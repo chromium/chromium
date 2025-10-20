@@ -623,12 +623,6 @@ void ChromeRenderFrameObserver::LoadBlockedPlugins(
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
-void ChromeRenderFrameObserver::SetSupportsDraggableRegions(
-    bool supports_draggable_regions) {
-  render_frame()->GetWebView()->SetSupportsDraggableRegions(
-      supports_draggable_regions);
-}
-
 void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
   prerender::SetShouldDeferMediaLoad(render_frame(), should_defer);
 }

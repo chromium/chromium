@@ -97,7 +97,6 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   void ExecuteWebUIJavaScript(const std::u16string& javascript) override {}
   void GetMediaFeedURL(GetMediaFeedURLCallback callback) override {}
   void LoadBlockedPlugins(const std::string& identifier) override {}
-  void SetSupportsDraggableRegions(bool supports_draggable_regions) override {}
   void SetShouldDeferMediaLoad(bool should_defer) override {}
 
   void InvokeTool(actor::mojom::ToolInvocationPtr request,

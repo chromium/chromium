@@ -11807,6 +11807,10 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
     save_package_->ClearPage();
     save_package_.reset();
   }
+
+  // Sync draggable regions.
+  SetSupportsDraggableRegions(supports_draggable_regions_);
+
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
 }
 
@@ -11935,6 +11939,17 @@ void WebContentsImpl::UpdateBrowserControlsState(
   // they are controlled from the renderer by the main RenderFrame(Host).
   GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate,
                                               offset_tag_modifications);
+}
+
+void WebContentsImpl::SetSupportsDraggableRegions(
+    bool supports_draggable_regions) {
+  supports_draggable_regions_ = supports_draggable_regions;
+  ExecutePageBroadcastMethod(
+      [supports_draggable_regions](RenderViewHostImpl* rvh) {
+        if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+          broadcast->SetSupportsDraggableRegions(supports_draggable_regions);
+        }
+      });
 }
 
 void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {

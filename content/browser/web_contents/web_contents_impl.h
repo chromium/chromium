@@ -650,6 +650,7 @@ class CONTENT_EXPORT WebContentsImpl
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications) override;
+  void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded) override;
@@ -2723,6 +2724,10 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
+
+  // Whether this contents has enabled draggable region calculation in the
+  // primary main frame.
+  bool supports_draggable_regions_{false};
 
   // The window open disposition that was originally requested
   // when this WebContents was created.

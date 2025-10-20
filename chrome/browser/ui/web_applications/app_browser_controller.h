@@ -352,11 +352,6 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Sets the url that the app browser controller was created with.
   void SetInitialURL(const GURL& initial_url);
 
-  // Indicates to the WebView whether it should support draggable regions via
-  // the app-region CSS property.
-  void UpdateSupportsDraggableRegions(bool supports_draggable_regions,
-                                      content::RenderFrameHost* host);
-
   const raw_ptr<Browser> browser_;
   const webapps::AppId app_id_;
   const bool has_tab_strip_;

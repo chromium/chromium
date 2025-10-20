@@ -98,12 +98,6 @@ void ExtensionsRenderFrameObserver::BindAppWindowReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void ExtensionsRenderFrameObserver::SetSupportsDraggableRegions(
-    bool supports_draggable_regions) {
-  render_frame()->GetWebView()->SetSupportsDraggableRegions(
-      supports_draggable_regions);
-}
-
 void ExtensionsRenderFrameObserver::SetVisuallyDeemphasized(bool deemphasized) {
   // TODO(danakj): This mojo API should be a MainFrame-only interface and object
   // rather than an every-frame interface and object.

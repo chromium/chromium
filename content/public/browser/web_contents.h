@@ -1608,6 +1608,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications) = 0;
 
+  // Indicates that the primary main frame should collect draggable regions set
+  // using the app-region CSS property.
+  virtual void SetSupportsDraggableRegions(bool supports_draggable_regions) = 0;
+
   // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
   // data is a model describing which JavaScript functions on the page should be
   // eagerly parsed & compiled by the JS engine.

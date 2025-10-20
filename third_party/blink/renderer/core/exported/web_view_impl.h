@@ -235,7 +235,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   int32_t HistoryListLength() const { return history_list_length_; }
   const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
   bool IsFencedFrameRoot() const override;
-  void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
 
   // Functions to add and remove observers for this object.
   void AddObserver(WebViewObserver* observer);
@@ -325,6 +324,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const ColorProviderColorMaps& color_provider_colors) override;
   void UpdateCanvasNoiseToken(
       std::optional<NoiseToken> canvas_noise_token) override;
+  void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
 
   std::optional<NoiseToken> CanvasNoiseTokenForTesting() override;
 

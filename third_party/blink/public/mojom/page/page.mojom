@@ -182,4 +182,8 @@ interface PageBroadcast {
   // the noise token at ReadyToCommit time and update blink::WebViews that
   // were made at request time.
   UpdateCanvasNoiseToken(blink.mojom.NoiseToken? canvas_noise_token);
+
+  // Indicates that the page's main frame should collect draggable regions set
+  // using the app-region CSS property.
+  SetSupportsDraggableRegions(bool supports_draggable_regions);
 };

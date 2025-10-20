@@ -72,4 +72,7 @@ void TestPageBroadcast::UpdateColorProviders(
 void TestPageBroadcast::UpdateCanvasNoiseToken(
     std::optional<blink::NoiseToken> canvas_noise_token) {}
 
+void TestPageBroadcast::SetSupportsDraggableRegions(
+    bool supports_draggable_regions) {}
+
 }  // namespace content

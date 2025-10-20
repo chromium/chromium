@@ -563,13 +563,6 @@ void AppBrowserController::PrimaryPageChanged(content::Page& page) {
   if (AppUsesWindowControlsOverlay()) {
     draggable_region_ = std::nullopt;
   }
-
-  // Collect draggable app regions if the app supports Window Controls Overlay
-  // or Borderless mode.
-  if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
-    content::RenderFrameHost& host = page.GetMainDocument();
-    UpdateSupportsDraggableRegions(/*supports_draggable_regions=*/true, &host);
-  }
 }
 
 std::optional<SkColor> AppBrowserController::GetThemeColor() const {
@@ -844,8 +837,7 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
   // RenderFrameCreated to handle existing web contents being reparented into an
   // app window.
   if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
-    content::RenderFrameHost* host = contents->GetPrimaryMainFrame();
-    UpdateSupportsDraggableRegions(/*supports_draggable_regions=*/true, host);
+    contents->SetSupportsDraggableRegions(/*supports_draggable_regions=*/true);
   }
 
   SetWebContentsCanAcceptLoadDrops(contents, false);
@@ -854,8 +846,7 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
 void AppBrowserController::OnTabRemoved(content::WebContents* contents) {
   // Stop collecting draggable app regions when the web contents is removed
   // since it may be reparented to a tab in the browser.
-  content::RenderFrameHost* host = contents->GetPrimaryMainFrame();
-  UpdateSupportsDraggableRegions(/*supports_draggable_regions=*/false, host);
+  contents->SetSupportsDraggableRegions(/*supports_draggable_regions=*/false);
 
   SetWebContentsCanAcceptLoadDrops(contents, true);
 }
@@ -980,21 +971,6 @@ void AppBrowserController::SetInitialURL(const GURL& initial_url) {
   initial_url_ = initial_url;
 
   OnReceivedInitialURL();
-}
-
-void AppBrowserController::UpdateSupportsDraggableRegions(
-    bool supports_draggable_regions,
-    content::RenderFrameHost* host) {
-  CHECK(host);
-
-  // App regions are only supported in the main frame.
-  if (!host->IsInPrimaryMainFrame()) {
-    return;
-  }
-
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
-  host->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-  client->SetSupportsDraggableRegions(supports_draggable_regions);
 }
 
 }  // namespace web_app

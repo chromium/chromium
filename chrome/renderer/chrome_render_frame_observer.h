@@ -125,7 +125,6 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #endif
   void GetMediaFeedURL(GetMediaFeedURLCallback callback) override;
   void LoadBlockedPlugins(const std::string& identifier) override;
-  void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
   void SetShouldDeferMediaLoad(bool should_defer) override;
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -86,12 +86,7 @@ void DraggableBubbleDialogView::SetupDraggingSupport() {
   }
 
   // Tell Blink that we support draggable region.
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  if (rfh) {
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->SetSupportsDraggableRegions(true);
-  }
+  web_contents->SetSupportsDraggableRegions(true);
 
   // Bind event handlers for dragging support.
   GetWidget()->GetNativeView()->AddPreTargetHandler(event_handler_.get());

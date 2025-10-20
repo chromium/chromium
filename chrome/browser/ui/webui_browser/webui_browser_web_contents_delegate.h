@@ -50,11 +50,6 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
 
-  // WebContentsObserver implementation.
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-
-  void EnableDraggableRegions();
-
   raw_ptr<WebUIBrowserWindow> window_;
   base::ObserverList<Observer> observers_;
 };

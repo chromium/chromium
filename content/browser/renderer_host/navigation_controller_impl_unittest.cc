@@ -168,6 +168,11 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (std::optional<blink::NoiseToken> canvas_noise_token),
               (override));
 
+  MOCK_METHOD(void,
+              SetSupportsDraggableRegions,
+              (bool supports_draggable_regions),
+              (override));
+
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }

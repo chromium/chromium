@@ -466,11 +466,6 @@ class BLINK_EXPORT WebView {
   // Returns whether this WebView represents a fenced frame root or not.
   virtual bool IsFencedFrameRoot() const = 0;
 
-  // Draggable Regions ---------------------------------------------------
-  // Indicates that this WebView should collect draggable regions set using the
-  // app-region CSS property.
-  virtual void SetSupportsDraggableRegions(bool supports_draggable_regions) = 0;
-
   // Misc -------------------------------------------------------------
 
   // Returns the number of live WebView instances in this process.
