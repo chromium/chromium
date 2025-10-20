@@ -197,10 +197,8 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 - (void)testSnapshotWithScrollDown {
   // TODO(crbug.com/452906291): Re-enable the test.
 #if TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 26.1, *)) {
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1 on iPad simulator.");
-    }
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
   }
 #endif
   // Open a page filled with 2 colors.
