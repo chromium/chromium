@@ -495,6 +495,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/sync/model:unit_tests",
     "//ios/chrome/browser/sync/model/prefs:unit_tests",
     "//ios/chrome/browser/synced_sessions/model:unit_tests",
+    "//ios/chrome/browser/synced_set_up/utils:unit_tests",
     "//ios/chrome/browser/tab_insertion/model:unit_tests",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:unit_tests",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions:unit_tests",
