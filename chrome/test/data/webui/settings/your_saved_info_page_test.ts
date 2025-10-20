@@ -75,6 +75,7 @@ suite('YourSavedInfoPage', function() {
       loadTimeData.getString('localPasswordManager'),
       loadTimeData.getString('paymentsTitle'),
       loadTimeData.getString('contactInfoTitle'),
+      loadTimeData.getString('identityDocsCardTitle'),
       loadTimeData.getString('travelCardTitle'),
     ];
 
@@ -101,6 +102,8 @@ suite('YourSavedInfoPage', function() {
   [
     {cardTitle: 'paymentsTitle', expectedRoute: routes.PAYMENTS},
     {cardTitle: 'contactInfoTitle', expectedRoute: routes.ADDRESSES},
+    // TODO(crbug.com/438666322): Update routing once the Identity docs subpage is created.
+    {cardTitle: 'identityDocsCardTitle', expectedRoute: routes.BASIC},
     // TODO(crbug.com/438666322): Update routing once the Travel subpage is created.
     {cardTitle: 'travelCardTitle', expectedRoute: routes.BASIC},
   ].forEach(({cardTitle, expectedRoute}) => {

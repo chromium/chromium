@@ -66,6 +66,10 @@ export class SettingsYourSavedInfoPageElement extends
         type: Array,
         computed: 'computeAddressesCardData_(addressesCount)',
       },
+      identityCardData_: {
+        type: Array,
+        computed: 'computeIdentityCardData_(driversLicensesCount, nationalIdCardsCount, passportsCount)',
+      },
       travelCardData_: {
         type: Array,
         computed:
@@ -109,6 +113,7 @@ export class SettingsYourSavedInfoPageElement extends
   declare private passwordsCardData_: ChipData[];
   declare private paymentsCardData_: ChipData[];
   declare private addressesCardData_: ChipData[];
+  declare private identityCardData_: ChipData[];
   declare private travelCardData_: ChipData[];
 
   private paymentsManager_: PaymentsManagerProxy =
@@ -329,6 +334,24 @@ export class SettingsYourSavedInfoPageElement extends
     ];
   }
 
+  private computeIdentityCardData_(): ChipData[] {
+    return [{
+      label: this.i18n('yourSavedInfoDriverLicenseChip'),
+      icon: 'settings20:id-card',
+      counter: this.driversLicensesCount,
+    },
+    {
+      label: this.i18n('yourSavedInfoNationalIdChip'),
+      icon: 'settings20:id-card',
+      counter: this.nationalIdCardsCount,
+    },
+    {
+      label: this.i18n('yourSavedInfoPassportChip'),
+      icon: 'settings20:passport',
+      counter: this.passportsCount,
+    }];
+  }
+
   private computeTravelCardData_(): ChipData[] {
     return [{
       label: this.i18n('yourSavedInfoFlightReservationsChip'),
@@ -359,6 +382,14 @@ export class SettingsYourSavedInfoPageElement extends
    */
   private onAddressesManagerClick_() {
     Router.getInstance().navigateTo(routes.ADDRESSES);
+  }
+
+  /**
+   * Shows the manage identity sub page.
+   */
+  private onIdentityManagerClick_() {
+    // TODO(crbug.com/438666322): Update routing once the Identity docs subpage is created.
+    Router.getInstance().navigateTo(routes.BASIC);
   }
 
   /**
