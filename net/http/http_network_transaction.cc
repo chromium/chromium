@@ -1127,6 +1127,11 @@ int HttpNetworkTransaction::DoCreateStream() {
             enable_ip_based_pooling_for_h2_, enable_alternative_services_,
             net_log_);
   } else {
+    // TODO(crbug.com/414173943): Remove this histogram timer once we confirm
+    // that time consumed by this method is different or the same for the HEv3
+    // and non-HEv3 paths.
+    base::ScopedUmaHistogramTimer histogram_timer(
+        "Net.NetworkTransaction.RequestStreamCpuTime");
     stream_request_ = session_->http_stream_factory()->RequestStream(
         *request_, priority_, /*allowed_bad_certs=*/observed_bad_certs_, this,
         enable_ip_based_pooling_for_h2_, enable_alternative_services_,

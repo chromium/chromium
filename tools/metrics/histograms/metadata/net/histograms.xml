@@ -3999,6 +3999,17 @@ chromium-metrics-reviews@google.com.
   <token key="HostType" variants="HostType"/>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.RequestStreamCpuTime" units="ms"
+    expires_after="2026-01-14">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures the CPU time taken by creating a HttpStreamRequest. Recoreded every
+    time the HttpNetworkTransaction::DoCreateStream() is called for HTTP stream
+    request.
+  </summary>
+</histogram>
+
 <histogram name="Net.NetworkTransaction.ResetConnectionAndResendRequestTime"
     units="ms" expires_after="2026-05-20">
   <owner>awillia@chromium.org</owner>
