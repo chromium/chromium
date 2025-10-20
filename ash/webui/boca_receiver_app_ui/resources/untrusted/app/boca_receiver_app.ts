@@ -4,26 +4,9 @@
 
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
-import {ConnectionClosedReason, ReceiverInfo, UserInfo} from '../mojom/boca_receiver.mojom-webui.js';
+import {ConnectionClosedReason, DecodedAudioPacket, ReceiverInfo, UserInfo} from '../mojom/boca_receiver.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-
-/**
- * TODO(b/449757180): Remove this definition once the
- * actual mojom::DecodedAudioPacket struct has been added and can be used
- * directly.
- *
- * This is a temporary client-side representation of the
- * mojom.DecodedAudioPacket.
- */
-export interface DecodedAudioPacket {
-  /** Sample rate (e.g., 48000). */
-  sampleRate: number;
-  /** Number of channels (e.g., 2 for stereo). */
-  channels: number;
-  /** The raw, interleaved 16-bit PCM audio samples. */
-  data: Int16Array;
-}
 
 export declare interface ClientApi {
   /**
@@ -80,6 +63,8 @@ function initializeApp(app: ClientApi) {
       () => app.onInitReceiverError());
   proxy.callbackRouter.onFrameReceived.addListener(
       (frameData: BitmapN32) => app.onFrameReceived(frameData));
+  proxy.callbackRouter.onAudioPacket.addListener(
+      (audioPacket: DecodedAudioPacket) => app.onAudioPacket(audioPacket));
   proxy.callbackRouter.onConnecting.addListener(
       (initiator: UserInfo, presenter: UserInfo|null) =>
           app.onConnecting(initiator, presenter));

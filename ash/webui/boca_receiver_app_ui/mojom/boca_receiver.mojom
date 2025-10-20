@@ -30,6 +30,15 @@ enum ConnectionClosedReason {
   kTakeOver = 3
 };
 
+struct DecodedAudioPacket {
+  // Sample rate (e.g., 48000).
+  int32 sample_rate;
+  // Number of channels (e.g., 2 for stereo).
+  int32 channels;
+  // The raw, interleaved 16-bit PCM audio samples.
+  array<int16> data;
+};
+
 // Implemented in TS and called from C++ side of he Boca Receiver app.
 interface UntrustedPage {
   // Updates the renderer with the receiver info on init and on change.
@@ -40,6 +49,9 @@ interface UntrustedPage {
 
   // Updates the renderer with the newly received frame.
   OnFrameReceived(skia.mojom.BitmapN32 frame_data);
+
+  // Updates the renderer with the newly received decoded audio packet.
+  OnAudioPacket(DecodedAudioPacket audio_packet);
 
   // Notifies the client that the receiver is connecting to a new host.
   OnConnecting(UserInfo initiator, UserInfo? presenter);

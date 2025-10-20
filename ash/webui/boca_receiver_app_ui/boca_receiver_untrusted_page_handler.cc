@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/webui/boca_receiver_app_ui/audio_packet_converter.h"
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom-data-view.h"
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
 #include "ash/webui/boca_receiver_app_ui/url_constants.h"
@@ -335,7 +336,13 @@ void BocaReceiverUntrustedPageHandler::OnCrdFrameReceived(
 
 void BocaReceiverUntrustedPageHandler::OnCrdAudioPacketReceived(
     std::unique_ptr<remoting::AudioPacket> packet) {
-  // TODO(crbug.com/450986461): Transform packet and pass it to UI through mojo.
+  boca_receiver::mojom::DecodedAudioPacketPtr mojom_packet =
+      ConvertAudioPacketToMojom(std::move(packet));
+  if (mojom_packet) {
+    page_->OnAudioPacket(std::move(mojom_packet));
+  } else {
+    LOG(ERROR) << "Dropping audio packet due to conversion failure.";
+  }
 }
 
 void BocaReceiverUntrustedPageHandler::OnCrdConnectionStateUpdated(
