@@ -109,6 +109,10 @@ gfx::RectF StubPasswordManagerDriver::TransformToRootCoordinates(
   return gfx::RectF();
 }
 
+void StubPasswordManagerDriver::CheckViewAreaVisible(
+    autofill::FieldRendererId field_id,
+    base::OnceCallback<void(bool)>) {}
+
 base::WeakPtr<PasswordManagerDriver> StubPasswordManagerDriver::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

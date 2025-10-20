@@ -64,6 +64,10 @@ BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 // login success/failure.
 BASE_DECLARE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved);
 
+// Checks if the new password field is visible in the viewport before returning
+// the form in the ChangePasswordFormWaiter.
+BASE_DECLARE_FEATURE(kCheckVisibilityInChangePasswordFormWaiter);
+
 // Identifies if the user is fully signed in in the main tab
 // before starting the Automated Password Change flow.
 BASE_DECLARE_FEATURE(kCheckLoginStateBeforePasswordChange);

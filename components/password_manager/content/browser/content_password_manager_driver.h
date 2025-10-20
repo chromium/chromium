@@ -126,6 +126,8 @@ class ContentPasswordManagerDriver final
   const url::Origin& GetLastCommittedOrigin() const override;
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override;
+  void CheckViewAreaVisible(autofill::FieldRendererId field_id,
+                            base::OnceCallback<void(bool)>) override;
   base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
 
   base::WeakPtr<ContentPasswordManagerDriver> AsWeakPtrImpl() {

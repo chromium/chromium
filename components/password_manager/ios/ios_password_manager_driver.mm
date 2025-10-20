@@ -199,6 +199,12 @@ gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
   return bounds_in_frame_coordinates;
 }
 
+void IOSPasswordManagerDriver::CheckViewAreaVisible(
+    autofill::FieldRendererId field_id,
+    base::OnceCallback<void(bool)>) {
+  NOTREACHED();
+}
+
 base::WeakPtr<password_manager::PasswordManagerDriver>
 IOSPasswordManagerDriver::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

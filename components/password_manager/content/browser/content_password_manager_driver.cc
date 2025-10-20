@@ -395,6 +395,14 @@ const url::Origin& ContentPasswordManagerDriver::GetLastCommittedOrigin()
   return render_frame_host_->GetLastCommittedOrigin();
 }
 
+void ContentPasswordManagerDriver::CheckViewAreaVisible(
+    autofill::FieldRendererId field_id,
+    base::OnceCallback<void(bool)> callback) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->CheckViewAreaVisible(field_id, std::move(callback));
+  }
+}
+
 void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
     const autofill::ParsingResult& parsing_result) {
   if (const auto& agent = GetPasswordAutofillAgent()) {

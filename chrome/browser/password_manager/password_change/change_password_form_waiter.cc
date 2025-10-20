@@ -5,7 +5,9 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -172,12 +174,42 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kCheckVisibilityInChangePasswordFormWaiter)) {
+    if (!form_manager->GetDriver()) {
+      return;
+    }
+
+    auto new_field_id =
+        form_manager->GetParsedObservedForm()->new_password_element_renderer_id;
+    form_manager->GetDriver()->CheckViewAreaVisible(
+        new_field_id,
+        base::BindOnce(
+            &ChangePasswordFormWaiter::OnCheckViewAreaVisibleCallback,
+            weak_ptr_factory_.GetWeakPtr(), new_field_id));
+    return;
+  }
+
   if (ignore_hidden_forms_ &&
       !IsNewPasswordFieldVisible(form_manager->GetParsedObservedForm())) {
     return;
   }
 
   std::move(callback_).Run(form_manager);
+}
+
+void ChangePasswordFormWaiter::OnCheckViewAreaVisibleCallback(
+    autofill::FieldRendererId new_password_element_id,
+    bool is_visible) {
+  if (!is_visible) {
+    return;
+  }
+
+  if (auto* form_manager = GetCorrespondingFormManager(
+          weak_ptr_factory_.GetWeakPtr(), new_password_element_id)) {
+    std::move(callback_).Run(form_manager);
+  }
 }
 
 void ChangePasswordFormWaiter::DidStartLoading() {

@@ -151,6 +151,10 @@ class FakePasswordAutofillAgent
               AnnotateFieldsWithParsingResult,
               (const ParsingResult&),
               (override));
+  MOCK_METHOD(void,
+              CheckViewAreaVisible,
+              (autofill::FieldRendererId, CheckViewAreaVisibleCallback),
+              (override));
 
  private:
   void SetLoggingState(bool active) override {

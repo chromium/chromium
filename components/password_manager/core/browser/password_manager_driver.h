@@ -214,6 +214,10 @@ class PasswordManagerDriver {
   virtual gfx::RectF TransformToRootCoordinates(
       const gfx::RectF& bounds_in_frame_coordinates) = 0;
 
+  // Checks if the view area of the field is visible.
+  virtual void CheckViewAreaVisible(autofill::FieldRendererId field_id,
+                                    base::OnceCallback<void(bool)>) = 0;
+
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordManagerDriver> AsWeakPtr() = 0;
 };

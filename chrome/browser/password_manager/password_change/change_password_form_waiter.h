@@ -79,6 +79,10 @@ class ChangePasswordFormWaiter
       base::WeakPtr<ChangePasswordFormWaiter> waiter,
       autofill::FieldRendererId new_password_element_id);
 
+  void OnCheckViewAreaVisibleCallback(
+      autofill::FieldRendererId new_password_element_id,
+      bool is_visible);
+
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   PasswordFormFoundCallback callback_;
 

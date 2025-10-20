@@ -44,6 +44,9 @@ BASE_FEATURE(kBiometricTouchToFill, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCheckVisibilityInChangePasswordFormWaiter,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCheckLoginStateBeforePasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

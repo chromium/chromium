@@ -1677,6 +1677,21 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
   field_data_manager().ClearData();
 }
 
+void PasswordAutofillAgent::CheckViewAreaVisible(
+    FieldRendererId field_id,
+    CheckViewAreaVisibleCallback callback) {
+  WebFormControlElement element =
+      form_util::GetFormControlByRendererId(field_id);
+  if (!element) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  element.ScrollIntoViewIfNeeded();
+
+  std::move(callback).Run(!element.VisibleBoundsInWidget().IsEmpty());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void PasswordAutofillAgent::TriggerFormSubmission() {
   // Find the last interacted element to simulate an enter keystroke at.

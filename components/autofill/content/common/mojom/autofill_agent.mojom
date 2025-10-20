@@ -185,6 +185,10 @@ interface PasswordAutofillAgent {
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.
   AnnotateFieldsWithParsingResult(ParsingResult parsing_result);
+
+  // Scrolls to the element if needed and checks if the view area of the field
+  // is visible.
+  CheckViewAreaVisible(FieldRendererId field_id) => (bool is_visible);
 };
 
 // There is one instance of this interface per render frame in the render
