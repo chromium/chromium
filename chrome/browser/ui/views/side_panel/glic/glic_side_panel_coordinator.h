@@ -81,6 +81,7 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   // SidePanelEntryObserver:
   void OnEntryWillHide(SidePanelEntry* entry,
                        SidePanelEntryHideReason reason) override;
+  void OnEntryHideCancelled(SidePanelEntry* entry) override;
   void OnEntryShown(SidePanelEntry* entry) override;
 
  private:

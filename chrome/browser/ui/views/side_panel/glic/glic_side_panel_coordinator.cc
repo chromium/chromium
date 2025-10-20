@@ -124,6 +124,12 @@ void GlicSidePanelCoordinator::OnEntryWillHide(
   NotifyStateChanged();
 }
 
+void GlicSidePanelCoordinator::OnEntryHideCancelled(SidePanelEntry* entry) {
+  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
+  state_ = State::kShown;
+  NotifyStateChanged();
+}
+
 void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   state_ = State::kShown;
