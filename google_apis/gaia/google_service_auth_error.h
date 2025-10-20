@@ -151,7 +151,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
 
   // Construct a GoogleServiceAuthError from a network error.
   // It will be created with CONNECTION_FAILED set.
-  // TODO(crbug.com/452635554): convert the parameter type to net::Error.
   static GoogleServiceAuthError FromConnectionError(int error);
 
   static GoogleServiceAuthError FromInvalidGaiaCredentialsReason(
@@ -187,8 +186,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
 
   // The error information.
   State state() const;
-  int network_error() const;
   const std::string& error_message() const;
+
+  // Should only be used when the error state is CONNECTION_FAILED.
+  net::Error GetNetworkError() const;
 
   // Should only be used when the error state is CHALLENGE_RESPONSE_REQUIRED.
   const std::string& GetTokenBindingChallenge() const;

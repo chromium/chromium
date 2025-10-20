@@ -45,7 +45,7 @@ const std::string AuthFailure::GetErrorString() const {
     case NETWORK_AUTH_FAILED:
       if (google_service_auth_error_.state() ==
           GoogleServiceAuthError::CONNECTION_FAILED) {
-        return net::ErrorToString(google_service_auth_error_.network_error());
+        return net::ErrorToString(google_service_auth_error_.GetNetworkError());
       }
       return "Google authentication failed.";
     case OWNER_REQUIRED:

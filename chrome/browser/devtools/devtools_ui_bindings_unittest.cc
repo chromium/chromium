@@ -386,12 +386,12 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
   identity_test_env_adaptor()
       ->identity_test_env()
       ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+          GoogleServiceAuthError::FromServiceUnavailable("test_error"));
   run_loop.Run();
 
   EXPECT_EQ(*result.FindString("error"), "Token fetch error");
   EXPECT_EQ(*result.FindString("detail"),
-            "Service unavailable; try again later.");
+            "Service unavailable; try again later (test_error).");
 }
 
 TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,

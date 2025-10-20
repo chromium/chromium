@@ -220,13 +220,6 @@ GoogleServiceAuthError::State GoogleServiceAuthError::state() const {
       details_);
 }
 
-int GoogleServiceAuthError::network_error() const {
-  return std::visit(
-      absl::Overload{[](const ConnectionFailed& d) { return d.network_error; },
-                     [](const auto&) { return net::OK; }},
-      details_);
-}
-
 const std::string& GoogleServiceAuthError::error_message() const {
   return std::visit(
       absl::Overload{[](const ServiceUnavailable& d) -> const std::string& {
@@ -241,6 +234,12 @@ const std::string& GoogleServiceAuthError::error_message() const {
                        return base::EmptyString();
                      }},
       details_);
+}
+
+net::Error GoogleServiceAuthError::GetNetworkError() const {
+  const auto* connection_failed = std::get_if<ConnectionFailed>(&details_);
+  CHECK(connection_failed);
+  return connection_failed->network_error;
 }
 
 const std::string& GoogleServiceAuthError::GetTokenBindingChallenge() const {
@@ -281,8 +280,9 @@ std::string GoogleServiceAuthError::ToString() const {
                                       connection_failed.network_error);
           },
           [](const ServiceUnavailable& service_unavailable) {
-            // TODO(crbug.com/452635554): append `error_message` to this string.
-            return std::string("Service unavailable; try again later.");
+            return base::StringPrintf(
+                "Service unavailable; try again later (%s).",
+                service_unavailable.error_message);
           },
           [](const RequestCanceled&) {
             return std::string("Request canceled.");
