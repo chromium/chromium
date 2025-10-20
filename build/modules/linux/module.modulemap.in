@@ -19,20 +19,12 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/asm-generic/errno.h"
     export *
   }
-  module asm_generic_int_ll64_h {
-    header "$sysroot/asm-generic/int-ll64.h"
-    export *
-  }
   module asm_generic_ioctl_h {
     header "$sysroot/asm-generic/ioctl.h"
     export *
   }
   module asm_generic_ioctls_h {
     header "$sysroot/asm-generic/ioctls.h"
-    export *
-  }
-  module asm_generic_posix_types_h {
-    header "$sysroot/asm-generic/posix_types.h"
     export *
   }
   module endian_h {
@@ -61,18 +53,6 @@ module sys_stage1 [system] [extern_c] {
   }
   module linux_ioctl_h {
     header "$sysroot/linux/ioctl.h"
-    export *
-  }
-  module linux_posix_types_h {
-    header "$sysroot/linux/posix_types.h"
-    export *
-  }
-  module linux_stddef_h {
-    header "$sysroot/linux/stddef.h"
-    export *
-  }
-  module linux_types_h {
-    header "$sysroot/linux/types.h"
     export *
   }
   module locale_h {

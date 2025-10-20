@@ -22,8 +22,8 @@ declare_args() {
 module_platform = "${current_os}-${current_cpu}"
 if (is_chromeos) {
   # ChromeOS uses the linux sysroot.
-  module_platform = "linux-${current_cpu}"
-} else if (is_fuchsia || is_mac) {
+  module_platform = "linux"
+} else if (is_fuchsia || is_mac || is_linux) {
   # Currently, these generate the same sysroot for all architectures. This is
   # not inherently the case. If we start getting errors on one architecture
   # but not the other, we will revert back to one modulemap per cpu.
