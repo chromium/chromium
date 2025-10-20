@@ -1,0 +1,12 @@
+exit code: 0
+stdout:
+//: LICENSE
+//extra_dir: extra_dir/LICENSE
+//subdir/third_party/narluga_v1: subdir/third_party/narluga_v1/LICENSE
+//subdir/third_party/narluga_v2: subdir/third_party/narluga_v2/LICENSE
+//third_party/sample3: third_party/sample3/the_license
+//third_party/sample: third_party/sample/LICENSE
+//third_party/sample2: third_party/sample2/LICENSE.apache, third_party/sample2/LICENSE.mit
+//third_party/sample2: third_party/sample2/LICENSE.notshipped
+//third_party/sample3/sub_component: third_party/sample3/sub_component/LICENSE
+stderr:

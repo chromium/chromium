@@ -1,0 +1,8 @@
+exit code: 0
+stdout:
+//: LICENSE
+//extra_dir: extra_dir/LICENSE
+//third_party/sample3: third_party/sample3/the_license
+//third_party/sample2: third_party/sample2/LICENSE.apache, third_party/sample2/LICENSE.mit
+//third_party/sample2: third_party/sample2/LICENSE.notshipped
+stderr:
