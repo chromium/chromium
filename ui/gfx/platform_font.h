@@ -126,8 +126,15 @@ class COMPONENT_EXPORT(GFX) PlatformFont
   // otherwise lose the handle to the correct platform font instance.
   virtual sk_sp<SkTypeface> GetNativeSkTypeface() const = 0;
 
+  std::strong_ordering operator<=>(const PlatformFont& other) const {
+    return Compare(other);
+  }
+
  protected:
   virtual ~PlatformFont() = default;
+
+  // Compares this PlatformFont with |other|.
+  virtual std::strong_ordering Compare(const PlatformFont& other) const;
 
  private:
   friend class base::RefCounted<PlatformFont>;
