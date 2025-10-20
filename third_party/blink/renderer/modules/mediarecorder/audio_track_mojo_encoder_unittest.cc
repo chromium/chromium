@@ -203,8 +203,7 @@ class AudioTrackMojoEncoderTest : public testing::Test {
   media::EncoderStatus::Codes error_code_ = media::EncoderStatus::Codes::kOk;
   std::vector<base::TimeTicks> capture_times_;
   AudioTrackMojoEncoder audio_track_encoder_{
-      scheduler::GetSequencedTaskRunnerForTesting(),
-      AudioTrackRecorder::CodecId::kAac,
+      scheduler::GetSequencedTaskRunnerForTesting(), media::AudioCodec::kAAC,
       /*on_encoded_audio_cb=*/
       CrossThreadBindRepeating(base::BindLambdaForTesting(
           [this](const media::AudioParameters& /*params*/,

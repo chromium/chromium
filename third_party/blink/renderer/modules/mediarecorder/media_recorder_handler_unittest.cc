@@ -1690,42 +1690,40 @@ struct MediaRecorderCodecProfileTestParams {
 static const MediaRecorderCodecProfileTestParams
     kMediaRecorderCodecProfileTestParams[] = {
         {"vp8,mp4a.40.2",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kVp8)},
-        {"vp9,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kVp9)},
-        {"av1,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kAv1)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kVP8)},
+        {"vp9,opus", VideoTrackRecorder::CodecProfile(media::VideoCodec::kVP9)},
+        {"av1,opus", VideoTrackRecorder::CodecProfile(media::VideoCodec::kAV1)},
         {"av01,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kAv1)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kAV1)},
         {"av01.0.04M.08,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kAv1)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kAV1)},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         {"h264,mp4a.40.2",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kH264)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kH264)},
         {"avc1,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kH264)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kH264)},
         {"avc3,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kH264)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kH264)},
         {"avc1.42E01E,opus", VideoTrackRecorder::CodecProfile(
-                                 VideoTrackRecorder::CodecId::kH264,
+                                 media::VideoCodec::kH264,
                                  media::VideoCodecProfile::H264PROFILE_BASELINE,
                                  30u)},
         {"avc3.42E01E,opus", VideoTrackRecorder::CodecProfile(
-                                 VideoTrackRecorder::CodecId::kH264,
+                                 media::VideoCodec::kH264,
                                  media::VideoCodecProfile::H264PROFILE_BASELINE,
                                  30u)},
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         {"hvc1,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kHevc)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kHEVC)},
         {"hev1,opus",
-         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kHevc)},
+         VideoTrackRecorder::CodecProfile(media::VideoCodec::kHEVC)},
         {"hvc1.1.6.L93.B0,opus", VideoTrackRecorder::CodecProfile(
-                                     VideoTrackRecorder::CodecId::kHevc,
+                                     media::VideoCodec::kHEVC,
                                      media::VideoCodecProfile::HEVCPROFILE_MAIN,
                                      93u)},
         {"hev1.1.6.L93.B0,opus", VideoTrackRecorder::CodecProfile(
-                                     VideoTrackRecorder::CodecId::kHevc,
+                                     media::VideoCodec::kHEVC,
                                      media::VideoCodecProfile::HEVCPROFILE_MAIN,
                                      93u)},
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

@@ -109,7 +109,6 @@ class VideoTrackRecorderImplContextProvider {
   }
 };
 
-using CodecId = VideoTrackRecorder::CodecId;
 
 libyuv::RotationMode MediaVideoRotationToRotationMode(
     media::VideoRotation rotation) {
@@ -150,51 +149,26 @@ constexpr MediaTrackContainerType kH265Types[] = {
 #endif
 
 constexpr struct {
-  CodecId codec_id;
+  media::VideoCodec codec;
   media::VideoCodecProfile min_profile;
   media::VideoCodecProfile max_profile;
   base::raw_span<const MediaTrackContainerType> supported_container_types;
-} kPreferredCodecIdAndVEAProfiles[] = {
-    {CodecId::kVp8, media::VP8PROFILE_ANY, media::VP8PROFILE_ANY,
+} kPreferredCodecAndVEAProfiles[] = {
+    {media::VideoCodec::kVP8, media::VP8PROFILE_ANY, media::VP8PROFILE_ANY,
      base::span{kVp8Types}},
-    {CodecId::kVp9, media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE0,
-     base::span{kVp9Types}},
+    {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0,
+     media::VP9PROFILE_PROFILE0, base::span{kVp9Types}},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {CodecId::kH264, media::H264PROFILE_BASELINE, media::H264PROFILE_HIGH,
-     base::span{kH264Types}},
+    {media::VideoCodec::kH264, media::H264PROFILE_BASELINE,
+     media::H264PROFILE_HIGH, base::span{kH264Types}},
 #endif
-    {CodecId::kAv1, media::AV1PROFILE_PROFILE_MAIN,
+    {media::VideoCodec::kAV1, media::AV1PROFILE_PROFILE_MAIN,
      media::AV1PROFILE_PROFILE_MAIN, base::span{kAv1Types}},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {CodecId::kHevc, media::HEVCPROFILE_MAIN, media::HEVCPROFILE_MAIN,
+    {media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN, media::HEVCPROFILE_MAIN,
      base::span{kH265Types}},
 #endif
 };
-
-static_assert(std::size(kPreferredCodecIdAndVEAProfiles) ==
-                  static_cast<int>(CodecId::kLast),
-              "|kPreferredCodecIdAndVEAProfiles| should consider all CodecIds");
-
-media::VideoCodec CodecIdToMediaCodec(VideoTrackRecorder::CodecId codec) {
-  switch (codec) {
-    case VideoTrackRecorder::CodecId::kVp8:
-      return media::VideoCodec::kVP8;
-    case VideoTrackRecorder::CodecId::kVp9:
-      return media::VideoCodec::kVP9;
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case VideoTrackRecorder::CodecId::kH264:
-      return media::VideoCodec::kH264;
-#endif
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case VideoTrackRecorder::CodecId::kHevc:
-      return media::VideoCodec::kHEVC;
-#endif
-    case VideoTrackRecorder::CodecId::kAv1:
-      return media::VideoCodec::kAV1;
-    case VideoTrackRecorder::CodecId::kLast:
-      return media::VideoCodec::kUnknown;
-  }
-}
 
 void NotifyEncoderSupportKnown(base::OnceClosure callback) {
   if (!Platform::Current()) {
@@ -231,7 +205,7 @@ media::VideoEncodeAccelerator::SupportedProfiles GetVEASupportedProfiles() {
       media::VideoEncodeAccelerator::SupportedProfiles());
 }
 
-void UmaHistogramForCodecImpl(bool uses_acceleration, CodecId codec_id) {
+void UmaHistogramForCodecImpl(bool uses_acceleration, media::VideoCodec codec) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // (kMaxValue being the only exception, as it does not map to a logged value,
@@ -251,49 +225,50 @@ void UmaHistogramForCodecImpl(bool uses_acceleration, CodecId codec_id) {
   };
   auto histogram = VideoTrackRecorderCodecImplHistogram::kUnknown;
   if (uses_acceleration) {
-    switch (codec_id) {
-      case CodecId::kVp8:
+    switch (codec) {
+      case media::VideoCodec::kVP8:
         histogram = VideoTrackRecorderCodecImplHistogram::kVp8Hw;
         break;
-      case CodecId::kVp9:
+      case media::VideoCodec::kVP9:
         histogram = VideoTrackRecorderCodecImplHistogram::kVp9Hw;
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      case CodecId::kH264:
+      case media::VideoCodec::kH264:
         histogram = VideoTrackRecorderCodecImplHistogram::kH264Hw;
         break;
 #endif
-      case CodecId::kAv1:
+      case media::VideoCodec::kAV1:
         histogram = VideoTrackRecorderCodecImplHistogram::kAv1Hw;
         break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case CodecId::kHevc:
+      case media::VideoCodec::kHEVC:
         histogram = VideoTrackRecorderCodecImplHistogram::kHevcHw;
         break;
 #endif
-      case CodecId::kLast:
+      default:
         break;
     }
   } else {
-    switch (codec_id) {
-      case CodecId::kVp8:
+    switch (codec) {
+      case media::VideoCodec::kVP8:
         histogram = VideoTrackRecorderCodecImplHistogram::kVp8Sw;
         break;
-      case CodecId::kVp9:
+      case media::VideoCodec::kVP9:
         histogram = VideoTrackRecorderCodecImplHistogram::kVp9Sw;
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      case CodecId::kH264:
+      case media::VideoCodec::kH264:
         histogram = VideoTrackRecorderCodecImplHistogram::kH264Sw;
         break;
 #endif
-      case CodecId::kAv1:
+      case media::VideoCodec::kAV1:
         histogram = VideoTrackRecorderCodecImplHistogram::kAv1Sw;
         break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case CodecId::kHevc:
+      case media::VideoCodec::kHEVC:
+        break;
 #endif
-      case CodecId::kLast:
+      default:
         break;
     }
   }
@@ -302,18 +277,18 @@ void UmaHistogramForCodecImpl(bool uses_acceleration, CodecId codec_id) {
 
 // Returns the default codec profile for |codec_id|.
 std::optional<media::VideoCodecProfile> GetMediaVideoCodecProfileForSwEncoder(
-    VideoTrackRecorder::CodecId codec_id) {
-  switch (codec_id) {
+    media::VideoCodec codec) {
+  switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_OPENH264)
-    case CodecId::kH264:
+    case media::VideoCodec::kH264:
       return media::H264PROFILE_BASELINE;
 #endif  // BUILDFLAG(ENABLE_OPENH264)
-    case CodecId::kVp8:
+    case media::VideoCodec::kVP8:
       return media::VP8PROFILE_ANY;
-    case CodecId::kVp9:
+    case media::VideoCodec::kVP9:
       return media::VP9PROFILE_MIN;
 #if BUILDFLAG(ENABLE_LIBAOM)
-    case CodecId::kAv1:
+    case media::VideoCodec::kAV1:
       return media::AV1PROFILE_MIN;
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
     default:
@@ -321,8 +296,8 @@ std::optional<media::VideoCodecProfile> GetMediaVideoCodecProfileForSwEncoder(
   }
 }
 
-bool IsSoftwareEncoderAvailable(CodecId codec_id) {
-  return GetMediaVideoCodecProfileForSwEncoder(codec_id).has_value();
+bool IsSoftwareEncoderAvailable(media::VideoCodec codec) {
+  return GetMediaVideoCodecProfileForSwEncoder(codec).has_value();
 }
 
 std::optional<media::VideoCodecProfile> GetMediaVideoCodecProfile(
@@ -339,24 +314,23 @@ std::optional<media::VideoCodecProfile> GetMediaVideoCodecProfile(
     // with a hardware encoder.
     CHECK(codec_profile.profile.has_value());
     return codec_profile.profile;
-  } else if (!IsSoftwareEncoderAvailable(codec_profile.codec_id)) {
-    LOG(ERROR) << "Can't use VEA, but must be able to use VEA, codec_id="
-               << static_cast<int>(codec_profile.codec_id);
+  } else if (!IsSoftwareEncoderAvailable(codec_profile.codec)) {
+    LOG(ERROR) << "Can't use VEA, but must be able to use VEA, codec="
+               << static_cast<int>(codec_profile.codec);
     return std::nullopt;
   }
   // Software encoder will be used.
   return codec_profile.profile.value_or(
-      GetMediaVideoCodecProfileForSwEncoder(codec_profile.codec_id).value());
+      GetMediaVideoCodecProfileForSwEncoder(codec_profile.codec).value());
 }
 
 MediaRecorderEncoderWrapper::CreateEncoderCB
 GetCreateHardwareVideoEncoderCallback(
-    CodecId codec_id,
+    media::VideoCodec codec,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   CHECK(gpu_factories);
   auto required_encoder_type =
-      media::MayHaveAndAllowSelectOSSoftwareEncoder(
-          MediaVideoCodecFromCodecId(codec_id))
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(codec)
           ? media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference
           : media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
   return CrossThreadBindRepeating(
@@ -375,32 +349,32 @@ GetCreateHardwareVideoEncoderCallback(
 }
 
 MediaRecorderEncoderWrapper::CreateEncoderCB
-GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
-  switch (codec_id) {
+GetCreateSoftwareVideoEncoderCallback(media::VideoCodec codec) {
+  switch (codec) {
 #if BUILDFLAG(ENABLE_OPENH264)
-    case CodecId::kH264:
+    case media::VideoCodec::kH264:
       return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::OpenH264VideoEncoder>();
           });
 #endif  // BUILDFLAG(ENABLE_OPENH264)
 #if BUILDFLAG(ENABLE_LIBVPX)
-    case CodecId::kVp8:
-    case CodecId::kVp9:
+    case media::VideoCodec::kVP8:
+    case media::VideoCodec::kVP9:
       return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::VpxVideoEncoder>();
           });
 #endif
 #if BUILDFLAG(ENABLE_LIBAOM)
-    case CodecId::kAv1:
+    case media::VideoCodec::kAV1:
       return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::Av1VideoEncoder>();
           });
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
     default:
-      NOTREACHED() << "Unsupported codec=" << static_cast<int>(codec_id);
+      NOTREACHED() << "Unsupported codec=" << static_cast<int>(codec);
   }
 }
 
@@ -414,21 +388,21 @@ std::optional<media::VideoTransformation> GetFrameTransformation(
 }  // anonymous namespace
 
 // static
-VideoTrackRecorder::CodecHistogram
-VideoTrackRecorder::CodecHistogramFromCodecId(CodecId codec_id) {
-  switch (codec_id) {
-    case CodecId::kVp8:
+VideoTrackRecorder::CodecHistogram VideoTrackRecorder::CodecHistogramFromCodec(
+    media::VideoCodec codec) {
+  switch (codec) {
+    case media::VideoCodec::kVP8:
       return CodecHistogram::kVp8;
-    case CodecId::kVp9:
+    case media::VideoCodec::kVP9:
       return CodecHistogram::kVp9;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case CodecId::kH264:
+    case media::VideoCodec::kH264:
       return CodecHistogram::kH264;
 #endif
-    case CodecId::kAv1:
+    case media::VideoCodec::kAV1:
       return CodecHistogram::kAv1;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case CodecId::kHevc:
+    case media::VideoCodec::kHEVC:
       return CodecHistogram::kHevc;
 #endif
     default:
@@ -448,20 +422,20 @@ VideoTrackRecorder::VideoTrackRecorder(
   CHECK(main_thread_task_runner_);
 }
 
-VideoTrackRecorderImpl::CodecProfile::CodecProfile(CodecId codec_id)
-    : codec_id(codec_id) {}
+VideoTrackRecorderImpl::CodecProfile::CodecProfile(media::VideoCodec codec)
+    : codec(codec) {}
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
-    CodecId codec_id,
+    media::VideoCodec codec,
     std::optional<media::VideoCodecProfile> opt_profile,
     std::optional<media::VideoCodecLevel> opt_level)
-    : codec_id(codec_id), profile(opt_profile), level(opt_level) {}
+    : codec(codec), profile(opt_profile), level(opt_level) {}
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
-    CodecId codec_id,
+    media::VideoCodec codec,
     media::VideoCodecProfile profile,
     media::VideoCodecLevel level)
-    : codec_id(codec_id), profile(profile), level(level) {}
+    : codec(codec), profile(profile), level(level) {}
 
 VideoTrackRecorderImpl::Counter::Counter() : count_(0u) {}
 
@@ -750,34 +724,35 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
 }
 
 // static
-VideoTrackRecorderImpl::CodecId VideoTrackRecorderImpl::GetPreferredCodecId(
+media::VideoCodec VideoTrackRecorderImpl::GetPreferredCodec(
     MediaTrackContainerType type) {
   for (const auto& supported_profile : GetVEASupportedProfiles()) {
-    const media::VideoCodecProfile codec = supported_profile.profile;
-    for (auto& entry : kPreferredCodecIdAndVEAProfiles) {
-      if (codec >= entry.min_profile && codec <= entry.max_profile &&
+    const media::VideoCodecProfile codec_profile = supported_profile.profile;
+    for (auto& entry : kPreferredCodecAndVEAProfiles) {
+      if (codec_profile >= entry.min_profile &&
+          codec_profile <= entry.max_profile &&
           std::find(entry.supported_container_types.begin(),
                     entry.supported_container_types.end(),
                     type) != entry.supported_container_types.end()) {
-        DVLOG(2) << "Accelerated codec found: " << media::GetProfileName(codec)
-                 << ", min_resolution: "
+        DVLOG(2) << "Accelerated codec found: "
+                 << media::GetProfileName(codec_profile) << ", min_resolution: "
                  << supported_profile.min_resolution.ToString()
                  << ", max_resolution: "
                  << supported_profile.max_resolution.ToString()
                  << ", max_framerate: "
                  << supported_profile.max_framerate_numerator << "/"
                  << supported_profile.max_framerate_denominator;
-        return entry.codec_id;
+        return entry.codec;
       }
     }
   }
 
   if (type == MediaTrackContainerType::kVideoMp4 ||
       type == MediaTrackContainerType::kAudioMp4) {
-    return CodecId::kVp9;
+    return media::VideoCodec::kVP9;
   }
 
-  return CodecId::kVp8;
+  return media::VideoCodec::kVP8;
 }
 
 // static
@@ -786,7 +761,7 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
     size_t width,
     size_t height,
     double framerate) {
-  if (IsSoftwareEncoderAvailable(codec_profile.codec_id)) {
+  if (IsSoftwareEncoderAvailable(codec_profile.codec)) {
     if (width < kVEAEncoderMinResolutionWidth) {
       return false;
     }
@@ -795,13 +770,12 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
     }
   }
 
-  const auto media_codec_id = CodecIdToMediaCodec(codec_profile.codec_id);
   for (const auto& profile : GetVEASupportedProfiles()) {
     DCHECK_NE(profile.profile, media::VIDEO_CODEC_PROFILE_UNKNOWN);
 
     // Skip other profiles if the profile is specified or skip on codec.
     if ((codec_profile.profile && *codec_profile.profile != profile.profile) ||
-        media_codec_id !=
+        codec_profile.codec !=
             media::VideoCodecProfileToVideoCodec(profile.profile)) {
       continue;
     }
@@ -1015,8 +989,8 @@ void VideoTrackRecorderImpl::CreateMediaVideoEncoder(
       bits_per_second_, is_screencast, create_vea_encoder,
       create_vea_encoder
           ? GetCreateHardwareVideoEncoderCallback(
-                codec_profile.codec_id, Platform::Current()->GetGpuFactories())
-          : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec_id),
+                codec_profile.codec, Platform::Current()->GetGpuFactories())
+          : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec),
       BindPostTask(main_thread_task_runner_,
                    CrossThreadBindRepeating(
                        &CallbackInterface::OnEncodedVideo,
@@ -1057,7 +1031,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   auto encoding_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   CHECK(encoding_task_runner);
-  UmaHistogramForCodecImpl(create_vea_encoder, codec_profile.codec_id);
+  UmaHistogramForCodecImpl(create_vea_encoder, codec_profile.codec);
 
   CreateMediaVideoEncoder(encoding_task_runner, codec_profile, is_screencast,
                           create_vea_encoder);

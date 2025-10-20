@@ -195,7 +195,7 @@ namespace blink {
 struct ATRTestParams {
   const media::ChannelLayoutConfig channel_layout;
   const int sample_rate;
-  const AudioTrackRecorder::CodecId codec;
+  const media::AudioCodec codec;
   const AudioTrackRecorder::BitrateMode bitrate_mode;
 };
 
@@ -203,64 +203,50 @@ const ATRTestParams kATRTestParams[] = {
     // Equivalent to default settings:
     {media::ChannelLayoutConfig::Stereo(),        /* channel layout */
      kDefaultSampleRate,                          /* sample rate */
-     AudioTrackRecorder::CodecId::kOpus,          /* codec for encoding */
+     media::AudioCodec::kOpus,                    /* codec for encoding */
      AudioTrackRecorder::BitrateMode::kVariable}, /* constant/variable rate */
 
     // Change to mono:
     {media::ChannelLayoutConfig::Mono(), kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::kOpus,
-     AudioTrackRecorder::BitrateMode::kVariable},
+     media::AudioCodec::kOpus, AudioTrackRecorder::BitrateMode::kVariable},
 
     // Different sampling rate as well:
-    {media::ChannelLayoutConfig::Mono(), 24000,
-     AudioTrackRecorder::CodecId::kOpus,
+    {media::ChannelLayoutConfig::Mono(), 24000, media::AudioCodec::kOpus,
      AudioTrackRecorder::BitrateMode::kVariable},
-    {media::ChannelLayoutConfig::Stereo(), 8000,
-     AudioTrackRecorder::CodecId::kOpus,
+    {media::ChannelLayoutConfig::Stereo(), 8000, media::AudioCodec::kOpus,
      AudioTrackRecorder::BitrateMode::kVariable},
 
     // Using a non-default Opus sampling rate (48, 24, 16, 12, or 8 kHz).
-    {media::ChannelLayoutConfig::Mono(), 22050,
-     AudioTrackRecorder::CodecId::kOpus,
+    {media::ChannelLayoutConfig::Mono(), 22050, media::AudioCodec::kOpus,
      AudioTrackRecorder::BitrateMode::kVariable},
-    {media::ChannelLayoutConfig::Stereo(), 44100,
-     AudioTrackRecorder::CodecId::kOpus,
+    {media::ChannelLayoutConfig::Stereo(), 44100, media::AudioCodec::kOpus,
      AudioTrackRecorder::BitrateMode::kVariable},
-    {media::ChannelLayoutConfig::Stereo(), 96000,
-     AudioTrackRecorder::CodecId::kOpus,
+    {media::ChannelLayoutConfig::Stereo(), 96000, media::AudioCodec::kOpus,
      AudioTrackRecorder::BitrateMode::kVariable},
 
     // Use Opus in constant bitrate mode:
     {media::ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::kOpus,
-     AudioTrackRecorder::BitrateMode::kConstant},
+     media::AudioCodec::kOpus, AudioTrackRecorder::BitrateMode::kConstant},
 
     // Use PCM encoder.
     {media::ChannelLayoutConfig::Mono(), kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::kPcm,
-     AudioTrackRecorder::BitrateMode::kVariable},
+     media::AudioCodec::kPCM, AudioTrackRecorder::BitrateMode::kVariable},
     {media::ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::kPcm,
-     AudioTrackRecorder::BitrateMode::kVariable},
+     media::AudioCodec::kPCM, AudioTrackRecorder::BitrateMode::kVariable},
 
 #if HAS_AAC_ENCODER
     {media::ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::kAac,
-     AudioTrackRecorder::BitrateMode::kVariable},
+     media::AudioCodec::kAAC, AudioTrackRecorder::BitrateMode::kVariable},
     {media::ChannelLayoutConfig::Mono(), kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::kAac,
+     media::AudioCodec::kAAC, AudioTrackRecorder::BitrateMode::kVariable},
+    {media::ChannelLayoutConfig::Stereo(), 44100, media::AudioCodec::kAAC,
      AudioTrackRecorder::BitrateMode::kVariable},
-    {media::ChannelLayoutConfig::Stereo(), 44100,
-     AudioTrackRecorder::CodecId::kAac,
-     AudioTrackRecorder::BitrateMode::kVariable},
-    {media::ChannelLayoutConfig::Mono(), 44100,
-     AudioTrackRecorder::CodecId::kAac,
+    {media::ChannelLayoutConfig::Mono(), 44100, media::AudioCodec::kAAC,
      AudioTrackRecorder::BitrateMode::kVariable},
     {media::ChannelLayoutConfig(media::CHANNEL_LAYOUT_5_1_BACK, 6), 44100,
-     AudioTrackRecorder::CodecId::kAac,
-     AudioTrackRecorder::BitrateMode::kVariable},
+     media::AudioCodec::kAAC, AudioTrackRecorder::BitrateMode::kVariable},
     {media::ChannelLayoutConfig(media::CHANNEL_LAYOUT_5_1_BACK, 6),
-     kDefaultSampleRate, AudioTrackRecorder::CodecId::kAac,
+     kDefaultSampleRate, media::AudioCodec::kAAC,
      AudioTrackRecorder::BitrateMode::kVariable},
 #endif  // HAS_AAC_ENCODER
 };
@@ -269,13 +255,13 @@ std::string ParamsToString(
     const ::testing::TestParamInfo<ATRTestParams>& info) {
   std::stringstream test_suffix;
   switch (info.param.codec) {
-    case AudioTrackRecorder::CodecId::kPcm:
+    case media::AudioCodec::kPCM:
       test_suffix << "Pcm";
       break;
-    case AudioTrackRecorder::CodecId::kOpus:
+    case media::AudioCodec::kOpus:
       test_suffix << "Opus";
       break;
-    case AudioTrackRecorder::CodecId::kAac:
+    case media::AudioCodec::kAAC:
       test_suffix << "Aac";
       break;
     default:
@@ -418,7 +404,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         encoder_task_runner_);
 
 #if HAS_AAC_ENCODER
-    if (codec_ == AudioTrackRecorder::CodecId::kAac) {
+    if (codec_ == media::AudioCodec::kAAC) {
       PostCrossThreadTask(
           *encoder_task_runner_.get(), FROM_HERE, CrossThreadBindOnce([] {
             auto interface_factory = std::make_unique<TestInterfaceFactory>();
@@ -446,17 +432,17 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     excess_input_ = 0;
   }
 
-  void InitializeDecoder(const AudioTrackRecorder::CodecId codec,
+  void InitializeDecoder(const media::AudioCodec codec,
                          const media::AudioParameters& params) {
     ShutdownDecoder();
-    if (codec == AudioTrackRecorder::CodecId::kOpus) {
+    if (codec == media::AudioCodec::kOpus) {
       int error;
       opus_decoder_ =
           opus_decoder_create(kDefaultSampleRate, params.channels(), &error);
       EXPECT_TRUE(error == OPUS_OK && opus_decoder_);
 
       opus_buffer_.reset(new float[opus_buffer_size_]);
-    } else if (codec == AudioTrackRecorder::CodecId::kAac) {
+    } else if (codec == media::AudioCodec::kAAC) {
 #if HAS_AAC_DECODER
       InitializeAacDecoder(params.channels(), params.sample_rate());
 #endif  // HAS_AAC_DECODER
@@ -472,10 +458,10 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
 
   void CalculateBufferInformation() {
     switch (codec_) {
-      case AudioTrackRecorder::CodecId::kPcm:
+      case media::AudioCodec::kPCM:
         frames_per_buffer_ = FramesPerInputBuffer(GetParam().sample_rate);
         break;
-      case AudioTrackRecorder::CodecId::kOpus:
+      case media::AudioCodec::kOpus:
         // According to documentation in third_party/opus/src/include/opus.h,
         // we must provide enough space in |buffer_| to contain 120ms of
         // samples.
@@ -488,7 +474,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         frames_per_buffer_ = kOpusBufferDurationMs * kDefaultSampleRate /
                              base::Time::kMillisecondsPerSecond;
         break;
-      case AudioTrackRecorder::CodecId::kAac:
+      case media::AudioCodec::kAAC:
         frames_per_buffer_ = kAacFramesPerBuffer;
         break;
       default:
@@ -516,19 +502,21 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   }
 
   int GetNumInputsNeeded(int desired_num_outputs, int sample_rate) {
-    if (codec_ == AudioTrackRecorder::CodecId::kPcm)
+    if (codec_ == media::AudioCodec::kPCM) {
       return desired_num_outputs;
+    }
 
 #if HAS_AAC_ENCODER && BUILDFLAG(IS_WIN)
     // The AAC encoder on Windows buffers two output frames. So, we need
     // enough input to fill these buffers before we will receive output, if we
     // haven't provided any other input.
-    if (first_input_ && codec_ == AudioTrackRecorder::CodecId::kAac)
+    if (first_input_ && codec_ == media::AudioCodec::kAAC) {
       desired_num_outputs += 2;
+    }
 #endif  // HAS_AAC_ENCODER
 
     int inputs_per_output;
-    if (codec_ == AudioTrackRecorder::CodecId::kOpus) {
+    if (codec_ == media::AudioCodec::kOpus) {
       // Opus resamples the input to use `kDefaultSampleRate`
       inputs_per_output =
           frames_per_buffer_ / FramesPerInputBuffer(kDefaultSampleRate);
@@ -538,7 +526,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     }
 
     int num_inputs_needed = desired_num_outputs * inputs_per_output;
-    if (codec_ == AudioTrackRecorder::CodecId::kOpus) {
+    if (codec_ == media::AudioCodec::kOpus) {
       if (frames_per_buffer_ % FramesPerInputBuffer(sample_rate))
         return ++num_inputs_needed;
     }
@@ -591,7 +579,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     // Save the samples that we read into the first_source_cache_ if we're using
     // the PCM encoder, so we can verify the output data later. Do not save it
     // if the recorder is paused.
-    if (codec_ == AudioTrackRecorder::CodecId::kPcm && !paused_) {
+    if (codec_ == media::AudioCodec::kPCM && !paused_) {
       std::unique_ptr<media::AudioBus> cache_bus(
           media::AudioBus::Create(bus->channels(), bus->frames()));
       bus->CopyTo(cache_bus.get());
@@ -617,7 +605,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
 
   void ExpectOutputsAndRunClosure(base::OnceClosure closure) {
 #if HAS_AAC_ENCODER
-    if (GetParam().codec == AudioTrackRecorder::CodecId::kAac) {
+    if (GetParam().codec == media::AudioCodec::kAAC) {
       EXPECT_CALL(*this, DoOnEncodedAudio)
           .Times(kExpectedNumOutputs - 1)
           .InSequence(s_);
@@ -673,13 +661,13 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     EXPECT_TRUE(!encoded_data->empty());
 
     switch (codec_) {
-      case AudioTrackRecorder::CodecId::kOpus:
+      case media::AudioCodec::kOpus:
         ValidateOpusData(encoded_data);
         break;
-      case AudioTrackRecorder::CodecId::kPcm:
+      case media::AudioCodec::kPCM:
         ValidatePcmData(encoded_data);
         break;
-      case AudioTrackRecorder::CodecId::kAac:
+      case media::AudioCodec::kAAC:
 #if HAS_AAC_DECODER
         ValidateAacData(encoded_data);
 #endif  // HAS_AAC_DECODER
@@ -799,7 +787,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
   // The codec we'll use for compression the audio.
-  const AudioTrackRecorder::CodecId codec_;
+  const media::AudioCodec codec_;
 
   // Two different sets of AudioParameters for testing re-init of ATR.
   const media::AudioParameters first_params_;

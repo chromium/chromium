@@ -59,14 +59,14 @@ struct CrossThreadCopier<media::EncoderStatus>
 // Max size of buffers passed on to encoders.
 const int kMaxChunkedBufferDurationMs = 60;
 
-AudioTrackRecorder::CodecId AudioTrackRecorder::GetPreferredCodecId(
+media::AudioCodec AudioTrackRecorder::GetPreferredCodec(
     MediaTrackContainerType type) {
-  return CodecId::kOpus;
+  return media::AudioCodec::kOpus;
 }
 
 AudioTrackRecorder::AudioTrackRecorder(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-    CodecId codec,
+    media::AudioCodec codec,
     MediaStreamComponent* track,
     WeakCell<CallbackInterface>* callback_interface,
     uint32_t bits_per_second,
@@ -109,17 +109,17 @@ AudioTrackRecorder::~AudioTrackRecorder() {
 // Creates an audio encoder from the codec. Returns nullptr if the codec is
 // invalid.
 SequenceBound<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
-    CodecId codec,
+    media::AudioCodec codec,
     AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
     AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second,
     BitrateMode bitrate_mode) {
   switch (codec) {
-    case CodecId::kPcm:
+    case media::AudioCodec::kPCM:
       return SequenceBound<AudioTrackPcmEncoder>(
           encoder_task_runner_, std::move(on_encoded_audio_cb),
           std::move(on_encoded_audio_error_cb));
-    case CodecId::kAac:
+    case media::AudioCodec::kAAC:
 #if HAS_AAC_ENCODER
       return SequenceBound<AudioTrackMojoEncoder>(
           encoder_task_runner_, encoder_task_runner_, codec,
@@ -128,12 +128,13 @@ SequenceBound<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
 #else
       NOTREACHED() << "AAC encoder is not supported.";
 #endif
-    case CodecId::kOpus:
-    default:
+    case media::AudioCodec::kOpus:
       return SequenceBound<AudioTrackOpusEncoder>(
           encoder_task_runner_, std::move(on_encoded_audio_cb),
           std::move(on_encoded_audio_error_cb), bits_per_second,
           bitrate_mode == BitrateMode::kVariable);
+    default:
+      NOTREACHED() << "Unexpected codec value in CreateAudioEncoder.";
   }
 }
 
