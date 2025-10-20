@@ -106,12 +106,12 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
   std::pair<GURL, GURL> StartPrefetchAndPrerender() {
     mojo::Remote<searchbox::mojom::PageHandler> remote_page_handler;
     RealboxSearchBrowserTestPage page;
-    RealboxHandler realbox_handler = RealboxHandler(
-        remote_page_handler.BindNewPipeAndPassReceiver(),
-        /*contextual_session_handle=*/nullptr,
-        /*secondary_contextual_session_handle=*/nullptr,
-        /*composebox_metrics_recorder=*/nullptr, browser()->profile(),
-        GetWebContents(), /*metrics_reporter=*/nullptr);
+    RealboxHandler realbox_handler =
+        RealboxHandler(remote_page_handler.BindNewPipeAndPassReceiver(),
+                       /*contextual_session_handle=*/nullptr,
+                       /*secondary_contextual_session_handle=*/nullptr,
+                       /*composebox_metrics_recorder=*/nullptr,
+                       browser()->profile(), GetWebContents());
     realbox_handler.SetPage(page.GetRemotePage());
     content::test::PrerenderHostRegistryObserver registry_observer(
         *GetWebContents());
@@ -241,8 +241,7 @@ class RealboxHandlerTest : public InProcessBrowserTest,
         /*contextual_session_handle=*/nullptr,
         /*secondary_contextual_session_handle=*/nullptr,
         /*composebox_metrics_recorder=*/nullptr, browser()->profile(),
-        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
-        /*metrics_reporter=*/nullptr);
+        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents());
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

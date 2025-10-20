@@ -33,10 +33,6 @@ class OmniboxPopupWebUIContent : public views::WebView {
   OmniboxPopupWebUIContent& operator=(const OmniboxPopupWebUIContent&) = delete;
   ~OmniboxPopupWebUIContent() override;
 
-  // Get the handler for communicating with the WebUI interface.
-  // Returns nullptr if handler is not ready.
-  WebuiOmniboxHandler* GetHandler();
-
   // Tells whether the WebUI handler is loaded and ready to receive calls.
   bool IsHandlerReady();
 
@@ -50,9 +46,6 @@ class OmniboxPopupWebUIContent : public views::WebView {
  private:
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
   raw_ptr<OmniboxPopupPresenter> omnibox_popup_presenter_ = nullptr;
-
-  // Whether any call to `GetHandler` has been made.
-  bool requested_handler_ = false;
 
   // Whether or not the WebUI popup includes the `location_bar_view` cutout.
   bool include_location_bar_cutout_ = true;

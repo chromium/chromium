@@ -62,13 +62,6 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
-  // Measure time since construction just once.
-  if (!construction_time_.is_null()) {
-    const base::TimeDelta delta = base::TimeTicks::Now() - construction_time_;
-    construction_time_ = base::TimeTicks();
-    base::UmaHistogramTimes("Omnibox.WebUI.FirstUpdate", delta);
-  }
-
   if (controller()->autocomplete_controller()->result().empty() ||
       omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
@@ -77,6 +70,13 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
     presenter_->Show();
     if (!was_visible) {
       NotifyOpenListeners();
+      if (!construction_time_.is_null()) {
+        const base::TimeDelta delta =
+            base::TimeTicks::Now() - construction_time_;
+        construction_time_ = base::TimeTicks();
+        base::UmaHistogramTimes(
+            "Omnibox.Popup.WebUI.ConstructionToFirstShownDuration", delta);
+      }
     }
   }
 }

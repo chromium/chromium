@@ -268,8 +268,7 @@ void LensSidePanelUntrustedUI::BindInterface(
 
   auto handler = std::make_unique<LensSearchboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
-      web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller);
+      web_ui()->GetWebContents(), /*lens_searchbox_client=*/controller);
   controller->SetSidePanelSearchboxHandler(std::move(handler));
 }
 

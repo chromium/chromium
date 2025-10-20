@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
@@ -37,21 +35,6 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
 }
 
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
-
-WebuiOmniboxHandler* OmniboxPopupWebUIContent::GetHandler() {
-  const bool ready = IsHandlerReady();
-  if (!requested_handler_) {
-    // Only log on first access.
-    requested_handler_ = true;
-    base::UmaHistogramBoolean("Omnibox.WebUI.HandlerReadyOnFirstAccess", ready);
-  }
-  if (!ready) {
-    return nullptr;
-  }
-  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
-      GetWebContents()->GetWebUI()->GetController());
-  return omnibox_popup_ui->handler();
-}
 
 void OmniboxPopupWebUIContent::AddedToWidget() {
   views::WebView::AddedToWidget();

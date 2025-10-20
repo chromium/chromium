@@ -99,7 +99,6 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
-                                   /*metrics_reporter=*/nullptr,
                                    std::move(metrics_recorder),
                                    std::make_unique<OmniboxController>(
                                        /*view=*/nullptr,

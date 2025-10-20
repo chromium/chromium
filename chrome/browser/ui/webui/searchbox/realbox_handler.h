@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/size.h"
 
-class MetricsReporter;
 class Profile;
 
 namespace content {
@@ -34,8 +33,7 @@ class RealboxHandler : public ContextualSearchboxHandler {
           secondary_contextual_session_handle,
       std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
       Profile* profile,
-      content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter);
+      content::WebContents* web_contents);
 
   RealboxHandler(const RealboxHandler&) = delete;
   RealboxHandler& operator=(const RealboxHandler&) = delete;

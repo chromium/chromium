@@ -23,7 +23,6 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "url/gurl.h"
 
-class MetricsReporter;
 class Profile;
 
 class ComposeboxHandler
@@ -42,8 +41,7 @@ class ComposeboxHandler
           secondary_contextual_session_handle,
       std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
       Profile* profile,
-      content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter);
+      content::WebContents* web_contents);
   ~ComposeboxHandler() override;
 
   // composebox::mojom::PageHandler:
