@@ -51,7 +51,7 @@ BASE_FEATURE(kUseHeuristicForWindowsFullScreenPowerPoint,
 // Controls the rollout of a finch experiment.
 // TODO(crbug.com/409473386): Remove this feature once it has been rolled out to
 // stable for a few milestones.
-BASE_FEATURE(kUseFullScreenHeuristicForWgc, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseFullScreenHeuristicForWgc, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 namespace content::desktop_capture {

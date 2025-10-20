@@ -25870,21 +25870,6 @@
             ]
         }
     ],
-    "UseFullScreenHeuristicForWgc": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseFullScreenHeuristicForWgc"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseHeuristicForWindowsFullScreenPowerPoint": [
         {
             "platforms": [
