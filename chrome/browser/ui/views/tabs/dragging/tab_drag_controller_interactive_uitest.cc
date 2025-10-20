@@ -1515,15 +1515,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // tabstrip . While this drag is still in session, pressing escape will revert
 // group of the tab, but will not recreate the group because the group was
 // closed during dragging.
-// Flaky in LaCrOS. https://crbug.com/1176998
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_RevertDragSingleTabGroup DISABLED_RevertDragSingleTabGroup
-#else
-#define MAYBE_RevertDragSingleTabGroup RevertDragSingleTabGroup
-#endif
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_RevertDragSingleTabGroup) {
+                       RevertDragSingleTabGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
