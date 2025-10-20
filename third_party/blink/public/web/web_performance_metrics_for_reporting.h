@@ -110,6 +110,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double LoadEventStart() const;
   double LoadEventEnd() const;
   double FirstPaint() const;
+  base::TimeTicks FirstPaintAsMonotonicTime() const;
   double FirstImagePaint() const;
   double FirstContentfulPaint() const;
   base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;

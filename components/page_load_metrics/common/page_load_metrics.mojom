@@ -96,6 +96,22 @@ struct PaintTiming {
   mojo_base.mojom.TimeDelta? first_input_or_scroll_notified_timestamp;
 };
 
+// `MonotonicPaintTiming` contains the full-resolution `TimeTicks` versions of a
+// subset of `PaintTiming` fields.
+// It is used when the browser needs to calculate a duration between a paint
+// event and another event timestamped in the browser, e.g. application launch.
+// The `TimeDelta` versions in `PaintTiming` are relative to navigation start,
+// and both of them are converted in a way that reconstructing the original
+// `TimeTicks` from them can be lossy. These raw `TimeTicks` values allow for
+// more accurate duration calculations.
+struct MonotonicPaintTiming {
+  // Time when the first paint is performed.
+  mojo_base.mojom.TimeTicks? first_paint;
+
+  // Time when the first contentful thing (image, text, etc.) is painted.
+  mojo_base.mojom.TimeTicks? first_contentful_paint;
+};
+
 // TimeDeltas below represent durations of time during the page load.
 struct ParseTiming {
   // Time that the document's parser started and stopped parsing main resource
@@ -214,6 +230,10 @@ struct PageLoadTiming {
 
   // Time when the standard UserTiming mark `mark_interactive` occurs.
   mojo_base.mojom.TimeDelta? user_timing_mark_interactive;
+
+  // The full-resolution monotonic times of the selected subset of
+  // `paint_timing`.
+  MonotonicPaintTiming? monotonic_paint_timing;
 
   // If you add additional members, also be sure to update page_load_timing.h.
 };

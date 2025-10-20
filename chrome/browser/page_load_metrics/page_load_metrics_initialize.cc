@@ -79,7 +79,9 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/page_load_metrics/observers/initial_webui_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #endif
 
@@ -163,6 +165,14 @@ void PageLoadMetricsEmbedder::RegisterObservers(
       !IsInternalWebUI(navigation_handle->GetURL())) {
     tracker->AddObserver(std::make_unique<WebUIPageLoadMetricsObserver>());
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (HasWebUIConfig(navigation_handle->GetURL()) &&
+      IsForInitialWebUI(navigation_handle->GetURL())) {
+    tracker->AddObserver(
+        std::make_unique<InitialWebUIPageLoadMetricsObserver>());
+  }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   if (IsNonTabWebUI(navigation_handle->GetURL())) {

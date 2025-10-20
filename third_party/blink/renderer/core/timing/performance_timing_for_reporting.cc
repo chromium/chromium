@@ -170,6 +170,15 @@ uint64_t PerformanceTimingForReporting::FirstPaintForMetrics() const {
   return MonotonicTimeToIntegerMilliseconds(timing->FirstPaintForMetrics());
 }
 
+base::TimeTicks
+PerformanceTimingForReporting::FirstPaintAsMonotonicTimeForMetrics() const {
+  const PaintTiming* timing = GetPaintTiming();
+  if (!timing) {
+    return base::TimeTicks();
+  }
+  return timing->FirstPaintForMetrics();
+}
+
 uint64_t PerformanceTimingForReporting::FirstImagePaint() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
