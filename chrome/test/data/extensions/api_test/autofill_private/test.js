@@ -1329,6 +1329,52 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  async function verifyWritableEntityTypesWithSyncOnReturnsWalletEntityTypes() {
+    const entityTypesList =
+        await chrome.autofillPrivate.getWritableEntityTypes();
+    const expectedEntityTypesList = [
+      {
+        typeName: 0,
+        typeNameAsString: 'Passport',
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
+      },
+      {
+        typeName: 1,
+        typeNameAsString: 'Driver\'s license',
+        addEntityTypeString: 'Add driver\'s license',
+        editEntityTypeString: 'Edit driver\'s license',
+        deleteEntityTypeString: 'Delete driver\'s license',
+        supportsWalletStorage: false,
+      },
+      {
+        typeName: 2,
+        typeNameAsString: 'Vehicle',
+        addEntityTypeString: 'Add vehicle',
+        editEntityTypeString: 'Edit vehicle',
+        deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage:
+            true,  // If a type can be both local and server stored,
+                   // server stored type takes precedence.
+      },
+      {
+        typeName: 6,
+        typeNameAsString: 'Flight',
+        addEntityTypeString: '',
+        editEntityTypeString: '',
+        deleteEntityTypeString: '',
+        supportsWalletStorage: true,
+      },
+    ];
+    for (const index in expectedEntityTypesList) {
+      chrome.test.assertEq(
+          expectedEntityTypesList[index], entityTypesList[index]);
+    }
+    chrome.test.succeed();
+  },
+
   async function getAllAttributeTypesForEntityTypeName() {
     const attributeTypesList =
         await chrome.autofillPrivate.getAllAttributeTypesForEntityTypeName(
@@ -1470,6 +1516,8 @@ var TESTS_FOR_CONFIG = {
   'getWritableEntityTypes': ['getWritableEntityTypes'],
   'verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes':
       ['verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes'],
+  'verifyWritableEntityTypesWithSyncOnReturnsWalletEntityTypes':
+      ['verifyWritableEntityTypesWithSyncOnReturnsWalletEntityTypes'],
   'getAllAttributeTypesForEntityTypeName':
       ['getAllAttributeTypesForEntityTypeName'],
   'testExpectedLabelsAreGenerated': ['testExpectedLabelsAreGenerated'],

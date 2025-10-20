@@ -189,6 +189,28 @@ autofill::AutofillProfile CreateNewAutofillProfile(
   return autofill::AutofillProfile(record_type, address_country_code);
 }
 
+autofill::DenseSet<EntityType> GetWalletStorableEntityTypes(
+    const autofill::AutofillClient* ac) {
+  constexpr autofill::DenseSet<EntityType> all_wallet_types{
+      EntityType(EntityTypeName::kFlightReservation),
+      EntityType(EntityTypeName::kVehicle)};
+
+  if (!ac) {
+    return {};
+  }
+
+  autofill::DenseSet<EntityType> result;
+  for (const EntityType type : all_wallet_types) {
+    if (MayPerformAutofillAiAction(
+            *ac, autofill::AutofillAiAction::kAddServerEntityInstanceInSettings,
+            type)) {
+      result.insert(type);
+    }
+  }
+
+  return result;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -1077,10 +1099,16 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateGetWritableEntityTypesFunction::Run() {
-  const auto all_types = autofill::DenseSet<EntityType>::all();
+  auto local_types = autofill::DenseSet<EntityType>::all();
+  const autofill::DenseSet<EntityType> wallet_types =
+      GetWalletStorableEntityTypes(autofill_client());
+  // If a type can be stored both locally and in Wallet, Wallet type is
+  // preferred.
+  local_types.erase_all(wallet_types);
+
   std::vector<autofill_private::EntityType> result;
-  result.reserve(all_types.size());
-  for (EntityType entity_type : all_types) {
+  result.reserve(local_types.size() + wallet_types.size());
+  for (EntityType entity_type : local_types) {
     if (!entity_type.enabled(
             autofill_client()->GetVariationConfigCountryCode())) {
       continue;
@@ -1088,17 +1116,16 @@ AutofillPrivateGetWritableEntityTypesFunction::Run() {
     if (entity_type.read_only()) {
       continue;
     }
-    autofill_private::EntityType& api_type = result.emplace_back();
-    api_type.type_name = base::to_underlying(entity_type.name());
-    api_type.type_name_as_string =
-        base::UTF16ToUTF8(entity_type.GetNameForI18n());
-    api_type.add_entity_type_string =
-        autofill_ai_util::GetAddEntityTypeStringForI18n(entity_type);
-    api_type.edit_entity_type_string =
-        autofill_ai_util::GetEditEntityTypeStringForI18n(entity_type);
-    api_type.delete_entity_type_string =
-        autofill_ai_util::GetDeleteEntityTypeStringForI18n(entity_type);
-    api_type.supports_wallet_storage = false;
+    result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(
+        entity_type, /*supports_wallet_storage=*/false));
+  }
+  for (EntityType entity_type : wallet_types) {
+    if (!entity_type.enabled(
+            autofill_client()->GetVariationConfigCountryCode())) {
+      continue;
+    }
+    result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(
+        entity_type, /*supports_wallet_storage=*/true));
   }
   return RespondNow(ArgumentList(
       autofill_private::GetWritableEntityTypes::Results::Create(result)));

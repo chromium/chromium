@@ -1,4 +1,11 @@
 <style include="cr-shared-style settings-shared cr-icons">
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
   .list-item {
     padding-top: 8px;
     padding-bottom: 8px;
@@ -71,10 +78,21 @@
   <template>
     <cr-action-menu role-description="$i18n{menu}">
       <template is="dom-repeat" items="[[completeEntityTypesList_]]">
-        <button id="addSpecificEntityType" class="dropdown-item"
-            on-click="onAddEntityInstanceFromDropdownClick_">
-          [[item.typeNameAsString]]
-        </button>
+        <template is="dom-if" if="[[!item.supportsWalletStorage]]" restamp>
+          <button id="addSpecificEntityType" class="dropdown-item"
+              on-click="onAddEntityInstanceFromDropdownClick_">
+            <div>[[item.typeNameAsString]]</div>
+          </button>
+        </template>
+        <template is="dom-if" if="[[item.supportsWalletStorage]]" restamp>
+          <button id="addEntityInstanceFromWallet" class="dropdown-item"
+              title="$i18n{remoteWalletPassesLinkLabel}" role="link"
+              on-click="onRemoteWalletPassesLinkClick_"
+              aria-description="$i18n{opensInNewTab}">
+            <div>[[item.typeNameAsString]]</div>
+            <cr-icon icon="cr:open-in-new" aria-hidden="false"></cr-icon>
+          </button>
+        </template>
       </template>
     </cr-action-menu>
   </template>

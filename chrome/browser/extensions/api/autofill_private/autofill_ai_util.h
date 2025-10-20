@@ -59,6 +59,10 @@ EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const autofill::EntityInstance> entity_instances,
     const std::string& app_locale);
 
+api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
+    const autofill::EntityType& entity_type,
+    bool supports_wallet_storage);
+
 }  // namespace extensions::autofill_ai_util
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_

@@ -196,8 +196,8 @@ suite('AutofillAiEntriesListUiTest', function() {
       guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
       nickname: 'My license',
     };
-    // Initially not sorted alphabetically. The production code should sort them
-    // alphabetically.
+    // Initially not sorted. The production code should sort them
+    // alphabetically and put entities with Wallet storage last.
     testEntityTypes = [
       {
         typeName: 0,
@@ -206,6 +206,14 @@ suite('AutofillAiEntriesListUiTest', function() {
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+      },
+      {
+        typeName: 6,
+        typeNameAsString: 'Flight',
+        addEntityTypeString: '',
+        editEntityTypeString: '',
+        deleteEntityTypeString: '',
+        supportsWalletStorage: true,
       },
       {
         typeName: 2,
@@ -250,9 +258,13 @@ suite('AutofillAiEntriesListUiTest', function() {
         testEntityInstancesWithLabels);
 
     // `testEntityTypes` now contains expected values, so they should be sorted
-    // alphabetically.
-    testEntityTypes.sort(
-        (a, b) => a.typeNameAsString.localeCompare(b.typeNameAsString));
+    // alphabetically and put entities with Wallet storage last.
+    testEntityTypes.sort((a, b) => {
+      if (a.supportsWalletStorage !== b.supportsWalletStorage) {
+        return a.supportsWalletStorage ? 1 : -1;
+      }
+      return a.typeNameAsString.localeCompare(b.typeNameAsString);
+    });
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
@@ -483,13 +495,32 @@ suite('AutofillAiEntriesListUiTest', function() {
 
     const addSpecificEntityTypeButtons =
         entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addSpecificEntityType');
+            '#addSpecificEntityType, #addEntityInstanceFromWallet');
     assertEquals(testEntityTypes.length, addSpecificEntityTypeButtons.length);
     for (const index in testEntityTypes) {
       assertTrue(
           addSpecificEntityTypeButtons[index]!.textContent.includes(
               testEntityTypes[index]!.typeNameAsString));
     }
+  });
+
+  test('EntityTypesStorableInWalletHaveOpenInNewIcon', async function() {
+    await createPage();
+    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    addButton.click();
+    await flushTasks();
+
+    const addWalletEntityTypeButtons =
+        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+            '#addEntityInstanceFromWallet');
+    assertEquals(1, addWalletEntityTypeButtons.length);
+
+    const icon =
+        addWalletEntityTypeButtons[0]!.querySelector<HTMLElement>('cr-icon');
+    assertTrue(!!icon);
+    assertEquals('cr:open-in-new', icon.getAttribute('icon'));
   });
 
   test(
