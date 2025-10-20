@@ -5,13 +5,12 @@
 import pathlib
 import typing
 
-from compiler import Cpu
-from compiler import Os
 from graph import all_headers
 from graph import calculate_rdeps
 from graph import Header
 from graph import IncludeDir
 from graph import Target
+from platforms import Os
 
 if typing.TYPE_CHECKING:
   # To fix circular dependency.

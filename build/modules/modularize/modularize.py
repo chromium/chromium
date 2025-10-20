@@ -14,13 +14,13 @@ import subprocess
 import sys
 import traceback
 
+from compiler import Compiler
 from config import fix_graph
 from graph import IncludeDir
 from graph import run_build
+from platforms import Cpu
+from platforms import Os
 import render
-from compiler import Compiler
-from compiler import Cpu
-from compiler import Os
 
 SOURCE_ROOT = pathlib.Path(__file__).parents[3].resolve()
 _OS_OPTS = '|'.join(os.value for os in Os)
