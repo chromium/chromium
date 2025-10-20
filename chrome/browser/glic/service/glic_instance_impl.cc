@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -135,7 +136,11 @@ GlicInstanceImpl::GlicInstanceImpl(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               &sharing_manager_,
               this,
-              contextual_cueing_service)) {
+              contextual_cueing_service)),
+      actor_task_manager_(std::make_unique<GlicActorTaskManager>(
+          profile,
+          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile))) {
+  CHECK(actor_task_manager_);
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Start warming the contents.
   host_.SetDelegate(&empty_embedder_delegate_);
@@ -293,32 +298,33 @@ void GlicInstanceImpl::CreateTask(
     base::WeakPtr<actor::ActorTaskDelegate> delegate,
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
-  service_->CreateTask(weak_ptr_factory_.GetWeakPtr(), std::move(options),
-                       std::move(callback));
+  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(options), std::move(callback));
 }
 
 void GlicInstanceImpl::PerformActions(
     const std::vector<uint8_t>& actions_proto,
     mojom::WebClientHandler::PerformActionsCallback callback) {
-  service_->PerformActions(actions_proto, std::move(callback));
+  actor_task_manager_->PerformActions(actions_proto, std::move(callback));
 }
 
 void GlicInstanceImpl::StopActorTask(actor::TaskId task_id,
                                      mojom::ActorTaskStopReason stop_reason) {
-  service_->StopActorTask(task_id, stop_reason);
+  actor_task_manager_->StopActorTask(task_id, stop_reason);
 }
 
 void GlicInstanceImpl::PauseActorTask(actor::TaskId task_id,
                                       mojom::ActorTaskPauseReason pause_reason,
                                       tabs::TabInterface::Handle tab_handle) {
-  service_->PauseActorTask(task_id, pause_reason, tab_handle);
+  actor_task_manager_->PauseActorTask(task_id, pause_reason, tab_handle);
 }
 
 void GlicInstanceImpl::ResumeActorTask(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  service_->ResumeActorTask(task_id, context_options, std::move(callback));
+  actor_task_manager_->ResumeActorTask(task_id, context_options,
+                                       std::move(callback));
 }
 
 void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
