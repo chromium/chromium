@@ -223,15 +223,15 @@ ChromeButton* TertiaryActionButton() {
 }
 
 void SetConfigurationTitle(UIButton* button, NSString* newString) {
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  buttonConfiguration.title = newString;
-  button.configuration = buttonConfiguration;
+  UIButtonConfiguration* button_configuration = button.configuration;
+  button_configuration.title = newString;
+  button.configuration = button_configuration;
 }
 
 void SetConfigurationFont(UIButton* button, UIFont* font) {
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  UIButtonConfiguration* button_configuration = button.configuration;
 
-  buttonConfiguration.titleTextAttributesTransformer =
+  button_configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
           NSDictionary<NSAttributedStringKey, id>* incoming) {
     NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
@@ -240,5 +240,11 @@ void SetConfigurationFont(UIButton* button, UIFont* font) {
     return outgoing;
   };
 
-  button.configuration = buttonConfiguration;
+  button.configuration = button_configuration;
+}
+
+void SetConfigurationImage(ChromeButton* button, UIImage* image) {
+  UIButtonConfiguration* button_configuration = button.configuration;
+  button_configuration.image = image;
+  button.configuration = button_configuration;
 }

@@ -46,4 +46,7 @@ void SetConfigurationTitle(UIButton* button, NSString* newString);
 // Sets the font of `button` through `button.configuration`.
 void SetConfigurationFont(UIButton* button, UIFont* font);
 
+// Sets the image of `button` through `button.configuration`.
+void SetConfigurationImage(ChromeButton* button, UIImage* image);
+
 #endif  // IOS_CHROME_COMMON_UI_UTIL_BUTTON_UTIL_H_
