@@ -306,6 +306,15 @@ gfx::Size RenderInputRouter::GetRootWidgetViewportSize() {
 blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
     const blink::WebInputEvent& event,
     const ui::LatencyInfo& latency_info) {
+  // Right after a navigation, RenderWidgetHost keeps the InputRouter inactive
+  // while browser paint-holding is active.  This is equivalent to a
+  // non-existent input event consumer.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDropInputEventsWhilePaintHolding) &&
+      input_router_ && !input_router_->IsActive()) {
+    return blink::mojom::InputEventResultState::kNoConsumerExists;
+  }
+
   // Don't ignore touch cancel events, since they may be sent while input
   // events are being ignored in order to keep the renderer from getting
   // confused about how many touches are active.

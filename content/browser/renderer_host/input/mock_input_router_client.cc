@@ -27,6 +27,14 @@ blink::mojom::InputEventResultState MockInputRouterClient::FilterInputEvent(
     const ui::LatencyInfo& latency_info) {
   filter_input_event_called_ = true;
   last_filter_event_ = input_event.Clone();
+
+  // Mimic filtering behavior in production code during paint-holding, see
+  // `RenderInputRouter::FilterInputEvent`.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDropInputEventsWhilePaintHolding) &&
+      input_router_ && !input_router_->IsActive()) {
+    return blink::mojom::InputEventResultState::kNoConsumerExists;
+  }
   return filter_state_;
 }
 

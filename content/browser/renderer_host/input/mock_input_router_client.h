@@ -80,9 +80,6 @@ class MockInputRouterClient : public input::InputRouterClient,
   blink::WebInputEvent::Type last_in_flight_event_type() const {
     return last_filter_event()->GetType();
   }
-  void set_allow_send_event(bool allow) {
-    filter_state_ = blink::mojom::InputEventResultState::kNoConsumerExists;
-  }
   const blink::WebInputEvent* last_filter_event() const {
     return last_filter_event_.get();
   }
