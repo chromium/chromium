@@ -155,8 +155,9 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
   bool AllowCaching() override { return false; }
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override {
-    if (parent_->csp_overrides_.contains(directive)) {
-      return parent_->csp_overrides_.at(directive);
+    if (auto it = parent_->csp_overrides_.find(directive);
+        it != parent_->csp_overrides_.end()) {
+      return it->second;
     } else if (directive == network::mojom::CSPDirectiveName::FrameAncestors) {
       std::string frame_ancestors;
       if (parent_->frame_ancestors_.size() == 0)
