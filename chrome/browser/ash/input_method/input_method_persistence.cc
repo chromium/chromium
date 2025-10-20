@@ -52,34 +52,6 @@ static void SetUserLastInputMethodPreference(
   known_user.SetUserLastLoginInputMethodId(account_id, input_method_id);
 }
 
-void PersistUserInputMethod(const std::string& input_method_id,
-                            InputMethodManager* const manager,
-                            Profile* profile) {
-  PrefService* user_prefs = nullptr;
-  // Persist the method on a per user basis. Note that the keyboard settings are
-  // stored per user desktop and a visiting window will use the same input
-  // method as the desktop it is on (and not of the owner of the window).
-  if (profile) {
-    user_prefs = profile->GetPrefs();
-  }
-  if (!user_prefs) {
-    return;
-  }
-
-  InputMethodPersistence::SetUserLastLoginInputMethodId(input_method_id,
-                                                        manager, profile);
-
-  const std::string current_input_method_id_on_pref =
-      user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
-  if (current_input_method_id_on_pref == input_method_id) {
-    return;
-  }
-
-  user_prefs->SetString(::prefs::kLanguagePreviousInputMethod,
-                        current_input_method_id_on_pref);
-  user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method_id);
-}
-
 }  // namespace
 
 InputMethodPersistence::InputMethodPersistence(
@@ -113,7 +85,7 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
       PersistSystemInputMethod(current_input_method);
       return;
     case InputMethodManager::UIStyle::kNormal:
-      PersistUserInputMethod(current_input_method, manager, profile);
+      PersistUserInputMethod(current_input_method, profile);
       return;
     case InputMethodManager::UIStyle::kLock:
       // We are either in unit test, or screen should be locked.
@@ -146,6 +118,34 @@ void InputMethodPersistence::SetUserLastLoginInputMethodId(
   // that is required on the lock screen.
   profile->GetPrefs()->SetString(prefs::kLastLoginInputMethod, input_method_id);
   SetUserLastInputMethodPreference(GetUserAccount(profile), input_method_id);
+}
+
+void InputMethodPersistence::PersistUserInputMethod(
+    const std::string& input_method_id,
+    Profile* profile) {
+  PrefService* user_prefs = nullptr;
+  // Persist the method on a per user basis. Note that the keyboard settings are
+  // stored per user desktop and a visiting window will use the same input
+  // method as the desktop it is on (and not of the owner of the window).
+  if (profile) {
+    user_prefs = profile->GetPrefs();
+  }
+  if (!user_prefs) {
+    return;
+  }
+
+  SetUserLastLoginInputMethodId(input_method_id, input_method_manager_,
+                                profile);
+
+  const std::string current_input_method_id_on_pref =
+      user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
+  if (current_input_method_id_on_pref == input_method_id) {
+    return;
+  }
+
+  user_prefs->SetString(::prefs::kLanguagePreviousInputMethod,
+                        current_input_method_id_on_pref);
+  user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method_id);
 }
 
 void SetUserLastInputMethodPreferenceForTesting(

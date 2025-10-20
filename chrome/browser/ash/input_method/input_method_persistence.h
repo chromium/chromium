@@ -43,6 +43,9 @@ class InputMethodPersistence : public InputMethodManager::Observer {
       Profile* profile);
 
  private:
+  void PersistUserInputMethod(const std::string& input_method_id,
+                              Profile* profile);
+
   raw_ptr<InputMethodManager> input_method_manager_;
 };
 
