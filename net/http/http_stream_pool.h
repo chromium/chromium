@@ -54,6 +54,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // Specify when to start the TCP based attempt delay timer.
   enum class TcpBasedAttemptDelayBehavior {
+    // Starts the stream attempt delay timer on the first request or preconnect.
+    kStartTimerOnFirstJob,
     // Starts the stream attempt delay timer on the first service endpoint
     // update.
     kStartTimerOnFirstEndpointUpdate,
@@ -152,7 +154,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
           {{TcpBasedAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate,
             "first_endpoint_update"},
            {TcpBasedAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt,
-            "first_quic_attempt"}});
+            "first_quic_attempt"},
+           {TcpBasedAttemptDelayBehavior::kStartTimerOnFirstJob, "first_job"}});
 
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;

@@ -1042,6 +1042,11 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   MaybeChangeServiceEndpointRequestPriority();
   UpdateTcpBasedAttemptState();
 
+  if (GetTcpBasedAttemptDelayBehavior() ==
+      TcpBasedAttemptDelayBehavior::kStartTimerOnFirstJob) {
+    MaybeRunTcpBasedAttemptDelayTimer();
+  }
+
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
     MaybeAttemptQuic();
     MaybeAttemptTcpBased();

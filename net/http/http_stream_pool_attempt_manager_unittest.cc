@@ -5792,6 +5792,67 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptQuicFail) {
 }
 
 // Test the behavior of the stream attempt delay timer with
+// StreamAttemptDelayBehavior::kStartTimerOnFirstJob.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       StreamAttemptDelayPassedTimerkStartTimerOnFirstJob) {
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kAsyncQuicSession, {}},
+       {features::kHappyEyeballsV3,
+        {{HttpStreamPool::kTcpBasedAttemptDelayBehaviorParamName.data(),
+          HttpStreamPool::kTcpBasedAttemptDelayBehaviorOptions[2].name}}}},
+      /*disabled_features=*/{});
+
+  quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kDelay);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  // QUIC attempt stalls forever.
+  auto quic_data = std::make_unique<MockQuicData>(quic_version());
+  quic_data->AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data->AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData tcp_data;
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  // Make a request. This should start the stream attempt delay timer.
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Fire the stream attempt delay timer.
+  auto before_delay = base::TimeTicks::Now();
+  FastForwardBy(kDelay);
+
+  // Complete service endpoint resolution. The delay timer is already fired so
+  // both QUIC and TCP attempts should start.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .attempt_manager();
+  ASSERT_FALSE(requester.result().has_value());
+  ASSERT_TRUE(manager->quic_attempt_for_testing());
+  ASSERT_EQ(manager->TcpBasedAttemptSlotCount(), 1u);
+
+  // The request should complete with the TCP-based attempt.
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(base::TimeTicks::Now() - before_delay, kDelay);
+}
+
+// Test the behavior of the stream attempt delay timer with
 // StreamAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        StreamAttemptDelayPassedTimerStartOnFirstEndpointUpdate) {
