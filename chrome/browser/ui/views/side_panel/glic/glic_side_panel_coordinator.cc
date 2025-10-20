@@ -46,10 +46,7 @@ actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
 GlicSidePanelCoordinator::GlicSidePanelCoordinator(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
-    : tab_(tab),
-      side_panel_registry_(side_panel_registry),
-      glic_action_(GetGlicActionItem(
-          tab->GetBrowserWindowInterface()->GetActions()->root_action_item())) {
+    : tab_(tab), side_panel_registry_(side_panel_registry) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab->GetBrowserWindowInterface()->GetProfile());
@@ -150,7 +147,9 @@ void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
   // Active tab sets visibility of toolbar action.
   // TODO: Consider moving this responsibility to a browser level singleton
   if (tab_->IsActivated()) {
-    glic_action_->SetVisible(is_allowed);
+    GetGlicActionItem(
+        tab_->GetBrowserWindowInterface()->GetActions()->root_action_item())
+        ->SetVisible(is_allowed);
   }
   // Register / deregister side panel entry.
   if (is_allowed) {
