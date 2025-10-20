@@ -1315,6 +1315,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Called when the delegate's CanResize or CanMaximize changes.
   void OnSizeConstraintsChanged();
 
+  // Called when a window-modal child's visibility changed.
+  void OnWindowModalVisibilityChanged(bool visible);
+
   // Notification that our owner is closing.
   // NOTE: this is not invoked for aura as it's currently not needed there.
   // Under aura menus close by way of activation getting reset when the owner
@@ -1568,7 +1571,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Notifies the parent that a window-modal child's visibility changed.
   // This function is a no-op if the parent does not exist or if this widget is
   // not a window modal.
-  void MaybeNotifyWindowModalVisibilityChanged(bool visible);
+  void MaybeNotifyParentAboutWindowModalVisibilityChanged(bool visible);
 
   // This holds logic that needs to called synchronously after showing, before
   // the native widget asynchronously invokes OnNativeWidgetVisibilityChanged().

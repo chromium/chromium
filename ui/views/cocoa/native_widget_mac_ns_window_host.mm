@@ -106,6 +106,8 @@ class BridgedNativeWidgetHostDummy
                                 bool full_keyboard_access_enabled) override {}
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
+  void OnSheetModalShown() override {}
+  void OnSheetModalClosed() override {}
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
   void OnImmersiveFullscreenMenuBarRevealChanged(
       double reveal_amount) override {}
@@ -1457,6 +1459,18 @@ void NativeWidgetMacNSWindowHost::OnWindowKeyStatusChanged(
   is_window_key_ = is_key;
   native_widget_mac_->OnWindowKeyStatusChanged(is_key,
                                                is_content_first_responder);
+}
+
+void NativeWidgetMacNSWindowHost::OnSheetModalShown() {
+  if (Widget* widget = GetWidget()) {
+    widget->OnWindowModalVisibilityChanged(true);
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnSheetModalClosed() {
+  if (Widget* widget = GetWidget()) {
+    widget->OnWindowModalVisibilityChanged(false);
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowStateRestorationDataChanged(

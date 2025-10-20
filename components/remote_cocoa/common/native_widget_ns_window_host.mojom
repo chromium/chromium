@@ -193,6 +193,12 @@ interface NativeWidgetNSWindowHost {
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
 
+  // Called when a sheet modal is shown.
+  OnSheetModalShown();
+
+  // Called when the sheet modal is closed.
+  OnSheetModalClosed();
+
   // Called when the toolbar reveal status changes. The toolbar is visible
   // either because there are outstanding reveal locks or the mouse is
   // hovering over the upper border of the screen.

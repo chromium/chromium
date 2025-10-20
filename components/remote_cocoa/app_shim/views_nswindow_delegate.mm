@@ -195,6 +195,14 @@
   _parent->OnSpaceActivationMayHaveChanged();
 }
 
+- (void)windowWillBeginSheet:(NSNotification*)notification {
+  _parent->host()->OnSheetModalShown();
+}
+
+- (void)windowDidEndSheet:(NSNotification*)notification {
+  _parent->host()->OnSheetModalClosed();
+}
+
 - (BOOL)windowShouldClose:(id)sender {
   bool canWindowClose = true;
   _parent->host()->OnWindowCloseRequested(&canWindowClose);
