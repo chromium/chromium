@@ -814,3 +814,27 @@ TEST_F(TipsNotificationClientTest,
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
+
+// Tests that a pending notification is cleared if trigger criteria is not valid
+// anymore.
+TEST_F(TipsNotificationClientTest, ClearInvalidPendingNotification) {
+  // Enable Enhanced Safe Browsing, which should invalidate the pending
+  // notification.
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kTipsNotificationId
+                    content:ContentForTipsNotificationType(
+                                TipsNotificationType::kEnhancedSafeBrowsing,
+                                false, GetProfileName())
+                    trigger:nil];
+  StubGetPendingRequests(@[ request ]);
+  OCMExpect([mock_notification_center_
+      removePendingNotificationRequestsWithIdentifiers:@[
+        kTipsNotificationId
+      ]]);
+
+  SimulateForegroundingApp();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}

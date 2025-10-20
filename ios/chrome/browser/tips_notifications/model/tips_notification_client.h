@@ -105,6 +105,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // IOSReactivationNotifications feature is enabled.
   bool CanSendReactivation() const;
 
+  // Returns true if the given `type` of notification is still valid (meets the
+  // trigger criteria).
+  bool IsNotificationValid(TipsNotificationType type) const;
+
   // Updates the instance variable that stores whether provisional
   // notifications are allowed by policy.
   void UpdateProvisionalAllowed();

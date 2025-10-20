@@ -258,15 +258,9 @@ void TipsNotificationClient::OnPendingRequestFound(
 
   // Check for the one-time default browser notification.
   if (base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification)) {
-    ProfileIOS* profile = GetActiveForegroundProfile();
-    if (profile) {
-      TipsNotificationType type = TipsNotificationType::kDefaultBrowser;
-      std::unique_ptr<TipsNotificationCriteria> criteria =
-          std::make_unique<TipsNotificationCriteria>(profile, local_state_,
-                                                     CanSendReactivation());
-      if (criteria->ShouldSendNotification(type)) {
-        one_time_type_ = type;
-      }
+    TipsNotificationType type = TipsNotificationType::kDefaultBrowser;
+    if (IsNotificationValid(type)) {
+      one_time_type_ = type;
     }
   }
 
@@ -282,6 +276,14 @@ void TipsNotificationClient::OnPendingRequestFound(
   interacted_type_ = std::nullopt;
 
   std::optional<TipsNotificationType> type = ParseTipsNotificationType(request);
+
+  // It is possible that the scheduled notification doesn't meet the trigger
+  // criteria anymore. If so, remove it from the queue.
+  if (type.has_value() && !IsNotificationValid(type.value())) {
+    ClearAllRequestedNotifications();
+    MarkNotificationTypeNotSent(type.value());
+    MaybeRequestNotification(base::DoNothing());
+  }
 
   if (CanSendReactivation()) {
     ClearAllRequestedNotifications();
@@ -558,6 +560,24 @@ bool TipsNotificationClient::CanSendReactivation() const {
   return local_state_->GetInteger(kReactivationNotificationsCanceledCount) <
              2 ||
          forced_type_.has_value();
+}
+
+bool TipsNotificationClient::IsNotificationValid(
+    TipsNotificationType type) const {
+  if (forced_type_.has_value() && forced_type_.value() == type) {
+    return true;
+  }
+
+  ProfileIOS* profile = GetActiveForegroundProfile();
+  if (profile) {
+    std::unique_ptr<TipsNotificationCriteria> criteria =
+        std::make_unique<TipsNotificationCriteria>(profile, local_state_,
+                                                   CanSendReactivation());
+    return criteria->ShouldSendNotification(type);
+  }
+
+  // If cannot determine, consider the notification invalid.
+  return false;
 }
 
 void TipsNotificationClient::UpdateProvisionalAllowed() {
