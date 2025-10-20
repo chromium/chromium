@@ -261,7 +261,7 @@ BASE_FEATURE(kBocaMigrateSpeechRecongnizerClient,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Boca receiver app.
-BASE_FEATURE(kBocaReceiverApp, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaReceiverApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables using a configured number of students.
 BASE_FEATURE(kBocaConfigureMaxStudents, base::FEATURE_DISABLED_BY_DEFAULT);
