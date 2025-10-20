@@ -12,13 +12,12 @@
 
 namespace tabs {
 
-class TabStateStorageDatabase;
 class TabStateStorageUpdater;
 
 // Builder for TabStateStorageUpdater.
 class TabStateStorageUpdaterBuilder {
  public:
-  explicit TabStateStorageUpdaterBuilder(TabStateStorageDatabase* db);
+  TabStateStorageUpdaterBuilder();
   TabStateStorageUpdaterBuilder(const TabStateStorageUpdaterBuilder&) = delete;
   TabStateStorageUpdaterBuilder& operator=(
       const TabStateStorageUpdaterBuilder&) = delete;

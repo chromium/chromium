@@ -18,17 +18,15 @@ class TabStateStorageDatabase;
 // Atomically performs a batch of updates in storage.
 class TabStateStorageUpdater {
  public:
-  explicit TabStateStorageUpdater(TabStateStorageDatabase* db);
+  TabStateStorageUpdater();
   TabStateStorageUpdater(const TabStateStorageUpdater&) = delete;
   TabStateStorageUpdater& operator=(const TabStateStorageUpdater&) = delete;
   ~TabStateStorageUpdater();
 
   void Add(std::unique_ptr<StorageUpdateUnit> unit);
-  bool Execute();
+  bool Execute(TabStateStorageDatabase* db);
 
  private:
-  raw_ptr<TabStateStorageDatabase> db_;
-
   std::vector<std::unique_ptr<StorageUpdateUnit>> updates_;
 };
 

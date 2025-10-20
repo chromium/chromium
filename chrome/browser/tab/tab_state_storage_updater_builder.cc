@@ -86,9 +86,8 @@ class RemoveNodeUpdateUnit : public tabs::StorageUpdateUnit {
 
 }  // namespace
 
-TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder(
-    TabStateStorageDatabase* db)
-    : updater_(std::make_unique<TabStateStorageUpdater>(db)) {}
+TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder()
+    : updater_(std::make_unique<TabStateStorageUpdater>()) {}
 
 TabStateStorageUpdaterBuilder::~TabStateStorageUpdaterBuilder() = default;
 
