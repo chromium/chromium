@@ -22,6 +22,7 @@ include_rules = [
   "+third_party/gvr-android-sdk",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h",
+  "+ui/base/unowned_user_data",
 ]
 
 specific_include_rules = {
