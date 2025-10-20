@@ -144,6 +144,6 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
             return PromoState.NONE;
         }
         final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
-        return historySyncHelper.shouldSuppressHistorySync() ? PromoState.NONE : PromoState.SIGNIN;
+        return !historySyncHelper.shouldDisplayHistorySync() ? PromoState.NONE : PromoState.SIGNIN;
     }
 }

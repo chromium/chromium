@@ -120,7 +120,7 @@ public class SigninSignoutIntegrationTest {
                         "Signin.SignIn.Completed", SigninAccessPoint.SETTINGS);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        doReturn(false).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mMainSettingsActivityTestRule.startSettingsActivity();
 

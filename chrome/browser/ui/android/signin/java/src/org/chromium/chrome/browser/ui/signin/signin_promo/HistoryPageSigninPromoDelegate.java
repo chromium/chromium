@@ -202,7 +202,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
             return PromoState.NONE;
         }
         final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
-        return historySyncHelper.shouldSuppressHistorySync() || historySyncHelper.isDeclinedOften()
+        return !historySyncHelper.shouldDisplayHistorySync() || historySyncHelper.isDeclinedOften()
                 ? PromoState.NONE
                 : PromoState.HISTORY_SYNC;
     }

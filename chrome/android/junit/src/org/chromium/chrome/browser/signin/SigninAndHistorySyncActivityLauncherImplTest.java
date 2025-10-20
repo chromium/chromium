@@ -174,6 +174,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -244,7 +245,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -344,7 +345,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -369,7 +370,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -394,6 +395,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -461,7 +463,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -486,7 +488,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -512,6 +514,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

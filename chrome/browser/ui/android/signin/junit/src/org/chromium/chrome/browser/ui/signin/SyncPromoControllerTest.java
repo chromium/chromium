@@ -89,6 +89,7 @@ public class SyncPromoControllerTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(mProfile))
                 .thenReturn(mIdentityManager);
+        when(mHistorySyncHelper.shouldDisplayHistorySync()).thenReturn(true);
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO),
@@ -317,7 +318,7 @@ public class SyncPromoControllerTest {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(true).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        when(mHistorySyncHelper.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelper.shouldDisplayHistorySync()).thenReturn(false);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -333,7 +334,7 @@ public class SyncPromoControllerTest {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(false).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        when(mHistorySyncHelper.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelper.shouldDisplayHistorySync()).thenReturn(false);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(

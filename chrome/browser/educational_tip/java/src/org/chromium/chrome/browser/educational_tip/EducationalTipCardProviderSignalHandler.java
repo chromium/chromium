@@ -170,7 +170,7 @@ public class EducationalTipCardProviderSignalHandler {
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                 .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             HistorySyncHelper helper = HistorySyncHelper.getForProfile(profile);
-            return helper.shouldSuppressHistorySync() || helper.isDeclinedOften() ? 0.0f : 1.0f;
+            return !helper.shouldDisplayHistorySync() || helper.isDeclinedOften() ? 0.0f : 1.0f;
         }
 
         return 0.0f;

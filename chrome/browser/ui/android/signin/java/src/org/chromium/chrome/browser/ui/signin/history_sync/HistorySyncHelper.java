@@ -73,11 +73,11 @@ public class HistorySyncHelper {
                 || mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS);
     }
 
-    /** Whether the history sync prompt should be suppressed. */
-    public boolean shouldSuppressHistorySync() {
-        return didAlreadyOptIn()
-                || isHistorySyncDisabledByCustodian()
-                || isHistorySyncDisabledByPolicy();
+    /** Whether the history sync prompt should be displayed. */
+    public boolean shouldDisplayHistorySync() {
+        return !didAlreadyOptIn()
+                && !isHistorySyncDisabledByCustodian()
+                && !isHistorySyncDisabledByPolicy();
     }
 
     /** Whether history sync is often declined. */

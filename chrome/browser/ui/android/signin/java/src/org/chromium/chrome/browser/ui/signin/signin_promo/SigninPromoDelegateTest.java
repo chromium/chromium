@@ -253,7 +253,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testHistoryPagePromoShown_hasPrimaryAccount_historySyncAvailable() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        doReturn(false).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         setupDelegate(SigninAccessPoint.HISTORY_PAGE, TestAccounts.ACCOUNT1);
@@ -264,7 +264,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testHistoryPagePromoHidden_hasPrimaryAccount_historySyncSuppressed() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        doReturn(false).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
@@ -275,6 +275,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testHistoryPagePromoHidden_hasPrimaryAccount_historySyncDeclinedOften() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         doReturn(true).when(mHistorySyncHelper).isDeclinedOften();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
@@ -348,6 +349,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testRecentTabsPromoShown_signinAllowed() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         doReturn(true).when(mSigninManager).isSigninAllowed();
         setupDelegate(SigninAccessPoint.RECENT_TABS, /* visibleAccount= */ null);
 
@@ -357,6 +359,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testRecentTabsPromoShown_hasPrimaryAccount() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
@@ -375,7 +378,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testRecentTabsPromoHidden_suppressed() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        doReturn(false).when(mHistorySyncHelper).shouldDisplayHistorySync();
         doReturn(true).when(mSigninManager).isSigninAllowed();
         setupDelegate(SigninAccessPoint.RECENT_TABS, /* visibleAccount= */ null);
 

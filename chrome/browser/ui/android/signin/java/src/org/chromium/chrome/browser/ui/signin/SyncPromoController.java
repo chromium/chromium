@@ -332,7 +332,7 @@ public class SyncPromoController {
             // If sign-in is not possible, then history sync isn't possible either.
             return false;
         }
-        return !historySyncHelper.shouldSuppressHistorySync();
+        return historySyncHelper.shouldDisplayHistorySync();
     }
 
     // Find the visible account for sync promos

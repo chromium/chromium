@@ -118,13 +118,14 @@ public interface SigninAndHistorySyncCoordinator {
                 SigninFeatureMap.isEnabled(SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN);
         return switch (historyOptInMode) {
             case HistorySyncConfig.OptInMode.NONE -> false;
-            case HistorySyncConfig.OptInMode.OPTIONAL -> !historySyncHelper
-                            .shouldSuppressHistorySync()
-                    && (forceHistoryOptInScreen || !historySyncHelper.isDeclinedOften());
-            case HistorySyncConfig.OptInMode.REQUIRED -> !historySyncHelper
-                    .shouldSuppressHistorySync();
-            default -> throw new IllegalArgumentException(
-                    "Unexpected value for historyOptInMode :" + historyOptInMode);
+            case HistorySyncConfig.OptInMode.OPTIONAL ->
+                    historySyncHelper.shouldDisplayHistorySync()
+                            && (forceHistoryOptInScreen || !historySyncHelper.isDeclinedOften());
+            case HistorySyncConfig.OptInMode.REQUIRED ->
+                    historySyncHelper.shouldDisplayHistorySync();
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unexpected value for historyOptInMode :" + historyOptInMode);
         };
     }
 }

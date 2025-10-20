@@ -130,6 +130,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(false);
         when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(false);
         when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(false);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
 
         // Skip device lock UI on automotive.
         DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
@@ -189,7 +190,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_historySyncSupressed() {
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivity(
