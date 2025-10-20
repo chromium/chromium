@@ -11770,21 +11770,6 @@
             ]
         }
     ],
-    "GlobalCacheListForGatingNotificationProtections": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlobalCacheListForGatingNotificationProtections"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlobalVaapiLock": [
         {
             "platforms": [
