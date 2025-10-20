@@ -603,4 +603,7 @@ BASE_FEATURE_PARAM(bool,
                    "url_loader",
                    true);
 
+BASE_FEATURE(kNetworkServicePerPriorityTaskQueues,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

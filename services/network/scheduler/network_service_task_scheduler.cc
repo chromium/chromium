@@ -4,12 +4,15 @@
 
 #include "services/network/scheduler/network_service_task_scheduler.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/request_priority.h"
 #include "net/base/task/task_runner.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_task_priority.h"
 #include "services/network/public/cpp/sequence_manager_configurator.h"
 
@@ -72,9 +75,9 @@ NetworkServiceTaskScheduler::CreateForTesting() {
 // For testing scenarios created via `CreateForTesting()`, the original task
 // runners for the thread are restored upon destruction.
 NetworkServiceTaskScheduler::~NetworkServiceTaskScheduler() {
-  if (original_high_priority_task_runner_for_testing_.has_value()) {
-    net::internal::GetTaskRunnerGlobals().high_priority_task_runner =
-        *original_high_priority_task_runner_for_testing_;
+  if (original_task_runners_for_testing_.has_value()) {
+    net::internal::GetTaskRunnerGlobals().task_runners =
+        *original_task_runners_for_testing_;
   }
   if (original_default_task_runner_.has_value()) {
     CurrentNetworkServiceThread::GetCurrentSequenceManagerImpl()
@@ -89,7 +92,7 @@ NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
   // crashes.
   sequence_manager->EnableCrashKeys("network_service_scheduler_async_stack");
   // Set the default task runner for the current thread.
-  sequence_manager->SetDefaultTaskRunner(task_queues_.GetDefaultTaskRunner());
+  sequence_manager->SetDefaultTaskRunner(GetDefaultTaskRunner());
 }
 
 NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
@@ -122,19 +125,44 @@ void NetworkServiceTaskScheduler::OnTaskCompleted(
 void NetworkServiceTaskScheduler::SetUpNetTaskRunners() {
   net::internal::TaskRunnerGlobals& globals =
       net::internal::GetTaskRunnerGlobals();
-  globals.high_priority_task_runner = GetTaskRunner(QueueType::kHigh);
+  if (base::FeatureList::IsEnabled(
+          features::kNetworkServicePerPriorityTaskQueues)) {
+    for (int i = 0; i < net::NUM_PRIORITIES; ++i) {
+      globals.task_runners[i] =
+          GetTaskRunner(static_cast<net::RequestPriority>(i));
+    }
+    return;
+  }
+
+  // Unless the feature is enabled, we use two task queues, DEFAULT and
+  // HIGHEST.
+  static_assert(net::RequestPriority::DEFAULT_PRIORITY <
+                net::RequestPriority::HIGHEST);
+  for (int i = 0; i < net::NUM_PRIORITIES; ++i) {
+    globals.task_runners[i] =
+        GetTaskRunner(net::RequestPriority::DEFAULT_PRIORITY);
+  }
+  // Highest is used only for net::RequestPriority::HIGHEST.
+  globals.task_runners[net::RequestPriority::HIGHEST] =
+      GetTaskRunner(net::RequestPriority::HIGHEST);
 }
 
 void NetworkServiceTaskScheduler::SetUpNetTaskRunnersForTesting() {
-  CHECK(!original_high_priority_task_runner_for_testing_.has_value());
-  original_high_priority_task_runner_for_testing_ =
-      net::internal::GetTaskRunnerGlobals().high_priority_task_runner;
+  CHECK(!original_task_runners_for_testing_.has_value());
+  original_task_runners_for_testing_ =
+      net::internal::GetTaskRunnerGlobals().task_runners;
   SetUpNetTaskRunners();
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
-NetworkServiceTaskScheduler::GetTaskRunner(QueueType type) const {
-  return task_queues_.GetTaskRunner(type);
+NetworkServiceTaskScheduler::GetTaskRunner(
+    net::RequestPriority priority) const {
+  return task_queues_.GetTaskRunner(priority);
+}
+
+const scoped_refptr<base::SingleThreadTaskRunner>&
+NetworkServiceTaskScheduler::GetDefaultTaskRunner() const {
+  return task_queues_.GetDefaultTaskRunner();
 }
 
 }  // namespace network

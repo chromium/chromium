@@ -1035,6 +1035,12 @@ message SequenceManagerTask {
     NORMAL_PRIORITY_CONTINUATION = 9;
     LOW_PRIORITY_CONTINUATION = 10;
     EXTREMELY_HIGH_PRIORITY = 11;
+
+    // Priorities used in Network Service.
+    MEDIUM_PRIORITY = 12;
+    LOWEST_PRIORITY = 13;
+    IDLE_PRIORITY = 14;
+    THROTTLED_PRIORITY = 15;
   }
 
   enum QueueName {
@@ -1105,11 +1111,20 @@ message SequenceManagerTask {
     V8_USER_VISIBLE_TQ = 56;
     V8_BEST_EFFORT_TQ = 57;
 
+    // TODO(crbug.com/450428442): Deprecate these TQ names when
+    // NetworkServicePerPriorityTaskQueues is enabled by default.
     NETWORK_SERVICE_THREAD_HIGH_TQ = 58;
     NETWORK_SERVICE_THREAD_DEFAULT_TQ = 59;
 
     UI_STARTUP_TQ = 60;
     IO_STARTUP_TQ = 61;
+
+    NETWORK_SERVICE_THREAD_THROTTLED_TQ = 62;
+    NETWORK_SERVICE_THREAD_IDLE_TQ = 63;
+    NETWORK_SERVICE_THREAD_LOWEST_TQ = 64;
+    NETWORK_SERVICE_THREAD_LOW_TQ = 65;
+    NETWORK_SERVICE_THREAD_MEDIUM_TQ = 66;
+    NETWORK_SERVICE_THREAD_HIGHEST_TQ = 67;
   }
 
   optional Priority priority = 1;

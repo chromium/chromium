@@ -10,8 +10,9 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequence_manager/task_queue.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "net/base/request_priority.h"
 #include "services/network/scheduler/network_service_task_queues.h"
 
 namespace base {
@@ -57,11 +58,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
 
   ~NetworkServiceTaskScheduler();
 
-  using QueueType = NetworkServiceTaskQueues::QueueType;
-
-  // Returns the task runner for the specified `QueueType`.
+  // Returns the task runner for the specified `RequestPriority`.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
-      QueueType type) const;
+      net::RequestPriority priority) const;
+
+  // Returns the default task runner.
+  const scoped_refptr<base::SingleThreadTaskRunner>& GetDefaultTaskRunner()
+      const;
 
   // Sets up the global `net` task runners to point to this scheduler's task
   // runners. This test-only version saves the original global task runners
@@ -97,11 +100,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
 
   NetworkServiceTaskQueues task_queues_;
 
-  // Stores the original global high-priority task runner when
+  // Stores the original global task runners when
   // `SetUpNetTaskRunnersForTesting()` is called, so it can be restored on
   // destruction.
-  std::optional<scoped_refptr<base::SingleThreadTaskRunner>>
-      original_high_priority_task_runner_for_testing_;
+  std::optional<std::array<scoped_refptr<base::SingleThreadTaskRunner>,
+                           net::NUM_PRIORITIES>>
+      original_task_runners_for_testing_;
 
   // Stores the original default task runner before `CreateForTesting()`
   // is called, so it can be restored on destruction.

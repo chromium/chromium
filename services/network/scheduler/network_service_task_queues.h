@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/request_priority.h"
 
 namespace base::sequence_manager {
 class SequenceManager;
@@ -34,13 +35,6 @@ class NetworkServiceTaskObserver;
 // `base::SingleThreadTaskRunner`s for each of these queues.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
  public:
-  // Defines the types of task queues available.
-  enum class QueueType {
-    kDefault,
-    kHigh,
-    kMaxValue = kHigh,
-  };
-
   // Creates task queues and task runners using the provided `sequence_manager`.
   // The `sequence_manager` must outlive this `NetworkServiceTaskQueues`
   // instance.
@@ -50,23 +44,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
   // Destroys all managed task queues.
   ~NetworkServiceTaskQueues();
 
-  // Returns the underlying `TaskQueue` for the default priority.
-  base::sequence_manager::TaskQueue* GetDefaultTaskQueue() const {
-    return GetTaskQueue(QueueType::kDefault);
-  }
-
   // Returns the task runner that should be returned by
   // SingleThreadTaskRunner::GetCurrentDefault().
-  // This is typically the task runner for the `QueueType::kDefault`.
+  // This is typically the task runner for the DEFAULT priority.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetDefaultTaskRunner()
       const {
-    return GetTaskRunner(QueueType::kDefault);
+    return GetTaskRunner(net::RequestPriority::DEFAULT_PRIORITY);
   }
 
-  // Returns the task runner for the specified `QueueType`.
+  // Returns the task runner for the specified `RequestPriority`.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
-      QueueType type) const {
-    return task_runners_[static_cast<size_t>(type)];
+      net::RequestPriority priority) const {
+    return task_runners_[static_cast<size_t>(priority)];
   }
 
   // Sets a handler to be called when a task is completed on any of the
@@ -75,12 +64,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
       base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler);
 
  private:
-  static constexpr size_t kNumQueueTypes =
-      static_cast<size_t>(QueueType::kMaxValue) + 1;
-
-  // Helper to get the underlying `TaskQueue` for a given `QueueType`.
-  base::sequence_manager::TaskQueue* GetTaskQueue(QueueType type) const {
-    return task_queues_[static_cast<size_t>(type)].get();
+  // Helper to get the underlying `TaskQueue` for a given priority.
+  base::sequence_manager::TaskQueue* GetTaskQueue(
+      net::RequestPriority priority) const {
+    return task_queues_[static_cast<size_t>(priority)].get();
   }
 
   void CreateTaskQueues(
@@ -89,20 +76,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
   void CreateNetworkServiceTaskRunners();
 
   // Array of handles to the underlying task queues.
-  // The index corresponds to the integer value of `QueueType`.
-  std::array<base::sequence_manager::TaskQueue::Handle, kNumQueueTypes>
+  std::array<base::sequence_manager::TaskQueue::Handle, net::NUM_PRIORITIES>
       task_queues_;
 
   // Array of task observers, one for each `TaskQueue` in `task_queues_`. There
   // is a 1:1 correspondence: `task_observers_[i]` is the task observer for
   // `task_queues_[i]`.
-  std::array<std::unique_ptr<NetworkServiceTaskObserver>, kNumQueueTypes>
+  std::array<std::unique_ptr<NetworkServiceTaskObserver>, net::NUM_PRIORITIES>
       task_observers_;
 
   // Array of task runners, one for each `TaskQueue` in `task_queues_`. There is
   // a 1:1 correspondence: `task_runners_[i]` is the runner for
   // `task_queues_[i]`.
-  std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
+  std::array<scoped_refptr<base::SingleThreadTaskRunner>, net::NUM_PRIORITIES>
       task_runners_;
 };
 

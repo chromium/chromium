@@ -117,6 +117,21 @@ chromium-metrics-reviews@google.com.
   <variant name="_FullScan" summary="Using WPA_supplicant to scan."/>
 </variants>
 
+<!-- LINT.IfChange(QueueName) -->
+
+<variants name="QueueName">
+  <variant name="Default" summary="Deprecated on 2025-10-15."/>
+  <variant name="High" summary="Deprecated on 2025-10-15."/>
+  <variant name="Highest"/>
+  <variant name="Idle"/>
+  <variant name="Low"/>
+  <variant name="Lowest"/>
+  <variant name="Medium"/>
+  <variant name="Throttled"/>
+</variants>
+
+<!-- LINT.ThenChange(//services/network/scheduler/network_service_task_queues.cc:PriorityToString) -->
+
 <!-- LINT.IfChange(RequestPriority) -->
 
 <variants name="RequestPriority">
@@ -5223,10 +5238,7 @@ chromium-metrics-reviews@google.com.
     NetworkServiceScheduler. Recorded with 0.001 probability when a task
     scheduled on the IO thread starts.
   </summary>
-  <token key="QueueName">
-    <variant name="Default"/>
-    <variant name="High"/>
-  </token>
+  <token key="QueueName" variants="QueueName"/>
 </histogram>
 
 <histogram
@@ -5239,10 +5251,7 @@ chromium-metrics-reviews@google.com.
     {QueueName}Queue of NetworkServiceScheduler. Recorded with 0.001 probability
     when a task scheduled on the IO thread starts.
   </summary>
-  <token key="QueueName">
-    <variant name="Default"/>
-    <variant name="High"/>
-  </token>
+  <token key="QueueName" variants="QueueName"/>
 </histogram>
 
 <histogram name="NetworkService.Scheduler.IOThread.TaskOffCpuDuration"
