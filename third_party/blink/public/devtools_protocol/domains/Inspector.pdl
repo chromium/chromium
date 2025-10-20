@@ -23,3 +23,6 @@ experimental domain Inspector
 
   # Fired when debugging target has reloaded after crash
   event targetReloadedAfterCrash
+
+  # Fired on worker targets when main worker script and any imported scripts have been evaluated.
+  experimental event workerScriptLoaded

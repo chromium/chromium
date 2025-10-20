@@ -58,6 +58,10 @@
                 "async": ["requestDatabaseNames", "requestDatabase", "requestData", "getMetadata", "deleteObjectStoreEntries", "clearObjectStore", "deleteDatabase"]
             },
             {
+                "domain": "Inspector",
+                "include": []
+            },
+            {
                 "domain": "LayerTree"
             },
             {

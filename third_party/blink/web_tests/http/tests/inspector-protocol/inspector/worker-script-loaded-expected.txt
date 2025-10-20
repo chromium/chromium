@@ -1,0 +1,10 @@
+Tests Inspector.workerScriptLoaded.
+creating worker '/inspector-protocol/resources/workerClassic.js'
+message: from the imported script
+message: from the main script
+workerScriptLoaded
+creating worker '/inspector-protocol/resources/workerModule.js'
+message: from the imported script
+message: from the main script
+workerScriptLoaded
+
