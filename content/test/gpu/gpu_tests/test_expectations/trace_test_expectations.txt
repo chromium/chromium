@@ -274,6 +274,9 @@ crbug.com/450323461 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectCompositi
 crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
 crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ RetryOnFailure ]
 
+# WebGPU is currently not enabled on win11 qualcomm but it will be soon
+[ win11 qualcomm ] WebGPUTraceTest* [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################

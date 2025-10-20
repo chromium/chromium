@@ -251,6 +251,11 @@ crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_
 # Win11 / NVIDIA RTX 4070 Super
 crbug.com/450323460 [ win11 nvidia-0x2783 ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
+
+# WebGPU is currently not enabled on win11 qualcomm but it will be soon
+[ win11 qualcomm ] ContextLost_WebGPU* [ Failure ]
+[ win11 qualcomm ] GpuNormalTermination_WebGPUNotBlocked [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################

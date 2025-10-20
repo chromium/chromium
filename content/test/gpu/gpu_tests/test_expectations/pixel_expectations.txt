@@ -350,6 +350,9 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_WebGLGreen
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColorBackground_TreesInViz [ Skip ]
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_RenderPasses_TreesInViz [ Skip ]
 
+# WebGPU is currently not enabled on win11 qualcomm but it will be soon
+[ win11 qualcomm ] Pixel_WebGPU* [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
