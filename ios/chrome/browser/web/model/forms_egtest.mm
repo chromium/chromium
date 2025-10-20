@@ -566,7 +566,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // Wait for the accessory icon to appear.
     [ChromeEarlGrey waitForKeyboardToAppear];
 
-    // TODO(crbug.com/40227513): Move this logic into EG.
+    // There's currently no EG API to tap 'go' on the keyboard.
     XCUIApplication* app = [[XCUIApplication alloc] init];
     [[[app keyboards] buttons][@"go"] tap];
   }

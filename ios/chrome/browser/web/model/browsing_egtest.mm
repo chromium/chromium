@@ -370,7 +370,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:script];
 
-  // TODO(crbug.com/40227513): Move this logic into EG.
+  // There's currently no EG API to tap 'go' on the keyboard.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   [[[app keyboards] buttons][@"go"] tap];
 
