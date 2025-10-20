@@ -91,7 +91,8 @@ void RunJavaCallbackLoadAllTabs(
   }
 
   base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/tab/LoadedTabState");
+      env,
+      "org/chromium/chrome/browser/tab/TabStateStorageService$LoadedTabState");
   base::android::ScopedJavaLocalRef<jobjectArray> j_loaded_tab_state_array =
       base::android::ToTypedJavaArrayOfObjects(env, j_loaded_tab_state_vector,
                                                type.obj());
