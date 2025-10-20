@@ -793,15 +793,24 @@ DatabaseConnection::DatabaseConnection(base::FilePath path,
     : path_(path), backing_store_(backing_store) {}
 
 DatabaseConnection::~DatabaseConnection() {
+  // Although generally active blobs will keep `this` alive, in some cases such
+  // as when the backing store is being force-closed, blobs may still be active.
+  active_blobs_.clear();
+
   if (!db_ || path_.empty()) {
     return;
   }
 
-  if (marked_for_permanent_deletion_) {
+  bool had_sql_error =
+      !sql::IsSqliteSuccessCode(sql::ToSqliteResultCode(db_->GetErrorCode()));
+
+  // When the database never finished initializing, it will be zygotic. This
+  // could happen if version change transaction was aborted/rolled back. In this
+  // case the newly created database should be deleted.
+  if (marked_for_permanent_deletion_ || (IsZygotic() && !had_sql_error)) {
     db_.reset();
     sql::Database::Delete(path_);
-  } else if (!sql::IsSqliteSuccessCode(
-                 sql::ToSqliteResultCode(db_->GetErrorCode()))) {
+  } else if (had_sql_error) {
     LogEvent(SpecificEvent::kDatabaseHadSqlError);
 
     // Note that `DatabaseConnection` does not set an error callback on
@@ -1892,9 +1901,8 @@ void DatabaseConnection::DeleteIdbDatabase(
       }();
 
   // If there are any errors in the above, then blobs will probably error out
-  // too, so abandon the blobs.
+  // too, so go ahead and destroy `this`.
   if (!success) {
-    active_blobs_.clear();
     backing_store_->DestroyConnection(metadata_.name);
     // `this` is deleted.
   }

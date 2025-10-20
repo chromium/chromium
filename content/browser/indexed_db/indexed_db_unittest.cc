@@ -2357,10 +2357,13 @@ TEST_P(IndexedDBTest, DataLoss) {
         IndexedDBDataFormatVersion(3, 4));
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
     base::RunLoop run_loop;
     EXPECT_CALL(client, MockedUpgradeNeeded(
                             _, _, blink::mojom::IDBDataLoss::None, _, _))
-        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
+        .WillOnce(
+            testing::DoAll(MoveArgPointee<0>(&pending_database),
+                           ::base::test::RunClosure(run_loop.QuitClosure())));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(),
@@ -2368,6 +2371,13 @@ TEST_P(IndexedDBTest, DataLoss) {
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/1, /*priority=*/0);
     run_loop.Run();
+
+    // Commit the versionchange transaction, lest it be aborted and rolled back
+    // and the database deleted.
+    mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection(
+        std::move(pending_database));
+    transaction_remote->Commit(0);
+    transaction_remote.FlushForTesting();
 
     // This step is necessary to make sure the backing store is closed so that
     // the second `Open` will initialize it with the new (older) data format
