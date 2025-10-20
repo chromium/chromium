@@ -458,7 +458,7 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
         error_status_ = DecoderStatus::Codes::kOutOfMemory;
       }
       DLOG(ERROR) << "vpx_codec_decode() failed for the alpha: "
-                  << vpx_codec_error(vpx_codec_.get());
+                  << vpx_codec_error(vpx_codec_alpha_.get());
       return kAlphaPlaneError;
     }
   }
