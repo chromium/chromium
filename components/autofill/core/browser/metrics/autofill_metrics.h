@@ -898,9 +898,11 @@ class AutofillMetrics {
 
   // Records the outcome of an address profile deletion initiated from the
   // keyboard accessory. `delete_confirmed` is true if the user confirmed the
-  // deletion prompt, and false if they canceled.
+  // deletion prompt, and false if they canceled. `record_type` holds the record
+  // type of the profile that was deleted.
   static void LogDeleteAddressProfileFromKeyboardAccessory(
-      bool delete_confirmed);
+      bool delete_confirmed,
+      AutofillProfile::RecordType record_type);
 
   static void LogAutocompleteEvent(AutocompleteEvent event);
 

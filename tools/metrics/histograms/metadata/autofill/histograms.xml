@@ -675,6 +675,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PHONE_HOME_WHOLE_NUMBER"/>
 </variants>
 
+<!-- LINT.IfChange(ProfileRecordTypeSuffix) -->
+
 <variants name="AutofillProfileRecordTypes">
   <variant name="Account" summary="Synced cross-device account profile"/>
   <variant name="AccountHome" summary="Read-only home address from account"/>
@@ -683,6 +685,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="AccountWork" summary="Read-only work address from account"/>
   <variant name="LocalOrSyncable" summary="Local or legacy-synced profile"/>
 </variants>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/autofill_metrics_utils.cc:ProfileRecordTypeSuffix) -->
 
 <variants name="AutofillSaveCardDestination">
   <variant name="Local" summary="local"/>

@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -470,8 +471,20 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
 
-  if (filling_product == FillingProduct::kAddress) {
-    AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory(confirmed);
+  if (filling_product == FillingProduct::kAddress && web_contents_) {
+    PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext());
+
+    const auto* payload = std::get_if<Suggestion::AutofillProfilePayload>(
+        &GetSuggestionAt(index).payload);
+    if (pdm && payload) {
+      const AutofillProfile* profile =
+          pdm->address_data_manager().GetProfileByGUID(payload->guid.value());
+      if (profile) {
+        AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory(
+            confirmed, profile->record_type());
+      }
+    }
   }
 
   if (!confirmed) {

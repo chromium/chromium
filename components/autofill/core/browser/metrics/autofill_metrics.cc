@@ -21,6 +21,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -1519,11 +1520,21 @@ void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
 
 // static
 void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory(
-    bool delete_confirmed) {
+    bool delete_confirmed,
+    AutofillProfile::RecordType record_type) {
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.KeyboardAccessory.Total",
                             delete_confirmed);
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any.Total",
                             delete_confirmed);
+
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.ProfileDeleted.KeyboardAccessory.",
+                    autofill_metrics::GetProfileRecordTypeSuffix(record_type)}),
+      delete_confirmed);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.ProfileDeleted.Any.",
+                    autofill_metrics::GetProfileRecordTypeSuffix(record_type)}),
+      delete_confirmed);
 }
 
 // static

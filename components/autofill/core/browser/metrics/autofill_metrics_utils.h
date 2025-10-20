@@ -62,6 +62,10 @@ AutofillProfileRecordTypeCategory GetCategoryOfProfile(
 const char* GetProfileCategorySuffix(
     AutofillProfileRecordTypeCategory category);
 
+// Converts the `record_type` to the histogram-suffix used for resolving some
+// metrics by record type.
+const char* GetProfileRecordTypeSuffix(AutofillProfile::RecordType record_type);
+
 // These values are persisted to UMA logs. Entries should not be renumbered
 // and numeric values should never be reused. This is the subset of field
 // types that can be changed in a profile change/store dialog or are affected

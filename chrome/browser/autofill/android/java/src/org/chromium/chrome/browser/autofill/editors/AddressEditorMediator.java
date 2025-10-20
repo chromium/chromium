@@ -648,6 +648,7 @@ class AddressEditorMediator {
     }
 
     private static String getProfileRecordTypeSuffixFromProfile(AutofillProfile profile) {
+        // LINT.IfChange(ProfileRecordTypeSuffix)
         switch (profile.getRecordType()) {
             case RecordType.LOCAL_OR_SYNCABLE:
                 return "LocalOrSyncable";
@@ -663,5 +664,6 @@ class AddressEditorMediator {
                 // Other types are not expected for addresses.
                 return "Unknown";
         }
+        // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/histograms.xml:ProfileRecordTypeSuffix)
     }
 }
