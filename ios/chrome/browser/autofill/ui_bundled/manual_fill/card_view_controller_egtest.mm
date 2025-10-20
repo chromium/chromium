@@ -775,8 +775,6 @@ void DismissPaymentBottomSheet() {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_OK)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
 
 // Tests an alert is shown warning the user when trying to fill a credit card
@@ -792,8 +790,6 @@ void DismissPaymentBottomSheet() {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_OK)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
 
 // Tests that credit card cardholder is injected.

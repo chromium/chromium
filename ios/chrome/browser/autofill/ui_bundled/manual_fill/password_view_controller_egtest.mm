@@ -871,8 +871,6 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Dismiss the alert.
   [[EarlGrey selectElementWithMatcher:ActionSheetItemWithAccessibilityLabelId(
                                           IDS_OK)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
 
 // Tests that the "no passwords found" message is visible when no password

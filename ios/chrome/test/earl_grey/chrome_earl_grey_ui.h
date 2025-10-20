@@ -170,10 +170,6 @@
 // Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
 - (BOOL)dismissContextMenuIfPresent;
 
-// Cleans up the view hierarchy after showing the system alert on certain OS
-// versions.
-- (void)cleanupAfterShowingAlert;
-
 // Type `text` in Omnibox and optionally press Enter if `shouldPressEnter` is
 // YES.
 - (void)typeTextInOmnibox:(std::string const&)text

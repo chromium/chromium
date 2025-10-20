@@ -459,17 +459,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   return err == nil;
 }
 
-- (void)cleanupAfterShowingAlert {
-  // Workaround for an Earl Grey crash in iOS 15.5 on iPad when traversing the
-  // view hierarchy with accessibility. Likely due to the system alert view, the
-  // traversal will crash because some system view cannot provide the correct
-  // accessibility result. Background and Foreground the app removes the system
-  // alert view's residues from the view hierarchy.
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  }
-}
-
 - (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher {
   id<GREYMatcher> classMatcher = grey_kindOfClass([UIWindow class]);
   id<GREYMatcher> parentMatcher = grey_descendant(matcher);

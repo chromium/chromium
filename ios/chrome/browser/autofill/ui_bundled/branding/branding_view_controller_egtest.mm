@@ -139,11 +139,6 @@ void OpenManualFallback() {
   CheckBrandingHasVisiblity(YES);
   OpenManualFallback();
 
-  if (!base::ios::IsRunningOnIOS16OrLater() && [ChromeEarlGrey isIPadIdiom]) {
-    [ChromeEarlGreyUI dismissByTappingOnTheWindowOfPopover:
-                          manual_fill::PasswordTableViewMatcher()];
-  }
-
   DismissKeyboard();
   // Second time: branding is still visible after user interacts with a keyboard
   // accessory element.
