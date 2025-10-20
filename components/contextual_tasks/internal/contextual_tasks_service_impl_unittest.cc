@@ -255,6 +255,7 @@ TEST_F(ContextualTasksServiceImplTest,
   ContextualTask task =
       service_->CreateTaskFromUrl(GURL("https://google.com?authuser=0"));
   EXPECT_FALSE(task.IsEphemeral());
+  EXPECT_EQ(1u, GetTasks().size());
 }
 
 TEST_F(ContextualTasksServiceImplTest,
@@ -269,6 +270,7 @@ TEST_F(ContextualTasksServiceImplTest,
   ContextualTask task =
       service_->CreateTaskFromUrl(GURL("https://google.com?authuser=0"));
   EXPECT_TRUE(task.IsEphemeral());
+  EXPECT_EQ(0u, GetTasks().size());
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetTaskById) {
@@ -1050,6 +1052,7 @@ class ContextualTasksServiceImplEphemeralOnlyTest
 TEST_F(ContextualTasksServiceImplEphemeralOnlyTest, CreateTask) {
   ContextualTask task = service_->CreateTask();
   EXPECT_TRUE(task.IsEphemeral());
+  EXPECT_TRUE(GetTasks().empty());
 }
 
 }  // namespace contextual_tasks

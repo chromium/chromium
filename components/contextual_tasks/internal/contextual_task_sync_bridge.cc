@@ -119,6 +119,7 @@ proto::ContextualTaskEntity SpecificsToEntityProto(
 
 proto::ContextualTaskEntity ContextualTaskToEntityProto(
     const ContextualTask& contextual_task) {
+  CHECK(!contextual_task.IsEphemeral());
   proto::ContextualTaskEntity entity;
   sync_pb::ContextualTaskSpecifics* specifics = entity.mutable_specifics();
   specifics->set_guid(StorageKeyFromUuid(contextual_task.GetTaskId()));
@@ -348,6 +349,10 @@ std::optional<ContextualTask> ContextualTaskSyncBridge::GetTaskById(
 
 void ContextualTaskSyncBridge::OnTaskAddedLocally(
     const ContextualTask& contextual_task) {
+  if (contextual_task.IsEphemeral()) {
+    return;
+  }
+
   proto::ContextualTaskEntity entity_proto =
       ContextualTaskToEntityProto(contextual_task);
   DCHECK(task_id_to_entities_map_.find(entity_proto.specifics().guid()) ==
@@ -376,6 +381,10 @@ void ContextualTaskSyncBridge::OnTaskRemovedLocally(const base::Uuid& task_id) {
 
 void ContextualTaskSyncBridge::OnTaskUpdatedLocally(
     const ContextualTask& contextual_task) {
+  if (contextual_task.IsEphemeral()) {
+    return;
+  }
+
   proto::ContextualTaskEntity entity_proto =
       ContextualTaskToEntityProto(contextual_task);
   UpdateEntityInMap(entity_proto);

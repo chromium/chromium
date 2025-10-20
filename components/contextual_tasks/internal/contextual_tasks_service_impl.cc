@@ -103,7 +103,11 @@ void ContextualTasksServiceImpl::GetTasks(
     base::OnceCallback<void(std::vector<ContextualTask>)> callback) const {
   std::vector<ContextualTask> tasks;
   for (const auto& pair : tasks_) {
-    tasks.push_back(pair.second);
+    ContextualTask task = pair.second;
+    if (task.IsEphemeral() || supports_ephemeral_only_) {
+      continue;
+    }
+    tasks.push_back(task);
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(tasks)));
@@ -409,13 +413,19 @@ size_t ContextualTasksServiceImpl::GetTabIdMapSizeForTesting() const {
 
 void ContextualTasksServiceImpl::OnContextualTaskDataStoreLoaded() {
   on_data_loaded_barrier_.Run();
+  // TODO(shaktisahu): CHECK that no data read from store if
+  // supports_ephemeral_only_.
 }
 
 void ContextualTasksServiceImpl::OnTaskAddedOrUpdatedRemotely(
-    const std::vector<ContextualTask>& task_entities) {}
+    const std::vector<ContextualTask>& task_entities) {
+  CHECK(!supports_ephemeral_only_);
+}
 
 void ContextualTasksServiceImpl::OnTaskRemovedRemotely(
-    const std::vector<base::Uuid>& task_entities) {}
+    const std::vector<base::Uuid>& task_entities) {
+  CHECK(!supports_ephemeral_only_);
+}
 
 void ContextualTasksServiceImpl::NotifyTaskAdded(const ContextualTask& task,
                                                  TriggerSource source) {

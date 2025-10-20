@@ -326,4 +326,21 @@ TEST_F(ContextualTaskSyncBridgeTest, OnUrlRemovedFromTask) {
   EXPECT_TRUE(retrieved_task->GetUrlResources().empty());
 }
 
+TEST_F(ContextualTaskSyncBridgeTest, EphemralTasksAreNotPersisted) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id, /*is_ephemeral=*/true);
+  task.SetTitle("New Task");
+
+  EXPECT_CALL(mock_processor_, Put(_, _, _)).Times(0);
+  bridge_->OnTaskAddedLocally(task);
+
+  std::optional<ContextualTask> retrieved_task =
+      bridge_->GetTaskById(task_id.AsLowercaseString());
+  ASSERT_FALSE(retrieved_task.has_value());
+
+  bridge_->OnTaskUpdatedLocally(task);
+  retrieved_task = bridge_->GetTaskById(task_id.AsLowercaseString());
+  ASSERT_FALSE(retrieved_task.has_value());
+}
+
 }  // namespace contextual_tasks
