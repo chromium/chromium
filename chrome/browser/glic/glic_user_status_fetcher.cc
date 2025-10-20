@@ -36,7 +36,7 @@ namespace {
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("gemini_user_status", R"(
     semantics {
-      sender: "Chrome Gemini"
+      sender: "Gemini in Chrome"
       description:
           "To decide whether an Enterprise primary account can access the "
           "Gemini feature and see the Gemini UI surfaces (e.g. tab strip "
@@ -47,7 +47,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "signed in and every 23 hours afterwards. The access token of "
           "the account is used for Oauth2 authentication."
       trigger:
-          "upon an Enterprise primary account sign-in or Chrome launch with "
+          "Upon an Enterprise primary account sign-in or Chrome launch with "
           "a signed-in Enterprise primary account and periodically "
           "afterwards"
       data:
@@ -70,6 +70,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       chrome_policy {
         GeminiSettings {
             GeminiSettings: 1
+        }
+        GenAiDefaultSettings {
+          GenAiDefaultSettings: 2
         }
       }
     }

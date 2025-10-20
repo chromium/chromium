@@ -447,19 +447,17 @@ content::WebContents* GlicFreController::GetWebContents() {
 
 namespace {
 
-// TODO(jbroman): This should be updated with more specifics once more
-// information about Glic is available, with updated strings and policy details.
 constexpr net::NetworkTrafficAnnotationTag kGlicFrePreconnectTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("glic_fre_preconnect",
                                         R"(
     semantics {
-      sender: "Glic FRE Preconnect"
+      sender: "Gemini in Chrome"
       description:
-        "This request is issued when the Glic first-run experience is "
-        "predicted to be issued soon, to establish a connection to the "
+        "This request is issued when the Gemini in Chrome first-run experience "
+        "is predicted to be issued soon, to establish a connection to the "
         "server."
       trigger:
-        "Hovering or focusing the Glic button."
+        "Hovering or focusing the Gemini button."
       data:
         "Minimal data is exchanged, though this may share network state "
         "with credentialed requests."
@@ -481,23 +479,16 @@ constexpr net::NetworkTrafficAnnotationTag kGlicFrePreconnectTrafficAnnotation =
         "There are a number of ways to prevent this request:"
         "A) Disable predictive operations under Settings > Performance "
         "   > Preload pages for faster browsing and searching,"
-        "B) Disable Glic altogether"
+        "B) Disable Gemini in Chrome altogether"
       chrome_policy {
-        URLBlocklist {
-          URLBlocklist: { entries: '*' }
+        GeminiSettings {
+          GeminiSettings: 1
         }
-      }
-      chrome_policy {
-        URLAllowlist {
-          URLAllowlist { }
+        GenAiDefaultSettings {
+          GenAiDefaultSettings: 2
         }
       }
     }
-    comments:
-      "This feature can be safely disabled, but enabling it may result in "
-      "faster load of the Glic first-run experience. Using either "
-      "URLBlocklist or URLAllowlist policies (or a combination of both) "
-      "limits the scope of these requests."
 )");
 
 BASE_FEATURE(kGlicFrePreconnect, base::FEATURE_ENABLED_BY_DEFAULT);

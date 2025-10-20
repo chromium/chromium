@@ -15,7 +15,7 @@ namespace {
 constexpr net::NetworkTrafficAnnotationTag kGlicWebUITrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("glic_web_ui", R"(
     semantics {
-      sender: "Glic WebUI"
+      sender: "Gemini in Chrome"
       description:
         "This request is issued when signed-in user tries to access Gemini in "
         "Chrome after a consent was given before hand to use this feature "
@@ -63,7 +63,7 @@ constexpr net::NetworkTrafficAnnotationTag kGlicWebUITrafficAnnotation =
 constexpr net::NetworkTrafficAnnotationTag kGlicFreWebUITrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("glic_fre_web_ui", R"(
     semantics {
-      sender: "Glic FRE WebUI"
+      sender: "Gemini in Chrome"
       description:
         "Signed-in users who haven't already given consent to share page "
         "content will encounter a first-run experience the first time they try "
