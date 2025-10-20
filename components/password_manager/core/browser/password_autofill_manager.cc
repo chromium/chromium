@@ -488,6 +488,12 @@ void PasswordAutofillManager::DeleteFillData() {
 
 void PasswordAutofillManager::ShowSuggestions(
     const autofill::TriggeringField& field) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (password_client_->IsActorTaskActive()) {
+    // Disables password suggestions if actor is active on the tab.
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
   if (autofill::IsPasswordsAutofillManuallyTriggered(field.trigger_source)) {
     if (!manual_fallback_flow_) {
       manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(

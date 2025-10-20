@@ -238,6 +238,9 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
        base::OnceClosure confirmation_callback),
       (override));
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool, IsActorTaskActive, (), (override));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   MockPasswordManagerDriver driver_;
@@ -349,6 +352,9 @@ class PasswordAutofillManagerTest : public testing::Test {
 
     EXPECT_CALL(*client->mock_driver(), CanShowAutofillUi)
         .WillRepeatedly(Return(true));
+#if !BUILDFLAG(IS_ANDROID)
+    ON_CALL(*client, IsActorTaskActive).WillByDefault(Return(false));
+#endif  //! BUILDFLAG(IS_ANDROID)
   }
 
   autofill::PasswordFormFillData CreateTestFormFillData() {
@@ -857,6 +863,25 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnNonPasswordField) {
             autofill::AutofillSuggestionTriggerSource::kPasswordManager);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that the "Manage passwords" fallback shows up in non-password
+// fields of login forms.
+TEST_F(PasswordAutofillManagerTest, ActorActiveSuppressesDropdown) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  autofill::PasswordFormFillData data = CreateTestFormFillData();
+
+  password_autofill_manager_->OnAddPasswordFillData(data);
+
+  EXPECT_CALL(client, IsActorTaskActive).WillOnce(Return(true));
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions).Times(0);
+  autofill::TriggeringField field = kTriggeringField;
+  field.typed_username = test_username_;
+  password_autofill_manager_->ShowSuggestions(field);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillManagerTest,
        MaybeShowPasswordSuggestionsWithGenerationNoCredentials) {
   TestPasswordManagerClient client;
