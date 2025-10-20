@@ -39,13 +39,19 @@ HistorySignInState GetHistorySignInState(
                    : HistorySignInState::kSignInPendingNotSyncingTabs;
 
       case signin_util::SignedInState::kSignedIn:
+        return sync_service &&
+                       sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kTabs)
+                   ? HistorySignInState::kSignedInSyncingTabs
+                   : HistorySignInState::kSignedInNotSyncingTabs;
+
       case signin_util::SignedInState::kSyncing:
       case signin_util::SignedInState::kSyncPaused:
         return sync_service &&
                        sync_service->GetUserSettings()->GetSelectedTypes().Has(
                            syncer::UserSelectableType::kTabs)
                    ? HistorySignInState::kSignedInSyncingTabs
-                   : HistorySignInState::kSignedInNotSyncingTabs;
+                   : HistorySignInState::kSyncDisabled;
     }
   } else {
     // Note: This intentionally does not check whether the history data type is

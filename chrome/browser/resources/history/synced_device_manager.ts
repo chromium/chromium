@@ -404,8 +404,16 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent(
         'history-view-changed', {bubbles: true, composed: true}));
 
-    // User signed out, clear synced device list and show the sign in promo.
-    if (this.signInState === HistorySignInState.SIGNED_OUT) {
+    if (this.replaceSyncPromosWithSignInPromos_) {
+      // User signed out, syncing without tabs, or disabled sync in general =>
+      // clear synced device list.
+      if (this.signInState === HistorySignInState.SIGNED_OUT ||
+          this.signInState === HistorySignInState.SYNC_DISABLED) {
+        this.clearDisplayedSyncedDevices_();
+        return;
+      }
+    } else if (this.signInState === HistorySignInState.SIGNED_OUT) {
+      // User signed out, clear synced device list and show the sign in promo.
       this.clearDisplayedSyncedDevices_();
       return;
     }

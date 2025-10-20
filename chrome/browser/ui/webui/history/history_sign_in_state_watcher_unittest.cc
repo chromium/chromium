@@ -131,6 +131,22 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
             watcher.GetSignInState());
 }
 
+// Signing in to Chrome, with sync enabled but tabs sync disabled, should
+// result in a sync disabled state.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest,
+       SyncingWithoutTabsSyncIsSyncDisabled) {
+  const CoreAccountInfo account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSync);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_, base::DoNothing());
+  EXPECT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+}
+
 // Opting in to history should not change the state and trigger a notification.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        DoesNotNotifyOnEnablingHistorySync) {
