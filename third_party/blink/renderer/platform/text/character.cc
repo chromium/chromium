@@ -38,12 +38,15 @@
 #include <algorithm>
 
 #include "base/synchronization/lock.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -319,12 +322,38 @@ bool Character::IsEmojiComponent(UChar32 c) {
   return u_hasBinaryProperty(c, UCHAR_EMOJI_COMPONENT);
 }
 
+namespace {
+
+consteval bool MaybeEmojiPresentationForAscii(unsigned char ch) {
+  constexpr auto kCopyRightSign = 0xA9;
+  constexpr auto kRegisteredSign = 0xAE;
+  return ch == kCopyRightSign || ch == kRegisteredSign ||
+         Character::IsEmojiKeycapBase(ch);
+}
+
+template <std::size_t N, typename Function>
+consteval auto GenerateTable(Function&& f) {
+  std::array<bool, N> arr;
+  for (unsigned char i = 0; i < N; ++i) {
+    arr[i] = f(i);
+  }
+  return arr;
+}
+
+static const auto maybe_emoji_presentation_ascii =
+    GenerateTable<128>([](int i) { return MaybeEmojiPresentationForAscii(i); });
+
+}  // namespace
+
 bool Character::MaybeEmojiPresentation(UChar32 c) {
-  return c == uchar::kZeroWidthJoiner || c == 0x00A9 /* copyright sign */ ||
-         c == 0x00AE /* registered sign */ || IsEmojiKeycapBase(c) ||
-         IsInRange(c, 0x203C, 0x2B55) || c == uchar::kVariationSelector15 ||
-         c == 0x3030 || c == 0x303D || c == 0x3297 || c == 0x3299 ||
-         c == uchar::kVariationSelector16 || c >= 65536;
+  if (IsASCII(c)) [[likely]] {
+    return maybe_emoji_presentation_ascii[c];
+  }
+  // Non-ascii characters.
+  return c == uchar::kZeroWidthJoiner || IsInRange(c, 0x203C, 0x2B55) ||
+         c == uchar::kVariationSelector15 || c == 0x3030 || c == 0x303D ||
+         c == 0x3297 || c == 0x3299 || c == uchar::kVariationSelector16 ||
+         c >= 65536;
 }
 
 bool Character::IsCommonOrInheritedScript(UChar32 character) {
