@@ -166,6 +166,11 @@
   padding-inline-end: 8px;
   padding-inline-start: var(--cr-searchbox-match-text-padding-inline-start, 8px);
   white-space: nowrap;
+<if expr="is_win">
+  /* Unlike other platforms, the text in the WebUI omnibox popup appears 2px
+     lower than the Views omnibox. See http://crbug.com/452732795. */
+  transform: translateY(-2px);
+</if>
 }
 
 #suggestion {
