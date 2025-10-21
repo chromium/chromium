@@ -90,10 +90,6 @@ class NativeTheme;
 class ThemeProvider;
 }  // namespace ui
 
-namespace views {
-class Button;
-}  // namespace views
-
 namespace web_modal {
 class WebContentsModalDialogHost;
 }
@@ -455,9 +451,6 @@ class BrowserWindow : public ui::BaseWindow {
                                bool show_signin_button) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Returns the PageActionIconView for the Sharing Hub.
-  virtual views::Button* GetSharingHubIconButton() = 0;
-
   // Toggles the multitask menu on the browser frame size button.
   virtual void ToggleMultitaskMenu() = 0;
 #else

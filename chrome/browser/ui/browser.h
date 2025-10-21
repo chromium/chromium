@@ -104,10 +104,6 @@ namespace web_modal {
 class WebContentsModalDialogHost;
 }
 
-namespace views {
-class View;
-}
-
 // This enum is not a member of `Browser` so that it can be forward
 // declared in `unload_controller.h` to avoid circular includes.
 enum class BrowserClosingStatus {
@@ -776,7 +772,6 @@ class Browser : public TabStripModelObserver,
   UnloadController* GetUnloadControllerForTesting() {
     return &unload_controller_;
   }
-
 
   // BrowserWindowInterface overrides:
   Profile* GetProfile() override;

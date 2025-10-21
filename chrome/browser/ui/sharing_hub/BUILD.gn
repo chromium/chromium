@@ -10,6 +10,7 @@ assert(toolkit_views)
 source_set("sharing_hub") {
   sources = [
     "screenshot/screenshot_captured_bubble_controller.h",
+    "sharing_hub_bubble_controller.cc",
     "sharing_hub_bubble_controller.h",
     "sharing_hub_bubble_view.h",
   ]
@@ -44,6 +45,7 @@ source_set("impl") {
   if (is_chromeos) {
     sources += [ "sharing_hub_bubble_controller_chromeos_impl.cc" ]
     deps += [
+      "//chrome/browser/ui/views/interaction",
       "//components/services/app_service/",
       "//ui/views",
     ]

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
@@ -64,7 +65,8 @@ void SharingHubBubbleControllerChromeOsImpl::ShowBubble(
     return;
   }
   bubble_showing_ = true;
-  ShowSharesheet(browser->window()->GetSharingHubIconButton());
+  ShowSharesheet(BrowserElementsViews::From(browser)->GetViewAs<views::Button>(
+      kIconElementId));
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }

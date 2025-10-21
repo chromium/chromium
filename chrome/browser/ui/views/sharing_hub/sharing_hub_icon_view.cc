@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace sharing_hub {
 
@@ -61,6 +62,8 @@ SharingHubIconView::SharingHubIconView(
   SetVisible(false);
   SetLabel(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
+  SetProperty(views::kElementIdentifierKey,
+              SharingHubBubbleController::kIconElementId);
   SetUpForInOutAnimation();
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP));
