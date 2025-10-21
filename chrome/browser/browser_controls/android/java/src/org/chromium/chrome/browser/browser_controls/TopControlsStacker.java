@@ -34,6 +34,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     private static final String TAG = "TopControlsStacker";
 
+    private static boolean sDumpStatusForTesting;
+
     /** Enums that defines the types of top controls. */
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -317,6 +319,19 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()
                 || !ChromeFeatureList.sTopControlsRefactorV2.isEnabled()) return;
 
+        if (sDumpStatusForTesting) {
+            Log.d(
+                    TAG,
+                    "*** repositionLayers *** initialTopOffset="
+                            + initialTopOffset
+                            + " minHeightOffset="
+                            + initialTopControlsMinHeightOffset
+                            + " requestNewFrame="
+                            + requestNewFrame
+                            + " offsetsAppliedByBrowser="
+                            + offsetsAppliedByBrowser);
+        }
+
         // 1. Calculate the offset based on the current layer position. In this step, the controls
         // are classified into scrollable and non-scrollable layer, and all the layers are display
         // at its full height.
@@ -457,6 +472,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             }
 
             layer.onBrowserControlsOffsetUpdate(yOffset, controlsAtResting);
+
+            if (sDumpStatusForTesting) {
+                dumpLayerStatus(layer, yOffset);
+            }
         }
     }
 
@@ -662,5 +681,37 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                         + actualHeight
                         + " actualMinHeight= "
                         + actualMinHeight);
+    }
+
+    private void dumpLayerStatus(TopControlLayer layer, int yOffset) {
+        Log.d(
+                TAG,
+                "["
+                        + getName(layer.getTopControlType())
+                        + "] yOffset="
+                        + yOffset
+                        + " scrollType="
+                        + layer.getScrollBehavior()
+                        + " visibility="
+                        + layer.getTopControlVisibility());
+    }
+
+    private static String getName(@TopControlType int type) {
+        switch (type) {
+            case TopControlType.STATUS_INDICATOR:
+                return "STATUS_INDICATOR";
+            case TopControlType.TABSTRIP:
+                return "TAB_STRIP";
+            case TopControlType.TOOLBAR:
+                return "TOOLBAR";
+            case TopControlType.BOOKMARK_BAR:
+                return "BOOKMARK_BAR";
+            case TopControlType.HAIRLINE:
+                return "HAIRLINE";
+            case TopControlType.PROGRESS_BAR:
+                return "PROGRESS_BAR";
+        }
+        assert false : "Unknown TopControlType: " + type;
+        return "";
     }
 }
