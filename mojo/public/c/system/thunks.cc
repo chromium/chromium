@@ -38,7 +38,7 @@ MojoResult NotImplemented(const char* name) {
   }
 
   LOG(FATAL) << "Mojo has not been initialized in this process. You must call "
-             << "either mojo::core::Init() as an embedder.";
+             << "mojo::core::Init() as an embedder.";
 }
 
 }  // namespace
