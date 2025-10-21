@@ -133,6 +133,7 @@
 #include "net/base/port_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "partition_alloc/memory_reclaimer.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -1716,6 +1717,7 @@ void RenderThreadImpl::OnMemoryPressure(
       blink::WebMemoryPressureListener::OnPurgeMemory();
     }
   }
+  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 
 void RenderThreadImpl::OnRendererInterfaceReceiver(

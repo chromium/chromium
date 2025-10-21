@@ -8,7 +8,6 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
-#include "partition_alloc/memory_reclaimer.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/blink.h"
@@ -18,12 +17,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
-
-// Function defined in third_party/blink/public/web/blink.h.
-void DecommitFreeableMemory() {
-  CHECK(IsMainThread());
-  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
-}
 
 // static
 bool MemoryPressureListenerRegistry::is_low_end_device_ = false;
@@ -97,14 +90,12 @@ void MemoryPressureListenerRegistry::OnMemoryPressure(
   CHECK(IsMainThread());
   for (auto& client : clients_)
     client->OnMemoryPressure(level);
-  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 
 void MemoryPressureListenerRegistry::OnPurgeMemory() {
   CHECK(IsMainThread());
   for (auto& client : clients_)
     client->OnPurgeMemory();
-  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 
 void MemoryPressureListenerRegistry::Trace(Visitor* visitor) const {

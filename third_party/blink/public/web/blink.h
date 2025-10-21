@@ -100,10 +100,6 @@ BLINK_EXPORT bool FontAntialiasingEnabledForTest();
 // https://crbug.com/735854). |reloadPages| is unsupported and must be false.
 BLINK_EXPORT void ResetPluginCache(bool reload_pages = false);
 
-// The embedder should call this periodically in an attempt to balance overall
-// performance and memory usage.
-BLINK_EXPORT void DecommitFreeableMemory();
-
 // Send memory pressure notification to isolates.
 // This should be use as last resort only to prevent an OOM. Avoid using this
 // as a general way of reducing memory footprint.
