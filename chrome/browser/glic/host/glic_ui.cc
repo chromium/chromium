@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -27,6 +28,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/glic_fre_resources.h"
+#include "chrome/grit/glic_fre_resources_map.h"
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -86,6 +89,10 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
   ConfigureSharedWebUISource(*source);
+
+  for (const auto& resource : kGlicFreResources) {
+    source->AddResourcePath(base::StrCat({"fre/", resource.path}), resource.id);
+  }
 
   // Add localized strings.
   source->AddLocalizedStrings(kStrings);
@@ -179,6 +186,20 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   }
   source->AddString("adminBlockedRedirectPatterns",
                     admin_blocked_redirect_patterns);
+
+  source->AddString(
+      "glicFreURL",
+      GetFreURL(Profile::FromBrowserContext(browser_context)).spec());
+  source->AddBoolean("isUnifiedFre",
+                     GlicEnabling::IsUnifiedFreEnabled(
+                         Profile::FromBrowserContext(browser_context)));
+  source->AddBoolean("shouldShowFre",
+                     !GlicEnabling::HasConsentedForProfile(
+                         Profile::FromBrowserContext(browser_context)));
+  source->AddInteger("reloadMaxLoadingTimeMs",
+                     features::kGlicReloadMaxLoadingTimeMs.Get());
+  source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(
+                                          features::kGlicCaaGuestError));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

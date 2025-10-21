@@ -156,6 +156,7 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
     ASSERT_TRUE(fre_server_.InitializeAndListen());
 
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
+    SetGlicFreUrlOverride(fre_url_);
 
     GlicFreControllerUiTestBase::SetUp();
   }
@@ -332,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
       InstrumentNonTabWebView(test::kGlicFreHostElementId,
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
-                                         {"#errorPanel:not([hidden])"})));
+                                         {"#freErrorPanel:not([hidden])"})));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
       InstrumentNonTabWebView(test::kGlicFreHostElementId,
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
-                                         {"#errorPanel:not([hidden])"})));
+                                         {"#freErrorPanel:not([hidden])"})));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
@@ -420,6 +421,7 @@ class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
     ASSERT_TRUE(fre_server_.InitializeAndListen());
 
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
+    SetGlicFreUrlOverride(fre_url_);
 
     GlicFreControllerUiTestBase::SetUp();
   }
@@ -446,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHttpErrorTest,
       InstrumentNonTabWebView(test::kGlicFreHostElementId,
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
-                                         {"#errorPanel:not([hidden])"})));
+                                         {"#freErrorPanel:not([hidden])"})));
 }
 
 class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTestBase {
@@ -501,6 +503,7 @@ class GlicFreControllerRedirectTest : public GlicFreControllerUiTestBase,
 
     fre_url_ = fre_server_.GetURL(
         base::StrCat({"/server-redirect-302?", admin_url.spec()}));
+    SetGlicFreUrlOverride(fre_url_);
 
     destination_url_ =
         fre_server_.GetURL("/echo").ReplaceComponents(replacements);
@@ -552,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
       InstrumentNonTabWebView(test::kGlicFreHostElementId,
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
-                                         {"#errorPanel:not([hidden])"})));
+                                         {"#freErrorPanel:not([hidden])"})));
 }
 
 // TODO(crbug.com/427261741#comment11) Test is flaky on all platforms.
@@ -666,12 +669,12 @@ IN_PROC_BROWSER_TEST_P(GlicFreControllerRedirectTest, AccessDeniedAdmin) {
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(
           WaitForElementVisible(test::kGlicFreHostElementId,
-                                {"#disabledByAdminPanel:not([hidden])"})),
+                                {"#freDisabledByAdminPanel:not([hidden])"})),
       CheckTabCount(1),
-      InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
-                                         {"#disabledByAdminPanel .notice a"})),
+      InAnyContext(WaitForElementVisible(
+          test::kGlicFreHostElementId, {"#freDisabledByAdminPanel .notice a"})),
       InAnyContext(ClickElement(test::kGlicFreHostElementId,
-                                {"#disabledByAdminPanel .notice a"})),
+                                {"#freDisabledByAdminPanel .notice a"})),
       InAnyContext(Do([&]() {
         EXPECT_EQ(user_action_tester().GetActionCount(
                       "Glic.Fre.DisabledByAdminPanelLinkClicked"),

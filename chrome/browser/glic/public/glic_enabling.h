@@ -208,6 +208,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   base::CallbackListSubscription RegisterOnShowSettingsPageChanged(
       ShowSettingsPageChangedCallback callback);
 
+  using ProfileReadyStateChangedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription RegisterProfileReadyStateChanged(
+      ProfileReadyStateChangedCallback callback);
+
  private:
   void OnGlicSettingsPolicyChanged();
 
@@ -245,6 +249,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
       base::RepeatingCallbackList<void()>;
   OnShowSettingsPageChangeCallbackList
       show_settings_page_changed_callback_list_;
+  using ProfileReadyStateChangedCallbackList =
+      base::RepeatingCallbackList<void()>;
+  ProfileReadyStateChangedCallbackList
+      profile_ready_state_changed_callback_list_;
   PrefChangeRegistrar pref_registrar_;
   std::unique_ptr<GlicUserStatusFetcher> glic_user_status_fetcher_;
   base::ScopedObservation<signin::IdentityManager,

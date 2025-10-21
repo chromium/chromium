@@ -81,7 +81,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   Host& host() { return *host_; }
 
  private:
-  void AllowedChanged();
+  void UpdateProfileReadyState();
+
   GlicKeyedService* GetGlicService();
 
   // HostManager keeps the host alive while GlicPageHandler is alive.

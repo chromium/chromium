@@ -1683,9 +1683,10 @@ GlicPageHandler::GlicPageHandler(
       page_(std::move(page)) {
   host_ = GetGlicService()->host_manager().WebUIPageHandlerAdded(this);
   subscriptions_.push_back(
-      GetGlicService()->enabling().RegisterAllowedChanged(base::BindRepeating(
-          &GlicPageHandler::AllowedChanged, base::Unretained(this))));
-  AllowedChanged();
+      GetGlicService()->enabling().RegisterProfileReadyStateChanged(
+          base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
+                              base::Unretained(this))));
+  UpdateProfileReadyState();
 }
 
 GlicPageHandler::~GlicPageHandler() {
@@ -1792,7 +1793,7 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
   host().WebUiStateChanged(this, new_state);
 }
 
-void GlicPageHandler::AllowedChanged() {
+void GlicPageHandler::UpdateProfileReadyState() {
   page_->SetProfileReadyState(GlicEnabling::GetProfileReadyState(
       Profile::FromBrowserContext(browser_context_)));
 }

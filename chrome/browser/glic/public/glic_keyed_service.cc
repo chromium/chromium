@@ -246,18 +246,20 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
     glic_profile_manager->SetActiveGlic(this);
   }
 
-  // Show the FRE if not yet completed, and if we have a browser to use.
-  if (fre_controller_->ShouldShowFreDialog()) {
-    Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
-    if (!fre_controller_->CanShowFreDialog(browser)) {
-      // If the FRE is blocked because it is already showing, we should instead
-      // dismiss it. This allows the glic button to be used to toggle the
-      // presence of the FRE.
-      fre_controller_->DismissFreIfOpenOnActiveTab(browser);
+  if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {
+    // Show the FRE if not yet completed, and if we have a browser to use.
+    if (fre_controller_->ShouldShowFreDialog()) {
+      Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+      if (!fre_controller_->CanShowFreDialog(browser)) {
+        // If the FRE is blocked because it is already showing, we should
+        // instead dismiss it. This allows the glic button to be used to toggle
+        // the presence of the FRE.
+        fre_controller_->DismissFreIfOpenOnActiveTab(browser);
+        return;
+      }
+      fre_controller_->ShowFreDialog(browser, source);
       return;
     }
-    fre_controller_->ShowFreDialog(browser, source);
-    return;
   }
 
   window_controller().Toggle(bwi ? bwi : GetActiveGlicEligibleBrowser(profile_),

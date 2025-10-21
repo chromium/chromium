@@ -21,9 +21,13 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
@@ -192,8 +196,9 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
     return ExecuteJs(test::kGlicHostElementId,
                      base::StringPrintf(R"(
         function () {
-          window.appController.simulateNoConnection = %s;
-          window.appController.%s();
+          const controller = window.appRouter.glicController;
+          controller.simulateNoConnection = %s;
+          controller.%s();
         }
       )",
                                         base::ToString(!online),
@@ -727,6 +732,135 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, AccessDeniedAdminWithoutLink) {
                                      "by-admin-link) .without-link"})),
       InAnyContext(EnsureNotVisible(test::kGlicHostElementId,
                                     {"#disabledByAdminPanel a"})));
+}
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGlicFreInnerContentsElementId);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kControllerIsShowingState);
+
+class GlicUiUnifiedFreIntegrationTest : public GlicUiInteractiveUiTestBase {
+ public:
+  GlicUiUnifiedFreIntegrationTest()
+      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {
+    feature_list_.InitAndEnableFeature(features::kGlicUnifiedFreScreen);
+  }
+  ~GlicUiUnifiedFreIntegrationTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("glic.test", "127.0.0.1");
+    GlicUiInteractiveUiTestBase::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    browser()->profile()->GetPrefs()->SetInteger(
+        glic::prefs::kGlicCompletedFre,
+        static_cast<int>(glic::prefs::FreStatus::kNotStarted));
+  }
+
+  const DeepQuery kFreContainer = {"#fre-app-container"};
+  const DeepQuery kGlicContainer = {"#glic-app-container"};
+  const DeepQuery kGlicGuestPanel = {"#glic-app-container", "#guestPanel"};
+
+  const DeepQuery kMockFreClientNoThanksButton = {"#noThanks"};
+  const DeepQuery kMockFreClientContinueButton = {"#continue"};
+
+  auto InstrumentFreWebview() {
+    return Steps(InAnyContext(WaitForElementVisible(
+                     test::kGlicHostElementId,
+                     {"#fre-app-container", "#freGuestFrame"})),
+                 InAnyContext(InstrumentInnerWebContents(
+                     kGlicFreInnerContentsElementId, test::kGlicHostElementId,
+                     0)));  // Index 0 for the FRE webview
+  }
+
+  auto ClickFreWebviewElement(const DeepQuery& where) {
+    return InAnyContext(ClickElement(kGlicFreInnerContentsElementId, where));
+  }
+
+  auto CheckElementHidden(const DeepQuery& query, bool hidden = true) {
+    return CheckJsResultAt(test::kGlicHostElementId, query, "(el) => el.hidden",
+                           hidden);
+  }
+
+ protected:
+  net::EmbeddedTestServer glic_server_;
+  GURL fre_url_;
+  GURL glic_guest_url_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest, ShowsFreInsteadOfGlic) {
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, GetHost()),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+      CheckState(kGlicUiStateHistory, IsNotCurrently(WebUiState::kReady)),
+      CheckElementVisible(kFreContainer, true),
+      CheckElementVisible(kGlicContainer, false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest,
+                       AcceptFreTransitionsToGlic) {
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, GetHost()),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+
+      InstrumentFreWebview(),
+      WaitForElementVisible(kGlicFreInnerContentsElementId,
+                            kMockFreClientContinueButton),
+      ClickFreWebviewElement(kMockFreClientContinueButton),
+      InAnyContext(
+          WaitForElementVisible(test::kGlicHostElementId, kGlicContainer)),
+      InAnyContext(CheckElementHidden(kFreContainer, true)),
+      InAnyContext(
+          WaitForElementVisible(test::kGlicHostElementId, kGlicGuestPanel)),
+      CheckResult(
+          [this]() {
+            return static_cast<glic::prefs::FreStatus>(
+                browser()->profile()->GetPrefs()->GetInteger(
+                    glic::prefs::kGlicCompletedFre));
+          },
+          glic::prefs::FreStatus::kCompleted),
+      WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)),
+      CheckControllerShowing(true));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest, RejectFreClosesPanel) {
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, GetHost()),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+      WaitForElementVisible(test::kGlicHostElementId, kFreContainer),
+
+      InAnyContext(InstrumentFreWebview()),
+      WaitForElementVisible(kGlicFreInnerContentsElementId,
+                            kMockFreClientNoThanksButton),
+      InAnyContext(ClickElement(kGlicFreInnerContentsElementId,
+                                kMockFreClientNoThanksButton)
+                       .SetMustRemainVisible(false)),
+      WaitForHide(kGlicViewElementId),
+      PollState(kControllerIsShowingState,
+                [this]() { return GetWindowControllerImpl().IsShowing(); }),
+      WaitForState(kControllerIsShowingState, false),
+      CheckControllerShowing(false),
+      CheckResult(
+          [this]() {
+            return static_cast<glic::prefs::FreStatus>(
+                browser()->profile()->GetPrefs()->GetInteger(
+                    glic::prefs::kGlicCompletedFre));
+          },
+          glic::prefs::FreStatus::kNotStarted));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest,
+                       DismissFreWithEscClosesPanel) {
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, GetHost()),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+      WaitForElementVisible(test::kGlicHostElementId, kFreContainer),
+      InAnyContext(SendAccelerator(test::kGlicHostElementId, escape_key)
+                       .SetMustRemainVisible(false)),
+      WaitForHide(kGlicViewElementId), CheckControllerShowing(false));
 }
 
 }  // namespace glic

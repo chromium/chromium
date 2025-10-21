@@ -241,6 +241,11 @@ base::CallbackListSubscription GlicEnabling::RegisterOnShowSettingsPageChanged(
   return show_settings_page_changed_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription GlicEnabling::RegisterProfileReadyStateChanged(
+    ProfileReadyStateChangedCallback callback) {
+  return profile_ready_state_changed_callback_list_.Add(std::move(callback));
+}
+
 void GlicEnabling::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   UpdateEnabledStatus();
@@ -288,11 +293,13 @@ void GlicEnabling::UpdateEnabledStatus() {
   }
   enable_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();
+  profile_ready_state_changed_callback_list_.Notify();
 }
 
 void GlicEnabling::UpdateConsentStatus() {
   consent_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();
+  profile_ready_state_changed_callback_list_.Notify();
 }
 
 }  // namespace glic

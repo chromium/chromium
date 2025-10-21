@@ -75,7 +75,7 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddLocalizedStrings(kStrings);
 
   // Add parameterized admin notice string.
-  source->AddString("disabledByAdminNotice",
+  source->AddString("disabledByAdminNoticeWithLink",
                     l10n_util::GetStringFUTF16(
                         IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_WITH_LINK,
                         base::UTF8ToUTF16(features::kGlicCaaLinkUrl.Get()),

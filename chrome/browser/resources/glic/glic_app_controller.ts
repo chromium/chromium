@@ -5,9 +5,8 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxyImpl} from './browser_proxy.js';
 import {PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
-import type {PageInterface} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {PageType, WebviewDelegate} from './webview.js';
@@ -97,8 +96,7 @@ export enum LoadingStage {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:LoadingStage,//tools/metrics/histograms/metadata/glic/histograms.xml:LoadingStage)
 
-export class GlicAppController implements PageInterface, WebviewDelegate,
-                                          ApiHostEmbedder {
+export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   loadingTimer: number|undefined;
 
   // This is used to simulate no connection for tests.
@@ -135,8 +133,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
 
   browserProxy: BrowserProxyImpl;
 
-  constructor() {
-    this.browserProxy = new BrowserProxyImpl(this);
+  constructor(browserProxy: BrowserProxyImpl) {
+    this.browserProxy = browserProxy;
 
     window.addEventListener('online', () => {
       this.online();

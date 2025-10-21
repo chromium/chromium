@@ -986,6 +986,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   // a disabled feature.
   const char* script = R"js(
 (()=>{
+  const appController = appRouter.glicController;
   if (!appController.webview.host.handler.getModelQualityClientId) {
     return "Method not found";
   }

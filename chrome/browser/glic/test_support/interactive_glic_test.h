@@ -188,6 +188,9 @@ class InteractiveGlicTestMixin : public T {
     guest_url_ = Test::embedded_test_server()->GetURL(path.str());
     command_line->AppendSwitchASCII(::switches::kGlicGuestURL,
                                     guest_url_.spec());
+    GURL fre_url = glic_fre_url_.value_or(
+        Test::embedded_test_server()->GetURL("/glic/test_client/fre.html"));
+    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url.spec());
     LOG(INFO) << "InteractiveGlicTest: done setting up";
   }
 
@@ -749,6 +752,8 @@ class InteractiveGlicTestMixin : public T {
     return guest_url_;
   }
 
+  void SetGlicFreUrlOverride(const GURL& url) { glic_fre_url_ = url; }
+
   // `InteractiveGlicTestMixin` is configured to operate a single browser, but
   // it can change which browser it operates. This changes the browser to be
   // used in functions of `InteractiveGlicTestMixin`.
@@ -867,6 +872,7 @@ class InteractiveGlicTestMixin : public T {
   std::optional<int> glic_instance_tab_index_ = 0;
   std::optional<tabs::TabInterface::Handle> glic_instance_tab_handle_;
   bool track_floating_glic_instance_ = false;
+  std::optional<GURL> glic_fre_url_;
 
   base::WeakPtr<Browser> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
