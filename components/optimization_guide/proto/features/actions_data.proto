@@ -171,9 +171,15 @@ message NavigateAction {
 }
 
 // Wait action waits the specified milliseconds.
-// Next ID: 2
+// Next ID: 3
 message WaitAction {
   int32 wait_time_ms = 1 [features = { field_presence: EXPLICIT }];
+
+  // If provided, the given tab will be included in the returned observations
+  // (along with tabs in the actuating set), regardless of whether the tab is in
+  // the actuating set. This will not cause the tab to be added to the actuating
+  // set.
+  int32 observe_tab_id = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Navigate the page Back action.
