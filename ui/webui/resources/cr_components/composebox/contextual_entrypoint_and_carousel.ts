@@ -378,7 +378,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected onDeepSearchClick_() {
-    if (!this.realboxLayoutMode) {
+    if (this.entrypointName !== 'Realbox') {
       this.showContextMenuDescription_ = !this.showContextMenuDescription_;
       this.inputsDisabled_ = !this.inputsDisabled_;
       this.inDeepSearchMode_ = !this.inDeepSearchMode_;
@@ -388,7 +388,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected onCreateImageClick_() {
-    if (!this.realboxLayoutMode) {
+    if (this.entrypointName !== 'Realbox') {
       this.showContextMenuDescription_ = !this.showContextMenuDescription_;
       this.inCreateImageMode_ = !this.inCreateImageMode_;
       if (this.hasImageFiles()) {

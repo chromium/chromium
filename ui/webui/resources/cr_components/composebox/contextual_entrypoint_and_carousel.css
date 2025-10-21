@@ -17,7 +17,7 @@
   padding-inline-start: var(--context-carousel-inline-start-spacing, 50px);
 }
 
-#contextMenuContainer {
+.context-menu-container {
   align-items: center;
   display: flex;
   gap: 4px;
@@ -27,6 +27,10 @@
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
   padding-inline-end: 8px;
+}
+
+#toolChipsContainer {
+  padding-inline-start: 16px;
 }
 
 #uploadContainer {

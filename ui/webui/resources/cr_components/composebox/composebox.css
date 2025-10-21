@@ -632,6 +632,11 @@
   margin-top: -48px;
 }
 
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"])
+    #context::part(tool-chips-container) {
+  padding-top: 6px;
+}
+
 :host([expanded_][show-dropdown_][ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) ntp-composebox-dropdown {
   padding-bottom: 0;
   padding-top: 8px;
