@@ -197,6 +197,7 @@ class NtpRealboxNextFieldTrialBrowserTest : public NtpFieldTrialBrowserTest {
     std::vector<base::test::FeatureRef> disabled_features;
     const auto feature = std::get<5>(GetParam());
     if (feature) {
+      enabled_features.push_back(ntp_composebox::kNtpComposebox);
       enabled_features.push_back(ntp_realbox::kNtpRealboxNext);
     } else {
       disabled_features.push_back(ntp_realbox::kNtpRealboxNext);
