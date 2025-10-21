@@ -4109,46 +4109,49 @@ public class ChromeTabbedActivity extends ChromeActivity {
         //
         // If the runnable doesn't run before the Activity dies, Chrome won't crash but the tab
         // won't be closed (crbug.com/587565).
+        if (MinimizeAppAndCloseTabBackPressHandler.supportCloseTabUponMinimization()) {
+            // TODO(crbug.com/450560278): closing the tab synchronously may introduce visual jank.
+            // Might require improvements.
+            closeTabUponMinimizationInternalSync(tabToClose);
+            return;
+        }
         mHandler.postDelayed(
-                () -> {
-                    if (mTabModelSelector == null
-                            || tabToClose.isClosing()
-                            || tabToClose.isDestroyed()) {
-                        return;
-                    }
-
-                    final TabModel currentModel = mTabModelSelector.getCurrentModel();
-                    final TabModel tabToCloseModel =
-                            mTabModelSelector.getModel(tabToClose.isIncognito());
-                    if (currentModel != tabToCloseModel) {
-                        // This seems improbable; however, crbug/1463397 suggests otherwise. If
-                        // this happens, remain on the current tab and close the tab in the
-                        // other model.
-                        tabToCloseModel
-                                .getTabRemover()
-                                .closeTabs(
-                                        TabClosureParams.closeTab(tabToClose)
-                                                .uponExit(true)
-                                                .allowUndo(false)
-                                                .build(),
-                                        /* allowDialog= */ false);
-                        return;
-                    }
-
-                    Tab nextTab =
-                            currentModel.getNextTabIfClosed(
-                                    tabToClose.getId(), /* uponExit= */ true);
-                    tabToCloseModel
-                            .getTabRemover()
-                            .closeTabs(
-                                    TabClosureParams.closeTab(tabToClose)
-                                            .recommendedNextTab(nextTab)
-                                            .uponExit(true)
-                                            .allowUndo(false)
-                                            .build(),
-                                    /* allowDialog= */ false);
-                },
+                () -> closeTabUponMinimizationInternalSync(tabToClose),
                 CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
+    }
+
+    private void closeTabUponMinimizationInternalSync(@NonNull Tab tabToClose) {
+        if (mTabModelSelector == null || tabToClose.isClosing() || tabToClose.isDestroyed()) {
+            return;
+        }
+
+        final TabModel currentModel = mTabModelSelector.getCurrentModel();
+        final TabModel tabToCloseModel = mTabModelSelector.getModel(tabToClose.isIncognito());
+        if (currentModel != tabToCloseModel) {
+            // This seems improbable; however, crbug/1463397 suggests otherwise. If
+            // this happens, remain on the current tab and close the tab in the
+            // other model.
+            tabToCloseModel
+                    .getTabRemover()
+                    .closeTabs(
+                            TabClosureParams.closeTab(tabToClose)
+                                    .uponExit(true)
+                                    .allowUndo(false)
+                                    .build(),
+                            /* allowDialog= */ false);
+            return;
+        }
+
+        Tab nextTab = currentModel.getNextTabIfClosed(tabToClose.getId(), /* uponExit= */ true);
+        tabToCloseModel
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(tabToClose)
+                                .recommendedNextTab(nextTab)
+                                .uponExit(true)
+                                .allowUndo(false)
+                                .build(),
+                        /* allowDialog= */ false);
     }
 
     @Override
