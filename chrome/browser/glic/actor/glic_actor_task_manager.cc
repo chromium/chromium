@@ -43,9 +43,14 @@ void GlicActorTaskManager::CreateTask(
         base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
     return;
   }
-  actor::TaskId task_id = actor_keyed_service_->CreateTaskWithOptions(
+
+  if (current_task_id_) {
+    StopActorTask(current_task_id_, /*success=*/false);
+  }
+
+  current_task_id_ = actor_keyed_service_->CreateTaskWithOptions(
       std::move(options), std::move(delegate));
-  std::move(callback).Run(task_id.value());
+  std::move(callback).Run(current_task_id_.value());
 }
 
 void GlicActorTaskManager::PerformActionsFinished(
@@ -150,6 +155,15 @@ void GlicActorTaskManager::PerformActions(
 void GlicActorTaskManager::StopActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskStopReason stop_reason) {
+  const bool success = stop_reason == mojom::ActorTaskStopReason::kTaskComplete;
+  StopActorTask(task_id, success);
+}
+
+void GlicActorTaskManager::StopActorTask(actor::TaskId task_id, bool success) {
+  if (current_task_id_ == task_id) {
+    current_task_id_ = actor::TaskId();
+  }
+
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsStopped()) {
     actor_keyed_service_->GetJournal().Log(
@@ -160,8 +174,6 @@ void GlicActorTaskManager::StopActorTask(
             .Build());
     return;
   }
-
-  const bool success = stop_reason == mojom::ActorTaskStopReason::kTaskComplete;
 
   actor_keyed_service_->StopTask(task->id(), success);
 }
