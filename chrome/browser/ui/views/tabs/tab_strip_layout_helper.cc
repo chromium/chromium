@@ -251,7 +251,7 @@ TabStripLayoutHelper::CalculateIdealBounds(std::optional<int> available_width) {
           : std::nullopt;
   const std::optional<int> active_split_tab_slot_index =
       active_tab_slot_index.has_value()
-          ? GetAdjacentSplitTab(active_tab_model_index.value())
+          ? GetAdjacentSplitTab(active_tab_slot_index.value())
           : std::nullopt;
   const int pinned_tab_count = GetPinnedTabCount();
   const std::optional<int> last_pinned_tab_slot_index =
@@ -401,16 +401,17 @@ int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
 }
 
 std::optional<int> TabStripLayoutHelper::GetAdjacentSplitTab(
-    int tab_index) const {
+    int slot_index) const {
   const std::optional<split_tabs::SplitTabId> split_id =
-      slots_[tab_index].view->split();
+      slots_[slot_index].view->split();
   if (!split_id.has_value()) {
     return std::nullopt;
-  } else if (tab_index > 0 && slots_[tab_index - 1].view->split() == split_id) {
-    return tab_index - 1;
-  } else if (tab_index < static_cast<int>(slots_.size()) - 1 &&
-             slots_[tab_index + 1].view->split() == split_id) {
-    return tab_index + 1;
+  } else if (slot_index > 0 &&
+             slots_[slot_index - 1].view->split() == split_id) {
+    return slot_index - 1;
+  } else if (slot_index < static_cast<int>(slots_.size()) - 1 &&
+             slots_[slot_index + 1].view->split() == split_id) {
+    return slot_index + 1;
   }
   return std::nullopt;
 }

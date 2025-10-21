@@ -141,9 +141,9 @@ class TabStripLayoutHelper {
   // in `slots_`.
   int GetSlotIndexForGroupHeader(tab_groups::TabGroupId group) const;
 
-  // If the tab at `index` is split, returns the index of the adjacent split
-  // tab. Otherwise returns `std::nullopt`.
-  std::optional<int> GetAdjacentSplitTab(int index) const;
+  // If the tab at `slot_index` is split, returns the index of the adjacent
+  // split tab. Otherwise returns `std::nullopt`.
+  std::optional<int> GetAdjacentSplitTab(int slot_index) const;
 
   // True iff the slot at index `i` is a tab that is in a collapsed group.
   bool SlotIsCollapsedTab(int i) const;
