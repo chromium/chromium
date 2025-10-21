@@ -70,7 +70,6 @@ const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
     "ntp-app", "setup-list-module-wrapper", "setup-list"};
 const InteractiveBrowserTestApi::DeepQuery kPathToSetupListFirstItem =
     kPathToSetupList + "setup-list-item";
-constexpr char kActionIconId[] = "#actionIcon";
 constexpr char kPromoTextId[] = "#bodyText";
 constexpr char kPromoIconId[] = "#bodyIcon";
 constexpr char kSignInIconName[] = "account_circle";
@@ -269,10 +268,6 @@ class NtpPromoUiTest
     return steps;
   }
 
-  auto GetActionButtonPath() const {
-    return GetFirstPromoPath() + kActionIconId;
-  }
-
   auto GetPromoIconPath() const { return GetFirstPromoPath() + kPromoIconId; }
 
   auto WaitForPromoIcon(std::string_view expected_icon) {
@@ -292,17 +287,9 @@ class NtpPromoUiTest
       case Eligibility::kEligible:
         steps += WaitForPromoIcon(std::string("ntp-promo:") +
                                   std::string(expected_icon));
-        steps +=
-            WaitForAndScrollToElement(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kCompleted:
         steps += WaitForPromoIcon("cr:check");
-        if (GetParam().promo_type == NtpBrowserPromoType::kSimple) {
-          steps += EnsureNotPresent(kNtpElementId, GetActionButtonPath());
-        } else {
-          steps +=
-              WaitForAndScrollToElement(kNtpElementId, GetActionButtonPath());
-        }
         break;
       case Eligibility::kIneligible:
         NOTREACHED();
@@ -319,8 +306,8 @@ class NtpPromoUiTest
         .AddDescriptionPrefix(__func__);
   }
 
-  auto PressActionButton() {
-    auto steps = ClickElement(kNtpElementId, GetActionButtonPath());
+  auto ClickPromo() {
+    auto steps = ClickElement(kNtpElementId, GetPromoIconPath());
     AddDescriptionPrefix(steps, __func__);
     return steps;
   }
@@ -404,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
       VerifyTestPromoText(),
       // As before, because the click and the event are sent asynchronously,
       // run these in parallel.
-      InParallel(RunSubsequence(PressActionButton()),
+      InParallel(RunSubsequence(ClickPromo()),
                  RunSubsequence(WaitForEvent(kBrowserViewElementId,
                                              kTestPromoClickedEvent))),
       // Verify that the correct histogram was recorded.
@@ -497,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
       PollViewProperty(kLocationBarTextValue, kOmniboxElementId,
                        &OmniboxViewViews::GetText),
       // Click the promo button; this should navigate the current page.
-      PressActionButton(),
+      ClickPromo(),
       WaitForState(kLocationBarTextValue,
                    OptionalStringContains(u"accounts.google.com")),
       // The NTP tab should navigate, rather than opening a new tab.
@@ -521,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
       PollViewProperty(kLocationBarTextValue, kOmniboxElementId,
                        &OmniboxViewViews::GetText),
       // Click the promo button; this should navigate the current page.
-      PressActionButton(),
+      ClickPromo(),
       // Note that the URL here may not match what users see, due to redirects.
       WaitForState(kLocationBarTextValue, OptionalStringContains(u"webstore")),
       // The NTP tab should navigate, rather than opening a new tab.
@@ -537,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
       WaitForPromoVisible(Eligibility::kEligible, kCustomizationIconName),
-      PressActionButton(), WaitForShow(kSidePanelElementId));
+      ClickPromo(), WaitForShow(kSidePanelElementId));
 
   // TODD(https://crbug.com/433607240): Check model, histograms.
 }
