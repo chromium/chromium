@@ -37,14 +37,6 @@ const bool kUsePropCodecs = false;
 // all cases except for when paired with the Opus codec.
 const char kTestMimeType[] = "foo/foo";
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-// HLS is supported on Android API level 14 and higher and Chrome supports
-// API levels 15 and higher, so HLS is always supported on Android.
-const bool kHlsSupported = true;
-#else
-const bool kHlsSupported = false;
-#endif
-
 // Helper method for creating a multi-value vector of |kTestStates| if
 // |test_all_values| is true or if false, a single value vector containing
 // |single_value|.
@@ -139,6 +131,13 @@ static bool HasIamfSupport() {
 }
 
 TEST(MimeUtilTest, CommonMediaMimeType) {
+  const bool kHlsSupported =
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+      base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
+#else
+      false;
+#endif
+
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/webm"));
   EXPECT_TRUE(IsSupportedMediaMimeType("video/webm"));
 
@@ -644,6 +643,13 @@ TEST(IsCodecSupportedOnAndroidTest, HEVCSupport) {
 #endif
 
 TEST(IsCodecSupportedOnAndroidTest, AndroidHLSAAC) {
+  const bool kHlsSupported =
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+      base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
+#else
+      false;
+#endif
+
   const std::string hls_mime_types[] = {"application/x-mpegurl",
                                         "application/vnd.apple.mpegurl",
                                         "audio/mpegurl", "audio/x-mpegurl"};

@@ -1051,14 +1051,7 @@ BASE_FEATURE(kUseAudioManagerMaxChannelLayout,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-BASE_FEATURE(kBuiltInHlsPlayer,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
+BASE_FEATURE(kBuiltInHlsPlayer, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.

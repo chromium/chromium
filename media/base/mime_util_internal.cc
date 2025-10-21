@@ -398,26 +398,14 @@ void MimeUtil::AddSupportedMediaFormats() {
   video_3gpp_codecs.emplace(H264);
   AddContainerWithCodecs("video/3gpp", video_3gpp_codecs);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  bool can_play_hls = false;
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  can_play_hls = true;
-#endif
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  can_play_hls |= base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
-#endif
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (can_play_hls) {
+  if (base::FeatureList::IsEnabled(kBuiltInHlsPlayer)) {
     // HTTP Live Streaming (HLS).
-    CodecSet hls_codecs{H264,
-                        // TODO(ddorwin): Is any MP3 codec string variant
-                        // included in real queries?
-                        MP3,
-                        // Android HLS only supports MPEG4_AAC (missing demuxer
-                        // support for MPEG2_AAC)
-                        MPEG4_AAC};
+    CodecSet hls_codecs{
+        H264,
+        MP3,
+        MPEG4_AAC,
+    };
     AddContainerWithCodecs("application/x-mpegurl", hls_codecs);
     AddContainerWithCodecs("application/vnd.apple.mpegurl", hls_codecs);
     AddContainerWithCodecs("audio/mpegurl", hls_codecs);
@@ -426,7 +414,7 @@ void MimeUtil::AddSupportedMediaFormats() {
     // https://crbug.com/675552 for details and examples.
     AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
   }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
