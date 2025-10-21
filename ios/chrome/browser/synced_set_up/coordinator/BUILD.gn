@@ -7,11 +7,17 @@ source_set("coordinator") {
     "synced_set_up_coordinator.h",
     "synced_set_up_coordinator.mm",
     "synced_set_up_coordinator_delegate.h",
+    "synced_set_up_mediator.h",
+    "synced_set_up_mediator.mm",
   ]
 
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 
-  deps = [ "//ios/chrome/app" ]
+  deps = [
+    "//base",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//ios/chrome/app",
+  ]
 
   frameworks = [ "Foundation.framework" ]
 }
