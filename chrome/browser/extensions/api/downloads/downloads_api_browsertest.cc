@@ -983,6 +983,15 @@ class HTML5FileWriter {
 
 }  // namespace
 
+// Tests that Number/double properties in query are parsed correctly.
+// Regression test for https://crbug.com/617435.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, ParseSearchQuery) {
+  ASSERT_TRUE(
+      RunFunction(new DownloadsSearchFunction, "[{\"totalBytesLess\":1}]"));
+  ASSERT_TRUE(
+      RunFunction(new DownloadsSearchFunction, "[{\"totalBytesGreater\":2}]"));
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // The open dialog is not yet implemented on desktop Android. Also, Java-side
 // org.chromium.ui.permissions.ContextualNotificationPermissionRequester may
