@@ -71,7 +71,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kAborted = 17,
     kNotInitialized = 18,
     kCheckSumError = 19,
-    kMaxValue = kCheckSumError
+    kDatabaseClosed = 20,
+    kMaxValue = kDatabaseClosed
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -354,6 +355,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Sets a flag to simulate database operation failures for testing.
   virtual void SetSimulateDbFailureForTesting(bool fail) = 0;
+
+  // Raze the Database and the poison the database handle for testing. This is
+  // useful for testing the behavior after a catastrophic error.
+  virtual void RazeAndPoisonForTesting() = 0;
 
  protected:
   SqlPersistentStore() = default;

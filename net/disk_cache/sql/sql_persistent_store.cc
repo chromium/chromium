@@ -116,6 +116,10 @@ using ResIdList = std::vector<ResId>;
 using ResIdListOrError = base::expected<ResIdList, Error>;
 using InMemoryIndexAndDoomedResIdsOrError =
     base::expected<InMemoryIndexAndDoomedResIds, Error>;
+using RangeResultOrError = base::expected<RangeResult, Error>;
+using Int64OrError = base::expected<int64_t, Error>;
+using OptionalEntryInfoWithIdAndKeyOrError =
+    base::expected<OptionalEntryInfoWithIdAndKey, Error>;
 
 // A helper struct to bundle an operation's result with a flag indicating
 // whether an eviction check is needed. This allows the background sequence,
@@ -423,9 +427,9 @@ class Backend {
                                      int64_t offset,
                                      int len,
                                      base::TimeTicks start_time);
-  int64_t CalculateSizeOfEntriesBetween(base::Time initial_time,
-                                        base::Time end_time,
-                                        base::TimeTicks start_time);
+  Int64OrError CalculateSizeOfEntriesBetween(base::Time initial_time,
+                                             base::Time end_time,
+                                             base::TimeTicks start_time);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       ResId res_id_cursor,
       base::TimeTicks start_time);
@@ -442,6 +446,8 @@ class Backend {
   void SetSimulateDbFailureForTesting(bool fail) {
     simulate_db_failure_for_testing_ = fail;
   }
+
+  void RazeAndPoisonForTesting() { db_.RazeAndPoison(); }
 
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
@@ -494,12 +500,12 @@ class Backend {
                                    int64_t body_end,
                                    bool sparse_reading,
                                    bool& corruption_detected);
-  RangeResult GetEntryAvailableRangeInternal(ResId res_id,
-                                             int64_t offset,
-                                             int len);
-  int64_t CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
-                                                base::Time end_time);
-  OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
+  RangeResultOrError GetEntryAvailableRangeInternal(ResId res_id,
+                                                    int64_t offset,
+                                                    int len);
+  Int64OrError CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
+                                                     base::Time end_time);
+  OptionalEntryInfoWithIdAndKeyOrError OpenLatestEntryBeforeResIdInternal(
       ResId res_id_cursor,
       bool& corruption_detected);
   ResIdListOrError RunEvictionInternal(
@@ -575,15 +581,14 @@ class Backend {
   int64_t CalculateResourceEntryCount();
   int64_t CalculateTotalSize();
 
-  // A helper method for checking that the database initialization was
-  // successful before proceeding with any database operations.
-  void CheckDatabaseInitStatus() {
-    CHECK(db_init_status_.has_value());
-    CHECK_EQ(*db_init_status_, Error::kOk);
-  }
+  // Checks the database status. Returns Error::kOk on success, or an error
+  // code if something is wrong.
+  Error CheckDatabaseStatus();
 
+  // Checks if the total size of entries exceeds the high watermark and the
+  // database is open, to determine if eviction should be initiated.
   bool ShouldStartEviction() const {
-    return GetSizeOfAllEntries() > high_watermark_;
+    return db_.is_open() && (GetSizeOfAllEntries() > high_watermark_);
   }
 
   void MaybeCrashIfCorrupted(bool corruption_detected) {
@@ -605,6 +610,21 @@ class Backend {
   // `OnCommitCallback` and reset to 0 after a checkpoint.
   int wal_pages_ = 0;
 };
+
+Error Backend::CheckDatabaseStatus() {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
+  if (!db_init_status_.has_value() || *db_init_status_ != Error::kOk) {
+    return Error::kNotInitialized;
+  }
+  if (!db_.is_open()) {
+    // The database have been closed when a catastrophic error occurred and
+    // RazeAndPoison() was called.
+    return Error::kDatabaseClosed;
+  }
+  return Error::kOk;
+}
 
 InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
@@ -768,8 +788,8 @@ EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
 
 EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key,
                                                     bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
   // Try to open first.
   auto open_result = OpenEntryInternal(key);
@@ -809,11 +829,9 @@ OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key,
 }
 
 OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
-  CheckDatabaseInitStatus();
-
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectLiveResources)));
   statement.BindInt(0, key.hash().value());
@@ -878,10 +896,9 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
                                               base::Time creation_time,
                                               bool run_existance_check,
                                               bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return base::unexpected(Error::kFailedToStartTransaction);
@@ -964,10 +981,9 @@ ErrorAndEvictionRequested Backend::DoomEntry(const CacheEntryKey& key,
 }
 
 Error Backend::DoomEntryInternal(ResId res_id, bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1040,10 +1056,9 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
 }
 
 Error Backend::DeleteDoomedEntryInternal(ResId res_id) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1102,10 +1117,9 @@ Error Backend::DeleteDoomedEntries(ResIdList res_ids_to_delete,
 
 Error Backend::DeleteDoomedEntriesInternal(const ResIdList& res_ids_to_delete,
                                            bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1158,10 +1172,9 @@ ResIdListOrErrorAndEvictionRequested Backend::DeleteLiveEntry(
 
 ResIdListOrError Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
                                                   bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return base::unexpected(Error::kFailedToStartTransaction);
@@ -1245,10 +1258,9 @@ ErrorAndEvictionRequested Backend::DeleteAllEntries(
 }
 
 Error Backend::DeleteAllEntriesInternal(bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1320,10 +1332,9 @@ ResIdListOrError Backend::DeleteLiveEntriesBetweenInternal(
     base::Time end_time,
     const base::flat_set<ResId>& excluded_res_ids,
     bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return base::unexpected(Error::kFailedToStartTransaction);
@@ -1405,10 +1416,9 @@ Error Backend::UpdateEntryLastUsedByKey(const CacheEntryKey& key,
 
 Error Backend::UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
                                                 base::Time last_used) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1457,10 +1467,9 @@ Error Backend::UpdateEntryLastUsedByResId(ResId res_id,
 
 Error Backend::UpdateEntryLastUsedByResIdInternal(ResId res_id,
                                                   base::Time last_used) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1524,11 +1533,10 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     scoped_refptr<net::IOBuffer> buffer,
     int64_t header_size_delta,
     bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
   CHECK(buffer);
-  CheckDatabaseInitStatus();
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1609,10 +1617,9 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
                                       int buf_len,
                                       bool truncate,
                                       bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return Error::kFailedForTesting;
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
   }
-  CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -2035,10 +2042,9 @@ IntOrError Backend::ReadEntryDataInternal(const CacheEntryKey& key,
                                           int64_t body_end,
                                           bool sparse_reading,
                                           bool& corruption_detected) {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
-  CheckDatabaseInitStatus();
 
   if (offset < 0 || buf_len < 0 || !buffer || buf_len > buffer->size()) {
     return base::unexpected(Error::kInvalidArgument);
@@ -2132,20 +2138,23 @@ RangeResult Backend::GetEntryAvailableRange(ResId res_id,
   base::ElapsedTimer timer;
   auto result = GetEntryAvailableRangeInternal(res_id, offset, len);
   RecordTimeAndErrorResultHistogram("GetEntryAvailableRange", posting_delay,
-                                    timer.Elapsed(), Error::kOk,
+                                    timer.Elapsed(),
+                                    result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.GetEntryAvailableRange", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, dict);
+                     PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return result.value_or(RangeResult(net::Error::ERR_FAILED));
 }
 
-RangeResult Backend::GetEntryAvailableRangeInternal(ResId res_id,
-                                                    int64_t offset,
-                                                    int len) {
-  CheckDatabaseInitStatus();
+RangeResultOrError Backend::GetEntryAvailableRangeInternal(ResId res_id,
+                                                           int64_t offset,
+                                                           int len) {
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
+  }
   // Truncate `len` to make sure that `offset + len` does not overflow.
   len = std::min(static_cast<int64_t>(len),
                  std::numeric_limits<int64_t>::max() - offset);
@@ -2193,9 +2202,10 @@ RangeResult Backend::GetEntryAvailableRangeInternal(ResId res_id,
   return RangeResult(offset, 0);
 }
 
-int64_t Backend::CalculateSizeOfEntriesBetween(base::Time initial_time,
-                                               base::Time end_time,
-                                               base::TimeTicks start_time) {
+Int64OrError Backend::CalculateSizeOfEntriesBetween(
+    base::Time initial_time,
+    base::Time end_time,
+    base::TimeTicks start_time) {
   if (initial_time == base::Time::Min() && end_time == base::Time::Max()) {
     return GetSizeOfAllEntries();
   }
@@ -2209,15 +2219,23 @@ int64_t Backend::CalculateSizeOfEntriesBetween(base::Time initial_time,
   base::ElapsedTimer timer;
   auto result = CalculateSizeOfEntriesBetweenInternal(initial_time, end_time);
   RecordTimeAndErrorResultHistogram("CalculateSizeOfEntriesBetween",
-                                    posting_delay, timer.Elapsed(), Error::kOk,
+                                    posting_delay, timer.Elapsed(),
+                                    result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
-                   "result", result);
+                   "result", [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
   return result;
 }
 
-int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
-                                                       base::Time end_time) {
+Int64OrError Backend::CalculateSizeOfEntriesBetweenInternal(
+    base::Time initial_time,
+    base::Time end_time) {
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
+  }
   // To calculate the total size of all entries whose `last_used` time falls
   // within the range [`initial_time`, `end_time`), sums up the `bytes_usage`
   // from the `resources` table and adds a static overhead for each entry.
@@ -2233,7 +2251,7 @@ int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
     // Add the static overhead for the entry's row in the database.
     total_size += kSqlBackendStaticResourceSize;
   }
-  return total_size;
+  return Int64OrError(total_size);
 }
 
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
@@ -2249,22 +2267,27 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
   bool corruption_detected = false;
   auto result =
       OpenLatestEntryBeforeResIdInternal(res_id_cursor, corruption_detected);
-  RecordTimeAndErrorResultHistogram("OpenLatestEntryBeforeResId", posting_delay,
-                                    timer.Elapsed(), Error::kOk,
-                                    corruption_detected);
+  RecordTimeAndErrorResultHistogram(
+      "OpenLatestEntryBeforeResId", posting_delay, timer.Elapsed(),
+      result.error_or(Error::kOk), corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
                    "result", [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, dict);
+                     PopulateTraceDetails(result, store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return result;
+  if (!result.has_value()) {
+    return std::nullopt;
+  }
+  return std::move(*result);
 }
 
-OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
-    ResId res_id_cursor,
-    bool& corruption_detected) {
-  CheckDatabaseInitStatus();
+OptionalEntryInfoWithIdAndKeyOrError
+Backend::OpenLatestEntryBeforeResIdInternal(ResId res_id_cursor,
+                                            bool& corruption_detected) {
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
+  }
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
@@ -2316,6 +2339,9 @@ ResIdListOrErrorAndEvictionRequested Backend::RunEviction(
 ResIdListOrError Backend::RunEvictionInternal(
     const base::flat_set<ResId>& excluded_res_ids,
     bool& corruption_detected) {
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
+  }
   int64_t size_to_be_removed = GetSizeOfAllEntries() - low_watermark_;
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -2470,11 +2496,8 @@ InMemoryIndexAndDoomedResIdsOrError Backend::LoadInMemoryIndex() {
 }
 
 InMemoryIndexAndDoomedResIdsOrError Backend::LoadInMemoryIndexInternal() {
-  if (simulate_db_failure_for_testing_) {
-    return base::unexpected(Error::kFailedForTesting);
-  }
-  if (!db_init_status_.has_value() || *db_init_status_ != Error::kOk) {
-    return base::unexpected(Error::kNotInitialized);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return base::unexpected(db_error);
   }
   SqlPersistentStoreInMemoryIndex index;
   ResIdList doomed_entry_res_ids;
@@ -2844,6 +2867,10 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
 
   void SetSimulateDbFailureForTesting(bool fail) override {
     backend_.AsyncCall(&Backend::SetSimulateDbFailureForTesting).WithArgs(fail);
+  }
+
+  void RazeAndPoisonForTesting() override {
+    backend_.AsyncCall(&Backend::RazeAndPoisonForTesting);
   }
 
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const override {
