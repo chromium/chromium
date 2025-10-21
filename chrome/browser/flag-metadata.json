@@ -8496,66 +8496,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "query-tiles",
-    "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "query-tiles-country-code",
-    "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "query-tiles-disable-country-override",
-    "owners": [ "qinmin@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "query-tiles-enable-query-editing",
-    "owners": [ "shaktisahu@chromium.org" ],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "query-tiles-enable-trending",
-    "owners": [ "qinmin@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "query-tiles-instant-fetch",
-    "owners": [ "xingliu@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "query-tiles-ntp",
-    "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "query-tiles-on-start",
-    "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "query-tiles-rank-tiles",
-    "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "query-tiles-segmentation",
-    "owners": [ "qinmin@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "query-tiles-single-tier",
-    "owners": [ "shaktisahu@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "query-tiles-swap-trending",
-    "owners": [ "qinmin@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "quick-answers-material-next-ui",
     "owners": [ "assistive-eng@google.com" ],
     "expiry_milestone": 133
