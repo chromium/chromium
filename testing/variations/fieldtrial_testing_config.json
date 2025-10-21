@@ -25189,27 +25189,6 @@
             ]
         }
     ],
-    "TimedHTMLParserBudgetForAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_10_50_2",
-                    "params": {
-                        "default-parser-budget": "10ms",
-                        "long-parser-budget": "50ms",
-                        "num-yields-with-default-budget": "2"
-                    },
-                    "enable_features": [
-                        "TimedHTMLParserBudget"
-                    ]
-                }
-            ]
-        }
-    ],
     "TokenHandleRefactoring": [
         {
             "platforms": [
