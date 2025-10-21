@@ -43,7 +43,7 @@ class TabGroupCollectionStorageData : public Payload {
 
   ~TabGroupCollectionStorageData() override = default;
 
-  std ::string SerializePayload() const override {
+  std::string SerializePayload() const override {
     return state_.SerializeAsString();
   }
 
@@ -59,7 +59,7 @@ class TabStripCollectionStorageData : public Payload {
 
   ~TabStripCollectionStorageData() override = default;
 
-  std ::string SerializePayload() const override {
+  std::string SerializePayload() const override {
     return state_.SerializeAsString();
   }
 

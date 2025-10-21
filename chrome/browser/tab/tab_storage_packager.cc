@@ -10,6 +10,7 @@
 #include "base/token.h"
 #include "chrome/browser/tab/collection_storage_package.h"
 #include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/split_collection_state.pb.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_package.h"
@@ -46,7 +47,21 @@ class ChildProcessor : public DirectChildWalker::Processor {
 class EmptyPayload : public Payload {
  public:
   EmptyPayload() = default;
-  std ::string SerializePayload() const override { return ""; }
+  std::string SerializePayload() const override { return ""; }
+};
+
+// A payload representing the collection children.
+class ChildrenPayload : public Payload {
+ public:
+  explicit ChildrenPayload(tabs_pb::Children children)
+      : children_(std::move(children)) {}
+
+  std::string SerializePayload() const override {
+    return children_.SerializeAsString();
+  }
+
+ private:
+  tabs_pb::Children children_;
 };
 
 // A payload of data representing SplitTabCollections.
@@ -58,7 +73,7 @@ class SplitCollectionStorageData : public Payload {
 
   ~SplitCollectionStorageData() override = default;
 
-  std ::string SerializePayload() const override {
+  std::string SerializePayload() const override {
     return split_collection_state_.SerializeAsString();
   }
 
@@ -69,14 +84,19 @@ class SplitCollectionStorageData : public Payload {
 TabStoragePackager::TabStoragePackager() = default;
 TabStoragePackager::~TabStoragePackager() = default;
 
+void PopulateChildren(tabs_pb::Children& children_proto,
+                      const TabCollection* collection,
+                      StorageIdMapping& mapping) {
+  ChildProcessor processor(children_proto, mapping);
+  DirectChildWalker walker(collection, &processor);
+  walker.Walk();
+}
+
 std::unique_ptr<StoragePackage> TabStoragePackager::Package(
     const TabCollection* collection,
     StorageIdMapping& mapping) {
   tabs_pb::Children children_proto;
-
-  ChildProcessor processor(children_proto, mapping);
-  DirectChildWalker walker(collection, &processor);
-  walker.Walk();
+  PopulateChildren(children_proto, collection, mapping);
 
   // TODO(crbug.com/450532811): Handle collection subtype-specific data.
   std::unique_ptr<Payload> metadata;
@@ -93,6 +113,15 @@ std::unique_ptr<StoragePackage> TabStoragePackager::Package(
 
   return std::make_unique<CollectionStoragePackage>(std::move(metadata),
                                                     std::move(children_proto));
+}
+
+std::unique_ptr<Payload> TabStoragePackager::PackageChildren(
+    const TabCollection* collection,
+    StorageIdMapping& mapping) {
+  tabs_pb::Children children_proto;
+
+  PopulateChildren(children_proto, collection, mapping);
+  return std::make_unique<ChildrenPayload>(std::move(children_proto));
 }
 
 std::unique_ptr<Payload> TabStoragePackager::PackageSplitTabCollectionData(

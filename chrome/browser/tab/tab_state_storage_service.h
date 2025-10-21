@@ -19,6 +19,7 @@
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -48,6 +49,12 @@ class TabStateStorageService : public KeyedService,
 
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
+
+  void Move(const TabInterface* tab, const TabCollection* prev_parent);
+  void Move(const TabCollection* collection, const TabCollection* prev_parent);
+
+  void Remove(const TabInterface* tab);
+  void Remove(const TabCollection* collection);
 
   void LoadAllTabs(LoadAllTabsCallback callback);
 

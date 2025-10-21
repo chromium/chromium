@@ -31,6 +31,42 @@ int GetOrCreateStorageId(T* object,
   return it->second;
 }
 
+// Adds a save children operation to the builder.
+void SaveChildrenInternal(TabStateStorageUpdaterBuilder& builder,
+                          const TabCollection* parent,
+                          TabStateStorageService* service,
+                          TabStoragePackager* packager) {
+  builder.SaveChildren(service->GetStorageId(parent),
+                       packager->PackageChildren(parent, *service));
+}
+
+void RemoveNodeSequence(int storage_id,
+                        const TabCollection* parent,
+                        TabStateStorageService* service,
+                        TabStoragePackager* packager,
+                        TabStateStorageBackend* backend) {
+  DCHECK(packager);
+
+  TabStateStorageUpdaterBuilder builder;
+  builder.RemoveNode(storage_id);
+
+  SaveChildrenInternal(builder, parent, service, packager);
+  backend->Update(builder.Build());
+}
+
+void MoveNodeSequence(const TabCollection* prev_parent,
+                      const TabCollection* curr_parent,
+                      TabStateStorageService* service,
+                      TabStoragePackager* packager,
+                      TabStateStorageBackend* backend) {
+  DCHECK(packager);
+
+  TabStateStorageUpdaterBuilder builder;
+  SaveChildrenInternal(builder, prev_parent, service, packager);
+  SaveChildrenInternal(builder, curr_parent, service, packager);
+  backend->Update(builder.Build());
+}
+
 }  // namespace
 
 TabStateStorageService::TabStateStorageService(
@@ -53,9 +89,7 @@ int TabStateStorageService::GetStorageId(const TabInterface* tab) {
 }
 
 void TabStateStorageService::Save(const TabInterface* tab) {
-  if (!packager_) {
-    return;
-  }
+  DCHECK(packager_);
 
   std::unique_ptr<StoragePackage> package = packager_->Package(tab);
   DCHECK(package) << "Packager should return a package";
@@ -67,9 +101,7 @@ void TabStateStorageService::Save(const TabInterface* tab) {
 }
 
 void TabStateStorageService::Save(const TabCollection* collection) {
-  if (!packager_) {
-    return;
-  }
+  DCHECK(packager_);
 
   std::unique_ptr<StoragePackage> package =
       packager_->Package(collection, *this);
@@ -80,6 +112,29 @@ void TabStateStorageService::Save(const TabCollection* collection) {
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNode(storage_id, type, std::move(package));
   tab_backend_->Update(builder.Build());
+}
+
+void TabStateStorageService::Remove(const TabInterface* tab) {
+  RemoveNodeSequence(GetStorageId(tab), tab->GetParentCollection(), this,
+                     packager_.get(), tab_backend_.get());
+}
+
+void TabStateStorageService::Remove(const TabCollection* collection) {
+  RemoveNodeSequence(GetStorageId(collection),
+                     collection->GetParentCollection(), this, packager_.get(),
+                     tab_backend_.get());
+}
+
+void TabStateStorageService::Move(const TabInterface* tab,
+                                  const TabCollection* prev_parent) {
+  MoveNodeSequence(prev_parent, tab->GetParentCollection(), this,
+                   packager_.get(), tab_backend_.get());
+}
+
+void TabStateStorageService::Move(const TabCollection* collection,
+                                  const TabCollection* prev_parent) {
+  MoveNodeSequence(prev_parent, collection->GetParentCollection(), this,
+                   packager_.get(), tab_backend_.get());
 }
 
 void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {
