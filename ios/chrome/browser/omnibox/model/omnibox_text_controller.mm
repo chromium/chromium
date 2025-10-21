@@ -292,6 +292,10 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)onTextChanged {
+  if (!_omniboxTextModel || !_omniboxClient) {
+    return;
+  }
+
   // Don't call CurrentMatch() when there's no editing, as in this case we'll
   // never actually use it.  This avoids running the autocomplete providers (and
   // any systems they then spin up) during startup.
