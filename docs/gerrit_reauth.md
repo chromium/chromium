@@ -12,6 +12,10 @@ with a Google-issued security key, on devices managed by Google (e.g. gLinux),
 simply run `git credential-luci reauth`, follow the prompts to complete ReAuth.
 You need to ReAuth every 20 hours (just like `gcert`).
 
+If you use a terminal persistence tool, such as screen, tmux, or shpool, refer
+to [the internal guide](go/gerrit-reauth#bookmark=id.gohr0ejjvi49) for
+additional instructions.
+
 Otherwise, follow this guide to ReAuth locally or remotely.
 
 If you aren't sure if your account is linked, follow
@@ -445,11 +449,27 @@ If you run into issues, please report to
 - The security key you're using (e.g. manufacturer, model, etc.)
 - Whether the security key is registered as a FIDO2 or U2F key (see
   [Prerequisites](#prerequisites))
+- The following environment variables: `SSH_AUTH_SOCK`, `SSH_CONNECTION` and
+  `GOOGLE_AUTH_WEBAUTHN_PLUGIN`
 
 Note, when sharing debug logs, please edit out the value after `Signature:`
 field (if it's present) and any other values if you wish.
 
 ## FAQs
+
+**ReAuth in `screen`, `tmux`, `shpool`, etc.**
+You need to manually set `GOOGLE_AUTH_WEBAUTHN_PLUGIN` environment variable for
+ReAuth to work. This is in addition to the instructions above.
+
+If you're a Googler, follow
+[the internal guide](go/gerrit-reauth#bookmark=id.gohr0ejjvi49).
+
+Otherwise, set the environment variable depending on your situation:
+
+* To ReAuth locally: `GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-fido2-plugin`
+* To ReAuth over SSH: `GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-ssh-plugin`
+
+Then run `git credential-luci reauth`.
 
 **I accidentally shared the `Signature:` in the debug logs\!**
 
