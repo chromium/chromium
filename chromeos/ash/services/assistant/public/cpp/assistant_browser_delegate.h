@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/one_shot_event.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "url/gurl.h"
 
 namespace ash::assistant {

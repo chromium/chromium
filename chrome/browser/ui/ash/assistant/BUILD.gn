@@ -17,7 +17,6 @@ static_library("assistant") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",

@@ -19,7 +19,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/assistant/assistant_util.h"
 // TODO(b/342514059): Depending on chrome/browser/ash/child_accounts is not
 // ideal because it's in chrome.
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
@@ -204,13 +203,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       "Microsoft365",
       chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile));
 
-  // Checks if the Google Assistant is allowed on this device by going through
-  // policies.
-  assistant::AssistantAllowedState assistant_allowed_state =
-      ::assistant::IsAssistantAllowedForProfile(profile);
-  source->AddBoolean(
-      "assistantAllowed",
-      assistant_allowed_state == assistant::AssistantAllowedState::ALLOWED);
+  // Google Assistant on ChromeOS is deprecated.
+  source->AddBoolean("assistantAllowed", false);
   source->AddBoolean("assistantEnabled", false);
   source->AddBoolean("playStoreEnabled",
                      arc::IsArcPlayStoreEnabledForProfile(profile));

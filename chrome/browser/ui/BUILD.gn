@@ -2099,7 +2099,6 @@ static_library("ui") {
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/arc/wallpaper",
       "//chrome/browser/ash/arc/window_predictor",
-      "//chrome/browser/ash/assistant",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/audio",
       "//chrome/browser/ash/auth",

@@ -13,7 +13,6 @@ component("cpp") {
   sources = [
     "assistant_browser_delegate.cc",
     "assistant_browser_delegate.h",
-    "assistant_enums.h",
     "features.cc",
     "features.h",
   ]

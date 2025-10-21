@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/assistant",
   "+chrome/browser/ash/boca/boca_manager.h",
   "+chrome/browser/ash/boca/boca_manager_factory.h",
   "+chrome/browser/ash/borealis",
