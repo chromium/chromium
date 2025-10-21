@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -183,14 +180,7 @@ public abstract class TabCreator {
 
     /** Creates a new tab and loads the NTP. */
     public final void launchNtp(@TabLaunchType int type) {
-        try {
-            TraceEvent.begin("TabCreator.launchNtp");
-            UrlConstantResolver urlConstantResolver =
-                    UrlConstantResolverFactory.getForProfile(getProfile());
-            launchUrl(urlConstantResolver.getNtpUrl(), type);
-        } finally {
-            TraceEvent.end("TabCreator.launchNtp");
-        }
+        TabCreatorUtil.launchNtp(this, getProfile(), type);
     }
 
     /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
