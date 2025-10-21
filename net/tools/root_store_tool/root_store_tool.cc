@@ -71,15 +71,16 @@ std::optional<std::map<std::string, std::string>> DecodeCerts(
     bssl::UniquePtr<char> scoped_name(name);
     bssl::UniquePtr<char> scoped_header(header);
     bssl::UniquePtr<unsigned char> scoped_data(data);
-    if (UNSAFE_TODO(strcmp(name, "CERTIFICATE")) != 0) {
+    if (std::string_view(name) != "CERTIFICATE") {
       LOG(ERROR) << "Found PEM block of type " << name
                  << " instead of CERTIFICATE";
       return std::nullopt;
     }
-    std::string sha256_hex =
-        base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(
-            UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(len))))));
-    certs[sha256_hex] = std::string(data, UNSAFE_TODO(data + len));
+    std::string_view cert_view(reinterpret_cast<const char*>(data),
+                               base::checked_cast<size_t>(len));
+    const std::string sha256_hex =
+        base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(cert_view)));
+    certs[sha256_hex] = std::string(cert_view);
   }
   return std::move(certs);
 }
