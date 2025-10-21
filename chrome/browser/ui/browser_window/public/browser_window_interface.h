@@ -37,7 +37,6 @@ class TabInterface;
 }  // namespace tabs
 
 namespace views {
-class WebView;
 class View;
 }  // namespace views
 
@@ -204,11 +203,6 @@ class BrowserWindowInterface : public content::PageNavigator {
 #if !BUILDFLAG(IS_ANDROID)
   // Returns nullptr if no browser window with the given session ID exists.
   static BrowserWindowInterface* FromSessionID(const SessionID& session_id);
-
-  // The contents of the active tab is rendered in a views::WebView. When the
-  // active tab switches, the contents of the views::WebView is modified, but
-  // the instance itself remains the same.
-  virtual views::WebView* GetWebView() = 0;
 
   // Opens a URL, with the given disposition. This is a convenience wrapper
   // around OpenURL from content::PageNavigator.

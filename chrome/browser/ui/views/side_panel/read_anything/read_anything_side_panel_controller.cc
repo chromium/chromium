@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -211,8 +212,8 @@ ReadAnythingSidePanelController::CreateContainerView(
 
 int ReadAnythingSidePanelController::GetPreferredDefaultWidth() {
   // Use 50% of the current WebView width
-  return tab_->GetBrowserWindowInterface()
-             ->GetWebView()
+  return BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+             ->RetrieveView(kActiveContentsWebViewRetrievalId)
              ->GetContentsBounds()
              .width() /
          2;

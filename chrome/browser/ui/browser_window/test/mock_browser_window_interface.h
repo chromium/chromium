@@ -13,7 +13,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MockBrowserWindowInterface();
   ~MockBrowserWindowInterface() override;
 
-  MOCK_METHOD(views::WebView*, GetWebView, (), (override));
   MOCK_METHOD(Profile*, GetProfile, (), (override));
   MOCK_METHOD(const Profile*, GetProfile, (), (const override));
   MOCK_METHOD(void,

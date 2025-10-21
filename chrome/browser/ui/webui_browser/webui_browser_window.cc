@@ -1093,11 +1093,6 @@ void WebUIBrowserWindow::ShowChromeLabs() {
   NOTIMPLEMENTED();
 }
 
-views::WebView* WebUIBrowserWindow::GetContentsWebView() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 BrowserView* WebUIBrowserWindow::AsBrowserView() {
   NOTIMPLEMENTED();
   return nullptr;

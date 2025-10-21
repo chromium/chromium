@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
@@ -1028,7 +1029,8 @@ FedCmAccountSelectionView::GetURLLoaderFactory() {
 }
 
 views::View* FedCmAccountSelectionView::GetAnchorView() {
-  return tab_->GetBrowserWindowInterface()->GetWebView();
+  return BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+      ->RetrieveView(kActiveContentsWebViewRetrievalId);
 }
 
 AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(

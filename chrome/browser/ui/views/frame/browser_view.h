@@ -50,6 +50,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/typed_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -562,7 +563,6 @@ class BrowserView : public BrowserWindow,
   bool IsLocationBarVisible() const override;
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override;
-  views::WebView* GetContentsWebView() override;
   BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
@@ -825,6 +825,8 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 #endif
+
+  views::WebView* GetActiveContentsWebView();
 
   // Returns the list of tab content's web views that is visible.
   // It returns > 1 elements when there is a split view that is active.

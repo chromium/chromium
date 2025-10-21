@@ -261,10 +261,6 @@ bool TestBrowserWindow::IsBorderlessModeEnabled() const {
   return false;
 }
 
-views::WebView* TestBrowserWindow::GetContentsWebView() {
-  return nullptr;
-}
-
 BrowserView* TestBrowserWindow::AsBrowserView() {
   return nullptr;
 }

@@ -162,7 +162,6 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   bool IsToolbarShowing() const override;
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override {}
-  views::WebView* GetContentsWebView() override;
   BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;

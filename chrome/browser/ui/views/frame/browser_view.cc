@@ -1522,7 +1522,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      int reason) {
   DCHECK(new_contents);
   TRACE_EVENT0("ui", "BrowserView::OnActiveTabChanged");
-  views::WebView* active_contents_view = GetContentsWebView();
+  views::WebView* active_contents_view = GetActiveContentsWebView();
   bool tab_change_in_split_view =
       IsTabChangeInSplitView(old_contents, new_contents);
 
@@ -1731,7 +1731,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   if (loading_bar_) {
     loading_bar_->SetWebContents(nullptr);
   }
-  GetContentsWebView()->SetWebContents(nullptr);
+  GetActiveContentsWebView()->SetWebContents(nullptr);
   infobar_container_->ChangeInfoBarManager(nullptr);
   app_banner_manager_observation_.Reset();
 }
@@ -2011,7 +2011,7 @@ void BrowserView::FullscreenStateChanged() {
 
     // Reshow the split view after completing the toolbar sizing.
     if (!IsFullscreen() && browser_->tab_strip_model()->IsActiveTabSplit()) {
-      ShowSplitView(GetContentsWebView()->HasFocus());
+      ShowSplitView(GetActiveContentsWebView()->HasFocus());
     }
   }
 }
@@ -2504,7 +2504,7 @@ void BrowserView::ShowChromeLabs() {
   browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
 }
 
-views::WebView* BrowserView::GetContentsWebView() {
+views::WebView* BrowserView::GetActiveContentsWebView() {
   if (multi_contents_view_) {
     return multi_contents_view_->GetActiveContentsView();
   } else {
@@ -2576,7 +2576,7 @@ void BrowserView::RotatePaneFocus(bool forwards) {
 }
 
 void BrowserView::FocusWebContentsPane() {
-  GetContentsWebView()->RequestFocus();
+  GetActiveContentsWebView()->RequestFocus();
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
@@ -3040,7 +3040,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  views::View* contents_view = GetContentsWebView();
+  views::View* contents_view = GetActiveContentsWebView();
 
   if (contents_view->HasFocus() && !GetLocationBarView()->IsMouseHovered() &&
       web_contents->IsFocusedElementEditable()) {
@@ -3417,7 +3417,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
       const tabs::TabInterface* active_tab =
           browser_->tab_strip_model()->GetActiveTab();
       if (active_tab->IsSplit()) {
-        ShowSplitView(GetContentsWebView()->HasFocus());
+        ShowSplitView(GetActiveContentsWebView()->HasFocus());
       }
       break;
     }
@@ -4518,7 +4518,7 @@ void BrowserView::MaybeUpdateStoredFocusForWebContents(
   ContentsWebView* focused_view =
       views::AsViewClass<ContentsWebView>(focus_helper->GetStoredFocus());
   if (focused_view && focused_view->web_contents() != web_contents) {
-    focus_helper->SetStoredFocusView(GetContentsWebView());
+    focus_helper->SetStoredFocusView(GetActiveContentsWebView());
   }
 }
 
@@ -4626,7 +4626,7 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
     // Draggable regions are defined relative to the web contents.
     gfx::Point point_in_contents_web_view_coords(location);
     views::View::ConvertPointToTarget(GetWidget()->GetRootView(),
-                                      GetContentsWebView(),
+                                      GetActiveContentsWebView(),
                                       &point_in_contents_web_view_coords);
 
     // Draggable regions should be ignored for clicks into any browser view's
@@ -5471,7 +5471,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
 
   // Reshow the split view after completing the toolbar sizing.
   if (!fullscreen && browser_->tab_strip_model()->IsActiveTabSplit()) {
-    ShowSplitView(GetContentsWebView()->HasFocus());
+    ShowSplitView(GetActiveContentsWebView()->HasFocus());
   }
 }
 

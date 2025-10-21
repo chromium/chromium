@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ForwardFocusTraversal) {
                   return !toast->close_button_for_testing()->HasFocus();
                 }),
       CheckView(kBrowserViewElementId, [](BrowserView* browser_view) {
-        return browser_view->GetContentsWebView()->HasFocus();
+        return browser_view->GetActiveContentsWebView()->HasFocus();
       }));
 }
 
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
       toast_controller->GetToastViewForTesting()->GetBoundsInScreen();
   const gfx::Rect web_view_bounds =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetContentsWebView()
+          ->GetActiveContentsWebView()
           ->GetBoundsInScreen();
   EXPECT_TRUE(web_view_bounds.Contains(toast_bounds));
 }

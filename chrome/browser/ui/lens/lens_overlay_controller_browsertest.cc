@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
@@ -736,6 +737,11 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     mock_hats_service_ = nullptr;
   }
 
+  views::WebView* GetWebView() {
+    return BrowserElementsViews::From(browser())->RetrieveView(
+        kActiveContentsWebViewRetrievalId);
+  }
+
   virtual void SetupFeatureList() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay,
@@ -1387,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -1395,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   // Tab contents web view should be disabled.
-  ASSERT_FALSE(browser()->GetWebView()->GetEnabled());
+  ASSERT_FALSE(GetWebView()->GetEnabled());
 
   // Grab fake controller to test if notify the overlay of being closed.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -1409,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
   // Tab contents web view should be disabled.
-  ASSERT_FALSE(browser()->GetWebView()->GetEnabled());
+  ASSERT_FALSE(GetWebView()->GetEnabled());
 
   // Close the side panel.
   coordinator->Close();
@@ -1418,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // The overlay should have been notified of the closing.
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
@@ -2219,7 +2225,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
@@ -2236,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->Contains(
       controller->GetOverlayWebViewForTesting()));
   // Tab contents web view should be disabled.
-  ASSERT_FALSE(browser()->GetWebView()->GetEnabled());
+  ASSERT_FALSE(GetWebView()->GetEnabled());
 
   // Open a side panel to test that the side panel persists between tab
   // switches.
@@ -2265,7 +2271,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !coordinator->IsSidePanelShowing(); }));
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Returning back to the previous tab should show the overlay UI again.
   browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
@@ -2281,7 +2287,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
   // Tab contents web view should be disabled.
-  ASSERT_FALSE(browser()->GetWebView()->GetEnabled());
+  ASSERT_FALSE(GetWebView()->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2294,7 +2300,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       static_cast<LensSearchControllerFake*>(GetLensSearchController());
   ASSERT_EQ(controller->state(), State::kOff);
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
@@ -2317,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // The lens overlay controller should be off.
   ASSERT_EQ(controller->state(), State::kOff);
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Opening a new tab should background the lens session.
   WaitForPaint(kDocumentWithNamedElement,
@@ -2331,7 +2337,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !coordinator->IsSidePanelShowing(); }));
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Returning back to the previous tab should restore the side panel.
   browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
@@ -2344,7 +2350,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 }
 
 // TODO(crbug.com/413042395): This test is not testing overlay logic, but
@@ -4910,7 +4916,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
   // Tab contents web view should be enabled.
-  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+  ASSERT_TRUE(GetWebView()->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

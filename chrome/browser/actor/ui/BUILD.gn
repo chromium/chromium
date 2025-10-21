@@ -55,6 +55,7 @@ source_set("ui") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",

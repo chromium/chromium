@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views_impl.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -627,6 +628,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   if (auto* const provider =
           browser_elements_->AsA<BrowserElementsViewsImpl>()) {
     provider->Init(browser_view);
+    provider->AddRetrievalCallback(
+        kActiveContentsWebViewRetrievalId,
+        base::BindRepeating(&BrowserView::GetActiveContentsWebView,
+                            base::Unretained(browser_view)));
   }
 
   scrim_view_controller_ = std::make_unique<ScrimViewController>(browser_view);

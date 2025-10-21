@@ -1089,10 +1089,6 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
   return GetStatusBubbles();
 }
 
-views::WebView* Browser::GetWebView() {
-  return window_->GetContentsWebView();
-}
-
 Profile* Browser::GetProfile() {
   return profile();
 }
