@@ -162,6 +162,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:BrowserActiveState) -->
 
+<!-- LINT.IfChange(CaptureRegionErrorReason) -->
+
+<enum name="GlicCaptureRegionErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="NoFocusableTab"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:CaptureRegionErrorReason) -->
+
 <!-- LINT.IfChange(GlicDetailedWebClientState) -->
 
 <enum name="GlicDetailedWebClientState">
@@ -324,6 +333,8 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="OnContextUploadStarted"/>
   <int value="69" label="SetActuationOnWebSetting"/>
   <int value="70" label="OnModeChange"/>
+  <int value="71" label="SubscribeToCaptureRegion"/>
+  <int value="72" label="UnsubscribeFromCaptureRegion"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

@@ -29,6 +29,7 @@ ts_library("build_extra_ts") {
     "test_client/client.ts",
     "test_client/test_client.ts",
     "test_client/page_element_types.ts",
+    "test_client/sections/capture_region.ts",
     "test_client/sections/audio_capture.ts",
     "test_client/sections/get_page_context.ts",
     "test_client/sections/page_metadata.ts",

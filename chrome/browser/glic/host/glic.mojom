@@ -641,6 +641,18 @@ interface WebClientHandler {
   // screen picker dialog.
   CaptureScreenshot() => (CaptureScreenshotResult result);
 
+  // Starts a user-interactive process to select content from a tab. Multiple
+  // regions can be captured. Results for each region, and errors, are sent
+  // via the observer.
+  //
+  // The `observer` remote is disconnected when the capture operation is
+  // terminated by either the browser (e.g., on user cancellation) or the
+  // client.
+  //
+  // If another capture is already in progress, the previous capture session
+  // will be terminated and a new one will begin.
+  CaptureRegion(pending_remote<CaptureRegionObserver> observer);
+
   // Requests that audio ducking be enabled or disabled.
   // If enabled, audio from other sources will be attenuated.
   // If disabled, normal audio playout resumes.
@@ -1246,6 +1258,39 @@ struct ImageOriginAnnotations {};
 struct Journal {
   // Encoded journal data.
   array<uint8> data;
+};
+
+// The captured region from the user.
+union CapturedRegion {
+  // A rectangular region.
+  gfx.mojom.Rect rect;
+};
+
+// The result of a successful region capture.
+struct CaptureRegionResult {
+  // The ID of the tab from which the region was captured.
+  int32 tab_id;
+  // The captured region. This can be expanded with other region types like
+  // polygons in the future.
+  CapturedRegion region;
+};
+
+// @generate glic_api
+// Reason for `captureRegion` error.
+// LINT.IfChange(CaptureRegionErrorReason)
+[Stable, Extensible]
+enum CaptureRegionErrorReason {
+  [Default] kUnknown = 0,
+  // There is no focused tab that can be used for region capture.
+  kNoFocusableTab = 1,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CaptureRegionErrorReason)
+
+// Observer for the capture region process.
+interface CaptureRegionObserver {
+  // Called for each region the user successfully selects, or when an
+  // error occurs. Exactly one of `result` or `reason` will be non-null.
+  OnUpdate(CaptureRegionResult? result, CaptureRegionErrorReason? reason);
 };
 
 // An encoded screenshot image and associated metadata.

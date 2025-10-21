@@ -34,7 +34,8 @@ class LensRegionSearchInstructionsView
   LensRegionSearchInstructionsView(views::View* anchor_view,
                                    base::OnceClosure close_callback,
                                    base::OnceClosure escape_callback,
-                                   const LayoutParams& layout_params);
+                                   const LayoutParams& layout_params,
+                                   int text_message_id);
   LensRegionSearchInstructionsView(const LensRegionSearchInstructionsView&) =
       delete;
   LensRegionSearchInstructionsView& operator=(
@@ -60,6 +61,8 @@ class LensRegionSearchInstructionsView
 
   // Layout parameters provided by caller.
   LayoutParams layout_params_;
+
+  const int text_message_id_;
 };
 }  // namespace lens
 #endif  // CHROME_BROWSER_UI_VIEWS_LENS_LENS_REGION_SEARCH_INSTRUCTIONS_VIEW_H_

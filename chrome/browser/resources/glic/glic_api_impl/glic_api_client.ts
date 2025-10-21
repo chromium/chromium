@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
@@ -10,7 +10,7 @@ import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './request_types.js';
-import {ConfirmationRequestErrorReason, ImageAlphaType, ImageColorType, newTransferableException, SelectCredentialDialogErrorReason} from './request_types.js';
+import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, ImageAlphaType, ImageColorType, newTransferableException, SelectCredentialDialogErrorReason} from './request_types.js';
 
 
 // Web client side of the Glic API.
@@ -353,6 +353,22 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       parts,
     });
   }
+
+  glicWebClientCaptureRegionUpdate(payload: {
+    result?: CaptureRegionResult,
+    reason?: CaptureRegionErrorReason, observationId: number,
+  }): void {
+    const observable = this.host.captureRegionObservable;
+    if (observable?.observationId !== payload.observationId) {
+      return;
+    }
+
+    if (payload.result) {
+      observable.processUpdate(payload.result);
+    } else if (payload.reason !== undefined) {
+      observable.processError(payload.reason);
+    }
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -383,6 +399,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
   pinCandidates: PinCandidatesObservable|undefined;
+  captureRegionObservable?: CaptureRegionObservable;
   // Makes IDs that are unique within the scope of this class.
   idGenerator = new IdGenerator();
   private currentZeroStateSuggestionOptions: ZeroStateSuggestionsOptions = {
@@ -543,6 +560,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableWebActuationSettingFeature) {
       this.getActuationOnWebSetting = undefined;
       this.setActuationOnWebSetting = undefined;
+    }
+
+    if (!state.enableCaptureRegion) {
+      this.captureRegion = undefined;
     }
   }
 
@@ -737,6 +758,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const screenshotResult = await this.sender.requestWithResponse(
         'glicBrowserCaptureScreenshot', undefined);
     return screenshotResult.screenshot;
+  }
+
+  captureRegion?(): ObservableValue<CaptureRegionResult> {
+    if (this.captureRegionObservable) {
+      this.captureRegionObservable.complete();
+    }
+    this.captureRegionObservable =
+        new CaptureRegionObservable(this.idGenerator.next(), this.sender);
+    return this.captureRegionObservable;
   }
 
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void> {
@@ -1135,6 +1165,55 @@ class IdGenerator {
 
   next(): number {
     return this.nextId++;
+  }
+}
+
+class CaptureRegionObservable extends ObservableValueImpl<CaptureRegionResult> {
+  observationId: number;
+
+  constructor(observationId: number, private sender: PostMessageRequestSender) {
+    super(false);
+    this.observationId = observationId;
+  }
+
+  override activeSubscriptionChanged(hasActiveSubscription: boolean): void {
+    super.activeSubscriptionChanged(hasActiveSubscription);
+    if (this.isStopped()) {
+      return;
+    }
+    if (hasActiveSubscription) {
+      this.sender.requestNoResponse(
+          'glicBrowserSubscribeToCaptureRegion',
+          {observationId: this.observationId});
+    } else {
+      this.sender.requestNoResponse(
+          'glicBrowserUnsubscribeFromCaptureRegion',
+          {observationId: this.observationId});
+      // Unsubscribing from the client side is a terminal event.
+      this.complete();
+    }
+  }
+
+  override error(e: any) {
+    if (this.isStopped()) {
+      return;
+    }
+    super.error(e);
+  }
+
+  override complete() {
+    if (this.isStopped()) {
+      return;
+    }
+    super.complete();
+  }
+
+  processUpdate(result: CaptureRegionResult) {
+    this.assignAndSignal(result);
+  }
+
+  processError(reason: CaptureRegionErrorReason) {
+    this.error(new ErrorWithReasonImpl('captureRegion', reason));
   }
 }
 

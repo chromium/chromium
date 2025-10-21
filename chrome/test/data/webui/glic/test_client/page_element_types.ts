@@ -77,6 +77,8 @@ export interface PageElementTypes {
   desktopScreenshotImg: HTMLImageElement;
   desktopScreenshotErrorReason: HTMLSpanElement;
   panelScreenshot: HTMLButtonElement;
+  captureRegionBtn: HTMLButtonElement;
+  captureRegionResultList: HTMLUListElement;
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
   scrollToDocumentId: HTMLSpanElement;

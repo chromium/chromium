@@ -201,6 +201,12 @@ void ScreenshotFlow::StartFullscreenCapture(
                                           gfx::Rect(web_contents_->GetSize()));
 }
 
+void ScreenshotFlow::StartForRegionSelection(
+    RegionSelectionCallback region_selection_callback) {
+  region_selection_callback_ = std::move(region_selection_callback);
+  CreateAndAddUIOverlay();
+}
+
 void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
     ScreenshotCaptureResultCode result_code,
     gfx::Rect region) {
@@ -218,9 +224,8 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
 }
 
 void ScreenshotFlow::CancelCapture() {
-  RemoveUIOverlay();
-  CaptureAndRunScreenshotCompleteCallback(
-      ScreenshotCaptureResultCode::USER_NAVIGATED_EXIT, gfx::Rect());
+  CompleteCapture(ScreenshotCaptureResultCode::USER_NAVIGATED_EXIT,
+                  gfx::Rect());
 }
 
 void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {
@@ -325,6 +330,12 @@ void ScreenshotFlow::OnScrollEvent(ui::ScrollEvent* event) {
 void ScreenshotFlow::CompleteCapture(ScreenshotCaptureResultCode result_code,
                                      const gfx::Rect& region) {
   RemoveUIOverlay();
+  if (region_selection_callback_) {
+    RegionSelectionResult result = {.result_code = result_code,
+                                    .selected_rect = region};
+    std::move(region_selection_callback_).Run(result);
+    return;
+  }
   CaptureAndRunScreenshotCompleteCallback(result_code, region);
 }
 

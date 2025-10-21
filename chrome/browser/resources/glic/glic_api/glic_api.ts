@@ -358,6 +358,28 @@ export declare interface GlicBrowserHost {
   captureScreenshot?(): Promise<Screenshot>;
 
   /**
+   * Starts a user-interactive process to select content from a tab. The user
+   * can select multiple regions.
+   *
+   * The returned observable will emit a value for each region captured. The
+   * client can cancel this operation by unsubscribing from the observable,
+   * which will cause the observable to be completed.
+   *
+   * The observable will terminate with a `CaptureRegionError` if the operation
+   * fails. This can happen if there is no focusable tab to capture from (with
+   * reason `NO_FOCUSABLE_TAB`), or if the operation is canceled by the user or
+   * the browser for other reasons (with reason `UNKNOWN`).
+   *
+   * Only one capture operation can be active at a time across all instances of
+   * the Glic web client running within a single Chrome user profile.
+   *
+   * If a capture is already in progress when this method is called (either from
+   * the same or a different client instance), the existing capture session will
+   * be terminated and a new one will begin.
+   */
+  captureRegion?(): ObservableValue<CaptureRegionResult>;
+
+  /**
    * @todo All actuation should eventually be moved onto PerformActions.
    *
    * Creates a tab and navigates to a URL. It is made the active tab by default
@@ -936,6 +958,56 @@ export declare interface OnResponseStoppedDetails {
   cause?: ResponseStopCause;
 }
 
+/**
+ * A rectangle with a position and size. All coordinate and size values are in
+ * DIPs.
+ */
+export declare interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * A region captured by the user from a document in a tab.
+ *
+ * This is a union of different possible region shapes. Currently only
+ * rectangular regions are supported, but this may be expanded with other region
+ * types like polygons in the future.
+ */
+export declare interface CapturedRegion {
+  /**
+   * A rectangular region captured from a document in a tab.
+   *
+   * The coordinate system is relative to the top-left corner of the document.
+   * The units are in device-independent pixels (DIPs), which are equivalent to
+   * CSS pixels.
+   *
+   * - **Position (`x`, `y`):** Coordinates of the top-left corner of the
+   *   rectangle, relative to the document's origin (0,0). Can be negative if
+   *   content is scrolled out of view.
+   * - **Size (`width`, `height`):** Dimensions of the rectangle, expected to be
+   *   non-negative.
+   *
+   * The rectangle can represent an area outside the currently visible viewport
+   * if the page is scrolled. It is not guaranteed to be contained within the
+   * document's bounds.
+   */
+  rect?: Rect;
+}
+
+/** The result of a successful region capture. */
+export declare interface CaptureRegionResult {
+  /** The ID of the tab from which the region was captured. */
+  tabId?: string;
+  /**
+   * The captured region. This can be expanded with other region types like
+   * polygons in the future.
+   */
+  region?: CapturedRegion;
+}
+
 /** An encoded journal. */
 export declare interface Journal {
   /**
@@ -1361,6 +1433,7 @@ export declare interface TaskOptions {
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
 export declare interface ErrorReasonTypes {
   captureScreenshot: CaptureScreenshotErrorReason;
+  captureRegion: CaptureRegionErrorReason;
   scrollTo: ScrollToErrorReason;
   webClientInitialize: WebClientInitializeErrorReason;
   actInFocusedTab: ActInFocusedTabErrorReason;
@@ -1425,6 +1498,8 @@ export declare interface ActInFocusedTabParams {
 
 /** Error type used for screenshot capture errors. */
 export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
+
+export type CaptureRegionError = ErrorWithReason<'captureRegion'>;
 
 /** Error type used for actuation errors. */
 export type ActInFocusedTabError = ErrorWithReason<'actInFocusedTab'>;
@@ -1866,6 +1941,9 @@ export interface BackwardsCompatibleTypes {
   userProfileInfo: UserProfileInfo;
   webClient: GlicWebClient;
   webPageData: WebPageData;
+  rect: Rect;
+  captureRegionResult: CaptureRegionResult;
+  capturedRegion: CapturedRegion;
   openSettingsOptions: OpenSettingsOptions;
   osPermissionType: OsPermissionType;
   zeroStateSuggestions: ZeroStateSuggestions;
@@ -1882,6 +1960,7 @@ export interface ClosedEnums {
 // Enums that can be extended.
 export interface ExtensibleEnums {
   captureScreenshotErrorReason: typeof CaptureScreenshotErrorReason;
+  captureRegionErrorReason: typeof CaptureRegionErrorReason;
   scrollToErrorReason: typeof ScrollToErrorReason;
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
   invocationSource: typeof InvocationSource;
@@ -2097,6 +2176,15 @@ export enum WebClientModel {
   DEFAULT = 0,
   // Actor operation mode.
   ACTOR = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason for `captureRegion` error.
+export enum CaptureRegionErrorReason {
+  UNKNOWN = 0,
+  // There is no focused tab that can be used for region capture.
+  NO_FOCUSABLE_TAB = 1,
 }
 
 ///////////////////////////////////////////////

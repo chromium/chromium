@@ -19,9 +19,9 @@ import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMoj
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, AdditionalContext as AdditionalContextMojo, AnnotatedPageData as AnnotatedPageDataMojo, ContextData as ContextDataMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, Screenshot as ScreenshotMojo, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInitialState, WebClientInterface, WebPageData as WebPageDataMojo, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
-import {CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode as WebClientModeMojo, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, ConversationInfo, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, TaskOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, AdditionalContext as AdditionalContextMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, Screenshot as ScreenshotMojo, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInitialState, WebClientInterface, WebPageData as WebPageDataMojo, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
+import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode as WebClientModeMojo, WebClientReceiver} from '../glic.mojom-webui.js';
+import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, CaptureRegionErrorReason, CaptureRegionResult, ConversationInfo, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, TaskOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '../glic_api/glic_api.js';
 import {ObservableValue} from '../observable.js';
 import type {ObservableValueReadOnly} from '../observable.js';
@@ -422,6 +422,62 @@ class WebClientImpl implements WebClientInterface {
   }
 }
 
+class CaptureRegionObserverImpl implements CaptureRegionObserver {
+  receiver?: CaptureRegionObserverReceiver;
+  constructor(
+      private sender: GatedSender, private handler: WebClientHandlerInterface,
+      public observationId: number) {
+    this.connectToSource();
+  }
+
+  // Stops requesting updates.
+  destroy() {
+    if (!this.receiver) {
+      return;
+    }
+    this.receiver.$.close();
+    this.receiver = undefined;
+  }
+
+  // Starts requesting updates.
+  private connectToSource() {
+    if (this.receiver) {
+      return;
+    }
+    this.receiver = new CaptureRegionObserverReceiver(this);
+    const remote = this.receiver.$.bindNewPipeAndPassRemote();
+    this.receiver.onConnectionError.addListener(() => {
+      // The connection was closed without OnUpdate being called with an error.
+      this.onUpdate(null, CaptureRegionErrorReasonMojo.kUnknown);
+    });
+    this.handler.captureRegion(remote);
+  }
+
+  onUpdate(
+      result: CaptureRegionResultMojo|null,
+      reason: CaptureRegionErrorReasonMojo|null): void {
+    const captureResult = captureRegionResultToClient(result);
+    if (captureResult) {
+      // Use `sendWhenActive` to queue up all captured regions if the panel is
+      // inactive. This is important because the panel is inactive during region
+      // selection, and we don't want to lose any of the user's selections.
+      this.sender.sendWhenActive('glicWebClientCaptureRegionUpdate', {
+        result: captureResult,
+        observationId: this.observationId,
+      });
+    } else {
+      // Use `sendWhenActive` to ensure the error is delivered, even if the
+      // panel is currently inactive.
+      this.sender.sendWhenActive('glicWebClientCaptureRegionUpdate', {
+        reason: (reason ?? CaptureRegionErrorReasonMojo.kUnknown) as number as
+            CaptureRegionErrorReason,
+        observationId: this.observationId,
+      });
+      this.destroy();
+    }
+  }
+}
+
 class PinCandidatesObserverImpl implements PinCandidatesObserver {
   receiver?: PinCandidatesObserverReceiver;
   constructor(
@@ -779,6 +835,24 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserEnableDragResize(request: {enabled: boolean}) {
     return this.embedder.enableDragResize(request.enabled);
+  }
+
+  glicBrowserSubscribeToCaptureRegion(request: {observationId: number}): void {
+    this.host.captureRegionObserver?.destroy();
+    this.host.captureRegionObserver = new CaptureRegionObserverImpl(
+        this.sender, this.handler, request.observationId);
+  }
+
+  glicBrowserUnsubscribeFromCaptureRegion(request: {observationId: number}):
+      void {
+    if (!this.host.captureRegionObserver) {
+      return;
+    }
+    if (this.host.captureRegionObserver.observationId ===
+        request.observationId) {
+      this.host.captureRegionObserver.destroy();
+      this.host.captureRegionObserver = undefined;
+    }
   }
 
   async glicBrowserCaptureScreenshot(_request: void, extras: ResponseExtras):
@@ -1213,6 +1287,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
   // Present while the client is monitoring pin candidates.
   pinCandidatesObserver?: PinCandidatesObserverImpl;
+  captureRegionObserver?: CaptureRegionObserverImpl;
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
@@ -1256,6 +1331,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.messageHandler.destroy();
     this.sender.destroy();
     this.pinCandidatesObserver?.disconnectFromSource();
+    this.captureRegionObserver?.destroy();
   }
 
   setInitialState(initialState: WebClientInitialState) {
@@ -1265,7 +1341,17 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   updateSenderActive() {
-    this.sender.setGating(this.shouldGateRequests());
+    const shouldGate = this.shouldGateRequests();
+    if (this.sender.isGating() === shouldGate) {
+      return;
+    }
+
+    if (shouldGate) {
+      // Becoming inactive, cancel capture.
+      this.captureRegionObserver?.destroy();
+      this.captureRegionObserver = undefined;
+    }
+    this.sender.setGating(shouldGate);
   }
 
   shouldGateRequests(): boolean {
@@ -1293,6 +1379,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.clientActiveObs.assignAndSignal(this.isClientActive());
     if (state === PanelOpenState.CLOSED) {
       this.pinCandidatesObserver?.disconnectFromSource();
+      this.captureRegionObserver?.destroy();
+      this.captureRegionObserver = undefined;
     } else {
       this.pinCandidatesObserver?.connectToSource();
     }
@@ -1593,6 +1681,10 @@ export class GatedSender {
   private keyedMessages = new Map<string, QueuedMessage>();
   private shouldGateRequests = true;
   constructor(private sender: PostMessageRequestSender) {}
+
+  isGating(): boolean {
+    return this.shouldGateRequests;
+  }
 
   // This is an escape hatch which should be used sparingly.
   getRawSender(): PostMessageRequestSender {
@@ -2170,4 +2262,16 @@ function webClientModeToMojo(mode: WebClientMode|undefined): WebClientModeMojo {
       return WebClientModeMojo.kText;
   }
   return WebClientModeMojo.kUnknown;
+}
+
+function captureRegionResultToClient(result: CaptureRegionResultMojo|null):
+    CaptureRegionResult|undefined {
+  if (!result) {
+    return undefined;
+  }
+  const region = result.region.rect ? {rect: result.region.rect} : undefined;
+  return {
+    tabId: tabIdToClient(result.tabId),
+    region,
+  };
 }

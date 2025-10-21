@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_source_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -151,6 +152,8 @@ GlicKeyedService::GlicKeyedService(
                                                 contextual_cueing_service)),
       sharing_manager_(
           CreateSharingManager(profile, &window_controller(), metrics_.get())),
+      region_capture_controller_(
+          std::make_unique<GlicRegionCaptureController>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
@@ -213,6 +216,10 @@ GlicKeyedService::GlicKeyedService(
 
 GlicKeyedService::~GlicKeyedService() {
   metrics_->SetControllers(nullptr, nullptr);
+}
+
+GlicRegionCaptureController& GlicKeyedService::region_capture_controller() {
+  return *region_capture_controller_;
 }
 
 // static
@@ -501,6 +508,12 @@ void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
 base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
     base::RepeatingClosure callback) {
   return user_input_submitted_callback_list_.Add(std::move(callback));
+}
+
+void GlicKeyedService::CaptureRegion(
+    content::WebContents* web_contents,
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
+  region_capture_controller_->CaptureRegion(web_contents, std::move(observer));
 }
 
 void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,

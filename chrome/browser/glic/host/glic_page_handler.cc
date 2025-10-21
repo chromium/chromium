@@ -57,6 +57,7 @@
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -84,6 +86,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1037,6 +1040,22 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
     host().CaptureScreenshot(std::move(callback));
+  }
+
+  void CaptureRegion(
+      mojo::PendingRemote<mojom::CaptureRegionObserver> observer) override {
+    content::WebContents* web_contents = nullptr;
+    const FocusedTabData& focus = sharing_manager().GetFocusedTabData();
+    // Prioritize the focused tab, but fall back to the unfocused tab if one is
+    // available. This is useful in cases where the active tab is not
+    // "focusable" by Glic (e.g. chrome:// pages).
+    tabs::TabInterface* active_tab =
+        focus.is_focus() ? focus.focus() : focus.unfocused_tab();
+
+    if (active_tab) {
+      web_contents = active_tab->GetContents();
+    }
+    glic_service_->CaptureRegion(web_contents, std::move(observer));
   }
 
   void SetAudioDucking(bool enabled,

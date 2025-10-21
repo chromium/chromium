@@ -38,12 +38,14 @@ LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     views::View* anchor_view,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback,
-    const LayoutParams& layout_params)
+    const LayoutParams& layout_params,
+    int text_message_id)
     : views::BubbleDialogDelegateView(
           anchor_view,
           views::BubbleBorder::Arrow::BOTTOM_CENTER,
           views::BubbleBorder::Shadow::STANDARD_SHADOW),
-      layout_params_(layout_params) {
+      layout_params_(layout_params),
+      text_message_id_(text_message_id) {
   // The cancel close_callback is called when VKEY_ESCAPE is hit.
   SetCancelCallback(std::move(escape_callback));
 
@@ -82,7 +84,7 @@ void LensRegionSearchInstructionsView::Init() {
   // the font list.
   int font_size_delta = kTextFontSize - default_font.GetFontSize();
   auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_LENS_REGION_SEARCH_BUBBLE_TEXT));
+      l10n_util::GetStringUTF16(text_message_id_));
   label->SetFontList(gfx::FontList().Derive(font_size_delta, gfx::Font::NORMAL,
                                             gfx::Font::Weight::MEDIUM));
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);

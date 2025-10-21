@@ -29,6 +29,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -55,6 +56,7 @@ class GlicFreController;
 class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
+class GlicRegionCaptureController;
 class GlicScreenshotCapturer;
 class GlicShareImageHandler;
 class GlicTabSourceObserver;
@@ -220,6 +222,10 @@ class GlicKeyedService : public KeyedService,
   base::CallbackListSubscription AddUserInputSubmittedCallback(
       base::RepeatingClosure callback);
 
+  void CaptureRegion(
+      content::WebContents* web_contents,
+      mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+
   // Fetches the image for the context menu item (if possible, and potentially
   // scaling and reencoding) and sends the result to the web client as
   // additional data.
@@ -228,6 +234,8 @@ class GlicKeyedService : public KeyedService,
                          const ::GURL& src_url);
 
   AuthController& GetAuthController() { return *auth_controller_; }
+
+  GlicRegionCaptureController& region_capture_controller();
 
   bool IsActiveWebContents(content::WebContents* contents);
 
@@ -307,6 +315,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
+  std::unique_ptr<GlicRegionCaptureController> region_capture_controller_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
