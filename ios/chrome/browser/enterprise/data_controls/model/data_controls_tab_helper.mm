@@ -123,7 +123,36 @@ void DataControlsTabHelper::ShouldAllowCut(
 
 void DataControlsTabHelper::ShouldAllowShare(
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(true);
+  if (!IsClipboardDataControlsEnabled()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  const GURL& source_url = web_state_->GetLastCommittedURL();
+
+  Verdict verdict = IsShareAllowedByPolicy(source_url, profile);
+  std::string domain = GetManagementDomain(profile);
+
+  switch (verdict.level()) {
+    case Rule::Level::kWarn:
+      ShowWarningDialog(
+          DataControlsDialog::Type::kClipboardShareWarn, domain,
+          base::BindOnce(&DataControlsTabHelper::FinishShare,
+                         weak_factory_.GetWeakPtr(), source_url,
+                         std::move(verdict), std::move(callback)));
+      break;
+    case Rule::Level::kBlock:
+      ShowRestrictSnackbar(domain);
+      [[fallthrough]];
+    case Rule::Level::kReport:
+    case Rule::Level::kAllow:
+    case Rule::Level::kNotSet:
+      FinishShare(source_url, std::move(verdict), std::move(callback),
+                  /*bypassed=*/false);
+      break;
+  }
 }
 
 void DataControlsTabHelper::SetDataControlsCommandsHandler(
@@ -169,6 +198,26 @@ void DataControlsTabHelper::FinishCopy(const GURL& source_url,
     auto* pasteboard_manager = DataControlsPasteboardManager::GetInstance();
     pasteboard_manager->SetNextPasteboardItemsSource(
         source_url, profile, verdicts.copy_to_os_clipbord);
+  }
+
+  std::move(callback).Run(allowed);
+}
+
+void DataControlsTabHelper::FinishShare(const GURL& source_url,
+                                        Verdict verdict,
+                                        base::OnceCallback<void(bool)> callback,
+                                        bool bypassed) {
+  // The user may have navigated away from the page from which the share
+  // operation was initiated. If the URL has changed, we should block the share
+  // operation as the original content is no longer available.
+  if (source_url != web_state_->GetLastCommittedURL()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool allowed = verdict.level() != Rule::Level::kBlock;
+  if (verdict.level() == Rule::Level::kWarn) {
+    allowed = bypassed;
   }
 
   std::move(callback).Run(allowed);

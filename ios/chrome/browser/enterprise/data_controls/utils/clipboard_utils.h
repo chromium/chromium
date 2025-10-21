@@ -54,6 +54,12 @@ CopyPolicyVerdicts IsCopyAllowedByPolicy(
     ProfileIOS* source_profile  // Must be non-null.
 );
 
+// This function checks if a share action is allowed by the "DataControlsRules"
+// policy.
+Verdict IsShareAllowedByPolicy(const GURL& source_url,
+                               ProfileIOS* source_profile  // Must be non-null.
+);
+
 }  // namespace data_controls
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_UTILS_CLIPBOARD_UTILS_H_

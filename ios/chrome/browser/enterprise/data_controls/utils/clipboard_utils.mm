@@ -69,4 +69,16 @@ CopyPolicyVerdicts IsCopyAllowedByPolicy(const GURL& source_url,
   return {std::move(verdict), allow_copy_to_os};
 }
 
+Verdict IsShareAllowedByPolicy(const GURL& source_url,
+                               ProfileIOS* source_profile) {
+  CHECK(source_profile);
+
+  IOSRulesService* rules_service =
+      IOSRulesServiceFactory::GetForProfile(source_profile);
+  // Once the default sharing sheet is presented, the user will be able to copy
+  // the selected content to the os clipboard. Treat the share intent as a copy
+  // to os clipboard intent.
+  return rules_service->GetCopyToOSClipboardVerdict(source_url);
+}
+
 }  // namespace data_controls

@@ -74,6 +74,12 @@ class DataControlsTabHelper
                    base::OnceCallback<void(bool)> callback,
                    bool bypassed);
 
+  // Finalizes the share action invoking the callback.
+  void FinishShare(const GURL& source_url,
+                   Verdict verdict,
+                   base::OnceCallback<void(bool)> callback,
+                   bool bypassed);
+
   // Displays a warning dialog associated with a user's action (e.g., copy,
   // paste, share).
   void ShowWarningDialog(DataControlsDialog::Type dialog_type,

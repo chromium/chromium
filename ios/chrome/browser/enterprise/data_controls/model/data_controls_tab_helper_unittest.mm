@@ -10,6 +10,7 @@
 #import "base/test/bind.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -32,6 +33,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace data_controls {
@@ -101,6 +103,18 @@ class DataControlsTabHelperTest : public PlatformTest {
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
                       })"},
+                    /*machine_scope=*/false);
+  }
+
+  void SetCopyFromOsClipboardBlockRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                          "sources": {
+                            "os_clipboard": true
+                          },
+                          "restrictions": [
+                            {"class": "CLIPBOARD", "level": "BLOCK"}
+                          ]
+                        })"},
                     /*machine_scope=*/false);
   }
 
@@ -853,14 +867,183 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCut) {
   [(OCMockObject*)snackbar_handler verify];
 }
 
-// Tests that share is allowed by default.
-TEST_F(DataControlsTabHelperTest, ShouldAllowShare) {
-  base::RunLoop run_loop;
-  tab_helper()->ShouldAllowShare(base::BindLambdaForTesting([&](bool allowed) {
-    EXPECT_TRUE(allowed);
-    run_loop.Quit();
-  }));
-  run_loop.Run();
+// Tests that share is allowed when no rules are set
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Default) {
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
+}
+
+// Tests that share is allowed when a "BLOCK" rule is set but the feature is
+// disabled.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
+  SetCopyBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
+}
+
+// Tests that share is blocked when a "BLOCK" rule matches the page URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Blocked) {
+  SetCopyBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_FALSE(test_future.Get());
+
+  EXPECT_OCMOCK_VERIFY(snackbar_handler);
+}
+
+// Tests that share is blocked when a "BLOCK" rule matches the page URL and
+// the snackbar message is correct when the organization domain is not empty.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Blocked_WithDomain) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+
+  SetCopyBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSStringF(
+                                  IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                  std::u16string(kOrganizationDomain))
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
+
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_FALSE(test_future.Get());
+
+  EXPECT_OCMOCK_VERIFY(snackbar_handler);
+}
+
+// Tests that share is blocked when a "BLOCK" rule forbids to copy content to
+// the OS clipboard.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_OS_Clipboard_Blocked) {
+  SetPasteBlockToOSClipboardRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_FALSE(test_future.Get());
+
+  EXPECT_OCMOCK_VERIFY(snackbar_handler);
+}
+
+// Tests that share is allowed when an "ALLOW" rule matches the page URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Allowed) {
+  SetCopyAllowRule();
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
+}
+
+// Tests that share is blocked when a "WARN" rule matches the page URL and the
+// user does not bypass the warning.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Warn_NotBypassed) {
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+
+  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
+  tab_helper()->SetDataControlsCommandsHandler(handler);
+
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardShareWarn);
+
+  std::move(handler->_callback).Run(false);
+
+  EXPECT_FALSE(test_future.Get());
+}
+
+// Tests that share is allowed when a "WARN" rule matches the page URL and the
+// user bypasses the warning.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Warn_Bypassed) {
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+
+  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
+  tab_helper()->SetDataControlsCommandsHandler(handler);
+
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardShareWarn);
+  EXPECT_TRUE(handler.organizationDomain.empty());
+
+  std::move(handler->_callback).Run(true);
+
+  EXPECT_TRUE(test_future.Get());
+}
+
+// Tests that share is allowed when a "WARN" rule matches the page URL, the
+// user bypasses the warning, and the warning dialog is correct when the
+// organization domain is not empty.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Warn_Bypassed_WithDomain) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+
+  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
+  tab_helper()->SetDataControlsCommandsHandler(handler);
+
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardShareWarn);
+  EXPECT_EQ(handler.organizationDomain, base::UTF16ToUTF8(kOrganizationDomain));
+
+  std::move(handler->_callback).Run(true);
+
+  EXPECT_TRUE(test_future.Get());
+}
+
+// Tests that share is allowed from a URL that doesn't match any rules.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShare_OtherUrl) {
+  SetCopyBlockRule();
+  // The blocking rule is set for `kBlockedUrl`, so it shouldn't apply to
+  // `kOtherUrl`.
+  web_state_->SetCurrentURL(GURL(kOtherUrl));
+
+  base::test::TestFuture<bool> test_future;
+  tab_helper()->ShouldAllowShare(test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
 }
 
 }  // namespace data_controls
