@@ -47,38 +47,44 @@ namespace {
 //
 // Note: Forgetting an identity is a asynchronous operation. This function does
 // not wait for the forget identity operation to finish.
-void StartForgetAllIdentities(ProfileIOS* profile, ProceduralBlock completion) {
+void StartForgetAllIdentitiesOnDevice(ProceduralBlock completion) {
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();
-  ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
-  NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
-  if (identities_to_remove.count == 0) {
-    if (completion) {
-      completion();
-    }
-    return;
-  }
-
-  __block int pending_tasks_count =
-      static_cast<int>(identities_to_remove.count);
+  // Number of tasks we are waiting for.
+  // Triggering all deletion counts as one task, so that
+  // the completion can’t be called until all deletions are requested.
+  __block int pending_tasks_count = 1;
   ProceduralBlock tasks_completion = ^{
     DCHECK_GT(pending_tasks_count, 0);
     if (--pending_tasks_count == 0 && completion) {
       completion();
     }
   };
-  for (id<SystemIdentity> identity in identities_to_remove) {
-    system_identity_manager->ForgetIdentity(
-        identity, base::BindOnce(^(NSError* error) {
-          if (error) {
-            NSLog(@"ForgetIdentity failed: [identity = %@, error = %@]",
-                  identity.userEmail, [error localizedDescription]);
-          }
-          tasks_completion();
-        }));
-  }
+
+  SystemIdentityManager::IdentityIteratorCallback callback =
+      base::BindRepeating(
+          [](int& pending_tasks_count, ProceduralBlock tasks_completion,
+             SystemIdentityManager* system_identity_manager,
+             id<SystemIdentity> identity) {
+            pending_tasks_count++;
+            system_identity_manager->ForgetIdentity(
+                identity, base::BindOnce(^(NSError* error) {
+                  if (error) {
+                    NSLog(@"ForgetIdentity failed: [identity = %@, error = %@]",
+                          identity.userEmail, [error localizedDescription]);
+                  }
+                  tasks_completion();
+                }));
+            return SystemIdentityManager::IteratorResult::kContinueIteration;
+          },
+          std::ref(pending_tasks_count), tasks_completion,
+          system_identity_manager);
+
+  system_identity_manager->IterateOverIdentities(std::move(callback));
+  // Now that all ForgetIdentity() calls have been kicked off, mark the task for
+  // triggering all deletions as complete.
+  tasks_completion();
 }
 
 }  // namespace
@@ -91,25 +97,50 @@ void TearDownMockAuthentication() {
   // Should we do something here?
 }
 
+// Clear sign-in related preferences.
+void ClearPreferences() {
+  ProfileIOS* profile = GetOriginalProfile();
+  CHECK(profile);
+  // Clear last signed in user preference.
+  profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
+  profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSignedInUsername);
+  profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+
+  // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref
+  // changes to ensure that clearing the last signed in account is saved on
+  // disk in case Chrome crashes during shutdown.
+  profile->GetPrefs()->CommitPendingWrite();
+}
+
+// Clear preferences and remove identities from device. Assumes the user is
+// signed-out.
+void ClearIdentities(ProceduralBlock completion) {
+  ProfileIOS* profile = GetOriginalProfile();
+  CHECK(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  ClearPreferences();
+  StartForgetAllIdentitiesOnDevice(completion);
+}
+
 void SignOutAndClearIdentities(ProceduralBlock completion) {
   // EarlGrey monitors network requests by swizzling internal iOS network
   // objects and expects them to be dealloced before the tear down. It is
   // important to autorelease all objects that make network requests to avoid
   // EarlGrey being confused about on-going network traffic..
+  CHECK(completion);
   @autoreleasepool {
     ProfileIOS* profile = GetOriginalProfile();
-    DCHECK(profile);
+    CHECK(profile);
 
     // Needs to wait for two tasks to complete:
     // - Sign-out & clean browsing data (skipped if the user is already
     // signed-out, but callback is still called)
     // - Forgetting all identities
-    __block int pending_tasks_count = 2;
-    ProceduralBlock tasks_completion = ^{
-      DCHECK_GT(pending_tasks_count, 0);
-      if (--pending_tasks_count == 0 && completion) {
-        completion();
-      }
+    ProceduralBlock signout_completion = ^{
+      ClearIdentities(completion);
     };
 
     // Sign out current user and clear all browsing data on the device.
@@ -119,24 +150,10 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
         AuthenticationServiceFactory::GetForProfile(profile);
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
-                                      tasks_completion);
+                                      signout_completion);
     } else {
-      tasks_completion();
+      signout_completion();
     }
-
-    // Clear last signed in user preference.
-    profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
-    profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSignedInUsername);
-    profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
-
-    // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref
-    // changes to ensure that clearing the last signed in account is saved on
-    // disk in case Chrome crashes during shutdown.
-    profile->GetPrefs()->CommitPendingWrite();
-
-    // Once the browser was signed out, start clearing all identities from the
-    // ChromeIdentityService.
-    StartForgetAllIdentities(profile, tasks_completion);
   }
 }
 
