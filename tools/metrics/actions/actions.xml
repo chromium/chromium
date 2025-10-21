@@ -6788,6 +6788,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BookmarkBar_ContextMenu_OpenAllInNewTabGroup">
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the bookmark context
+    menu &quot;Open All in New Tab Group&quot;
+  </description>
+</action>
+
 <action name="BookmarkBar_ContextMenu_OpenAllInNewWindow">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -6802,32 +6811,38 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="BookmarkBar_ContextMenu_OpenInNewTab">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_OpenInNewWindow">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_Redo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_Remove">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_RemoveFromBookmarkBar">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_ShowInFolder">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
@@ -6841,7 +6856,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="BookmarkBar_ContextMenu_Undo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
@@ -41440,6 +41456,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel_Bookmarks_ContextMenu_OpenAll">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the SidePanel for
     &quot;open all&quot;
@@ -41448,6 +41465,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel_Bookmarks_ContextMenu_OpenAllIncognito">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the SidePanel for
     &quot;open all incognito&quot;
@@ -41456,6 +41474,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel_Bookmarks_ContextMenu_OpenAllInNewTabGroup">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the SidePanel for
     &quot;open all in new tab group&quot;
@@ -41464,6 +41483,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel_Bookmarks_ContextMenu_OpenAllInNewWindow">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the SidePanel for
     &quot;open all in new window&quot;
@@ -41472,6 +41492,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel_Bookmarks_ContextMenu_OpenSplitView">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the SidePanel for
     &quot;open split view&quot;
@@ -51954,9 +51975,10 @@ should be able to be added at any place in this file.
 
 <action name="WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewTabGroup">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the Wrench menu for
-    &quot;open split view&quot;
+    &quot;Open all in new tab group&quot;
   </description>
 </action>
 
@@ -51975,6 +51997,7 @@ should be able to be added at any place in this file.
 
 <action name="WrenchMenu_Bookmarks_ContextMenu_OpenSplitView">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks context menu is used in the Wrench menu for
     &quot;open split view&quot;
@@ -51996,6 +52019,7 @@ should be able to be added at any place in this file.
 
 <action name="WrenchMenu_OpenRecentGroup">
   <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>App Menu: Recently Closed: Open a recent group.</description>
 </action>
 
