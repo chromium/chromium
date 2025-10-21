@@ -134,13 +134,16 @@ export function getFavicon(url: string): string {
  *     mode version of the default favicon.
  * @param fallbackToHost To allow for disabling the best match fallback
  *     behavior.
- *
+ * @param ignoreCache To add the timestamp as a search param to the URL in order
+ *     to bypass caching. Useful for surfaces that expect the favicon source to
+ *     change during their lifetime (e.g. omnibox).
  * @return image-set for the favicon.
  */
 export function getFaviconForPageURL(
     url: string, isSyncedUrlForHistoryUi: boolean,
     remoteIconUrlForUma: string = '', size: number = 16,
-    forceLightMode: boolean = false, fallbackToHost: boolean = true): string {
+    forceLightMode: boolean = false, fallbackToHost: boolean = true,
+    ignoreCache = false): string {
   // Note: URL param keys used below must match those in the description of
   // chrome://favicon2 format in components/favicon_base/favicon_url_parser.h.
   const faviconUrl = getBaseFaviconUrl();
@@ -158,6 +161,9 @@ export function getFaviconForPageURL(
   }
   if (!fallbackToHost) {
     faviconUrl.searchParams.set('fallbackToHost', '0');
+  }
+  if (ignoreCache) {
+    faviconUrl.searchParams.set('cacheBypass', String(Date.now()));
   }
 
   return getImageSet(faviconUrl.toString());
