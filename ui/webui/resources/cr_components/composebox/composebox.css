@@ -115,6 +115,10 @@
   );
 }
 
+:host([ntp-realbox-next-enabled]) {
+  --input-bottom-spacing: 12px;
+}
+
 :host([expanded_]) {
   border-radius: var(--expanded-border-radius);
 }
