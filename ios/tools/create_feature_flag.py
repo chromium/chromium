@@ -176,8 +176,9 @@ def update_flag_descriptions_mm(content, feature_name):
 
 def update_about_flags_mm(content, feature_name):
     """Adds the feature flag to the kFeatureEntries array in
-    about_flags.mm."""
+    about_flags.mm, ensuring the previous entry has a trailing comma."""
     feature_flag_name = f"k{to_camel_case(feature_name)}"
+    # The new entry itself includes a trailing comma.
     feature_entry = f"""{{"{to_kebab_case(to_camel_case(feature_name))}",
           flag_descriptions::{feature_flag_name}Name,
           flag_descriptions::{feature_flag_name}Description,
@@ -191,12 +192,37 @@ def update_about_flags_mm(content, feature_name):
         print("Error: Could not find the start of the kFeatureEntries array.")
         sys.exit(1)
 
+    # Find the opening brace of the array
+    opening_brace_index = content.find('{', array_start_index)
+    if opening_brace_index == -1:
+        print("Error: Could not find '{' for kFeatureEntries array.")
+        sys.exit(1)
+
     end_of_array_marker = "};"
     insertion_index = content.find(end_of_array_marker, array_start_index)
     if insertion_index == -1:
         print("Error: Could not find the end of the kFeatureEntries array.")
         sys.exit(1)
 
+    # Find the last closing brace '}' of an entry before the '};'
+    last_brace_index = content.rfind('}', opening_brace_index, insertion_index)
+
+    # Check if we found a brace and it's after the array's opening brace
+    # (i.e., the array is not empty).
+    if last_brace_index > opening_brace_index:
+        # We found a previous entry.
+        # Check for a comma in the content between it and the insertion point.
+        trailing_content = content[last_brace_index + 1:insertion_index]
+        if ',' not in trailing_content:
+            # No comma found. We need to add one right after the last brace.
+            # Rebuild the content:
+            # [content_before_brace] + '}' + ',' + [trailing_whitespace] +
+            # [new_entry] + [end_marker]
+            return (content[:last_brace_index + 1] + ',' + trailing_content +
+                    feature_entry + content[insertion_index:])
+
+    # If the array was empty (last_brace_index <= opening_brace_index)
+    # or if a comma was already present, just insert the new entry.
     return content[:insertion_index] + feature_entry + content[insertion_index:]
 
 
