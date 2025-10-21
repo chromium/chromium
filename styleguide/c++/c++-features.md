@@ -1966,7 +1966,7 @@ const std::string& MyString() {
 type T that behaves as an object of type T but never calls T's destructor.
 
 **Documentation:**
-[no_destructor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/no_desctructor.h)
+[no_destructor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/no_destructor.h)
 
 **Notes:**
 *** promo
