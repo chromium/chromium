@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -57,30 +52,29 @@ NSMutableArray<NSData*>* PRFOutputsFromExtensionOutputData(
         extension_output_data) {
   static constexpr size_t kPRFOutputSize = 32u;
 
-  size_t result_size = extension_output_data.prf_result.size();
-  bool hasOneOutput = result_size == kPRFOutputSize;
-  bool hasTwoOutputs = result_size == 2u * kPRFOutputSize;
+  auto span = base::span(extension_output_data.prf_result);
 
   // The PRF result can be empty, have exactly 1 output or exactly 2 outputs.
-  CHECK(result_size == 0u || hasOneOutput || hasTwoOutputs)
-      << "Invalid PRF result size: " << result_size;
+  CHECK_EQ(span.size() % kPRFOutputSize, 0u)
+      << "Invalid PRF result size: " << span.size();
+  CHECK_LE(span.size() / kPRFOutputSize, 2u)
+      << "Invalid PRF result size: " << span.size();
 
-  if (hasOneOutput || hasTwoOutputs) {
-    NSMutableArray<NSData*>* prf_outputs = [NSMutableArray array];
-    [prf_outputs
-        addObject:[[NSData alloc]
-                      initWithBytes:extension_output_data.prf_result.data()
-                             length:kPRFOutputSize]];
-    if (hasTwoOutputs) {
-      [prf_outputs
-          addObject:[[NSData alloc]
-                        initWithBytes:extension_output_data.prf_result.data() +
-                                      kPRFOutputSize
-                               length:kPRFOutputSize]];
-    }
-    return prf_outputs;
+  if (span.empty()) {
+    return nil;
   }
-  return nil;
+
+  NSMutableArray<NSData*>* result = [NSMutableArray array];
+  while (span.size() >= kPRFOutputSize) {
+    auto [head, rest] = span.split_at<kPRFOutputSize>();
+
+    [result addObject:[[NSData alloc] initWithBytes:head.data()
+                                             length:head.size()]];
+
+    span = rest;
+  }
+
+  return result;
 }
 
 // Wrapper around passkey_model_utils's MakeAuthenticatorDataForAssertion
