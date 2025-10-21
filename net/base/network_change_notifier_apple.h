@@ -60,6 +60,9 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
 
  private:
   friend class NetworkChangeNotifierAppleTest;
+#if BUILDFLAG(IS_MAC)
+  friend class NetworkChangeNotifierApplePathMonitorTest;
+#endif
 
   // Called on the main thread on startup, afterwards on the notifier thread.
   static ConnectionType CalculateConnectionType(SCNetworkConnectionFlags flags);
@@ -80,6 +83,14 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
   static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsMac();
 
 #if BUILDFLAG(IS_MAC)
+  struct NetworkPathMonitorStorage;
+
+  bool ShouldUseNetworkPathMonitor() const;
+  bool EnsureNetworkPathMonitorStarted();
+  void StopNetworkPathMonitor();
+  void OnNetworkPathConnectionTypeChanged(ConnectionType new_type);
+  void ProcessConnectionTypeUpdate(ConnectionType new_type, bool should_notify);
+
   void SetCallbacksForTest(
       base::OnceClosure initialized_callback,
       base::RepeatingCallback<bool(NetworkInterfaceList*, int)>
@@ -104,6 +115,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
 
 #if BUILDFLAG(IS_MAC)
   const bool reduce_ip_address_change_notification_;
+  std::unique_ptr<NetworkPathMonitorStorage> network_path_monitor_;
   base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store_;
   std::optional<NetworkInterfaceList> interfaces_for_network_change_check_;
   std::string ipv4_primary_interface_name_;

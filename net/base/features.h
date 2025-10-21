@@ -678,6 +678,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTruncateBodyToContentLength);
 // Reduces the frequency of IP address change notifications that result in
 // TCP and QUIC connection resets.
 NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
+
+// Uses the Network framework path monitor instead of SCNetworkReachability for
+// connection type change detection on macOS.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseNetworkPathMonitorForNetworkChangeNotifier);
 #endif  // BUILDFLAG(IS_MAC)
 
 // This feature will enable the Device Bound Session Credentials protocol to let

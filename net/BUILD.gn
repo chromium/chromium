@@ -1650,6 +1650,7 @@ component("net") {
       "CFNetwork.framework",
       "CoreServices.framework",
       "Foundation.framework",
+      "Network.framework",
       "Security.framework",
       "SystemConfiguration.framework",
       "UniformTypeIdentifiers.framework",
