@@ -11,11 +11,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/modal_dialog_host.h"
@@ -115,7 +117,8 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
 
   if (widget->is_top_level() && SupportsGlobalScreenCoordinates()) {
     views::Widget* const host_widget =
-        host_browser_window->TopContainer()->GetWidget();
+        BrowserElementsViews::From(host_browser_window)
+            ->GetPrimaryWindowWidget();
     gfx::Rect dialog_screen_bounds =
         dialog_bounds +
         host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
@@ -416,9 +419,8 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
 }
 
 views::Widget* TabDialogManager::GetHostWidget() const {
-  return tab_interface_->GetBrowserWindowInterface()
-      ->TopContainer()
-      ->GetWidget();
+  return BrowserElementsViews::From(tab_interface_->GetBrowserWindowInterface())
+      ->GetPrimaryWindowWidget();
 }
 
 void TabDialogManager::UpdateModalDialogBounds() {

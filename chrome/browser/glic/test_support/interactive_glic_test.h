@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -340,14 +341,12 @@ class InteractiveGlicTestMixin : public T {
   auto ToggleGlicWindow(GlicWindowMode window_mode) {
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
       return Api::PressButton(kGlicButtonElementId)
-          .SetContext(views::ElementTrackerViews::GetContextForView(
-              browser()->TopContainer()));
+          .SetContext(BrowserElements::From(browser())->GetContext());
     }
     switch (window_mode) {
       case GlicWindowMode::kAttached:
         return Api::PressButton(kGlicButtonElementId)
-            .SetContext(views::ElementTrackerViews::GetContextForView(
-                browser()->TopContainer()));
+            .SetContext(BrowserElements::From(browser())->GetContext());
       case GlicWindowMode::kDetached:
         return Api::Do(
             [this] { window_controller().ShowDetachedForTesting(); });

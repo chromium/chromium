@@ -718,6 +718,8 @@ BrowserView::BrowserView(Browser* browser)
   // container.
   auto lens_overlay_view = std::make_unique<views::View>();
   lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
+  lens_overlay_view->SetProperty(views::kElementIdentifierKey,
+                                 kLensOverlayViewElementId);
   lens_overlay_view->SetVisible(false);
   lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
   lens_overlay_view_ =
@@ -3101,14 +3103,6 @@ void BrowserView::ShowOneClickSigninConfirmation(
   OneClickSigninDialogView::ShowDialog(email, std::move(delegate),
                                        GetNativeWindow(),
                                        std::move(confirmed_callback));
-}
-
-views::View* BrowserView::GetTopContainer() {
-  return top_container_;
-}
-
-views::View* BrowserView::GetLensOverlayView() {
-  return lens_overlay_view_;
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {

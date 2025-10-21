@@ -795,9 +795,7 @@ class Browser : public TabStripModelObserver,
       BrowserDidCloseCallback callback) override;
   base::CallbackListSubscription RegisterBrowserCloseCancelled(
       BrowserCloseCancelledCallback callback) override;
-  views::View* TopContainer() override;
   base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
-  views::View* LensOverlayView() override;
   base::CallbackListSubscription RegisterActiveTabDidChange(
       ActiveTabChangeCallback callback) override;
   tabs::TabInterface* GetActiveTabInterface() override;

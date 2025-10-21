@@ -1791,7 +1791,9 @@ bool LensOverlayController::IsContextualSearchbox() {
 
 raw_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   // Grab the host view for the overlay which is owned by the browser view.
-  auto* host_view = tab_->GetBrowserWindowInterface()->LensOverlayView();
+  auto* const host_view =
+      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+          ->GetView(kLensOverlayViewElementId);
   CHECK(host_view);
 
   // Setup a preselection anchor view. Usually bubbles are anchored to top
@@ -1890,9 +1892,8 @@ void LensOverlayController::OnWidgetActivationChanged(views::Widget* widget,
     // the preselection widget, make sure to clear out the browser's native
     // focus. This causes the preselection widget to lose activation, so
     // reactivate it manually.
-    tab_->GetBrowserWindowInterface()
-        ->TopContainer()
-        ->GetWidget()
+    BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+        ->GetPrimaryWindowWidget()
         ->GetFocusManager()
         ->ClearNativeFocus();
     preselection_widget_->Activate();

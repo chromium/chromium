@@ -331,14 +331,6 @@ sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-views::View* TestBrowserWindow::GetTopContainer() {
-  return nullptr;
-}
-
-views::View* TestBrowserWindow::GetLensOverlayView() {
-  return nullptr;
-}
-
 DownloadBubbleUIController* TestBrowserWindow::GetDownloadBubbleUIController() {
   return nullptr;
 }

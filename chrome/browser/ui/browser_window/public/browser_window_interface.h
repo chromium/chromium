@@ -36,10 +36,6 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-namespace views {
-class View;
-}  // namespace views
-
 namespace web_app {
 class AppBrowserController;
 }  // namespace web_app
@@ -234,9 +230,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   virtual base::CallbackListSubscription RegisterBrowserCloseCancelled(
       BrowserCloseCancelledCallback callback) = 0;
 
-  // Returns the top container view.
-  virtual views::View* TopContainer() = 0;
-
   // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
   // An appropriate use case is as a variable passed to an asynchronously
   // invoked PostTask.
@@ -256,9 +249,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   //   std::optional<SkColor> color_of_browser_;
   // };
   virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
-
-  // Returns the view that houses the Lens overlay.
-  virtual views::View* LensOverlayView() = 0;
 
   using ActiveTabChangeCallback =
       base::RepeatingCallback<void(BrowserWindowInterface*)>;

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -107,7 +108,8 @@ void GlicFocusedBrowserManager::OnBrowserBecameActive(
     BrowserWindowInterface* browser_interface) {
   // Observe for browser window minimization changes.
   widget_observation_.Reset();
-  views::Widget* widget = browser_interface->TopContainer()->GetWidget();
+  views::Widget* widget =
+      BrowserElementsViews::From(browser_interface)->GetPrimaryWindowWidget();
   widget_observation_.Observe(widget);
 
   MaybeUpdateFocusedBrowser();

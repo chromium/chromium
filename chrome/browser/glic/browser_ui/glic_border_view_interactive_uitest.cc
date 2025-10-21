@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -66,7 +67,8 @@ class WidgetShowStateObserver : public views::WidgetObserver {
  public:
   WidgetShowStateObserver(Browser* browser, bool should_be_minimized)
       : browser_(browser), should_be_minimized_(should_be_minimized) {
-    widget_observation_.Observe(browser->TopContainer()->GetWidget());
+    widget_observation_.Observe(
+        BrowserElementsViews::From(browser)->GetPrimaryWindowWidget());
   }
 
   void Wait() {

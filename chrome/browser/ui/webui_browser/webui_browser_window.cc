@@ -863,20 +863,6 @@ void WebUIBrowserWindow::ShowOneClickSigninConfirmation(
   NOTIMPLEMENTED();
 }
 
-views::View* WebUIBrowserWindow::GetTopContainer() {
-  // This view is technically the entire window, not just the top container.
-  // We return it because the BookmarkContextMenu constructor needs to be able
-  // get to a NativeWindow whenever the context menu is triggered from the
-  // bookmarks side panel, and uses
-  // browser_window->TopContainer()->GetWidget()->GetNativeWindow().
-  return web_view_;
-}
-
-views::View* WebUIBrowserWindow::GetLensOverlayView() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 DownloadBubbleUIController*
 WebUIBrowserWindow::GetDownloadBubbleUIController() {
   NOTIMPLEMENTED();

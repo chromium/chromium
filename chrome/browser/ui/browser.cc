@@ -1136,16 +1136,8 @@ base::CallbackListSubscription Browser::RegisterBrowserCloseCancelled(
   return browser_close_cancelled_callback_list_.Add(std::move(callback));
 }
 
-views::View* Browser::TopContainer() {
-  return window_->GetTopContainer();
-}
-
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
   return AsWeakPtr();
-}
-
-views::View* Browser::LensOverlayView() {
-  return window_->GetLensOverlayView();
 }
 
 base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
