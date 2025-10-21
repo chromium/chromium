@@ -72,12 +72,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.cc:EntityTypeToMetricsString) -->
 
+<!-- LINT.IfChange(Autofill.Ai.PromptTypes) -->
+
 <variants name="Autofill.Ai.PromptTypes">
+  <variant name="MigratePrompt"
+      summary="The prompt is asking users to migrate an existing local
+               entity."/>
   <variant name="SavePrompt"
       summary="The prompt is asking users to save a new entity."/>
   <variant name="UpdatePrompt"
       summary="The prompt is asking users to update an existing entity."/>
 </variants>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.cc:EntityPromptTypeToMetricsString) -->
 
 <variants name="Autofill.BetterAuthFlowType">
   <variant name="Cvc" summary="CVC authentication only"/>

@@ -64,6 +64,21 @@ std::string_view EntityRecordTypeToMetricsString(
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Ai.EntityRecordType)
 
+// LINT.IfChange(EntityPromptTypeToMetricsString)
+std::string_view EntityPromptTypeToMetricsString(
+    AutofillClient::AutofillAiPromptTypes prompt_type) {
+  switch (prompt_type) {
+    case AutofillClient::AutofillAiPromptTypes::kSave:
+      return "SavePrompt";
+    case AutofillClient::AutofillAiPromptTypes::kUpdate:
+      return "UpdatePrompt";
+    case AutofillClient::AutofillAiPromptTypes::kMigrate:
+      return "MigratePrompt";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Ai.EntityPromptType)
+
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&
         local_entities_considered_for_deduplication_per_type,

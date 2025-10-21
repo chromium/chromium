@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 
@@ -35,6 +36,9 @@ std::string_view EntityTypeToMetricsString(EntityType type);
 
 std::string_view EntityRecordTypeToMetricsString(
     EntityInstance::RecordType record_type);
+
+std::string_view EntityPromptTypeToMetricsString(
+    AutofillClient::AutofillAiPromptTypes prompt_type);
 
 }  // namespace autofill
 

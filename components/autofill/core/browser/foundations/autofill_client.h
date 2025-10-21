@@ -254,8 +254,9 @@ class AutofillClient {
       base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
 
   // The types of prompts that AutofillAi can show to the user after a form
-  // submission.
-  enum class AutofillAiPromptTypes { kSave, kUpdate, kMigrate };
+  // submission. The values are ordered by decreasing priority of being shown
+  // vis-a-vis each other.
+  enum class AutofillAiPromptTypes { kSave = 0, kUpdate = 1, kMigrate = 2 };
 
   // Specifies the type of the address save prompt.
   enum class SaveAddressBubbleType {

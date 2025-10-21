@@ -103,28 +103,77 @@ class AutofillAiManager {
   bool IsUpdateBlockedByStrikeDatabase(
       const EntityInstance::EntityId& entity_uuid) const;
 
-  // Given `form` that is observed at submission, returns candidates for showing
-  // either save or update prompts. The returned list of candidates is ordered
-  // by decreasing priority.
-  //
-  // The function returns two possible type of candidates:
-  // - A single EntityInstance (and `std::nullopt`) if the entity qualifies for
-  //   a save prompt.
-  // - A pair of two entities if the entity qualifies for an update prompt. In
-  //   that case, the first entity in the pair would be the new entity (after
-  //   update) and the second one the old entity (before update).
-  std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
-  GetEntitySaveAndUpdatePromptCandidates(const FormStructure& form);
+  struct EntityImportPromptCandidate {
+    EntityImportPromptCandidate() = delete;
+    EntityImportPromptCandidate(
+        AutofillClient::AutofillAiPromptTypes prompt_type,
+        const EntityInstance& candidate_entity,
+        std::optional<EntityInstance::EntityId> existing_entity_id);
+    EntityImportPromptCandidate(const EntityImportPromptCandidate&);
+    EntityImportPromptCandidate(EntityImportPromptCandidate&&);
+    EntityImportPromptCandidate& operator=(const EntityImportPromptCandidate&);
+    EntityImportPromptCandidate& operator=(EntityImportPromptCandidate&&);
+    ~EntityImportPromptCandidate();
 
-  // Given `form` that is observed at submission, returns a pair containing the
-  // candidate for showing a migration/upstream prompt together with the
-  // original local entity to be migrated. Migration means moving an entity from
-  // local storage to the Wallet server. The migrated entity is the most
-  // recently used one that is a superset of the values filled in form.
-  //
-  // The function returns `std::nullopt` if no candidate exists.
-  std::optional<std::pair<EntityInstance, EntityInstance::EntityId>>
-  GetEntityUpstreamCandidate(const FormStructure& form);
+    // The type of prompt that this candidate is meant for.
+    AutofillClient::AutofillAiPromptTypes prompt_type;
+    // The entity that the user would get if they accept the possibly shown
+    // save/update/migrate prompt.
+    EntityInstance candidate_entity;
+    // The ID of the already existing entity that contributed to the
+    // update/migrate prompt. This is `std::nullopt` for save prompt candidates.
+    std::optional<EntityInstance::EntityId> existing_entity_id;
+  };
+
+  // Given `form` that is observed at submission, returns candidates for showing
+  // either save or update prompts. The function returns a map keyed by the type
+  // of prompt to be shown and where the value is a list of candidates that
+  // qualifies for showing a prompt of the corresponding type. The candidates
+  // are ordered in decreasing priority of the corresponding prompt being shown.
+  std::vector<EntityImportPromptCandidate> GetEntityPromptCandidates(
+      const FormStructure& form);
+
+  // Finds the entities for which AutofillAi should offer a save prompt.
+  // - `observed_entities` are the EntityInstances that were extracted from
+  //   `form` at form submission.
+  // - `saved_entities` are the EntityInstance's already stored for the user.
+  // - For each pair (observed_entity[i], saved_entity[j]),
+  //   `entity_mergeabilities[i][j]` contains the `EntityMergeability`
+  //   information for that pair if the two entities share the same
+  //   `EntityType`, and std::nullopt otherwise.
+  std::vector<EntityImportPromptCandidate> GetSavePromptCandidates(
+      base::span<const EntityInstance> observed_entities,
+      base::span<const EntityInstance> saved_entities,
+      const FormStructure& form,
+      const std::vector<
+          std::vector<std::optional<EntityInstance::EntityMergeability>>>&
+          entities_mergeabilities) const;
+
+  // Finds the entities for which AutofillAi should offer an update prompt. An
+  // update candidate consists of the new entity that would be stored after
+  // update, as well as the ID of the old entity to be updated.
+  // - `observed_entities` are the EntityInstances extracted at form submission.
+  // - `saved_entities` are the EntityInstances already stored for the user.
+  // - For each pair (observed_entity[i], saved_entity[j]),
+  //   `entity_mergeabilities[i][j]` contains the `EntityMergeability`
+  //   information for that pair if the two entities share the same
+  //   `EntityType`, and std::nullopt otherwise.
+  std::vector<EntityImportPromptCandidate> GetUpdatePromptCandidates(
+      base::span<const EntityInstance> observed_entities,
+      base::span<const EntityInstance> saved_entities,
+      const std::vector<
+          std::vector<std::optional<EntityInstance::EntityMergeability>>>&
+          entities_mergeabilities) const;
+
+  // Finds the entities for which AutofillAi should offer a migration prompt.
+  // A migration candidate consists of the new entity that would be stored after
+  // migration, as well as the ID of the old entity to be migrated.
+  // - `observed_entities` are the EntityInstances extracted at form submission.
+  // - `saved_entities` are the EntityInstance's already stored for the user.
+  std::vector<EntityImportPromptCandidate> GetMigratePromptCandidates(
+      base::span<const EntityInstance> observed_entities,
+      base::span<const EntityInstance> saved_entities,
+      const FormStructure& form) const;
 
   // Attempts to display an import bubble for `form` if Autofill AI is
   // interested in the form. Returns whether an import bubble will be shown.
@@ -160,12 +209,6 @@ class AutofillAiManager {
       const EntityInstance& entity,
       EntityInstance::EntityId local_entity,
       AutofillClient::EntitySaveOrUpdatePromptResult result);
-
-  // Decides whether a migration bubble should be shown after a form submitted.
-  // This is used to upstream local entities of a certain type to the Google
-  // Wallet server.
-  bool MaybeUpstreamEntityToWallet(const FormStructure& form,
-                                   ukm::SourceId ukm_source_id);
 
   LogManager* GetCurrentLogManager();
 
