@@ -7,10 +7,12 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
+#include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -92,6 +94,44 @@ TEST_F(FetchManifestAndUpdateTest, NoUpdateAfterInstall) {
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   ASSERT_EQ(result, FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
+}
+
+TEST_F(FetchManifestAndUpdateTest, ClearsPendingUpdateInfo) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  GetPageManifest()->name = u"New Name";
+
+  {
+    base::test::TestFuture<ManifestSilentUpdateCompletionInfo> future;
+    provider().scheduler().ScheduleManifestSilentUpdate(
+        *web_contents(),
+        /*previous_time_for_silent_icon_update=*/std::nullopt,
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+
+  EXPECT_TRUE(provider()
+                  .registrar_unsafe()
+                  .GetAppById(app_id)
+                  ->pending_update_info()
+                  .has_value());
+
+  WebAppTestRegistryObserverAdapter observer(profile());
+  base::test::TestFuture<const webapps::AppId&, bool> future;
+  observer.SetWebAppPendingUpdateChangedDelegate(future.GetRepeatingCallback());
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccess);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id), "New Name");
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<0>(), app_id);
+  EXPECT_FALSE(future.Get<1>());
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppById(app_id)
+                   ->pending_update_info()
+                   .has_value());
 }
 
 // TODO(http://crbug.com/452416687): Add tests for other updatable items, and

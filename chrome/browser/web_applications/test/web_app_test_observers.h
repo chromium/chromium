@@ -129,6 +129,12 @@ class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
   void SetWebAppLastBadgingTimeChangedDelegate(
       WebAppLastBadgingTimeChangedDelegate delegate);
 
+  using WebAppPendingUpdateChangedDelegate =
+      base::RepeatingCallback<void(const webapps::AppId& app_id,
+                                   bool has_pending_update)>;
+  void SetWebAppPendingUpdateChangedDelegate(
+      WebAppPendingUpdateChangedDelegate delegate);
+
   using WebAppProtocolSettingsChangedDelegate = base::RepeatingCallback<void()>;
   void SetWebAppProtocolSettingsChangedDelegate(
       WebAppProtocolSettingsChangedDelegate delegate);
@@ -140,6 +146,8 @@ class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
       const std::vector<const WebApp*>& new_apps_state) override;
   void OnWebAppLastBadgingTimeChanged(const webapps::AppId& app_id,
                                       const base::Time& time) override;
+  void OnWebAppPendingUpdateChanged(const webapps::AppId& app_id,
+                                    bool has_pending_update) override;
   void OnWebAppProtocolSettingsChanged(const webapps::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
@@ -158,6 +166,7 @@ class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
   WebAppWillBeUpdatedFromSyncDelegate app_will_be_updated_from_sync_delegate_;
   WebAppEffectiveScopeChangedDelegate app_effective_scope_changed_delegate_;
   WebAppLastBadgingTimeChangedDelegate app_last_badging_time_changed_delegate_;
+  WebAppPendingUpdateChangedDelegate app_pending_update_changed_delegate_;
   WebAppProtocolSettingsChangedDelegate app_protocol_settings_changed_delegate_;
 
   base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>

@@ -15,6 +15,8 @@
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -204,6 +206,19 @@ void FetchManifestAndUpdateCommand::OnUpdateFinalized(
                             FetchManifestAndUpdateResult::kInstallationError);
     return;
   }
+
+  const WebApp* app = lock_->registrar().GetAppById(app_id);
+  CHECK(app);
+  if (app->pending_update_info().has_value()) {
+    {
+      ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+      update->UpdateApp(app_id)->SetPendingUpdateInfo(std::nullopt);
+    }
+    lock_->registrar().NotifyPendingUpdateInfoChanged(
+        app_id, /*pending_update_available=*/false,
+        WebAppRegistrar::PendingUpdateInfoChangePassKey());
+  }
+
   CompleteAndSelfDestruct(CommandResult::kSuccess,
                           FetchManifestAndUpdateResult::kSuccess);
 }

@@ -68,6 +68,7 @@ class WebAppRegistrarObserver;
 class WebAppScope;
 class AppLock;
 class ManifestSilentUpdateCommand;
+class FetchManifestAndUpdateCommand;
 class ApplyPendingManifestUpdateCommand;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
@@ -591,6 +592,7 @@ class WebAppRegistrar {
   // of triggering a pending update info change.
   class PendingUpdateInfoChangePassKey {
     friend class ManifestSilentUpdateCommand;
+    friend class FetchManifestAndUpdateCommand;
     friend void SetWebAppPendingUpdateAsIgnored(const webapps::AppId&,
                                                 AppLock& lock,
                                                 base::Value::Dict& debug_value);

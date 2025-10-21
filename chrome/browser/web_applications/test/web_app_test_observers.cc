@@ -171,6 +171,11 @@ void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
   app_last_badging_time_changed_delegate_ = std::move(delegate);
 }
 
+void WebAppTestRegistryObserverAdapter::SetWebAppPendingUpdateChangedDelegate(
+    WebAppPendingUpdateChangedDelegate delegate) {
+  app_pending_update_changed_delegate_ = std::move(delegate);
+}
+
 void WebAppTestRegistryObserverAdapter::
     SetWebAppProtocolSettingsChangedDelegate(
         WebAppProtocolSettingsChangedDelegate delegate) {
@@ -196,6 +201,14 @@ void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
     const base::Time& time) {
   if (app_last_badging_time_changed_delegate_)
     app_last_badging_time_changed_delegate_.Run(app_id, time);
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppPendingUpdateChanged(
+    const webapps::AppId& app_id,
+    bool has_pending_update) {
+  if (app_pending_update_changed_delegate_) {
+    app_pending_update_changed_delegate_.Run(app_id, has_pending_update);
+  }
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged(
