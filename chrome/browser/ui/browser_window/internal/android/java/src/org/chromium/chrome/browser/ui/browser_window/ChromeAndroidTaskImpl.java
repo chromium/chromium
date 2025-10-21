@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -92,6 +93,14 @@ final class ChromeAndroidTaskImpl
 
     private @Nullable Integer mId;
     private @Nullable Integer mPendingId;
+
+    /**
+     * Callback for native callers of {@link BrowserWindowCreatorBridge#createBrowserWindowAsync} to
+     * be aware of when a native {@code AndroidBrowserWindow} is created and fully initialized.
+     *
+     * <p>The type of the callback is the address of the native {@code AndroidBrowserWindow}.
+     */
+    private @Nullable JniOnceCallback<Long> mCreationCallbackForNative;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
     private final Profile mInitialProfile;
@@ -206,6 +215,7 @@ final class ChromeAndroidTaskImpl
         mBrowserWindowType = browserWindowType;
         mId = getActivity(activityWindowAndroid).getTaskId();
         mPendingId = null;
+        mCreationCallbackForNative = null;
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         assert tabModel.getProfile() != null
                 : "ChromeAndroidTask must be initialized with a non-null profile";
@@ -215,6 +225,13 @@ final class ChromeAndroidTaskImpl
     }
 
     ChromeAndroidTaskImpl(int pendingId, AndroidBrowserWindowCreateParams createParams) {
+        this(pendingId, createParams, null);
+    }
+
+    ChromeAndroidTaskImpl(
+            int pendingId,
+            AndroidBrowserWindowCreateParams createParams,
+            @Nullable JniOnceCallback<Long> callback) {
         mCreateParams = createParams;
         mBrowserWindowType = createParams.getWindowType();
         mId = null;
@@ -222,6 +239,7 @@ final class ChromeAndroidTaskImpl
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         mInitialProfile = createParams.getProfile();
         mState.set(State.PENDING);
+        mCreationCallbackForNative = callback;
     }
 
     @Override
@@ -287,6 +305,11 @@ final class ChromeAndroidTaskImpl
         // is "ALIVE".
         if (!mState.compareAndSet(State.ALIVE, State.DESTROYING)) {
             return;
+        }
+
+        if (mCreationCallbackForNative != null) {
+            mCreationCallbackForNative.destroy();
+            mCreationCallbackForNative = null;
         }
 
         clearActivityWindowAndroidInternal();
@@ -707,6 +730,10 @@ final class ChromeAndroidTaskImpl
                 mPendingId = null;
                 mState.set(State.ALIVE);
                 dispatchPendingActionsLocked(activityWindowAndroid);
+                if (mCreationCallbackForNative != null) {
+                    mCreationCallbackForNative.onResult(getOrCreateNativeBrowserWindowPtr());
+                    mCreationCallbackForNative = null;
+                }
             }
         }
     }

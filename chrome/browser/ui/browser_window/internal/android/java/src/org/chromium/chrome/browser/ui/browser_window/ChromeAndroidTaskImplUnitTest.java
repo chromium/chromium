@@ -46,6 +46,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -1659,5 +1660,29 @@ public class ChromeAndroidTaskImplUnitTest {
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
         verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
         assertEquals(expectedBoundsInPx, boundsCaptor.getValue());
+    }
+
+    @Test
+    public void setActivityWindowAndroid_fromPendingState_invokesCallback() {
+        // Arrange: Create pending task with a callback.
+        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
+        JniOnceCallback<Long> mockCallback = mock();
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams, mockCallback);
+        // Arrange: Setup WindowAndroid.
+        int taskId = 2;
+        var activityWindowAndroid =
+                createActivityWindowAndroidMocks(taskId).mMockActivityWindowAndroid;
+
+        // Act.
+        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+
+        // Assert.
+        var ptrCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(mockCallback).onResult(ptrCaptor.capture());
+        assertEquals(
+                ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                (long) ptrCaptor.getValue());
     }
 }
