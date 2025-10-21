@@ -159,7 +159,7 @@ AccountCapabilities FakeSystemIdentityManager::GetVisibleCapabilities(
   DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
   FakeSystemIdentityDetails* details =
       [storage_ detailsForGaiaID:identity.gaiaId];
-  return details.visibleCapabilities;
+  return AccountCapabilities(details.visibleCapabilities);
 }
 
 void FakeSystemIdentityManager::SetInstantlyFillHostedDomainCache(

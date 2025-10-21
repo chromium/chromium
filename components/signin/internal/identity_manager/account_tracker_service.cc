@@ -61,12 +61,6 @@ const char kAdvancedProtectionAccountStatusKey[] =
     "is_under_advanced_protection";
 const char kAccountAccessPoint[] = "access_point";
 
-// This key is deprecated since 2022/02 and should be removed after migration.
-// It was replaced by GetCapabilityPrefPath(capability_name) method that derives
-// pref name based on the Capabilities service key.
-const char kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath[] =
-    "accountcapabilities.can_offer_extended_chrome_sync_promos";
-
 // Account folders used for storing account related data at disk.
 const base::FilePath::CharType kAccountsFolder[] =
     FILE_PATH_LITERAL("Accounts");
@@ -651,6 +645,56 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
       FROM_HERE, base::BindOnce(&RemoveImage, GetImagePathFor(account_id)));
 }
 
+AccountCapabilities AccountTrackerService::LoadAccountCapabilities(
+    const base::Value::Dict& dict) {
+  AccountCapabilities capabilities;
+  for (std::string_view name :
+       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+    signin::Tribool state = FindAccountCapabilityState(dict, name);
+    if (state != signin::Tribool::kUnknown) {
+      capabilities.capabilities_map_[std::string(name)] =
+          (state == signin::Tribool::kTrue);
+    }
+  }
+  return capabilities;
+}
+
+AccountInfo AccountTrackerService::LoadAccountInfoFromDict(
+    const base::Value::Dict& dict) {
+  AccountInfo account_info;
+  std::string gaia_id_string;
+  GetString(dict, kAccountGaiaKey, gaia_id_string);
+  account_info.gaia = GaiaId(gaia_id_string);
+
+  GetString(dict, kAccountEmailKey, account_info.email);
+  GetString(dict, kAccountHostedDomainKey, account_info.hosted_domain);
+  GetString(dict, kAccountFullNameKey, account_info.full_name);
+  GetString(dict, kAccountGivenNameKey, account_info.given_name);
+  GetString(dict, kAccountLocaleKey, account_info.locale);
+  GetString(dict, kAccountPictureURLKey, account_info.picture_url);
+  GetString(dict, kLastDownloadedImageURLWithSizeKey,
+            account_info.last_downloaded_image_url_with_size);
+
+  account_info.is_child_account =
+      ParseTribool(dict.FindInt(kAccountChildAttributeKey));
+
+  std::optional<bool> is_under_advanced_protection =
+      dict.FindBool(kAdvancedProtectionAccountStatusKey);
+  if (is_under_advanced_protection.has_value()) {
+    account_info.is_under_advanced_protection =
+        is_under_advanced_protection.value();
+  }
+
+  std::optional<int> access_point = dict.FindInt(kAccountAccessPoint);
+  if (access_point.has_value()) {
+    account_info.access_point =
+        static_cast<signin_metrics::AccessPoint>(access_point.value());
+  }
+
+  account_info.capabilities.UpdateWith(this->LoadAccountCapabilities(dict));
+  return account_info;
+}
+
 void AccountTrackerService::LoadFromPrefs() {
   const base::Value::List& list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
@@ -680,65 +724,8 @@ void AccountTrackerService::LoadFromPrefs() {
     CoreAccountId account_id = CoreAccountId::FromString(*account_key);
     StartTrackingAccount(account_id);
     AccountInfo& account_info = accounts_[account_id];
-
-    std::string gaia_id_string;
-    GetString(*dict, kAccountGaiaKey, gaia_id_string);
-    account_info.gaia = GaiaId(gaia_id_string);
-
-    GetString(*dict, kAccountEmailKey, account_info.email);
-    GetString(*dict, kAccountHostedDomainKey, account_info.hosted_domain);
-    GetString(*dict, kAccountFullNameKey, account_info.full_name);
-    GetString(*dict, kAccountGivenNameKey, account_info.given_name);
-    GetString(*dict, kAccountLocaleKey, account_info.locale);
-    GetString(*dict, kAccountPictureURLKey, account_info.picture_url);
-    GetString(*dict, kLastDownloadedImageURLWithSizeKey,
-              account_info.last_downloaded_image_url_with_size);
-
-    account_info.is_child_account =
-        ParseTribool(dict->FindInt(kAccountChildAttributeKey));
-
-    std::optional<bool> is_under_advanced_protection =
-        dict->FindBool(kAdvancedProtectionAccountStatusKey);
-    if (is_under_advanced_protection.has_value()) {
-      account_info.is_under_advanced_protection =
-          is_under_advanced_protection.value();
-    }
-
-    std::optional<int> access_point = dict->FindInt(kAccountAccessPoint);
-    if (access_point.has_value()) {
-      account_info.access_point =
-          static_cast<signin_metrics::AccessPoint>(access_point.value());
-    }
-
-    if (std::optional<int> deprecated_can_offer_extended_chrome_sync_promos =
-            dict->FindIntByDottedPath(
-                kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
-      // Migrate to Capability names based pref paths.
-      ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-      base::Value::Dict& update_dict = (*update)[i].GetDict();
-      SetAccountCapabilityState(
-          update_dict,
-          kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
-          ParseTribool(deprecated_can_offer_extended_chrome_sync_promos));
-      update_dict.RemoveByDottedPath(
-          kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
-    }
-
-    for (std::string_view name :
-         AccountCapabilities::GetSupportedAccountCapabilityNames()) {
-      switch (FindAccountCapabilityState(*dict, name)) {
-        case signin::Tribool::kUnknown:
-          account_info.capabilities.capabilities_map_.erase(name);
-          break;
-        case signin::Tribool::kTrue:
-          account_info.capabilities.capabilities_map_[std::string(name)] = true;
-          break;
-        case signin::Tribool::kFalse:
-          account_info.capabilities.capabilities_map_[std::string(name)] =
-              false;
-          break;
-      }
-    }
+    account_info = LoadAccountInfoFromDict(*dict);
+    account_info.account_id = account_id;
 
     if (!account_info.gaia.empty()) {
       NotifyAccountUpdated(account_info);
@@ -777,51 +764,66 @@ void AccountTrackerService::LoadFromPrefs() {
                            accounts_.size());
 }
 
+base::Value::Dict* AccountTrackerService::FindOrCreateDictForAccount(
+    ScopedListPrefUpdate& update,
+    const CoreAccountId& account_id) {
+  for (base::Value& value : *update) {
+    base::Value::Dict* dict = value.GetIfDict();
+    if (dict) {
+      const std::string* account_key = dict->FindString(kAccountKeyKey);
+      if (account_key && *account_key == account_id.ToString()) {
+        return dict;
+      }
+    }
+  }
+
+  update->Append(base::Value::Dict());
+  base::Value::Dict* new_dict = &update->back().GetDict();
+  new_dict->Set(kAccountKeyKey, account_id.ToString());
+  return new_dict;
+}
+
+void AccountTrackerService::UpdateDictForAccount(
+    base::Value::Dict& dict,
+    const AccountInfo& account_info) {
+  dict.Set(kAccountEmailKey, account_info.email);
+  dict.Set(kAccountGaiaKey, account_info.gaia.ToString());
+  dict.Set(kAccountHostedDomainKey, account_info.hosted_domain);
+  dict.Set(kAccountFullNameKey, account_info.full_name);
+  dict.Set(kAccountGivenNameKey, account_info.given_name);
+  dict.Set(kAccountLocaleKey, account_info.locale);
+  dict.Set(kAccountPictureURLKey, account_info.picture_url);
+  dict.Set(kAccountChildAttributeKey,
+           static_cast<int>(account_info.is_child_account));
+  dict.Set(kAdvancedProtectionAccountStatusKey,
+           account_info.is_under_advanced_protection);
+  dict.Set(kAccountAccessPoint, static_cast<int>(account_info.access_point));
+  // |kLastDownloadedImageURLWithSizeKey| should only be set after the GAIA
+  // picture is successufly saved to disk. Otherwise, there is no guarantee that
+  // |kLastDownloadedImageURLWithSizeKey| matches the picture on disk.
+  this->SaveAccountCapabilitiesToDict(dict, account_info.capabilities);
+}
+
+void AccountTrackerService::SaveAccountCapabilitiesToDict(
+    base::Value::Dict& dict,
+    const AccountCapabilities& capabilities) {
+  for (std::string_view name :
+       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+    signin::Tribool capability_state =
+        capabilities.GetCapabilityByName(name);
+    SetAccountCapabilityState(dict, name, capability_state);
+  }
+}
+
 void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   if (!pref_service_) {
     return;
   }
 
-  base::Value::Dict* dict = nullptr;
   ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (base::Value& value : *update) {
-    base::Value::Dict* maybe_dict = value.GetIfDict();
-    if (maybe_dict) {
-      const std::string* account_key = maybe_dict->FindString(kAccountKeyKey);
-      if (account_key && *account_key == account_info.account_id.ToString()) {
-        dict = maybe_dict;
-        break;
-      }
-    }
-  }
-
-  if (!dict) {
-    update->Append(base::Value::Dict());
-    dict = &update->back().GetDict();
-    dict->Set(kAccountKeyKey, account_info.account_id.ToString());
-  }
-
-  dict->Set(kAccountEmailKey, account_info.email);
-  dict->Set(kAccountGaiaKey, account_info.gaia.ToString());
-  dict->Set(kAccountHostedDomainKey, account_info.hosted_domain);
-  dict->Set(kAccountFullNameKey, account_info.full_name);
-  dict->Set(kAccountGivenNameKey, account_info.given_name);
-  dict->Set(kAccountLocaleKey, account_info.locale);
-  dict->Set(kAccountPictureURLKey, account_info.picture_url);
-  dict->Set(kAccountChildAttributeKey,
-            static_cast<int>(account_info.is_child_account));
-  dict->Set(kAdvancedProtectionAccountStatusKey,
-            account_info.is_under_advanced_protection);
-  dict->Set(kAccountAccessPoint, static_cast<int>(account_info.access_point));
-  // |kLastDownloadedImageURLWithSizeKey| should only be set after the GAIA
-  // picture is successufly saved to disk. Otherwise, there is no guarantee that
-  // |kLastDownloadedImageURLWithSizeKey| matches the picture on disk.
-  for (std::string_view name :
-       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
-    signin::Tribool capability_state =
-        account_info.capabilities.GetCapabilityByName(name);
-    SetAccountCapabilityState(*dict, name, capability_state);
-  }
+  base::Value::Dict* dict =
+      FindOrCreateDictForAccount(update, account_info.account_id);
+  UpdateDictForAccount(*dict, account_info);
 }
 
 void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {

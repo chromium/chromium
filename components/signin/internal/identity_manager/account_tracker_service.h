@@ -197,7 +197,19 @@ class AccountTrackerService {
 
   // Load the current state of the account info from the preferences file.
   void LoadFromPrefs();
+  AccountInfo LoadAccountInfoFromDict(const base::Value::Dict& dict);
+  AccountCapabilities LoadAccountCapabilities(const base::Value::Dict& dict);
   void SaveToPrefs(const AccountInfo& account);
+
+  // Helper methods for SaveToPrefs.
+  base::Value::Dict* FindOrCreateDictForAccount(
+      ScopedListPrefUpdate& update,
+      const CoreAccountId& account_id);
+  void UpdateDictForAccount(base::Value::Dict& dict,
+                            const AccountInfo& account_info);
+  void SaveAccountCapabilitiesToDict(base::Value::Dict& dict,
+                                     const AccountCapabilities& capabilities);
+
   void RemoveFromPrefs(const AccountInfo& account);
 
   // Used to load/save account images from/to disc.

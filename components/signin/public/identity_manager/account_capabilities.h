@@ -48,7 +48,7 @@ class AccountCapabilities {
 #endif
 
 #if BUILDFLAG(IS_IOS)
-  AccountCapabilities(base::flat_map<std::string, bool> capabilities);
+  explicit AccountCapabilities(base::flat_map<std::string, bool> capabilities);
   const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
 
@@ -157,6 +157,10 @@ class AccountCapabilities {
   bool operator==(const AccountCapabilities& other) const;
 
  private:
+  // Returns the list of account capability service names supported in Chrome.
+  static base::span<const std::string_view>
+  GetSupportedAccountCapabilityNames();
+
   friend std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
       const base::Value::Dict& account_capabilities);
   friend class AccountCapabilitiesFetcherGaia;
@@ -171,10 +175,6 @@ class AccountCapabilities {
 
   // Returns the capability state using the service name.
   signin::Tribool GetCapabilityByName(std::string_view name) const;
-
-  // Returns the list of account capability service names supported in Chrome.
-  static base::span<const std::string_view>
-  GetSupportedAccountCapabilityNames();
 
   base::flat_map<std::string, bool> capabilities_map_;
 };
