@@ -112,6 +112,7 @@ void GpuPersistentCache::StoreData(const void* key,
                                    size_t key_size,
                                    const void* value,
                                    size_t value_size) {
+  ScopedHistogramTimer timer(GetHistogramName("Store"));
   SCOPED_LOCK(lock_);
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreData", "persistent_cache_",
                !!persistent_cache_);
@@ -122,7 +123,9 @@ void GpuPersistentCache::StoreData(const void* key,
     base::UmaHistogramBoolean(GetHistogramName("Store.CacheAvailable"),
                               !!persistent_cache_);
   }
+
   if (!persistent_cache_) {
+    timer.SetEnabled(false);
     return;
   }
 

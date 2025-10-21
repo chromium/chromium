@@ -1280,6 +1280,18 @@ chromium-metrics-reviews@google.com.
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
 </histogram>
 
+<histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.Store"
+    units="microseconds" expires_after="2026-03-22">
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Time it takes in gpu::GpuPersistentCache::StoreData (only when it is ready).
+    Recorded only for clients that support high-resolution clocks.
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
 <histogram
     name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.{LoadStore}.CacheAvailable"
     enum="Boolean" expires_after="2026-03-22">
