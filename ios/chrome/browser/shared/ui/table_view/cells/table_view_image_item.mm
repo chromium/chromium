@@ -52,6 +52,8 @@
   if (self.title) {
     cell.accessibilityUserInputLabels = @[ self.title ];
   }
+  cell.accessibilityValue = configuration.accessibilityValue;
+  cell.accessibilityHint = configuration.accessibilityHint;
 
   cell.userInteractionEnabled = self.enabled;
 }

@@ -54,6 +54,8 @@
   }
 
   cell.accessibilityLabel = accessibilityLabel;
+  cell.accessibilityValue = configuration.accessibilityValue;
+  cell.accessibilityHint = configuration.accessibilityHint;
 
   // Accessory symbol.
   switch (self.accessorySymbol) {

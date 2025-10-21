@@ -98,12 +98,6 @@
   } else if (self.subtitle.length > 0) {
     [parts addObject:self.subtitle];
   }
-  if (self.attributedTrailingText.length > 0) {
-    [parts addObject:self.attributedTrailingText.string];
-  } else if (self.trailingText.length > 0) {
-    [parts addObject:self.trailingText];
-  }
-
   return [parts componentsJoinedByString:@", "];
 }
 
@@ -112,21 +106,39 @@
 }
 
 - (NSString*)accessibilityHint {
-  if (self.trailingConfiguration.accessibilityHint) {
-    return self.trailingConfiguration.accessibilityHint;
-  }
+  NSMutableArray* parts = [NSMutableArray array];
+
   if (self.leadingConfiguration.accessibilityHint) {
-    return self.leadingConfiguration.accessibilityHint;
+    [parts addObject:self.leadingConfiguration.accessibilityHint];
+  }
+  if (self.trailingConfiguration.accessibilityHint) {
+    [parts addObject:self.trailingConfiguration.accessibilityHint];
+  }
+
+  if (parts.count > 0) {
+    return [parts componentsJoinedByString:@", "];
   }
   return [super accessibilityHint];
 }
 
 - (NSString*)accessibilityValue {
-  if (self.trailingConfiguration.accessibilityValue) {
-    return self.trailingConfiguration.accessibilityValue;
+  NSMutableArray* parts = [NSMutableArray array];
+
+  if (self.attributedTrailingText.length > 0) {
+    [parts addObject:self.attributedTrailingText.string];
+  } else if (self.trailingText.length > 0) {
+    [parts addObject:self.trailingText];
   }
+
   if (self.leadingConfiguration.accessibilityValue) {
-    return self.leadingConfiguration.accessibilityValue;
+    [parts addObject:self.leadingConfiguration.accessibilityValue];
+  }
+  if (self.trailingConfiguration.accessibilityValue) {
+    [parts addObject:self.trailingConfiguration.accessibilityValue];
+  }
+
+  if (parts.count > 0) {
+    return [parts componentsJoinedByString:@", "];
   }
   return [super accessibilityValue];
 }

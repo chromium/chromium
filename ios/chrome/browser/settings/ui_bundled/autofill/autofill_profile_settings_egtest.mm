@@ -62,7 +62,15 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Matcher for a country entry with the given accessibility label.
 id<GREYMatcher> CountryEntry(NSString* label) {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
-                    grey_sufficientlyVisible(), nil);
+                    grey_userInteractionEnabled(), grey_sufficientlyVisible(),
+                    nil);
+}
+
+// Matcher for the "Country" button.
+id<GREYMatcher> CountryButton() {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY)),
+      grey_userInteractionEnabled(), nil);
 }
 
 // Matcher for the search bar's scrim.
@@ -461,9 +469,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_COUNTRY))]
+  [[EarlGrey selectElementWithMatcher:CountryButton()]
       performAction:grey_tap()];
 
   // Focus the search bar.
@@ -545,9 +551,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_COUNTRY))]
+  [[EarlGrey selectElementWithMatcher:CountryButton()]
       performAction:grey_tap()];
 
   // Focus the search bar.
@@ -603,9 +607,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_COUNTRY))]
+  [[EarlGrey selectElementWithMatcher:CountryButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:CountryEntry(@"United States")]
@@ -632,9 +634,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_COUNTRY))]
+  [[EarlGrey selectElementWithMatcher:CountryButton()]
       performAction:grey_tap()];
 
   // Focus the search bar.
@@ -657,9 +657,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       assertWithMatcher:grey_enabled()];
 
   // Tap on Country and select "India" now.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_COUNTRY))]
+  [[EarlGrey selectElementWithMatcher:CountryButton()]
       performAction:grey_tap()];
 
   // Focus the search bar.

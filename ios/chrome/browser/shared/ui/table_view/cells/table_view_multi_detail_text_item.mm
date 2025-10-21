@@ -33,6 +33,8 @@
   contentConfiguration.trailingTextColor = self.trailingDetailTextColor;
   cell.contentConfiguration = contentConfiguration;
   cell.accessibilityLabel = contentConfiguration.accessibilityLabel;
+  cell.accessibilityValue = contentConfiguration.accessibilityValue;
+  cell.accessibilityHint = contentConfiguration.accessibilityHint;
 }
 
 - (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {

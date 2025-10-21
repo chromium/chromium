@@ -77,10 +77,12 @@ id<GREYMatcher> SearchBarScrim() {
 
 // Matcher for a language entry with the given accessibility label. Matches a
 // button if `tappable` is true.
-id<GREYMatcher> LanguageEntry(NSString* label, BOOL tappable = YES) {
-  return grey_allOf(tappable ? ButtonWithAccessibilityLabel(label)
-                             : grey_accessibilityLabel(label),
-                    grey_sufficientlyVisible(), nil);
+id<GREYMatcher> LanguageEntry(NSString* label, BOOL offer_translate = NO) {
+  return grey_allOf(
+      ButtonWithAccessibilityLabel(label),
+      grey_accessibilityValue(offer_translate ? kOfferToTranslateLabel
+                                              : kNeverTranslateLabel),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Matcher for the "Never Translate" button in the Language Details page.
@@ -161,9 +163,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       performAction:grey_tap()];
 
   // Test accessibility on the Language Details page.
-  NSString* languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kEnglishLabel,
-                       kEnglishLabel, kNeverTranslateLabel];
+  NSString* languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kEnglishLabel,
+                                 kEnglishLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:LanguageDetailsTableView()]
@@ -195,8 +197,11 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   NSString* languageEntryLabel =
       [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kEnglishLabel,
                                  kEnglishLabel];
-  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel,
-                                                    /*tappable=*/NO)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(languageEntryLabel),
+                                   grey_accessibilityValue(@""),
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the Translate switch is off and enabled. Toggle it on.
@@ -212,9 +217,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
 
   // Verify that "English (United States)" features a label indicating it is
   // Translate-blocked.
-  languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kEnglishLabel,
-                       kEnglishLabel, kNeverTranslateLabel];
+  languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kEnglishLabel,
+                                 kEnglishLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       assertWithMatcher:grey_notNil()];
 }
@@ -241,7 +246,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   NSString* languageEntryLabel =
       [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
                                  kTurkishNativeLabel];
-  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
+  id<GREYMatcher> turkishLanguageEntry =
+      grey_allOf(ButtonWithAccessibilityLabel(languageEntryLabel),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:turkishLanguageEntry]
       assertWithMatcher:grey_nil()];
 
   // Focus the search bar.
@@ -264,7 +272,7 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       waitForNotSufficientlyVisibleElementWithMatcher:SearchBarScrim()];
 
   // Verify the "Turkish" language entry is visible.
-  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
+  [[EarlGrey selectElementWithMatcher:turkishLanguageEntry]
       assertWithMatcher:grey_notNil()];
 
   // Clear the search.
@@ -276,7 +284,7 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       performAction:grey_replaceText(kTurkishNativeLabel)];
 
   // Verify the "Turkish" language entry is visible and tap it.
-  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
+  [[EarlGrey selectElementWithMatcher:turkishLanguageEntry]
       performAction:grey_tap()];
 
   // Verify that we navigated back to the Language Settings's main page.
@@ -284,9 +292,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify "Turkish" was added to the list of accept languages.
-  languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kTurkishLabel,
-                       kTurkishNativeLabel, kNeverTranslateLabel];
+  languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
+                                 kTurkishNativeLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       assertWithMatcher:grey_notNil()];
 
@@ -309,9 +317,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Go to the "Turkish" Language Details page.
-  NSString* languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kTurkishLabel,
-                       kTurkishNativeLabel, kNeverTranslateLabel];
+  NSString* languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
+                                 kTurkishNativeLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       performAction:grey_tap()];
 
@@ -332,10 +340,11 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify that "Turkish" is unblocked.
-  languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kTurkishLabel,
-                       kTurkishNativeLabel, kOfferToTranslateLabel];
-  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
+  languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
+                                 kTurkishNativeLabel];
+  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel,
+                                                    /*offer_translate*/ YES)]
       assertWithMatcher:grey_notNil()];
 
   // Verify the prefs are up-to-date.
@@ -343,7 +352,8 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
                   @"Turkish should not be Translate-blocked");
 
   // Go to the "Turkish" Language Details page.
-  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
+  [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel,
+                                                    /*offer_translate*/ YES)]
       performAction:grey_tap()];
 
   // Verify both options are enabled and "Offer to Translate" is selected.
@@ -363,9 +373,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify "Turkish" is Translate-blocked.
-  languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kTurkishLabel,
-                       kTurkishNativeLabel, kNeverTranslateLabel];
+  languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
+                                 kTurkishNativeLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       assertWithMatcher:grey_notNil()];
 
@@ -391,9 +401,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Go to the "Turkish" Language Details page.
-  NSString* languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kTurkishLabel,
-                       kTurkishNativeLabel, kNeverTranslateLabel];
+  NSString* languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
+                                 kTurkishNativeLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       performAction:grey_tap()];
 
@@ -418,9 +428,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Go to the "Turkish" Language Details page.
-  NSString* languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kEnglishLabel,
-                       kEnglishLabel, kNeverTranslateLabel];
+  NSString* languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kEnglishLabel,
+                                 kEnglishLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       performAction:grey_tap()];
 
@@ -449,9 +459,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Go to the "Aragonese" Language Details page.
-  NSString* languageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kAragoneseLabel,
-                       kAragoneseLabel, kNeverTranslateLabel];
+  NSString* languageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate,
+                                 kAragoneseLabel, kAragoneseLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
       performAction:grey_tap()];
 
@@ -503,9 +513,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Swipe left on the "English" language entry.
-  NSString* englishLanguageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kEnglishLabel,
-                       kEnglishLabel, kNeverTranslateLabel];
+  NSString* englishLanguageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kEnglishLabel,
+                                 kEnglishLabel];
 
   // swipeAction uses start point to stay small so that it works across
   // devices on iOS13.
@@ -520,9 +530,9 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       assertWithMatcher:grey_notNil()];
 
   // Swipe left on the "Turkish" language entry.
-  NSString* turkishLanguageEntryLabel = [NSString
-      stringWithFormat:kLanguageEntryThreeLabelsTemplate, kTurkishLabel,
-                       kTurkishNativeLabel, kNeverTranslateLabel];
+  NSString* turkishLanguageEntryLabel =
+      [NSString stringWithFormat:kLanguageEntryTwoLabelsTemplate, kTurkishLabel,
+                                 kTurkishNativeLabel];
   [[EarlGrey selectElementWithMatcher:LanguageEntry(turkishLanguageEntryLabel)]
       performAction:swipeAction];
 

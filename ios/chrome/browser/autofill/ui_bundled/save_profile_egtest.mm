@@ -126,7 +126,8 @@ id<GREYMatcher> ModalMigrationButtonMatcher() {
 // Matcher for a country entry with the given accessibility label.
 id<GREYMatcher> CountryEntry(NSString* label) {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
-                    grey_sufficientlyVisible(), nil);
+                    grey_userInteractionEnabled(), grey_sufficientlyVisible(),
+                    nil);
 }
 
 // Matcher for the search bar.
@@ -612,8 +613,10 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       performAction:grey_replaceText(@"New York")];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
+                                              l10n_util::GetNSString(
+                                                  IDS_IOS_AUTOFILL_COUNTRY)),
+                                          grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
 
   // Focus the search bar.
