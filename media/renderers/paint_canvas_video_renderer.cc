@@ -1056,19 +1056,13 @@ void PaintCanvasVideoRenderer::CopyOOPR(
     viz::RasterContextProvider* raster_context_provider) {
   CHECK(!raster_context_provider ||
         raster_context_provider->ContextCapabilities().gpu_rasterization);
-  Copy(std::move(video_frame), canvas, raster_context_provider);
-}
 
-void PaintCanvasVideoRenderer::Copy(
-    scoped_refptr<VideoFrame> video_frame,
-    cc::PaintCanvas* canvas,
-    viz::RasterContextProvider* raster_context_provider) {
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
-  Paint(std::move(video_frame), canvas, flags, PaintParams(),
-        raster_context_provider);
+  PaintOOPR(std::move(video_frame), canvas, flags, PaintParams(),
+            raster_context_provider);
 }
 
 namespace {
