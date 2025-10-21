@@ -82,6 +82,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
+  bool avatar_changed_ = false;
   bool screen_mode_changed_ = false;
   history_sync_optin::mojom::ScreenMode screen_mode_ =
       history_sync_optin::mojom::ScreenMode::kPending;

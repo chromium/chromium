@@ -125,13 +125,10 @@ void HistorySyncOptinHandler::MaybeGetAccountInfo() {
 
   if (!primary_account_info.IsEmpty()) {
     DispatchAccountInfoUpdate(primary_account_info);
-
-    // Derive the screen mode from account capabilities.
-    ScreenMode screen_mode =
-        GetHistorySyncScreenMode(primary_account_info.capabilities);
-    if (!screen_mode_changed_ && screen_mode != ScreenMode::kPending) {
-      OnScreenModeChanged(screen_mode);
-      // TODO(crbug.com/450448970): Consider short circuiting from here.
+    if (avatar_changed_ && screen_mode_changed_) {
+      // Both avatar and screen mode are immediately available.
+      identity_manager_observation_.Reset();
+      return;
     }
   }
 
@@ -206,6 +203,7 @@ void HistorySyncOptinHandler::OnScreenModeChanged(ScreenMode screen_mode) {
 
 void HistorySyncOptinHandler::OnAvatarChanged(const AccountInfo& info) {
   CHECK(info.IsValid());
+  avatar_changed_ = true;
   page_->SendAccountInfo(CreateAccountInfoDataMojo(info));
 }
 
@@ -216,22 +214,30 @@ void HistorySyncOptinHandler::DispatchAccountInfoUpdate(
     // confirmation dialog.
     return;
   }
+
   if (info.account_id !=
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     return;
   }
-  if (info.IsValid()) {
+
+  ScreenMode screen_mode = GetHistorySyncScreenMode(info.capabilities);
+  if (!screen_mode_changed_ && screen_mode != ScreenMode::kPending) {
+    OnScreenModeChanged(screen_mode);
+  }
+
+  if (info.IsValid() && !avatar_changed_) {
     OnAvatarChanged(info);
   }
 }
 
 void HistorySyncOptinHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  ScreenMode screen_mode = GetHistorySyncScreenMode(info.capabilities);
-  if (!screen_mode_changed_ && screen_mode != ScreenMode::kPending) {
-    OnScreenModeChanged(screen_mode);
-  }
   DispatchAccountInfoUpdate(info);
+
+  if (avatar_changed_ && screen_mode_changed_) {
+    // The IdentityManager emitted both avatar and screen mode information.
+    identity_manager_observation_.Reset();
+  }
 }
 
 void HistorySyncOptinHandler::OnScreenModeTimeout() {

@@ -121,22 +121,25 @@ class HistorySyncOptinHandlerTest : public testing::TestWithParam<bool> {
 };
 
 // Tests that the handler sends the AccountInfo and ScreenMode when requested.
-TEST_P(HistorySyncOptinHandlerTest, RequestScreenMode) {
+TEST_P(HistorySyncOptinHandlerTest,
+       RequestAccountInfoWithImmediatelyAvailableCapabilities) {
   AccountInfo account_info = SignInAndSetUpSyncService();
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       IsUnrestricted());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-  EXPECT_CALL(page_, SendAccountInfo(_)).Times(2);
 
-  // The ScreenMode is only sent once.
+  // The AccountInfo and the ScreenMode are sent only once.
+  EXPECT_CALL(page_, SendAccountInfo(_)).Times(1);
   EXPECT_CALL(page_, SendScreenMode(ExpectedScreenMode())).Times(1);
   handler_->RequestAccountInfo();
 
   // Simulate an AccountInfo update.
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      !IsUnrestricted());
+  account_info.full_name = "new_fullname";
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Attempt to request the AccountInfo, which the handler will ignore.
+  handler_->RequestAccountInfo();
 
   task_environment_.RunUntilIdle();
 
@@ -152,6 +155,50 @@ TEST_P(HistorySyncOptinHandlerTest, RequestScreenMode) {
                                      0);
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountCapabilities.ImmediatelyAvailable", true, 1);
+}
+
+// Tests that the handler sends the ScreenMode when capabilities become
+// available.
+TEST_P(HistorySyncOptinHandlerTest, RequestAccountInfoWithCapabilitiesUpdate) {
+  AccountInfo account_info = SignInAndSetUpSyncService();
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // The AccountInfo update, which contains Avatar info, is sent only once.
+  EXPECT_CALL(page_, SendAccountInfo(_)).Times(1);
+  handler_->RequestAccountInfo();
+
+  // The ScreenMode is sent only once.
+  EXPECT_CALL(page_, SendScreenMode(ExpectedScreenMode())).Times(1);
+
+  // Simulate an AccountInfo update without ScreenMode information.
+  account_info.full_name = "new_fullname";
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Simulate an AccountInfo update with capabilities. The handler will send
+  // a ScreenMode update, but not a second AccountInfo update.
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      IsUnrestricted());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Simulate another AccountInfo update, which the handler will not receive.
+  account_info.given_name = "new_givenname";
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      IsUnrestricted()
+          ? signin_metrics::SyncButtonsType::kSyncNotEqualWeighted
+          : signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.AccountCapabilities.UserVisibleLatency", 1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
+                                     1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
 }
 
 // Tests that user settings are updated on accepting the History Sync dialog.
