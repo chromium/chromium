@@ -1232,6 +1232,26 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryFailsOnDoomedEntry) {
   EXPECT_EQ(CountDoomedResourcesTable(kLiveKey), 0);
 }
 
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntryNonExistentWithIndex) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  CreateEntryAndGetResId(kKey);
+
+  // Load the index.
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  const CacheEntryKey kNonExistentKey("non-existent-key");
+  // With the index loaded, this should synchronously return kNotFound without a
+  // DB lookup.
+  std::optional<SqlPersistentStore::Error> error;
+  store_->DeleteLiveEntry(
+      kNonExistentKey,
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::Error result) { error = result; }));
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(*error, SqlPersistentStore::Error::kNotFound);
+}
+
 TEST_F(SqlPersistentStoreTest, DeleteLiveEntryWithCorruptSizeRecovers) {
   CreateAndInitStore();
   const CacheEntryKey kKeyToCorrupt("key-to-corrupt-size");
@@ -1837,6 +1857,26 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByKeyOnDoomedEntry) {
   // Attempting to update a doomed entry should fail as if it's not found.
   ASSERT_EQ(UpdateEntryLastUsedByKey(kKey, base::Time::Now()),
             SqlPersistentStore::Error::kNotFound);
+}
+
+TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByKeyNonExistentWithIndex) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  CreateEntryAndGetResId(kKey);
+
+  // Load the index.
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  const CacheEntryKey kNonExistentKey("non-existent-key");
+  // With the index loaded, this should synchronously return kNotFound without a
+  // DB lookup.
+  std::optional<SqlPersistentStore::Error> error;
+  store_->UpdateEntryLastUsedByKey(
+      kNonExistentKey, base::Time::Now(),
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::Error result) { error = result; }));
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(*error, SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByResIdSuccess) {

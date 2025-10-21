@@ -2645,6 +2645,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void DeleteLiveEntry(const CacheEntryKey& key,
                        ErrorCallback callback) override {
+    // If the entry is not in the in-memory index, we can skip the DB lookup.
+    if (GetIndexStateForHash(key.hash()) == IndexState::kHashNotFound) {
+      std::move(callback).Run(Error::kNotFound);
+      return;
+    }
     backend_.AsyncCall(&Backend::DeleteLiveEntry)
         .WithArgs(key, base::TimeTicks::Now())
         .Then(WrapErrorCallbackToRemoveFromIndex(
@@ -2681,6 +2686,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   void UpdateEntryLastUsedByKey(const CacheEntryKey& key,
                                 base::Time last_used,
                                 ErrorCallback callback) override {
+    // If the entry is not in the in-memory index, we can skip the DB lookup.
+    if (GetIndexStateForHash(key.hash()) == IndexState::kHashNotFound) {
+      std::move(callback).Run(Error::kNotFound);
+      return;
+    }
     backend_.AsyncCall(&Backend::UpdateEntryLastUsedByKey)
         .WithArgs(key, last_used, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));

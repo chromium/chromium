@@ -894,6 +894,21 @@ TEST_F(SqlBackendImplTest, OnExternalCacheHitRacesWithOpen) {
   entry->Close();
 }
 
+TEST_F(SqlBackendImplTest, DoomEntryNonExistent) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+  const std::string kNonExistentKey = "non-existent-key";
+  net::TestCompletionCallback cb_doom;
+  int rv_doom =
+      backend->DoomEntry(kNonExistentKey, net::HIGHEST,
+                         base::BindOnce([](int rv) { NOTREACHED(); }));
+  // The operation should complete synchronously due to the in-memory index
+  // check, so the callback should not be reached if the DB operation were to
+  // be attempted.
+  EXPECT_EQ(net::OK, rv_doom);
+}
+
 // Tests that calling Doom() multiple times on the same entry is safe and
 // idempotent.
 TEST_F(SqlBackendImplTest, MultipleDoomsOnSameEntry) {
