@@ -226,22 +226,28 @@ class BaseAutofillAiTest : public testing::Test {
     NOTREACHED();
   }
 
-  EntityInstance CreateEntity(EntityType type) {
+  EntityInstance CreateEntity(EntityType type,
+                              EntityInstance::RecordType record_type) {
     switch (type.name()) {
       case EntityTypeName::kPassport:
-        return test::GetPassportEntityInstance();
+        return test::GetPassportEntityInstance({.record_type = record_type});
       case EntityTypeName::kDriversLicense:
-        return test::GetDriversLicenseEntityInstance();
+        return test::GetDriversLicenseEntityInstance(
+            {.record_type = record_type});
       case EntityTypeName::kKnownTravelerNumber:
-        return test::GetKnownTravelerNumberInstance();
+        return test::GetKnownTravelerNumberInstance(
+            {.record_type = record_type});
       case EntityTypeName::kRedressNumber:
-        return test::GetRedressNumberEntityInstance();
+        return test::GetRedressNumberEntityInstance(
+            {.record_type = record_type});
       case EntityTypeName::kVehicle:
-        return test::GetVehicleEntityInstance();
+        return test::GetVehicleEntityInstance({.record_type = record_type});
       case EntityTypeName::kNationalIdCard:
-        return test::GetNationalIdCardEntityInstance();
+        return test::GetNationalIdCardEntityInstance(
+            {.record_type = record_type});
       case EntityTypeName::kFlightReservation:
-        return test::GetFlightReservationEntityInstance();
+        return test::GetFlightReservationEntityInstance(
+            {.record_type = record_type});
     }
     NOTREACHED();
   }
@@ -300,8 +306,8 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 // Test that the funnel metrics are logged correctly given different scenarios.
 // This test is parameterized by a boolean representing whether the form was
 // submitted or abandoned, an `EntityType` representing the type of funnel we're
-// testing, and an integer representing the last stage of the funnel that was
-// reached:
+// testing, the `RecordType` of the entity, and an integer representing the last
+// stage of the funnel that was reached:
 //
 // 0) A form was loaded
 // 1) The form was detected eligible for AutofillAi.
@@ -311,12 +317,14 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 // 5) The user corrected the filled suggestion.
 class AutofillAiFunnelMetricsTest
     : public BaseAutofillAiTest,
-      public testing::WithParamInterface<std::tuple<bool, EntityType, int>> {
-  static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s%s";
+      public testing::WithParamInterface<
+          std::tuple<bool, EntityType, int, EntityInstance::RecordType>> {
+  static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s%s%s";
 
  public:
   AutofillAiFunnelMetricsTest() = default;
 
+  EntityInstance::RecordType record_type() { return std::get<3>(GetParam()); }
   bool submitted() { return std::get<0>(GetParam()); }
   EntityType entity_type() { return std::get<1>(GetParam()); }
   bool is_form_eligible() { return std::get<2>(GetParam()) > 0; }
@@ -330,167 +338,90 @@ class AutofillAiFunnelMetricsTest
   }
 
   EntityInstance CreateEntity() {
-    return BaseAutofillAiTest::CreateEntity(entity_type());
+    return BaseAutofillAiTest::CreateEntity(entity_type(), record_type());
   }
 
   void ExpectCorrectFunnelRecording(
       const base::HistogramTester& histogram_tester) {
-    std::string_view entity_type_str = EntityTypeToMetricsString(entity_type());
-    for (const bool use_entity_type : {false, true}) {
-      // Expect that we do not record any sample for the submission-specific
-      // histograms that are not applicable.
-      histogram_tester.ExpectTotalCount(GetEligibilityHistogram(!submitted()),
-                                        0);
-      histogram_tester.ExpectTotalCount(
-          GetReadinessAfterEligibilityHistogram(
-              !submitted(),
-              use_entity_type ? std::optional(entity_type_str) : std::nullopt),
-          0);
-      histogram_tester.ExpectTotalCount(
-          GetFillAfterSuggestionHistogram(
-              !submitted(),
-              use_entity_type ? std::optional(entity_type_str) : std::nullopt),
-          0);
-      histogram_tester.ExpectTotalCount(
-          GetCorrectionAfterFillHistogram(
-              !submitted(),
-              use_entity_type ? std::optional(entity_type_str) : std::nullopt),
-          0);
-      for (const bool use_submitted : {false, true}) {
-        // Expect that the aggregate and appropriate submission-specific
-        // histograms record the correct values.
-        if (is_form_eligible()) {
-          histogram_tester.ExpectUniqueSample(
-              GetEligibilityHistogram(use_submitted ? std::optional(submitted())
-                                                    : std::nullopt),
-              entity_type().name(), 1);
-        } else {
-          histogram_tester.ExpectTotalCount(
-              GetEligibilityHistogram(use_submitted ? std::optional(submitted())
-                                                    : std::nullopt),
-              0);
-        }
+    for (bool use_entity_type : {false, true}) {
+      for (bool use_record_type : {false, true}) {
+        for (bool use_submitted : {false, true}) {
+          if (use_record_type && !use_entity_type) {
+            // Only entity-type-specific histograms are split by record type.
+            continue;
+          }
 
-        if (is_form_eligible()) {
-          histogram_tester.ExpectUniqueSample(
-              GetReadinessAfterEligibilityHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              user_has_data(), 1);
-        } else {
-          histogram_tester.ExpectTotalCount(
-              GetReadinessAfterEligibilityHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              0);
-        }
+          auto expect_correct_histogram = [&](std::string_view histogram_name,
+                                              bool precondition,
+                                              int bucket_value) {
+            std::string histogram_name_str = GetFunnelHistogram(
+                histogram_name,
+                use_submitted ? std::optional(submitted()) : std::nullopt,
+                use_entity_type ? std::optional(entity_type()) : std::nullopt,
+                use_record_type ? std::optional(record_type()) : std::nullopt);
+            if (precondition) {
+              histogram_tester.ExpectUniqueSample(histogram_name_str,
+                                                  bucket_value, 1);
+            } else {
+              histogram_tester.ExpectTotalCount(histogram_name_str, 0);
+            }
+          };
 
-        if (user_has_data()) {
-          histogram_tester.ExpectUniqueSample(
-              GetSuggestionAfterReadinessHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              user_saw_suggestions(), 1);
-        } else {
-          histogram_tester.ExpectTotalCount(
-              GetSuggestionAfterReadinessHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              0);
-        }
-
-        if (user_saw_suggestions()) {
-          histogram_tester.ExpectUniqueSample(
-              GetFillAfterSuggestionHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              user_filled_suggestion(), 1);
-        } else {
-          histogram_tester.ExpectTotalCount(
-              GetFillAfterSuggestionHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              0);
-        }
-
-        if (user_filled_suggestion()) {
-          histogram_tester.ExpectUniqueSample(
-              GetCorrectionAfterFillHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              user_corrected_filling(), 1);
-        } else {
-          histogram_tester.ExpectTotalCount(
-              GetCorrectionAfterFillHistogram(
-                  use_submitted ? std::optional(submitted()) : std::nullopt,
-                  use_entity_type ? std::optional(entity_type_str)
-                                  : std::nullopt),
-              0);
+          // Expect that the aggregate and appropriate submission-specific
+          // histograms record the correct values.
+          if (!use_record_type && !use_entity_type) {
+            // Eligibility isn't split by entity and record type.
+            expect_correct_histogram("Eligibility2", is_form_eligible(),
+                                     base::to_underlying(entity_type().name()));
+          }
+          expect_correct_histogram("ReadinessAfterEligibility",
+                                   is_form_eligible(), user_has_data());
+          expect_correct_histogram("SuggestionAfterReadiness", user_has_data(),
+                                   user_saw_suggestions());
+          expect_correct_histogram("FillAfterSuggestion",
+                                   user_saw_suggestions(),
+                                   user_filled_suggestion());
+          expect_correct_histogram("CorrectionAfterFill",
+                                   user_filled_suggestion(),
+                                   user_corrected_filling());
         }
       }
     }
   }
 
  private:
-  std::string GetFunnelHistogram(std::string_view funnel_state,
-                                 std::optional<bool> submitted,
-                                 std::optional<std::string_view> entity_type) {
+  std::string GetFunnelHistogram(
+      std::string_view funnel_state,
+      std::optional<bool> submitted,
+      std::optional<EntityType> entity_type,
+      std::optional<EntityInstance::RecordType> record_type) {
+    EXPECT_FALSE(!entity_type && record_type)
+        << "Only entity-type-specific histograms are split by record type.";
     std::string_view submission_state = "Aggregate";
     if (submitted) {
       submission_state = *submitted ? "Submitted" : "Abandoned";
     }
     return base::StringPrintf(
         kFunnelUmaMask, submission_state, funnel_state,
-        entity_type ? std::string(".") + std::string(*entity_type) : "");
-  }
-
-  std::string GetEligibilityHistogram(std::optional<bool> submitted) {
-    return GetFunnelHistogram("Eligibility2", submitted,
-                              /*entity_type=*/std::nullopt);
-  }
-
-  std::string GetReadinessAfterEligibilityHistogram(
-      std::optional<bool> submitted,
-      std::optional<std::string_view> entity_type_str) {
-    return GetFunnelHistogram("ReadinessAfterEligibility", submitted,
-                              entity_type_str);
-  }
-
-  std::string GetSuggestionAfterReadinessHistogram(
-      std::optional<bool> submitted,
-      std::optional<std::string_view> entity_type_str) {
-    return GetFunnelHistogram("SuggestionAfterReadiness", submitted,
-                              entity_type_str);
-  }
-
-  std::string GetFillAfterSuggestionHistogram(
-      std::optional<bool> submitted,
-      std::optional<std::string_view> entity_type_str) {
-    return GetFunnelHistogram("FillAfterSuggestion", submitted,
-                              entity_type_str);
-  }
-
-  std::string GetCorrectionAfterFillHistogram(
-      std::optional<bool> submitted,
-      std::optional<std::string_view> entity_type_str) {
-    return GetFunnelHistogram("CorrectionAfterFill", submitted,
-                              entity_type_str);
+        entity_type
+            ? base::StrCat({".", EntityTypeToMetricsString(*entity_type)})
+            : "",
+        record_type
+            ? base::StrCat({".", EntityRecordTypeToMetricsString(*record_type)})
+            : "");
   }
 };
 
+// TODO(crbug.com/445679087): Remove the funnel value parameterization and
+// instead have a separate test for each funnel histogram.
 INSTANTIATE_TEST_SUITE_P(
     AutofillAiTest,
     AutofillAiFunnelMetricsTest,
-    testing::Combine(testing::Bool(),
-                     testing::ValuesIn(DenseSet<EntityType>::all()),
-                     testing::Values(0, 1, 2, 3, 4, 5)));
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn(DenseSet<EntityType>::all()),
+        testing::Values(0, 1, 2, 3, 4, 5),
+        testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
 
 // Tests that appropriate calls in `AutofillAiManager`
 // result in correct metric logging.
@@ -545,7 +476,8 @@ class AutofillAiKeyMetricsTest
   }
 
   EntityInstance CreateEntity() {
-    return BaseAutofillAiTest::CreateEntity(entity_type());
+    return BaseAutofillAiTest::CreateEntity(entity_type(),
+                                            EntityInstance::RecordType::kLocal);
   }
 
   void ExpectKeyMetricsRecording(const base::HistogramTester& histogram_tester,

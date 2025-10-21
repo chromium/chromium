@@ -42,6 +42,16 @@ chromium-metrics-reviews@google.com.
                to be filled and assigned to the control case."/>
 </variants>
 
+<!-- LINT.IfChange(Autofill.Ai.EntityRecordType) -->
+
+<variants name="Autofill.Ai.EntityRecordType">
+  <variant name=".Local" summary="Emitted for local entities only."/>
+  <variant name=".ServerWallet"
+      summary="Emitted for Wallet server entities only."/>
+</variants>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.cc:EntityRecordTypeToMetricsString) -->
+
 <!-- LINT.IfChange(Autofill.Ai.EntityType) -->
 
 <variants name="Autofill.Ai.EntityType">
@@ -1306,6 +1316,48 @@ Called by update_autofill_enums.py. This is a manual comment.-->
                  histogram, this variant will just be the accumulation of all
                  histogram records of the other variants."/>
   </token>
+</histogram>
+
+<histogram
+    name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}{EntityGranularity}{EntityRecordType}"
+    enum="Boolean" expires_after="2026-02-22">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records various stages of the Autofill AI funnel. The same metric is logged
+    for submitted and for abandoned forms, with an additional metric aggregating
+    both. The metric is recorded once per form per submission/abandonment.
+
+    {FunnelStage}
+
+    {EntityGranularity}
+
+    {EntityRecordType}
+  </summary>
+  <token key="SubmissionState">
+    <variant name="Abandoned"/>
+    <variant name="Aggregate"/>
+    <variant name="Submitted"/>
+  </token>
+  <token key="FunnelStage">
+    <variant name="CorrectionAfterFill"
+        summary="Given a form where the user filled an Autofill AI
+                 suggestion, records whether the filling was corrected or
+                 not."/>
+    <variant name="FillAfterSuggestion"
+        summary="Given a form where the user saw Autofill AI filling
+                 suggestions, records whether the suggestion was filled or
+                 not."/>
+    <variant name="ReadinessAfterEligibility"
+        summary="Given an Autofill-AI-eligible form, this metric records
+                 whether the user has stored data to fill the form."/>
+    <variant name="SuggestionAfterReadiness"
+        summary="Given an Autofill-AI-eligible form where the user has data
+                 stored to fill it, this metric records whether the user saw
+                 an Autofill AI suggestion or not."/>
+  </token>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType"/>
+  <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType"/>
 </histogram>
 
 <histogram name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}"

@@ -6,7 +6,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 namespace autofill {
@@ -45,8 +47,22 @@ std::string_view EntityTypeToMetricsString(EntityType type) {
     case EntityTypeName::kFlightReservation:
       return "FlightReservation";
   }
+  NOTREACHED();
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Ai.EntityType)
+
+// LINT.IfChange(EntityRecordTypeToMetricsString)
+std::string_view EntityRecordTypeToMetricsString(
+    EntityInstance::RecordType record_type) {
+  switch (record_type) {
+    case EntityInstance::RecordType::kLocal:
+      return "Local";
+    case EntityInstance::RecordType::kServerWallet:
+      return "ServerWallet";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Ai.EntityRecordType)
 
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&

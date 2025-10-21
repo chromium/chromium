@@ -87,8 +87,16 @@ class AutofillAiLogger {
       std::map<EntityType, std::map<EntityInstance::RecordType, FunnelState>>;
 
   void RecordFunnelMetrics(const FormFunnelStateMap& funnel_states,
-                           DenseSet<EntityType> relevant_entities,
                            bool submission_state) const;
+  // Records the funnel metrics for a single `funnel_state`. `entity_type` and
+  // `record_type` can be `std::nullopt`, denoting that the metrics to be
+  // emitted should not be split by this information. Is is assumed that
+  // `record_type` can only be non-null when `entity_type` is non-null.
+  void RecordFunnelMetricsForState(
+      FunnelState funnel_state,
+      std::optional<EntityType> entity_type,
+      std::optional<EntityInstance::RecordType> record_type,
+      bool submission_state) const;
   void RecordKeyMetrics(DenseSet<EntityType> relevant_entities,
                         const FormFunnelStateMap& funnel_states) const;
   void RecordNumberOfFieldsFilled(const FormStructure& form,
@@ -97,8 +105,20 @@ class AutofillAiLogger {
 
   // Compresses `funnel_states` into a single `FunnelState` object by
   // essentially taking the logical OR of all its boolean members.
-  FunnelState CombineStates(const std::map<EntityInstance::RecordType,
-                                           FunnelState>& funnel_states) const;
+  template <class Key>
+  FunnelState CombineStates(
+      const std::map<Key, FunnelState>& funnel_states) const {
+    auto combine = [&](auto pred) {
+      return std::ranges::any_of(funnel_states, pred,
+                                 &std::pair<const Key, FunnelState>::second);
+    };
+    return FunnelState{
+        .has_data_to_fill = combine(&FunnelState::has_data_to_fill),
+        .suggestions_shown = combine(&FunnelState::suggestions_shown),
+        .did_fill_suggestions = combine(&FunnelState::did_fill_suggestions),
+        .edited_autofilled_field =
+            combine(&FunnelState::edited_autofilled_field)};
+  }
 
   // Records the funnel state for each form and entity type and record type
   // separately. See the documentation of `FunnelState` for more information
