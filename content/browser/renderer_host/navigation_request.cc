@@ -7210,7 +7210,7 @@ bool NavigationRequest::IsAllowedByCSPDirective(
   network::CSPCheckResult result = context->IsAllowedByCsp(
       policies, directive, url, commit_params_->original_url,
       has_followed_redirect, common_params_->source_location, disposition,
-      begin_params_->is_form_submission, is_opaque_fenced_frame);
+      is_opaque_fenced_frame);
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         GetParentFrame(),

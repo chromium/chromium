@@ -58,7 +58,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) CSPContext {
       bool has_followed_redirect,
       const mojom::SourceLocationPtr& source_location,
       CheckCSPDisposition check_csp_disposition,
-      bool is_form_submission,
       bool is_opaque_fenced_frame = false);
 
   // Called when IsAllowedByCsp return false. Implementer of CSPContext must

@@ -40,7 +40,6 @@ CSPCheckResult CSPContext::IsAllowedByCsp(
     bool has_followed_redirect,
     const mojom::SourceLocationPtr& source_location,
     CheckCSPDisposition check_csp_disposition,
-    bool is_form_submission,
     bool is_opaque_fenced_frame) {
   CSPCheckResult result = CSPCheckResult::Allowed();
   for (const auto& policy : policies) {
