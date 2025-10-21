@@ -221,7 +221,6 @@ if (is_chromeos) {
     "sw",
     "ta",
     "te",
-    "ur",
   ]
 }
 
