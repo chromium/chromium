@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/valuables/valuable_data_type_controller.h"
+#include "components/autofill/core/browser/webdata/valuables/valuable_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/data_type_controller/collaboration_group_data_type_controller.h"
@@ -112,6 +113,14 @@ base::WeakPtr<syncer::DataTypeControllerDelegate>
 AutofillValuableDelegateFromDataService(
     autofill::AutofillWebDataService* service) {
   return autofill::ValuableSyncBridge::FromWebDataService(service)
+      ->change_processor()
+      ->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+AutofillValuableMetadataDelegateFromDataService(
+    autofill::AutofillWebDataService* service) {
+  return autofill::ValuableMetadataSyncBridge::FromWebDataService(service)
       ->change_processor()
       ->GetControllerDelegate();
 }
@@ -820,7 +829,23 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE_METADATA) &&
       base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
-    // TODO(crbug.com/436551488) Complete syncing of valuable usage.
+    // Both `AUTOFILL_VALUABLE` and `AUTOFILL_VALUABLE_METADATA` use the same
+    // controller as they share the same behaviour.
+    controllers.push_back(
+        std::make_unique<autofill::AutofillValuableDataTypeController>(
+            syncer::AUTOFILL_VALUABLE_METADATA,
+            std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+                profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
+                base::BindRepeating(
+                    &AutofillValuableMetadataDelegateFromDataService,
+                    base::RetainedRef(
+                        profile_autofill_web_data_service_.value()))),
+            std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+                profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
+                base::BindRepeating(
+                    &AutofillValuableMetadataDelegateFromDataService,
+                    base::RetainedRef(
+                        profile_autofill_web_data_service_.value())))));
   }
 
 #endif

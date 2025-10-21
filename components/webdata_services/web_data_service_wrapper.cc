@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/valuables/valuable_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -93,6 +94,15 @@ void InitValuableSyncBridgeOnDBSequence(
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
   autofill::ValuableSyncBridge::CreateForWebDataServiceAndBackend(
+      autofill_backend, autofill_web_data.get());
+}
+
+void InitValuableMetadataSyncBridgeOnDBSequence(
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+    const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
+    autofill::AutofillWebDataBackend* autofill_backend) {
+  DCHECK(db_task_runner->RunsTasksInCurrentSequence());
+  autofill::ValuableMetadataSyncBridge::CreateForWebDataServiceAndBackend(
       autofill_backend, autofill_web_data.get());
 }
 
@@ -211,6 +221,12 @@ WebDataServiceWrapper::WebDataServiceWrapper(
     profile_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitValuableSyncBridgeOnDBSequence, db_task_runner,
                        profile_autofill_web_data_));
+  }
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
+    profile_autofill_web_data_->GetAutofillBackend(
+        base::BindOnce(&InitValuableMetadataSyncBridgeOnDBSequence,
+                       db_task_runner, profile_autofill_web_data_));
   }
 #endif
 
