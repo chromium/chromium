@@ -251,8 +251,11 @@ FrameShapeCache* PlainTextPainter::GetCacheFor(const Font& font) {
   return cache;
 }
 
-void PlainTextPainter::OnPurgeMemory() {
-  cache_map_.clear();
+void PlainTextPainter::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    cache_map_.clear();
+  }
 }
 
 }  // namespace blink

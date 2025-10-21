@@ -42,7 +42,7 @@ class CORE_EXPORT UniqueFontSelector
   friend class UniqueFontSelectorTest;
 
   // MemoryPressureListener override:
-  void OnPurgeMemory() override;
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   Member<FontSelector> base_selector_;
 

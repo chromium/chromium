@@ -106,7 +106,7 @@ class PLATFORM_EXPORT PlainTextPainter
   FrameShapeCache* GetCacheFor(const Font& font);
 
   // MemoryPressureListener override:
-  void OnPurgeMemory() override;
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   // A map from a FontFallbackList to a FrameShapeCache.
   // We don't need to worry about Web Fonts. When a Web Font loading state is

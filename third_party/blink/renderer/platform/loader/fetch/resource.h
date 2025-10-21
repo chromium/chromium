@@ -548,7 +548,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   String ReasonNotDeletable() const;
 
   // MemoryPressureListener overrides:
-  void OnPurgeMemory() override;
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   void CheckResourceIntegrity();
   void TriggerNotificationForFinishObservers(base::SingleThreadTaskRunner*);

@@ -92,12 +92,6 @@ void MemoryPressureListenerRegistry::OnMemoryPressure(
     client->OnMemoryPressure(level);
 }
 
-void MemoryPressureListenerRegistry::OnPurgeMemory() {
-  CHECK(IsMainThread());
-  for (auto& client : clients_)
-    client->OnPurgeMemory();
-}
-
 void MemoryPressureListenerRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(clients_);
 }

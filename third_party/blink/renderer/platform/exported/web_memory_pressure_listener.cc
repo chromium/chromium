@@ -13,8 +13,4 @@ void WebMemoryPressureListener::OnMemoryPressure(
   MemoryPressureListenerRegistry::Instance().OnMemoryPressure(pressure_level);
 }
 
-void WebMemoryPressureListener::OnPurgeMemory() {
-  MemoryPressureListenerRegistry::Instance().OnPurgeMemory();
-}
-
 }  // namespace blink

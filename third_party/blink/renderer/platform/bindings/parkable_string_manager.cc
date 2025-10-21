@@ -51,7 +51,11 @@ bool CompressionEnabled() {
 
 class OnPurgeMemoryListener : public GarbageCollected<OnPurgeMemoryListener>,
                               public MemoryPressureListener {
-  void OnPurgeMemory() override {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
+    if (memory_pressure_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      return;
+    }
     if (!CompressionEnabled()) {
       return;
     }

@@ -1714,7 +1714,6 @@ void RenderThreadImpl::OnMemoryPressure(
     if (blink_platform_impl_) {
       // Purge Skia font cache, resource cache, and image filter.
       SkGraphics::PurgeAllCaches();
-      blink::WebMemoryPressureListener::OnPurgeMemory();
     }
   }
   ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();

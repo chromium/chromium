@@ -73,9 +73,12 @@ void UniqueFontSelector::RegisterForInvalidationCallbacks(
   }
 }
 
-void UniqueFontSelector::OnPurgeMemory() {
-  font_cache_.clear();
-  lru_list_.clear();
+void UniqueFontSelector::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    font_cache_.clear();
+    lru_list_.clear();
+  }
 }
 
 void UniqueFontSelector::CacheValue::Trace(Visitor* visitor) const {
