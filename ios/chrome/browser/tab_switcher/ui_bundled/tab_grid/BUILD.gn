@@ -319,6 +319,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:inactive_tabs_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:eg2_utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/common/ui/table_view:cells_constants",

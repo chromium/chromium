@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 @class GridItemIdentifier;
+class TabGroup;
+@class TabInfo;
 
 // Reflects user’s change in grid's model.
 @protocol GridViewControllerMutator <NSObject>
@@ -23,6 +25,19 @@
 
 // Notifies the model to close a specific item identifier.
 - (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier;
+
+// Creates a group with `title` for `sourceItem` (or `droppedTab` if
+// `sourceItem` is from another window) as the dropped tab and `destinationItem`
+// as the tab that is visually replaced with the group.
+- (void)createTabGroupWithTitle:(NSString*)title
+                     sourceItem:(GridItemIdentifier*)sourceItem
+                     droppedTab:(TabInfo*)droppedTab
+                destinationItem:(GridItemIdentifier*)destinationItem;
+
+// Adds `droppedTab` (of `sourceItem` if it is a local drop) to `group`.
+- (void)addDroppedTab:(TabInfo*)droppedTab
+           sourceItem:(GridItemIdentifier*)sourceItem
+              toGroup:(const TabGroup*)group;
 
 @end
 

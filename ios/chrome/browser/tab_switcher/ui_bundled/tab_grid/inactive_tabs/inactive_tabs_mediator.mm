@@ -498,4 +498,17 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   [self closeItemWithID:identifier.tabSwitcherItem.identifier];
 }
 
+- (void)createTabGroupWithTitle:(NSString*)title
+                     sourceItem:(GridItemIdentifier*)sourceItem
+                     droppedTab:(TabInfo*)droppedTab
+                destinationItem:(GridItemIdentifier*)destinationItem {
+  // No-op
+}
+
+- (void)addDroppedTab:(TabInfo*)droppedTab
+           sourceItem:(GridItemIdentifier*)sourceItem
+              toGroup:(const TabGroup*)group {
+  // No-op
+}
+
 @end

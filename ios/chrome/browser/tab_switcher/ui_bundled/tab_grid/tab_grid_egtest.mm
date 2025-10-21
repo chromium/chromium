@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -271,6 +272,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 @end
 
 @implementation TabGridTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testDragAndDropCreatesGroup)]) {
+    config.features_enabled.push_back(kTabGridDragAndDrop);
+  }
+
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -669,6 +679,36 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           IdentifierForCellAtIndex(0))]
       assertWithMatcher:matcher];
+}
+
+// Tests that dragging and dropping cell1 onto cell2 creates a group with the
+// title of cell2.
+- (void)testDragAndDropCreatesGroup {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  GREYAssert(chrome_test_util::LongPressCellAndDragToOffsetOf(
+                 IdentifierForCellAtIndex(1), 0, IdentifierForCellAtIndex(0), 0,
+                 CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell into another cell in the same window");
+
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
+      assertWithMatcher:grey_nil()];
+
+  chrome_test_util::OpenTabGroupAtIndex(0);
+
+  // Check that both tabs are in the group.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that the incognito buttons are correctly displayed (regression for

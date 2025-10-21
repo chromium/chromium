@@ -214,8 +214,8 @@ TEST_F(BaseGridViewControllerTest, MoveUnselectedItem) {
   EXPECT_EQ(1U, view_controller_.selectedIndex);
 }
 
-// Tests that `replaceItem:withReplacementItem:` does not crash when updating an
-// item that is scrolled offscreen.
+// Tests that `replaceItem:withReplacementItem:` does not
+// crash when updating an item that is scrolled offscreen.
 TEST_F(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   // This test requires that the collection view be placed on the screen.
   SetRootViewController(view_controller_);

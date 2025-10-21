@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -466,14 +467,23 @@ NSCollectionLayoutSection* SuggestedActionsSection(
     return attributes;
   }
 
-  // Cells being inserted start faded out, scaled down, and drop downwards
-  // slightly.
-  attributes.alpha = 0.0;
-  CGAffineTransform transform =
-      CGAffineTransformScale(attributes.transform, /*sx=*/0.9, /*sy=*/0.9);
-  transform = CGAffineTransformTranslate(transform, /*tx=*/0,
-                                         /*ty=*/attributes.size.height * 0.1);
-  attributes.transform = transform;
+  if (IsTabGridDragAndDropEnabled() &&
+      self.dragAndDropGroupIndexPath == itemIndexPath) {
+    attributes.alpha = 1.0;
+    attributes.transform = CGAffineTransformScale(
+        attributes.transform, /*sx=*/kGridCellHighlightScaleTransform,
+        /*sy=*/kGridCellHighlightScaleTransform);
+    self.dragAndDropGroupIndexPath = nil;
+  } else {
+    // Cells being inserted start faded out, scaled down, and drop downwards
+    // slightly.
+    attributes.alpha = 0.0;
+    CGAffineTransform transform =
+        CGAffineTransformScale(attributes.transform, /*sx=*/0.9, /*sy=*/0.9);
+    transform = CGAffineTransformTranslate(transform, /*tx=*/0,
+                                           /*ty=*/attributes.size.height * 0.1);
+    attributes.transform = transform;
+  }
   return attributes;
 }
 
