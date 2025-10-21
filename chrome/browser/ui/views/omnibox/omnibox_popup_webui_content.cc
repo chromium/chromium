@@ -6,12 +6,14 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -33,6 +35,8 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
       GURL(chrome::kChromeUIOmniboxPopupURL), location_bar_view->profile(), -1);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
+  webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
+                                   location_bar_view->browser());
   // Make the OmniboxController available to the OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
   OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
