@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/crash/core/common/crash_key.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -89,32 +88,6 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::ViewTracker>*)
 namespace views {
 
 namespace {
-
-// TODO(crbug.com/374313509): Remove once the investigation concludes and the
-// clamp asserts are avoided.
-int ClampWithCrashKeys(int value,
-                       int low,
-                       int high,
-                       const gfx::Rect& anchor_bounds,
-                       const gfx::Rect& menu_bounds,
-                       const gfx::Rect& monitor_bounds,
-                       const gfx::Insets& border_insets = {}) {
-  if (low > high) {
-    static crash_reporter::CrashKeyString<64> anchor_bounds_key(
-        "anchor_bounds");
-    anchor_bounds_key.Set(anchor_bounds.ToString());
-    static crash_reporter::CrashKeyString<64> menu_bounds_key("menu_bounds");
-    menu_bounds_key.Set(menu_bounds.ToString());
-    static crash_reporter::CrashKeyString<64> monitor_bounds_key(
-        "monitor_bounds");
-    monitor_bounds_key.Set(monitor_bounds.ToString());
-    static crash_reporter::CrashKeyString<64> border_insets_key(
-        "border_insets");
-    border_insets_key.Set(border_insets.ToString());
-    CHECK_LE(low, high);
-  }
-  return std::clamp(value, low, high);
-}
 
 enum class MenuPartType { kNone, kMenuItem, kScrollUp, kScrollDown };
 
@@ -2782,14 +2755,10 @@ gfx::Rect MenuController::CalculateMenuBounds(
   }
 
   // Ensure the menu is not displayed off screen.
-  menu_bounds.set_x(
-      ClampWithCrashKeys(menu_bounds.x(), monitor_bounds.x(),
-                         monitor_bounds.right() - menu_bounds.width(),
-                         anchor_bounds, menu_bounds, monitor_bounds));
-  menu_bounds.set_y(
-      ClampWithCrashKeys(menu_bounds.y(), monitor_bounds.y(),
-                         monitor_bounds.bottom() - menu_bounds.height(),
-                         anchor_bounds, menu_bounds, monitor_bounds));
+  menu_bounds.set_x(std::clamp(menu_bounds.x(), monitor_bounds.x(),
+                               monitor_bounds.right() - menu_bounds.width()));
+  menu_bounds.set_y(std::clamp(menu_bounds.y(), monitor_bounds.y(),
+                               monitor_bounds.bottom() - menu_bounds.height()));
 
   return menu_bounds;
 }
@@ -3002,12 +2971,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     const int y_min = monitor_bounds.y() - border_insets.top();
     const int y_max =
         monitor_bounds.bottom() - menu_size.height() + border_insets.bottom();
-    x = ClampWithCrashKeys(x, x_min, x_max, anchor_bounds,
-                           gfx::Rect(gfx::Point(x, y), menu_size),
-                           monitor_bounds, border_insets);
-    y = ClampWithCrashKeys(y, y_min, y_max, anchor_bounds,
-                           gfx::Rect(gfx::Point(x, y), menu_size),
-                           monitor_bounds, border_insets);
+    x = std::clamp(x, x_min, x_max);
+    y = std::clamp(y, y_min, y_max);
   } else {
     // This is a sub-menu, position it relative to the parent menu.
     // If the layout is RTL, then a 'leading' menu is positioned to the left of
@@ -3068,9 +3033,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     auto y_min = monitor_bounds.y() - border_insets.top();
     auto y_max =
         monitor_bounds.bottom() + border_insets.bottom() - menu_size.height();
-    y = ClampWithCrashKeys(y, y_min, y_max, anchor_bounds,
-                           gfx::Rect(gfx::Point(x, y), menu_size),
-                           monitor_bounds, border_insets);
+    y = std::clamp(y, y_min, y_max);
   }
 
   return gfx::Rect({x, y}, menu_size);
