@@ -246,8 +246,8 @@ std::vector<std::u16string> AutocompleteProviderClientImpl::GetBuiltinURLs() {
 
 std::vector<std::u16string>
 AutocompleteProviderClientImpl::GetBuiltinsToProvideAsUserTypes() {
-  return {base::ASCIIToUTF16(kChromeUIChromeURLsURL),
-          base::ASCIIToUTF16(kChromeUIVersionURL)};
+  return {base::ASCIIToUTF16(std::string_view(kChromeUIChromeURLsURL)),
+          base::ASCIIToUTF16(std::string_view(kChromeUIVersionURL))};
 }
 
 component_updater::ComponentUpdateService*
