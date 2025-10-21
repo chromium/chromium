@@ -100,6 +100,13 @@ class WhatsNewFetcher : public BrowserListObserver {
  public:
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
+    browser_did_become_active_subscription_ = browser_->RegisterDidBecomeActive(
+        base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeActive,
+                            base::Unretained(this)));
+    browser_did_become_inactive_subscription_ =
+        browser_->RegisterDidBecomeActive(
+            base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeInactive,
+                                base::Unretained(this)));
 
     GURL server_url = GetServerURL();
     startup_url_ = GetWebUIStartupURL();
@@ -181,6 +188,14 @@ class WhatsNewFetcher : public BrowserListObserver {
 
   ~WhatsNewFetcher() override { BrowserList::RemoveObserver(this); }
 
+  void OnBrowserDidBecomeActive(BrowserWindowInterface* browser) {
+    browser_closed_or_inactive_ = false;
+  }
+
+  void OnBrowserDidBecomeInactive(BrowserWindowInterface* browser) {
+    browser_closed_or_inactive_ = true;
+  }
+
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override {
     if (browser != browser_) {
@@ -189,19 +204,9 @@ class WhatsNewFetcher : public BrowserListObserver {
 
     browser_closed_or_inactive_ = true;
     BrowserList::RemoveObserver(this);
+    browser_did_become_active_subscription_ = {};
+    browser_did_become_inactive_subscription_ = {};
     browser_ = nullptr;
-  }
-
-  void OnBrowserNoLongerActive(Browser* browser) override {
-    if (browser == browser_) {
-      browser_closed_or_inactive_ = true;
-    }
-  }
-
-  void OnBrowserSetLastActive(Browser* browser) override {
-    if (browser == browser_) {
-      browser_closed_or_inactive_ = false;
-    }
   }
 
  private:
@@ -267,6 +272,8 @@ class WhatsNewFetcher : public BrowserListObserver {
   raw_ptr<Browser> browser_;
   bool browser_closed_or_inactive_ = false;
   GURL startup_url_;
+  base::CallbackListSubscription browser_did_become_active_subscription_;
+  base::CallbackListSubscription browser_did_become_inactive_subscription_;
 };
 
 }  // namespace
