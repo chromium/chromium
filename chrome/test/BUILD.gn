@@ -4021,6 +4021,7 @@ if (!is_android) {
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/history",
       "//chrome/browser/infobars:test_support",
+      "//chrome/browser/metrics",
       "//chrome/browser/notifications",
       "//chrome/browser/passage_embeddings",
       "//chrome/browser/preloading:test_support",

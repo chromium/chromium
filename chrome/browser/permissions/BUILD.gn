@@ -75,6 +75,7 @@ source_set("permissions") {
     "//chrome/browser/content_extraction",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",
+    "//chrome/browser/metrics",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

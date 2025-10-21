@@ -38,6 +38,7 @@ source_set("impl") {
     ":background_sync",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",
+    "//chrome/browser/metrics",
     "//chrome/browser/search_engines",
     "//chrome/common:chrome_features",
     "//components/content_settings/core/browser",

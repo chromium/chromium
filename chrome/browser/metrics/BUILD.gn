@@ -4,6 +4,16 @@
 
 import("//components/metrics/generate_expired_histograms_array.gni")
 
+source_set("metrics") {
+  sources = [ "ukm_background_recorder_service.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

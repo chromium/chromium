@@ -28,6 +28,7 @@ source_set("impl") {
   deps = [
     ":content_index",
     "//chrome/browser/engagement",
+    "//chrome/browser/metrics",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",

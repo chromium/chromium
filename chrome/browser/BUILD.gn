@@ -713,7 +713,6 @@ static_library("browser") {
     "metrics/thread_watcher_report_hang.cc",
     "metrics/thread_watcher_report_hang.h",
     "metrics/ukm_background_recorder_service.cc",
-    "metrics/ukm_background_recorder_service.h",
     "metrics/variations/chrome_variations_service_client.cc",
     "metrics/variations/chrome_variations_service_client.h",
     "metrics/variations/google_groups_manager_factory.cc",
@@ -1790,12 +1789,10 @@ static_library("browser") {
     # - c/b/download/download_request_limiter.h
     # - c/b/download/background_download_service_factory.h
     # - c/b/offline_items_collection/offline_content_aggregator_factory.h
-    # - c/b/metrics/ukm_background_recorder_service.h
     "//chrome/browser/background_fetch:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers get componentized:
-    # - c/b/metrics/ukm_background_recorder_service.h
     # - c/b/webapps/installable/installable_utils.h
     "//chrome/browser/background_sync:impl",
 
@@ -1806,7 +1803,6 @@ static_library("browser") {
 
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers get componentized:
-    # - c/b/metrics/ukm_background_recorder_service.h
     # - c/b/offline_items_collection/offline_content_aggregator_factory.h
     "//chrome/browser/content_index:impl",
   ]
@@ -1926,6 +1922,7 @@ static_library("browser") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/metrics",
     "//chrome/browser/metrics:expired_histograms_array",
     "//chrome/browser/metrics/structured",
     "//chrome/browser/metrics/variations:chrome_ui_string_overrider_factory",

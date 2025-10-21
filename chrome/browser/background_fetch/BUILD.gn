@@ -32,6 +32,7 @@ source_set("impl") {
     ":background_fetch",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/metrics",
     "//chrome/browser/profiles",
     "//components/content_settings/core/browser",
     "//components/download/public/common:public",
