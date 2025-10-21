@@ -94,7 +94,7 @@ public class KeyNavigationUtil {
                 &&
                 // The only modifier we allow is shift.
                 // If it has other modifiers, it might be a keyboard shortcut, not tab navigation.
-                event.getModifiers() == KeyEvent.META_SHIFT_ON;
+                event.hasModifiers(KeyEvent.META_SHIFT_ON);
     }
 
     /** Returns whether {@param event} is tab navigation (tab or shift+tab, no other modifiers). */
