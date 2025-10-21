@@ -39,7 +39,7 @@ enum AcMatchClassificationStyle {
 const ENTITY_MATCH_TYPE: string = 'search-suggest-entity';
 
 type ActionEvent = CustomEvent<{
-  event: MouseEvent | KeyboardEvent,
+  event: PointerEvent | KeyboardEvent,
   actionIndex: number,
 }>;
 
@@ -247,6 +247,16 @@ export class SearchboxMatchElement extends CrLitElement {
   //============================================================================
   // Event handlers
   //============================================================================
+
+  protected onActivateKeyword_(e: ActionEvent) {
+    // Keyboard activation isn't possible because when the keyword chip is
+    // focused, focus is redirected to the omnibox view.
+    const event = e.detail.event as PointerEvent;
+    this.pageHandler_.activateKeyword(
+        this.matchIndex, this.match.destinationUrl, mojoTimeTicks(Date.now()),
+        // Distinguish mouse and touch or pen events for logging purposes.
+        event.pointerType === 'mouse');
+  }
 
   /**
    * containing index of the action that was removed as well as modifier key
