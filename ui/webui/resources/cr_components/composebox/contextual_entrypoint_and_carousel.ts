@@ -20,6 +20,7 @@ import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-we
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
+import type {RecentTabChipElement} from './recent_tab_chip.js';
 
 export enum ComposeboxMode {
   DEFAULT = '',
@@ -34,6 +35,7 @@ export interface ContextualEntrypointAndCarouselElement {
     carousel: ComposeboxFileCarouselElement,
     imageInput: HTMLInputElement,
     imageUploadButton: CrIconButtonElement,
+    recentTabChip: RecentTabChipElement,
   };
 }
 
@@ -95,6 +97,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      showRecentTabChip_: {type: Boolean},
       inDeepSearchMode_: {
         reflect: true,
         type: Boolean,
@@ -105,6 +108,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       },
       tabSuggestions_: {type: Array},
       entrypointName: {type: String},
+      recentTabInContext_: {type: Boolean},
     };
   }
 
@@ -124,10 +128,27 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected accessor showContextMenuDescription_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
+  protected accessor showRecentTabChip_: boolean =
+      loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
-  protected accessor tabSuggestions_: TabInfo[] = [];
+  accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor recentTabInContext_: boolean = false;
+
+  private hasTabSuggestions_(): boolean {
+    return this.tabSuggestions_?.length > 0;
+  }
+
+  protected get inToolMode_(): boolean {
+    return this.inDeepSearchMode_ || this.inCreateImageMode_;
+  }
+
+  protected get shouldShowRecentTabChip_(): boolean {
+    return this.showRecentTabChip_ && this.hasTabSuggestions_() &&
+        !this.recentTabInContext_ && !this.inToolMode_;
+  }
+
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
@@ -153,14 +174,32 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
     }
+
+    if (changedPrivateProperties.has('files_') ||
+        changedPrivateProperties.has('tabSuggestions_')) {
+      this.recentTabInContext_ = this.computeRecentTabInContext_();
+    }
+  }
+
+  private computeRecentTabInContext_(): boolean {
+    const recentTab = this.tabSuggestions_?.[0];
+    if (!recentTab) {
+      return false;
+    }
+
+    return this.addedTabsIds_.has(recentTab.tabId);
   }
 
   setContextFiles(files: ComposeboxFile[]) {
     for (const file of files) {
       if (file.type === 'tab') {
-        this.addTabContext_(
-          new CustomEvent('addTabContext', {
-            detail: {id: file.tabId!, title: file.name, url: file.url!}}));
+        this.addTabContext_(new CustomEvent('addTabContext', {
+          detail: {
+            id: file.tabId!,
+            title: file.name,
+            url: file.url!,
+          },
+        }));
       } else {
         this.addFileContext_([file.file!], file.objectUrl !== null);
       }

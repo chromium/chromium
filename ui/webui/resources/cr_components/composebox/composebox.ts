@@ -4,6 +4,7 @@
 import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
 import './contextual_entrypoint_and_carousel.js';
+import './recent_tab_chip.js';
 import './composebox_dropdown.js';
 import './error_scrim.js';
 import './file_carousel.js';

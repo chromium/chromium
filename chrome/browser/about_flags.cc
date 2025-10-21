@@ -1608,21 +1608,25 @@ const FeatureEntry::FeatureParam kComposeboxNoEscClosure[] = {
 };
 const FeatureEntry::FeatureParam kComposeboxShowContextMenu[] = {
     {"ShowContextMenu", "true"},
+    {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
     {"ShowComposeboxZps", "true"},
     {"ShowContextMenu", "true"},
+    {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
     {"MaxNumFiles", "5"},
     {"ShowComposeboxZps", "true"},
     {"ShowContextMenu", "true"},
+    {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndZpsMultiFileNoViewport[] = {
         {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
         {"ShowContextMenu", "true"},
+        {"ShowRecentTabChip", "true"},
         {"EnableViewportImages", "false"},
 };
 const FeatureEntry::FeatureParam
@@ -1630,6 +1634,7 @@ const FeatureEntry::FeatureParam
         {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
         {"ShowContextMenu", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowContextMenuTabPreviews", "true"},
 };
 const FeatureEntry::FeatureParam kShowToolsAndModels[] = {

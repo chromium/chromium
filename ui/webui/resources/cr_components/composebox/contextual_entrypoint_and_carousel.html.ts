@@ -9,9 +9,8 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
-  const showDescription = this.realboxLayoutMode === 'Compact' ?
-      false :
-      this.showContextMenuDescription_;
+  const showDescription = this.realboxLayoutMode !== 'Compact' &&
+      this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_;
   const contextMenu = html`
       <div id="contextMenuContainer">
         <composebox-context-menu-entrypoint id="contextEntrypoint"
@@ -31,6 +30,16 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}">
         </composebox-context-menu-entrypoint>
+        ${
+      this.shouldShowRecentTabChip_ ? html`
+        <composebox-recent-tab-chip id="recentTabChip"
+            class="upload-icon"
+            .recentTab_=${this.tabSuggestions_[0]}
+            .inputsDisabled_=${this.inputsDisabled_}
+            @add-tab-context="${this.addTabContext_}">
+        </composebox-recent-tab-chip>
+        ` :
+                                      ''}
         <composebox-tool-chip
             icon="composebox:deepSearch"
             label="${this.i18n('deepSearch')}"

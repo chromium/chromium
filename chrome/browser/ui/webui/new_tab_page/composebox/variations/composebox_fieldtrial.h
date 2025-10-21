@@ -47,6 +47,8 @@ extern const base::FeatureParam<bool> kShowComposeboxImageSuggestions;
 // Whether to show the + entrypoint and contextual input menu in the realbox and
 // composebox.
 extern const base::FeatureParam<bool> kShowContextMenu;
+// Whether to show the recent tab chip in the realbox and composebox.
+extern const base::FeatureParam<bool> kShowRecentTabChip;
 // Whether to show tab previews on hover for the composebox context menu.
 extern const base::FeatureParam<bool> kShowContextMenuTabPreviews;
 // The maximum number of tab suggestions to show in the composebox context menu.
