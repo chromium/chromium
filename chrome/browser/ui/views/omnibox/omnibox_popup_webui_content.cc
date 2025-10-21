@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -30,12 +29,14 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
       omnibox_popup_presenter_(presenter),
       controller_(controller),
       include_location_bar_cutout_(include_location_bar_cutout) {
+  contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
+      GURL(chrome::kChromeUIOmniboxPopupURL), location_bar_view->profile(), -1);
+  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+  SetWebContents(contents_wrapper_->web_contents());
   // Make the OmniboxController available to the OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
   OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
       ->set_omnibox_controller(controller);
-
-  LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
 }
 
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
@@ -62,6 +63,16 @@ void OmniboxPopupWebUIContent::AddedToWidget() {
   }
   zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
   zoom_controller->SetZoomLevel(0);
+}
+
+void OmniboxPopupWebUIContent::ShowUI() {
+  // The OmniboxPopupPresenter manages the widget visibility,
+  // so this is a no-op.
+}
+
+void OmniboxPopupWebUIContent::CloseUI() {
+  // The OmniboxPopupPresenter manages the widget visibility,
+  // so this is a no-op.
 }
 
 void OmniboxPopupWebUIContent::ResizeDueToAutoResize(

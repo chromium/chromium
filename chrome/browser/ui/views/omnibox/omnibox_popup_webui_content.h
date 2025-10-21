@@ -7,7 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,7 +23,8 @@ class OmniboxController;
 class OmniboxPopupPresenter;
 
 // The content WebView for the popup of a WebUI Omnibox.
-class OmniboxPopupWebUIContent : public views::WebView {
+class OmniboxPopupWebUIContent : public views::WebView,
+                                 public WebUIContentsWrapper::Host {
   METADATA_HEADER(OmniboxPopupWebUIContent, views::WebView)
  public:
   OmniboxPopupWebUIContent() = delete;
@@ -33,10 +36,16 @@ class OmniboxPopupWebUIContent : public views::WebView {
   OmniboxPopupWebUIContent& operator=(const OmniboxPopupWebUIContent&) = delete;
   ~OmniboxPopupWebUIContent() override;
 
+  WebUIContentsWrapperT<OmniboxPopupUI>* contents_wrapper() {
+    return contents_wrapper_.get();
+  }
+
   // views::View:
   void AddedToWidget() override;
 
-  // content::WebContentsDelegate:
+  // WebUIContentsWrapper::Host:
+  void ShowUI() override;
+  void CloseUI() override;
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
   bool HandleKeyboardEvent(content::WebContents* source,
@@ -50,6 +59,10 @@ class OmniboxPopupWebUIContent : public views::WebView {
 
   // Whether or not the WebUI popup includes the `location_bar_view` cutout.
   bool include_location_bar_cutout_ = true;
+
+  std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents_wrapper_;
+
+  base::WeakPtrFactory<OmniboxPopupWebUIContent> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_WEBUI_CONTENT_H_
