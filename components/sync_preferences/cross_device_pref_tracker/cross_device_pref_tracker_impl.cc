@@ -214,7 +214,14 @@ std::optional<std::string> GetLocalCacheGuid(
 
 // Helper to check if a `DeviceInfo` matches the provided filter criteria.
 bool DeviceMatchesFilter(const syncer::DeviceInfo& device_info,
-                         const CrossDevicePrefTracker::DeviceFilter& filter) {
+                         const CrossDevicePrefTracker::DeviceFilter& filter,
+                         const base::Time current_time) {
+  if (filter.max_sync_recency.has_value() &&
+      device_info.last_updated_timestamp() <
+          (current_time - filter.max_sync_recency.value())) {
+    return false;
+  }
+
   if (filter.os_type.has_value() &&
       device_info.os_type() != filter.os_type.value()) {
     return false;
@@ -413,12 +420,14 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
       profile_pref_service.GetDict(cross_device_pref_name);
 
   std::vector<TimestampedPrefValueInternal> matching_cross_device_entries;
+  base::Time current_time = base::Time::Now();
 
   for (const auto [cache_guid, entry_value] : cross_device_dict) {
     const syncer::DeviceInfo* device_info =
         device_info_tracker->GetDeviceInfo(cache_guid);
 
-    if (!device_info || !DeviceMatchesFilter(*device_info, filter) ||
+    if (!device_info ||
+        !DeviceMatchesFilter(*device_info, filter, current_time) ||
         !entry_value.is_dict()) {
       continue;
     }

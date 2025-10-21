@@ -278,10 +278,12 @@ class CrossDevicePrefTrackerTest : public testing::Test {
   std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       const std::string& guid,
       syncer::DeviceInfo::OsType os_type,
-      syncer::DeviceInfo::FormFactor form_factor) {
+      syncer::DeviceInfo::FormFactor form_factor,
+      base::Time last_updated_timestamp = base::Time::Now()) {
     return CreateFakeDeviceInfo(guid, "Device Name", std::nullopt,
                                 sync_pb::SyncEnums::TYPE_UNSET, os_type,
-                                form_factor);
+                                form_factor, "manufacturer", "model",
+                                std::string(), last_updated_timestamp);
   }
 
   // Helper to manually populate the cross-device dictionary pref.
@@ -747,6 +749,40 @@ TEST_F(CrossDevicePrefTrackerTest, GetValuesFiltersByOsTypeAndFormFactor) {
       tracker_->GetValues(kTrackedProfilePref, filter);
 
   EXPECT_THAT(results, testing::ElementsAre(HasIntValue(1)));
+}
+
+// Verifies that GetValues can filter results based on an active syncing period.
+TEST_F(CrossDevicePrefTrackerTest, GetValuesFiltersByActiveSyncingPeriod) {
+  CreateTracker();
+  const base::Time kOldSync = base::Time::Now() - base::Days(365);
+  const base::Time kRecentSync = base::Time::Now();
+  // Device that has not connected to sync servers in a long time.
+  GetTracker()->Add(CreateDeviceInfo(
+      "guid_inactive_android_phone", syncer::DeviceInfo::OsType::kAndroid,
+      syncer::DeviceInfo::FormFactor::kPhone, kOldSync));
+
+  // Device that has recently connected to sync servers (Match).
+  GetTracker()->Add(CreateDeviceInfo(
+      "guid_syncing_android_phone", syncer::DeviceInfo::OsType::kAndroid,
+      syncer::DeviceInfo::FormFactor::kPhone, kRecentSync));
+
+  // Add corresponding entries.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref,
+                             "guid_inactive_android_phone", base::Value(1),
+                             kOldSync, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref,
+                             "guid_syncing_android_phone", base::Value(2),
+                             kOldSync, std::nullopt);
+
+  // Filter for devices that have connected to the sync servers within a recency
+  // window.
+  CrossDevicePrefTracker::DeviceFilter filter;
+  base::TimeDelta lastSyncRecency = base::Days(90);
+  filter.max_sync_recency = lastSyncRecency;
+  std::vector<TimestampedPrefValue> results =
+      tracker_->GetValues(kTrackedProfilePref, filter);
+
+  EXPECT_THAT(results, testing::ElementsAre(HasIntValue(2)));
 }
 
 // Verifies that GetMostRecentValue respects filters.

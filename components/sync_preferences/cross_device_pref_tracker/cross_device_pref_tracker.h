@@ -81,6 +81,10 @@ class CrossDevicePrefTracker : public KeyedService {
   struct DeviceFilter {
     std::optional<syncer::DeviceInfo::OsType> os_type;
     std::optional<syncer::DeviceInfo::FormFactor> form_factor;
+    // If provided, only include devices whose
+    // `DeviceInfo::last_updated_timestamp` is within this duration from the
+    // time the filter is applied.
+    std::optional<base::TimeDelta> max_sync_recency;
   };
 
   ~CrossDevicePrefTracker() override;
