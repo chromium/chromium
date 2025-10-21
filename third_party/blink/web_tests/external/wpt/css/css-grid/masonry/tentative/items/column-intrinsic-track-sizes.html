@@ -21,7 +21,7 @@
 }
 </style>
 
-<div id="grid">
+<div id="masonry">
   <div id="item">XXX XX<br>XX<br>XX</div>
 </div>
 
@@ -34,7 +34,7 @@
 const item = document.getElementById("item");
 function checkTrackSizes(span, trackList, expectedCols) {
   item.style.gridColumn = `span ${span}`;
-  TestingUtils.testGridTemplateColumns("grid", trackList, expectedCols);
+  TestingUtils.testGridTemplateColumns("masonry", trackList, expectedCols);
 }
 
 setup({ explicit_done: true });

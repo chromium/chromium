@@ -35,7 +35,7 @@ var TestingUtils = (function() {
             var grid = document.getElementById(gridId);
             grid.style.gridTemplateRows = rowsStyle;
             checkGridTemplateRows(grid, rowsComputedValue);
-        }, (label ? label + " " : "") + "'" + gridId +"with: grid-template-rows: " + rowsStyle + ";");
+        }, (label ? label + " " : "") + "'" + gridId +"' with: grid-template-rows: " + rowsStyle + ";");
     }
 
     function checkGridTemplateAreas(element, value) {
