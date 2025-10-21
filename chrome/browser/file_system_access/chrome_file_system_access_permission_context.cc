@@ -632,6 +632,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::DANGEROUS_ACCOUNT_COMPROMISE:
     case Result::BLOCKED_SCAN_FAILED:
     case Result::SENSITIVE_CONTENT_BLOCK:
+    case Result::FORCE_SAVE_TO_GDRIVE:
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kBlock;
 

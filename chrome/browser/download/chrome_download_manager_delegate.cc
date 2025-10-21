@@ -497,6 +497,8 @@ download::DownloadDangerType SavePackageDangerType(
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED;
     case safe_browsing::DownloadCheckResult::BLOCKED_TOO_LARGE:
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
+    // TODO(alshawwa): add DownloadDangerType value for force save to gdrive
+    case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
       return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
     case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
@@ -1679,6 +1681,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         danger_type = download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING;
         break;
       case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+      // TODO(alshawwa): add a new download::DownloadDangerType corresponding to
+      // FORCE_SAVE_TO_GDRIVE.
+      case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
         danger_type = download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
         break;
       case safe_browsing::DownloadCheckResult::DEEP_SCANNED_SAFE:

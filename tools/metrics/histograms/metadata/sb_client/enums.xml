@@ -284,6 +284,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="ASYNC_LOCAL_PASSWORD_SCANNING"/>
   <int value="19" label="BLOCKED_SCAN_FAILED"/>
   <int value="20" label="IMMEDIATE_DEEP_SCAN"/>
+  <int value="21" label="FORCE_SAVE_TO_GDRIVE"/>
 </enum>
 
 <enum name="SBClientDownloadUserGestureFileTypeAttributes">

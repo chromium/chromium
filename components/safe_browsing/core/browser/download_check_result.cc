@@ -48,6 +48,8 @@ std::string_view DownloadCheckResultToString(DownloadCheckResult result) {
       return "BLOCKED_SCAN_FAILED";
     case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
       return "IMMEDIATE_DEEP_SCAN";
+    case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+      return "FORCE_SAVE_TO_GDRIVE";
   }
 }
 

@@ -74,6 +74,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
       DownloadCheckResult::BLOCKED_TOO_LARGE,
       DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED,
       DownloadCheckResult::BLOCKED_SCAN_FAILED,
+      DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
       DownloadCheckResult::POTENTIALLY_UNWANTED,
       DownloadCheckResult::SENSITIVE_CONTENT_WARNING,
       DownloadCheckResult::PROMPT_FOR_SCANNING,
@@ -125,6 +126,8 @@ enterprise_connectors::EventResult GetEventResult(
     case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
       return enterprise_connectors::EventResult::WARNED;
 
+    // TODO(alshawwa): Add force save to drive EventResult, for reporting.
+    case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
@@ -669,6 +672,9 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
                  enterprise_connectors::DefaultAction::kBlock) {
     download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
   }
+
+  // TODO(alshawwa): add logic to handle
+  // DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
 
   LogDeepScanResult(download_result, trigger_,
                     metadata_->IsTopLevelEncryptedArchive());

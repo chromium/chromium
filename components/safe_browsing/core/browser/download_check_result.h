@@ -36,7 +36,8 @@ enum class DownloadCheckResult {
   ASYNC_LOCAL_PASSWORD_SCANNING = 18,
   BLOCKED_SCAN_FAILED = 19,
   IMMEDIATE_DEEP_SCAN = 20,
-  kMaxValue = IMMEDIATE_DEEP_SCAN,
+  FORCE_SAVE_TO_GDRIVE = 21,
+  kMaxValue = FORCE_SAVE_TO_GDRIVE,
 };
 
 std::string_view DownloadCheckResultToString(DownloadCheckResult result);

@@ -80,6 +80,7 @@ DownloadCheckResult DeepScanningMetadata::MaybeOverrideScanResult(
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+    case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
     case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
     case DownloadCheckResult::BLOCKED_SCAN_FAILED:
       break;
