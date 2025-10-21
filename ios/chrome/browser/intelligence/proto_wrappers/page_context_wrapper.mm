@@ -124,15 +124,18 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 
             // Try to access the iframe's body, failure is possible (cross-origin iframes).
             let iframeBody;
+            let iframeTitle;
             try {
-                iframeBody = iframe.contentDocument ? iframe.contentDocument.body : null;
+                const contentDoc = iframe.contentDocument;
+                iframeBody = contentDoc ? contentDoc.body : null;
+                iframeTitle = contentDoc ? contentDoc.title : '';
             } catch (error) {
                 return null;
             }
 
             // Recursively construct the innerText tree for the iframe's body.
-            return iframeBody ? constructSameOriginInnerTextTree(iframeBody, iframe.src, iframe.title,
-                nonceAttributeValue) : null;
+            return iframeBody ? constructSameOriginInnerTextTree(iframeBody,
+                iframe.src, iframeTitle, nonceAttributeValue) : null;
         });
 
         const result = {

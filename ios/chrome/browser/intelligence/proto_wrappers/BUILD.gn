@@ -38,6 +38,33 @@ source_set("page_context_metrics") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_context_wrapper_unittest.mm" ]
+  deps = [
+    ":metrics_constants",
+    ":proto_wrappers",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_swift",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
+    "//ios/chrome/browser/snapshots/model:test_utils",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/web/find_in_page",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("metrics_constants") {
   sources = [
     "metrics_constants.h",

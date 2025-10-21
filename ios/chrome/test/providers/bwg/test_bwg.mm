@@ -6,11 +6,6 @@
 
 namespace ios::provider {
 
-// Script to check whether PageContext should be detached from the request, for
-// testing.
-constexpr const char16_t* kShouldDetachPageContextScriptForTesting =
-    u"return false;";
-
 std::string CreateRequestBody(
     std::string prompt,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context) {
@@ -24,7 +19,17 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
 void StartBwgOverlay(BWGConfiguration* bwg_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
-  return kShouldDetachPageContextScriptForTesting;
+  return uR"JS(
+      if (window.__gCrWeb && window.__gCrWeb.pageContext) {
+        if (typeof window.__gCrWeb.pageContext.shouldDetach === 'boolean') {
+          return window.__gCrWeb.pageContext.shouldDetach;
+        }
+        if (window.__gCrWeb.pageContext.shouldTimeout) {
+          while(true);
+        }
+      }
+      return false;
+  )JS";
 }
 
 id<BWGGatewayProtocol> CreateBWGGateway() {
