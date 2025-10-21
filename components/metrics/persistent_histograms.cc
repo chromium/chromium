@@ -82,15 +82,13 @@ constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay = base::Minutes(2);
 // it. Memory that is not actually used won't be physically mapped by the
 // system. BrowserMetrics usage, as reported in UMA, has the 99.99
 // percentile around 3MiB as of 2018-10-22.
-// Please update ServicificationBackgroundServiceTest.java if the |kAllocSize|
-// is changed.
-// LINT.IfChange
+// LINT.IfChange(HistogramSpareFile)
 const size_t kAllocSize = 4 << 20;     // 4 MiB
 const uint32_t kAllocId = 0x935DDD43;  // SHA1(BrowserMetrics)
 
 base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
-  return base::GlobalHistogramAllocator::ConstructFilePath(
-      metrics_dir, kBrowserMetricsName + std::string("-spare"));
+  return base::GlobalHistogramAllocator::ConstructFilePathForSpareFile(
+      metrics_dir, kBrowserMetricsName);
 }
 // LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java)
 
@@ -236,6 +234,11 @@ const base::FeatureParam<std::string> kPersistentHistogramsStorage{
 
 const char kBrowserMetricsName[] = "BrowserMetrics";
 const char kDeferredBrowserMetricsName[] = "DeferredBrowserMetrics";
+
+base::FilePath GetPersistentHistogramsSpareFilePath(
+    const base::FilePath& metrics_dir) {
+  return GetSpareFilePath(metrics_dir);
+}
 
 void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
                                      bool persistent_histograms_enabled,

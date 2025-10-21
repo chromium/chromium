@@ -21,6 +21,7 @@ import org.chromium.base.Log;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.backup.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.init.MinimalBrowserStartupUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -40,14 +41,7 @@ public final class ServicificationBackgroundServiceTest {
     private RandomAccessFile mMappedSpareFile;
     private File mSpareFile;
 
-    /**
-     * The size of the persistent/shared memory to store histograms. It should be consistent with
-     * the |kAllocSize| in persistent_histograms.cc.
-     */
-    private static final int ALLOC_SIZE = 4 << 20; // 4 MiB
-
     private static final String APP_CHROME_DIR = "app_chrome";
-    private static final String SPARE_FILE_NAME = "BrowserMetrics-spare.pma";
     private static final String TAG = "ServicifiStartupTest";
 
     @Before
@@ -70,11 +64,11 @@ public final class ServicificationBackgroundServiceTest {
                         APP_CHROME_DIR);
         if (!appChromeDir.exists()) appChromeDir.mkdir();
 
-        mSpareFile = new File(appChromeDir + File.separator + SPARE_FILE_NAME);
+        mSpareFile = new File(appChromeDir, ChromeBackupAgentImpl.HISTOGRAM_SPARE_FILE_NAME);
         try {
             mSpareFile.createNewFile();
         } catch (IOException e) {
-            Log.d(TAG, "Fail to create file: %s", SPARE_FILE_NAME);
+            Log.d(TAG, "Fail to create file: %s", mSpareFile);
             return;
         }
 
@@ -84,13 +78,16 @@ public final class ServicificationBackgroundServiceTest {
             MappedByteBuffer mappedByteBuffer =
                     mMappedSpareFile
                             .getChannel()
-                            .map(FileChannel.MapMode.READ_WRITE, 0, ALLOC_SIZE);
+                            .map(
+                                    FileChannel.MapMode.READ_WRITE,
+                                    0,
+                                    ChromeBackupAgentImpl.HISTOGRAM_SPARE_FILE_SIZE);
 
             mappedByteBuffer.put(0, (byte) 0);
             mappedByteBuffer.force();
             Assert.assertTrue(Byte.compare(mappedByteBuffer.get(0), (byte) 0) == 0);
         } catch (Exception e) {
-            Log.d(TAG, "Fail to create memory-mapped file: %s", SPARE_FILE_NAME);
+            Log.d(TAG, "Fail to create memory-mapped file: %s", mSpareFile);
         }
     }
 
@@ -100,7 +97,7 @@ public final class ServicificationBackgroundServiceTest {
         try {
             mMappedSpareFile.close();
         } catch (IOException e) {
-            Log.d(TAG, "Fail to close memory-mapped file: %s", SPARE_FILE_NAME);
+            Log.d(TAG, "Fail to close memory-mapped file: %s", mSpareFile);
         }
     }
 

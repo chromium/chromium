@@ -434,6 +434,10 @@ class BASE_EXPORT GlobalHistogramAllocator
   static FilePath ConstructFilePathForActiveFile(const FilePath& dir,
                                                  std::string_view name);
 
+  // Constructs a filename using a name for a "spare" file.
+  static FilePath ConstructFilePathForSpareFile(const FilePath& dir,
+                                                std::string_view name);
+
   // Like above but with timestamp and pid for use in upload directories.
   static FilePath ConstructFilePathForUploadDir(const FilePath& dir,
                                                 std::string_view name,

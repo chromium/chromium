@@ -181,6 +181,14 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
     // Timeout for the sign-in flow and related preferences commit.
     private static final long SIGNIN_TIMEOUT_SECS = 10;
 
+    // LINT.IfChange(HistogramSpareFile)
+    @VisibleForTesting
+    public static final String HISTOGRAM_SPARE_FILE_NAME = "BrowserMetrics-spare.pma";
+
+    @VisibleForTesting public static final int HISTOGRAM_SPARE_FILE_SIZE = 4 * 1024 * 1024;
+
+    // LINT.ThenChange(/components/metrics/persistent_histograms.cc)
+
     /**
      * Class to save and restore the backup state, used to decide if backups are needed. Since the
      * backup data is small, and stored as private data by the backup service, this can simply store
@@ -628,18 +636,13 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         // install - there won't be a spare file to be used, breaking persistent histograms and
         // thus restore flow metrics. To work around this issue and still get metrics from the
         // restore flow - create a spare file manually.
-        // LINT.IfChange
-        final String spareFileName = "BrowserMetrics-spare.pma";
-        final int spareFileSize = 4 * 1024 * 1024;
-        // LINT.ThenChange(/components/metrics/persistent_histograms.cc)
-
-        File spareFile = new File(dataDirectory, spareFileName);
+        File spareFile = new File(dataDirectory, HISTOGRAM_SPARE_FILE_NAME);
         try (OutputStream outputStream = new FileOutputStream(spareFile)) {
             // Zero-initialize the whole file to make sure the space is actually allocated and it
             // can be used for persisting histograms.
             byte[] buffer = new byte[8192];
-            for (int writtenBytes = 0; writtenBytes < spareFileSize; ) {
-                int writeSize = Math.min(buffer.length, spareFileSize - writtenBytes);
+            for (int writtenBytes = 0; writtenBytes < HISTOGRAM_SPARE_FILE_SIZE; ) {
+                int writeSize = Math.min(buffer.length, HISTOGRAM_SPARE_FILE_SIZE - writtenBytes);
                 outputStream.write(buffer, 0, writeSize);
                 writtenBytes += writeSize;
             }

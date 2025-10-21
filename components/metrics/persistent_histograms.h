@@ -44,6 +44,11 @@ extern const char kBrowserMetricsName[];
 // future session's metrics instead of independently.
 extern const char kDeferredBrowserMetricsName[];
 
+// Get the path under the given base directory that wil be used to create a
+// "spare" file if a mapped file is being used for the allocator.
+base::FilePath GetPersistentHistogramsSpareFilePath(
+    const base::FilePath& metrics_dir);
+
 // Do all the checking and work necessary to enable persistent histograms.
 // `metrics_dir` specifies the root directory where persistent histograms will
 // live. If `persistent_histograms_enabled` is false, this is essentially a
