@@ -149,6 +149,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/favicon/core",

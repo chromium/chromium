@@ -9,8 +9,8 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -70,7 +70,9 @@ void TabManagementTool::Invoke(InvokeCallback callback) {
       browser_window_interface->GetTabStripModel()->AddObserver(this);
 
       // Watch for the window going away as well so we don't wait indefinitely.
-      browser_list_observation_.Observe(BrowserList::GetInstance());
+      browser_did_close_subscription_ =
+          browser_window_interface->RegisterBrowserDidClose(base::BindRepeating(
+              &TabManagementTool::OnBrowserDidClose, base::Unretained(this)));
 
       // Open a blank tab.
       browser_window_interface->OpenGURL(GURL(url::kAboutBlankURL),
@@ -144,16 +146,14 @@ void TabManagementTool::OnTabStripModelChanged(
   }
 }
 
-void TabManagementTool::OnBrowserRemoved(Browser* browser) {
+void TabManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {
   // If the window is destroyed in the interval after a create tab has been
   // invoked but before the tab's been added, this ensures we don't hang waiting
   // for the new tab.
-  if (action_ == kCreate) {
-    CHECK(window_id_);
-    if (callback_ && browser->GetSessionID().id() == window_id_.value()) {
-      PostResponseTask(std::move(callback_),
-                       MakeResult(mojom::ActionResultCode::kWindowWentAway));
-    }
+  CHECK(window_id_);
+  if (action_ == kCreate && callback_) {
+    PostResponseTask(std::move(callback_),
+                     MakeResult(mojom::ActionResultCode::kWindowWentAway));
   }
 }
 

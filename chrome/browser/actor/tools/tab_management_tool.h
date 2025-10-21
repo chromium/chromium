@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_TAB_MANAGEMENT_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_TAB_MANAGEMENT_TOOL_H_
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -21,9 +20,7 @@ class ObservationDelayController;
 // A tool to manage the tabs in a browser window, e.g. create, close,
 // activate, etc.
 // TODO(crbug.com/445993857): Implement actions other than create.
-class TabManagementTool : public Tool,
-                          public TabStripModelObserver,
-                          public BrowserListObserver {
+class TabManagementTool : public Tool, public TabStripModelObserver {
  public:
   enum Action { kCreate, kActivate, kClose };
 
@@ -58,10 +55,10 @@ class TabManagementTool : public Tool,
                               const TabStripModelChange& change,
                               const TabStripSelectionChange& selection) final;
 
-  // BrowserListObserver
-  void OnBrowserRemoved(Browser* browser) final;
-
  private:
+  // Called when the browser with `window_id_` has closed.
+  void OnBrowserDidClose(BrowserWindowInterface* browser);
+
   Action action_;
 
   InvokeCallback callback_;
@@ -76,8 +73,9 @@ class TabManagementTool : public Tool,
   // If creating a tab, the window in which to create the tab.
   std::optional<int32_t> window_id_;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  // Subscription to the close event for the Browser corresponding to
+  // `window_id_`.
+  base::CallbackListSubscription browser_did_close_subscription_;
 
   base::WeakPtrFactory<TabManagementTool> weak_ptr_factory_{this};
 };
