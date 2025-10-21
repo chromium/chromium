@@ -106,16 +106,16 @@ The Chromium CQ supports a variety of options that can change what it checks.
 * `Include-Ci-Only-Tests: true` or
   `Include-Ci-Only-Tests: <comma-separated-builder-ids>|<comma-separated-tests>`
 
-  Some builder configurations may run configure to run some tests only after
+  Some builder configurations may be configured to run some tests only after
   submission (on CI) and not before submission (in the CQ) by default. Possible
-  reasons this might be that the tests are too slow or too expensive or there is
-  insufficient capacity to run the tests for every CL. In order to still be able
-  to explicitly reproduce what the CI builder is doing, you can specify this
-  footer to run those tests before submission anyway. Specifying true will run
-  all such tests on any triggered try builders. Specifying builder IDs and tests
-  will run only the named tests defined for the identified CI builders on the
-  try builders that mirror those CI builders. A * can be used in place of a
-  builder ID or test name to match any builder/test.
+  reasons this might be are that the tests are too slow or too expensive or
+  there is insufficient capacity to run the tests for every CL. In order to
+  still be able to explicitly reproduce what the CI builder is doing, you can
+  specify this footer to run those tests before submission anyway. Specifying
+  true will run all such tests on any triggered try builders. Specifying builder
+  IDs and tests will run only the named tests defined for the identified CI
+  builders on the try builders that mirror those CI builders. A * can be used in
+  place of a builder ID or test name to match any builder/test.
 
   Constructing a footer value manually should generally be unnecessary: tests
   configured to run only on CI will have the necessary footer included in their
