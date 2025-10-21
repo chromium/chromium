@@ -1422,8 +1422,6 @@ static_library("ui") {
       "//chrome/browser/bluetooth",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
-      "//chrome/browser/contextual_tasks",
-      "//chrome/browser/contextual_tasks:impl",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/password_manager/factories",
@@ -1693,8 +1691,6 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     # Non-android circular dependencies
     allow_circular_includes_from += [
-      "//chrome/browser/contextual_tasks:impl",
-
       # TODO(crbug.com/40110173): Resolve circular dependencies.
       "//chrome/browser/media/router",
 

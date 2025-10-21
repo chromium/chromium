@@ -5,7 +5,7 @@
 source_set("internal") {
   visibility = [
     ":*",
-    "//chrome/browser/contextual_tasks",
+    "//chrome/browser/contextual_tasks:*",
   ]
 
   sources = [
