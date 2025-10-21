@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -34,7 +35,7 @@ class MockTest : public testing::Test {
     // Create a mock bus.
     Bus::Options options;
     options.bus_type = Bus::SYSTEM;
-    mock_bus_ = new MockBus(options);
+    mock_bus_ = new MockBus(std::move(options));
 
     // Create a mock proxy.
     mock_proxy_ = new MockObjectProxy(

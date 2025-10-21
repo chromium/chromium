@@ -21,7 +21,7 @@ namespace dbus {
 // D-Bus calls.
 class MockBus : public Bus {
  public:
-  MockBus(const Bus::Options& options);
+  explicit MockBus(Bus::Options options);
 
   MOCK_METHOD2(GetObjectProxy, ObjectProxy*(std::string_view service_name,
                                             const ObjectPath& object_path));

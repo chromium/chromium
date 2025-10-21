@@ -194,7 +194,7 @@ void TestService::Run(base::RunLoop* run_loop) {
   bus_options.bus_type = Bus::SESSION;
   bus_options.connection_type = Bus::PRIVATE;
   bus_options.dbus_task_runner = dbus_task_runner_;
-  bus_ = new Bus(bus_options);
+  bus_ = new Bus(std::move(bus_options));
 
   exported_object_ = bus_->GetExportedObject(
       ObjectPath("/org/chromium/TestObject"));

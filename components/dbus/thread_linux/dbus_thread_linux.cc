@@ -4,6 +4,8 @@
 
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 
+#include <utility>
+
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
@@ -45,7 +47,7 @@ scoped_refptr<dbus::Bus> CreateSharedBus(dbus::Bus::BusType bus_type) {
   options.bus_type = bus_type;
   options.connection_type = dbus::Bus::PRIVATE;
   options.dbus_task_runner = g_dbus_thread_task_runner.Get();
-  return base::MakeRefCounted<dbus::Bus>(options);
+  return base::MakeRefCounted<dbus::Bus>(std::move(options));
 }
 
 }  // namespace

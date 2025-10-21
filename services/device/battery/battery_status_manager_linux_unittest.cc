@@ -7,6 +7,7 @@
 #include <limits>
 #include <list>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -192,7 +193,7 @@ class BatteryStatusManagerLinuxTest : public testing::Test {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
     options.connection_type = dbus::Bus::PRIVATE;
-    mock_bus_ = new NiceMock<dbus::MockBus>(options);
+    mock_bus_ = new NiceMock<dbus::MockBus>(std::move(options));
 
     EXPECT_CALL(*mock_bus_, Connect()).WillRepeatedly(Return(true));
     mock_display_device_ = CreateMockBatteryObject();

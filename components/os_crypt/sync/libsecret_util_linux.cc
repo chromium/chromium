@@ -6,6 +6,8 @@
 
 #include <dlfcn.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,7 +44,7 @@ bool CanUseLibsecret() {
   dbus::Bus::Options bus_options;
   bus_options.bus_type = dbus::Bus::SESSION;
   bus_options.connection_type = dbus::Bus::PRIVATE;
-  auto bus = base::MakeRefCounted<dbus::Bus>(bus_options);
+  auto bus = base::MakeRefCounted<dbus::Bus>(std::move(bus_options));
 
   dbus::ObjectProxy* bus_proxy =
       bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));

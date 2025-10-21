@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
@@ -48,7 +49,7 @@ class GeolocationWifiDataProviderLinuxTest : public testing::Test {
     // Create a mock bus.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = base::MakeRefCounted<dbus::MockBus>(options);
+    mock_bus_ = base::MakeRefCounted<dbus::MockBus>(std::move(options));
     EXPECT_CALL(*mock_bus_, Connect()).WillRepeatedly(Return(true));
 
     EXPECT_CALL(*mock_bus_, GetOriginTaskRunner())

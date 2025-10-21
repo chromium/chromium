@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_bluetooth_telephony_client.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -55,7 +57,7 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     client_ = FlossBluetoothTelephonyClient::Create();
     SetUpMocks();
   }

@@ -405,7 +405,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     // Create a mock bus.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = new dbus::MockBus(options);
+    mock_bus_ = new dbus::MockBus(std::move(options));
 
     // Create a mock lorgnette daemon proxy.
     mock_proxy_ = new dbus::MockObjectProxy(

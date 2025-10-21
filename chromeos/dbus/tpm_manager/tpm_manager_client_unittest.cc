@@ -57,7 +57,7 @@ class TpmManagerClientTest : public testing::Test {
   void SetUp() override {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = new dbus::MockBus(options);
+    bus_ = new dbus::MockBus(std::move(options));
 
     dbus::ObjectPath tpm_manager_object_path =
         dbus::ObjectPath(::tpm_manager::kTpmManagerServicePath);

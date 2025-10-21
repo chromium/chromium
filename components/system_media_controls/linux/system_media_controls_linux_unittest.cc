@@ -5,6 +5,7 @@
 #include "components/system_media_controls/linux/system_media_controls_linux.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -178,7 +179,7 @@ class SystemMediaControlsLinuxTest : public testing::Test,
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SESSION;
     options.connection_type = dbus::Bus::PRIVATE;
-    mock_bus_ = base::MakeRefCounted<dbus::MockBus>(options);
+    mock_bus_ = base::MakeRefCounted<dbus::MockBus>(std::move(options));
     mock_exported_object_ = base::MakeRefCounted<dbus::MockExportedObject>(
         mock_bus_.get(), dbus::ObjectPath(kMprisAPIObjectPath));
 

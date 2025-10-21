@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -66,7 +67,7 @@ class EndToEndAsyncTest : public testing::Test {
     bus_options.bus_type = Bus::SESSION;
     bus_options.connection_type = Bus::PRIVATE;
     bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
     object_proxy_ = bus_->GetObjectProxy(
         test_service_->service_name(),
         ObjectPath("/org/chromium/TestObject"));
@@ -142,7 +143,7 @@ class EndToEndAsyncTest : public testing::Test {
     bus_options.address = kInvalidAddress;
     bus_options.connection_type = Bus::PRIVATE;
     bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
     ASSERT_TRUE(bus_->HasDBusThread());
 
     // Create new object proxy.

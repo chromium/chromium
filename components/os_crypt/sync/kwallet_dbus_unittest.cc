@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/containers/to_vector.h"
 #include "base/nix/xdg_util.h"
@@ -67,7 +68,7 @@ class KWalletDBusTest
 
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SESSION;
-    mock_session_bus_ = new dbus::MockBus(options);
+    mock_session_bus_ = new dbus::MockBus(std::move(options));
 
     mock_klauncher_proxy_ = new StrictMock<dbus::MockObjectProxy>(
         mock_session_bus_.get(), "org.kde.klauncher",

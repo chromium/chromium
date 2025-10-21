@@ -196,7 +196,7 @@ class FlossManagerClientTest : public testing::Test {
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     client_ = FlossManagerClient::Create();
 
     SetUpMocks();

@@ -23,7 +23,7 @@ TestSecretPortal::TestSecretPortal(bool pre_test) : pre_test_(pre_test) {
   dbus::Bus::Options bus_options;
   bus_options.bus_type = dbus::Bus::SESSION;
   bus_options.connection_type = dbus::Bus::PRIVATE;
-  bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
+  bus_ = base::MakeRefCounted<dbus::Bus>(std::move(bus_options));
 
   exported_object_ = bus_->GetExportedObject(
       dbus::ObjectPath(SecretPortalKeyProvider::kObjectPathSecret));

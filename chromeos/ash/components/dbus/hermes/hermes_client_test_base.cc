@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
+
+#include <utility>
+
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -50,7 +53,7 @@ dbus::MockBus* HermesClientTestBase::GetMockBus() {
 void HermesClientTestBase::InitMockBus() {
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  bus_ = new dbus::MockBus(options);
+  bus_ = new dbus::MockBus(std::move(options));
 }
 
 }  // namespace ash

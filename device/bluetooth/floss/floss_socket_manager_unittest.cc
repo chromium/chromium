@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_socket_manager.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -67,7 +69,7 @@ class FlossSocketManagerTest : public testing::Test {
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     sockmgr_ = FlossSocketManager::Create();
 
     SetUpMocks();

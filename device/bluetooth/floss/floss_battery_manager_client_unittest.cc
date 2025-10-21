@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -75,7 +77,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     callback_path_ =
         ::dbus::ObjectPath(FlossBatteryManagerClient::kExportedCallbacksPath);
     client_ = FlossBatteryManagerClient::Create();

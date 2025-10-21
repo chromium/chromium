@@ -36,7 +36,7 @@ void ServiceProviderTestHelper::SetUp(
   // Create a mock bus.
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  mock_bus_ = new dbus::MockBus(options);
+  mock_bus_ = new dbus::MockBus(std::move(options));
 
   // ShutdownAndBlock() will be called in TearDown().
   EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());

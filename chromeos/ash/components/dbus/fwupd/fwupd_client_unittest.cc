@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -176,7 +177,7 @@ class FwupdClientTest : public testing::Test {
   FwupdClientTest() {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = base::MakeRefCounted<dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<dbus::MockBus>(std::move(options));
 
     dbus::ObjectPath fwupd_service_path(kFwupdServicePath);
     proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(

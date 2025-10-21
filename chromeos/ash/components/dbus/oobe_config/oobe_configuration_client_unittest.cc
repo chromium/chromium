@@ -5,8 +5,10 @@
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 
 #include <dbus/dbus-protocol.h>
+
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -55,7 +57,7 @@ class OobeConfigurationClientTest : public testing::Test {
     // Create a mock bus.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = new dbus::MockBus(options);
+    mock_bus_ = new dbus::MockBus(std::move(options));
 
     // Create a mock oobe config proxy.
     mock_proxy_ = new dbus::MockObjectProxy(

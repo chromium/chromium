@@ -100,7 +100,7 @@ class SessionChapsClientTest : public testing::Test {
   void SetUp() override {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = base::MakeRefCounted<dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<dbus::MockBus>(std::move(options));
 
     std::string chaps_name = "org.chromium.Chaps";
     dbus::ObjectPath chaps_path = dbus::ObjectPath("/org/chromium/Chaps");

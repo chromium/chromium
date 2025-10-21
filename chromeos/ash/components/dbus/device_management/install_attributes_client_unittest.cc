@@ -90,7 +90,7 @@ class InstallAttributesClientTest : public testing::Test {
   void SetUp() override {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = base::MakeRefCounted<dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<dbus::MockBus>(std::move(options));
 
     dbus::ObjectPath object_path =
         dbus::ObjectPath(::device_management::kDeviceManagementServicePath);

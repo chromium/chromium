@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -122,7 +123,7 @@ class PrintscanmgrClientTest : public testing::Test {
     // Create mock D-Bus objects for printscanmgr.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = new dbus::MockBus(options);
+    mock_bus_ = new dbus::MockBus(std::move(options));
     mock_proxy_ = new dbus::MockObjectProxy(
         mock_bus_.get(), printscanmgr::kPrintscanmgrServiceName,
         dbus::ObjectPath(printscanmgr::kPrintscanmgrServicePath));

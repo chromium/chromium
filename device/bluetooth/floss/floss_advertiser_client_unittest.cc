@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_advertiser_client.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -54,7 +56,7 @@ class FlossAdvertiserClientTest : public testing::Test,
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     advclient_ = FlossAdvertiserClient::Create();
     callback_path_ = ::dbus::ObjectPath(kAdvertisingSetCallbackPath);
 

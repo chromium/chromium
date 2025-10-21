@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -245,7 +246,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = base::MakeRefCounted<dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<dbus::MockBus>(std::move(options));
 
     dbus::ObjectPath fwupd_service_path(kFwupdServicePath);
     proxy_ = base::MakeRefCounted<NiceMock<dbus::MockObjectProxy>>(
