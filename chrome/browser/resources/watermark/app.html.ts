@@ -17,7 +17,7 @@ export function getHtml(this: WatermarkAppElement) {
           <p>Customize the watermark style and test it live</p>
         </div>
         <cr-button @click="${this.onCopyJsonClick_}">
-            Copy style in JSON
+            Copy style as JSON
         </cr-button>
       </div>
 

@@ -104,6 +104,7 @@ export class WatermarkAppElement extends CrLitElement {
           },
         },
         null, 2));
+    this.pageHandler_.showNotificationToast();
   }
 
   protected onFontSizeChanged_() {

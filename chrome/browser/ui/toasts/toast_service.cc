@@ -304,4 +304,9 @@ void ToastService::RegisterToasts(
                                   IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY)
           .AddCloseButton()
           .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kCopiedToClipboard,
+      ToastSpecification::Builder(kInfoIcon, IDS_COPIED_TO_CLIPBOARD_TOAST_BODY)
+          .Build());
 }  // RegisterToasts() end.

@@ -41,7 +41,8 @@ enum class ToastId {
   kTabGroupSharingVersionUpToDate = 19,
   kEmailVerified = 20,
   kGlicShareImageFailed = 21,
-  kMaxValue = kGlicShareImageFailed,
+  kCopiedToClipboard = 22,
+  kMaxValue = kCopiedToClipboard
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

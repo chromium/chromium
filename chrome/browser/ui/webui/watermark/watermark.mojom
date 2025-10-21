@@ -27,4 +27,7 @@ interface PageHandler {
   // adjusts the watermark controls, allowing for real-time updates.
   // @param style The desired style settings for the watermark.
   SetWatermarkStyle(WatermarkStyle style);
+
+  // Triggers a toast with text "Copied to clipboard" to show up.
+  ShowNotificationToast();
 };

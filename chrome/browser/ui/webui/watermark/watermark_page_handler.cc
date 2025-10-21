@@ -7,7 +7,10 @@
 #include "base/types/to_address.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -39,4 +42,19 @@ void WatermarkPageHandler::SetWatermarkStyle(
           enterprise_watermark::kBaseOutlineRGB,
           enterprise_watermark::PercentageToSkAlpha(style->outline_opacity)),
       style->font_size);
+}
+
+void WatermarkPageHandler::ShowNotificationToast() {
+  auto* bwi =
+      webui::GetBrowserWindowInterface(base::to_address(host_contents_));
+  if (!bwi) {
+    return;
+  }
+
+  BrowserWindowFeatures& features = bwi->GetFeatures();
+  ToastController* const toast_controller = features.toast_controller();
+  if (toast_controller) {
+    ToastParams params(ToastId::kCopiedToClipboard);
+    toast_controller->MaybeShowToast(std::move(params));
+  }
 }

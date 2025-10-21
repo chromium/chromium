@@ -24,6 +24,8 @@ class WatermarkPageHandler : public watermark::mojom::PageHandler {
 
   void SetWatermarkStyle(watermark::mojom::WatermarkStylePtr style) override;
 
+  void ShowNotificationToast() override;
+
  private:
   const raw_ref<content::WebContents> host_contents_;
   mojo::Receiver<watermark::mojom::PageHandler> receiver_;

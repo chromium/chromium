@@ -52,6 +52,8 @@ std::string GetToastName(ToastId toast_id) {
       return "EmailVerified";
     case ToastId::kGlicShareImageFailed:
       return "GlicShareImageFailed";
+    case ToastId::kCopiedToClipboard:
+      return "CopiedToClipboard";
   }
 
   NOTREACHED();

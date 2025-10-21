@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
   <int value="20"
       label="Autofilled email got automatically verified by the browser"/>
   <int value="21" label="Sharing image with Gemini failed"/>
+  <int value="22" label="Copied to clipboard"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

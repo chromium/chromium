@@ -22,6 +22,8 @@ static_library("watermark") {
     "//chrome/browser/resources/watermark:resources_grit",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/watermark:mojo_bindings",
     "//chrome/common",
