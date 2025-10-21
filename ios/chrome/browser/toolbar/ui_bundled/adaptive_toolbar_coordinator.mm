@@ -103,6 +103,7 @@ using tab_groups::VersioningMessageController;
   self.mediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:browser
              scenario:kMenuScenarioHistogramToolbarMenu];
+  self.mediator.commandDispatcher = browser->GetCommandDispatcher();
 
   _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       FullscreenController::FromBrowser(browser), self.viewController);
