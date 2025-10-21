@@ -34,7 +34,7 @@
 }
 
 /* Entities may feature a dominant color background until image loads. */
-:host([has-image]:not([is-weather-answer])) #container {
+:host([has-image]:not([in-searchbox]):not([is-weather-answer])) #container {
   background-color: var(--color-searchbox-results-icon-container-background,
       var(--container-bg-color));
 }
@@ -55,7 +55,7 @@
   width: 100%;
 }
 
-:host([has-image]) #image {
+:host([has-image]:not([in-searchbox])) #image {
   display: initial;
 }
 
@@ -118,8 +118,8 @@
   width: var(--cr-searchbox-icon-size-in-searchbox);
 }
 
-:host([has-image]) #icon,
-:host([has-image]) #iconImg {
+:host([has-image]:not([in-searchbox])) #icon,
+:host([has-image]:not([in-searchbox])) #iconImg {
   display: none;
 }
 
