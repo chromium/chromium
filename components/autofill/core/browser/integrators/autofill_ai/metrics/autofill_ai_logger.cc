@@ -174,6 +174,16 @@ void AutofillAiLogger::OnImportPromptResult(
     const std::string& domain,
     AutofillClient::EntityImportPromptResult result,
     ukm::SourceId ukm_source_id) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.Ai.",
+                    EntityPromptTypeToMetricsString(prompt_type), ".",
+                    EntityTypeToMetricsString(entity_type)}),
+      result.close_reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.Ai.",
+                    EntityPromptTypeToMetricsString(prompt_type),
+                    ".AllEntities"}),
+      result.close_reason);
   ukm_logger_.LogImportPromptResult(prompt_type, entity_type, record_type,
                                     form_session_id, domain, result,
                                     ukm_source_id);

@@ -28,6 +28,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -57,43 +58,6 @@ bool DidUserDeclineExplicitly(
     case kLostFocus:
       return false;
   }
-}
-
-void EmitBubbleFunnelMetrics(
-    bool is_save_prompt,
-    EntityType entity_type,
-    AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  auto get_save_or_update_histogram_string = [](bool is_save_prompt) {
-    return is_save_prompt ? ".SavePrompt" : ".UpdatePrompt";
-  };
-  auto get_entity_name_for_logging = [](EntityType entity_type) {
-    switch (entity_type.name()) {
-      case EntityTypeName::kDriversLicense:
-        return "DriversLicense";
-      case EntityTypeName::kKnownTravelerNumber:
-        return "KnownTravelerNumber";
-      case EntityTypeName::kNationalIdCard:
-        return "NationalIdCard";
-      case EntityTypeName::kVehicle:
-        return "Vehicle";
-      case EntityTypeName::kPassport:
-        return "Passport";
-      case EntityTypeName::kRedressNumber:
-        return "RedressNumber";
-      case EntityTypeName::kFlightReservation:
-        return "FlightReservation";
-    }
-    NOTREACHED();
-  };
-  const std::string prefix = "Autofill.Ai";
-  base::UmaHistogramEnumeration(
-      base::StrCat({prefix, get_save_or_update_histogram_string(is_save_prompt),
-                    ".", get_entity_name_for_logging(entity_type)}),
-      close_reason);
-  base::UmaHistogramEnumeration(
-      base::StrCat({prefix, get_save_or_update_histogram_string(is_save_prompt),
-                    ".AllEntities"}),
-      close_reason);
 }
 
 std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
@@ -313,7 +277,7 @@ void AutofillAiImportDataControllerImpl::OnVisibilityChanged(
 
   // TODO(crbug.com/441742849): Consider moving this logic to
   // `AutofillBubbleControllerBase`, for now keep it specific to this class to
-  // avoid interfeering with other bubbles in transactions.
+  // avoid interfering with other bubbles in transactions.
   AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
   if (visibility == content::Visibility::VISIBLE &&
       reopen_bubble_when_web_contents_becomes_visible_) {
@@ -324,17 +288,13 @@ void AutofillAiImportDataControllerImpl::OnVisibilityChanged(
 
 void AutofillAiImportDataControllerImpl::OnBubbleClosed(
     AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  // Make sure competing close calls does not lead to emitting metrics twice.
-  if (!bubble_hide_initiated_by_bubble_manager_ && bubble_view()) {
-    EmitBubbleFunnelMetrics(IsSavePrompt(), new_entity_->type(), close_reason);
-  }
   ResetBubbleViewAndInformBubbleManager();
   UpdatePageActionIcon();
 
   if (!bubble_hide_initiated_by_bubble_manager_ &&
       !prompt_closed_callback_.is_null()) {
     std::move(prompt_closed_callback_)
-        .Run({DidUserDeclineExplicitly(close_reason),
+        .Run({DidUserDeclineExplicitly(close_reason), close_reason,
               /*entity=*/close_reason ==
                       AutofillClient::AutofillAiBubbleClosedReason::kAccepted
                   ? std::exchange(new_entity_, std::nullopt)
@@ -343,13 +303,13 @@ void AutofillAiImportDataControllerImpl::OnBubbleClosed(
 }
 
 void AutofillAiImportDataControllerImpl::OnBubbleDiscarded() {
-  EmitBubbleFunnelMetrics(
-      IsSavePrompt(), new_entity_->type(),
-      was_bubble_shown_
-          ? AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted
-          : AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
   if (!prompt_closed_callback_.is_null()) {
-    std::move(prompt_closed_callback_).Run({false, std::nullopt});
+    std::move(prompt_closed_callback_)
+        .Run({false,
+              was_bubble_shown_
+                  ? AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted
+                  : AutofillClient::AutofillAiBubbleClosedReason::kUnknown,
+              std::nullopt});
   }
 }
 

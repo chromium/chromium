@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -550,8 +551,9 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
 // Tests that save prompts are only shown three times per url and entity type.
 TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerUrl) {
   constexpr char16_t kOtherPassportNumber[] = u"67867";
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
 
   MockFunction<void()> check;
   {
@@ -600,10 +602,13 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerUrl) {
 // this case, passport number).
 TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
   constexpr char16_t kOtherPassportNumber[] = u"567435";
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
-  AutofillClient::EntityImportPromptResult ignore = {/*did_user_decline=*/false,
-                                                     std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
+  AutofillClient::EntityImportPromptResult ignore = {
+      /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted,
+      std::nullopt};
 
   MockFunction<void()> check;
   {
@@ -651,10 +656,13 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
 // (in this case, passport number).
 TEST_F(AutofillAiManagerImportFormTest,
        StrikesForMigrationPromptsPerAttribute) {
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
-  AutofillClient::EntityImportPromptResult ignore = {/*did_user_decline=*/false,
-                                                     std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
+  AutofillClient::EntityImportPromptResult ignore = {
+      /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted,
+      std::nullopt};
 
   EntityInstance local_vehicle_entity_default_plate =
       test::GetVehicleEntityInstanceWithRandomGuid(
@@ -716,12 +724,16 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
   constexpr char16_t kOtherPassportNumber[] = u"67867";
   constexpr char16_t kOtherPassportNumber2[] = u"6785634567";
 
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
-  AutofillClient::EntityImportPromptResult ignore = {/*did_user_decline=*/false,
-                                                     std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
+  AutofillClient::EntityImportPromptResult ignore = {
+      /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted,
+      std::nullopt};
   AutofillClient::EntityImportPromptResult accept = {
       /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
       test::GetPassportEntityInstance({.number = kDefaultPassportNumber})};
 
   {
@@ -793,10 +805,12 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerUrl) {
   constexpr char16_t kOtherPassportNumber[] = u"56745";
   constexpr char16_t kOtherLicensePlate[] = u"MU-LJ-4500";
 
-  AutofillClient::EntityImportPromptResult decline{/*did_user_decline=*/true,
-                                                   std::nullopt};
+  AutofillClient::EntityImportPromptResult decline{
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
   AutofillClient::EntityImportPromptResult accept = {
       /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
       test::GetPassportEntityInstance({.number = kDefaultPassportNumber})};
   MockFunction<void()> check;
   {
@@ -864,10 +878,12 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerUrl) {
 // Tests that accepting a save prompt for an entity resets the strike counter
 // for the strike key attributes of that entity.
 TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
   AutofillClient::EntityImportPromptResult accept = {
       /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
       test::GetPassportEntityInstance({.number = kDefaultPassportNumber})};
   {
     InSequence s;
@@ -914,8 +930,9 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
 // Tests that migration prompts are only shown three times per url and entity
 // type.
 TEST_F(AutofillAiManagerImportFormTest, StrikesForMigrationPromptsPerUrl) {
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
   // A different vin number is also needed because it is part of the entity
   // strike keys. Otherwise the strike logic would stop showing the prompt but
   // not due to the url, rather the attributes.
@@ -973,8 +990,9 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForMigrationPromptsPerUrl) {
 // Tests that accepting a migration prompt for an entity resets the strike
 // counter for that entity type.
 TEST_F(AutofillAiManagerImportFormTest, AcceptingMigrationResetsStrikesPerUrl) {
-  AutofillClient::EntityImportPromptResult decline{/*did_user_decline=*/true,
-                                                   std::nullopt};
+  AutofillClient::EntityImportPromptResult decline{
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
   EntityInstance local_vehicle_entity_default_plate =
       test::GetVehicleEntityInstanceWithRandomGuid(
           {.name = kDefaultVehicleOwner, .plate = kDefaultLicensePlate});
@@ -984,7 +1002,9 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingMigrationResetsStrikesPerUrl) {
   AddOrUpdateEntityInstance(local_vehicle_entity_default_plate);
   AddOrUpdateEntityInstance(local_vehicle_entity_other_plate);
   AutofillClient::EntityImportPromptResult accept = {
-      /*did_user_decline=*/false, local_vehicle_entity_default_plate};
+      /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
+      local_vehicle_entity_default_plate};
   MockFunction<void()> check;
   {
     InSequence s;
@@ -1032,14 +1052,17 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingMigrationResetsStrikesPerUrl) {
 // counter for the strike key attributes of that entity.
 TEST_F(AutofillAiManagerImportFormTest,
        AcceptingMigrationResetsStrikesPerAttribute) {
-  AutofillClient::EntityImportPromptResult decline = {/*did_user_decline=*/true,
-                                                      std::nullopt};
+  AutofillClient::EntityImportPromptResult decline = {
+      /*did_user_decline=*/true,
+      AutofillClient::AutofillAiBubbleClosedReason::kClosed, std::nullopt};
   EntityInstance local_vehicle_entity_default_plate =
       test::GetVehicleEntityInstanceWithRandomGuid(
           {.name = kDefaultVehicleOwner, .plate = kDefaultLicensePlate});
   AddOrUpdateEntityInstance(local_vehicle_entity_default_plate);
   AutofillClient::EntityImportPromptResult accept = {
-      /*did_user_decline=*/false, local_vehicle_entity_default_plate};
+      /*did_user_decline=*/false,
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
+      local_vehicle_entity_default_plate};
   {
     InSequence s;
     // First, we expect to see two migration attempts for a vehicle.
@@ -1132,7 +1155,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false, new_entity));
+          /*did_user_decline=*/false,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted, new_entity));
   // Tests that the expected entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 1u);
@@ -1168,7 +1192,11 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
   // Decline the bubble.
-  std::move(save_callback).Run(AutofillClient::EntityImportPromptResult());
+  std::move(save_callback)
+      .Run(AutofillClient::EntityImportPromptResult{
+          /*did_user_decline=*/true,
+          AutofillClient::AutofillAiBubbleClosedReason::kClosed,
+          /*entity=*/std::nullopt});
   // Tests that the no entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 0u);
@@ -1235,7 +1263,8 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false, entity));
+          /*did_user_decline=*/false,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted, entity));
   // Tests that the expected entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 2u);
@@ -1348,7 +1377,9 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_NewInfo) {
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/true, *new_entity));
+          /*did_user_decline=*/true,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
+          *new_entity));
 
   // Only one entity should exist, as it was updated.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
@@ -1403,7 +1434,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false, new_entity));
+          /*did_user_decline=*/false,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted, new_entity));
   EXPECT_THAT(GetEntityInstances(), testing::UnorderedElementsAre(new_entity));
 }
 
@@ -1471,7 +1503,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_UpdateInfo) {
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/true, new_entity));
+          /*did_user_decline=*/true,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted, new_entity));
 
   // Only one entity should exist, as it was updated.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
@@ -1684,7 +1717,9 @@ TEST_F(AutofillAiManagerUpstreamTest,
   // Accept the bubble.
   std::move(upstream_callback)
       .Run(AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false, entity_to_upstream));
+          /*did_user_decline=*/false,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
+          entity_to_upstream));
   EXPECT_THAT(GetEntityInstances(), testing::UnorderedElementsAre(
                                         local_entity_1, entity_to_upstream));
 }

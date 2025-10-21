@@ -255,8 +255,10 @@ class AutofillClient {
   // prompt.
   struct EntityImportPromptResult final {
     EntityImportPromptResult();
-    EntityImportPromptResult(bool did_user_decline,
-                             std::optional<EntityInstance> entity);
+    EntityImportPromptResult(
+        bool did_user_decline,
+        AutofillClient::AutofillAiBubbleClosedReason close_reason,
+        std::optional<EntityInstance> entity);
     EntityImportPromptResult(const EntityImportPromptResult&);
     EntityImportPromptResult(EntityImportPromptResult&&);
     EntityImportPromptResult& operator=(const EntityImportPromptResult&);
@@ -265,6 +267,10 @@ class AutofillClient {
 
     // Whether the user explicitly declined the dialog.
     bool did_user_decline = false;
+
+    // The actual reason for the bubble to be closed.
+    AutofillClient::AutofillAiBubbleClosedReason close_reason =
+        AutofillClient::AutofillAiBubbleClosedReason::kUnknown;
 
     // Non-empty iff the prompt was accepted.
     std::optional<EntityInstance> entity;

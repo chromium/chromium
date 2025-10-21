@@ -56,8 +56,11 @@ AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
 
 AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
     bool did_user_decline,
+    AutofillClient::AutofillAiBubbleClosedReason close_reason,
     std::optional<EntityInstance> entity)
-    : did_user_decline(did_user_decline), entity(std::move(entity)) {}
+    : did_user_decline(did_user_decline),
+      close_reason(close_reason),
+      entity(std::move(entity)) {}
 
 AutofillClient::EntityImportPromptResult::EntityImportPromptResult() = default;
 

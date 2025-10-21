@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 
 #include "base/notreached.h"
@@ -674,6 +675,56 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_MixedForm) {
       "Autofill.Ai.KeyMetrics.FillingCorrectness", 0, 1);
 }
 
+class AutofillAiPromptMetricsTest
+    : public BaseAutofillAiTest,
+      public testing::WithParamInterface<
+          std::tuple<EntityType,
+                     AutofillClient::AutofillAiImportPromptType,
+                     AutofillClient::AutofillAiBubbleClosedReason>> {
+ public:
+  AutofillAiPromptMetricsTest() = default;
+
+  EntityType entity_type() { return std::get<0>(GetParam()); }
+  AutofillClient::AutofillAiImportPromptType prompt_type() {
+    return std::get<1>(GetParam());
+  }
+  AutofillClient::AutofillAiBubbleClosedReason close_reason() {
+    return std::get<2>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillAiTest,
+    AutofillAiPromptMetricsTest,
+    testing::Combine(
+        testing::ValuesIn(DenseSet<EntityType>::all()),
+        testing::ValuesIn(
+            DenseSet<AutofillClient::AutofillAiImportPromptType>::all()),
+        testing::ValuesIn(
+            DenseSet<AutofillClient::AutofillAiBubbleClosedReason>::all())));
+
+TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
+  constexpr std::string_view kPromptHistogramMask = "Autofill.Ai.%s.%s";
+  base::HistogramTester histogram_tester;
+  test_api(manager()).logger().OnImportPromptResult(
+      prompt_type(), entity_type(), EntityInstance::RecordType::kLocal,
+      /*form_session_id*/ 0, /*domain=*/"",
+      AutofillClient::EntityImportPromptResult(
+          /*did_user_decline=*/false, close_reason(), /*entity=*/std::nullopt),
+      /*ukm_source_id=*/0);
+
+  const std::string_view prompt_type_str =
+      EntityPromptTypeToMetricsString(prompt_type());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kPromptHistogramMask, prompt_type_str,
+                         EntityTypeToMetricsString(entity_type())),
+      close_reason(), 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kPromptHistogramMask, prompt_type_str, "AllEntities"),
+      close_reason(), 1);
+}
+
 class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
  public:
   AutofillAiMqlsMetricsTest() {
@@ -833,7 +884,9 @@ TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
       EntityType(EntityTypeName::kPassport), EntityInstance::RecordType::kLocal,
       /*form_session_id=*/kFormSession, "myform_root.com",
       AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false, test::GetPassportEntityInstance()),
+          /*did_user_decline=*/false,
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
+          test::GetPassportEntityInstance()),
       /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 1u);
 

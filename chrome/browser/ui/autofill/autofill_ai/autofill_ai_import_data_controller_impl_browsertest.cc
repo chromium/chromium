@@ -8,12 +8,12 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/visibility.h"
@@ -115,15 +115,8 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
             AutofillAiImportDataController::EntityAttributeUpdateType::
                 kNewEntityAttributeAdded);
   EXPECT_EQ(update_details[1].attribute_value, u"Sweden");
-  base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed(
       AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.UpdatePrompt.Passport",
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.UpdatePrompt.AllEntities",
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
@@ -138,15 +131,8 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
               AutofillAiImportDataController::EntityAttributeUpdateType::
                   kNewEntityAttributeAdded);
   }
-  base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed(
       AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.SavePrompt.Passport",
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.SavePrompt.AllEntities",
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted, 1);
 }
 
 // When clicking a link in the bubble the user is navigated to a new tab, which
