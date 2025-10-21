@@ -736,6 +736,10 @@ inline constexpr base::FeatureParam<bool>
         &omnibox::kOmniboxImprovementForLFF, "remove_suggestion_via_button",
         false};
 
+inline constexpr base::FeatureParam<bool>
+    kOmniboxImprovementForLFFPersistEditingState{
+        &omnibox::kOmniboxImprovementForLFF, "persist_editing_state", false};
+
 // <-- Omnibox Improvement for Large Form Factors
 #endif
 

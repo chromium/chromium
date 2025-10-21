@@ -1994,6 +1994,8 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
 const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
     {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name, "true"},
     {OmniboxFieldTrial::kOmniboxImprovementForLFFRemoveSuggestionViaButton.name,
+     "true"},
+    {OmniboxFieldTrial::kOmniboxImprovementForLFFPersistEditingState.name,
      "true"}};
 
 const FeatureEntry::FeatureParam
@@ -2007,6 +2009,11 @@ const FeatureEntry::FeatureParam
              .name,
          "true"}};
 
+const FeatureEntry::FeatureParam
+    kOmniboxImprovementForLFFVariationsPersistEditingState[] = {
+        {OmniboxFieldTrial::kOmniboxImprovementForLFFPersistEditingState.name,
+         "true"}};
+
 const FeatureEntry::FeatureVariation kOmniboxImprovementForLFFVariations[] = {
     {"All", kOmniboxImprovementForLFFVariationsAll,
      std::size(kOmniboxImprovementForLFFVariationsAll), nullptr},
@@ -2015,6 +2022,10 @@ const FeatureEntry::FeatureVariation kOmniboxImprovementForLFFVariations[] = {
     {"Remove Suggestion",
      kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton,
      std::size(kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton),
+     nullptr},
+    {"Persist Editing State",
+     kOmniboxImprovementForLFFVariationsPersistEditingState,
+     std::size(kOmniboxImprovementForLFFVariationsPersistEditingState),
      nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)

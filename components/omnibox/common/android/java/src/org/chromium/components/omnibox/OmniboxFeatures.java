@@ -215,6 +215,10 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sOmniboxImprovementForRemoveSuggestionViaButton =
             newBooleanParam(sOmniboxImprovementForLFF, "remove_suggestion_via_button", false);
 
+    // This parameter enables persisting editing state.
+    public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFPersistEditingState =
+            newBooleanParam(sOmniboxImprovementForLFF, "persist_editing_state", false);
+
     // Omnibox Diagnostics
     private static final CachedFlag sDiagnostics =
             newFlag(OmniboxFeatureList.DIAGNOSTICS, FeatureState.DISABLED);
