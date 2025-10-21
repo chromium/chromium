@@ -784,7 +784,7 @@ void PeerConnectionTracker::TrackAddIceCandidate(
   json->WriteJSON(&value);
   const char* event =
       (source == kSourceLocal)
-          ? "icecandidate"
+          ? "onicecandidate"
           : (succeeded ? "addIceCandidate" : "addIceCandidateFailed");
 
   SendPeerConnectionUpdate(id, event, value.ToString());
@@ -816,7 +816,7 @@ void PeerConnectionTracker::TrackIceCandidateError(
   json->SetInteger("error_code", error_code);
   StringBuilder value;
   json->WriteJSON(&value);
-  SendPeerConnectionUpdate(id, "icecandidateerror", value.ToString());
+  SendPeerConnectionUpdate(id, "onicecandidateerror", value.ToString());
 }
 
 void PeerConnectionTracker::TrackAddTransceiver(
@@ -890,7 +890,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   StringBuilder value;
   json->WriteJSON(&value);
   SendPeerConnectionUpdate(
-      id, source == kSourceLocal ? "createDataChannel" : "datachannel",
+      id, source == kSourceLocal ? "createDataChannel" : "ondatachannel",
       value.ToString());
 }
 

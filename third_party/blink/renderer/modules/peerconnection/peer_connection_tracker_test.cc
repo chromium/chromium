@@ -469,13 +469,77 @@ TEST_F(PeerConnectionTrackerTest, ModifyTransceiver) {
   EXPECT_EQ(expected_value, update_value);
 }
 
-TEST_F(PeerConnectionTrackerTest, IceCandidateError) {
+TEST_F(PeerConnectionTrackerTest, OnSignalingStateChange) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();
   auto transceiver = CreateDefaultTransceiver();
   String update_value;
   EXPECT_CALL(*mock_host_,
-              UpdatePeerConnection(_, String("icecandidateerror"), _))
+              UpdatePeerConnection(_, String("onsignalingstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackSignalingStateChange(
+      mock_handler_.get(),
+      webrtc::PeerConnectionInterface::SignalingState::kStable);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"stable\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceGatheringStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onicegatheringstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackIceGatheringStateChange(
+      mock_handler_.get(), webrtc::PeerConnectionInterface::IceGatheringState::
+                               kIceGatheringComplete);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"complete\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceConnectionStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("oniceconnectionstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackIceConnectionStateChange(
+      mock_handler_.get(), webrtc::PeerConnectionInterface::IceConnectionState::
+                               kIceConnectionDisconnected);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"disconnected\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnConnectionStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onconnectionstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackConnectionStateChange(
+      mock_handler_.get(),
+      webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"disconnected\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceCandidateError) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onicecandidateerror"), _))
       .WillOnce(testing::SaveArg<2>(&update_value));
   tracker_->TrackIceCandidateError(mock_handler_.get(), "1.1.1.1", 15, "[::1]",
                                    "test url", 404, "test error");
