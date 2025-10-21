@@ -6315,7 +6315,9 @@ void AXNodeObject::InsertChild(AXObject* child,
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       if (children[i]->IsDetached()) {
-        NOTREACHED(base::NotFatalUntil::M140)
+        // TODO(crbug.com/452392024): Investigate why this is reached, fix it,
+        // and move to a NOTREACHED.
+        DUMP_WILL_BE_NOTREACHED()
             << "Cannot add a detached child: " << "\n* Child: " << children[i]
             << "\n* Parent: " << child << "\n* Grandparent: " << this;
         continue;
