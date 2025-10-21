@@ -10,9 +10,8 @@
 
 namespace content {
 
-// Note that the methods should run on BrowserThread::IO to get pumped because
-// BrowserThread::UI is being blocked on a semaphore at TextInputClientMac.
-// http://crbug.com/121917
+// A class to implement the incoming response messages from the renderer process
+// for IME IPCs. See the class comment on TextInputClientMac.
 class TextInputHostImpl : public blink::mojom::TextInputHost {
  public:
   TextInputHostImpl();
