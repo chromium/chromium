@@ -732,8 +732,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, true, true);
     public static final CachedFlag sAndroidBottomToolbarV2 =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR_V2, false, true);
-    public static final CachedFlag sAndroidComposeplate =
-            newCachedFlag(ANDROID_COMPOSEPLATE, false, true);
+    public static final CachedFlag sAndroidComposeplate = newCachedFlag(ANDROID_COMPOSEPLATE, true);
     public static final CachedFlag sAndroidDataImporterService =
             newCachedFlag(ANDROID_DATA_IMPORTER_SERVICE, true);
     public static final CachedFlag sAndroidDesktopDensity =
@@ -1441,7 +1440,7 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "hide_incognito_button", false);
 
     public static final BooleanCachedFeatureParam sAndroidComposeplateV2Enabled =
-            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "v2_enabled", false);
+            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "v2_enabled", true);
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
 
