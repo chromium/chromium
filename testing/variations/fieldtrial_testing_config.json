@@ -2726,6 +2726,26 @@
             ]
         }
     ],
+    "AutofillFixRewriterRules": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFixRewriterRules"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillI18nINAddressModel": [
         {
             "platforms": [
