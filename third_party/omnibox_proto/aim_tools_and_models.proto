@@ -20,6 +20,7 @@ enum ChromeAimToolsAndModels {
   TOOL_MODE_DEEP_SEARCH = 1;
   TOOL_MODE_CANVAS = 2;
   TOOL_MODE_IMAGE_GEN = 4;
+  TOOL_MODE_IMAGE_GEN_UPLOAD = 7;
 
   // Reserved for TOOL_MODE_GEMINI_PRO. Will be added back if client needs it.
   reserved 3;

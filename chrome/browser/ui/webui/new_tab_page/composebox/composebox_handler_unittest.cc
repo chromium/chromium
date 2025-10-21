@@ -225,7 +225,7 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
   run_loop.Run();
 
   // Submitting with create image mode enabled.
-  handler().SetCreateImageMode(true);
+  handler().SetCreateImageMode(true, /*image_present= */ false);
   histogram_tester().ExpectUniqueSample(
       "NewTabPage.Composebox.Tools.CreateImage",
       static_cast<int>(AimToolState::kEnabled), 1);
@@ -238,7 +238,7 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
   EXPECT_EQ("1", imgn_param);
 
   // Submitting with create image mode disabled.
-  handler().SetCreateImageMode(false);
+  handler().SetCreateImageMode(false, /*image_present= */ false);
   histogram_tester().ExpectTotalCount("NewTabPage.Composebox.Tools.CreateImage",
                                       2);
   histogram_tester().ExpectBucketCount(
@@ -298,7 +298,7 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
       static_cast<int>(SubmissionType::kDeepSearch), 1);
 
   // Submitting with create image mode enabled.
-  handler().SetCreateImageMode(true);
+  handler().SetCreateImageMode(true, /*image_present= */ false);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
       "NewTabPage.Composebox.Tools.SubmissionType",

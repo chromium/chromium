@@ -270,9 +270,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.showContextMenuDescription_ = true;
     } else if (this.inCreateImageMode_) {
       this.inCreateImageMode_ = false;
-      this.fire(
-          'set-create-image-mode',
-          {inCreateImageMode: this.inCreateImageMode_});
+      this.fire('set-create-image-mode', {
+        inCreateImageMode: this.inCreateImageMode_,
+        imagePresent: this.hasImageFiles(),
+      });
       this.showContextMenuDescription_ = true;
     }
   }
@@ -394,8 +395,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.inputsDisabled_ = !this.inputsDisabled_;
       }
     }
-    this.fire('set-create-image-mode',
-      {inCreateImageMode: this.inCreateImageMode_});
+    this.fire('set-create-image-mode', {
+      inCreateImageMode: this.inCreateImageMode_,
+      imagePresent: this.hasImageFiles(),
+    });
   }
 
   private recordFileValidationMetric_(

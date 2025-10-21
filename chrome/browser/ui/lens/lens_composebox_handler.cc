@@ -76,7 +76,8 @@ void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
   // in Lens.
 }
 
-void LensComposeboxHandler::SetCreateImageMode(bool enabled) {
+void LensComposeboxHandler::SetCreateImageMode(bool enabled,
+                                               bool image_present) {
   // Ignore, intentionally unimplemented for Lens. Create image not implemented
   // in Lens.
 }
