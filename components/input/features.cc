@@ -18,7 +18,7 @@ BASE_FEATURE(kUseAndroidBufferedInputDispatch,
 // time.
 const base::FeatureParam<bool> kTransferSequencesWithAbnormalDownTime{
     &features::kInputOnViz,
-    /*name=*/"transfer_sequences_with_abnormal_down_time", true};
+    /*name=*/"transfer_sequences_with_abnormal_down_time", false};
 #endif
 
 BASE_FEATURE(kDispatchSingleEventIfNoPrediction,
