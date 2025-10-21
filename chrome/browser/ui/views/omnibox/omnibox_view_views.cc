@@ -58,6 +58,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -647,6 +648,16 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
   {
     SCOPED_UMA_HISTOGRAM_TIMER("Omnibox.PaintTime");
     Textfield::OnPaint(canvas);
+  }
+
+  // Record an impression of the AIM hint text if it is being shown.
+  const bool should_show_placeholder = ShouldShowPlaceholderText();
+  const bool is_aim_placeholder =
+      GetPlaceholderText() ==
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT);
+  if (should_show_placeholder && is_aim_placeholder && !aim_hint_shown_) {
+    aim_hint_shown_ = true;
+    RecordAimHintImpression();
   }
 }
 
@@ -1670,7 +1681,9 @@ void OmniboxViewViews::OnBlur() {
   render_text->SetWhitespaceElision(false);
   render_text->SetDisplayOffset(0);
 
-  // |location_bar_view_| can be null in tests.
+  aim_hint_shown_ = false;
+
+  // `location_bar_view_` can be null in tests.
   if (location_bar_view_) {
     location_bar_view_->OnOmniboxBlurred();
 
@@ -2357,9 +2370,65 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
       dse_placeholder_installed ? kColorOmniboxText : kColorOmniboxTextDimmed));
 }
 
+bool OmniboxViewViews::AreAimHintImpressionLimitsReached() const {
+  // If the hint has already been shown in the current focus session, we can
+  // ignore the limits to avoid hiding the hint text in the same session that
+  // the impression limit was reached.
+  if (aim_hint_shown_) {
+    return false;
+  }
+
+  const auto& config = omnibox_feature_configs::AiModeOmniboxEntryPoint::Get();
+  if (config.enable_hint_impression_limits) {
+    PrefService* prefs = location_bar_view_->profile()->GetPrefs();
+
+    // Check total impressions.
+    const int total_impressions =
+        prefs->GetInteger(omnibox::kAimHintTotalImpressions);
+    if (total_impressions >= config.aim_hint_impression_limit_total) {
+      return true;
+    }
+
+    // Check daily impressions.
+    const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+    if (prefs->GetInteger(omnibox::kAimHintLastImpressionDay) == today &&
+        prefs->GetInteger(omnibox::kAimHintDailyImpressionsCount) >=
+            config.aim_hint_impression_limit_daily) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
   return omnibox_feature_configs::AiModeOmniboxEntryPoint::Get().enabled &&
          model()->is_caret_visible();
+}
+
+void OmniboxViewViews::RecordAimHintImpression() {
+  const auto& config = omnibox_feature_configs::AiModeOmniboxEntryPoint::Get();
+  if (!config.enable_hint_impression_limits) {
+    return;
+  }
+
+  PrefService* prefs = location_bar_view_->profile()->GetPrefs();
+
+  // Increment the total impressions count.
+  const int total_impressions =
+      prefs->GetInteger(omnibox::kAimHintTotalImpressions) + 1;
+  prefs->SetInteger(omnibox::kAimHintTotalImpressions, total_impressions);
+
+  // Increment the daily impressions count, resetting the count if the day has
+  // changed.
+  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  if (prefs->GetInteger(omnibox::kAimHintLastImpressionDay) != today) {
+    prefs->SetInteger(omnibox::kAimHintLastImpressionDay, today);
+    prefs->SetInteger(omnibox::kAimHintDailyImpressionsCount, 0);
+  }
+
+  const int daily_impressions =
+      prefs->GetInteger(omnibox::kAimHintDailyImpressionsCount) + 1;
+  prefs->SetInteger(omnibox::kAimHintDailyImpressionsCount, daily_impressions);
 }
 
 bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
@@ -2370,6 +2439,12 @@ bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
       !AimButtonVisible()) {
     return false;
   }
+
+  // If the impression limits have been reached, the hint should not be shown.
+  if (AreAimHintImpressionLimitsReached()) {
+    return false;
+  }
+
   // The placeholder text should only be shown when the omnibox is visibly
   // focused and the popup selection state is normal (i.e. no popup buttons are
   // focused and we are not in keyword mode). The hint text will be shown on NTP
