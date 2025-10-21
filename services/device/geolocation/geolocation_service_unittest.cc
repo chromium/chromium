@@ -68,8 +68,6 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   void TearDown() override {
     WifiDataProviderHandle::ResetFactoryForTesting();
 
-    DeviceServiceTestBase::TearDown();
-
 #if BUILDFLAG(IS_CHROMEOS)
     ash::NetworkHandler::Shutdown();
     ash::shill_clients::Shutdown();
@@ -82,6 +80,8 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
     GeolocationProviderImpl::GetInstance()
         ->clear_user_did_opt_into_location_services_for_testing();
     base::RunLoop().RunUntilIdle();
+
+    DeviceServiceTestBase::TearDown();
   }
 
   scoped_refptr<MockWifiDataProvider> wifi_data_provider_;
