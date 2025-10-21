@@ -10314,6 +10314,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "use-shared-image-in-oop-vd",
+    "owners": [ "fangzhoug@chromium.org", "blundell@chromium.org", "vasilyt@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "use-stork-smds-server-address",
     "owners": [ "cros-device-enablement@google.com", "hsuregan@chromium.org"],
     // This flag is required for dev testing via Stork profiles which can be quickly
