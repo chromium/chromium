@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/screen.h"
 
 #import <AppKit/AppKit.h>
@@ -220,9 +215,9 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   // It would be ridiculous to have this many displays connected, but
   // CGDirectDisplayID is just an integer, so supporting up to this many
   // doesn't hurt.
-  CGDirectDisplayID online_displays[1024];
+  std::array<CGDirectDisplayID, 1024> online_displays;
   CGDisplayCount online_display_count = 0;
-  if (CGGetOnlineDisplayList(std::size(online_displays), online_displays,
+  if (CGGetOnlineDisplayList(online_displays.size(), online_displays.data(),
                              &online_display_count) != kCGErrorSuccess) {
     return std::vector<DisplayMac>(1, BuildPrimaryDisplay());
   }
@@ -237,9 +232,9 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   }
 
   std::vector<DisplayMac> displays_mac;
-  for (CGDisplayCount online_display_index = 0;
-       online_display_index < online_display_count; ++online_display_index) {
-    CGDirectDisplayID online_display = online_displays[online_display_index];
+
+  auto online_span = base::span(online_displays).first(online_display_count);
+  for (CGDirectDisplayID online_display : online_span) {
     if (CGDisplayMirrorsDisplay(online_display) == kCGNullDirectDisplay) {
       // If this display doesn't mirror any other, include it in the list.
       // The primary display in a mirrored set will be counted, but those that
