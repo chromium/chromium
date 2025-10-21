@@ -15,13 +15,11 @@
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/page_info/core/page_info_action.h"
-#import "components/privacy_sandbox/tracking_protection_settings.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/page_info/model/about_this_site_service_factory.h"
-#import "ios/chrome/browser/page_info/tracking_protection/coordinator/page_info_tracking_protection_mediator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_about_this_site_mediator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_history_mediator.h"
@@ -31,12 +29,10 @@
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_site_security_description.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_site_security_mediator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_view_controller.h"
-#import "ios/chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -67,9 +63,6 @@
 
   // Mediator for the Last Visited feature.
   PageInfoHistoryMediator* _pageInfoHistoryMediator;
-
-  // Mediator for tracking protection settings.
-  PageInfoTrackingProtectionMediator* _trackingProtectionMediator;
 }
 
 @synthesize presentationProvider = _presentationProvider;
@@ -139,17 +132,6 @@
     self.viewController.pageInfoHistoryMutator = _pageInfoHistoryMediator;
   }
 
-  privacy_sandbox::TrackingProtectionSettings* trackingProtectionSettings =
-      TrackingProtectionSettingsFactory::GetForProfile(
-          self.browser->GetProfile());
-
-  _trackingProtectionMediator = [[PageInfoTrackingProtectionMediator alloc]
-                initWithWebState:webState
-      trackingProtectionSettings:trackingProtectionSettings];
-
-  _trackingProtectionMediator.consumer = self.viewController;
-  self.viewController.trackingProtectionMutator = _trackingProtectionMediator;
-
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
@@ -177,8 +159,6 @@
 
   [self.lastVisitedCoordinator stop];
   self.lastVisitedCoordinator = nil;
-
-  _trackingProtectionMediator = nil;
 
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
@@ -254,13 +234,6 @@
                               hostName:_siteSecurityDescription.siteURL];
   self.lastVisitedCoordinator.delegate = self;
   [self.lastVisitedCoordinator start];
-}
-
-- (void)showSendFeedbackPageForSender:(UserFeedbackSender)sender {
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler showReportAnIssueFromViewController:self.viewController
-                                                   sender:sender];
 }
 
 #pragma mark - HistoryCoordinatorDelegate

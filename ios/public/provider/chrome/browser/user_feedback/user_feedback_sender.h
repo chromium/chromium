@@ -23,8 +23,6 @@ enum class UserFeedbackSender {
   UnitConversion,
   // Sent from a content notification.
   ContentNotification,
-  // Sent from Tracking Protections section on Site Info page (Incognito only).
-  TrackingProtections,
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_SENDER_H_
