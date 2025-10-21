@@ -129,26 +129,6 @@ ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
   platform_delegate_->DetachFromModel();
 }
 
-void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
-    const extensions::ExtensionId& extension_id,
-    int tab_id) {
-  // Ignore requests for other tabs.
-  auto* web_contents = GetActiveWebContents();
-  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  if (tab_id != current_tab_id) {
-    return;
-  }
-
-  // Ignore requests that are not active.
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser_->GetProfile());
-  if (!permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
-    return;
-  }
-
-  platform_delegate_->OnAccessRequestAdded(extension_id, web_contents);
-}
-
 void ExtensionsMenuViewModel::UpdateSiteAccess(
     const extensions::ExtensionId& extension_id,
     PermissionsManager::UserSiteAccess site_access) {
@@ -259,6 +239,26 @@ void ExtensionsMenuViewModel::UpdateSiteSetting(
       ->UpdateUserSiteSetting(origin, site_setting);
 
   LogSiteSettingsUpdate(site_setting);
+}
+
+void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  // Ignore requests for other tabs.
+  auto* web_contents = GetActiveWebContents();
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  // Ignore requests that are not active.
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser_->GetProfile());
+  if (!permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
+    return;
+  }
+
+  platform_delegate_->OnAccessRequestAdded(extension_id, web_contents);
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

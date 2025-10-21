@@ -30,10 +30,6 @@ class ExtensionsMenuViewModel
       delete;
   virtual ~ExtensionsMenuViewModel();
 
-  // PermissionsManager::Observer:
-  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
-                                int tab_id) override;
-
   // Updates the extension's site access for the current site.
   void UpdateSiteAccess(
       const extensions::ExtensionId& extension_id,
@@ -48,6 +44,10 @@ class ExtensionsMenuViewModel
   // Update the extension's site setting for the current site.
   void UpdateSiteSetting(
       extensions::PermissionsManager::UserSiteSetting site_setting);
+
+  // PermissionsManager::Observer:
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
+                                int tab_id) override;
 
  private:
   content::WebContents* GetActiveWebContents();
