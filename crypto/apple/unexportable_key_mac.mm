@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/unexportable_key.h"
 
 #import <CoreFoundation/CoreFoundation.h>
@@ -37,14 +32,9 @@
 #include "crypto/apple/keychain_util.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/apple/unexportable_key_mac.h"
+#include "crypto/keypair.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key_metrics.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/mem.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
 
 using base::apple::CFToNSPtrCast;
 using base::apple::NSToCFPtrCast;
@@ -52,9 +42,6 @@ using base::apple::NSToCFPtrCast;
 namespace crypto::apple {
 
 namespace {
-
-// The size of an uncompressed x9.63 encoded EC public key, 04 || X || Y.
-constexpr size_t kUncompressedPointLength = 65;
 
 // The value of the kSecAttrLabel when generating the key. The documentation
 // claims this should be a user-visible label, but there does not exist any UI
@@ -69,32 +56,13 @@ std::vector<uint8_t> CFDataToVec(CFDataRef data) {
 
 std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
     base::span<const uint8_t> x962) {
-  // Parse x9.63 point into an |EC_POINT|.
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));
-  if (x962.size() != kUncompressedPointLength ||
-      x962[0] != POINT_CONVERSION_UNCOMPRESSED ||
-      !EC_POINT_oct2point(p256.get(), point.get(), x962.data(), x962.size(),
-                          /*ctx=*/nullptr)) {
+  std::optional<crypto::keypair::PublicKey> imported =
+      crypto::keypair::PublicKey::FromEcP256Point(x962);
+  if (!imported) {
     LOG(ERROR) << "P-256 public key is not on curve";
     return std::nullopt;
   }
-  // Marshal point into a DER SPKI.
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(EC_KEY_set_public_key(ec_key.get(), point.get()));
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  CHECK(EVP_PKEY_assign_EC_KEY(pkey.get(), ec_key.release()));
-  bssl::ScopedCBB cbb;
-  uint8_t* der_bytes = nullptr;
-  size_t der_bytes_len = 0;
-  CHECK(CBB_init(cbb.get(), /* initial size */ 128) &&
-        EVP_marshal_public_key(cbb.get(), pkey.get()) &&
-        CBB_finish(cbb.get(), &der_bytes, &der_bytes_len));
-  std::vector<uint8_t> ret(der_bytes, der_bytes + der_bytes_len);
-  OPENSSL_free(der_bytes);
-  return ret;
+  return imported->ToSubjectPublicKeyInfo();
 }
 
 // Logs `status` to an error histogram capturing that `operation` failed for a

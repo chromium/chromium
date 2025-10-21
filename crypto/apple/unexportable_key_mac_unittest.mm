@@ -6,6 +6,7 @@
 
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
+#include "crypto/keypair.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +60,18 @@ TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {
   auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
   ASSERT_TRUE(key);
   EXPECT_TRUE(key->GetSecKeyRef());
+}
+
+TEST_F(UnexportableKeyMacTest, GeneratedSpkiIsValid) {
+  ASSERT_TRUE(provider_);
+  auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+
+  const auto spki = key->GetSubjectPublicKeyInfo();
+  const auto imported =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
+  ASSERT_TRUE(imported);
+  EXPECT_TRUE(imported->IsEcP256());
 }
 
 }  // namespace
