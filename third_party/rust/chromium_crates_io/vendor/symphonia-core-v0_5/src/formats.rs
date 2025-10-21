@@ -54,7 +54,7 @@ pub struct SeekedTo {
 }
 
 /// `SeekMode` selects the precision of a seek.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SeekMode {
     /// Coarse seek mode is a best-effort attempt to seek to the requested position. The actual
     /// position seeked to may be before or after the requested position. Coarse seeking is an
@@ -319,7 +319,7 @@ impl Packet {
     }
 
     /// Get a `BufStream` to read the packet data buffer sequentially.
-    pub fn as_buf_reader(&self) -> BufReader {
+    pub fn as_buf_reader(&self) -> BufReader<'_> {
         BufReader::new(&self.data)
     }
 }
@@ -392,24 +392,25 @@ pub mod util {
             let seek_point = SeekPoint::new(ts, byte_offset, n_frames);
 
             // Get the timestamp of the last entry in the index.
-            let last_ts = self.points.last().map_or(u64::MAX, |p| p.frame_ts);
+            let (last_ts, last_offset) =
+                self.points.last().map_or((u64::MAX, u64::MAX), |p| (p.frame_ts, p.byte_offset));
 
-            // If the seek point has a timestamp greater-than the last entry in the index, then
-            // simply append it to the index.
-            if ts > last_ts {
+            // If the seek point has a timestamp greater-than and byte offset greater-than or equal to
+            // the last entry in the index, then simply append it to the index.
+            if ts > last_ts && byte_offset >= last_offset {
                 self.points.push(seek_point)
             }
             else if ts < last_ts {
                 // If the seek point has a timestamp less-than the last entry in the index, then the
                 // insertion point must be found. This case should rarely occur.
+                let i = self
+                    .points
+                    .partition_point(|p| ts > p.frame_ts && byte_offset >= p.byte_offset);
 
-                // TODO: Use when Rust 1.52 is stable.
-                // let i = self.points.partition_point(|p| p.frame_ts < ts);
-
-                let i =
-                    self.points.iter().position(|p| p.frame_ts > ts).unwrap_or(self.points.len());
-
-                self.points.insert(i, seek_point);
+                // Insert if the point found or if the points are empty
+                if i < self.points.len() || i == 0 {
+                    self.points.insert(i, seek_point);
+                }
             }
         }
 
@@ -489,26 +490,53 @@ pub mod util {
         #[test]
         fn verify_seek_index_search() {
             let mut index = SeekIndex::new();
-            index.insert(50, 0, 45);
-            index.insert(120, 0, 4);
-            index.insert(320, 0, 100);
-            index.insert(421, 0, 10);
-            index.insert(500, 0, 12);
-            index.insert(600, 0, 12);
+            // Normal index insert
+            index.insert(479232, 706812, 1152);
+            index.insert(959616, 1421536, 1152);
+            index.insert(1919232, 2833241, 1152);
+            index.insert(2399616, 3546987, 1152);
+            index.insert(2880000, 4259455, 1152);
 
-            assert_eq!(index.search(25), SeekSearchResult::Upper(SeekPoint::new(50, 0, 45)));
-            assert_eq!(index.search(700), SeekSearchResult::Lower(SeekPoint::new(600, 0, 12)));
+            // Search for point lower than the first entry
             assert_eq!(
-                index.search(110),
-                SeekSearchResult::Range(SeekPoint::new(50, 0, 45), SeekPoint::new(120, 0, 4))
+                index.search(0),
+                SeekSearchResult::Upper(SeekPoint::new(479232, 706812, 1152))
             );
+
+            // Search for point higher than last entry
             assert_eq!(
-                index.search(340),
-                SeekSearchResult::Range(SeekPoint::new(320, 0, 100), SeekPoint::new(421, 0, 10))
+                index.search(3000000),
+                SeekSearchResult::Lower(SeekPoint::new(2880000, 4259455, 1152))
             );
+
+            // Search for point that has equal timestamp with some index
             assert_eq!(
-                index.search(320),
-                SeekSearchResult::Range(SeekPoint::new(320, 0, 100), SeekPoint::new(421, 0, 10))
+                index.search(959616),
+                SeekSearchResult::Range(
+                    SeekPoint::new(959616, 1421536, 1152),
+                    SeekPoint::new(1919232, 2833241, 1152)
+                )
+            );
+
+            // Index insert out of order
+            index.insert(1440000, 2132419, 1152);
+
+            // Search for point that have out of order index when inserting
+            assert_eq!(
+                index.search(1000000),
+                SeekSearchResult::Range(
+                    SeekPoint::new(959616, 1421536, 1152),
+                    SeekPoint::new(1440000, 2132419, 1152)
+                )
+            );
+
+            // Index insert with byte_offset less than last entry
+            index.insert(3359232, 0, 0);
+
+            // Search for ignored point because byte_offset less than last entry
+            assert_eq!(
+                index.search(3359232),
+                SeekSearchResult::Lower(SeekPoint::new(2880000, 4259455, 1152))
             );
         }
     }

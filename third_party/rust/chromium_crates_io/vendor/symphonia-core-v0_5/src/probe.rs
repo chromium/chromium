@@ -13,7 +13,7 @@ use crate::formats::{FormatOptions, FormatReader};
 use crate::io::{MediaSourceStream, ReadBytes, SeekBuffered};
 use crate::meta::{Metadata, MetadataLog, MetadataOptions, MetadataReader};
 
-use log::{debug, error, info};
+use log::{debug, error};
 
 mod bloom {
 
@@ -276,7 +276,7 @@ impl Probe {
 
                             // TODO: Implement scoring.
 
-                            info!(
+                            debug!(
                                 "found the format marker {:x?} @ {}+{} bytes.",
                                 &context[0..len],
                                 init_pos,

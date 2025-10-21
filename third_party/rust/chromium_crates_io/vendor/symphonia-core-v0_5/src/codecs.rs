@@ -490,7 +490,7 @@ pub trait Decoder: Send + Sync {
     /// decoded audio buffer to change. All other errors are unrecoverable.
     ///
     /// Implementors of decoders *must* `clear` the internal buffer if an error occurs.
-    fn decode(&mut self, packet: &Packet) -> Result<AudioBufferRef>;
+    fn decode(&mut self, packet: &Packet) -> Result<AudioBufferRef<'_>>;
 
     /// Optionally, obtain post-decode information such as the verification status.
     fn finalize(&mut self) -> FinalizeResult;
@@ -500,7 +500,7 @@ pub trait Decoder: Send + Sync {
     /// After a successful call to `decode`, this will contain the audio content of the last decoded
     /// `Packet`. If the last call to `decode` resulted in an error, then implementors *must* ensure
     /// the returned audio buffer has zero length.
-    fn last_decoded(&self) -> AudioBufferRef;
+    fn last_decoded(&self) -> AudioBufferRef<'_>;
 }
 
 /// A `CodecDescriptor` stores a description of a single logical codec. Common information such as

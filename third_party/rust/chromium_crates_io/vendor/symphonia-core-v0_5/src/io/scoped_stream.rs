@@ -184,8 +184,8 @@ impl<B: ReadBytes + SeekBuffered> SeekBuffered for ScopedStream<B> {
     fn seek_buffered_rel(&mut self, delta: isize) -> u64 {
         // Clamp the delta value such that the absolute position after the buffered seek will be
         // within the bounds of the ScopedStream.
-        let max_back = self.read.min(std::isize::MAX as u64) as isize;
-        let max_forward = (self.len - self.read).min(std::isize::MAX as u64) as isize;
+        let max_back = self.read.min(isize::MAX as u64) as isize;
+        let max_forward = (self.len - self.read).min(isize::MAX as u64) as isize;
         self.inner.seek_buffered_rel(delta.clamp(-max_back, max_forward))
     }
 }
