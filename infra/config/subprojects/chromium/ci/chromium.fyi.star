@@ -1170,7 +1170,7 @@ fyi_ios_builder(
         mixins = [
             "has_native_resultdb_integration",
             "ioswpt-chromium-swarming-pool",
-            "mac_14_x64",
+            "mac_15_x64",
             "mac_toolchain",
             "xcode_26_main",
         ],
