@@ -10,7 +10,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
+#import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/public/types.h"
@@ -34,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -43,6 +46,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -252,12 +256,19 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
 };
 
 // Tests adding a tab group when the currently foregrounded active scene is with
-// the same profile.
-TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
+// the same profile with auto open tab groups allowed.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       CreateTabGroupSameBrowserStateForegroundWithAutoOpen) {
   scene_state_same_profile_.activationLevel =
       SceneActivationLevelForegroundActive;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   other_scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+
+  // Enable feature flag and enable user pref
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSAutoOpenRemoteTabGroupsSettings);
+  PrefService* pref_service = browser_same_profile_->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled, true);
 
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
@@ -293,12 +304,61 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
   VerifyLocalTabGroup(target_web_state_list, 1);
 }
 
+// Tests adding a tab group when the currently foregrounded active scene is with
+// the same profile with auto open tab groups disallowed.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       CreateTabGroupSameBrowserStateForegroundWithoutAutoOpen) {
+  scene_state_same_profile_.activationLevel =
+      SceneActivationLevelForegroundActive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  other_scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+
+  // Enable feature flag but disable user pref
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSAutoOpenRemoteTabGroupsSettings);
+  PrefService* pref_service = browser_same_profile_->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled, false);
+
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group(kGroupTitle, kGroupColor,
+                            CreateSavedTabs(saved_tab_group_id),
+                            std::make_optional(0), saved_tab_group_id);
+
+  // Should NOT call UpdateLocalTabGroupMapping because pref is disabled
+  EXPECT_CALL(*mock_service_,
+              UpdateLocalTabGroupMapping(saved_tab_group_id, _, _))
+      .Times(0);
+
+  const GURL kFakeUrl = GURL("https://fakeWebState.com");
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
+  fake_web_state->SetCurrentURL(kFakeUrl);
+  WebStateList* target_web_state_list =
+      browser_same_profile_->GetWebStateList();
+  target_web_state_list->InsertWebState(std::move(fake_web_state));
+  target_web_state_list->ActivateWebStateAt(0);
+
+  delegate_->CreateLocalTabGroup(saved_group);
+
+  // Verify no group was created
+  ASSERT_EQ(1, target_web_state_list->count());
+  EXPECT_EQ(kFakeUrl, target_web_state_list->GetWebStateAt(0)->GetVisibleURL());
+  EXPECT_EQ(0u, target_web_state_list->GetGroups().size());
+}
+
 // Tests adding a tab group when the currently foreground active scene is from
-// another profile.
-TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
+// another profile with auto open tab groups allowed.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       CreateTabGroupOtherBrowserStateForegroundWithAutoOpen) {
   other_scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   scene_state_same_profile_.activationLevel = SceneActivationLevelBackground;
+
+  // Enable feature flag and enable user pref
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSAutoOpenRemoteTabGroupsSettings);
+  PrefService* pref_service = browser_->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled, true);
 
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
@@ -332,13 +392,59 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
   VerifyLocalTabGroup(target_web_state_list, 1);
 }
 
+// Tests adding a tab group when the currently foreground active scene is from
+// another profile with auto open tab groups disallowed.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       CreateTabGroupOtherBrowserStateForegroundWithoutAutoOpen) {
+  other_scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_same_profile_.activationLevel = SceneActivationLevelBackground;
+
+  // Enable feature flag but disable user pref
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSAutoOpenRemoteTabGroupsSettings);
+  PrefService* pref_service = browser_->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled, false);
+
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group(kGroupTitle, kGroupColor,
+                            CreateSavedTabs(saved_tab_group_id),
+                            std::make_optional(0), saved_tab_group_id);
+
+  // Should NOT call UpdateLocalTabGroupMapping because pref is disabled
+  EXPECT_CALL(*mock_service_,
+              UpdateLocalTabGroupMapping(saved_tab_group_id, _, _))
+      .Times(0);
+
+  const GURL kFakeUrl = GURL("https://fakeWebState.com");
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
+  fake_web_state->SetCurrentURL(kFakeUrl);
+  WebStateList* target_web_state_list = browser_->GetWebStateList();
+  target_web_state_list->InsertWebState(std::move(fake_web_state));
+  target_web_state_list->ActivateWebStateAt(0);
+
+  delegate_->CreateLocalTabGroup(saved_group);
+
+  // Verify no group was created
+  ASSERT_EQ(1, target_web_state_list->count());
+  EXPECT_EQ(kFakeUrl, target_web_state_list->GetWebStateAt(0)->GetVisibleURL());
+  EXPECT_EQ(0u, target_web_state_list->GetGroups().size());
+}
+
 // Tests adding a tab group when there is no currently foreground active scene,
 // the only foreground scene is from another profile and there is one
-// scene in background.
-TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
+// scene in background with auto open tab groups allowed.
+TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundSceneWithAutoOpen) {
   other_scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   scene_state_.activationLevel = SceneActivationLevelBackground;
   scene_state_same_profile_.activationLevel = SceneActivationLevelDisconnected;
+
+  // Enable feature flag and enable user pref
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSAutoOpenRemoteTabGroupsSettings);
+  PrefService* pref_service = browser_->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled, true);
 
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
@@ -371,6 +477,47 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
   ASSERT_TRUE(tab_group);
 
   VerifyLocalTabGroup(target_web_state_list, 1);
+}
+
+// Tests adding a tab group when there is no currently foreground active scene,
+// the only foreground scene is from another profile and there is one
+// scene in background with auto open tab groups disallowed.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       CreateTabGroupBackgroundSceneWithoutAutoOpen) {
+  other_scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_same_profile_.activationLevel = SceneActivationLevelDisconnected;
+
+  // Enable feature flag but disable user pref
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSAutoOpenRemoteTabGroupsSettings);
+  PrefService* pref_service = browser_->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled, false);
+
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group(kGroupTitle, kGroupColor,
+                            CreateSavedTabs(saved_tab_group_id),
+                            std::make_optional(0), saved_tab_group_id);
+
+  // Should NOT call UpdateLocalTabGroupMapping because pref is disabled
+  EXPECT_CALL(*mock_service_,
+              UpdateLocalTabGroupMapping(saved_tab_group_id, _, _))
+      .Times(0);
+
+  const GURL kFakeUrl = GURL("https://fakeWebState.com");
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
+  fake_web_state->SetCurrentURL(kFakeUrl);
+  WebStateList* target_web_state_list = browser_->GetWebStateList();
+  target_web_state_list->InsertWebState(std::move(fake_web_state));
+  target_web_state_list->ActivateWebStateAt(0);
+
+  delegate_->CreateLocalTabGroup(saved_group);
+
+  // Verify no group was created
+  ASSERT_EQ(1, target_web_state_list->count());
+  EXPECT_EQ(kFakeUrl, target_web_state_list->GetWebStateAt(0)->GetVisibleURL());
+  EXPECT_EQ(0u, target_web_state_list->GetGroups().size());
 }
 
 // Tests `CloseLocalTabGroup`.
