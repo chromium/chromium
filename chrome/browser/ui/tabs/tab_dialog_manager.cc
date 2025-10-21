@@ -336,7 +336,9 @@ void TabDialogManager::CloseDialog() {
 }
 
 bool TabDialogManager::MaybeActivateDialog() {
-  if (!widget_) {
+  // Also test whether the widget is in the closed state and in the middle of
+  // being torn down (Widget::CloseNow() or Widget::Close() called)
+  if (!widget_ || widget_->IsClosed()) {
     return false;
   }
 
