@@ -17,8 +17,8 @@
 }
 
 .spinner {
-  height: 24px;
-  width: 24px;
+  height: 20px;
+  width: 20px;
 }
 
 .spinner-circle {
@@ -78,26 +78,27 @@
   gap: 8px;
   height: 36px;
   padding: 0px 0px 0px 4px;
-  width: 156px;
+  width: 174px;
 }
 
 .thumbnail {
   align-items: center;
   display: flex;
   flex-shrink: 0;
+  height: 20px;
   justify-content: center;
-  height: 33px;
+  margin-left: 4px;
   position: relative;
-  width: 33px;
+  width: 20px;
 }
 
 .pdf-icon {
   background-color: var(--color-new-tab-page-composebox-background);
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 4px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
   height: 100%;
-  padding: 9px;
+  padding: 4px;
   width: 100%;
 }
 
@@ -113,13 +114,16 @@
 .remove-button {
   --cr-icon-button-fill-color:
     var(--color-new-tab-page-composebox-file-chip-text);
-  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 8px;
   background-color: var(--color-new-tab-page-composebox-background);
-  border-radius: 10px;
+  border-radius: 4px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
   height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
   width: 100%;
 }
 
@@ -128,8 +132,7 @@
   font-family: inherit;
   font-size: 14px;
   font-weight: 400;
-  margin-inline-end: 13px;
-  max-width: 100px;
+  margin-inline-end: 12px;
   overflow: hidden;
   position: relative;
   text-overflow: ellipsis;
@@ -144,7 +147,7 @@
 }
 
 #tabThumbnail composebox-tab-favicon {
-  border-radius: 10px;
-  height: 24px;
-  width: 24px;
+  border-radius: 4px;
+  height: 20px;
+  width: 20px;
 }
