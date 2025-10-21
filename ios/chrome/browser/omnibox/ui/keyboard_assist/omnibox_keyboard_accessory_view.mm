@@ -208,7 +208,8 @@ constexpr CGFloat kShadowOpacity = 0.12;
 
   // Position the stack views.
   id<LayoutGuideProvider> layoutGuide =
-      _effectView ? _effectView.contentView : self.safeAreaLayoutGuide;
+      _effectView ? _effectView.contentView.safeAreaLayoutGuide
+                  : self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     [searchStackView.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor
