@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -215,7 +216,8 @@ class ComposeboxQueryControllerTest
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
       FileUploadStatus expected_status = FileUploadStatus::kUploadSuccessful,
-      std::optional<FileUploadErrorType> expected_error_type = std::nullopt) {
+      std::optional<FileUploadErrorType> expected_error_type = std::nullopt,
+      bool expect_suggest_signals_ready = true) {
     FileUploadStatusTuple processing_file_upload_status =
         file_upload_status_future_.Take();
     EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
@@ -223,6 +225,17 @@ class ComposeboxQueryControllerTest
     EXPECT_EQ(FileUploadStatus::kProcessing,
               std::get<2>(processing_file_upload_status));
     EXPECT_EQ(std::nullopt, std::get<3>(processing_file_upload_status));
+
+    if (expect_suggest_signals_ready) {
+      FileUploadStatusTuple processing_suggest_file_upload_status =
+          file_upload_status_future_.Take();
+      EXPECT_EQ(file_token, std::get<0>(processing_suggest_file_upload_status));
+      EXPECT_EQ(mime_type, std::get<1>(processing_suggest_file_upload_status));
+      EXPECT_EQ(FileUploadStatus::kProcessingSuggestSignalsReady,
+                std::get<2>(processing_suggest_file_upload_status));
+      EXPECT_EQ(std::nullopt,
+                std::get<3>(processing_suggest_file_upload_status));
+    }
 
     if (expected_status != FileUploadStatus::kValidationFailed) {
       // For client-side validation failures, the state will never change to
@@ -469,6 +482,38 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
   WaitForFileUpload(file_token, lens::MimeType::kPdf,
                     /*expected_status=*/FileUploadStatus::kUploadFailed,
                     /*expected_error_type=*/FileUploadErrorType::kServerError);
+
+  // Assert: The suggest inputs are cleared.
+  EXPECT_FALSE(controller().suggest_inputs().has_search_session_id());
+  EXPECT_FALSE(controller().suggest_inputs().has_encoded_request_id());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadFileWithoutClusterInfoNeverHasSuggestReady) {
+  // Arrange: Simulate an error in the cluster info request.
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+
+  // Assert: Validate file upload request and status changes.
+  FileUploadStatusTuple processing_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
+  EXPECT_EQ(FileUploadStatus::kProcessing,
+            std::get<2>(processing_file_upload_status));
+  EXPECT_EQ(std::nullopt, std::get<3>(processing_file_upload_status));
+
+  // Assert: file_upload_status_future_ is empty.
+  EXPECT_TRUE(file_upload_status_future_.IsEmpty());
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -1486,6 +1531,16 @@ TEST_F(ComposeboxQueryControllerTest,
 
   EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 1);
 
+  // Assert: Validate file status changes now that cluster info is received.
+  FileUploadStatusTuple suggest_ready_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(suggest_ready_file_upload_status));
+  EXPECT_EQ(lens::MimeType::kPdf,
+            std::get<1>(suggest_ready_file_upload_status));
+  EXPECT_EQ(FileUploadStatus::kProcessingSuggestSignalsReady,
+            std::get<2>(suggest_ready_file_upload_status));
+  EXPECT_EQ(std::nullopt, std::get<3>(suggest_ready_file_upload_status));
+
   // Assert: Validate file upload request and status changes.
   FileUploadStatusTuple upload_started_file_upload_status =
       file_upload_status_future_.Take();
@@ -2024,16 +2079,50 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
   // Check that file is in cache.
   EXPECT_TRUE(controller().GetFileInfo(file_token));
 
-  EXPECT_EQ(controller().suggest_inputs().search_session_id(),
-            kTestSearchSessionId);
+  // Check that the request id is set correctly in the suggest inputs.
+  EXPECT_EQ(
+      controller().suggest_inputs().encoded_request_id(),
+      lens::Base64EncodeRequestId(
+          *controller().GetFileInfo(file_token)->GetRequestIdForTesting()));
+  EXPECT_EQ(controller().suggest_inputs().contextual_visual_input_type(),
+            "pdf");
+
+  // Act: Start the second file upload flow.
+  const base::UnguessableToken second_file_token =
+      base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(second_file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(second_file_token, lens::MimeType::kPdf,
+                    FileUploadStatus::kUploadSuccessful,
+                    /*error_type=*/std::nullopt,
+                    /*expect_suggest_signals_ready=*/false);
+
+  // Check that file is in cache.
+  EXPECT_TRUE(controller().GetFileInfo(second_file_token));
+
+  // Check that the suggest inputs are clearned now that there are two files in
+  // the request.
+  EXPECT_EQ(controller().suggest_inputs().encoded_request_id(), "");
+
+  EXPECT_EQ(controller().suggest_inputs().search_session_id(), "");
 
   // Delete file.
-  const bool deleted = controller().DeleteFile(file_token);
+  const bool deleted = controller().DeleteFile(second_file_token);
 
   // Check that file is no longer in cache.
   EXPECT_TRUE(deleted);
-  EXPECT_FALSE(controller().GetFileInfo(file_token));
-  EXPECT_EQ(controller().suggest_inputs().search_session_id(), "");
+  EXPECT_FALSE(controller().GetFileInfo(second_file_token));
+
+  // Check that the request id in the suggest inputs is set correctly to the
+  // first file's request id.
+  EXPECT_EQ(
+      controller().suggest_inputs().encoded_request_id(),
+      lens::Base64EncodeRequestId(
+          *controller().GetFileInfo(file_token)->GetRequestIdForTesting()));
+  EXPECT_EQ(controller().suggest_inputs().contextual_visual_input_type(),
+            "pdf");
 }
 
 TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {
@@ -2183,7 +2272,10 @@ TEST_F(ComposeboxQueryControllerTest,
                          /*file_data=*/std::vector<uint8_t>());
 
   // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(second_file_token, lens::MimeType::kPdf);
+  WaitForFileUpload(second_file_token, lens::MimeType::kPdf,
+                    FileUploadStatus::kUploadSuccessful,
+                    /*error_type=*/std::nullopt,
+                    /*expect_suggest_signals_ready=*/false);
 
   auto second_file_upload_request =
       controller().last_sent_file_upload_request();

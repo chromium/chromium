@@ -292,8 +292,9 @@ class ComposeboxQueryController {
   // Clear entire file cache.
   virtual void ClearFiles();
 
-  // Clears the suggest inputs.
-  virtual void ClearSuggestInputs();
+  // Resets the suggest inputs, setting it to the suggest inputs for the
+  // last file if there is only one attached file remaining.
+  virtual void ResetSuggestInputs();
 
   int num_files_in_request() { return num_files_in_request_; }
 
@@ -363,6 +364,12 @@ class ComposeboxQueryController {
   scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
  private:
+  // Updates the internal suggest inputs state with the given file's request id.
+  // Updates the file upload status to kProcessingSuggestSignalsReady if the
+  // inputs are ready and the status is kProcessing.
+  void UpdateSuggestInputsForFileIfReady(
+      const base::UnguessableToken& file_token);
+
   // Fetches the OAuth headers and calls the callback with the headers. If the
   // OAuth cannot be retrieved (like if the user is not logged in), the callback
   // will be called with an empty vector. Returns the access token fetcher

@@ -57,7 +57,12 @@ bool IsLensMWebResult(const GURL& url);
 
 std::string Base64EncodeRequestId(LensOverlayRequestId request_id);
 
+// Returns the vit query parameter value for the given mime type.
 std::string VitQueryParamValueForMimeType(MimeType mime_type);
+
+// Returns the vit query parameter value for the given media type.
+std::string VitQueryParamValueForMediaType(
+    LensOverlayRequestId::MediaType media_type);
 
 // Returns a key-value map of all parameters in `url` except the query
 // parameter.

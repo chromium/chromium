@@ -41,6 +41,8 @@ std::string UploadStatusToString(FileUploadStatus status) {
       return "NotUploaded";
     case FileUploadStatus::kProcessing:
       return "Processing";
+    case FileUploadStatus::kProcessingSuggestSignalsReady:
+      return "ProcessingSuggestSignalsReady";
     case FileUploadStatus::kValidationFailed:
       return "ValidationFailed";
     case FileUploadStatus::kUploadStarted:
@@ -123,6 +125,7 @@ void ComposeboxMetricsRecorder::OnFileUploadStatusChanged(
     case FileUploadStatus::kNotUploaded:
     case FileUploadStatus::kUploadStarted:
     case FileUploadStatus::kUploadExpired:
+    case FileUploadStatus::kProcessingSuggestSignalsReady:
       break;
   }
 }

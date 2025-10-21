@@ -182,6 +182,7 @@ void CreateFileUploadRequestProtoWithPayloadAndContinue(
 bool IsValidFileUploadStatusForMultimodalRequest(
     FileUploadStatus upload_status) {
   return upload_status == FileUploadStatus::kProcessing ||
+         upload_status == FileUploadStatus::kProcessingSuggestSignalsReady ||
          upload_status == FileUploadStatus::kUploadStarted ||
          upload_status == FileUploadStatus::kUploadSuccessful;
 }
@@ -234,32 +235,6 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
   ClearClusterInfo();
   SetQueryControllerState(QueryControllerState::kOff);
   session_id_++;
-}
-
-std::unique_ptr<lens::LensOverlayRequestId>
-ComposeboxQueryController::GetNextRequestId(
-    lens::RequestIdUpdateMode update_mode,
-    lens::MimeType mime_type,
-    lens::LensOverlayRequestId_MediaType media_type) {
-  std::unique_ptr<lens::LensOverlayRequestId> request_id =
-      request_id_generator_.GetNextRequestId(update_mode, media_type);
-
-  suggest_inputs_.set_encoded_request_id(
-      lens::Base64EncodeRequestId(*request_id));
-  if (!base::Contains(lens::kUnsupportedVitMimeTypes, mime_type)) {
-    // TODO(crbug.com/445777189): Support multi-context input id flow for
-    // suggest.
-    suggest_inputs_.set_contextual_visual_input_type(
-        lens::VitQueryParamValueForMimeType(mime_type));
-  }
-  if (cluster_info_.has_value()) {
-    suggest_inputs_.set_search_session_id(cluster_info_->search_session_id());
-    suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
-  } else {
-    suggest_inputs_.clear_search_session_id();
-  }
-
-  return request_id;
 }
 
 lens::LensOverlayRequestId
@@ -354,9 +329,9 @@ GURL ComposeboxQueryController::CreateSearchUrl(
             omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(),
-            GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
-                             last_file->mime_type_,
-                             last_file->request_id_->media_type()),
+            request_id_generator_.GetNextRequestId(
+                lens::RequestIdUpdateMode::kSearchUrl,
+                last_file->request_id_->media_type()),
             last_file->mime_type_,
             should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
             base::UTF8ToUTF16(search_url_request_info->query_text),
@@ -420,7 +395,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
        !use_separate_request_ids_for_multi_context_viewport_images_);
   // Unlike image uploads, PDF / page content uploads need to increment the
   // long context id instead of the image sequence id.
-  current_file_info.request_id_ = GetNextRequestId(
+  current_file_info.request_id_ = request_id_generator_.GetNextRequestId(
       enable_multi_context_input_flow_
           ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
           : (current_file_info.mime_type_ == lens::MimeType::kImage
@@ -429,17 +404,17 @@ void ComposeboxQueryController::StartFileUploadFlow(
                         ? lens::RequestIdUpdateMode::
                               kPageContentWithViewportRequest
                         : lens::RequestIdUpdateMode::kPageContentRequest)),
-      current_file_info.mime_type_,
       lens::MimeTypeToMediaType(current_file_info.mime_type_,
                                 use_has_viewport_media_type));
 
-  // Update the file upload status to processing. This will notify the UI
-  // to fetch suggestions at the earliest possible time. The suggest inputs are
-  // set by the previous GetNextRequestId call. If the file upload later fails
-  // due to validation failures, the suggest response will be empty so it is
-  // safe to kick off the suggestions fetch at this point.
+  // Update the file upload status to processing.
   UpdateFileUploadStatus(file_token, FileUploadStatus::kProcessing,
                          std::nullopt);
+  // Update the suggest inputs with the new request id and update the file
+  // status if suggest signals are ready. If the file upload later fails due to
+  // validation failures, the suggest response will be empty so it is safe to
+  // kick off the suggestions fetch at this point.
+  ResetSuggestInputs();
 
   // If the is_page_context_eligible is set to false, then fail early.
   if (contextual_input_data->is_page_context_eligible.has_value() &&
@@ -470,18 +445,25 @@ void ComposeboxQueryController::StartFileUploadFlow(
       file_token, std::move(contextual_input_data), image_options);
 }
 
-void ComposeboxQueryController::ClearSuggestInputs() {
+void ComposeboxQueryController::ResetSuggestInputs() {
   // Multiple file upload is not supported yet, once it is, the suggest
   // inputs should instead be updated to reflect this file being deleted.
   // Suggest inputs must be cleared so when autocomplete is queried again
   // in the UI, contextual suggestions do not appear.
   suggest_inputs_.Clear();
+
+  // If there is a single file remaining, update the suggest inputs to
+  // include that file.
+  if (active_files_.size() == 1) {
+    UpdateSuggestInputsForFileIfReady(active_files_.begin()->first);
+  }
 }
 
 bool ComposeboxQueryController::DeleteFile(
     const base::UnguessableToken& file_token) {
-  ClearSuggestInputs();
-  return !!active_files_.erase(file_token);
+  bool deleted = !!active_files_.erase(file_token);
+  ResetSuggestInputs();
+  return deleted;
 }
 
 void ComposeboxQueryController::ClearFiles() {
@@ -559,6 +541,38 @@ lens::LensOverlayClientContext ComposeboxQueryController::CreateClientContext()
   }
 
   return context;
+}
+
+void ComposeboxQueryController::UpdateSuggestInputsForFileIfReady(
+    const base::UnguessableToken& file_token) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
+    return;
+  }
+
+  suggest_inputs_.set_encoded_request_id(
+      lens::Base64EncodeRequestId(*file_info->request_id_));
+  // TODO(crbug.com/445777189): Support multi-context input id flow for
+  // suggest.
+  suggest_inputs_.set_contextual_visual_input_type(
+      lens::VitQueryParamValueForMediaType(
+          file_info->request_id_->media_type()));
+
+  // If the cluster info is already available, update the suggest inputs.
+  suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
+  if (cluster_info_.has_value()) {
+    suggest_inputs_.set_search_session_id(
+        cluster_info_.value().search_session_id());
+
+    // If the file is still processing, update the file upload status to ready
+    // for suggest.
+    if (file_info->upload_status_ == FileUploadStatus::kProcessing) {
+      // TODO(crbug.com/452401443): Listen for this new status from the webui.
+      UpdateFileUploadStatus(file_token,
+                             FileUploadStatus::kProcessingSuggestSignalsReady,
+                             std::nullopt);
+    }
+  }
 }
 
 // TODO(crbug.com/424869589): Clean up code duplication with
@@ -709,6 +723,9 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
   SetQueryControllerState(QueryControllerState::kClusterInfoReceived);
 
+  // Update the suggest inputs with the new cluster info.
+  ResetSuggestInputs();
+
   // Iterate through any existing files and send the upload requests if ready.
   for (const auto& [file_token, file_info] : active_files_) {
     for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
@@ -752,6 +769,7 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
   }
   if (!IsValidFileUploadStatusForMultimodalRequest(status)) {
     active_files_.erase(file_token);
+    ResetSuggestInputs();
   } else {
     file_info->upload_status_ = status;
   }
@@ -1016,7 +1034,9 @@ void ComposeboxQueryController::OnUploadEndpointFetcherCreated(
 
   upload_request->start_time = base::Time::Now();
   upload_request->endpoint_fetcher_ = std::move(endpoint_fetcher);
-  if (file_info->upload_status_ == FileUploadStatus::kProcessing) {
+  if (file_info->upload_status_ == FileUploadStatus::kProcessing ||
+      file_info->upload_status_ ==
+          FileUploadStatus::kProcessingSuggestSignalsReady) {
     UpdateFileUploadStatus(file_info->file_token_,
                            FileUploadStatus::kUploadStarted, std::nullopt);
   }

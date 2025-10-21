@@ -514,6 +514,8 @@ chromium-metrics-reviews@google.com.
   <token key="FileState">
     <variant name="NotUploaded" summary="File not uploaded"/>
     <variant name="Processing" summary="File upload processing"/>
+    <variant name="ProcessingSuggestSignalsReady"
+        summary="File upload processing and suggest signals ready"/>
     <variant name="Unknown" summary="Unknown"/>
     <variant name="UploadFailed" summary="File upload failed"/>
     <variant name="UploadStarted" summary="File upload started"/>

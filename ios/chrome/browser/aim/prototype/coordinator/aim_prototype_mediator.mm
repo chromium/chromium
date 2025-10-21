@@ -338,6 +338,7 @@ size_t WhitespaceCount(const std::u16string& string) {
       break;
     case FileUploadStatus::kNotUploaded:
     case FileUploadStatus::kProcessing:
+    case FileUploadStatus::kProcessingSuggestSignalsReady:
     case FileUploadStatus::kUploadStarted:
       // No-op, as the state is already `Uploading`.
       return;
