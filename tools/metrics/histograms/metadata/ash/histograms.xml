@@ -3709,11 +3709,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Latency" units="ms"
-    expires_after="2026-03-08">
+    expires_after="2026-11-20">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded API latency of the requests sent by Focus Mode. The recorded value
     indicates the time to receive the response.
@@ -3734,11 +3734,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Result" enum="BooleanHit"
-    expires_after="2026-03-08">
+    expires_after="2026-11-20">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded API result of the requests sent by Focus Mode. The recorded value
     indicates whether the request succeeds with retry.
@@ -3759,11 +3759,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.RetryCount" units="count"
-    expires_after="2025-11-01">
+    expires_after="2026-11-20">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded API result of the requests sent by Focus Mode. The recorded value
     indicates whether the request succeeds with retry.
@@ -3783,11 +3783,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Status" enum="ApiErrorCode"
-    expires_after="2026-01-04">
+    expires_after="2026-11-20">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded API status of the requests sent by Focus Mode. The recorded enum
     value indicates the HTTP status code of response.
@@ -3806,12 +3806,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.DNDStateOnFocusEnd"
-    enum="DNDStateOnFocusEndType" expires_after="2025-11-01">
+    enum="DNDStateOnFocusEndType" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records interactions with Do Not Disturb during a Focus Mode session.
     Recorded once per session. Indicates the final state of Do Not Disturb and
@@ -3820,11 +3819,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.DuringSession.ToggleEndSessionSource"
-    enum="FocusModeEndSessionSource" expires_after="2026-03-08">
+    enum="FocusModeEndSessionSource" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a focus session will be ended through the focus panel, the
     contextual panel, or the feature pod.
@@ -3832,21 +3830,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.EndingMomentBubbleAction"
-    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2026-01-04">
+    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Record the reason for the ending moment bubble closed.</summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.MusicPausedSessionCount" units="count"
-    expires_after="2025-11-01">
-  <owner>nupurjain@google.com</owner>
+    expires_after="2026-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When a session ends, record how many times the user paused the playlists
     which were played by the Focus Mode during the session.
@@ -3854,12 +3850,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PercentOfSessionCompleted.{SessionDurationType}"
-    units="%" expires_after="2026-01-04">
-  <owner>nupurjain@google.com</owner>
+    units="%" expires_after="2026-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the percent of the session which was completed (bucketed by the
     final session duration) when a session is over. This is for the
@@ -3874,22 +3869,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistChosen" enum="FocusModePlaylistChosen"
-    expires_after="2026-03-08">
+    expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Records the playlist which starts playing during a session.</summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistsDuringSession" units="count"
-    expires_after="2026-03-08">
-  <owner>nupurjain@google.com</owner>
+    expires_after="2026-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When a session ends, record how many playlists were played during the
     session.
@@ -3897,34 +3890,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistTypesSelectedDuringSession"
-    enum="PlaylistTypesSelectedDuringSessionType" expires_after="2026-03-08">
+    enum="PlaylistTypesSelectedDuringSessionType" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the type of playlists played during a session when a session ends.
   </summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.SessionDuration" units="minutes"
-    expires_after="2026-03-08">
+    expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Record the time in minutes since the session started when the session ends.
   </summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.SoundscapeLatency" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records how many milliseconds the user waited for a soundscape playlist to
     be played from clicking on the playlist while in a focus session or starting
@@ -3933,11 +3924,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.ExistingMediaPlaying"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true when an existing media session is playing on the system on
     session start; otherwise, emits false.
@@ -3945,34 +3936,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.InitialDuration" units="minutes"
-    expires_after="2025-11-01">
+    expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records a session duration in minutes when starting a focus session.
   </summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.TaskState"
-    enum="FocusModeStartedWithTaskState" expires_after="2026-03-08">
+    enum="FocusModeStartedWithTaskState" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Record the state of the selected task when a focus mode session is started.
   </summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.ToggleSource"
-    enum="FocusModeStartSessionSource" expires_after="2026-01-04">
+    enum="FocusModeStartSessionSource" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a focus session will be started through the focus panel or
     the feature pod.
@@ -3980,12 +3968,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TasksCompleted" units="count"
-    expires_after="2025-11-01">
-  <owner>nupurjain@google.com</owner>
+    expires_after="2026-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When a session ends, record how many tasks were marked as completed by the
     user during the session.
@@ -3993,11 +3980,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TasksSelected" units="count"
-    expires_after="2025-11-01">
+    expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Record the count of tasks selected throughout each focus session. Emitted
     when a session ends. Note that only one task can be selected at a time.
@@ -4005,12 +3991,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TimeAdded.{TimeAddedType}" units="minutes"
-    expires_after="2025-11-01">
-  <owner>nupurjain@google.com</owner>
+    expires_after="2026-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of minutes that were added to a session (bucketed by the
     initial session duration) when a session is over. This is for the
@@ -4025,12 +4010,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.YouTubeMusicLatency" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records how many milliseconds the user waited for a YouTube Music playlist
     to be played from clicking on the playlist while in a focus session or
