@@ -2585,7 +2585,16 @@ TEST_F(NativeWidgetMacTest,
   parent->CloseNow();
 }
 
-TEST_F(NativeWidgetMacTest, OnWidgetWindowModalVisibilityChanged) {
+// Tests behavior of window-modal dialogs, displayed as sheets.
+// TODO(crbug.com/453833804): Disabled on ASAN due to flakiness.
+#if BUILDFLAG(IS_MAC) && defined(MEMORY_SANITIZER)
+#define MAYBE_OnWidgetWindowModalVisibilityChanged \
+  DISABLED_OnWidgetWindowModalVisibilityChanged
+#else
+#define MAYBE_OnWidgetWindowModalVisibilityChanged \
+  OnWidgetWindowModalVisibilityChanged
+#endif
+TEST_F(NativeWidgetMacTest, MAYBE_OnWidgetWindowModalVisibilityChanged) {
   Widget* parent_widget = CreateTopLevelPlatformWidget();
   parent_widget->Show();
   NSWindow* parent_nswindow =
