@@ -3201,20 +3201,6 @@ MLOperand* MLGraphBuilder::softmax(MLOperand* input,
   return output;
 }
 
-MLOperand* MLGraphBuilder::softmax(MLOperand* input,
-                                   MLOperatorOptions* options,
-                                   ExceptionState& exception_state) {
-  // This is to emulate the deprecated 2-D softmax until all Chrome channels
-  // support the latest version.
-  if (input->Rank() != 2) {
-    exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        "The input must be a 2-D tensor.");
-    return nullptr;
-  }
-  return softmax(input, /*axis=*/1, options, exception_state);
-}
-
 MLOperand* MLGraphBuilder::softplus(MLOperand* input,
                                     MLOperatorOptions* options,
                                     ExceptionState& exception_state) {

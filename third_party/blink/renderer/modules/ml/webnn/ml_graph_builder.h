@@ -484,9 +484,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                      uint32_t axis,
                      MLOperatorOptions* options,
                      ExceptionState& exception_state);
-  MLOperand* softmax(MLOperand* input,
-                     MLOperatorOptions* options,
-                     ExceptionState& exception_state);
 
   MLOperand* softplus(MLOperand* input,
                       MLOperatorOptions* options,

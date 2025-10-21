@@ -398,8 +398,6 @@ dictionary MLTriangularOptions : MLOperatorOptions {
                                     sequence<[EnforceRange] unsigned long> sizes,
                                     optional MLSliceOptions options = {});
 
-  // TODO: crbug.com/342919187 - Remove the deprecated version once ort-web 1.18.* supporting softmax(input, aixs) is released.
-  [RaisesException] MLOperand softmax(MLOperand input, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand softmax(MLOperand input, [EnforceRange] unsigned long axis, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand softplus(MLOperand input, optional MLOperatorOptions options = {});
