@@ -38,6 +38,10 @@ class GraduationManager;
 
 }  // namespace ash
 
+namespace chrome {
+class SettingsWindowManager;
+}  // namespace chrome
+
 namespace chromeos {
 class MahiManager;
 class MahiMediaAppEventsProxy;
@@ -135,10 +139,9 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<CastConfigControllerMediaRouter>
       cast_config_controller_media_router_;
 
-  // Initialized in PreProfileInit if ash config != MASH:
-  std::unique_ptr<AshShellInit> ash_shell_init_;
 
   // Initialized in PreProfileInit in all configs after Shell init:
+  std::unique_ptr<AshShellInit> ash_shell_init_;
   std::unique_ptr<AccessibilityControllerClient>
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
@@ -157,6 +160,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       in_session_auth_token_provider_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
+  std::unique_ptr<chrome::SettingsWindowManager> settings_window_manager_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
   std::unique_ptr<SystemTrayClientImpl> system_tray_client_;
   std::unique_ptr<TabClusterUIClient> tab_cluster_ui_client_;

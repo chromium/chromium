@@ -217,8 +217,6 @@ TEST_F(QuickAnswersUiControllerTest, QuickAnswersViewAccessibleProperties) {
 
 TEST_F(QuickAnswersUiControllerTest, OpenSettingsQuickAnswers) {
   MockSettingsWindowManager mock_settings_window_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(
-      &mock_settings_window_manager);
 
   EXPECT_CALL(mock_settings_window_manager,
               ShowChromePageForProfile(
@@ -245,8 +243,6 @@ TEST_F(QuickAnswersUiControllerTest, OpenSettingsQuickAnswers) {
 
 TEST_F(QuickAnswersUiControllerTest, OpenSettingsHmr) {
   MockSettingsWindowManager mock_settings_window_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(
-      &mock_settings_window_manager);
 
   EXPECT_CALL(mock_settings_window_manager,
               ShowChromePageForProfile(

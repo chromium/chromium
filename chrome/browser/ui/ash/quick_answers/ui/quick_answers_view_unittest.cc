@@ -376,8 +376,6 @@ TEST_F(QuickAnswersViewsTest, ResultWithPhoneticsAudio) {
 
 TEST_F(QuickAnswersViewsTest, OpenSettings) {
   MockSettingsWindowManager mock_settings_window_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(
-      &mock_settings_window_manager);
 
   EXPECT_CALL(
       mock_settings_window_manager,

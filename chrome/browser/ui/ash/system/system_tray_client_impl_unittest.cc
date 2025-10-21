@@ -67,12 +67,8 @@ class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
                         ->platform_part()
                         ->browser_policy_connector_ash()));
     settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
-
-    chrome::SettingsWindowManager::SetInstanceForTesting(
-        settings_window_manager_.get());
   }
   void TearDown() override {
-    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
     settings_window_manager_.reset();
     client_impl_.reset();
     BrowserWithTestWindowTest::TearDown();

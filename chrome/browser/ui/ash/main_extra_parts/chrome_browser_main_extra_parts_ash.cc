@@ -100,6 +100,7 @@
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
 #include "chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
@@ -364,6 +365,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
           g_browser_process->platform_part()->browser_policy_connector_ash()));
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
 
+  settings_window_manager_ = std::make_unique<chrome::SettingsWindowManager>();
+
   if (ash::features::IsCoralFeatureEnabled()) {
     ash::TabClusterUIController* tab_cluster_ui_controller =
         ash::Shell::Get()->tab_cluster_ui_controller();
@@ -627,6 +630,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
     device::GeolocationSystemPermissionManager::GetInstance()->Shutdown();
   }
   device::GeolocationSystemPermissionManager::SetInstance(nullptr);
+
+  settings_window_manager_.reset();
   system_tray_client_.reset();
   session_controller_client_.reset();
   ime_controller_client_.reset();

@@ -65,6 +65,7 @@ include_rules = [
   "+chrome/browser/ui/ash/web_view",
   "+chrome/browser/ui/ash/read_write_cards",
   "+chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h",
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   "+chrome/browser/ui/webui/ash/settings/pref_names.h",

@@ -52,10 +52,16 @@ size_t GetNumberOfSettingsWindows() {
 
 class SettingsWindowManagerTest : public InProcessBrowserTest {
  public:
-  SettingsWindowManagerTest()
-      : settings_manager_(chrome::SettingsWindowManager::GetInstance()) {}
+  SettingsWindowManagerTest() = default;
+  SettingsWindowManagerTest(const SettingsWindowManagerTest&) = delete;
+  SettingsWindowManagerTest& operator=(const SettingsWindowManagerTest&) =
+      delete;
+
+  ~SettingsWindowManagerTest() override = default;
 
   void SetUpOnMainThread() override {
+    settings_manager_ = chrome::SettingsWindowManager::GetInstance();
+
     // Install the Settings App.
     ash::SystemWebAppManager::GetForTest(browser()->profile())
         ->InstallSystemAppsForTesting();
@@ -67,11 +73,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
     ASSERT_TRUE(synchronized.Wait());
   }
 
-  SettingsWindowManagerTest(const SettingsWindowManagerTest&) = delete;
-  SettingsWindowManagerTest& operator=(const SettingsWindowManagerTest&) =
-      delete;
-
-  ~SettingsWindowManagerTest() override = default;
+  void TearDownOnMainThread() override { settings_manager_ = nullptr; }
 
   void CloseNonDefaultBrowsers() {
     std::list<Browser*> browsers_to_close;
@@ -93,7 +95,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<chrome::SettingsWindowManager> settings_manager_;
+  raw_ptr<chrome::SettingsWindowManager> settings_manager_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {

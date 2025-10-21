@@ -33,34 +33,28 @@
 #include "ui/aura/window.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/472871229): Move to chromeos/ash/experiences/settings_ui
-// with getting rid of singleton.
-namespace ash {
-SettingsAppManager* SettingsAppManager::Get() {
-  return chrome::SettingsWindowManager::GetInstance();
-}
-}  // namespace ash
-
 namespace chrome {
 
 namespace {
 
 bool g_force_deprecated_settings_window_for_testing = false;
-SettingsWindowManager* g_settings_window_manager_for_testing = nullptr;
+SettingsWindowManager* g_instance = nullptr;
 
 }  // namespace
 
-// static
-SettingsWindowManager* SettingsWindowManager::GetInstance() {
-  return g_settings_window_manager_for_testing
-             ? g_settings_window_manager_for_testing
-             : base::Singleton<SettingsWindowManager>::get();
+SettingsWindowManager::SettingsWindowManager() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+SettingsWindowManager::~SettingsWindowManager() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 // static
-void SettingsWindowManager::SetInstanceForTesting(
-    SettingsWindowManager* manager) {
-  g_settings_window_manager_for_testing = manager;
+SettingsWindowManager* SettingsWindowManager::GetInstance() {
+  return g_instance;
 }
 
 // static
@@ -257,9 +251,5 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
            iter->second == browser->session_id();
   }
 }
-
-SettingsWindowManager::SettingsWindowManager() = default;
-
-SettingsWindowManager::~SettingsWindowManager() = default;
 
 }  // namespace chrome

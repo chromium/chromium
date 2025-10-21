@@ -33,4 +33,7 @@ specific_include_rules = {
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+ui/message_center/message_center.h",
   ],
+  "app_controls_notifier_unittest.cc": [
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  ],
 }

@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
-#include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
@@ -27,16 +26,15 @@ class SettingsWindowManagerObserver;
 // Manages Settings windows for CrOS. Each Profile is associated with a single
 // Browser window for Settings that will be created when the Settings UI is
 // first opened and reused for any Settings links while it exists.
-
 class SettingsWindowManager : public ash::SettingsAppManager {
  public:
+  SettingsWindowManager();
   SettingsWindowManager(const SettingsWindowManager&) = delete;
   SettingsWindowManager& operator=(const SettingsWindowManager&) = delete;
+  ~SettingsWindowManager() override;
 
+  // TODO(crbug.com/472871229): Migrate into SettingsAppManager::Get().
   static SettingsWindowManager* GetInstance();
-
-  // Caller is responsible for |manager|'s life time.
-  static void SetInstanceForTesting(SettingsWindowManager* manager);
 
   // See https://crbug.com/1067073.
   static void ForceDeprecatedSettingsWindowForTesting();
@@ -82,12 +80,7 @@ class SettingsWindowManager : public ash::SettingsAppManager {
   // Returns true if |browser| is a settings window.
   bool IsSettingsBrowser(Browser* browser) const;
 
- protected:
-  SettingsWindowManager();
-  ~SettingsWindowManager() override;
-
  private:
-  friend struct base::DefaultSingletonTraits<SettingsWindowManager>;
   typedef std::map<Profile*, SessionID> ProfileSessionMap;
 
   base::ObserverList<SettingsWindowManagerObserver>::Unchecked observers_;

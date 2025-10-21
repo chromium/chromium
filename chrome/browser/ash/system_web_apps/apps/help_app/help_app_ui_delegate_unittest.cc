@@ -129,8 +129,6 @@ const std::vector<OpenSettingsScenario> kOpenSettingsScenario{
 
 TEST_P(HelpAppUiDelegateOpenSettingsTest, ShouldShowPageForSettingsComponent) {
   MockSetingsWindowManager mock_settings_window_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(
-      &mock_settings_window_manager);
 
   EXPECT_CALL(
       mock_settings_window_manager,
