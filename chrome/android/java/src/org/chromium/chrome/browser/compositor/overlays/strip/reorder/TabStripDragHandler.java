@@ -72,8 +72,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     private final Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
     private final Supplier<Boolean> mStripLayoutVisibilitySupplier;
-    private final Supplier<TabContentManager> mTabContentManagerSupplier;
-    private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlStateProvider;
     private final float mPxToDp;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
@@ -117,8 +117,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             Context context,
             Supplier<StripLayoutHelper> stripLayoutHelperSupplier,
             Supplier<Boolean> stripLayoutVisibilitySupplier,
-            Supplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            ObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
@@ -251,11 +251,13 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         if (mShadowView != null) return;
 
         // Create group thumbnail provider.
+        TabContentManager tabContentManager = mTabContentManagerSupplier.get();
+        assert tabContentManager != null;
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(
                         getActivity(),
                         mBrowserControlStateProvider,
-                        mTabContentManagerSupplier.get(),
+                        tabContentManager,
                         getCurrentTabGroupModelFilterSupplier());
         mMultiThumbnailCardProvider.initWithNative(
                 assumeNonNull(getTabModelSelector().getModel(/* incognito= */ false).getProfile()));
@@ -270,7 +272,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mShadowView.initialize(
                 mBrowserControlStateProvider,
                 mMultiThumbnailCardProvider,
-                mTabContentManagerSupplier,
+                tabContentManager,
                 mLayerTitleCacheSupplier,
                 getTabModelSelector(),
                 () -> {

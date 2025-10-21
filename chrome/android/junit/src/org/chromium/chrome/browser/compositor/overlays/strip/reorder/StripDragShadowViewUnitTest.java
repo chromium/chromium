@@ -44,6 +44,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -64,8 +65,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.TestActivity;
 
-import java.util.function.Supplier;
-
 /** Unit tests for {@link StripDragShadowView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StripDragShadowViewUnitTest {
@@ -80,8 +79,6 @@ public class StripDragShadowViewUnitTest {
 
     @Mock private BrowserControlsStateProvider mMockBrowserControlsStateProvider;
     @Mock private MultiThumbnailCardProvider mMockMultiThumbnailCardProvider;
-    @Mock private Supplier<TabContentManager> mMockTabContentManagerSupplier;
-    @Mock private Supplier<LayerTitleCache> mMockLayerTitleCacheSupplier;
     @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private StripDragShadowView.ShadowUpdateHost mMockShadowUpdateHost;
 
@@ -115,8 +112,6 @@ public class StripDragShadowViewUnitTest {
                             mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
                         });
 
-        when(mMockTabContentManagerSupplier.get()).thenReturn(mMockTabContentManager);
-        when(mMockLayerTitleCacheSupplier.get()).thenReturn(mMockLayerTitleCache);
         when(mMockTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mMockTabGroupModelFilterProvider);
         when(mMockTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
@@ -133,8 +128,8 @@ public class StripDragShadowViewUnitTest {
         mStripDragShadowView.initialize(
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
-                mMockTabContentManagerSupplier,
-                mMockLayerTitleCacheSupplier,
+                mMockTabContentManager,
+                new ObservableSupplierImpl<>(mMockLayerTitleCache),
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 

@@ -27,6 +27,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,7 +56,6 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @NullMarked
 public class StripDragShadowView extends FrameLayout {
@@ -98,7 +98,7 @@ public class StripDragShadowView extends FrameLayout {
 
     // External Dependencies
     private BrowserControlsStateProvider mBrowserControlStateProvider;
-    private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private TabModelSelector mTabModelSelector;
     private ShadowUpdateHost mShadowUpdateHost;
 
@@ -151,8 +151,8 @@ public class StripDragShadowView extends FrameLayout {
     public void initialize(
             BrowserControlsStateProvider browserControlsStateProvider,
             MultiThumbnailCardProvider multiThumbnailCardProvider,
-            Supplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            TabContentManager tabContentManager,
+            ObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             TabModelSelector tabModelSelector,
             ShadowUpdateHost shadowUpdateHost) {
         mBrowserControlStateProvider = browserControlsStateProvider;
@@ -161,8 +161,7 @@ public class StripDragShadowView extends FrameLayout {
         mShadowUpdateHost = shadowUpdateHost;
 
         mMultiThumbnailCardProvider = multiThumbnailCardProvider;
-        mSingleThumbnailCardProvider =
-                new TabContentManagerThumbnailProvider(tabContentManagerSupplier.get());
+        mSingleThumbnailCardProvider = new TabContentManagerThumbnailProvider(tabContentManager);
 
         mCardView.getBackground().mutate();
         mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
@@ -195,6 +194,7 @@ public class StripDragShadowView extends FrameLayout {
 
         // Title text
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        assumeNonNull(layerTitleCache);
         String defaultTitle = context.getString(R.string.tab_loading_default_title);
         mTitleView.setText(layerTitleCache.getUpdatedTitle(tab, defaultTitle));
         mTitleView.setTextColor(TabUiThemeUtil.getTabTextColor(context, isIncognito));
@@ -255,6 +255,7 @@ public class StripDragShadowView extends FrameLayout {
 
         // Favicon
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        assumeNonNull(layerTitleCache);
         mFaviconView.setImageBitmap(layerTitleCache.getDefaultFavicon(tab));
         // Hide the thumbnail and favicon to create a "pill" shape.
         mThumbnailView.setVisibility(View.GONE);
@@ -298,6 +299,7 @@ public class StripDragShadowView extends FrameLayout {
 
         // Group title text
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        assumeNonNull(layerTitleCache);
         String titleText =
                 layerTitleCache.getUpdatedGroupTitle(
                         tabGroupId,
@@ -442,7 +444,11 @@ public class StripDragShadowView extends FrameLayout {
             public void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                 if (icon == null) {
                     icon = TabFavicon.getBitmap(tab);
-                    if (icon == null) icon = mLayerTitleCacheSupplier.get().getDefaultFavicon(tab);
+                    if (icon == null) {
+                        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+                        assumeNonNull(layerTitleCache);
+                        icon = layerTitleCache.getDefaultFavicon(tab);
+                    }
                 }
                 mFaviconView.setImageBitmap(icon);
                 mShadowUpdateHost.requestUpdate();
