@@ -1576,7 +1576,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE + ":v2_enabled/false")
     public void testButtonVisibility_showComposeplateUnfocused() {
         mProfileSupplier.set(mProfile);
         enableBothVoiceAndLensButtons();
@@ -1611,7 +1611,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE + ":v2_enabled/false")
     public void testButtonVisibility_dontShowComposeplateFocused() {
         mProfileSupplier.set(mProfile);
         enableBothVoiceAndLensButtons();
