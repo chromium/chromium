@@ -423,8 +423,9 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                     .getNavigationClients()
                     .removeIf(
                             awNavigationListener ->
-                                    awNavigationListener.getSupportLibInvocationHandler()
-                                            == listener);
+                                    awNavigationListener
+                                            .getSupportLibInvocationHandler()
+                                            .equals(listener));
         }
     }
 
