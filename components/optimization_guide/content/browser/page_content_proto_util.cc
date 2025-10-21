@@ -885,6 +885,39 @@ class Converter {
   raw_ref<blink::mojom::PageMetadata> page_metadata_;
 };
 
+// Private helper template to handle both mutable and const traversals for
+// VisitContentNodes().
+template <typename ContentNodeType, typename VisitorType>
+  requires std::is_same_v<std::remove_const_t<ContentNodeType>,
+                          optimization_guide::proto::ContentNode>
+void VisitContentNodesImpl(ContentNodeType& node,
+                           std::string_view document_identifier,
+                           VisitorType visitor) {
+  visitor(node, document_identifier);
+
+  // In case of an iframe, replace the document_identifier for the traversal
+  // of children.
+  if (node.content_attributes().has_iframe_data()) {
+    const optimization_guide::proto::IframeData& iframe_data =
+        node.content_attributes().iframe_data();
+    if (iframe_data.has_frame_data()) {
+      const optimization_guide::proto::FrameData& frame_data =
+          iframe_data.frame_data();
+      document_identifier = frame_data.document_identifier().serialized_token();
+    }
+  }
+
+  if constexpr (std::is_const_v<std::remove_reference_t<ContentNodeType>>) {
+    for (const auto& child : node.children_nodes()) {
+      VisitContentNodesImpl(child, document_identifier, visitor);
+    }
+  } else {
+    for (auto& child : *node.mutable_children_nodes()) {
+      VisitContentNodesImpl(child, document_identifier, visitor);
+    }
+  }
+}
+
 }  // namespace
 
 base::expected<void, std::string> ConvertAIPageContentToProto(
@@ -1151,6 +1184,22 @@ GURL GetURLForFrameMetadata(const GURL& committed_url,
     return committed_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
   }
   return committed_url;
+}
+
+void VisitContentNodes(
+    optimization_guide::proto::ContentNode& node,
+    std::string_view document_identifier,
+    base::FunctionRef<void(optimization_guide::proto::ContentNode& node,
+                           std::string_view document_identifier)> visitor) {
+  VisitContentNodesImpl(node, document_identifier, visitor);
+}
+
+void VisitContentNodes(
+    const optimization_guide::proto::ContentNode& node,
+    std::string_view document_identifier,
+    base::FunctionRef<void(const optimization_guide::proto::ContentNode& node,
+                           std::string_view document_identifier)> visitor) {
+  VisitContentNodesImpl(node, document_identifier, visitor);
 }
 
 }  // namespace optimization_guide

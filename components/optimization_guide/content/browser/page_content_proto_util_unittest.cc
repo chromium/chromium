@@ -18,6 +18,7 @@ namespace {
 
 using optimization_guide::TargetNodeInfo;
 using optimization_guide::proto::AnnotatedPageContent;
+using optimization_guide::proto::ContentAttributes;
 using optimization_guide::proto::ContentNode;
 using optimization_guide::proto::Coordinate;
 using optimization_guide::proto::DocumentIdentifier;
@@ -1481,6 +1482,66 @@ TEST(FindNodeWithIDTest, SameNodeIDInDifferentDocuments) {
   std::optional<TargetNodeInfo> result_wrong_doc =
       FindNodeWithID(page_content, "wrong_doc", target_node_id);
   EXPECT_EQ(result_wrong_doc, std::nullopt);
+}
+
+TEST(PageContentProtoUtilTest, VisitContentNodes) {
+  AnnotatedPageContent page_content;
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_doc");
+
+  ContentNode* root = page_content.mutable_root_node();
+
+  // Setup the iframe node in the main document.
+  ContentNode* iframe_node_in_main_doc = root->add_children_nodes();
+  DocumentIdentifier iframe_internal_doc_id;
+  const std::string iframe_internal_token = "iframe_doc";
+  iframe_internal_doc_id.set_serialized_token(iframe_internal_token);
+  SetIframeData(iframe_node_in_main_doc, iframe_internal_doc_id);
+
+  // Setup the content *inside* the iframe.
+  ContentNode* iframe_internal_root =
+      iframe_node_in_main_doc->add_children_nodes();
+
+  // Add form_control_node as a child node of iframe_internal_root.
+  ContentNode* form_control_node = iframe_internal_root->add_children_nodes();
+
+  ContentAttributes* form_control_node_attributes =
+      form_control_node->mutable_content_attributes();
+  form_control_node_attributes->set_attribute_type(
+      proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+
+  std::vector<const proto::ContentNode*> visited_nodes;
+  std::vector<std::string> visited_docs;
+  VisitContentNodes(page_content.root_node(), "main_doc",
+                    [&](const optimization_guide::proto::ContentNode& node,
+                        std::string_view document_identifier) {
+                      visited_nodes.push_back(&node);
+                      visited_docs.emplace_back(document_identifier);
+                    });
+
+  // Expect 4 nodes: main_root, iframe_node_in_main_doc, iframe_internal_root,
+  // and form_control_node.
+  ASSERT_EQ(visited_nodes.size(), 4u);
+  EXPECT_EQ(visited_nodes[0], root);
+  EXPECT_EQ(visited_nodes[1], iframe_node_in_main_doc);
+  EXPECT_EQ(visited_nodes[2], iframe_internal_root);
+  EXPECT_EQ(visited_nodes[3], &iframe_internal_root->children_nodes(0));
+
+  ASSERT_EQ(visited_docs.size(), 4u);
+  EXPECT_EQ(visited_docs[0], "main_doc");
+  EXPECT_EQ(visited_docs[1], "main_doc");
+  EXPECT_EQ(visited_docs[2], "iframe_doc");
+  EXPECT_EQ(visited_docs[3], "iframe_doc");
+
+  // Do a similar exercise with mutable nodes.
+  std::vector<proto::ContentNode*> visited_mutable_nodes;
+  VisitContentNodes(*page_content.mutable_root_node(), "main_doc",
+                    [&](optimization_guide::proto::ContentNode& node,
+                        std::string_view document_identifier) {
+                      visited_mutable_nodes.push_back(&node);
+                    });
+  EXPECT_EQ(visited_mutable_nodes.size(), 4u);
 }
 
 }  // namespace

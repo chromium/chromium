@@ -98,6 +98,21 @@ content::RenderFrameHost* GetRenderFrameForDocumentIdentifier(
 GURL GetURLForFrameMetadata(const GURL& committed_url,
                             const url::Origin& committed_origin);
 
+// Traverses `node` and its children recursively in pre-order, descending into
+// iframes, and calls `visitor` on each node. `document_identifier` informs the
+// visitor about the document identifier of the current node. The two versions
+// exist to enable mutating `node` or to deal with const ContentNodes.
+void VisitContentNodes(
+    optimization_guide::proto::ContentNode& node,
+    std::string_view document_identifier,
+    base::FunctionRef<void(optimization_guide::proto::ContentNode& node,
+                           std::string_view document_identifier)> visitor);
+void VisitContentNodes(
+    const optimization_guide::proto::ContentNode& node,
+    std::string_view document_identifier,
+    base::FunctionRef<void(const optimization_guide::proto::ContentNode& node,
+                           std::string_view document_identifier)> visitor);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_UTIL_H_
