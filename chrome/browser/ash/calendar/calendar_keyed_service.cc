@@ -90,14 +90,12 @@ CalendarKeyedService::~CalendarKeyedService() {
 void CalendarKeyedService::Initialize() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::vector<std::string> scopes;
-  scopes.push_back(GaiaConstants::kCalendarReadOnlyOAuth2Scope);
   url_loader_factory_ = profile_->GetURLLoaderFactory();
   sender_ = std::make_unique<RequestSender>(
       std::make_unique<google_apis::AuthService>(
           identity_manager_,
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          url_loader_factory_, scopes),
+          url_loader_factory_, signin::OAuthConsumerId::kAuthServiceCalendar),
       url_loader_factory_,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
