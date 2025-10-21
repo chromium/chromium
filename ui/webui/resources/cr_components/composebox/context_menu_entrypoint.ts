@@ -88,18 +88,14 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onEntrypointClick_() {
-    this.fire('refresh-tab-suggestions', {
-      onRefreshComplete: (tabs: TabInfo[]) => {
-        this.tabSuggestions_ = tabs;
-        const entrypoint =
-            this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
-        assert(entrypoint);
-        this.$.menu.showAt(entrypoint, {
-          top: entrypoint.getBoundingClientRect().bottom,
-          width: MENU_WIDTH_PX,
-          anchorAlignmentX: AnchorAlignment['AFTER_START'],
-        });
-      }});
+    const entrypoint =
+        this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assert(entrypoint);
+    this.$.menu.showAt(entrypoint, {
+      top: entrypoint.getBoundingClientRect().bottom,
+      width: MENU_WIDTH_PX,
+      anchorAlignmentX: AnchorAlignment['AFTER_START'],
+    });
   }
 
   protected addTabContext_(e: Event) {

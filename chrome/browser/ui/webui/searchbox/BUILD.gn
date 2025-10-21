@@ -92,6 +92,7 @@ source_set("searchbox_test_utils") {
     ":searchbox",
     "//base",
     "//chrome/browser/ui/omnibox:test_support",
+    "//components/lens",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
     "//mojo/public/cpp/bindings",

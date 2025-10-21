@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -51,7 +52,8 @@ class ContextualOmniboxClient : public SearchboxOmniboxClient {
 // shared between the composebox and realbox to support contextual search.
 class ContextualSearchboxHandler
     : public ComposeboxQueryController::FileUploadStatusObserver,
-      public SearchboxHandler {
+      public SearchboxHandler,
+      public TabStripModelObserver {
  public:
   explicit ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
@@ -90,6 +92,12 @@ class ContextualSearchboxHandler
   // SearchboxHandler:
   std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon) const override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  protected:
   void ComputeAndOpenQueryUrl(

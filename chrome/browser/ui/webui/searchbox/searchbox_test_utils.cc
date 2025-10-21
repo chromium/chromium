@@ -27,3 +27,9 @@ MockOmniboxEditModel::~MockOmniboxEditModel() = default;
 
 MockLensSearchboxClient::MockLensSearchboxClient() = default;
 MockLensSearchboxClient::~MockLensSearchboxClient() = default;
+
+MockTabContextualizationController::MockTabContextualizationController(
+    tabs::TabInterface* tab_interface)
+    : lens::TabContextualizationController(tab_interface) {}
+MockTabContextualizationController::~MockTabContextualizationController() =
+    default;

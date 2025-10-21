@@ -44,10 +44,10 @@ export function getHtml(this: ComposeboxElement) {
         </div>
       </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
+          .tabSuggestions_=${this.tabSuggestions_}
           @add-tab-context="${this.addTabContext_}"
           @add-file-context="${this.addFileContext_}"
           @delete-context="${this.deleteContext_}"
-          @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           @on-file-validation-error="${this.onFileValidationError_}"
           @set-deep-search-mode="${this.setDeepSearchMode_}"
           @set-create-image-mode="${this.setCreateImageMode_}"

@@ -298,4 +298,7 @@ interface Page {
       mojo_base.mojom.UnguessableToken token,
       composebox_query.mojom.FileUploadStatus status,
       composebox_query.mojom.FileUploadErrorType? error_type);
+
+  // Notifies the page that the tab strip has changed.
+  OnTabStripChanged();
 };
