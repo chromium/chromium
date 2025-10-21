@@ -15,6 +15,10 @@ class WalletablePass;
 }  // namespace proto
 }  // namespace optimization_guide
 
+namespace strike_database {
+class StrikeDatabaseBase;
+}  // namespace strike_database
+
 namespace wallet {
 
 // A client interface that must be supplied to the Wallet component by the
@@ -46,6 +50,8 @@ class WalletablePassClient {
 
   virtual optimization_guide::OptimizationGuideModelExecutor*
   GetOptimizationGuideModelExecutor() = 0;
+
+  virtual strike_database::StrikeDatabaseBase* GetStrikeDatabase() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
       WalletablePassBubbleResultCallback callback) = 0;

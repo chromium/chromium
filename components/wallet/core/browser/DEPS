@@ -2,5 +2,6 @@ include_rules = [
   # go/keep-sorted start
   "+components/keyed_service/core",
   "+components/optimization_guide",
+  "+components/strike_database",
   # go/keep-sorted end
 ]

@@ -14,6 +14,9 @@ class OptimizationGuideDecider;
 class OptimizationGuideModelExecutor;
 }  // namespace optimization_guide
 
+namespace strike_database {
+class StrikeDatabaseBase;
+}  // namespace strike_database
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -39,8 +42,12 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   // WalleablePassClient implementation.
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
       override;
+
   optimization_guide::OptimizationGuideModelExecutor*
   GetOptimizationGuideModelExecutor() override;
+
+  strike_database::StrikeDatabaseBase* GetStrikeDatabase() override;
+
   void ShowWalletablePassConsentBubble(
       WalletablePassBubbleResultCallback callback) override;
   void ShowWalletablePassSaveBubble(

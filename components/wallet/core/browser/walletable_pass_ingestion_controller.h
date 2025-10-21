@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_category.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 
 class GURL;
@@ -19,9 +20,13 @@ class GURL;
 namespace optimization_guide {
 class ModelQualityLogEntry;
 struct OptimizationGuideModelExecutionResult;
+namespace proto {
+class WalletablePass;
+}  // namespace proto
 }  // namespace optimization_guide
 
 namespace wallet {
+// class WalletablePassSaveStrikeDatabaseByCategory;
 
 // Controls the detection of walletable passes on a web page.
 class WalletablePassIngestionController {
@@ -66,6 +71,11 @@ class WalletablePassIngestionController {
       const GURL& url,
       optimization_guide::proto::AnnotatedPageContent annotated_page_content);
 
+  // Shows the "Save" bubble to the user, allowing them to save the provided
+  // pass.
+  void ShowSaveBubble(std::unique_ptr<optimization_guide::proto::WalletablePass>
+                          walletable_pass);
+
  private:
   friend class WalletablePassIngestionControllerTestApi;
 
@@ -80,12 +90,18 @@ class WalletablePassIngestionController {
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
+  // Callback invoked when the user interacts with the save bubble (e.g.,
+  // accepts, declines, or dismisses).
   void OnGetSaveBubbleResult(
+      std::unique_ptr<optimization_guide::proto::WalletablePass>
+          walletable_pass,
       WalletablePassClient::WalletablePassBubbleResult result);
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
   const raw_ref<WalletablePassClient> client_;
+
+  std::unique_ptr<WalletablePassSaveStrikeDatabaseByCategory> save_strike_db_;
 
   base::WeakPtrFactory<WalletablePassIngestionController> weak_ptr_factory_{
       this};

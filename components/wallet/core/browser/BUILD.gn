@@ -6,6 +6,7 @@ import("//components/optimization_guide/features.gni")
 
 static_library("browser") {
   sources = [
+    "strike_databases/walletable_pass_save_strike_database_by_category.h",
     "walletable_pass_client.h",
     "walletable_pass_ingestion_controller.cc",
     "walletable_pass_ingestion_controller.h",
@@ -16,6 +17,7 @@ static_library("browser") {
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/strike_database",
     "//url",
   ]
 }
@@ -43,6 +45,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
+    "//components/strike_database:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

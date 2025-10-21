@@ -5,6 +5,7 @@
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/strike_database/strike_database.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -34,6 +36,13 @@ ChromeWalletablePassClient::GetOptimizationGuideModelExecutor() {
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   return OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+}
+
+strike_database::StrikeDatabaseBase*
+ChromeWalletablePassClient::GetStrikeDatabase() {
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  return autofill::StrikeDatabaseFactory::GetForProfile(profile);
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(

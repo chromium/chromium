@@ -10,6 +10,7 @@ static_library("wallet") {
 
   deps = [
     "//base",
+    "//chrome/browser/autofill",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/wallet",

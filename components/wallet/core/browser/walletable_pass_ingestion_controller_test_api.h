@@ -40,6 +40,11 @@ class WalletablePassIngestionControllerTestApi {
     controller_->StartWalletablePassDetectionFlow(url);
   }
 
+  void ShowSaveBubble(std::unique_ptr<optimization_guide::proto::WalletablePass>
+                          walletable_pass) {
+    controller_->ShowSaveBubble(std::move(walletable_pass));
+  }
+
  private:
   const raw_ref<WalletablePassIngestionController> controller_;
 };
