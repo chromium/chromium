@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
 </enum>
 
-<!-- LINT.IfChange(ContextMenuOptionDesktop -->
+<!-- LINT.IfChange(ContextMenuOptionDesktop) -->
 
 <enum name="ContextMenuOptionDesktop">
   <summary>The item selected from a context menu on Desktop.</summary>
