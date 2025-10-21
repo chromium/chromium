@@ -17,6 +17,9 @@
 
 namespace tabs {
 
+using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
+using TransactionCallback = base::OnceCallback<bool(OpenTransaction*)>;
+
 namespace {
 constexpr base::TaskTraits kDBTaskTraits = {
     base::MayBlock(), base::TaskPriority::BEST_EFFORT,

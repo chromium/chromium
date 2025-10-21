@@ -31,26 +31,32 @@ struct NodeState {
 // This class is responsible for all database operations.
 class TabStateStorageDatabase {
  public:
-  // Holds an sql::Transaction. Used as a key for database updates.
-  class Transaction {
+  // Represents a transaction. Used as a key for database updates, and must be
+  // returned to commit the transaction.
+  class OpenTransaction {
    public:
-    explicit Transaction(std::unique_ptr<sql::Transaction> transaction);
-    ~Transaction();
+    ~OpenTransaction();
+    OpenTransaction(const OpenTransaction&) = delete;
+    OpenTransaction& operator=(const OpenTransaction&) = delete;
 
-    // Starts a transaction. Returns false in the case of failures.
-    bool Begin();
+    // Marks the transaction as failed. Rolls back the transaction once
+    // returned.
+    void MarkFailed();
 
-    // Rolls back the transaction.
-    void Rollback();
+    // Returns whether the transaction has failed.
+    bool HasFailed();
 
-    // Commits the transaction. Returns false in the case of failures.
-    bool Commit();
-
-    // Returns true if the transaction is still open.
-    bool IsOpen();
+    // Returns whether the transaction is valid.
+    static bool IsValid(OpenTransaction* transaction);
 
    private:
+    friend TabStateStorageDatabase;
+    explicit OpenTransaction(std::unique_ptr<sql::Transaction> transaction);
+
+    sql::Transaction* GetTransaction();
+
     std::unique_ptr<sql::Transaction> transaction_;
+    bool mark_failed_ = false;
   };
 
   explicit TabStateStorageDatabase(const base::FilePath& profile_path);
@@ -62,7 +68,7 @@ class TabStateStorageDatabase {
   bool Initialize();
 
   // Saves a node to the database.
-  bool SaveNode(Transaction* transaction,
+  bool SaveNode(OpenTransaction* transaction,
                 int id,
                 TabStorageType type,
                 std::string payload,
@@ -70,19 +76,25 @@ class TabStateStorageDatabase {
 
   // Saves the children of a node to the database.
   // This will silently fail if the node does not already exist.
-  bool SaveNodeChildren(Transaction* transaction, int id, std::string children);
+  bool SaveNodeChildren(OpenTransaction* transaction,
+                        int id,
+                        std::string children);
 
   // Removes a node from the database.
   // This will silently fail if the node does not already exist.
-  bool RemoveNode(Transaction* transaction, int id);
+  bool RemoveNode(OpenTransaction* transaction, int id);
 
-  // Creates a transaction.
-  std::unique_ptr<Transaction> CreateTransaction();
+  // Creates an open transaction.
+  OpenTransaction* CreateTransaction();
+
+  // Closes the existing transaction.
+  bool CloseTransaction(OpenTransaction* transaction);
 
   // Loads all nodes from the database.
   std::vector<NodeState> LoadAllNodes();
 
  private:
+  std::unique_ptr<OpenTransaction> open_transaction_;
   base::FilePath profile_path_;
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<sql::MetaTable> meta_table_;

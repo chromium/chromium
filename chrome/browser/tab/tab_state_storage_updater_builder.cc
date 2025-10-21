@@ -16,18 +16,19 @@
 
 namespace tabs {
 
+using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
+
 namespace {
 
-class SaveNodeUpdateUnit : public tabs::StorageUpdateUnit {
+class SaveNodeUpdateUnit : public StorageUpdateUnit {
  public:
   SaveNodeUpdateUnit(int id,
-                     tabs::TabStorageType type,
-                     std::unique_ptr<tabs::StoragePackage> package)
+                     TabStorageType type,
+                     std::unique_ptr<StoragePackage> package)
       : id_(id), type_(type), package_(std::move(package)) {}
 
-  bool Execute(
-      tabs::TabStateStorageDatabase* db,
-      tabs::TabStateStorageDatabase::Transaction* transaction) override {
+  bool Execute(TabStateStorageDatabase* db,
+               OpenTransaction* transaction) override {
     std::string payload = package_->SerializePayload();
     std::string children = package_->SerializeChildren();
     bool success = db->SaveNode(transaction, id_, type_, std::move(payload),
@@ -40,18 +41,17 @@ class SaveNodeUpdateUnit : public tabs::StorageUpdateUnit {
 
  private:
   int id_;
-  tabs::TabStorageType type_;
-  std::unique_ptr<tabs::StoragePackage> package_;
+  TabStorageType type_;
+  std::unique_ptr<StoragePackage> package_;
 };
 
-class SaveChildrenUpdateUnit : public tabs::StorageUpdateUnit {
+class SaveChildrenUpdateUnit : public StorageUpdateUnit {
  public:
-  SaveChildrenUpdateUnit(int id, std::unique_ptr<tabs::Payload> children)
+  SaveChildrenUpdateUnit(int id, std::unique_ptr<Payload> children)
       : id_(id), children_(std::move(children)) {}
 
-  bool Execute(
-      tabs::TabStateStorageDatabase* db,
-      tabs::TabStateStorageDatabase::Transaction* transaction) override {
+  bool Execute(TabStateStorageDatabase* db,
+               OpenTransaction* transaction) override {
     std::string serialized = children_->SerializePayload();
     bool success =
         db->SaveNodeChildren(transaction, id_, std::move(serialized));
@@ -63,16 +63,15 @@ class SaveChildrenUpdateUnit : public tabs::StorageUpdateUnit {
 
  private:
   int id_;
-  std::unique_ptr<tabs::Payload> children_;
+  std::unique_ptr<Payload> children_;
 };
 
-class RemoveNodeUpdateUnit : public tabs::StorageUpdateUnit {
+class RemoveNodeUpdateUnit : public StorageUpdateUnit {
  public:
   explicit RemoveNodeUpdateUnit(int id) : id_(id) {}
 
-  bool Execute(
-      tabs::TabStateStorageDatabase* db,
-      tabs::TabStateStorageDatabase::Transaction* transaction) override {
+  bool Execute(TabStateStorageDatabase* db,
+               OpenTransaction* transaction) override {
     bool success = db->RemoveNode(transaction, id_);
     if (!success) {
       DLOG(ERROR) << "Could not perform remove node operation.";

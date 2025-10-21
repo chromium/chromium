@@ -16,8 +16,9 @@ class StorageUpdateUnit {
   virtual ~StorageUpdateUnit() = default;
 
   // Returns false if the update operation failed.
-  virtual bool Execute(TabStateStorageDatabase* db,
-                       TabStateStorageDatabase::Transaction* transaction) = 0;
+  virtual bool Execute(
+      TabStateStorageDatabase* db,
+      TabStateStorageDatabase::OpenTransaction* transaction) = 0;
 };
 
 }  // namespace tabs

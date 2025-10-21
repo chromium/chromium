@@ -5,10 +5,12 @@
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -16,6 +18,8 @@
 
 namespace tabs {
 namespace {
+
+using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
 
 const int kCurrentVersionNumber = 1;
 const int kCompatibleVersionNumber = 1;
@@ -73,33 +77,27 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
 }  // namespace
 
-TabStateStorageDatabase::Transaction::Transaction(
-    std::unique_ptr<sql::Transaction> transaction)
+OpenTransaction::OpenTransaction(std::unique_ptr<sql::Transaction> transaction)
     : transaction_(std::move(transaction)) {}
 
-TabStateStorageDatabase::Transaction::~Transaction() {
-  if (transaction_) {
-    transaction_->Rollback();
-  }
+OpenTransaction::~OpenTransaction() = default;
+
+bool OpenTransaction::HasFailed() {
+  return mark_failed_;
 }
 
-bool TabStateStorageDatabase::Transaction::Begin() {
-  DCHECK(transaction_) << "Transaction already closed.";
-  return transaction_->Begin();
+void OpenTransaction::MarkFailed() {
+  mark_failed_ = true;
 }
 
-void TabStateStorageDatabase::Transaction::Rollback() {
-  DCHECK(transaction_) << "Transaction already closed.";
-  transaction_.release()->Rollback();
+sql::Transaction* OpenTransaction::GetTransaction() {
+  return transaction_.get();
 }
 
-bool TabStateStorageDatabase::Transaction::IsOpen() {
-  return transaction_.get() != nullptr;
-}
-
-bool TabStateStorageDatabase::Transaction::Commit() {
-  DCHECK(transaction_) << "Transaction already closed.";
-  return transaction_.release()->Commit();
+// static
+bool TabStateStorageDatabase::OpenTransaction::IsValid(
+    OpenTransaction* transaction) {
+  return transaction && !transaction->HasFailed();
 }
 
 TabStateStorageDatabase::TabStateStorageDatabase(
@@ -139,13 +137,13 @@ bool TabStateStorageDatabase::Initialize() {
   return true;
 }
 
-bool TabStateStorageDatabase::SaveNode(Transaction* transaction,
+bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        int id,
                                        TabStorageType type,
                                        std::string payload,
                                        std::string children) {
   CHECK(db_);
-  DCHECK(transaction && transaction->IsOpen());
+  DCHECK(OpenTransaction::IsValid(transaction));
 
   static constexpr char kInsertTabSql[] =
       "INSERT OR REPLACE INTO nodes"
@@ -165,11 +163,11 @@ bool TabStateStorageDatabase::SaveNode(Transaction* transaction,
   return write_statement.Run();
 }
 
-bool TabStateStorageDatabase::SaveNodeChildren(Transaction* transaction,
+bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
                                                int id,
                                                std::string children) {
   CHECK(db_);
-  DCHECK(transaction && transaction->IsOpen());
+  DCHECK(OpenTransaction::IsValid(transaction));
 
   static constexpr char kUpdateChildrenSql[] =
       "UPDATE nodes"
@@ -187,9 +185,9 @@ bool TabStateStorageDatabase::SaveNodeChildren(Transaction* transaction,
   return write_statement.Run();
 }
 
-bool TabStateStorageDatabase::RemoveNode(Transaction* transaction, int id) {
+bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction, int id) {
   CHECK(db_);
-  DCHECK(transaction && transaction->IsOpen());
+  DCHECK(OpenTransaction::IsValid(transaction));
 
   static constexpr char kDeleteChildrenSql[] =
       "DELETE FROM nodes"
@@ -204,11 +202,42 @@ bool TabStateStorageDatabase::RemoveNode(Transaction* transaction, int id) {
   return write_statement.Run();
 }
 
-std::unique_ptr<TabStateStorageDatabase::Transaction>
-TabStateStorageDatabase::CreateTransaction() {
-  std::unique_ptr<sql::Transaction> sql_transaction =
+OpenTransaction* TabStateStorageDatabase::CreateTransaction() {
+  DCHECK(!open_transaction_) << "An open transaction already exists.";
+
+  std::unique_ptr<sql::Transaction> transaction =
       std::make_unique<sql::Transaction>(db_.get());
-  return std::make_unique<Transaction>(std::move(sql_transaction));
+  OpenTransaction* open_transaction =
+      new OpenTransaction(std::move(transaction));
+  sql::Transaction* transaction_ptr = open_transaction->GetTransaction();
+
+  if (!transaction_ptr->Begin()) {
+    DLOG(ERROR) << "Failed to begin transaction.";
+    open_transaction->MarkFailed();
+  }
+
+  open_transaction_ = base::WrapUnique(open_transaction);
+  return open_transaction_.get();
+}
+
+bool TabStateStorageDatabase::CloseTransaction(
+    OpenTransaction* open_transaction) {
+  DCHECK(open_transaction_) << "There is no open transaction.";
+  sql::Transaction* transaction = open_transaction->GetTransaction();
+
+  if (open_transaction->HasFailed()) {
+    transaction->Rollback();
+    DLOG(ERROR) << "Transaction rolled back.";
+    return false;
+  } else if (bool commit_success = transaction->Commit()) {
+    DLOG(ERROR) << "Failed to commit transaction.";
+    // TODO(crbug.com/454005648): If possible, record the reason for commit
+    // failure here.
+    return commit_success;
+  } else {
+    open_transaction_.reset();
+    return false;
+  }
 }
 
 std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
