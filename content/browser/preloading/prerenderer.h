@@ -15,7 +15,8 @@ namespace content {
 class Prerenderer {
  public:
   using PrerenderCancellationCallback =
-      base::RepeatingCallback<void(const GURL&)>;
+      base::RepeatingCallback<void(const GURL&,
+                                   blink::mojom::SpeculationAction action)>;
 
   virtual ~Prerenderer() = default;
 
