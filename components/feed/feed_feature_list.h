@@ -79,10 +79,6 @@ BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
-// When enabled, no view cache is used.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kFeedNoViewCache);
-
 // When enabled, allow show sign in command to request a user signs in / syncs.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
