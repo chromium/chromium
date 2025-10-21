@@ -38,7 +38,7 @@
 const item = document.getElementById("item");
 let testset = "unlabeled";
 function checkTrackSizes(span, trackList, expected) {
-  item.style.gridColumn = `span ${span}`;
+  item.style.gridRow = `span ${span}`;
   TestingUtils.testGridTemplateRows("masonry", trackList, expected, testset);
 }
 

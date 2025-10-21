@@ -1137,7 +1137,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/mas
 # Incorrect OOF position
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-intrinsic-maximums.html [ Failure ]
 # Intrinsic minimum sizing failures
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/row-flex-track-intrinsic-sizes.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/row-item-minmax-img-002.html [ Failure ]
 # Baseline failures when applied to intrinsic minimums
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-minimum-contribution-baseline-shim-vertical-lr.html [ Failure ]
