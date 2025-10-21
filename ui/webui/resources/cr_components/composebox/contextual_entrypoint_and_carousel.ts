@@ -160,7 +160,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
            FileUploadStatus.kUploadExpired].includes(status)) {
         this.files_.delete(token);
         if (file.tabId) {
-          this.addedTabsIds_.delete(file.tabId);
+          this.addedTabsIds_ = new Set([...this.addedTabsIds_].filter(
+            (id) => id !== file!.tabId));
         }
 
         switch (status) {
@@ -226,7 +227,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     const file = this.files_.get(e.detail.uuid);
     if (file?.tabId) {
-      this.addedTabsIds_.delete(file.tabId);
+      this.addedTabsIds_ = new Set([...this.addedTabsIds_].filter(
+          (id) => id !== file.tabId));
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
@@ -293,7 +295,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       url: e.detail.url,
       onContextAdded: (file: ComposeboxFile) => {
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
-        this.addedTabsIds_.add(e.detail.id);
+        this.addedTabsIds_ = new Set([...this.addedTabsIds_, e.detail.id]);
       },
     });
   }
