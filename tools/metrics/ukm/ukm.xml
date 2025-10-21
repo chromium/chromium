@@ -13015,6 +13015,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.ReaderMode.ReaderModeShown.AccessPoint" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Records when Reading Mode UI was successfully displayed to the user.
+    Recorded for iOS interactions only.
+  </summary>
+  <metric name="AccessPoint" enum="ReaderModeAccessPoint">
+    <summary>
+      The access point that triggered the Reading Mode UI that is shown for the
+      current page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="IOS.RendererGone">
   <owner>olivierrobin@chromium.org</owner>
   <summary>

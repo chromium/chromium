@@ -71,6 +71,8 @@ class ReaderModeMetricsHelper
 
   // Tracks the last state that was recorded in the Reading Mode events.
   std::optional<ReaderModeState> last_reader_mode_state_;
+  // Access point used to trigger Reading Mode distillation.
+  std::optional<ReaderModeAccessPoint> reader_mode_distilled_access_point_;
   raw_ptr<web::WebState> web_state_;
   raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
   base::ScopedObservation<dom_distiller::DistilledPagePrefs,

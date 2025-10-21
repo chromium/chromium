@@ -340,6 +340,25 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointWithModeForIncognito) {
       BucketsAre(Bucket(ReaderModeAccessPointWithMode::kAIHubInIncognito, 1)));
 }
 
+// Tests that Reader Mode access point UKM is recorded when the Reader is shown.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeShownAccessPointRecorded) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
+  metrics_helper()->RecordReaderDistillerCompleted(
+      ReaderModeAccessPoint::kAIHub,
+      ReaderModeDistillerResult::kPageIsDistillable);
+  metrics_helper()->RecordReaderShown();
+
+  std::vector<int64_t> ukm_access_point_entries =
+      test_ukm_recorder_.GetMetricsEntryValues(
+          ukm::builders::IOS_ReaderMode_ReaderModeShown_AccessPoint::kEntryName,
+          ukm::builders::IOS_ReaderMode_ReaderModeShown_AccessPoint::
+              kAccessPointName);
+  EXPECT_THAT(
+      ukm_access_point_entries,
+      testing::ElementsAre(static_cast<int>(ReaderModeAccessPoint::kAIHub)));
+}
+
 // Tests metrics functionality based on the heuristic result.
 class ReaderModeMetricsHelperWithEligibilityTest
     : public ReaderModeMetricsHelperTest,
