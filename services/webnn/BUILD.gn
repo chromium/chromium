@@ -192,8 +192,6 @@ component("webnn_service") {
       "ort/ort_session_options.h",
       "ort/ort_status.cc",
       "ort/ort_status.h",
-      "ort/ort_tensor.cc",
-      "ort/ort_tensor.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
       "ort/scoped_ort_types.h",

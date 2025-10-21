@@ -11,7 +11,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
-#include "services/webnn/ort/ort_tensor.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
@@ -38,9 +37,7 @@ BufferContentOrt::BufferContentOrt(const OperandDescriptor& descriptor) {
       ScopedOrtValue::Receiver(tensor_).get()));
   CHECK(tensor_.get());
 
-  // TODO(crbug.com/420355411): Use ORT GetTensorSizeInBytes API once it is
-  // supported.
-  size_ = CalculateOrtTensorSizeInBytes(ort_shape, ort_data_type);
+  CHECK_STATUS(ort_api->GetTensorSizeInBytes(tensor_.get(), &size_));
   // Invalid values are rejected in GraphBuilder.
   CHECK(base::IsValueInRangeForNumericType<int>(size_));
 

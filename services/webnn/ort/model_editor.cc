@@ -10,7 +10,6 @@
 #include "services/webnn/ort/external_weights_manager.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
-#include "services/webnn/ort/ort_tensor.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace webnn::ort {
@@ -193,8 +192,9 @@ void ModelEditor::AddInitializerAsRawData(base::cstring_view name,
 
   // SAFETY: `mutable_data` was created to hold a tensor of `shape` and
   // `data_type`.
-  UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(mutable_data),
-                            CalculateOrtTensorSizeInBytes(shape, data_type)))
+  size_t tensor_size = 0;
+  CHECK_STATUS(ort_api->GetTensorSizeInBytes(initializer.get(), &tensor_size));
+  UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(mutable_data), tensor_size))
       .copy_from(data);
 
   const OrtModelEditorApi* ort_model_editor_api = GetOrtModelEditorApi();
@@ -209,7 +209,6 @@ void ModelEditor::AddInitializerAsExternalData(
     ONNXTensorElementDataType data_type,
     base::span<const int64_t> shape,
     base::HeapArray<uint8_t> data) {
-  CHECK_EQ(data.size(), CalculateOrtTensorSizeInBytes(shape, data_type));
   ScopedOrtValue initializer =
       model_info_->external_weights_manager->CreateInitializer(
           std::move(data), shape, data_type);
