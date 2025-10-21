@@ -156,8 +156,9 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/453977731): Flaky test.
 IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
-                       CacheBehaviorOnTabSwitchAndClose) {
+                       DISABLED_CacheBehaviorOnTabSwitchAndClose) {
   auto* extraction_service =
       PageContentExtractionServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(extraction_service);
