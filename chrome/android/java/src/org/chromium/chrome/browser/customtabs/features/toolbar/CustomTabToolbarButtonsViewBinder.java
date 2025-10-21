@@ -218,12 +218,8 @@ public class CustomTabToolbarButtonsViewBinder
             view.getCloseButton().setVisibility(View.GONE);
         }
 
-        if (view.getMenuButton() == null && model.get(MENU_BUTTON_VISIBLE)) {
-            view.ensureMenuButtonInflated();
-        }
-
-        var menuButton = view.getMenuButton();
-        if (menuButton != null) {
+        if (model.get(MENU_BUTTON_VISIBLE)) {
+            var menuButton = view.ensureMenuButtonInflated();
             boolean isEndPosition = model.get(CLOSE_BUTTON).position != CLOSE_BUTTON_POSITION_END;
             positionButton(
                     menuButton,
@@ -231,6 +227,8 @@ public class CustomTabToolbarButtonsViewBinder
                     defaultButtonWidth,
                     defaultButtonHorizontalPadding,
                     isEndPosition);
+        } else if (view.getMenuButton() != null) {
+            view.getMenuButton().setVisibility(View.GONE);
         }
 
         FrameLayout customActionButtons = assumeNonNull(view.getCustomActionButtonsParent());
