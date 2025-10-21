@@ -92,6 +92,17 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
 
   ++rendered_frame_count_;
 
+  if (latest_frame_->HasSharedImage()) {
+    if (!raster_context_provider_ ||
+        !raster_context_provider_->ContextCapabilities().gpu_rasterization) {
+      // When passed a VideoFrame with a SharedImage in it,
+      // PaintCanvasVideoRenderer can paint only if the passed-in context
+      // provider supports GPU rasterization. Note that we put this check
+      // underneath the increment above to preserve historical behavior.
+      return;
+    }
+  }
+
   media::PaintCanvasVideoRenderer::PaintParams paint_params;
   paint_params.dest_rect = gfx::RectF(media::ComputeLetterboxRegion(
       {width(), height()}, latest_frame_->natural_size()));
@@ -101,8 +112,10 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
   // Select high quality frame scaling.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
   flags.setAntiAlias(true);
-  video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(), flags,
-                        paint_params, raster_context_provider_.get());
+
+  video_renderer_.PaintOOPR(std::move(latest_frame_), canvas->sk_canvas(),
+                            flags, paint_params,
+                            raster_context_provider_.get());
 }
 
 gfx::Size VideoStreamView::CalculatePreferredSize(

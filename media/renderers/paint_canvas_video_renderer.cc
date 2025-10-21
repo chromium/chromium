@@ -880,8 +880,10 @@ void PaintCanvasVideoRenderer::PaintOOPR(
     cc::PaintFlags& flags,
     const PaintParams& params,
     viz::RasterContextProvider* raster_context_provider) {
-  CHECK(!raster_context_provider ||
-        raster_context_provider->ContextCapabilities().gpu_rasterization);
+  if (video_frame && video_frame->HasSharedImage()) {
+    CHECK(!raster_context_provider ||
+          raster_context_provider->ContextCapabilities().gpu_rasterization);
+  }
   Paint(std::move(video_frame), canvas, flags, params, raster_context_provider);
 }
 
