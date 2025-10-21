@@ -257,7 +257,7 @@ describe('NetworkProcessor', () => {
       });
     });
 
-    it('should combine multiple headers with the same name', () => {
+    it('should not combine multiple headers', () => {
       const headers: Network.Header[] = [
         {
           name: SOME_HEADER_NAME,
@@ -269,12 +269,12 @@ describe('NetworkProcessor', () => {
         },
         {
           name: SOME_HEADER_NAME,
-          value: {type: 'string', value: 'YET ANOTHER VALUE'},
+          value: {type: 'string', value: 'THE LAST VALUE'},
         },
       ];
       const result = parseBiDiHeaders(headers);
       expect(result).to.deep.equal({
-        [SOME_HEADER_NAME]: 'SOME VALUE, ANOTHER VALUE, YET ANOTHER VALUE',
+        [SOME_HEADER_NAME]: 'THE LAST VALUE',
       });
     });
 

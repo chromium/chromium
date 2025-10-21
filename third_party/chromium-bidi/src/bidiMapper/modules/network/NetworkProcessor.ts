@@ -741,14 +741,9 @@ export function parseBiDiHeaders(
         );
       }
 
-      if (parsedHeaders[bidiHeader.name] === undefined) {
-        parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
-      } else {
-        // Combine headers with the same name, meaning concatenate them with 0x2C 0x20
-        // separator: https://fetch.spec.whatwg.org/#concept-header-list-combine.
-        parsedHeaders[bidiHeader.name] =
-          `${parsedHeaders[bidiHeader.name]}, ${bidiHeader.value.value}`;
-      }
+      // BiDi spec does not combine but overrides the headers with the same names.
+      // https://www.w3.org/TR/webdriver-bidi/#update-headers
+      parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
     } else {
       throw new UnsupportedOperationException(
         'Only string headers values are supported',
