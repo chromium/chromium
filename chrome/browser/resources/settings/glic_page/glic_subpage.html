@@ -157,6 +157,13 @@
           on-sub-label-link-clicked="onDefaultTabAccessToggleLearnMoreClick_"
           hidden="[[!showGlicDefaultTabContextSetting_]]">
       </settings-toggle-button>
+      <settings-toggle-button
+          id="webActuationToggleDisabled" pref="[[fakePref_]]" disabled
+          label="$i18n{glicWebActuationToggle}"
+          sub-label-with-link="[[webActuationSubLabel_]]"
+          on-sub-label-link-clicked="onWebActuationToggleLearnMoreClick_"
+          hidden="[[!webActuationFeatureEnabled_]]">
+      </settings-toggle-button>
     </template>
 
     <!-- Glic Policy Enabled -->
@@ -315,6 +322,78 @@
           </div>
         </cr-collapse>
       </div>
+    <div hidden="[[!webActuationFeatureEnabled_]]">
+      <settings-toggle-button
+          id="webActuationToggle"
+          pref="{{prefs.glic.user_enabled_actuation_on_web}}"
+          label="$i18n{glicWebActuationToggle}"
+          sub-label-with-link="[[webActuationSubLabel_]]"
+          on-sub-label-link-clicked="onWebActuationToggleLearnMoreClick_"
+          on-settings-boolean-control-change="onWebActuationToggleChange_"
+          no-toggle-on-host-click on-click="onWebActuationExpand_">
+          <div id="webActuationToggleActions"
+            class="toggle-actions-container"
+            slot="more-actions">
+          <cr-expand-button id="webActuationExpandButton" no-hover
+              expanded="{{webActuationEnabledExpanded_}}">
+          </cr-expand-button>
+          <div class="separator"></div>
+        </div>
+      </settings-toggle-button>
+      <cr-collapse id="webActuationInfoCollapse"
+          opened="[[webActuationEnabledExpanded_]]"
+          hidden="[[!webActuationFeatureEnabled_]]">
+        <div class="settings-columned-section">
+          <div class="column">
+            <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon aria-hidden="true"
+                    icon="settings20:arrow-selector-tool">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{glicWebActuationToggleWhenOn1}
+                </div>
+              </li>
+              <li>
+                <cr-icon aria-hidden="true"
+                    icon="cr:check-circle">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{glicWebActuationToggleWhenOn2}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon aria-hidden="true"
+                  <if expr="not _google_chrome">
+                    icon="settings20:web">
+                  </if>
+                  <if expr="_google_chrome">
+                    icon="settings-internal:screensaver-auto">
+                  </if>
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{glicWebActuationToggleConsider1}
+                </div>
+              </li>
+              <li>
+                <cr-icon aria-hidden="true"
+                    icon="settings20:shield">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{glicWebActuationToggleConsider2}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </cr-collapse>
+    </div>
       <cr-link-row id="activityButton" on-click="onActivityRowClick_"
           label="$i18n{glicActivityButton}"
           sub-label="$i18n{glicActivityButtonSublabel}" external>

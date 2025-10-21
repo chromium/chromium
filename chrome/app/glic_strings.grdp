@@ -192,6 +192,12 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model.">
     The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" translateable="false" desc="Title for the Gemini feature introduction screen">
+    Let Gemini browse for you
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" translateable="false" desc="Subheader explaining what the Gemini feature does">
+    Gemini works in your tabs to complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out.">
     Gemini Apps Activity
   </message>
@@ -230,6 +236,18 @@
   </message>
   <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context section in Other Data.">
       Personal context
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1" translateable="false" desc="First point in 'when on' column of the 'let Gemini browse for you' expands">
+    Gemini can help you book appointments, create shopping carts, or do any other tasks you give it.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_2" translateable="false" desc="Second point in 'when on' column of the 'let Gemini browse for you' expands">
+    Gemini shows its steps and tries to confirm before taking higher-risk ones. You can stop or take over anytime.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1"  translateable="false" desc="First point in 'things to consider' column of the 'let Gemini browse for you' expands">
+    The page content and URLs that Gemini uses during a task will be shared with Google until the task is done or stopped.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2" translateable="false" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands">
+    Use Gemini carefully and safely. You are responsible for Gemini's actions during a task, including mistakes and unexpected results like purchases.
   </message>
 
   <!-- Glic button and tab strip context menu -->

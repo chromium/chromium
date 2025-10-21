@@ -1309,6 +1309,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::kDictionary;
     (*s_allowlist)[prefs::kGeminiSettings] =
         settings_api::PrefType::kNumber;
+    (*s_allowlist)[glic::prefs::kGlicUserEnabledActuationOnWeb] =
+        settings_api::PrefType::kBoolean;
   }
 #endif
 

@@ -555,6 +555,23 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageDefaultTabContextToggleTest,
       "runMochaSuite('GlicSubpage DefaultTabContextSettingFeatureEnabled')");
 }
 
+class SettingsGlicSubPageWebActuationToggleTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicSubPageWebActuationToggleTest() {
+    scoped_feature_list_.InitWithFeatures({features::kGlicWebActuationSetting},
+                                          /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
+                       SettingsGlicSubPageWebActuationToggleEnabled) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
+}
+
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {
  public:
   SettingsGlicSubageDataProtectionTest() {

@@ -614,6 +614,11 @@ BASE_FEATURE_PARAM(std::string,
                    "glic-settings-page-learn-more-url",
                    "");
 BASE_FEATURE_PARAM(std::string,
+                   kGlicWebActuationToggleLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-actuation-on-web-toggle-learn-more-url",
+                   "");
+BASE_FEATURE_PARAM(std::string,
                    kGlicExtensionsManagementUrl,
                    &kGlicLearnMoreURLConfig,
                    "glic-extensions-management-url",

@@ -142,6 +142,8 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithMqlsIdGetterEnabled",
       "GlicApiTestWithMqlsIdGetterDisabled",
       "GlicApiTestRuntimeFeatureOff",
+      "GlicApiTestWithWebActuationSettingDisabled",
+      "GlicApiTestWithWebActuationSettingEnabled",
   };
 }
 
@@ -294,6 +296,27 @@ class GlicApiTestWithDefaultTabContextDisabled : public GlicApiTestWithOneTab {
   GlicApiTestWithDefaultTabContextDisabled() {
     feature_list_.InitWithFeatures({},
                                    {features::kGlicDefaultTabContextSetting});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestWithWebActuationSettingEnabled : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithWebActuationSettingEnabled() {
+    feature_list_.InitWithFeatures({features::kGlicWebActuationSetting}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestWithWebActuationSettingDisabled
+    : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithWebActuationSettingDisabled() {
+    feature_list_.InitWithFeatures({}, {features::kGlicWebActuationSetting});
   }
 
  private:
@@ -552,6 +575,22 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
   ExecuteJsTest();
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kGlicDefaultTabContextEnabled, false);
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingDisabled,
+                       testWebActuationSettingIsUndefinedWhenFeatureDisabled) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingEnabled,
+                       testGetWebActuationSetting) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicUserEnabledActuationOnWeb, false);
+  ExecuteJsTest();
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicUserEnabledActuationOnWeb, true);
   ContinueJsTest();
 }
 
@@ -2692,6 +2731,14 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithWebActuationSettingDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithWebActuationSettingEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

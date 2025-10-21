@@ -13995,6 +13995,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.WebActuation.Disabled">
+  <owner>michelleabreo@google.com</owner>
+  <description>
+    Logged if the user disables actuation on web in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.WebActuation.Enabled">
+  <owner>michelleabreo@google.com</owner>
+  <description>
+    Logged if the user enables actuation on web in glic settings.
+  </description>
+</action>
+
 <action name="Glic.Unpinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -38349,6 +38363,14 @@ should be able to be added at any place in this file.
   <description>
     Logged when the user clicks on the 'Learn more' link associated with the Tab
     Access Toggle in chrome://settings/ai/gemini.
+  </description>
+</action>
+
+<action name="Settings.AiPage.GlicShortcuts.WebActuationToggleLearnMoreClicked">
+  <owner>michelleabreo@google.com</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more' link associated with the Web
+    Actuation setting in chrome://settings/ai/gemini.
   </description>
 </action>
 

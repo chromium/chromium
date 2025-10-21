@@ -776,6 +776,10 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL},
       {"glicDefaultTabAccessToggleSublabelDataProtected",
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED},
+      {"glicWebActuationToggle",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE},
+      {"glicWebActuationToggleSublabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL},
       {"glicActivityButton", IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON},
       {"glicActivityButtonSublabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL},
@@ -799,6 +803,14 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicPersonalContextSettingLabel", IDS_SETTINGS_GLIC_PERSONAL_CONTEXT},
       {"glicPersonalContextSettingSublabel",
        IDS_SETTINGS_GLIC_PERSONAL_CONTEXT_LABEL},
+      {"glicWebActuationToggleWhenOn1",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1},
+      {"glicWebActuationToggleWhenOn2",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_2},
+      {"glicWebActuationToggleConsider1",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1},
+      {"glicWebActuationToggleConsider2",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -830,6 +842,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
                          features::kGlicSettingsPageLearnMoreURL.Get());
   html_source->AddString("glicExtensionsManagementUrl",
                          features::kGlicExtensionsManagementUrl.Get());
+  html_source->AddString("glicWebActuationToggleLearnMoreUrl",
+                         features::kGlicWebActuationToggleLearnMoreURL.Get());
   html_source->AddBoolean(
       "glicClosedCaptionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
@@ -844,6 +858,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showGlicDefaultTabContextSetting",
       base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting));
+  html_source->AddBoolean(
+      "glicWebActuationFeatureEnabled",
+      base::FeatureList::IsEnabled(features::kGlicWebActuationSetting));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -1246,7 +1263,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"travelCardTitle", IDS_AUTOFILL_TRAVEL_TITLE},
       {"yourSavedInfoVehiclesChip", IDS_AUTOFILL_AI_VEHICLES_TITLE},
       {"yourSavedInfoTravelInfoChip", IDS_AUTOFILL_AI_TRAVEL_INFO_TITLE},
-      {"yourSavedInfoFlightReservationsChip", IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE},
+      {"yourSavedInfoFlightReservationsChip",
+       IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE},
       {"passwordsDescription", IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION},
       {"genericCreditCard", IDS_AUTOFILL_CC_GENERIC},
       {"creditCards", IDS_AUTOFILL_PAYMENT_METHODS},
@@ -1319,8 +1337,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR},
       {"editAddressRequiredFieldsError",
        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR},
-      {"creditAndDebitCardTitle",
-       IDS_SETTINGS_CREDIT_AND_DEBIT_CARD_TITLE},
+      {"creditAndDebitCardTitle", IDS_SETTINGS_CREDIT_AND_DEBIT_CARD_TITLE},
       {"creditCardExpiration", IDS_SETTINGS_CREDIT_CARD_EXPIRATION_DATE},
       {"creditCardName", IDS_SETTINGS_NAME_ON_CREDIT_CARD},
       {"creditCardNickname", IDS_SETTINGS_CREDIT_CARD_NICKNAME},

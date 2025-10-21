@@ -673,6 +673,83 @@ suite('GlicSubpage', function() {
     });
   });
 
+  suite('WebActuationSettingFeatureEnabled', () => {
+    test('WebActuationSettingFeatureEnabled', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+    });
+
+    test('ToggleEnabled', () => {
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
+
+      assertTrue($<SettingsToggleButtonElement>('webActuationToggle')!.checked);
+    });
+
+    test('ToggleDisabled', () => {
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>('webActuationToggle')!.checked);
+    });
+
+    test('WebActuationExpand', async () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      const infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, false);
+
+      assertFalse(infoCard.opened);
+
+      // Clicking the host element of the toggle button expands the info card
+      // but does not change the pref.
+      webActuationToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+
+      // Clicking the host element again collapses the info card.
+      webActuationToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+
+      // Toggling the setting to on expands the info card.
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertTrue(infoCard.opened);
+      await verifyUserAction('Glic.Settings.WebActuation.Enabled');
+
+      // Toggling the setting off collapses the info card.
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertFalse(infoCard.opened);
+      await verifyUserAction('Glic.Settings.WebActuation.Disabled');
+
+      // Toggling the setting to on while the info card is open leaves it open.
+      webActuationToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertTrue(infoCard.opened);
+
+      // Toggling the setting to off while the info card is closed leaves it
+      // closed.
+      webActuationToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertFalse(infoCard.opened);
+    });
+  });
+
+
   suite('DataProtection_UserStatusCheckEnabled', () => {
     test('DataProtectionStringsShownForEligibleUser', () => {
       page.setPrefValue(
