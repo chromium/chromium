@@ -76,14 +76,14 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
+  auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
   // Using CHECK() here is fine. AllocateGpuMemoryBufferHandle() won't return a
   // gfx::GpuMemoryBufferHandle if this conversion fails.
-  CHECK(buffer_format.has_value());
+  CHECK(si_format.has_value());
 
   return Create(visible_rect, natural_size, timestamp, buffer_usage,
                 base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-                    coded_size, *buffer_format,
+                    coded_size, *si_format,
                     std::move(gmb_handle).native_pixmap_handle()));
 }
 
