@@ -23,6 +23,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
@@ -256,6 +257,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.PRERENDER2)
+    @DisabledTest(message = "flaky, see crbug.com/454050513")
     public void testExternalAppPrerenderingNavigation() {
         // Ensure that a prerendering main frame doesn't call into the delegate.
         mLoadedTestPage =
