@@ -72,8 +72,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
    public:
     RasterBufferImpl(GpuRasterBufferProvider* client,
                      const ResourcePool::InUsePoolResource& in_use_resource,
-                     bool resource_has_previous_content,
-                     bool depends_on_at_raster_decodes);
+                     bool resource_has_previous_content);
     RasterBufferImpl(const RasterBufferImpl&) = delete;
     ~RasterBufferImpl() override;
 
@@ -122,7 +121,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
     // These fields are for use on the worker thread.
     const bool resource_has_previous_content_;
-    const bool depends_on_at_raster_decodes_;
     base::TimeTicks creation_time_;
   };
 

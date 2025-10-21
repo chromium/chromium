@@ -46,11 +46,9 @@ namespace cc {
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    bool resource_has_previous_content,
-    bool depends_on_at_raster_decodes)
+    bool resource_has_previous_content)
     : client_(client),
-      resource_has_previous_content_(resource_has_previous_content),
-      depends_on_at_raster_decodes_(depends_on_at_raster_decodes) {
+      resource_has_previous_content_(resource_has_previous_content) {
   if (!in_use_resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>(
         in_use_resource.size(), in_use_resource.format(),
@@ -153,8 +151,7 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<RasterBufferImpl>(this, resource,
-                                            resource_has_previous_content,
-                                            depends_on_at_raster_decodes);
+                                            resource_has_previous_content);
 }
 
 void GpuRasterBufferProvider::Flush() {
@@ -256,10 +253,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-    // TODO(crbug.com/450466845): Remove `depends_on_at_raster_decodes_`, as it
-    // now serves no purpose.
-    std::ignore = depends_on_at_raster_decodes_;
-
     // Use a query to time the GPU side work for rasterizing this tile.
     ri->GenQueriesEXT(1, &query->raster_duration_query_id);
     DCHECK_GT(query->raster_duration_query_id, 0u);
