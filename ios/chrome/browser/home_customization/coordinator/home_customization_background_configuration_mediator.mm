@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -189,7 +188,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     }
   }
 
-  [self.configurationConsumer
+  [self.consumer
       setBackgroundCollectionConfigurations:@[ collectionConfiguration ]
                        selectedBackgroundId:selectedBackgroundID];
 }
@@ -235,7 +234,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             : noBackgroundConfiguration.configurationID;
   }
 
-  [self.configurationConsumer
+  [self.consumer
       setBackgroundCollectionConfigurations:@[ collectionConfiguration ]
                        selectedBackgroundId:selectedColorID];
 }
@@ -397,29 +396,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
   }
 
-  [self.configurationConsumer
-      currentBackgroundConfigurationChanged:currentConfiguration];
-
-  if (!self.consumer || self.consumer.navigationItem.leftBarButtonItem) {
-    return;
-  }
-
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(discardBackground)];
-  cancelButton.accessibilityIdentifier =
-      kPickerViewCancelButtonAccessibilityIdentifier;
-
-  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self
-                           action:@selector(confirmBackground)];
-  doneButton.accessibilityIdentifier =
-      kPickerViewDoneButtonAccessibilityIdentifier;
-
-  self.consumer.navigationItem.leftBarButtonItem = cancelButton;
-  self.consumer.navigationItem.rightBarButtonItem = doneButton;
+  [self.consumer currentBackgroundConfigurationChanged:currentConfiguration];
 }
 
 #pragma mark - Private
@@ -478,9 +455,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     [collectionConfigurations addObject:section];
   }
 
-  [self.configurationConsumer
-      setBackgroundCollectionConfigurations:collectionConfigurations
-                       selectedBackgroundId:selectedBackgroundId];
+  [self.consumer setBackgroundCollectionConfigurations:collectionConfigurations
+                                  selectedBackgroundId:selectedBackgroundId];
 }
 
 // Applies the user-uploaded photo background to the NTP.
@@ -653,15 +629,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   }
 }
 
-// Discards customization changes and cancels the menu.
 - (void)discardBackground {
   [self cancelThemeSelection];
-  [self.delegate cancelBackgroundPicker];
-}
-
-// Dismiss the menu. The current background will be saved on menu dismiss.
-- (void)confirmBackground {
-  [self.delegate dismissBackgroundPicker];
 }
 
 @end

@@ -17,7 +17,6 @@ class ImageFetcher;
 class HomeBackgroundImageService;
 class HomeBackgroundCustomizationService;
 @protocol HomeCustomizationBackgroundConfigurationConsumer;
-@protocol HomeCustomizationBackgroundPickerActionSheetConsumer;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 class UserUploadedImageManager;
 
@@ -51,12 +50,7 @@ class UserUploadedImageManager;
 
 // The consumer that receives the background configurations.
 @property(nonatomic, weak) id<HomeCustomizationBackgroundConfigurationConsumer>
-    configurationConsumer;
-
-// The consumer for the background picker's action sheet.
-@property(nonatomic, weak)
-    id<HomeCustomizationBackgroundPickerActionSheetConsumer>
-        consumer;
+    consumer;
 
 // Whether this mediator has changed the theme.
 @property(nonatomic, readonly) BOOL themeHasChanged;

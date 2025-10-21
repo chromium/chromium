@@ -235,8 +235,7 @@ CGFloat const kSheetCornerRadius = 30;
       self.mainViewController.customizationDisabledByPolicy =
           _backgroundService->IsCustomizationDisabledOrColorManagedByPolicy();
       self.mediator.mainPageConsumer = self.mainViewController;
-      _backgroundConfigurationMediator.configurationConsumer =
-          self.mainViewController;
+      _backgroundConfigurationMediator.consumer = self.mainViewController;
       // Do not set self.mainViewController as
       // _backgroundConfigurationMediator.consumer because this view should not
       // have cancel/done buttons when the selected background changes.

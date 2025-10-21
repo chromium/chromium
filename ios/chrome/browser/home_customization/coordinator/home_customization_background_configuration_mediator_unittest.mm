@@ -132,9 +132,9 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
                     homeBackgroundImageService:home_background_image_service
                       userUploadedImageManager:user_image_manager];
 
-    configuration_consumer_ =
+    consumer_ =
         [[FakeHomeCustomizationBackgroundConfigurationConsumer alloc] init];
-    mediator_.configurationConsumer = configuration_consumer_;
+    mediator_.consumer = consumer_;
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
@@ -194,8 +194,8 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
   // Mediator being tested by these tests.
   HomeCustomizationBackgroundConfigurationMediator* mediator_;
 
-  // Confguration Consumer that the mediator will alert of data changes.
-  FakeHomeCustomizationBackgroundConfigurationConsumer* configuration_consumer_;
+  // Consumer that the mediator will alert of data changes.
+  FakeHomeCustomizationBackgroundConfigurationConsumer* consumer_;
 };
 
 // Tests loading gallery backgrounds.
@@ -228,30 +228,27 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   [mediator_ loadGalleryBackgroundConfigurations];
 
   // Verify collections
-  ASSERT_EQ(collection_images.size(),
-            configuration_consumer_.configurations.count);
+  ASSERT_EQ(collection_images.size(), consumer_.configurations.count);
 
   for (size_t i = 0; i < collection_images.size(); i++) {
-    EXPECT_EQ(std::get<0>(collection_images[i]),
-              base::SysNSStringToUTF8(
-                  configuration_consumer_.configurations[i].collectionName));
+    EXPECT_EQ(
+        std::get<0>(collection_images[i]),
+        base::SysNSStringToUTF8(consumer_.configurations[i].collectionName));
 
     std::vector<CollectionImage> expected_images =
         std::get<1>(collection_images[i]);
 
     // Verify that each collection has the right number of items.
-    EXPECT_EQ(
-        expected_images.size(),
-        configuration_consumer_.configurations[i].configurationOrder.count);
     EXPECT_EQ(expected_images.size(),
-              configuration_consumer_.configurations[i].configurations.count);
+              consumer_.configurations[i].configurationOrder.count);
+    EXPECT_EQ(expected_images.size(),
+              consumer_.configurations[i].configurations.count);
 
     // Verify that each individual item matches the data.
     for (size_t j = 0; j < expected_images.size(); j++) {
-      NSString* item_id =
-          configuration_consumer_.configurations[i].configurationOrder[j];
+      NSString* item_id = consumer_.configurations[i].configurationOrder[j];
       id<BackgroundCustomizationConfiguration> item =
-          configuration_consumer_.configurations[i].configurations[item_id];
+          consumer_.configurations[i].configurations[item_id];
       EXPECT_EQ(HomeCustomizationBackgroundStyle::kPreset,
                 item.backgroundStyle);
       EXPECT_EQ(expected_images[j].thumbnail_image_url, item.thumbnailURL);
@@ -260,8 +257,8 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   // Verify that the item that was set as the current background initially is
   // identified as the currently selected background.
-  EXPECT_EQ(configuration_consumer_.configurations[0].configurationOrder[0],
-            configuration_consumer_.selectedBackgroundId);
+  EXPECT_EQ(consumer_.configurations[0].configurationOrder[0],
+            consumer_.selectedBackgroundId);
 }
 
 // Tests loading color backgrounds.
@@ -270,10 +267,9 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   [mediator_ loadColorBackgroundConfigurations];
 
   // Verify collection.
-  ASSERT_EQ(1u, configuration_consumer_.configurations.count);
+  ASSERT_EQ(1u, consumer_.configurations.count);
 
-  BackgroundCollectionConfiguration* collection =
-      configuration_consumer_.configurations[0];
+  BackgroundCollectionConfiguration* collection = consumer_.configurations[0];
 
   // First element is the default background, so expected size is number of
   // colors + 1.
@@ -303,8 +299,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   // If no color is initially selected, the initial default background
   // configuration should be selected.
-  EXPECT_EQ(collection.configurationOrder[0],
-            configuration_consumer_.selectedBackgroundId);
+  EXPECT_EQ(collection.configurationOrder[0], consumer_.selectedBackgroundId);
 }
 
 // Tests that when color backgrounds are loaded, the correct color is selected.
@@ -319,9 +314,8 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   [mediator_ loadColorBackgroundConfigurations];
 
   // The first item in the configurations is the default color selector.
-  EXPECT_EQ(configuration_consumer_.configurations[0]
-                .configurationOrder[selected_color + 1],
-            configuration_consumer_.selectedBackgroundId);
+  EXPECT_EQ(consumer_.configurations[0].configurationOrder[selected_color + 1],
+            consumer_.selectedBackgroundId);
 }
 
 // Tests loading the recently used backgrounds.
@@ -348,10 +342,9 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   CustomizationService()->StoreCurrentTheme();
 
   [mediator_ loadRecentlyUsedBackgroundConfigurations];
-  ASSERT_EQ(1u, configuration_consumer_.configurations.count);
+  ASSERT_EQ(1u, consumer_.configurations.count);
 
-  BackgroundCollectionConfiguration* collection =
-      configuration_consumer_.configurations[0];
+  BackgroundCollectionConfiguration* collection = consumer_.configurations[0];
 
   // There should be 4 items: default, then the user image, gallery image, and
   // color (the set backgrounds in reverse order).
@@ -399,8 +392,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   }
 
   // Index 1, the user-uploaded image, should be the selected one.
-  EXPECT_EQ(collection.configurationOrder[1],
-            configuration_consumer_.selectedBackgroundId);
+  EXPECT_EQ(collection.configurationOrder[1], consumer_.selectedBackgroundId);
 }
 
 // Tests that applying a background configuration based off of a
@@ -642,10 +634,9 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   // The color option is index 1 in configurationOrder as index 0 is the default
   // background.
   NSString* configuration_id =
-      configuration_consumer_.configurations[0].configurationOrder[1];
+      consumer_.configurations[0].configurationOrder[1];
   id<BackgroundCustomizationConfiguration> configuration =
-      configuration_consumer_.configurations[0]
-          .configurations[configuration_id];
+      consumer_.configurations[0].configurations[configuration_id];
 
   [mediator_ deleteBackgroundFromRecentlyUsed:configuration];
 

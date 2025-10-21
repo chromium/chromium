@@ -9,8 +9,9 @@
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/centered_flow_layout.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_custom_color_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
@@ -79,8 +80,6 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 @end
 
 @implementation HomeCustomizationBackgroundColorPickerViewController
-
-@dynamic navigationItem;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -159,6 +158,23 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 - (void)currentBackgroundConfigurationChanged:
     (id<BackgroundCustomizationConfiguration>)currentConfiguration {
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonPressed)];
+  cancelButton.accessibilityIdentifier =
+      kPickerViewCancelButtonAccessibilityIdentifier;
+
+  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(donebuttonPressed)];
+  doneButton.accessibilityIdentifier =
+      kPickerViewDoneButtonAccessibilityIdentifier;
+
+  self.navigationItem.leftBarButtonItem = cancelButton;
+  self.navigationItem.rightBarButtonItem = doneButton;
+
   NSString* currentItemID = currentConfiguration.configurationID;
 
   NSUInteger selectedIndex =
@@ -305,6 +321,17 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                   animated:NO
                             scrollPosition:UICollectionViewScrollPositionNone];
   }
+}
+
+// Cancels any unsaved changes and dismisses the menu.
+- (void)cancelButtonPressed {
+  [self.mutator discardBackground];
+  [self.presentationDelegate cancelBackgroundPicker];
+}
+
+// Dismiss the menu. The current background will be saved on menu dismiss.
+- (void)donebuttonPressed {
+  [self.presentationDelegate dismissBackgroundPicker];
 }
 
 @end

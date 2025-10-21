@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_skeleton_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
@@ -95,8 +95,6 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 @synthesize additionalViewWillTransitionToSizeHandler =
     _additionalViewWillTransitionToSizeHandler;
 
-@dynamic navigationItem;
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -172,6 +170,21 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   }
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+  // Log final maximums before disappearing, for example.
+  base::UmaHistogramSparse(
+      "IOS.HomeCustomization.Background.Gallery.MaxVisibleSectionIndex",
+      _maxVisibleSectionIndex);
+  base::UmaHistogramSparse(
+      "IOS.HomeCustomization.Background.Gallery.MaxVisibleItemIndex",
+      _maxVisibleItemIndex);
+  // Log the total number of selection changes while the gallery was open.
+  base::UmaHistogramCounts10000(
+      "IOS.HomeCustomization.Background.Gallery.ClickCount",
+      _galleryClickCount);
+  [self stopLoadingAnimation];
+}
+
 - (NSInteger)selectedIndex {
   return _collectionView.indexPathsForSelectedItems.firstObject.section;
 }
@@ -221,21 +234,23 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
              scrollPosition:UICollectionViewScrollPositionNone];
 
   _selectedBackgroundId = currentItemID;
-}
 
-- (void)viewWillDisappear:(BOOL)animated {
-  // Log final maximums before disappearing, for example.
-  base::UmaHistogramSparse(
-      "IOS.HomeCustomization.Background.Gallery.MaxVisibleSectionIndex",
-      _maxVisibleSectionIndex);
-  base::UmaHistogramSparse(
-      "IOS.HomeCustomization.Background.Gallery.MaxVisibleItemIndex",
-      _maxVisibleItemIndex);
-  // Log the total number of selection changes while the gallery was open.
-  base::UmaHistogramCounts10000(
-      "IOS.HomeCustomization.Background.Gallery.ClickCount",
-      _galleryClickCount);
-  [self stopLoadingAnimation];
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonPressed)];
+  cancelButton.accessibilityIdentifier =
+      kPickerViewCancelButtonAccessibilityIdentifier;
+
+  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(donebuttonPressed)];
+  doneButton.accessibilityIdentifier =
+      kPickerViewDoneButtonAccessibilityIdentifier;
+
+  self.navigationItem.leftBarButtonItem = cancelButton;
+  self.navigationItem.rightBarButtonItem = doneButton;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -577,6 +592,17 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
         [self.collectionView cellForItemAtIndexPath:indexPath];
     cell.alpha = 1.0;
   }
+}
+
+// Cancels any unsaved changes and dismisses the menu.
+- (void)cancelButtonPressed {
+  [self.mutator discardBackground];
+  [self.presentationDelegate cancelBackgroundPicker];
+}
+
+// Dismiss the menu. The current background will be saved on menu dismiss.
+- (void)donebuttonPressed {
+  [self.presentationDelegate dismissBackgroundPicker];
 }
 
 @end

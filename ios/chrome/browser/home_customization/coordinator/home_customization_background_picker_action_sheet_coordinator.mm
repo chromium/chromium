@@ -55,8 +55,7 @@ CGFloat const kSheetCornerRadius = 30;
   HomeCustomizationBackgroundPhotoPickerCoordinator* _photoPickerCoordinator;
 
   // The main view controller presented by the base view controller.
-  UIViewController<HomeCustomizationBackgroundConfigurationConsumer,
-                   HomeCustomizationBackgroundPickerActionSheetConsumer>*
+  UIViewController<HomeCustomizationBackgroundConfigurationConsumer>*
       _mainViewController;
 
   // The view to which the action sheet popover should be anchored.
@@ -218,8 +217,6 @@ CGFloat const kSheetCornerRadius = 30;
   switch (_pickerStyle) {
     case HomeCustomizationBackgroundStyle::kColor:
       _mainViewController = [self createColorPickerViewController];
-      _backgroundConfigurationMediator.configurationConsumer =
-          _mainViewController;
       _backgroundConfigurationMediator.consumer = _mainViewController;
       [_backgroundConfigurationMediator loadColorBackgroundConfigurations];
       base::RecordAction(base::UserMetricsAction(
@@ -228,8 +225,6 @@ CGFloat const kSheetCornerRadius = 30;
       break;
     case HomeCustomizationBackgroundStyle::kPreset:
       _mainViewController = [self createPresetGalleryPickerViewController];
-      _backgroundConfigurationMediator.configurationConsumer =
-          _mainViewController;
       _backgroundConfigurationMediator.consumer = _mainViewController;
       [_backgroundConfigurationMediator loadGalleryBackgroundConfigurations];
       base::RecordAction(base::UserMetricsAction(

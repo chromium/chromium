@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 
 @protocol HomeCustomizationBackgroundConfigurationMutator;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
@@ -18,7 +17,6 @@
 // and data source to handle color options.
 @interface HomeCustomizationBackgroundColorPickerViewController
     : UIViewController <HomeCustomizationBackgroundConfigurationConsumer,
-                        HomeCustomizationBackgroundPickerActionSheetConsumer,
                         UICollectionViewDelegate,
                         UICollectionViewDataSource>
 
