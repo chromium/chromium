@@ -23,6 +23,7 @@ class MainThreadTaskRunnerRestricted {
   friend class DevToolsAgent;
   friend class FontCache;
   friend class InspectorNetworkAgent;
+  friend class LocaleController;
   friend class MemoryCache;
   friend class ParkableImageManager;
   friend class ParkableStringManager;

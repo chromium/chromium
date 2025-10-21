@@ -1,0 +1,20 @@
+Tests that Emulation.setLocaleOverride works when sent to a dedicated worker target.
+
+Set locale to zh_CN in dedicated worker
+Detected main page locale: zh-CN
+Detected dedicated worker locale: zh-CN
+
+Tried to set override from main page
+Another locale override is already in effect
+
+Overwrite locale with fr-FR in dedicated worker
+Detected main page locale: fr-FR
+Detected dedicated worker locale: fr-FR
+
+Reset locale to default in dedicated worker
+Locale correctly reset to initial value: true
+
+Set locale to ru-RU in main page after dedicated worker reset
+Detected main page locale: ru-RU
+Detected dedicated worker locale: ru-RU
+

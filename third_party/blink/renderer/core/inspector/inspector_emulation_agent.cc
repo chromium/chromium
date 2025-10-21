@@ -893,14 +893,9 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
 
 protocol::Response InspectorEmulationAgent::setLocaleOverride(
     std::optional<String> maybe_locale) {
-  // Only allow resetting overrides set by the same agent.
-  if (locale_override_.Get().empty() &&
-      LocaleController::instance().has_locale_override()) {
-    return protocol::Response::ServerError(
-        "Another locale override is already in effect");
-  }
   String locale = maybe_locale.value_or(String());
-  String error = LocaleController::instance().SetLocaleOverride(locale);
+  String error = LocaleController::instance().SetLocaleOverride(
+      locale, locale_override_.Get().empty());
   if (!error.empty())
     return protocol::Response::ServerError(error.Utf8());
   locale_override_.Set(locale);
