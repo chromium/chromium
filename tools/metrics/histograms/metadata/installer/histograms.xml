@@ -256,6 +256,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Setup.Install.SCM.{Operation}.Result" enum="WinGetLastError"
+    expires_after="2026-10-30">
+  <owner>grt@chromium.org</owner>
+  <owner>ganesh@chromium.org</owner>
+  <summary>
+    The Windows error code (or ERROR_SUCCESS) for a call to {Operation} when
+    interacting with the Service Control Manager to install or update a Windows
+    service. Recorded once per operation.
+  </summary>
+  <token key="Operation">
+    <variant name="ChangeServiceConfig"/>
+    <variant name="ChangeServiceConfig2"/>
+    <variant name="CreateService"/>
+    <variant name="DeleteService"/>
+    <variant name="OpenSCManager"/>
+    <variant name="OpenService"/>
+    <variant name="QueryServiceConfig"/>
+    <variant name="QueryServiceConfig2"/>
+  </token>
+</histogram>
+
 <histogram name="Setup.Install.UnbufferedFileWriter.{Operation}.Error"
     enum="WinGetLastError" expires_after="2026-09-28">
   <owner>grt@chromium.org</owner>

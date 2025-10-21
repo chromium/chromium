@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat_win.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/install_static/install_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/installer/util/install_service_work_item_impl.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace installer {
@@ -232,6 +234,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
     // Calling ::OpenSCManager requires an admin user.
     GTEST_SKIP() << "This test must be run by an admin user";
   }
+  base::HistogramTester histogram_tester;
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
@@ -254,6 +257,9 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
   EXPECT_TRUE(IsServiceGone(item.get()));
   ExpectServiceCOMRegistrationAbsent();
   EXPECT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Setup.Install.SCM."),
+              testing::Not(testing::IsEmpty()));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {

@@ -20,6 +20,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +35,44 @@ namespace installer {
 
 namespace {
 
+enum class Operation {
+  kChangeServiceConfig,
+  kChangeServiceConfig2,
+  kCreateService,
+  kDeleteService,
+  kOpenSCManager,
+  kOpenService,
+  kQueryServiceConfig,
+  kQueryServiceConfig2,
+};
+
+std::string_view ToString(Operation operation) {
+  switch (operation) {
+    case Operation::kChangeServiceConfig:
+      return "ChangeServiceConfig";
+    case Operation::kChangeServiceConfig2:
+      return "ChangeServiceConfig2";
+    case Operation::kCreateService:
+      return "CreateService";
+    case Operation::kDeleteService:
+      return "DeleteService";
+    case Operation::kOpenSCManager:
+      return "OpenSCManager";
+    case Operation::kOpenService:
+      return "OpenService";
+    case Operation::kQueryServiceConfig:
+      return "QueryServiceConfig";
+    case Operation::kQueryServiceConfig2:
+      return "QueryServiceConfig2";
+  }
+}
+
+void RecordResult(Operation operation, DWORD error_code) {
+  base::UmaHistogramSparse(
+      base::StrCat({"Setup.Install.SCM.", ToString(operation), ".Result"}),
+      static_cast<int>(error_code));
+}
+
 constexpr uint32_t kServiceType = SERVICE_WIN32_OWN_PROCESS;
 constexpr uint32_t kServiceErrorControl = SERVICE_ERROR_NORMAL;
 constexpr wchar_t kServiceDependencies[] = L"RPCSS\0";
@@ -42,32 +81,6 @@ constexpr wchar_t kServiceDependencies[] = L"RPCSS\0";
 // Do/Rollback scenarios are requested since the handle is reused.
 constexpr uint32_t kServiceAccess =
     DELETE | SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG;
-
-// One value for each possible outcome of DoImpl.
-// These values are logged to histograms. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ServiceInstallResult {
-  kFailedFreshInstall = 0,
-  kFailedInstallNewAfterFailedUpgrade = 1,
-  kFailedOpenSCManager = 2,
-  kSucceededChangeServiceConfig = 3,
-  kSucceededFreshInstall = 4,
-  kSucceededInstallNewAndDeleteOriginal = 5,
-  kSucceededInstallNewAndFailedDeleteOriginal = 6,
-  kSucceededServiceCorrectlyConfigured = 7,
-  kMaxValue = kSucceededServiceCorrectlyConfigured,
-};
-
-// One value for each possible outcome of RollbackImpl.
-// These values are logged to histograms. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ServiceRollbackResult {
-  kFailedDeleteCurrentService = 0,
-  kFailedRollbackOriginalServiceConfig = 1,
-  kSucceededDeleteCurrentService = 2,
-  kSucceededRollbackOriginalServiceConfig = 3,
-  kMaxValue = kSucceededRollbackOriginalServiceConfig,
-};
 
 std::wstring GetComRegistryPath(std::wstring_view hive, const GUID& guid) {
   return base::StrCat(
@@ -159,9 +172,12 @@ bool InstallServiceWorkItemImpl::DoInstallService() {
   scm_.Set(::OpenSCManager(nullptr, nullptr,
                            SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
   if (!scm_.IsValid()) {
+    auto error = ::GetLastError();
     PLOG(ERROR) << "::OpenSCManager Failed";
+    RecordResult(Operation::kOpenSCManager, error);
     return false;
   }
+  RecordResult(Operation::kOpenSCManager, ERROR_SUCCESS);
 
   if (!OpenService()) {
     VPLOG(1) << "Attempting to install new service following failure to open";
@@ -346,9 +362,12 @@ bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
 
   scm_.Set(::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT));
   if (!scm_.IsValid()) {
+    auto error = ::GetLastError();
     DPLOG(ERROR) << "::OpenSCManager Failed";
+    RecordResult(Operation::kOpenSCManager, error);
     return false;
   }
+  RecordResult(Operation::kOpenSCManager, ERROR_SUCCESS);
 
   if (!OpenService())
     return false;
@@ -421,10 +440,13 @@ bool InstallServiceWorkItemImpl::ChangeServiceConfig(
           /*lpServiceStartName=*/nullptr, /*lpPassword=*/nullptr,
           !config.display_name.empty() ? config.display_name.c_str()
                                        : nullptr)) {
+    auto error = ::GetLastError();
     PLOG(WARNING) << "Failed to change service config "
                   << GetCurrentServiceName().c_str();
+    RecordResult(Operation::kChangeServiceConfig, error);
     return false;
   }
+  RecordResult(Operation::kChangeServiceConfig, ERROR_SUCCESS);
 
   return true;
 }
@@ -437,7 +459,13 @@ bool InstallServiceWorkItemImpl::OpenService() {
   DCHECK(scm_.IsValid());
   service_.Set(::OpenService(scm_.Get(), GetCurrentServiceName().c_str(),
                              kServiceAccess));
-  return service_.IsValid();
+  if (!service_.IsValid()) {
+    auto error = ::GetLastError();
+    RecordResult(Operation::kOpenService, error);
+    return false;
+  }
+  RecordResult(Operation::kOpenService, ERROR_SUCCESS);
+  return true;
 }
 
 bool InstallServiceWorkItemImpl::GetServiceConfig(ServiceConfig* config) const {
@@ -456,10 +484,13 @@ bool InstallServiceWorkItemImpl::GetServiceConfig(ServiceConfig* config) const {
   if (!::QueryServiceConfig(service_.Get(), service_config,
                             kMaxQueryConfigBufferBytes,
                             &bytes_needed_ignored)) {
+    auto error = ::GetLastError();
     PLOG(ERROR) << "QueryServiceConfig failed "
                 << GetCurrentServiceName().c_str();
+    RecordResult(Operation::kQueryServiceConfig, error);
     return false;
   }
+  RecordResult(Operation::kQueryServiceConfig, ERROR_SUCCESS);
 
   *config = ServiceConfig(
       service_config->dwServiceType, service_config->dwStartType,
@@ -570,10 +601,13 @@ std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDescription() const {
   if (!::QueryServiceConfig2(service_.Get(), SERVICE_CONFIG_DESCRIPTION,
                              buffer.get(), kMaxQueryConfigBufferBytes,
                              &bytes_needed_ignored)) {
+    auto error = ::GetLastError();
     PLOG(ERROR) << "QueryServiceConfig2 failed "
                 << GetCurrentServiceName().c_str();
+    RecordResult(Operation::kQueryServiceConfig2, error);
     return {};
   }
+  RecordResult(Operation::kQueryServiceConfig2, ERROR_SUCCESS);
 
   return description->lpDescription ? description->lpDescription : L"";
 }
@@ -589,8 +623,12 @@ void InstallServiceWorkItemImpl::SetDescription() {
   SERVICE_DESCRIPTION description = {desc.data()};
   if (!::ChangeServiceConfig2(service_.Get(), SERVICE_CONFIG_DESCRIPTION,
                               &description)) {
+    auto error = ::GetLastError();
     PLOG(WARNING) << "Failed to set service description: "
                   << GetCurrentServiceName().c_str() << ": " << description_;
+    RecordResult(Operation::kChangeServiceConfig2, error);
+  } else {
+    RecordResult(Operation::kChangeServiceConfig2, ERROR_SUCCESS);
   }
 }
 
@@ -652,10 +690,13 @@ bool InstallServiceWorkItemImpl::InstallService(const ServiceConfig& config) {
       !config.dependencies.empty() ? config.dependencies.data() : nullptr,
       nullptr, nullptr));
   if (!service.IsValid()) {
+    auto error = ::GetLastError();
     PLOG(WARNING) << "Failed to create service "
                   << GetCurrentServiceName().c_str();
+    RecordResult(Operation::kCreateService, error);
     return false;
   }
+  RecordResult(Operation::kCreateService, ERROR_SUCCESS);
 
   service_ = std::move(service);
   return true;
@@ -668,8 +709,10 @@ bool InstallServiceWorkItemImpl::DeleteService(ScopedScHandle service) const {
   if (!::DeleteService(service.Get())) {
     DWORD error = ::GetLastError();
     PLOG(WARNING) << "DeleteService failed " << GetCurrentServiceName().c_str();
+    RecordResult(Operation::kDeleteService, error);
     return error == ERROR_SERVICE_MARKED_FOR_DELETE;
   }
+  RecordResult(Operation::kDeleteService, ERROR_SUCCESS);
 
   return true;
 }
