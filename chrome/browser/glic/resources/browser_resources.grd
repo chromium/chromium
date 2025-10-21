@@ -16,6 +16,7 @@ found in the LICENSE file.
   <release seq="1">
     <includes>
       <include name="IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON" file="glic_attach_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_SHARE_IMAGE_ICON" file="glic_button_alt_icon.png" type="BINDATA" />
       <include name="IDR_GLIC_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PARAMETERIZED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_SIMPLIFIED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
