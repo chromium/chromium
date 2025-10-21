@@ -547,6 +547,13 @@ Profile* GPMEnclaveController::GetProfile() const {
       ->GetOriginalProfile();
 }
 
+void GPMEnclaveController::ShowSecurityDomainRecoveryUI() {
+  // The acquired lock indicates that the explicit key retrieval flow is being
+  // used.
+  store_keys_lock_ = enclave_manager_->GetStoreKeysLock();
+  model_->SetStep(Step::kRecoverSecurityDomain);
+}
+
 GPMEnclaveController::AccountState
 GPMEnclaveController::account_state_for_testing() const {
   return account_state_;
@@ -726,6 +733,7 @@ void GPMEnclaveController::OnKeysStored() {
 
   CHECK(enclave_manager_->has_pending_keys());
   CHECK(!enclave_manager_->is_ready());
+  store_keys_lock_.reset();
 
   if ((pin_metadata_.has_value() && pin_metadata_->usable_pin_metadata) ||
       *can_make_uv_keys_) {
@@ -769,7 +777,7 @@ void GPMEnclaveController::RecoverSecurityDomain() {
       trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 #else
-  model_->SetStep(Step::kRecoverSecurityDomain);
+  ShowSecurityDomainRecoveryUI();
 #endif  // BUILDFLAG(IS_MAC)
 }
 
@@ -847,7 +855,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
       });
   if (local_icloud_key_it == local_icloud_keys.end()) {
     FIDO_LOG(DEBUG) << "Could not find matching iCloud recovery key";
-    model_->SetStep(Step::kRecoverSecurityDomain);
+    ShowSecurityDomainRecoveryUI();
     return;
   }
   const auto member_key_it = std::ranges::max_element(
@@ -860,11 +868,12 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
   if (!security_domain_secret) {
     FIDO_LOG(ERROR)
         << "Could not decrypt security domain secret with iCloud key";
-    model_->SetStep(Step::kRecoverSecurityDomain);
+    ShowSecurityDomainRecoveryUI();
     return;
   }
   FIDO_LOG(EVENT) << "Successful recovery from iCloud recovery key";
   recovered_with_icloud_keychain_ = true;
+  store_keys_lock_ = enclave_manager_->GetStoreKeysLock();
   enclave_manager_->StoreKeys(user_gaia_id_,
                               {std::move(*security_domain_secret)},
                               member_key_it->version);

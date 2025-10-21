@@ -2734,12 +2734,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   // Disable Touch ID. The request should still resolve with uv=true.
   request_delegate()->dialog_model()->OnTouchIDComplete(false);
 
-  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
-      ->StoreKeys(kSyncGaiaId,
-                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
-                                        std::end(kSecurityDomainSecret))},
-                  kSecretVersion);
-
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
@@ -3308,8 +3302,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
             profile->GetWeakPtr()),
         url_loader_factory_.GetSafeWeakWrapper());
 
-    second_manager.StoreKeys(kSyncGaiaId, {*security_domain_secret},
-                             /*last_key_version=*/kSecretVersion);
+    {
+      auto store_keys_lock = second_manager.GetStoreKeysLock();
+      second_manager.StoreKeys(kSyncGaiaId, {*security_domain_secret},
+                               /*last_key_version=*/kSecretVersion);
+    }
 
     base::test::TestFuture<bool> add_future;
     second_manager.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
