@@ -75,9 +75,12 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
@@ -686,6 +689,49 @@ void TabWebContentsDelegateAndroid::LostPointerLock() {
   }
 
   Java_TabWebContentsDelegateAndroidImpl_lostPointerLock(env, obj);
+}
+
+void TabWebContentsDelegateAndroid::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    WebContents* contents) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  // See AppBrowserController::DraggableRegionsChanged in
+  // chrome/browser/ui/web_applications/app_browser_controller.cc.
+  // This is inverted from that logic. On most OSes, we're doing a hit test to
+  // determine whether we should allow a region to be dragged. On android, we
+  // need to provide a list of *undraggable* Rects.
+  float dip_scale = contents->GetNativeView()->GetDipScale();
+  const gfx::Rect& wco_rect = contents->GetWindowsControlsOverlayRect();
+  std::unique_ptr<SkRegion> sk_region =
+      std::make_unique<SkRegion>(SkIRect::MakeLTRB(
+          wco_rect.x() * dip_scale, wco_rect.y() * dip_scale,
+          wco_rect.right() * dip_scale, wco_rect.bottom() * dip_scale));
+  for (const auto& region : regions) {
+    sk_region->op(
+        SkIRect::MakeLTRB(region->bounds.x() * dip_scale,
+                          region->bounds.y() * dip_scale,
+                          region->bounds.right() * dip_scale,
+                          region->bounds.bottom() * dip_scale),
+        region->draggable ? SkRegion::kDifference_Op : SkRegion::kUnion_Op);
+  }
+
+  ScopedJavaLocalRef<jobject> jregions =
+      Java_TabWebContentsDelegateAndroidImpl_createRectList(env, obj);
+
+  // Convert the region to a java List<Rect>.
+  for (SkRegion::Iterator i(*sk_region); !i.done(); i.next()) {
+    Java_TabWebContentsDelegateAndroidImpl_createRectAndAddToList(
+        env, obj, jregions, i.rect().left(), i.rect().top(), i.rect().right(),
+        i.rect().bottom());
+  }
+
+  Java_TabWebContentsDelegateAndroidImpl_nonDraggableRegionsChanged(env, obj,
+                                                                    jregions);
 }
 
 }  // namespace android

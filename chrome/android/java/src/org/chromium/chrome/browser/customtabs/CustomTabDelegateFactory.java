@@ -11,6 +11,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
@@ -211,6 +213,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final boolean mShouldEnableEmbeddedMediaExperience;
         private final Supplier<Boolean> mHeaderControlsVisibilitySupplier;
         private final Supplier<Boolean> mHeaderAsOverlaySupplier;
+        private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
         /** See {@link TabWebContentsDelegateAndroid}. */
         public CustomTabWebContentsDelegate(
@@ -231,7 +234,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<Boolean> headerControlsVisibilitySupplier,
                 Supplier<Boolean> headerAsOverlaySupplier,
-                @Nullable ExclusiveAccessManager exclusiveAccessManager) {
+                @Nullable ExclusiveAccessManager exclusiveAccessManager,
+                @Nullable DesktopWindowStateManager desktopWindowStateManager) {
             super(
                     tab,
                     activity,
@@ -252,6 +256,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
             mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
             mHeaderAsOverlaySupplier = headerAsOverlaySupplier;
+            mDesktopWindowStateManager = desktopWindowStateManager;
         }
 
         @Override
@@ -336,6 +341,13 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         protected boolean isPopup() {
             return assumeNonNull(mIntentDataProvider).getUiType() == CustomTabsUiType.POPUP;
         }
+
+        @Override
+        public void nonDraggableRegionsChanged(List<Rect> regions) {
+            if (mDesktopWindowStateManager != null) {
+                mDesktopWindowStateManager.updateSystemGestureExclusionRects(regions);
+            }
+        }
     }
 
     private final Activity mActivity;
@@ -370,6 +382,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private @Nullable ExternalNavigationDelegateImpl mNavigationDelegate;
     private @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * @param activity {@link Activity} instance.
@@ -419,7 +432,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             BrowserControlsManager browserControlsManager,
             Supplier<Boolean> headerControlsVisibilitySupplier,
             Supplier<Boolean> headerAsOverlaySupplier,
-            @Nullable ExclusiveAccessManager exclusiveAccessManager) {
+            @Nullable ExclusiveAccessManager exclusiveAccessManager,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mIntentDataProvider = intentDataProvider;
         if (mIntentDataProvider != null) {
             mShouldHideBrowserControls = mIntentDataProvider.shouldEnableUrlBarHiding();
@@ -457,6 +471,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
         mHeaderAsOverlaySupplier = headerAsOverlaySupplier;
         mExclusiveAccessManager = exclusiveAccessManager;
+        mDesktopWindowStateManager = desktopWindowStateManager;
     }
 
     /**
@@ -486,6 +501,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 () -> false,
                 () -> false,
+                null,
                 null);
     }
 
@@ -534,7 +550,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mModalDialogManagerSupplier,
                         mHeaderControlsVisibilitySupplier,
                         mHeaderAsOverlaySupplier,
-                        mExclusiveAccessManager);
+                        mExclusiveAccessManager,
+                        mDesktopWindowStateManager);
         return mWebContentsDelegateAndroid;
     }
 

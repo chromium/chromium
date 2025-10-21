@@ -669,7 +669,10 @@ public interface WebContents extends Parcelable {
      *
      * @param rect The rect of the overlay.
      */
-    public void updateWindowControlsOverlay(Rect rect);
+    void updateWindowControlsOverlay(Rect rect);
+
+    /** Enables draggable region calculation in this WebContents' primary main frame. */
+    void setSupportsDraggableRegions(boolean supportsDraggableRegions);
 
     /**
      * Factory interface passed to {@link #getOrSetUserData()} for instantiation of class as user

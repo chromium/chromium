@@ -1282,6 +1282,12 @@ public class WebContentsImpl
                         mNativeWebContentsAndroid, rect.left, rect.top, rect.right, rect.bottom);
     }
 
+    @Override
+    public void setSupportsDraggableRegions(boolean supportsDraggableRegions) {
+        WebContentsImplJni.get()
+                .setSupportsDraggableRegions(mNativeWebContentsAndroid, supportsDraggableRegions);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -1513,5 +1519,8 @@ public class WebContentsImpl
 
         void updateWindowControlsOverlay(
                 long nativeWebContentsAndroid, int left, int top, int right, int bottom);
+
+        void setSupportsDraggableRegions(
+                long nativeWebContentsAndroid, boolean supportsDraggableRegions);
     }
 }

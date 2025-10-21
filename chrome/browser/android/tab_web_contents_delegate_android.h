@@ -149,6 +149,10 @@ class TabWebContentsDelegateAndroid
   bool IsDynamicSafeAreaInsetsEnabled() const;
   bool OpenInAppOrChromeFromCct(GURL url);
 
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
+
  private:
   std::unique_ptr<device::mojom::GeolocationContext>
       installed_webapp_geolocation_context_;

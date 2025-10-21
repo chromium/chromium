@@ -413,6 +413,9 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void updateWindowControlsOverlay(Rect rect) {}
 
     @Override
+    public void setSupportsDraggableRegions(boolean supportsDraggableRegions) {}
+
+    @Override
     public <T extends UserData> @Nullable T getOrSetUserData(
             Class<T> key, @Nullable UserDataFactory<T> userDataFactory) {
         return null;

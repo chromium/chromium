@@ -56,6 +56,7 @@ import org.chromium.content_public.browser.navigation_controller.UserAgentOverri
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Implementation class of {@link TabWebContentsDelegateAndroid}. */
@@ -99,6 +100,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @CalledByNative
     private static RectF createRectF(float x, float y, float right, float bottom) {
         return new RectF(x, y, right, bottom);
+    }
+
+    @CalledByNative
+    public List<Rect> createRectList() {
+        return new ArrayList<Rect>();
+    }
+
+    @CalledByNative
+    public void createRectAndAddToList(List<Rect> list, int x, int y, int right, int bottom) {
+        list.add(new Rect(x, y, right, bottom));
     }
 
     @CalledByNative
@@ -534,6 +545,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public void lostPointerLock() {
         mDelegate.lostPointerLock();
+    }
+
+    @CalledByNative
+    @Override
+    public void nonDraggableRegionsChanged(List<Rect> regions) {
+        mDelegate.nonDraggableRegionsChanged(regions);
     }
 
     @Override

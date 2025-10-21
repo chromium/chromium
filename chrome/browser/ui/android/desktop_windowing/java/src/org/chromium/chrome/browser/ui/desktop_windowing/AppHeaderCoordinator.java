@@ -48,6 +48,8 @@ import org.chromium.ui.insets.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.List;
+
 /**
  * Class coordinating the business logic to draw into app header in desktop windowing mode, ranging
  * from listening the window insets updates, and pushing updates to the tab strip.
@@ -194,6 +196,13 @@ public class AppHeaderCoordinator
     @Override
     public void updateForegroundColor(int backgroundColor) {
         updateIconColorForCaptionBars(backgroundColor);
+    }
+
+    @Override
+    public void updateSystemGestureExclusionRects(List<Rect> rects) {
+        for (AppHeaderObserver observer : mObservers) {
+            observer.onSystemGestureExclusionRectsChanged(rects);
+        }
     }
 
     // TopResumedActivityChangedObserver implementation.

@@ -4,10 +4,14 @@
 
 package org.chromium.components.browser_ui.desktop_windowing;
 
+import android.graphics.Rect;
+
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.List;
 
 /** Interface to observe and retrieve desktop windowing mode state and updates. */
 @NullMarked
@@ -39,6 +43,14 @@ public interface DesktopWindowStateManager {
          *     activity is focused, {@code false} when the activity is unfocused.
          */
         default void onActivityFocusStateChanged(boolean isFocused) {}
+
+        /**
+         * Notifies interested {@link AppHeaderObserver}s of an app-header provided system gesture
+         * exclusion rects change.
+         *
+         * @param rects The list of Rects that should not respond to system gestures.
+         */
+        default void onSystemGestureExclusionRectsChanged(List<Rect> rects) {}
     }
 
     /**
@@ -74,6 +86,13 @@ public interface DesktopWindowStateManager {
      * @param backgroundColor The app header background color.
      */
     void updateForegroundColor(@ColorInt int backgroundColor);
+
+    /**
+     * Called when app-header provided system gesture exclusion rects change.
+     *
+     * @param rects The list of Rects that should not respond to system gestures.
+     */
+    void updateSystemGestureExclusionRects(List<Rect> rects);
 
     /** Destroy the instances and remove all the dependencies. */
     void destroy();

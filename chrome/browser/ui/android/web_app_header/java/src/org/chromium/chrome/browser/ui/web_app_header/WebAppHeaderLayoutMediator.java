@@ -68,6 +68,7 @@ class WebAppHeaderLayoutMediator
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsFirstAppHeaderStateUpdate = true;
     private boolean mBrowserControlsVisible;
+    private @Nullable List<Rect> mSystemGestureExclusionRects;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -145,6 +146,14 @@ class WebAppHeaderLayoutMediator
                         && mCurrentHeaderState.isInDesktopWindow()
                         && mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
                         && !mBrowserControlsVisible;
+
+        final Tab tab = mTabSupplier.get();
+        if (tab == null) return;
+
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+        webContents.setSupportsDraggableRegions(mHeaderAsOverlay);
+
         mSetHeaderAsOverlayCallback.onResult(mHeaderAsOverlay);
         updateBackgroundBars();
         updateNonDraggableAreas();
@@ -295,19 +304,21 @@ class WebAppHeaderLayoutMediator
             areas.addAll(controlPositions);
         }
 
-        if (mHeaderAsOverlay) {
-            areas.add(
-                    new Rect(
-                            mCurrentHeaderState.getLeftPadding(),
-                            0,
-                            mCurrentHeaderState.getLeftPadding()
-                                    + mCurrentHeaderState.getUnoccludedRectWidth(),
-                            mCurrentHeaderState.getCaptionControlsHeight()));
+        if (mHeaderAsOverlay
+                && mSystemGestureExclusionRects != null
+                && !mSystemGestureExclusionRects.isEmpty()) {
+            areas.addAll(mSystemGestureExclusionRects);
         }
 
         mModel.set(
                 WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS,
                 areas == null || areas.isEmpty() ? List.of(EMPTY_NON_DRAGGABLE_AREA) : areas);
+    }
+
+    @Override
+    public void onSystemGestureExclusionRectsChanged(List<Rect> rects) {
+        mSystemGestureExclusionRects = rects;
+        updateNonDraggableAreas();
     }
 
     /** Navigates back in the navigation history of the current {@link Tab}. */

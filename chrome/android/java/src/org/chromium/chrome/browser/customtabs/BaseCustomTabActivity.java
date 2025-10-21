@@ -1406,7 +1406,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                             getBrowserControlsManager(),
                             this::isShowingWebAppHeaderButtons,
                             this::isShowingHeaderAsOverlay,
-                            mRootUiCoordinator.getExclusiveAccessManager());
+                            mRootUiCoordinator.getExclusiveAccessManager(),
+                            mRootUiCoordinator.getDesktopWindowStateManager());
         }
         return mDelegateFactory;
     }

@@ -998,6 +998,12 @@ void WebContentsAndroid::UpdateWindowControlsOverlay(JNIEnv* env,
       gfx::Rect(left, top, right - left, bottom - top));
 }
 
+void WebContentsAndroid::SetSupportsDraggableRegions(
+    JNIEnv* env,
+    bool supports_draggable_regions) {
+  web_contents_->SetSupportsDraggableRegions(supports_draggable_regions);
+}
+
 void WebContentsAndroid::UpdateOffsetTagDefinitions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jtag_definitions) {

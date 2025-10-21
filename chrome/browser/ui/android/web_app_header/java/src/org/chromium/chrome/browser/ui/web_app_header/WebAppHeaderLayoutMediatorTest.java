@@ -59,6 +59,7 @@ public class WebAppHeaderLayoutMediatorTest {
     private static final int HEADER_BUTTON_HEIGHT = 46;
     private static final int LEFT_INSET = 50;
     private static final int RIGHT_INSET = 60;
+    private static final Rect EMPTY_NON_DRAGGABLE_AREA = new Rect(0, 0, 0, 0);
     private static final Rect WIDEST_UNOCCLUDED_RECT =
             new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, SYS_APP_HEADER_HEIGHT);
     private static final int LIGHT_COLOR = 0xfffff;
@@ -666,12 +667,20 @@ public class WebAppHeaderLayoutMediatorTest {
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         mMediator.setBrowserControlsVisible(false);
 
-        final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
-        assertEquals("There should be only one area in the list", 1, areas.size());
+        final var areasBefore = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only one area in the list", 1, areasBefore.size());
+        assertEquals(
+                "Until onSystemGestureExclusionRectsChanged is called, the area is empty",
+                EMPTY_NON_DRAGGABLE_AREA,
+                areasBefore.get(0));
+
+        mMediator.onSystemGestureExclusionRectsChanged(List.of(WIDEST_UNOCCLUDED_RECT));
+        final var areasAfter = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only one area in the list", 1, areasAfter.size());
         assertEquals(
                 "The area should cover the whole unoccluded area",
                 WIDEST_UNOCCLUDED_RECT,
-                areas.get(0));
+                areasAfter.get(0));
     }
 
     @Test
@@ -696,6 +705,7 @@ public class WebAppHeaderLayoutMediatorTest {
                         mSetHeaderAsOverlayCallback);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         mMediator.setBrowserControlsVisible(false);
+        mMediator.onSystemGestureExclusionRectsChanged(List.of(WIDEST_UNOCCLUDED_RECT));
 
         final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
         assertEquals("There should be only one area in the list", 3, areas.size());
