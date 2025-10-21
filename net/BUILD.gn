@@ -2478,7 +2478,7 @@ if (use_external_gssapi) {
   # In order for the tests to be reliable, these two targets cannot depend on a
   # valid GSSAPI library. This is easy to achieve on most platforms. But on
   # macOS care must be taken to not depend directly or indirectly on
-  # GSS.framework. This is suprisingly easy to get wrong since
+  # GSS.framework. This is surprisingly easy to get wrong since
   # Security.framework is such a common dependency and it indirectly depends on
   # GSS.
   shared_library("test_gssapi") {
@@ -3548,6 +3548,7 @@ if (!is_ios) {
       "extras/sqlite/sqlite_persistent_cookie_store_perftest.cc",
       "http/http_no_vary_search_data_perftest.cc",
       "http/http_request_headers_perftest.cc",
+      "http/no_vary_search_cache_perftest.cc",
       "socket/udp_socket_perftest.cc",
       "spdy/spdy_http_utils_perftest.cc",
       "url_request/url_request_quic_perftest.cc",
