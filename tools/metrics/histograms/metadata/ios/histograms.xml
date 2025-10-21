@@ -2837,7 +2837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoLockOverlayInteraction"
-    enum="IncognitoLockOverlayInteractionType" expires_after="2026-02-15">
+    enum="IncognitoLockOverlayInteractionType" expires_after="2026-04-19">
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -6856,7 +6856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Web.FileInput.ContentState"
-    enum="IOSWebFileInputContentState" expires_after="2026-02-15">
+    enum="IOSWebFileInputContentState" expires_after="2026-04-19">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>
   <summary>
