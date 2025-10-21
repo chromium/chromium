@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.RetryEnqueueRecordStatus"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-12-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-12-01">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
