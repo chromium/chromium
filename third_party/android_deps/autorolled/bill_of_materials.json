@@ -1257,12 +1257,12 @@
     {
         "name": "play-services-cast",
         "group": "com.google.android.gms",
-        "version": "22.1.0"
+        "version": "22.2.0"
     },
     {
         "name": "play-services-cast-framework",
         "group": "com.google.android.gms",
-        "version": "22.1.0"
+        "version": "22.2.0"
     },
     {
         "name": "play-services-clearcut",
