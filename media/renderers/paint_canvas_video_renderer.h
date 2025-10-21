@@ -81,20 +81,11 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // The transformation to apply to the video before the copy.
     VideoTransformation transformation = media::kNoTransformation;
   };
-  // Wrapper of Paint() that CHECK()'s that `raster_context_provider` is either
-  // null or supports the `gpu_rasterization` capability. Being used to
-  // incrementally validate that all callers of Paint() satisfy these
-  // conditions, at which point it will be merged into Paint().
   void PaintOOPR(scoped_refptr<VideoFrame> video_frame,
                  cc::PaintCanvas* canvas,
                  cc::PaintFlags& flags,
                  const PaintParams& params,
                  viz::RasterContextProvider* raster_context_provider);
-  void Paint(scoped_refptr<VideoFrame> video_frame,
-             cc::PaintCanvas* canvas,
-             cc::PaintFlags& flags,
-             const PaintParams& params,
-             viz::RasterContextProvider* raster_context_provider);
 
   // Paints |video_frame|, scaled to its |video_frame->visible_rect().size()|
   // on |canvas|. Note that the origin of |video_frame->visible_rect()| is

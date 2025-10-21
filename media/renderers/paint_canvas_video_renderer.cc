@@ -880,19 +880,6 @@ void PaintCanvasVideoRenderer::PaintOOPR(
     cc::PaintFlags& flags,
     const PaintParams& params,
     viz::RasterContextProvider* raster_context_provider) {
-  if (video_frame && video_frame->HasSharedImage()) {
-    CHECK(!raster_context_provider ||
-          raster_context_provider->ContextCapabilities().gpu_rasterization);
-  }
-  Paint(std::move(video_frame), canvas, flags, params, raster_context_provider);
-}
-
-void PaintCanvasVideoRenderer::Paint(
-    scoped_refptr<VideoFrame> video_frame,
-    cc::PaintCanvas* canvas,
-    cc::PaintFlags& flags,
-    const PaintParams& params,
-    viz::RasterContextProvider* raster_context_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (flags.isFullyTransparent()) {
     return;
@@ -904,10 +891,7 @@ void PaintCanvasVideoRenderer::Paint(
           << "Can't render textured frames w/o viz::RasterContextProvider";
       return;  // Unable to get/create a shared main thread context.
     }
-    if (!raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      DLOG(ERROR) << "Can't render textured frames w/o GPU raster.";
-      return;
-    }
+    CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   }
 
   gfx::RectF dest_rect = params.dest_rect.value_or(
