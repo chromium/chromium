@@ -48,9 +48,8 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
   *auto_behavior = AutoSizeBehavior::kFitContent;
   *is_overflow_safe = alignment.Overflow() == OverflowAlignment::kSafe;
 
-  const bool is_masonry = parent_grid_style.IsDisplayMasonryBox();
   const bool applies_alignment = ([&]() {
-    if (!is_masonry) {
+    if (!parent_grid_style.IsDisplayMasonryBox()) {
       return true;
     }
 
@@ -137,14 +136,8 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
                                                  : AxisEdge::kEnd;
     case ItemPosition::kNormal:
       if (applies_alignment) {
-        // Don't apply special 'fit-content' behavior for replaced items in
-        // a masonry container.
-        if (is_masonry) {
-          *auto_behavior = AutoSizeBehavior::kStretchImplicit;
-        } else {
-          *auto_behavior = is_replaced ? AutoSizeBehavior::kFitContent
-                                       : AutoSizeBehavior::kStretchImplicit;
-        }
+        *auto_behavior = is_replaced ? AutoSizeBehavior::kFitContent
+                                     : AutoSizeBehavior::kStretchImplicit;
       }
       return AxisEdge::kStart;
     case ItemPosition::kLegacy:
