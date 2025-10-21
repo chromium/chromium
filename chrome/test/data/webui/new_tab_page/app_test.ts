@@ -1289,26 +1289,6 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!composebox);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
-    test('searchbox text carries over to composebox', async () => {
-      // Arrange.
-      callbackRouterRemote.setTheme(createTheme());
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Act.
-      $$(app, '#searchbox')!.dispatchEvent(
-          new CustomEvent('open-composebox', {
-            detail: {searchboxText: 'text', contextFiles: []},
-          }));
-      await microtasksFinished();
-
-      // Assert.
-      const composebox = app.shadowRoot.querySelector('ntp-composebox');
-      assertTrue(!!composebox);
-      assertEquals(
-          'text',
-          composebox.shadowRoot.querySelector<HTMLInputElement>('#input')!.value);
-      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
-    });
     test(
         'Clicking the searchbox composebox button notifies composebox handler',
         async () => {
@@ -2008,5 +1988,25 @@ suite('NewTabPageAppTest', () => {
           await microtasksFinished();
           assertFalse(!!getScrim());
         });
+    test('searchbox text carries over to composebox', async () => {
+        // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      $$(app, '#searchbox')!.dispatchEvent(
+          new CustomEvent('open-composebox', {
+            detail: {searchboxText: 'text', contextFiles: []},
+          }));
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.querySelector('ntp-composebox');
+      assertTrue(!!composebox);
+      assertEquals(
+        'text',
+        composebox.shadowRoot.querySelector<HTMLInputElement>('#input')!.value);
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
+    });
   });
 });

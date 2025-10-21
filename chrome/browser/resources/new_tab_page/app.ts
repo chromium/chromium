@@ -654,25 +654,6 @@ export class AppElement extends AppElementBase {
         changedPrivateProperties.has('showComposebox_')) {
       this.updateOneGoogleBarAppearance_();
     }
-
-    if (changedPrivateProperties.has('showComposebox_') &&
-        this.showComposebox_) {
-      const composebox =
-          this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
-      assert(composebox);
-      if (this.pendingComposeboxContextFiles_.length > 0) {
-        composebox.setContext(this.pendingComposeboxContextFiles_);
-        this.pendingComposeboxContextFiles_ = [];
-      }
-      if (this.pendingComposeboxText_) {
-        composebox.setText(this.pendingComposeboxText_);
-        this.pendingComposeboxText_ = '';
-      }
-      if (this.pendingComposeboxMode_ !== ComposeboxMode.DEFAULT) {
-        composebox.setInitialMode(this.pendingComposeboxMode_);
-        this.pendingComposeboxMode_ = ComposeboxMode.DEFAULT;
-      }
-    }
   }
 
   // Called to update the OGB of relevant NTP state changes.
@@ -744,6 +725,18 @@ export class AppElement extends AppElementBase {
     if (this.showWallpaperSearchButton_) {
       this.customizeButtonsHandler_.incrementWallpaperSearchButtonShownCount();
     }
+  }
+
+  protected onComposeboxInitialized_(e: CustomEvent<{
+    initializeComposeboxState:
+        (text: string, files: ComposeboxFile[], mode: ComposeboxMode) => void,
+  }>) {
+    e.detail.initializeComposeboxState(
+        this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
+        this.pendingComposeboxMode_);
+    this.pendingComposeboxContextFiles_ = [];
+    this.pendingComposeboxText_ = '';
+    this.pendingComposeboxMode_ = ComposeboxMode.DEFAULT;
   }
 
   protected openComposebox_(e: CustomEvent<{
