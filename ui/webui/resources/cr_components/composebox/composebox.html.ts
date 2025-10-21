@@ -24,7 +24,9 @@ export function getHtml(this: ComposeboxElement) {
           <div id="aimIcon"></div>
         </div>
         <div id="inputWrapper">
-          <textarea autocomplete="off" id="input"
+          <textarea
+            aria-expanded="${this.showDropdown_}" aria-controls="matches"
+            role="combobox" autocomplete="off" id="input"
             type="search" spellcheck="false"
             placeholder="${this.inputPlaceholder_}"
             part="input"
@@ -38,7 +40,7 @@ export function getHtml(this: ComposeboxElement) {
                    spans -->
               <span id="invisibleText">${this.input_}</span><!--
               --><span id="ghostText">${this.smartComposeInlineHint_}</span><!--
-              --><span id="tabChip">Tab</span>
+              --><span id="tabChip">${this.i18n('composeboxSmartComposeTabTitle')}</span>
             </div>
           `: ''}
         </div>
