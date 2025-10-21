@@ -63,7 +63,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   ModelQualityLogsUploader* logs_uploader() { return logs_uploader_.get(); }
   LoginStateChecker* login_checker() { return login_state_checker_.get(); }
   ChangePasswordFormFinder* form_finder() { return form_finder_.get(); }
-  content::WebContents* executor() { return executor_.get(); }
   PasswordChangeUIController* ui_controller() { return ui_controller_.get(); }
   std::u16string generated_password() { return generated_password_; }
   ChangePasswordFormFillingSubmissionHelper* submission_verifier() {
@@ -79,6 +78,11 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   // Called by the OtpFieldDetector if an OTP field is detected in any relevant
   // frame of executor_. Visible for testing.
   void OnOtpFieldDetected();
+
+  // Returns the web contents, on which the password change is run.
+  content::WebContents* executor() {
+    return hidden_executor_ ? hidden_executor_.get() : visible_executor_.get();
+  }
 
  private:
   // PasswordChangeDelegate Impl
@@ -125,7 +129,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   std::u16string generated_password_;
 
   raw_ptr<content::WebContents> originator_ = nullptr;
-  std::unique_ptr<content::WebContents> executor_;
+  // If the password change tab is visible to the user, hidden_executor_ will be
+  // null, if it's hidden, visible_executor_ will be null.
+  std::unique_ptr<content::WebContents> hidden_executor_;
+  raw_ptr<content::WebContents> visible_executor_ = nullptr;
 
   const raw_ptr<Profile> profile_ = nullptr;
 

@@ -202,6 +202,10 @@ BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 // Enables improvements to password change functionality.
 BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 
+// Runs the Password Change flow (enabled by kImprovedPasswordChangeService
+// feature flag) in a user-visible background tab.
+BASE_DECLARE_FEATURE(kRunPasswordChangeInBackgroundTab);
+
 #if BUILDFLAG(IS_ANDROID)
 // The feature flag for reloading passwords when the trusted vault encryption
 // state changes.

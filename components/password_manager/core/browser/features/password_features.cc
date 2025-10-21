@@ -173,6 +173,9 @@ BASE_FEATURE(kEnablePasswordManagerMojoApi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImprovedPasswordChangeService, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRunPasswordChangeInBackgroundTab,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
