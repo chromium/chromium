@@ -10,6 +10,7 @@ import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.base.MutableParamWithSafeDefault;
+import org.chromium.base.SysUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
@@ -1405,7 +1406,10 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sCctAdaptiveButtonDefaultVariant =
             newIntCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "default_variant", 0);
     public static final IntCachedFeatureParam sLowMemoryDeviceThresholdMb =
-            newIntCachedFeatureParam(LOW_END_MEMORY_EXPERIMENT, "LowMemoryDeviceThresholdMB", 1024);
+            newIntCachedFeatureParam(
+                    LOW_END_MEMORY_EXPERIMENT,
+                    "LowMemoryDeviceThresholdMB",
+                    SysUtils.LOW_MEMORY_DEVICE_THRESHOLD_MB);
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleForceCardShow =
             newBooleanCachedFeatureParam(ANDROID_APP_INTEGRATION_MODULE, "force_card_shown", false);
 
