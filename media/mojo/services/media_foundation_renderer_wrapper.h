@@ -33,14 +33,12 @@ class MediaFoundationRendererWrapper final
       public mojom::MuteStateObserver {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
-  using ClientExtension = mojom::MediaFoundationRendererClientExtension;
 
   MediaFoundationRendererWrapper(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
-      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
-      mojo::PendingRemote<ClientExtension> client_extension_remote);
+      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver);
   MediaFoundationRendererWrapper(const MediaFoundationRendererWrapper&) =
       delete;
   MediaFoundationRendererWrapper operator=(
@@ -82,8 +80,6 @@ class MediaFoundationRendererWrapper final
       frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
-  mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>
-      client_extension_remote_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
 
   base::CallbackListSubscription luid_update_subscription_;

@@ -29,7 +29,6 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
     std::unique_ptr<MediaLog> media_log,
     std::unique_ptr<MojoRenderer> mojo_renderer,
     mojo::PendingRemote<RendererExtension> pending_renderer_extension,
-    mojo::PendingReceiver<ClientExtension> client_extension_receiver,
     std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
     VideoRendererSink* sink,
     mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
@@ -40,8 +39,6 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
       pending_renderer_extension_(std::move(pending_renderer_extension)),
       dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
       sink_(sink),
-      pending_client_extension_receiver_(std::move(client_extension_receiver)),
-      client_extension_receiver_(this),
       pending_media_foundation_renderer_observer_(
           std::move(media_foundation_renderer_observer)) {
   DVLOG_FUNC(1);
@@ -77,8 +74,6 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
   media_foundation_renderer_observer_.Bind(
       std::move(pending_media_foundation_renderer_observer_),
       media_task_runner_);
-  client_extension_receiver_.Bind(std::move(pending_client_extension_receiver_),
-                                  media_task_runner_);
 
   // Handle unexpected mojo pipe disconnection such as "mf_cdm" utility process
   // crashed or killed in Browser task manager.
@@ -253,8 +248,6 @@ void MediaFoundationRendererClient::OnVideoFrameRateChange(
 
   client_->OnVideoFrameRateChange(fps);
 }
-
-// media::mojom::MediaFoundationRendererClientExtension
 
 // private
 

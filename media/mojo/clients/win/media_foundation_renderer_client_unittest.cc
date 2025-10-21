@@ -175,11 +175,6 @@ class MediaFoundationRendererClientTest
         std::make_unique<FakeMediaFoundationRendererExtension>(),
         mf_renderer_extensions_remote.InitWithNewPipeAndPassReceiver());
 
-    mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-        client_extension_remote;
-    auto client_extension_receiver =
-        client_extension_remote.InitWithNewPipeAndPassReceiver();
-
     auto mojo_renderer = std::make_unique<MojoRenderer>(
         task_environment_.GetMainThreadTaskRunner(),
         /*video_overlay_factory*/ nullptr,
@@ -196,7 +191,6 @@ class MediaFoundationRendererClientTest
         std::make_unique<MediaFoundationRendererClient>(
             task_environment_.GetMainThreadTaskRunner(), media_log_.Clone(),
             std::move(mojo_renderer), std::move(mf_renderer_extensions_remote),
-            std::move(client_extension_receiver),
             std::move(dcomp_texture_wrapper_), &mock_video_renderer_sink_,
             std::move(media_foundation_renderer_observer_remote));
   }

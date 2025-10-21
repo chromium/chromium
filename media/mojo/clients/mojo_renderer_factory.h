@@ -54,8 +54,6 @@ class MojoRendererFactory final : public RendererFactory {
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver,
-      mojo::PendingRemote<mojom::MediaFoundationRendererClientExtension>
-          client_extension_remote,
       const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       VideoRendererSink* video_renderer_sink);
 #endif  // BUILDFLAG(IS_WIN)

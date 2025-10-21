@@ -41,12 +41,10 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
     mojo::PendingRemote<mojom::MediaLog> media_log_remote,
-    mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
-    mojo::PendingRemote<ClientExtension> client_extension_remote)
+    mojo::PendingReceiver<RendererExtension> renderer_extension_receiver)
     : frame_interfaces_(frame_interfaces),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)),
-      client_extension_remote_(std::move(client_extension_remote), task_runner),
       site_mute_observer_(this) {
   DVLOG_FUNC(1);
   DCHECK(frame_interfaces_);

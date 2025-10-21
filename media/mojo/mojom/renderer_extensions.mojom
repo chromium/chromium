@@ -37,21 +37,6 @@ struct FramePoolInitializationParameters {
 };
 
 [EnableIf=is_win]
-// Extension of the mojo:RendererClient communication layer for Media
-// Foundation based Renderer.
-// This allows the MF_CDM utility process to call the blink Renderer process
-// side.
-// Concretely, the MediaFoundationRenderer (in the MF_CDM process) uses these
-// methods to send video frames as textures to the
-// MediaFoundationRendererClient which lives in the blink renderer process so
-// that the MediaFoundationRenderer can signal to the video stream sink that
-// the specific texture is ready to be displayed.
-interface MediaFoundationRendererClientExtension {
-  // TODO(448103582): This is referenced in lots of places, so will remove
-  // separately.
-};
-
-[EnableIf=is_win]
 // Extension of the mojo::Renderer communication layer for MediaFoundation-based
 // Renderer.
 // This allows the MediaFoundationRendererClient in the render process to call

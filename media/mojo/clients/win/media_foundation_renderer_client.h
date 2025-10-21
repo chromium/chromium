@@ -46,20 +46,15 @@ class MediaLog;
 // b) -> renderer_extension_->GetDCOMPSurface() -> OnDCOMPSurfaceReceived() ->
 //    SetDCOMPSurfaceHandle() -> OnDCOMPSurfaceHandleSet()
 // ```
-class MediaFoundationRendererClient
-    : public Renderer,
-      public RendererClient,
-      public media::mojom::MediaFoundationRendererClientExtension {
+class MediaFoundationRendererClient : public Renderer, public RendererClient {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
-  using ClientExtension = media::mojom::MediaFoundationRendererClientExtension;
 
   MediaFoundationRendererClient(
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       std::unique_ptr<MediaLog> media_log,
       std::unique_ptr<MojoRenderer> mojo_renderer,
       mojo::PendingRemote<RendererExtension> pending_renderer_extension,
-      mojo::PendingReceiver<ClientExtension> client_extension_receiver,
       std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
       VideoRendererSink* sink,
       mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
@@ -141,10 +136,6 @@ class MediaFoundationRendererClient
   PipelineStatusCallback init_cb_;
   raw_ptr<CdmContext> cdm_context_ = nullptr;
   CdmAttachedCB cdm_attached_cb_;
-
-  // Used to receive calls from the MF_CMD LPAC Utility Process.
-  mojo::PendingReceiver<ClientExtension> pending_client_extension_receiver_;
-  mojo::Receiver<ClientExtension> client_extension_receiver_;
 
   mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
       pending_media_foundation_renderer_observer_;
