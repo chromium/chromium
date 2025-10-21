@@ -327,8 +327,16 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                 mTabGroupModelFilter.isTabInTabGroup(mModel.getTabByIdChecked(lastTab.getTabId()));
         lastTab.setTrailingMargin((lastTabIsInGroup && !lastTab.isCollapsed()) ? marginWidth : 0.f);
 
-        // 3. Ensure the second-to-last tab doesn't have a trailing margin after reorder.
-        if (stripTabs.length > 1) stripTabs[stripTabs.length - 2].setTrailingMargin(0f);
+        // 3. Clear the "previous last" tab's trailing margin after reorder. For MultiTabs reorder,
+        // the "previous last" could be any tab after bulk moves, so loop backward and clear the
+        // first non-zero trailing margin.
+        for (int i = stripTabs.length - 2; i >= 0; i--) {
+            StripLayoutTab stripTab = stripTabs[i];
+            if (stripTab.getTrailingMargin() != 0) {
+                stripTab.setTrailingMargin(0f);
+                break;
+            }
+        }
     }
 
     // ============================================================================================
