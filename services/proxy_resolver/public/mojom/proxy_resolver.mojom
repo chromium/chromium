@@ -11,8 +11,10 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/proxy_config.mojom";
 import "url/mojom/url.mojom";
+
+[EnableIf=is_win]
+import "services/network/public/mojom/proxy_config.mojom";
 
 // Mirror of net::ProxyResolveDnsOperation.
 enum HostResolveOperation {
