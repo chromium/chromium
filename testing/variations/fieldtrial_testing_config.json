@@ -23768,6 +23768,7 @@
                         "IPH_SideBySideTabSwitchFeature",
                         "ReloadSelectionModel",
                         "SideBySide",
+                        "SideBySideDropTargetNudge",
                         "SideBySideLinkMenuNewBadge",
                         "SideBySideSessionRestore"
                     ]
