@@ -16,7 +16,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -45,7 +45,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -78,7 +78,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -106,7 +106,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -135,7 +135,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -161,7 +161,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -200,7 +200,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -247,7 +247,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -285,7 +285,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -323,7 +323,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -365,7 +365,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -412,7 +412,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -451,7 +451,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -489,7 +489,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -527,7 +527,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -567,7 +567,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
@@ -607,7 +607,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "1002:7480-24.2.8",
+            "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
