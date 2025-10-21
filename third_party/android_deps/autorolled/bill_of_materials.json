@@ -1145,6 +1145,11 @@
         "version": "1.0.0-alpha01"
     },
     {
+        "name": "work-runtime",
+        "group": "androidx.work",
+        "version": "2.12.0-SNAPSHOT"
+    },
+    {
         "name": "arcore",
         "group": "androidx.xr.arcore",
         "version": "1.0.0-alpha05"
