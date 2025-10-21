@@ -35,12 +35,12 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
     return kChromeUIUserDefaultsInternalsHost;
   }
 
-  std::string GetMimeType(const std::string& path) const override {
+  std::string GetMimeType(std::string_view path) const override {
     return "text/plain";
   }
 
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override {
     std::string response;
 

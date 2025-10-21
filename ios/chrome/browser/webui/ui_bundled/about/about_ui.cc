@@ -43,9 +43,9 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(std::string_view path) const override;
   bool ShouldDenyXFrameOptions() const override;
 
   // Send the response data.
@@ -72,7 +72,7 @@ std::string AboutUIHTMLSource::GetSource() const {
 }
 
 void AboutUIHTMLSource::StartDataRequest(
-    const std::string& path,
+    std::string_view path,
     web::URLDataSourceIOS::GotDataCallback callback) {
   std::string response;
   // Add your data source here, in alphabetical order.
@@ -120,7 +120,7 @@ void AboutUIHTMLSource::FinishDataRequest(
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(html));
 }
 
-std::string AboutUIHTMLSource::GetMimeType(const std::string& path) const {
+std::string AboutUIHTMLSource::GetMimeType(std::string_view path) const {
   if (path == kCreditsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }

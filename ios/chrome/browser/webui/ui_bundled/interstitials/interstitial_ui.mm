@@ -41,9 +41,9 @@ class InterstitialHTMLSource : public web::URLDataSourceIOS {
   // web::URLDataSourceIOS:
   std::string GetSource() const override;
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(std::string_view path) const override;
 
   // The ProfileIOS passed on initialization.  Used to construct
   // WebStates that are passed to IOSSecurityInterstitialPages.
@@ -62,7 +62,7 @@ InterstitialHTMLSource::InterstitialHTMLSource(ProfileIOS* profile)
 InterstitialHTMLSource::~InterstitialHTMLSource() = default;
 
 std::string InterstitialHTMLSource::GetMimeType(
-    const std::string& mime_type) const {
+    std::string_view mime_type) const {
   return "text/html";
 }
 
@@ -71,7 +71,7 @@ std::string InterstitialHTMLSource::GetSource() const {
 }
 
 void InterstitialHTMLSource::StartDataRequest(
-    const std::string& path,
+    std::string_view path,
     web::URLDataSourceIOS::GotDataCallback callback) {
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(web::WebState::CreateParams(profile_));

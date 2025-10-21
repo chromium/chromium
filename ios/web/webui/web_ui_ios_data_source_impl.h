@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_WEBUI_WEB_UI_IOS_DATA_SOURCE_IMPL_H_
 #define IOS_WEB_WEBUI_WEB_UI_IOS_DATA_SOURCE_IMPL_H_
 
-#include <map>
 #include <string>
 #include <string_view>
 
@@ -15,6 +14,7 @@
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/webui/url_data_manager_ios.h"
 #include "ios/web/webui/url_data_source_ios_impl.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/template_expressions.h"
 
 namespace web {
@@ -63,11 +63,11 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   // Methods that match URLDataSource which are called by
   // InternalDataSource.
   std::string GetSource() const;
-  std::string GetMimeType(const std::string& path) const;
-  void StartDataRequest(const std::string& path,
+  std::string GetMimeType(std::string_view path) const;
+  void StartDataRequest(std::string_view path,
                         URLDataSourceIOS::GotDataCallback callback);
 
-  int PathToIdrOrDefault(const std::string& path) const;
+  int PathToIdrOrDefault(std::string_view path) const;
 
   // The name of this source.
   // E.g., for favicons, this could be "favicon", which results in paths for
@@ -75,7 +75,7 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   std::string source_name_;
   int default_resource_;
   bool use_strings_js_ = false;
-  std::map<std::string, int> path_to_idr_map_;
+  absl::flat_hash_map<std::string, int> path_to_idr_map_;
   // The replacements are initiallized in the main thread and then used in the
   // IO thread. The map is safe to read from multiple threads as long as no
   // further changes are made to it after initialization.

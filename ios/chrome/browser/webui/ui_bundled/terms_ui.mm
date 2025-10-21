@@ -27,9 +27,9 @@ class TermsUIHTMLSource : public web::URLDataSourceIOS {
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(std::string_view path) const override;
   bool ShouldDenyXFrameOptions() const override;
 
   // Send the response data.
@@ -54,7 +54,7 @@ std::string TermsUIHTMLSource::GetSource() const {
 }
 
 void TermsUIHTMLSource::StartDataRequest(
-    const std::string& path,
+    std::string_view path,
     web::URLDataSourceIOS::GotDataCallback callback) {
   NSString* terms_of_service_path =
       base::SysUTF8ToNSString(GetTermsOfServicePath());
@@ -77,7 +77,7 @@ void TermsUIHTMLSource::FinishDataRequest(
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(html));
 }
 
-std::string TermsUIHTMLSource::GetMimeType(const std::string& path) const {
+std::string TermsUIHTMLSource::GetMimeType(std::string_view path) const {
   return "text/html";
 }
 
