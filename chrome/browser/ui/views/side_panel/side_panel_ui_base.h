@@ -160,7 +160,7 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   // side panel.
   std::optional<UniqueKey> GetNewActiveKeyOnTabChanged();
 
-  SidePanelEntryWaiter* waiter() const;
+  SidePanelEntryWaiter* waiter(SidePanelEntry::PanelType type) const;
 
   const raw_ptr<Browser> browser_;
 

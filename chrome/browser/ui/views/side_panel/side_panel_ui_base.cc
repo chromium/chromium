@@ -208,8 +208,9 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
   return std::nullopt;
 }
 
-SidePanelEntryWaiter* SidePanelUIBase::waiter() const {
-  return panel_data_.at(SidePanelEntry::PanelType::kContent)->waiter.get();
+SidePanelEntryWaiter* SidePanelUIBase::waiter(
+    SidePanelEntry::PanelType type) const {
+  return panel_data_.at(type)->waiter.get();
 }
 
 void SidePanelUIBase::OnTabStripModelChanged(

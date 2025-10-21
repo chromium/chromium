@@ -72,8 +72,9 @@ void SidePanelCoordinator::Toggle(
   // it should also be closed. This handles quick double clicks
   // to close the sidepanel.
   if (IsSidePanelShowing()) {
-    if (waiter()->loading_entry() == GetEntryForKey(key)) {
-      waiter()->ResetLoadingEntryIfNecessary();
+    SidePanelEntry* entry = GetEntryForKey(key);
+    if (entry && waiter(entry->type())->loading_entry() == entry) {
+      waiter(entry->type())->ResetLoadingEntryIfNecessary();
       Close();
       return;
     }
@@ -111,8 +112,9 @@ void SidePanelCoordinator::DisableAnimationsForTesting() {
       ->DisableAnimationsForTesting();  // IN-TEST
 }
 
-SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  return waiter()->loading_entry();
+SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting(
+    SidePanelEntry::PanelType type) const {
+  return waiter(type)->loading_entry();
 }
 
 void SidePanelCoordinator::Show(
@@ -150,7 +152,7 @@ void SidePanelCoordinator::Show(
 
   // If the side panel is already showing, cancel all loads and do nothing.
   if (current_key() && *current_key() == input) {
-    waiter()->ResetLoadingEntryIfNecessary();
+    waiter(entry->type())->ResetLoadingEntryIfNecessary();
 
     // If the side panel is in the process of closing, show it instead.
     if (browser_view_->contents_height_side_panel()->state() ==
@@ -166,10 +168,11 @@ void SidePanelCoordinator::Show(
   SidePanelUtil::RecordEntryShowTriggeredMetrics(
       browser_view_->browser(), entry->key().id(), open_trigger);
 
-  waiter()->WaitForEntry(
-      entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
-                            base::Unretained(this), suppress_animations, input,
-                            open_trigger));
+  waiter(entry->type())
+      ->WaitForEntry(entry,
+                     base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
+                                    base::Unretained(this), suppress_animations,
+                                    input, open_trigger));
 }
 
 // There are 3 different contexts in which the side panel can be closed. All go
@@ -359,7 +362,8 @@ SidePanelEntry* SidePanelCoordinator::GetCurrentSidePanelEntryForTesting() {
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
-  waiter()->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
+  waiter(SidePanelEntry::PanelType::kContent)
+      ->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,

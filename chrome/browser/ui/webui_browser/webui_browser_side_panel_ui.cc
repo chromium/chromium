@@ -93,7 +93,7 @@ void WebUIBrowserSidePanelUI::Show(
 
   SidePanelEntry* entry = GetEntryForUniqueKey(input);
   if (current_key() && *current_key() == input) {
-    waiter()->ResetLoadingEntryIfNecessary();
+    waiter(entry->type())->ResetLoadingEntryIfNecessary();
 
     // TODO(webium): Implement the following:
     // If the side panel is in the process of closing, show it instead.
@@ -105,10 +105,12 @@ void WebUIBrowserSidePanelUI::Show(
     return;
   }
 
-  waiter()->WaitForEntry(
-      entry, base::BindOnce(&WebUIBrowserSidePanelUI::PopulateSidePanel,
-                            base::Unretained(this), suppress_animations, input,
-                            /*open_trigger=*/std::nullopt));
+  waiter(entry->type())
+      ->WaitForEntry(
+          entry,
+          base::BindOnce(&WebUIBrowserSidePanelUI::PopulateSidePanel,
+                         base::Unretained(this), suppress_animations, input,
+                         /*open_trigger=*/std::nullopt));
 }
 
 void WebUIBrowserSidePanelUI::PopulateSidePanel(

@@ -64,7 +64,8 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   SidePanelEntry* GetCurrentSidePanelEntryForTesting();
 
-  SidePanelEntry* GetLoadingEntryForTesting() const;
+  SidePanelEntry* GetLoadingEntryForTesting(
+      SidePanelEntry::PanelType type) const;
 
  private:
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is

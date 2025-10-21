@@ -2520,8 +2520,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loaded_content_entry1_->key().id());
   // Verify the loading_content_entry1_ is the loading entry.
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(),
-            loading_content_entry1_);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry1_->type()),
+      loading_content_entry1_);
 
   // While that entry is loading, switch to a different entry with content that
   // needs to load.
@@ -2532,23 +2533,27 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
       SidePanelUtil::GetSidePanelContentProxy(loading_content2);
   EXPECT_FALSE(loading_content_proxy2->IsAvailable());
   // Verify the loading_content_entry2_ is no longer the loading entry.
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(),
-            loading_content_entry2_);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry2_->type()),
+      loading_content_entry2_);
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loaded_content_entry1_->key().id());
 
   // Set loading_content_entry1_ as available and verify it is not made the
   // active entry.
   loading_content_proxy1->SetAvailable(true);
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(),
-            loading_content_entry2_);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry2_->type()),
+      loading_content_entry2_);
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loaded_content_entry1_->key().id());
 
   // Set loading_content_entry2_ as available and verify it is made the active
   // entry.
   loading_content_proxy2->SetAvailable(true);
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(), nullptr);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry2_->type()),
+      nullptr);
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loading_content_entry2_->key().id());
 }
@@ -2566,8 +2571,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   SidePanelContentProxy* loading_content_proxy1 =
       SidePanelUtil::GetSidePanelContentProxy(loading_content);
   EXPECT_FALSE(loading_content_proxy1->IsAvailable());
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(),
-            loading_content_entry1_);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry1_->type()),
+      loading_content_entry1_);
   // Set the content proxy to available.
   loading_content_proxy1->SetAvailable(true);
   EXPECT_TRUE(
@@ -2583,13 +2589,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loading_content_entry1_->key().id());
   // Verify the loading_content_entry2_ is the loading entry.
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(),
-            loading_content_entry2_);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry2_->type()),
+      loading_content_entry2_);
 
   // While that entry is loading, switch back to the currently showing entry.
   coordinator()->Show(loading_content_entry1_->key().id());
   // Verify the loading_content_entry2_ is no longer the loading entry.
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(), nullptr);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry1_->type()),
+      nullptr);
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loading_content_entry1_->key().id());
 
@@ -2602,7 +2611,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   // Show loading_content_entry2_ and verify it shows without availability
   // needing to be set again.
   coordinator()->Show(loading_content_entry2_->key().id());
-  EXPECT_EQ(coordinator()->GetLoadingEntryForTesting(), nullptr);
+  EXPECT_EQ(
+      coordinator()->GetLoadingEntryForTesting(loading_content_entry2_->type()),
+      nullptr);
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             loading_content_entry2_->key().id());
 }
