@@ -65,6 +65,61 @@ def get_dates_range() -> list[tuple[datetime.date, datetime.date]]:
     return dates_range
 
 
+def get_existing_owners(root_directory: str) -> dict[str, set[str]]:
+    """Walks a directory to find all OWNERS files and parse them.
+
+    Args:
+        root_directory: The directory to start the search from.
+
+    Returns:
+        A dictionary mapping directory paths to a set of owner usernames.
+        `per-file` entries in OWNERS files are ignored.
+        `file:` entries are ignored.
+        `set noparent` directives are ignored.
+    """
+    owners_map = {}
+    for root, _, files in os.walk(root_directory):
+        if 'OWNERS' in files:
+            owners_path = os.path.join(root, 'OWNERS')
+            with open(owners_path, 'r') as f:
+                owners = set()
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith(('#', 'per-file', 'file:',
+                                                    'set noparent')):
+                        continue
+                    # Extract username from email format.
+                    if '@' in line:
+                        owners.add(line.split('@')[0])
+                if owners:
+                    owners_map[os.path.relpath(
+                        root, root_directory)] = owners
+    return owners_map
+
+
+def is_high_level_owner(reviewer: str, path: str,
+                        owners_map: dict[str, set[str]]) -> bool:
+    """Checks if a reviewer is an owner of the given path or any parent path.
+
+    Args:
+        reviewer: The username of the reviewer.
+        path: The file path of the change being reviewed.
+        owners_map: The map of existing owners.
+
+    Returns:
+        True if the reviewer is an owner of the path or a parent directory.
+    """
+    current_path = path
+    while current_path:
+        if current_path in owners_map and reviewer in owners_map[current_path]:
+            return True
+        parent_path = os.path.dirname(current_path)
+        if parent_path == current_path:
+            break
+        current_path = parent_path
+    return False
+
+
 def progress_indicator(future) -> None:
     """Simple progress indicator callback function for multi-process calls."""
     print('.', end='', flush=True)
@@ -106,11 +161,15 @@ def get_all_commits_of_folder(path: str, quiet: bool = False) -> list[str]:
 
 
 def extract_commits_informations(commits: list[str],
+                                 owners_map: dict[str, set[str]],
+                                 owner_exclusion: bool,
                                  quiet: bool = False) -> dict:
     """Parses raw commit logs and aggregates statistics by folder.
 
     Args:
         commits: A list of raw commit description strings.
+        owners_map: A dictionary mapping directories to their owners.
+        owner_exclusion: If True, exclude high-level owners from review stats.
         quiet: If True, suppresses progress indicators.
 
     Returns:
@@ -149,10 +208,13 @@ def extract_commits_informations(commits: list[str],
         allStatsPerFolder[path]['last_update'] = max(
             allStatsPerFolder[path]['last_update'], date)
         allStatsPerFolder[path]['total_commit'] += 1
-        allStatsPerFolder[path]['total_review'] += len(reviewers)
         allStatsPerFolder[path]['individual_stats'][author][
             'commit_count'] += 1
         for reviewer in reviewers:
+            if owner_exclusion and is_high_level_owner(reviewer, path,
+                                                       owners_map):
+                continue
+            allStatsPerFolder[path]['total_review'] += 1
             if not reviewer in allStatsPerFolder[path]['individual_stats']:
                 allStatsPerFolder[path]['individual_stats'][reviewer] = dict(
                     commit_count=0, review_count=0)
@@ -356,15 +418,26 @@ if __name__ == '__main__':
         '--output-file',
         default='final_algo.csv',
         help="The path to the output CSV file. Defaults to 'final_algo.csv'.")
+    parser.add_argument(
+        '--disable-owner-exclusion',
+        action='store_true',
+        help='Disable exclusion of higher-level owners from review stats.')
     args = parser.parse_args()
 
     root_folder = args.root_directory
     output_file = args.output_file
     quiet_mode = args.quiet
+    owner_exclusion = not args.disable_owner_exclusion
+
+    # Pre-computation: Build owners map
+    owners_map = get_existing_owners(root_folder)
 
     # Phase 1: Data Collection
     commits = get_all_commits_of_folder(root_folder, quiet=quiet_mode)
-    stats_per_folder = extract_commits_informations(commits, quiet=quiet_mode)
+    stats_per_folder = extract_commits_informations(commits,
+                                                    owners_map,
+                                                    owner_exclusion,
+                                                    quiet=quiet_mode)
 
     # Clear output file before starting
     with open(output_file, 'w') as f:
