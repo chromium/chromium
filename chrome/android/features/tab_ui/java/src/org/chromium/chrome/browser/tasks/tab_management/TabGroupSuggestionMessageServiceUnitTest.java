@@ -345,4 +345,19 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         assertEquals("Group tabs", data.getActionText());
         assertEquals("No thanks", data.getDismissActionText());
     }
+
+    @Test
+    public void testIsIncognitoFalse() {
+        List<Integer> tabIds = List.of(TAB1_ID, TAB2_ID);
+
+        mTabGroupSuggestionMessageService.addGroupMessageForTabs(
+                tabIds, mSuggestionLifecycleObserver);
+        verify(mTabGroupSuggestionMessageService)
+                .sendAvailabilityNotification(mMessageDataCaptor.capture());
+
+        MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
+        PropertyModel model = modelFactory.build(mContext, ignored -> {});
+
+        assertEquals(false, model.get(MessageCardViewProperties.IS_INCOGNITO));
+    }
 }
