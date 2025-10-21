@@ -178,7 +178,6 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
         // tablet toolbar resize refactor is enabled.
         if (mIsTablet) {
             if (!ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()
-                    || mTabStripVisibilitySupplier.get() == null
                     || mTabStripVisibilitySupplier.get() != StripVisibilityState.HIDDEN_BY_FADE) {
                 return false;
             }

@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
@@ -515,13 +514,10 @@ public class RootUiCoordinator
         mTabStripVisibilitySupplier =
                 new TransitiveObservableSupplier<>(
                         mLayoutManagerImplSupplier,
-                        (layoutManagerImpl) -> {
-                            StripLayoutHelperManager stripLayoutHelperManager =
-                                    layoutManagerImpl.getStripLayoutHelperManager();
-                            return stripLayoutHelperManager != null
-                                    ? stripLayoutHelperManager.getStripVisibilityStateSupplier()
-                                    : null;
-                        });
+                        (layoutManagerImpl) ->
+                                layoutManagerImpl
+                                        .getStripLayoutHelperManager()
+                                        .getStripVisibilityStateSupplier());
 
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
