@@ -108,7 +108,7 @@ BrowserViewLayoutDelegateImplBase::GetImmersiveModeController() const {
 
 ExclusiveAccessBubbleViews*
 BrowserViewLayoutDelegateImplBase::GetExclusiveAccessBubble() const {
-  return browser_view_->exclusive_access_bubble();
+  return browser_view_->GetExclusiveAccessBubble();
 }
 
 bool BrowserViewLayoutDelegateImplBase::IsTopControlsSlideBehaviorEnabled()

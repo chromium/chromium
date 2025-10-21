@@ -264,7 +264,7 @@ ExclusiveAccessBubbleType ExclusiveAccessTest::GetExclusiveAccessBubbleType() {
 ExclusiveAccessBubbleViews*
 ExclusiveAccessTest::GetExclusiveAccessBubbleView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  return browser_view ? browser_view->exclusive_access_bubble() : nullptr;
+  return browser_view ? browser_view->GetExclusiveAccessBubble() : nullptr;
 }
 
 bool ExclusiveAccessTest::IsExclusiveAccessBubbleDisplayed() {

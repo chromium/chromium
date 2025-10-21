@@ -6,6 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,6 +27,11 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
       delete;
   ExclusiveAccessBubbleViewsTest& operator=(
       const ExclusiveAccessBubbleViewsTest&) = delete;
+
+  ExclusiveAccessBubbleViewsContext* GetContext() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetExclusiveAccessBubbleViewsContextForTesting();
+  }
 
   void ClearSnooze() {
     GetExclusiveAccessBubbleView()->snooze_until_ = base::TimeTicks::Min();
@@ -74,9 +80,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, NativeClose) {
 // despite the type being EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE. See
 // crbug.com/1472150.
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
-  ExclusiveAccessBubbleViews bubble(
-      BrowserView::GetBrowserViewForBrowser(browser()), {.has_download = true},
-      base::NullCallback());
+  ExclusiveAccessBubbleViews bubble(GetContext(), {.has_download = true},
+                                    base::NullCallback());
   EXPECT_TRUE(IsBubbleDownloadNotification(&bubble));
 }
 

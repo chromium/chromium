@@ -121,7 +121,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->exclusive_access_bubble();
+    return browser_view->GetExclusiveAccessBubble();
   }
 
   KeyboardLockController* GetKeyboardLockController() {

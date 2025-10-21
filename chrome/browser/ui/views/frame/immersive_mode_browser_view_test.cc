@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   {
     ui_test_utils::FullscreenWaiter waiter(
         browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen);
-    browser_view->ExitFullscreen();
+    browser_view->GetExclusiveAccessContext()->ExitFullscreen();
     waiter.Wait();
   }
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -570,7 +571,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
               .force_update = true,
           },
           base::NullCallback());
-  EXPECT_TRUE(browser_view()->IsExclusiveAccessBubbleDisplayed());
+  EXPECT_TRUE(browser_view()
+                  ->GetExclusiveAccessContext()
+                  ->IsExclusiveAccessBubbleDisplayed());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
@@ -588,7 +591,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
            .force_update = true},
           base::NullCallback());
-  EXPECT_FALSE(browser_view()->IsExclusiveAccessBubbleDisplayed());
+  EXPECT_FALSE(browser_view()
+                   ->GetExclusiveAccessContext()
+                   ->IsExclusiveAccessBubbleDisplayed());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,

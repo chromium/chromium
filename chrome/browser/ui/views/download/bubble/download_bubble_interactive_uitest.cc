@@ -266,7 +266,7 @@ class DownloadBubbleInteractiveUiTest
     return base::BindLambdaForTesting([&, displayed = displayed]() {
       ExclusiveAccessBubbleViews* bubble =
           BrowserView::GetBrowserViewForBrowser(browser())
-              ->exclusive_access_bubble();
+              ->GetExclusiveAccessBubble();
       return displayed ==
              (bubble ? IsExclusiveAccessBubbleVisible(bubble) : false);
     });
@@ -277,7 +277,7 @@ class DownloadBubbleInteractiveUiTest
     return base::BindLambdaForTesting([&, for_download = for_download]() {
       ExclusiveAccessBubbleViews* bubble =
           BrowserView::GetBrowserViewForBrowser(browser())
-              ->exclusive_access_bubble();
+              ->GetExclusiveAccessBubble();
       return for_download ==
              (bubble ? ExclusiveAccessTest::IsBubbleDownloadNotification(bubble)
                      : false);

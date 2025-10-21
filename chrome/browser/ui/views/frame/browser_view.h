@@ -22,12 +22,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -76,6 +74,7 @@ class ContentsContainerView;
 class ContentsLayoutManager;
 struct DropData;
 class ExclusiveAccessBubbleViews;
+class ExclusiveAccessBubbleViewsContext;
 class InfoBarContainerView;
 class LocationBarView;
 class MultiContentsView;
@@ -130,8 +129,6 @@ class BrowserView : public BrowserWindow,
                     public content::WebContentsObserver,
                     public views::ClientView,
                     public infobars::InfoBarContainer::Delegate,
-                    public ExclusiveAccessContext,
-                    public ExclusiveAccessBubbleViewsContext,
                     public ImmersiveModeController::Observer,
                     public webapps::AppBannerManager::Observer,
                     public views::FocusChangeListener {
@@ -181,6 +178,8 @@ class BrowserView : public BrowserWindow,
   // Returns a Browser instance of this view.
   Browser* browser() { return browser_; }
   const Browser* browser() const { return browser_; }
+
+  Profile* GetProfile();
 
   const TopControlsSlideController* top_controls_slide_controller() const {
     return top_controls_slide_controller_.get();
@@ -290,11 +289,6 @@ class BrowserView : public BrowserWindow,
   // Accessor for the InfobarContainer.
   InfoBarContainerView* infobar_container() { return infobar_container_; }
 
-  // Accessor for the FullscreenExitBubbleViews.
-  ExclusiveAccessBubbleViews* exclusive_access_bubble() {
-    return exclusive_access_bubble_.get();
-  }
-
   // Accessors for the contents WebView.
   // Will return the single active contents view. If side by side is enabled,
   // it may make more sense to use GetAllVisibleContentsWebViews() depending on
@@ -311,6 +305,13 @@ class BrowserView : public BrowserWindow,
 
   // Accessor for the BrowserView's TabSearchBubbleHost instance.
   TabSearchBubbleHost* GetTabSearchBubbleHost();
+
+  // Accessor for the ExclusiveAccessBubble.
+  ExclusiveAccessBubbleViews* GetExclusiveAccessBubble();
+
+  // Test-specific accessor for the bubble view context.
+  ExclusiveAccessBubbleViewsContext*
+  GetExclusiveAccessBubbleViewsContextForTesting();
 
   // Returns true if the top UI are visible on screen.
   bool GetTabStripVisible() const;
@@ -519,15 +520,6 @@ class BrowserView : public BrowserWindow,
   void OnWebApiWindowResizableChanged() override;
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
-  void EnterFullscreen(const url::Origin& origin,
-                       ExclusiveAccessBubbleType bubble_type,
-                       FullscreenTabParams fullscreen_tab_params) override;
-  void ExitFullscreen() override;
-  void UpdateExclusiveAccessBubble(
-      const ExclusiveAccessBubbleParams& params,
-      ExclusiveAccessBubbleHideCallback first_hide_callback) override;
-  bool IsExclusiveAccessBubbleDisplayed() const override;
-  void OnExclusiveAccessUserInput() override;
   bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreen() const override;
   bool IsFullscreenBubbleVisible() const override;
@@ -758,13 +750,6 @@ class BrowserView : public BrowserWindow,
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  // ExclusiveAccessContext:
-  Profile* GetProfile() override;
-  void UpdateUIForTabFullscreen() override;
-  content::WebContents* GetWebContentsForExclusiveAccess() override;
-  bool CanUserEnterFullscreen() const override;
-  bool CanUserExitFullscreen() const override;
-
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
@@ -884,15 +869,6 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
 
   class AccessibilityModeObserver;
-
-  // ExclusiveAccessBubbleViewsContext:
-  ExclusiveAccessManager* GetExclusiveAccessManager() override;
-  ui::AcceleratorProvider* GetAcceleratorProvider() override;
-  gfx::NativeView GetBubbleParentView() const override;
-  gfx::Rect GetClientAreaBoundsInScreen() const override;
-  bool IsImmersiveModeEnabled() const override;
-  gfx::Rect GetTopContainerBoundsInScreen() override;
-  void DestroyAnyExclusiveAccessBubble() override;
 
   // Sets or clears the flags to force showing bookmark bar.
   void SetForceShowBookmarkBarFlag(BookmarkBarController::ForceShowFlag flag);
@@ -1123,6 +1099,9 @@ class BrowserView : public BrowserWindow,
   bool ShouldUseBrowserContentMinimumSize() const;
   bool IsBrowserAWebApp() const;
 
+  class ExclusiveAccessContextImpl;
+  std::unique_ptr<ExclusiveAccessContextImpl> exclusive_access_context_;
+
   // The BrowserWidget that owns this view.
   std::unique_ptr<BrowserWidget> browser_widget_;
 
@@ -1304,12 +1283,6 @@ class BrowserView : public BrowserWindow,
   // to ignore requests to layout while in ProcessFullscreen() to reduce
   // jankiness.
   bool in_process_fullscreen_ = false;
-
-  std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
-  // Tracks the task to asynchronously destroy the exclusive access bubble.
-  base::CancelableTaskTracker exclusive_access_bubble_cancelable_task_tracker_;
-  std::optional<base::CancelableTaskTracker::TaskId>
-      exclusive_access_bubble_destruction_task_id_;
 
   // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
   // Kiosk session.

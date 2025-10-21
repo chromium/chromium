@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -597,7 +598,7 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
 #endif
   return !ImmersiveModeController::From(browser_view_->browser())
               ->IsEnabled() &&
-         browser_view_->CanUserExitFullscreen();
+         browser_view_->GetExclusiveAccessContext()->CanUserExitFullscreen();
 }
 
 void DownloadToolbarUIController::OpenSecuritySubpage(

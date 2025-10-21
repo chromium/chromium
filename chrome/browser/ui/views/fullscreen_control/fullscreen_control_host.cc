@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -191,8 +192,8 @@ void FullscreenControlHost::OnMouseEvent(const ui::MouseEvent& event) {
         // If the exit fullscreen prompt is being shown (say user just pressed
         // F11 with the cursor on the top of the screen) then we suppress the
         // fullscreen control host and just put it in cooldown mode.
-        const auto* bubble = browser_view_->exclusive_access_bubble();
-        if (bubble && bubble->IsShowing()) {
+        if (const auto* bubble = browser_view_->GetExclusiveAccessBubble();
+            bubble && bubble->IsShowing()) {
           in_mouse_cooldown_mode_ = true;
         } else {
           ShowForInputEntryMethod(InputEntryMethod::MOUSE);
@@ -292,8 +293,7 @@ bool FullscreenControlHost::IsAnimating() const {
 void FullscreenControlHost::ShowForInputEntryMethod(
     InputEntryMethod input_entry_method) {
   input_entry_method_ = input_entry_method;
-  auto* bubble = browser_view_->exclusive_access_bubble();
-  if (bubble) {
+  if (auto* const bubble = browser_view_->GetExclusiveAccessBubble()) {
     bubble->HideImmediately();
   }
   GetPopup()->Show(browser_view_->GetWidget()->GetClientAreaBoundsInScreen());
@@ -339,7 +339,7 @@ void FullscreenControlHost::OnPopupTimeout(
 
 bool FullscreenControlHost::IsExitUiNeeded() {
   return browser_view_->IsFullscreen() &&
-         browser_view_->CanUserExitFullscreen() &&
+         browser_view_->GetExclusiveAccessContext()->CanUserExitFullscreen() &&
          browser_view_->ShouldHideUIForFullscreen();
 }
 
@@ -369,5 +369,5 @@ float FullscreenControlHost::CalculateCursorBufferHeight() const {
 void FullscreenControlHost::OnExitFullscreenPopupClicked() {
   base::RecordAction(
       base::UserMetricsAction("ExitFullscreen_PopupCloseButton"));
-  browser_view_->ExitFullscreen();
+  browser_view_->GetExclusiveAccessContext()->ExitFullscreen();
 }

@@ -74,13 +74,17 @@ class ExclusiveAccessBubbleViewsTest : public InProcessBrowserTest {
  public:
   ExclusiveAccessBubbleViewsTest() = default;
 
+  ExclusiveAccessBubbleViewsContext* GetContext() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetExclusiveAccessBubbleViewsContextForTesting();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ExclusiveAccessBubbleParams params{
         .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION};
     bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-        BrowserView::GetBrowserViewForBrowser(browser()), params,
-        base::NullCallback());
+        GetContext(), params, base::NullCallback());
   }
 
   void TearDownOnMainThread() override {
@@ -232,8 +236,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
   ExclusiveAccessBubbleParams params{.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                                      .has_download = true};
   bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      BrowserView::GetBrowserViewForBrowser(browser()), params,
-      base::NullCallback());
+      GetContext(), params, base::NullCallback());
   EXPECT_TRUE(base::StartsWith(
       GetInstructionViewText(),
       CreateInstructionText(UserGoal::kSeeDownload, Shortcut::kPressEsc)));
@@ -246,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   ExclusiveAccessBubbleParams params{.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                                      .has_download = true};
   bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      BrowserView::GetBrowserViewForBrowser(browser()), params,
-      base::NullCallback());
+      GetContext(), params, base::NullCallback());
   UpdateExclusiveAccessBubbleType(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                                   /*has_download=*/true);
   EXPECT_TRUE(base::StartsWith(
