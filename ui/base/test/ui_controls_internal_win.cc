@@ -539,7 +539,8 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
     return true;
   }
 
-  if (!ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE)) {
+  if (!ui::SendMouseEvent(screen_point,
+                          MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK)) {
     return false;
   }
 
