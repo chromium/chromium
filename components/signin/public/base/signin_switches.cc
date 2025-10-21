@@ -37,7 +37,7 @@ const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kAccountRetrievalWaitsForRestoration,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAllowlistScopesForMdmErrors, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowlistScopesForMdmErrors, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN)
