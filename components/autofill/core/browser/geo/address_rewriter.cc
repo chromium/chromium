@@ -7,12 +7,14 @@
 #include <memory>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/grit/autofill_address_rewriter_resources_map.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -25,9 +27,8 @@ std::string GetMapKey(const std::string& region) {
   return base::StrCat({"IDR_ADDRESS_REWRITER_", region, "_RULES"});
 }
 
-// Helper function to extract region rules data.
-std::string ExtractRegionRulesData(const std::string& region) {
-  std::string resource_key = GetMapKey(region);
+// Helper function to retrieve resource data.
+std::string GetResourceData(const std::string& resource_key) {
   for (const webui::ResourcePath& resource :
        kAutofillAddressRewriterResources) {
     if (resource.path == resource_key) {
@@ -39,8 +40,22 @@ std::string ExtractRegionRulesData(const std::string& region) {
       return data;
     }
   }
-
   return std::string();
+}
+
+// Helper function to extract region rules data.
+std::string ExtractRegionRulesData(const std::string& region) {
+  std::string resource_key = GetMapKey(region);
+
+  if (base::FeatureList::IsEnabled(features::kAutofillFixRewriterRules)) {
+    std::string resource_data =
+        GetResourceData(base::StrCat({resource_key, "_UPDATED"}));
+    if (!resource_data.empty()) {
+      return resource_data;
+    }
+  }
+
+  return GetResourceData(resource_key);
 }
 
 }  // namespace

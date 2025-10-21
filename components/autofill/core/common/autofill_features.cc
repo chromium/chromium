@@ -825,6 +825,10 @@ BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
 BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the rewriter uses updated rewrite rules.
+// TODO(crbug.com/445863287): Cleanup when launched.
+BASE_FEATURE(kAutofillFixRewriterRules, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
