@@ -1072,7 +1072,7 @@ impl<T, P> Index<usize> for Punctuated<T, P> {
     type Output = T;
 
     fn index(&self, index: usize) -> &Self::Output {
-        if index == self.len() - 1 {
+        if index.checked_add(1) == Some(self.len()) {
             match &self.last {
                 Some(t) => t,
                 None => &self.inner[index].0,
@@ -1085,7 +1085,7 @@ impl<T, P> Index<usize> for Punctuated<T, P> {
 
 impl<T, P> IndexMut<usize> for Punctuated<T, P> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if index == self.len() - 1 {
+        if index.checked_add(1) == Some(self.len()) {
             match &mut self.last {
                 Some(t) => t,
                 None => &mut self.inner[index].0,

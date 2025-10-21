@@ -411,6 +411,7 @@ impl LitChar {
 }
 
 impl LitInt {
+    #[track_caller]
     pub fn new(repr: &str, span: Span) -> Self {
         let (digits, suffix) = match value::parse_lit_int(repr) {
             Some(parse) => parse,
@@ -482,6 +483,7 @@ impl LitInt {
 }
 
 impl From<Literal> for LitInt {
+    #[track_caller]
     fn from(token: Literal) -> Self {
         let repr = token.to_string();
         if let Some((digits, suffix)) = value::parse_lit_int(&repr) {
@@ -505,6 +507,7 @@ impl Display for LitInt {
 }
 
 impl LitFloat {
+    #[track_caller]
     pub fn new(repr: &str, span: Span) -> Self {
         let (digits, suffix) = match value::parse_lit_float(repr) {
             Some(parse) => parse,
@@ -554,6 +557,7 @@ impl LitFloat {
 }
 
 impl From<Literal> for LitFloat {
+    #[track_caller]
     fn from(token: Literal) -> Self {
         let repr = token.to_string();
         if let Some((digits, suffix)) = value::parse_lit_float(&repr) {
@@ -1135,6 +1139,7 @@ mod value {
 
     impl Lit {
         /// Interpret a Syn literal from a proc-macro2 literal.
+        #[track_caller]
         pub fn new(token: Literal) -> Self {
             let repr = token.to_string();
 
@@ -1297,7 +1302,7 @@ mod value {
                             let (byte, rest) = backslash_x(s);
                             s = rest;
                             assert!(byte <= 0x7F, "invalid \\x byte in string literal");
-                            char::from_u32(u32::from(byte)).unwrap()
+                            char::from(byte)
                         }
                         b'u' => {
                             let (ch, rest) = backslash_u(s);
@@ -1578,7 +1583,7 @@ mod value {
                         let (byte, rest) = backslash_x(s);
                         s = rest;
                         assert!(byte <= 0x7F, "invalid \\x byte in character literal");
-                        char::from_u32(u32::from(byte)).unwrap()
+                        char::from(byte)
                     }
                     b'u' => {
                         let (ch, rest) = backslash_u(s);

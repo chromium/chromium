@@ -1,7 +1,10 @@
 use self::{Action::*, Input::*};
 use proc_macro2::{Delimiter, Ident, Spacing, TokenTree};
 use syn::parse::{ParseStream, Result};
-use syn::{AngleBracketedGenericArguments, BinOp, Expr, ExprPath, Lifetime, Lit, Token, Type};
+#[allow(unused_imports)]
+//#[cfg_attr(not(test), expect(unused_imports))] // Rust 1.81+
+use syn::Token;
+use syn::{AngleBracketedGenericArguments, BinOp, Expr, ExprPath, Lifetime, Lit, Type};
 
 enum Input {
     Keyword(&'static str),

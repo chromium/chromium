@@ -1,12 +1,11 @@
 #![allow(
     clippy::elidable_lifetime_names,
-    clippy::map_unwrap_or,
     clippy::needless_lifetimes,
     clippy::uninlined_format_args
 )]
 
 use syn::punctuated::{Pair, Punctuated};
-use syn::{parse_quote, GenericParam, Generics, Lifetime, LifetimeParam, Token};
+use syn::Token;
 
 macro_rules! punctuated {
     ($($e:expr,)+) => {{
@@ -85,21 +84,9 @@ fn may_dangle() {
     }
 }
 
-// Regression test for https://github.com/dtolnay/syn/issues/1718
 #[test]
-fn no_opaque_drop() {
-    let mut generics = Generics::default();
-
-    let _ = generics
-        .lifetimes()
-        .next()
-        .map(|param| param.lifetime.clone())
-        .unwrap_or_else(|| {
-            let lifetime: Lifetime = parse_quote!('a);
-            generics.params.insert(
-                0,
-                GenericParam::Lifetime(LifetimeParam::new(lifetime.clone())),
-            );
-            lifetime
-        });
+#[should_panic = "index out of bounds: the len is 0 but the index is 0"]
+fn index_out_of_bounds() {
+    let p = Punctuated::<syn::Ident, Token![,]>::new();
+    let _ = p[0].clone();
 }

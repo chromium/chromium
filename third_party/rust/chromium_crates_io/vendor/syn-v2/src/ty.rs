@@ -350,7 +350,7 @@ pub(crate) mod parsing {
                         Path::parse_rest(input, &mut ty.path, false)?;
                         return Ok(Type::Path(ty));
                     } else {
-                        group.elem = Box::new(Type::Path(ty));
+                        *group.elem = Type::Path(ty);
                     }
                 }
             }

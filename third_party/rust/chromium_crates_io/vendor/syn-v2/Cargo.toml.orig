@@ -1,6 +1,6 @@
 [package]
 name = "syn"
-version = "2.0.106"
+version = "2.0.107"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "parser-implementations"]
 description = "Parser for Rust source code"
@@ -18,7 +18,7 @@ include = [
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/syn"
-rust-version = "1.61"
+rust-version = "1.68"
 
 [features]
 default = ["derive", "parsing", "printing", "clone-impls", "proc-macro"]
@@ -69,6 +69,7 @@ all-features = true
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extend-css=src/gen/token.css",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",

@@ -12,7 +12,10 @@ mod snapshot;
 mod debug;
 
 use quote::quote;
-use syn::{DeriveInput, ItemFn, TypeParamBound, WhereClause, WherePredicate};
+use syn::{
+    parse_quote, DeriveInput, GenericParam, Generics, ItemFn, Lifetime, LifetimeParam,
+    TypeParamBound, WhereClause, WherePredicate,
+};
 
 #[test]
 fn test_split_for_impl() {
@@ -319,4 +322,24 @@ fn test_where_clause_at_end_of_input() {
     snapshot!(input as WhereClause, @"WhereClause");
 
     assert_eq!(input.predicates.len(), 0);
+}
+
+// Regression test for https://github.com/dtolnay/syn/issues/1718
+#[test]
+#[allow(clippy::map_unwrap_or)]
+fn no_opaque_drop() {
+    let mut generics = Generics::default();
+
+    let _ = generics
+        .lifetimes()
+        .next()
+        .map(|param| param.lifetime.clone())
+        .unwrap_or_else(|| {
+            let lifetime: Lifetime = parse_quote!('a);
+            generics.params.insert(
+                0,
+                GenericParam::Lifetime(LifetimeParam::new(lifetime.clone())),
+            );
+            lifetime
+        });
 }

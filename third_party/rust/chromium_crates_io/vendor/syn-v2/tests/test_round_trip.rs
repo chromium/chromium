@@ -20,7 +20,7 @@ extern crate rustc_driver;
 extern crate rustc_error_messages;
 extern crate rustc_errors;
 extern crate rustc_expand;
-extern crate rustc_parse as parse;
+extern crate rustc_parse;
 extern crate rustc_session;
 extern crate rustc_span;
 
@@ -34,6 +34,7 @@ use rustc_ast_pretty::pprust;
 use rustc_data_structures::flat_map_in_place::FlatMapInPlace;
 use rustc_error_messages::{DiagMessage, LazyFallbackBundle};
 use rustc_errors::{translation, Diag, PResult};
+use rustc_parse::lexer::StripTokens;
 use rustc_session::parse::ParseSess;
 use rustc_span::FileName;
 use std::borrow::Cow;
@@ -162,7 +163,13 @@ fn librustc_parse(content: String, sess: &ParseSess) -> PResult<Crate> {
     static COUNTER: AtomicUsize = AtomicUsize::new(0);
     let counter = COUNTER.fetch_add(1, Ordering::Relaxed);
     let name = FileName::Custom(format!("test_round_trip{}", counter));
-    let mut parser = parse::new_parser_from_source_str(sess, name, content).unwrap();
+    let mut parser = rustc_parse::new_parser_from_source_str(
+        sess,
+        name,
+        content,
+        StripTokens::ShebangAndFrontmatter,
+    )
+    .unwrap();
     parser.parse_crate_mod()
 }
 

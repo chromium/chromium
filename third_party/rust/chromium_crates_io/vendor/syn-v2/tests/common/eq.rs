@@ -593,7 +593,7 @@ spanless_eq_enum!(GenericArgs; AngleBracketed(0) Parenthesized(0) ParenthesizedE
 spanless_eq_enum!(GenericBound; Trait(0) Outlives(0) Use(0 1));
 spanless_eq_enum!(GenericParamKind; Lifetime Type(default) Const(ty span default));
 spanless_eq_enum!(ImplPolarity; Positive Negative(0));
-spanless_eq_enum!(Inline; Yes No);
+spanless_eq_enum!(Inline; Yes No(had_parse_error));
 spanless_eq_enum!(InlineAsmRegOrRegClass; Reg(0) RegClass(0));
 spanless_eq_enum!(InlineAsmTemplatePiece; String(0) Placeholder(operand_idx modifier span));
 spanless_eq_enum!(IntTy; Isize I8 I16 I32 I64 I128);
@@ -605,11 +605,11 @@ spanless_eq_enum!(MacStmtStyle; Semicolon Braces NoBraces);
 spanless_eq_enum!(MatchKind; Prefix Postfix);
 spanless_eq_enum!(MetaItemKind; Word List(0) NameValue(0));
 spanless_eq_enum!(MetaItemInner; MetaItem(0) Lit(0));
-spanless_eq_enum!(ModKind; Loaded(0 1 2 3) Unloaded);
+spanless_eq_enum!(ModKind; Loaded(0 1 2) Unloaded);
 spanless_eq_enum!(Movability; Static Movable);
 spanless_eq_enum!(Mutability; Mut Not);
 spanless_eq_enum!(Parens; Yes No);
-spanless_eq_enum!(PatFieldsRest; Rest Recovered(0) None);
+spanless_eq_enum!(PatFieldsRest; Rest(0) Recovered(0) None);
 spanless_eq_enum!(PreciseCapturingArg; Lifetime(0) Arg(0 1));
 spanless_eq_enum!(RangeEnd; Included(0) Excluded);
 spanless_eq_enum!(RangeLimits; HalfOpen Closed);
@@ -722,13 +722,11 @@ impl SpanlessEq for TokenStream {
         let mut this_trees = self.iter();
         let mut other_trees = other.iter();
         loop {
-            let this = match this_trees.next() {
-                None => return other_trees.next().is_none(),
-                Some(tree) => tree,
+            let Some(this) = this_trees.next() else {
+                return other_trees.next().is_none();
             };
-            let other = match other_trees.next() {
-                None => return false,
-                Some(tree) => tree,
+            let Some(other) = other_trees.next() else {
+                return false;
             };
             if SpanlessEq::eq(this, other) {
                 continue;
@@ -774,9 +772,9 @@ fn doc_comment<'a>(
             _ => return false,
         }
     }
-    let stream = match trees.next() {
-        Some(TokenTree::Delimited(_span, _spacing, Delimiter::Bracket, stream)) => stream,
-        _ => return false,
+    let Some(TokenTree::Delimited(_span, _spacing, Delimiter::Bracket, stream)) = trees.next()
+    else {
+        return false;
     };
     let mut trees = stream.iter();
     match trees.next() {

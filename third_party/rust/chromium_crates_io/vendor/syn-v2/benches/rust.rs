@@ -63,6 +63,7 @@ mod librustc_parse {
     use rustc_errors::registry::Registry;
     use rustc_errors::translation::Translator;
     use rustc_errors::{DiagCtxt, DiagInner};
+    use rustc_parse::lexer::StripTokens;
     use rustc_session::parse::ParseSess;
     use rustc_span::source_map::{FilePathMapping, SourceMap};
     use rustc_span::FileName;
@@ -89,8 +90,13 @@ mod librustc_parse {
             let handler = DiagCtxt::new(emitter);
             let sess = ParseSess::with_dcx(handler, source_map);
             let name = FileName::Custom("bench".to_owned());
-            let mut parser =
-                rustc_parse::new_parser_from_source_str(&sess, name, content.to_owned()).unwrap();
+            let mut parser = rustc_parse::new_parser_from_source_str(
+                &sess,
+                name,
+                content.to_owned(),
+                StripTokens::ShebangAndFrontmatter,
+            )
+            .unwrap();
             if let Err(diagnostic) = parser.parse_crate_mod() {
                 diagnostic.cancel();
                 return Err(());
