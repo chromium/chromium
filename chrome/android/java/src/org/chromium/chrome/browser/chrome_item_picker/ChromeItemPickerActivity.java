@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -35,15 +36,17 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
         ViewGroup containerView = findViewById(R.id.chrome_item_picker_container);
         ViewGroup rootView = containerView;
 
-        // TODO: Set mWindowId to be the most recently used window.
         mWindowId =
                 IntentUtils.safeGetIntExtra(
                         getIntent(),
                         IntentHandler.EXTRA_WINDOW_ID,
                         TabWindowManager.INVALID_WINDOW_ID);
         if (mWindowId == TabWindowManager.INVALID_WINDOW_ID) {
-            mWindowId =
-                    savedInstanceState == null ? 0 : savedInstanceState.getInt("window_index", 0);
+            mWindowId = MultiWindowUtils.getLastAccessedWindowId();
+        }
+        if (mWindowId == TabWindowManager.INVALID_WINDOW_ID) {
+            handleFailureToShowPicker("Could not determine a valid target browser window ID.");
+            return;
         }
 
         mItemPickerCoordinator =
@@ -69,13 +72,16 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
 
     private void handleModelFailure(@Nullable TabModelSelector tabModelSelector) {
         if (tabModelSelector == null) {
-            final String error = "Failed to launch activity.";
-            Log.e(TAG, error);
-            final Intent resultIntent = new Intent();
-            resultIntent.putExtra(IntentHandler.EXTRA_ITEM_PICKER_ERROR, error);
-            setResult(Activity.RESULT_CANCELED, resultIntent);
-            finish();
+            handleFailureToShowPicker("Failed to launch activity.");
             return;
         }
+    }
+
+    private void handleFailureToShowPicker(String error) {
+        Log.e(TAG, error);
+        final Intent resultIntent = new Intent();
+        resultIntent.putExtra(IntentHandler.EXTRA_ITEM_PICKER_ERROR, error);
+        setResult(Activity.RESULT_CANCELED, resultIntent);
+        finish();
     }
 }
