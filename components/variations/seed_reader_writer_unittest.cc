@@ -38,6 +38,18 @@ const base::FilePath::CharType kOldSeedFilename[] =
 // Used for clients that do not participate in SeedFiles experiment.
 constexpr char kNoGroup[] = "";
 
+std::string CreateTooLargeData() {
+  return std::string(SeedReaderWriter::MaxUncompressedSeedSizeForTesting() + 1,
+                     'A');
+}
+
+// Creates a string of size equal to the maximum uncompressed seed size. The
+// data is not valid, it should only be used for testing size limits.
+std::string CreateValidSizeData() {
+  return std::string(SeedReaderWriter::MaxUncompressedSeedSizeForTesting(),
+                     'A');
+}
+
 // Compresses `data` using Gzip compression.
 std::string Gzip(const std::string& data) {
   std::string compressed;
@@ -785,21 +797,61 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataExceedsSizeLimit) {
   // Create and store a "too large" seed. When load on startup, it should fail
   // and keep the seed data in memory empty.
   std::string compressed_seed_info =
-      SeedReaderWriter::CompressForSeedFileForTesting(
-          std::string(51 * 1024 * 1024, 'A'));
+      SeedReaderWriter::CompressForSeedFileForTesting(CreateTooLargeData());
   ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed_info));
 
+  std::string_view histogram_suffix = GetHistogramSuffix();
+
+  base::HistogramTester histogram_tester;
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
       kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
-      entropy_providers_.get(), /*histogram_suffix=*/"",
+      entropy_providers_.get(), histogram_suffix,
       file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Variations.SeedFileReadResult.", histogram_suffix}),
+      /*sample=*/LoadSeedResult::kExceedsUncompressedSizeLimit,
+      /*expected_bucket_count=*/1);
 
   std::string seed_data;
   std::string base64_seed_signature;
   LoadSeedResult result = seed_reader_writer.ReadSeedDataOnStartup(
       &seed_data, &base64_seed_signature);
+  EXPECT_EQ(result, LoadSeedResult::kEmpty);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedData_LimitSizeSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  // Create and store a "correct size seed". When load on startup, it shouldn't
+  // fail because of incorrect size.
+  std::string compressed_seed_info =
+      SeedReaderWriter::CompressForSeedFileForTesting(CreateValidSizeData());
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed_info));
+
+  std::string_view histogram_suffix = GetHistogramSuffix();
+
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), histogram_suffix,
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Variations.SeedFileReadResult.", histogram_suffix}),
+      /*sample=*/LoadSeedResult::kExceedsUncompressedSizeLimit,
+      /*expected_count=*/0);
+
+  std::string seed_data;
+  std::string base64_seed_signature;
+  LoadSeedResult result = seed_reader_writer.ReadSeedDataOnStartup(
+      &seed_data, &base64_seed_signature);
+  // Because the data is invalid, the seed data should be empty.
   EXPECT_EQ(result, LoadSeedResult::kEmpty);
 }
 
@@ -908,8 +960,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest,
 
   // Simulate a "too large" seed by writing a very large seed to the file.
   std::string corrupt_compressed_seed_info =
-      SeedReaderWriter::CompressForSeedFileForTesting(
-          std::string(51 * 1024 * 1024, 'A'));
+      SeedReaderWriter::CompressForSeedFileForTesting(CreateTooLargeData());
   ASSERT_TRUE(
       base::WriteFile(temp_seed_file_path_, corrupt_compressed_seed_info));
 
@@ -932,6 +983,51 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest,
   seed_reader_writer.ReadSeedData(lambda_cb);
   run_loop.Run();
   EXPECT_EQ(load_result, LoadSeedResult::kExceedsUncompressedSizeLimit);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataCallback_LimitSizeSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  // Create and store a seed. The seed loaded on startup should be valid for the
+  // test to be meaningful, otherwise an empty seed will be stored in memory and
+  // never be purged.
+  std::string compressed_seed_info = Compress(CreateStoredSeedInfo());
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed_info));
+
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), /*histogram_suffix=*/"",
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Simulate a "too large" seed by writing a very large seed to the file.
+  std::string corrupt_compressed_seed_info =
+      SeedReaderWriter::CompressForSeedFileForTesting(CreateValidSizeData());
+  ASSERT_TRUE(
+      base::WriteFile(temp_seed_file_path_, corrupt_compressed_seed_info));
+
+  // Allow the seed data to be purged from memory to simulate the case where the
+  // seed data is read from the file.
+  file_writer_thread_.FlushForTesting();
+  base::RunLoop().RunUntilIdle();
+  seed_reader_writer.AllowToPurgeSeedDataFromMemory();
+  ASSERT_FALSE(seed_reader_writer.stored_seed_data_for_testing().has_value());
+
+  // Read seed data and verify result.
+  base::RunLoop run_loop;
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result,
+       &run_loop](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
+        run_loop.Quit();
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  run_loop.Run();
+  // Because the seed is invalid, the load result should not be success.
+  EXPECT_NE(load_result, LoadSeedResult::kSuccess);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1240,7 +1336,7 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataExceedsSizeLimit) {
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   const std::string base64_compressed_seed =
-      base::Base64Encode(Gzip(std::string(51 * 1024 * 1024, 'A')));
+      base::Base64Encode(Gzip(CreateTooLargeData()));
   seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
 
   std::string seed_data;
@@ -1248,6 +1344,33 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataExceedsSizeLimit) {
   LoadSeedResult result = seed_reader_writer.ReadSeedDataOnStartup(
       &seed_data, &base64_seed_signature);
   EXPECT_EQ(result, LoadSeedResult::kExceedsUncompressedSizeLimit);
+}
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedData_LimitSizeSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer and an empty file
+  // path.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename, kOldSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), /*histogram_suffix=*/"",
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  const std::string base64_compressed_seed =
+      base::Base64Encode(Gzip(CreateValidSizeData()));
+  seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
+
+  std::string seed_data;
+  std::string base64_seed_signature;
+  LoadSeedResult result = seed_reader_writer.ReadSeedDataOnStartup(
+      &seed_data, &base64_seed_signature);
+  EXPECT_NE(result, LoadSeedResult::kExceedsUncompressedSizeLimit);
+  // Because the seed is not validated at this point, it should not be
+  // considered valid.
+  EXPECT_EQ(result, LoadSeedResult::kSuccess);
 }
 
 TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataCallback) {
@@ -1352,7 +1475,7 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest,
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   const std::string base64_compressed_seed =
-      base::Base64Encode(Gzip(std::string(51 * 1024 * 1024, 'A')));
+      base::Base64Encode(Gzip(CreateTooLargeData()));
   seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
 
   base::RunLoop run_loop;
@@ -1366,6 +1489,39 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest,
   seed_reader_writer.ReadSeedData(lambda_cb);
   run_loop.Run();
   EXPECT_EQ(load_result, LoadSeedResult::kExceedsUncompressedSizeLimit);
+}
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest,
+       ReadSeedDataCallback_LimitSizeSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer and an empty file
+  // path.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename, kOldSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), /*histogram_suffix=*/"",
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  const std::string base64_compressed_seed =
+      base::Base64Encode(Gzip(CreateValidSizeData()));
+  seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
+
+  base::RunLoop run_loop;
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result,
+       &run_loop](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
+        run_loop.Quit();
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  run_loop.Run();
+  // Because the seed is not validated at this point, it should not be
+  // considered valid.
+  EXPECT_EQ(load_result, LoadSeedResult::kSuccess);
 }
 
 INSTANTIATE_TEST_SUITE_P(

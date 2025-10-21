@@ -60,6 +60,12 @@ const base::FilePath::CharType kSafeSeedFilename[] =
 // Used for clients that do not participate in SeedFiles experiment.
 constexpr char kNoGroup[] = "";
 
+// Returns a seed that is larger than the maximum uncompressed seed size.
+std::string CreateTooLargeData() {
+  return std::string(SeedReaderWriter::MaxUncompressedSeedSizeForTesting() + 1,
+                     'A');
+}
+
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(
@@ -767,11 +773,9 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
-  // 51MiB of uncompressed data to exceed 50MiB limit.
-  std::string seed_data(51 * 1024 * 1024, 'A');
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .seed_data = seed_data,
+          .seed_data = CreateTooLargeData(),
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1325,12 +1329,8 @@ TEST_F(LoadSeedDataSeedFilesGroupTest, LoadSeed_CorruptGzip) {
 TEST_F(LoadSeedDataSeedFilesGroupTest, LoadSeed_ExceedsUncompressedSizeLimit) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             kSeedFilesGroup);
-  // Flip some bits to corrupt the data
-  // 51MiB of uncompressed data to exceed 50MiB limit.
-  std::string compressed_seed_info(51 * 1024 * 1024, 'A');
-
   WriteRegularSeedToFile(
-      SeedReaderWriter::CompressForSeedFileForTesting(compressed_seed_info));
+      SeedReaderWriter::CompressForSeedFileForTesting(CreateTooLargeData()));
   WriteTestSafeSeedToFile();
 
   prefs_.SetString(prefs::kVariationsSafeSeedLocale, "en-US");
@@ -1986,10 +1986,9 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
-  // 51MiB of uncompressed data to exceed 50MiB limit.
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .seed_data = std::string(51 * 1024 * 1024, 'A'),
+          .seed_data = CreateTooLargeData(),
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -2306,9 +2305,8 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
             kSeedFilesGroup);
 
   WriteTestRegularSeedToFile();
-  // 51MiB of uncompressed data to exceed 50MiB limit.
   StoredSeedInfo stored_seed_info;
-  stored_seed_info.set_data(std::string(51 * 1024 * 1024, 'A'));
+  stored_seed_info.set_data(CreateTooLargeData());
   stored_seed_info.set_signature("ignored signature");
   stored_seed_info.set_milestone(1);
   stored_seed_info.set_seed_date(base::Time::Now().ToInternalValue());

@@ -563,6 +563,11 @@ bool SeedReaderWriter::UncompressFromSeedFileForTesting(
   return result.has_value();
 }
 
+// static
+std::size_t SeedReaderWriter::MaxUncompressedSeedSizeForTesting() {
+  return kMaxUncompressedSeedSize;
+}
+
 base::ImportantFileWriter::BackgroundDataProducerCallback
 SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -245,6 +245,8 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
       std::string_view compressed_contents,
       std::string* uncompressed_contents);
 
+  static std::size_t MaxUncompressedSeedSizeForTesting();
+
  private:
   // The storage format of the seed data.
   // - kCompressed: the seed is compressed. This is used for backward
