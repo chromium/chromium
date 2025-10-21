@@ -9849,6 +9849,8 @@ crbug.com/450592015 [ Win11-arm64 ] external/wpt/webxr/idlharness.https.window.h
 # Disabled for landing behavior change
 crbug.com/439514253 external/wpt/webrtc-extensions/RTCRtpTransceiver-headerExtensionControl.html [ Failure Pass ]
 
+crbug.com/453203283 [ Mac ] virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-on-body-not-propagated-to-root.html [ Pass Timeout ]
+
 # Gardener 2025-10-15
 crbug.com/451712152 virtual/permission-element/external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
 crbug.com/377152628 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html [ Failure Pass ]
