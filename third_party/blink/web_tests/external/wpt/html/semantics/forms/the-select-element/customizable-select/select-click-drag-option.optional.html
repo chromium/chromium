@@ -8,6 +8,11 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 
+<!-- This test is optional because the click and drag behavior is not
+  explicitly specified. The spec does say that mousedown on the select
+  element opens the picker and mouseup chooses options in order to support
+  this behavior. -->
+
 <style>
 select, ::picker(select) {
   appearance: base-select;
