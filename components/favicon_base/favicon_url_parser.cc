@@ -140,6 +140,12 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
         return false;
       }
       parsed->fallback_to_host = val == "1";
+    } else if (key == "forceEmptyDefaultFavicon") {
+      const std::string val = it.GetUnescapedValue();
+      if (!(val == "0" || val == "1")) {
+        return false;
+      }
+      parsed->force_empty_default_favicon = val == "1";
     }
   }
 

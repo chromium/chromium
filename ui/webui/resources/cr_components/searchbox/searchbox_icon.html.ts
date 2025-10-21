@@ -13,8 +13,20 @@ export function getHtml(this: SearchboxIconElement) {
     style="--container-bg-color:${this.getContainerBgColor_()};">
   <img id="image" src="${this.imageSrc_}" ?hidden="${!this.showImage_}"
       @load="${this.onImageLoad_}" @error="${this.onImageError_}">
-  <div id="icon" style="${this.iconStyle_}" ?hidden="${this.showIconImg_}">
+
+  <div ?hidden="${this.showIconImg_}">
+    <div id="icon" style="-webkit-mask-image: ${this.maskImage};"
+        ?hidden="${this.showFaviconImage_}">
+    </div>
+    <div id="faviconImageContainer"
+        ?hidden="${!this.showFaviconImage_}">
+      <img id="faviconImage" src="${this.faviconImage_}"
+          srcset="${this.faviconImageSrcSet_}"
+          @load="${this.onFaviconLoad_}"
+          @error="${this.onFaviconError_}">
+    </div>
   </div>
+
   <img id="iconImg" src="${this.iconSrc_}" ?hidden="${!this.showIconImg_}"
       @load="${this.onIconLoad_}">
 </div>

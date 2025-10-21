@@ -30,6 +30,11 @@ namespace ui {
 class NativeTheme;
 }
 
+enum class DefaultFaviconBehavior {
+  kUseGlobeIcon = 0,
+  kUseEmptyIcon = 1,
+};
+
 // FaviconSource is the gateway between network-level chrome:
 // requests for favicons and the history backend that serves these.
 // Two possible formats are allowed: chrome://favicon, kept only for backwards
@@ -87,9 +92,11 @@ class FaviconSource : public content::URLDataSource {
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
   // Sends the 16x16 DIP 1x default favicon.
-  void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
-                           const content::WebContents::Getter& wc_getter,
-                           bool force_light_mode = false);
+  void SendDefaultResponse(
+      content::URLDataSource::GotDataCallback callback,
+      const content::WebContents::Getter& wc_getter,
+      bool force_light_mode = false,
+      DefaultFaviconBehavior behavior = DefaultFaviconBehavior::kUseGlobeIcon);
 
   // Sends back default favicon or fallback monogram.
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
@@ -100,7 +107,8 @@ class FaviconSource : public content::URLDataSource {
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
                            int size_in_dip,
                            float scale_factor,
-                           bool dark_mode);
+                           bool dark_mode,
+                           DefaultFaviconBehavior behavior);
 
   chrome::FaviconUrlFormat url_format_;
 
