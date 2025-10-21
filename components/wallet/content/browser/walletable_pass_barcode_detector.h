@@ -36,6 +36,8 @@ enum WalletBarcodeFormat {
 struct WalletBarcodeDetectionResult {
   std::string raw_value;
   WalletBarcodeFormat format;
+
+  bool operator==(const WalletBarcodeDetectionResult& other) const = default;
 };
 
 // A class used to detect barcodes from a potential walletable pass web

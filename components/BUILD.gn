@@ -552,6 +552,7 @@ test("components_unittests") {
       "//components/value_store:unit_tests",
       "//components/visited_url_ranking/public:unit_tests",
       "//components/visitedlink/test:unit_tests",
+      "//components/wallet/content/browser:unit_tests",
       "//components/web_cache/browser:unit_tests",
       "//components/web_package:unit_tests",
       "//components/web_package/test_support:unit_tests",

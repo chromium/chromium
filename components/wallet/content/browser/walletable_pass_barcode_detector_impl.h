@@ -26,20 +26,45 @@ class WalletablePassBarcodeDetectorImpl : public WalletablePassBarcodeDetector {
               WalletBarcodeDetectionDetectCallback callback) override;
 
  private:
-  mojo::Remote<mojom::ImageExtractor> CreateAndBindImageExtractorRemote(
+  // Creates and binds a remote for the image extractor service for the given
+  // `web_contents`.
+  virtual mojo::Remote<mojom::ImageExtractor> CreateAndBindImageExtractorRemote(
       content::WebContents* web_contents);
 
+  // Creates and binds a remote for the barcode detection service.
+  virtual mojo::Remote<shape_detection::mojom::BarcodeDetection>
+  CreateAndBindBarcodeDetectorRemote();
+
+  // Takes a remote `ImageExtractor` and extracts images from the web contents.
+  // `callback` is only triggered once all the images are extracted.
   void ExtractImageWithRemote(mojo::Remote<mojom::ImageExtractor> remote,
                               WalletBarcodeDetectionDetectCallback callback);
 
+  // Invoked when images have been extracted from the web contents. This method
+  // will detect barcodes in the extracted images.
   void OnImagesExtracted(WalletBarcodeDetectionDetectCallback callback,
                          const std::vector<SkBitmap>& images);
 
+  // Invoked when all barcode detections are complete.
+  void OnAllBarcodesDetected(
+      WalletBarcodeDetectionDetectCallback callback,
+      std::vector<
+          std::vector<shape_detection::mojom::BarcodeDetectionResultPtr>>
+          all_results);
+
+  // Invoked when the image extractor remote is disconnected.
   void OnRemoteDisconnected(WalletBarcodeDetectionDetectCallback callback);
 
+  // Invoked when the barcode detector remote is disconnected.
+  void OnBarcodeDetectorDisconnected(
+      WalletBarcodeDetectionDetectCallback callback);
+
+  // Converts a shape_detection::mojom::BarcodeFormat to a
+  // wallet::WalletBarcodeFormat.
   WalletBarcodeFormat MojoToBarcodeFormat(
       shape_detection::mojom::BarcodeFormat format);
 
+  mojo::Remote<shape_detection::mojom::BarcodeDetection> barcode_detector_;
   mojo::Remote<mojom::ImageExtractor> image_extractor_remote_;
 
   base::WeakPtrFactory<WalletablePassBarcodeDetectorImpl> weak_ptr_factory_{
