@@ -146,6 +146,9 @@ dependencies {
     // Used by 1p Play Services.
     compile 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    // Used by LeakCanary.
+    compileLatest 'androidx.work:work-runtime:+'
+
     // testCompile targets have test_only = true.
     androidTestCompileLatest 'androidx.fragment:fragment-testing:+'
     androidTestCompileLatest 'androidx.benchmark:benchmark-macro:+'
