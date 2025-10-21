@@ -13834,6 +13834,21 @@
             ]
         }
     ],
+    "IOSSaveToDriveClientFolder": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSSaveToDriveClientFolder"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [

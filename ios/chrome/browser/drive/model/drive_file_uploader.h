@@ -104,6 +104,14 @@ class DriveFileUploader {
       NSString* folder_name,
       DriveFolderCompletionCallback completion_callback) = 0;
 
+  // Gets or creates the destination Drive folder as a client folder. The name
+  // of the created folder is `folder_name`. The result, including possible
+  // error details, is returned asynchronously through `completion_callback`.
+  // TODO(crbug.com/452543744): Make pure virtual once implemented everywhere.
+  virtual void FetchSaveToDriveClientFolder(
+      NSString* folder_name,
+      DriveFolderCompletionCallback completion_callback);
+
   // Uploads the file stored locally at `file_url`, with MIME type
   // `file_mime_type`, in Drive folder with identifier `folder_identifier`.
   // Progress of upload is reported through `progress_callback` and final

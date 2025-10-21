@@ -482,6 +482,9 @@ BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 
+// Feature flag enabling the client folder implementation of Save to Drive.
+BASE_DECLARE_FEATURE(kIOSSaveToDriveClientFolder);
+
 // Feature flag enabling account storage management.
 BASE_DECLARE_FEATURE(kIOSManageAccountStorage);
 

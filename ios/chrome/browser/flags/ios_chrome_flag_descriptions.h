@@ -480,6 +480,9 @@ extern const char kIOSProvidesAppNotificationSettingsDescription[];
 extern const char kIOSReactivationNotificationsName[];
 extern const char kIOSReactivationNotificationsDescription[];
 
+extern const char kIOSSaveToDriveClientFolderName[];
+extern const char kIOSSaveToDriveClientFolderDescription[];
+
 extern const char kIOSSoftLockName[];
 extern const char kIOSSoftLockDescription[];
 

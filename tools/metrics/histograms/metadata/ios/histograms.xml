@@ -53,6 +53,9 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateFolder"
       summary="Recorded once when a query to create a Drive folder returns a
                result."/>
+  <variant name="FetchClientFolder"
+      summary="Recorded once when a query to fetch a Drive client folder
+               returns a result."/>
   <variant name="FetchStorageQuota"
       summary="Recorded once when a query to fetch a user's Drive storage
                quota returns a result."/>

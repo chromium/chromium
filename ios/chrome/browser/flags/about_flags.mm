@@ -2877,7 +2877,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"gemini-onboarding-cards", flag_descriptions::kGeminiOnboardingCardsName,
      flag_descriptions::kGeminiOnboardingCardsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiOnboardingCards)},
-};
+    {"ios-save-to-drive-client-folder",
+     flag_descriptions::kIOSSaveToDriveClientFolderName,
+     flag_descriptions::kIOSSaveToDriveClientFolderDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSSaveToDriveClientFolder)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

@@ -46,6 +46,7 @@ source_set("drive_upload_task") {
     ":metrics",
     "//base",
     "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:system_identity",
     "//net",
     "//url",
