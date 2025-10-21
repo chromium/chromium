@@ -26,6 +26,8 @@ enum class Event;
 // hybrid flow to retrieve credentials stored on a mobile device.
 class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
  public:
+  using RequestInfo = content::digital_credentials::cross_device::RequestInfo;
+
   DigitalIdentityProviderDesktop();
   ~DigitalIdentityProviderDesktop() override;
 
@@ -48,16 +50,15 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
 
  private:
   // Shared implementation between `Request()` and `Create()` above.
-  void Transact(
-      content::WebContents* web_contents,
-      content::digital_credentials::cross_device::RequestInfo::RequestType
-          request_type,
-      const url::Origin& rp_origin,
-      base::ValueView request,
-      DigitalIdentityCallback callback);
+  void Transact(content::WebContents* web_contents,
+                RequestInfo::RequestType request_type,
+                const url::Origin& rp_origin,
+                base::ValueView request,
+                DigitalIdentityCallback callback);
 
   // Called whenever some significant event occurs during the transaction.
   void OnEvent(const std::string& qr_url,
+               RequestInfo::RequestType request_type,
                content::digital_credentials::cross_device::Event);
 
   // caBLE events notify when the user has started the transaction on their
@@ -74,7 +75,8 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   DigitalIdentityMultiStepDialog* EnsureDialogCreated();
 
   // Shows dialog with QR code.
-  void ShowQrCodeDialog(const std::string& qr_url);
+  void ShowQrCodeDialog(const std::string& qr_url,
+                        RequestInfo::RequestType request_type);
 
   // Shows dialog which prompts user to manually turn on bluetooth.
   void ShowBluetoothManualTurnOnDialog();

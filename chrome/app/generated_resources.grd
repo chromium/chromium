@@ -18076,11 +18076,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE">
-        To choose an ID, scan the QR code
+        Use another device by scanning the QR code
       </message>
 
-      <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY">
-        Safely use an ID from your mobile device
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_PRESENTATION_QR_BODY">
+        <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> wants to get info from your mobile device
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_ISSUANCE_QR_BODY">
+        <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> wants to save info on your mobile device
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT">

@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/qr_code_generator/bitmap_generator.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -165,15 +166,18 @@ void DigitalIdentityProviderDesktop::Transact(
         return SystemNetworkContextManager::GetInstance()->GetContext();
       }),
       base::BindRepeating(&DigitalIdentityProviderDesktop::OnEvent,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(qr_url)),
+                          weak_ptr_factory_.GetWeakPtr(), std::move(qr_url),
+                          request_type),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,
-                                             Event event) {
+void DigitalIdentityProviderDesktop::OnEvent(
+    const std::string& qr_url,
+    RequestInfo::RequestType request_type,
+    Event event) {
   std::visit(absl::Overload{
-                 [this, qr_url](SystemEvent event) {
+                 [this, qr_url, request_type](SystemEvent event) {
                    switch (event) {
                      case SystemEvent::kBluetoothNotPowered:
                        ShowBluetoothManualTurnOnDialog();
@@ -184,7 +188,7 @@ void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,
                        break;
                      case SystemEvent::kReady:
                        bluetooth_manual_dialog_controller_.reset();
-                       ShowQrCodeDialog(qr_url);
+                       ShowQrCodeDialog(qr_url, request_type);
                        break;
                    }
                  },
@@ -266,11 +270,24 @@ DigitalIdentityProviderDesktop::EnsureDialogCreated() {
 }
 
 void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
-    const std::string& qr_url) {
+    const std::string& qr_url,
+    RequestInfo::RequestType request_type) {
   std::u16string dialog_title =
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
-  std::u16string dialog_body =
-      l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY);
+
+  int dialog_body_id = 0;
+  switch (request_type) {
+    case RequestInfo::RequestType::kGet:
+      dialog_body_id = IDS_WEB_DIGITAL_CREDENTIALS_PRESENTATION_QR_BODY;
+      break;
+    case RequestInfo::RequestType::kCreate:
+      dialog_body_id = IDS_WEB_DIGITAL_CREDENTIALS_ISSUANCE_QR_BODY;
+      break;
+  }
+  std::u16string dialog_body = l10n_util::GetStringFUTF16(
+      dialog_body_id,
+      url_formatter::FormatOriginForSecurityDisplay(
+          rp_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
       /*cancel_button=*/
