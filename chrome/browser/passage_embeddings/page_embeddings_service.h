@@ -111,7 +111,8 @@ class PageEmbeddingsService
 
   // Retrieves the embeddings for web_content. Returns the empty vector if
   // embeddings have not yet been computed.
-  std::vector<PassageEmbedding> GetEmbeddings(
+  // Virtual for testing.
+  virtual std::vector<PassageEmbedding> GetEmbeddings(
       content::WebContents* web_content) const;
 
   // PageContentExtractionService:
@@ -119,6 +120,11 @@ class PageEmbeddingsService
       content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent& page_content)
       override;
+
+ protected:
+  explicit PageEmbeddingsService(
+      page_content_annotations::PageContentExtractionService*
+          page_content_extraction_service);
 
  private:
   class WebContentsEventsObserver;

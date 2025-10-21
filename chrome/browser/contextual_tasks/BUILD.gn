@@ -6,14 +6,19 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("contextual_tasks") {
   sources = [
-    "contextual_tasks_context_controller_factory.cc",
     "contextual_tasks_context_controller_factory.h",
     "contextual_tasks_service_factory.cc",
     "contextual_tasks_service_factory.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "contextual_tasks_context_service_factory.cc",
+      "contextual_tasks_context_service_factory.h",
+    ]
+  }
+
   deps = [
-    ":internal",
     "//base",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/favicon",
@@ -25,10 +30,12 @@ source_set("contextual_tasks") {
     "//components/contextual_tasks/public",
     "//components/favicon/core",
     "//components/history/core/browser",
-    "//components/omnibox/browser",
     "//components/sync/model",
     "//content/public/browser",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/passage_embeddings" ]
+  }
 
   public_deps = [
     ":public",
@@ -42,29 +49,51 @@ source_set("public") {
     "contextual_tasks_context_controller.h",
   ]
 
+  if (!is_android) {
+    sources += [ "contextual_tasks_context_service.h" ]
+  }
+
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
     "//components/sessions:session_id",
   ]
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/passage_embeddings" ]
+  }
 }
 
 source_set("internal") {
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
 
   sources = [
+    "contextual_tasks_context_controller_factory.cc",
     "contextual_tasks_context_controller_impl.cc",
     "contextual_tasks_context_controller_impl.h",
   ]
+  if (!is_android) {
+    sources += [ "contextual_tasks_context_service.cc" ]
+  }
 
   deps = [
+    ":contextual_tasks",
     ":public",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
     "//components/sessions:session_id",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+    ]
+  }
 }
 
 if (!is_android) {
@@ -134,6 +163,9 @@ source_set("unit_tests") {
     "contextual_tasks_context_controller_impl_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
   ]
+  if (!is_android) {
+    sources += [ "contextual_tasks_context_service_factory_unittest.cc" ]
+  }
 
   if (!is_android) {
     sources += [ "contextual_tasks_ui_service_unittest.cc" ]

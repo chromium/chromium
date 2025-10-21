@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
 
 namespace contextual_tasks {
 

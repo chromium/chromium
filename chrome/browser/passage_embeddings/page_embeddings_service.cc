@@ -134,6 +134,13 @@ PageEmbeddingsService::PageEmbeddingsService(
         page_content_extraction_service,
     passage_embeddings::Embedder* embedder)
     : candidates_generator_(candidates_generator), embedder_(embedder) {}
+PageEmbeddingsService::PageEmbeddingsService(
+    page_content_annotations::PageContentExtractionService*
+        page_content_extraction_service)
+    : PageEmbeddingsService(
+          PageEmbeddingsService::EmbeddingCandidatesGenerator(),
+          page_content_extraction_service,
+          nullptr) {}
 
 PageEmbeddingsService::~PageEmbeddingsService() = default;
 
