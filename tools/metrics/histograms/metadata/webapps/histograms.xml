@@ -823,7 +823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyIconFile" units="web apps"
-    expires_after="2025-11-03">
+    expires_after="2026-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithGeneratedIconFlag" units="web apps"
-    expires_after="2025-11-03">
+    expires_after="2026-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithMissingIconFile" units="web apps"
-    expires_after="2025-11-03">
+    expires_after="2026-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2325,7 +2325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.CorruptUserUninstallPrefsCount"
-    units="apps" expires_after="2025-12-01">
+    units="apps" expires_after="2026-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -2805,7 +2805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestUpdateResult"
-    enum="WebAppManifestUpdateResult" expires_after="2025-10-28">
+    enum="WebAppManifestUpdateResult" expires_after="2026-10-28">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
