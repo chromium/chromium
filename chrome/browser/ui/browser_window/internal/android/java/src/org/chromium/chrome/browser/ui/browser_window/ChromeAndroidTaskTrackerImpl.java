@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Browser;
 import android.util.ArrayMap;
 
 import androidx.annotation.GuardedBy;
@@ -17,6 +18,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.mojom.WindowShowState;
@@ -305,7 +307,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     private static void launchActivityFromParams(
-            AndroidBrowserWindowCreateParams createParams, long pendingId) {
+            AndroidBrowserWindowCreateParams createParams, int pendingId) {
         String activityClassName;
         switch (createParams.getWindowType()) {
             case BrowserWindowType.NORMAL:
@@ -318,11 +320,15 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
         Context context = ContextUtils.getApplicationContext();
         try {
+            // TODO(http://crbug.com/453777179): use MultiInstanceManager to create the Intent.
             Intent intent = new Intent(context, Class.forName(activityClassName));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
             intent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
             IntentUtils.addTrustedIntentExtras(intent);
+
+            MultiInstanceManager.onMultiInstanceModeStarted();
 
             if (!createParams.getInitialBounds().isEmpty()) {
                 // Apply non-default initial launch bounds if non-empty.

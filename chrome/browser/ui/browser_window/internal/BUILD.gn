@@ -183,6 +183,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/multiwindow:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/util:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -269,6 +270,7 @@ if (is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "android/create_browser_window_android_browsertest.cc" ]
     deps = [
+      "//base",
       "//chrome/browser/profiles",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",

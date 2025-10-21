@@ -6,13 +6,23 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using CreateBrowserWindowAndroidBrowserTest = AndroidBrowserTest;
+class CreateBrowserWindowAndroidBrowserTest : public AndroidBrowserTest {
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    AndroidBrowserTest::SetUpDefaultCommandLine(command_line);
+
+    // Disable the first-run experience (FRE) so that when a function under
+    // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
+    // will be shown instead of FirstRunActivity.
+    command_line->AppendSwitch("disable-fre");
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(CreateBrowserWindowAndroidBrowserTest,
                        CreateBrowserWindowReturnsBrowserWindowInterface) {
