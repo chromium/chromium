@@ -3534,6 +3534,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.{WindowingMode}.Duration" units="ms"
+    expires_after="2026-10-15">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Total time spent in {WindowingMode} mode in a given 24-hour period. The
+    histogram will be emitted for a previous emission cycle when an activity in
+    any windowing mode is stopped after more than 24 hours have elapsed since
+    the start of this emission cycle.
+  </summary>
+  <token key="WindowingMode">
+    <variant name="DefaultMultiWindow" summary="default multi-window"/>
+    <variant name="DesktopWindow" summary="desktop windowing"/>
+    <variant name="Fullscreen" summary="fullscreen"/>
+    <variant name="PictureInPicture" summary="picture-in-picture"/>
+  </token>
+</histogram>
+
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
     expires_after="2026-03-01">
   <owner>finkm@chromium.org</owner>

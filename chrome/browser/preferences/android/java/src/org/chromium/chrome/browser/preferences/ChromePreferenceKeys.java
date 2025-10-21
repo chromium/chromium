@@ -496,6 +496,20 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.MultiInstance.LastAccessedTime.*");
     public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
 
+    // Start timestamp of 1-day period for measuring the duration of disjoint time spent in various
+    // windowing modes.
+    public static final String MULTI_WINDOW_MODE_CYCLE_START_TIME =
+            "Chrome.MultiWindowMode.CycleStartTime";
+    // Start timestamp of the current windowing mode.
+    public static final KeyPrefix MULTI_WINDOW_MODE_START_TIME =
+            new KeyPrefix("Chrome.MultiWindowMode.StartTime.*");
+    // Number of activities in the current windowing mode.
+    public static final KeyPrefix MULTI_WINDOW_MODE_ACTIVITY_COUNT =
+            new KeyPrefix("Chrome.MultiWindowMode.ActivityCount.*");
+    // Aggregated duration of time spent in a given windowing mode.
+    public static final KeyPrefix MULTI_WINDOW_MODE_DURATION_MS =
+            new KeyPrefix("Chrome.MultiWindowMode.DurationMs.*");
+
     public static final String NOTIFICATIONS_CHANNELS_VERSION = "channels_version_key";
     public static final String NOTIFICATIONS_LAST_SHOWN_NOTIFICATION_TYPE =
             "NotificationUmaTracker.LastShownNotificationType";
@@ -1153,6 +1167,10 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_TITLE.pattern(),
                 MULTI_INSTANCE_CUSTOM_TITLE.pattern(),
                 MULTI_INSTANCE_URL.pattern(),
+                MULTI_WINDOW_MODE_ACTIVITY_COUNT.pattern(),
+                MULTI_WINDOW_MODE_CYCLE_START_TIME,
+                MULTI_WINDOW_MODE_DURATION_MS.pattern(),
+                MULTI_WINDOW_MODE_START_TIME.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
                 NOTIFICATION_PERMISSION_REQUEST_COUNT,
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,

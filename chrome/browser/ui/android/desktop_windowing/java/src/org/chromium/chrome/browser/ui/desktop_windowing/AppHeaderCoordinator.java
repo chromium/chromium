@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -239,8 +240,21 @@ public class AppHeaderCoordinator
         assert mInsetObserver.getLastRawWindowInsets() != null
                 : "Attempt to read the insets too early.";
         if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
-            mWindowingMode =
-                    AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow, mWindowingMode);
+            int prevWindowingMode = mWindowingMode;
+            mWindowingMode = AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow);
+            if (prevWindowingMode != mWindowingMode) {
+                // Record this histogram every time the windowing mode changes.
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.MultiWindowMode.Configuration",
+                        mWindowingMode,
+                        WindowingMode.NUM_ENTRIES);
+                // Record windowing mode changes if not going from/to UNKNOWN.
+                if (prevWindowingMode != AppHeaderUtils.WindowingMode.UNKNOWN
+                        && mWindowingMode != AppHeaderUtils.WindowingMode.UNKNOWN) {
+                    AppHeaderUtils.recordWindowingMode(prevWindowingMode, /* isStarted= */ false);
+                    AppHeaderUtils.recordWindowingMode(mWindowingMode, /* isStarted= */ true);
+                }
+            }
         }
 
         var appHeaderState =
