@@ -7,7 +7,10 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "base/version_info/channel.h"
@@ -44,39 +47,6 @@ constexpr char kNumberOfGoogleAccounts[] = "Number of Google Accounts";
 constexpr char kDismissedSigninBubbleType[] =
     "Data type Sign-in Bubble Dismissed";
 constexpr char kIdentityState[] = "Sign-in Status";
-
-struct ChromeIdentityHatsTriggerFeatureMappingEntry {
-  const char* trigger;
-  const raw_ptr<const base::Feature> feature;
-};
-
-const ChromeIdentityHatsTriggerFeatureMappingEntry
-    kChromeIdentityHatsTriggerFeatureMapping[] = {
-        {kHatsSurveyTriggerIdentityAddressBubbleSignin,
-         &switches::kChromeIdentitySurveyAddressBubbleSignin},
-        {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
-         &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
-        {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
-         &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
-        {kHatsSurveyTriggerIdentityFirstRunSignin,
-         &switches::kChromeIdentitySurveyFirstRunSignin},
-        {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
-         &switches::kChromeIdentitySurveyPasswordBubbleSignin},
-        {kHatsSurveyTriggerIdentityProfileMenuDismissed,
-         &switches::kChromeIdentitySurveyProfileMenuDismissed},
-        {kHatsSurveyTriggerIdentityProfileMenuSignin,
-         &switches::kChromeIdentitySurveyProfileMenuSignin},
-        {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
-         &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
-        {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
-         &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
-        {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-         &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
-        {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-         &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
-        {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
-         &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
-};
 
 // Launches a HaTS survey for the profile associated with `browser`.
 void LaunchSigninHatsSurveyForBrowser(const std::string& trigger,
@@ -154,10 +124,37 @@ namespace signin {
 
 bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  for (const auto& entry : kChromeIdentityHatsTriggerFeatureMapping) {
-    if (trigger == entry.trigger) {
-      return base::FeatureList::IsEnabled(*entry.feature);
-    }
+  static const base::NoDestructor<
+      base::flat_map<std::string_view, const base::Feature*>>
+      kChromeIdentityHatsTriggerFeatureMap({
+          {kHatsSurveyTriggerIdentityAddressBubbleSignin,
+           &switches::kChromeIdentitySurveyAddressBubbleSignin},
+          {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
+           &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
+          {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
+           &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
+          {kHatsSurveyTriggerIdentityFirstRunSignin,
+           &switches::kChromeIdentitySurveyFirstRunSignin},
+          {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
+           &switches::kChromeIdentitySurveyPasswordBubbleSignin},
+          {kHatsSurveyTriggerIdentityProfileMenuDismissed,
+           &switches::kChromeIdentitySurveyProfileMenuDismissed},
+          {kHatsSurveyTriggerIdentityProfileMenuSignin,
+           &switches::kChromeIdentitySurveyProfileMenuSignin},
+          {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
+           &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
+          {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
+           &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
+          {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+           &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
+          {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+           &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
+          {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
+           &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
+      });
+  if (const auto* feature =
+          base::FindPtrOrNull(*kChromeIdentityHatsTriggerFeatureMap, trigger)) {
+    return base::FeatureList::IsEnabled(*feature);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
