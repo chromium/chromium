@@ -26,6 +26,7 @@ source_set("glic") {
     "browser_ui/glic_vector_icon_manager.h",
     "browser_ui/scoped_glic_button_indicator.h",
     "fre/glic_fre_ui.h",
+    "gemini_act_on_web_settings_policy_handler.h",
     "glic_hotkey.h",
     "glic_metrics.h",
     "glic_net_log.h",
@@ -78,6 +79,7 @@ source_set("glic") {
     "//components/favicon/core",
     "//components/metrics",
     "//components/optimization_guide/content/browser",
+    "//components/policy/core/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/variations",
@@ -105,6 +107,7 @@ source_set("enum") {
 # dependencies that are only needed internally.
 source_set("impl") {
   sources = [
+    "gemini_act_on_web_settings_policy_handler.cc",
     "glic_hotkey.cc",
     "glic_metrics.cc",
     "glic_metrics_provider.cc",
