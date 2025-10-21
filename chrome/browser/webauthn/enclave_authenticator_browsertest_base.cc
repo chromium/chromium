@@ -332,14 +332,11 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
           browser()->profile());
   ASSERT_TRUE(enclave_manager);
 
-  {
-    auto store_keys_lock = enclave_manager->GetStoreKeysLock();
-    enclave_manager->StoreKeys(
-        kSyncGaiaId,
-        {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
-                              std::end(kSecurityDomainSecret))},
-        /*last_key_version=*/0);
-  }
+  enclave_manager->StoreKeys(
+      kSyncGaiaId,
+      {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                            std::end(kSecurityDomainSecret))},
+      /*last_key_version=*/0);
 
   base::test::TestFuture<bool> add_device_future;
   enclave_manager->AddDeviceAndPINToAccount(

@@ -29,7 +29,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
-#include "device/fido/features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -276,18 +275,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
          {site_isolation::features::
               kPartialSiteIsolationMemoryThresholdParamName,
           "0"}});
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {trusted_vault::kSetClientEncryptionKeysJsApi,
-         // This flag is used for simulating the presence of the passkey system
-         // user verification (UV) mechanism (which is either provided by the
-         // operating system, or not provided). On Linux and Windows system UV
-         // is not available by default. So, the flag helps to ensure that on
-         // Linux and Windows the passkey secret will always be stored in the
-         // test SetPasskeysKeyInEnclaveManager.
-         device::kWebAuthnUseInsecureSoftwareUnexportableKeys},
-        /*disabled_features=*/{});
 #else
     feature_list_.InitAndEnableFeature(
         trusted_vault::kSetClientEncryptionKeysJsApi);
@@ -581,10 +568,6 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   const unsigned initial_count = enclave_manager->store_keys_count();
 
   const std::vector<uint8_t> kEncryptionKey = {7};
-  // This call simulates the passkey secret retrieval out of WebAuthn context
-  // (opportunistic key retrieval). In this case the key will be stored only if
-  // either a User Verification mechanism is available or if the development
-  // flag `kWebAuthnUseInsecureSoftwareUnexportableKeys` is enabled:
   ExecJsSetClientEncryptionKeysForSecurityDomain(
       web_contents()->GetPrimaryMainFrame(),
       trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey);

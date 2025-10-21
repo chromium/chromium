@@ -186,22 +186,6 @@ class EnclaveManager : public EnclaveManagerInterface {
     UvKeyCreationLock() = default;
   };
 
-  // A reference to this object is returned to represent a claim on key provided
-  // by accounts.google.com. See `GetStoreKeysLock`.
-  class StoreKeysLock {
-   public:
-    explicit StoreKeysLock(base::WeakPtr<EnclaveManager> manager);
-    StoreKeysLock(const StoreKeysLock&) = delete;
-    StoreKeysLock(StoreKeysLock&&) = delete;
-    StoreKeysLock& operator=(const StoreKeysLock&) = delete;
-    StoreKeysLock& operator=(StoreKeysLock&&) = delete;
-    ~StoreKeysLock();
-
-   private:
-    const base::WeakPtr<EnclaveManager> manager_;
-    SEQUENCE_CHECKER(sequence_checker_);
-  };
-
   EnclaveManager(
       const base::FilePath& base_dir,
       signin::IdentityManager* identity_manager,
@@ -237,19 +221,9 @@ class EnclaveManager : public EnclaveManagerInterface {
   void RegisterIfNeeded(Callback callback);
   // Set up an account with a newly-created PIN.
   void SetupWithPIN(std::string pin, Callback callback);
-  // Take a lock that prevents any keys provided by accounts.google.com from
-  // being opportunistically used to register with the enclave. While a
-  // `StoreKeysLock` object exists, any stored keys will wait for a call to,
-  // e.g. `AddDeviceToAccount`. The lock only needs to span the `StoreKeys`
-  // call, it doesn't need to be held throughout adding the device to the
-  // security domain.
-  std::unique_ptr<StoreKeysLock> GetStoreKeysLock();
-  // Adds the current device to the security domain. This method is supposed to
-  // be called after calling `StoreKeys` (with a lock outstanding from
-  // `GetStoreKeysLock`) and thus `has_pending_keys` returns true. Also, this
-  // method is being called from `StoreKeysFromOutOfContextRetrieval`.
-  //
-  // If `pin_metadata` has a value then it is taken to be the current GPM PIN.
+  // Adds the current device to the security domain. Only valid to call after
+  // `StoreKeys` has been called and thus `has_pending_keys` returns true. If
+  // `pin_metadata` has a value then it is taken to be the current GPM PIN.
   // If you want to add a new PIN to the account, see
   // `AddDeviceAndPINToAccount`.
   //
@@ -385,9 +359,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   void RemoveObserver(Observer* observer);
 
   // This function is called by the MagicArch integration when the user
-  // successfully completes recovery. It must be called either with a lock
-  // outstanding from `GetStoreKeysLock`, or without a lock (but in this case
-  // the keys will be stored only if a system UV is available).
+  // successfully completes recovery.
   void StoreKeys(const GaiaId& gaia_id,
                  std::vector<std::vector<uint8_t>> keys,
                  int last_key_version);
@@ -441,7 +413,6 @@ class EnclaveManager : public EnclaveManagerInterface {
   class IdentityObserver;
   struct PendingAction;
   friend class StateMachine;
-  friend class StoreKeysLock;
   FRIEND_TEST_ALL_PREFIXES(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey);
 
   // Starts a `StateMachine` to process the current request.
@@ -526,24 +497,6 @@ class EnclaveManager : public EnclaveManagerInterface {
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
 
-  // Stores keys in the pending state (the keys will remain in this state until
-  // `AddDeviceToAccount` is called).
-  void StorePendingKeys(const GaiaId& gaia_id,
-                        std::vector<std::vector<uint8_t>> keys,
-                        int last_key_version);
-
-  // Stores keys and performs `AddDeviceToAccount` if the system UV is
-  // available.
-  void StoreKeysFromOutOfContextRetrieval(
-      const GaiaId& gaia_id,
-      std::vector<std::vector<uint8_t>> keys,
-      int last_key_version);
-
-  void OpportunisticStoreKeysUVCheckComplete(
-      std::unique_ptr<StoreKeysArgs> pending_keys,
-      bool can_make_uv_keys);
-  void OpportunisticStoreKeysAddComplete(bool can_make_uv_keys);
-
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   device::NetworkContextFactory network_context_factory_;
@@ -589,7 +542,6 @@ class EnclaveManager : public EnclaveManagerInterface {
       identity_key_;
 
   unsigned store_keys_count_ = 0;
-  unsigned store_keys_lock_depth_ = 0;
 
   // Timer for recording a metric measuring the delay to load the Enclave
   // state.

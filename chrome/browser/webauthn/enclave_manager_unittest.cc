@@ -497,13 +497,6 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     state.mutable_users()->begin()->second.set_device_id("corrupted value");
   }
 
-  void AcquireLockAndStoreKey(EnclaveManager* manager,
-                              std::vector<uint8_t> key,
-                              int last_key_version) {
-    auto store_keys_lock = manager->GetStoreKeysLock();
-    manager->StoreKeys(gaia_id_, {std::move(key)}, last_key_version);
-  }
-
   base::test::TaskEnvironment task_env_;
   unsigned stored_count_ = 0;
   unsigned notified_about_state_update_count_ = 0;
@@ -558,7 +551,8 @@ TEST_F(EnclaveManagerTest, Basic) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)}, kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
   EXPECT_EQ(stored_count_, 1u);
@@ -598,7 +592,7 @@ TEST_F(EnclaveManagerTest,
   // Storing keys and adding device to account is supposed to notify observers
   // about enclave state update:
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)}, kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)}, kSecretVersion);
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
@@ -617,8 +611,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   // If secrets are provided before `RegisterIfNeeded` is called, the state
   // machine should still trigger registration.
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
@@ -640,8 +634,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   // Provide the domain secrets before the registration has completed. The
   // system should still end up in the correct state.
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
@@ -772,8 +766,8 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   security_domain_service_->pretend_there_are_members();
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
@@ -798,8 +792,8 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
 
 TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
 
   BoolFuture add_future;
   // A wrapped PIN that isn't a valid protobuf should be rejected.
@@ -944,8 +938,8 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
@@ -994,9 +988,8 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccountWithPreviouslyInvalidPIN) {
   const std::string pin = "pin";
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {key},
-                         /*last_key_version=*/kSecretVersion);
-
+  manager_.StoreKeys(gaia_id_, {key},
+                     /*last_key_version=*/kSecretVersion);
   {
     BoolFuture add_future;
     manager_.AddDeviceAndPINToAccount(pin,
@@ -1008,8 +1001,8 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccountWithPreviouslyInvalidPIN) {
   // Then, make the PIN unusable and reset the registration.
   security_domain_service_->MakePinMemberUnusable();
   manager_.ClearRegistrationForTesting();
-  AcquireLockAndStoreKey(&manager_, {key},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {key},
+                     /*last_key_version=*/kSecretVersion);
   {
     // Verify that attempting to register with a PIN succeeds when the public
     // key of the obsolete PIN is set.
@@ -1045,8 +1038,8 @@ TEST_P(EnclaveManagerChangePINTest, ChangePIN) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
@@ -1087,8 +1080,8 @@ TEST_P(EnclaveManagerChangePINTest, AddPINToExistingAccount) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
@@ -1128,8 +1121,8 @@ TEST_P(EnclaveManagerChangePINTest,
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
@@ -1163,10 +1156,10 @@ TEST_P(EnclaveManagerChangePINTest, ChangePINWithTwoDevices) {
       url_loader_factory_.GetSafeWeakWrapper());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {key},
-                         /*last_key_version=*/kSecretVersion);
-  AcquireLockAndStoreKey(&second_manager, {key},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {key},
+                     /*last_key_version=*/kSecretVersion);
+  second_manager.StoreKeys(gaia_id_, {key},
+                           /*last_key_version=*/kSecretVersion);
 
   {
     BoolFuture add_future;
@@ -1235,8 +1228,8 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
   security_domain_service_->pretend_there_are_members();
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
@@ -1255,8 +1248,8 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   security_domain_service_->pretend_there_are_members();
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
   BoolFuture add_future;
   manager_.AddDeviceAndPINToAccount("1234",
                                     /*previous_pin_public_key=*/std::nullopt,
@@ -1436,8 +1429,7 @@ TEST_P(EnclaveManagerRenewPINTest, RenewPINWithStaleDataFromAnotherClient) {
         return network_context_.get();
       }),
       url_loader_factory_.GetSafeWeakWrapper());
-  AcquireLockAndStoreKey(&second_manager, {secret->second},
-                         /*last_key_version=*/secret->first);
+  second_manager.StoreKeys(gaia_id_, {secret->second}, secret->first);
   BoolFuture add_future;
   second_manager.AddDeviceToAccount(security_domain_service_->GetPinMetadata(),
                                     add_future.GetCallback());
@@ -1974,8 +1966,8 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2298,8 +2290,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2332,8 +2324,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUnavailable) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2360,8 +2352,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2444,8 +2436,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2458,77 +2450,6 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   ASSERT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUI);
 }
-
-TEST_F(EnclaveUVTest, OpportunisticStoreKeys) {
-  security_domain_service_->pretend_there_are_members();
-  ASSERT_FALSE(manager_.is_registered());
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-
-  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)},
-                     /*last_key_version=*/kSecretVersion);
-  EXPECT_EQ(manager_.store_keys_count(), 1u);
-
-  while (!manager_.is_ready()) {
-    task_env_.RunUntilIdle();
-  }
-}
-
-TEST_F(EnclaveUVTest, OpportunisticStoreKeysAreIgnoredWhenFeatureIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      device::kWebAuthnOpportunisticRetrieval);
-  security_domain_service_->pretend_there_are_members();
-  ASSERT_FALSE(manager_.is_registered());
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-
-  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)},
-                     /*last_key_version=*/kSecretVersion);
-  EXPECT_EQ(manager_.store_keys_count(), 1u);
-  EXPECT_FALSE(manager_.is_registered());
-}
-
-TEST_F(EnclaveUVTest, OpportunisticStoreKeysRedundant) {
-  ASSERT_FALSE(manager_.is_registered());
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-
-  BoolFuture register_future;
-  manager_.RegisterIfNeeded(register_future.GetCallback());
-  EXPECT_TRUE(register_future.Wait());
-
-  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)},
-                     /*last_key_version=*/kSecretVersion);
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-
-  // If the existing registration doesn't cause the keys to be discarded then
-  // several things will go wrong. If nothing else, `pretend_there_are_members`
-  // isn't called so the fake security domain service will CHECK since the
-  // version is non-zero.
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-// On Chrome OS, `AreUserVerifyingKeysSupported` always returns true, thus this
-// test cannot establish its preconditions.
-
-TEST_F(EnclaveUVTest, OpportunisticStoreKeysNoUV) {
-  ASSERT_FALSE(manager_.is_registered());
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-  DisableUVKeySupport();
-
-  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)},
-                     /*last_key_version=*/kSecretVersion);
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-
-  // If the lack of UV doesn't cause the keys to be discarded then several
-  // things will go wrong. If nothing else, `pretend_there_are_members` isn't
-  // called so the fake security domain service will CHECK since the version is
-  // non-zero.
-  EXPECT_FALSE(manager_.is_registered());
-}
-#endif
 
 #if BUILDFLAG(IS_MAC)
 // Tests that if biometrics are available on macOS, Chrome will handle prompting
@@ -2546,8 +2467,8 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2583,8 +2504,8 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2634,8 +2555,8 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
@@ -2702,8 +2623,8 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
-  AcquireLockAndStoreKey(&manager_, {std::move(key)},
-                         /*last_key_version=*/kSecretVersion);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 

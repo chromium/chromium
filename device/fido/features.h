@@ -167,10 +167,6 @@ BASE_DECLARE_FEATURE(kWebAuthenticationFixWindowsHelloRdp);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave);
 
-// Enables to save keys from out of context ("opportunistic") retrieval.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);
-
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
