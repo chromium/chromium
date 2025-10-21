@@ -120,6 +120,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",
+      "//chrome/browser/ui/toolbar",
       "//components/tabs:public",
       "//components/vector_icons",
     ]

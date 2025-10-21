@@ -391,72 +391,10 @@ void ExtensionsMenuViewPlatformDelegateViews::OnSiteSettingsToggleButtonPressed(
 void ExtensionsMenuViewPlatformDelegateViews::OnExtensionToggleSelected(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
-  const extensions::Extension* extension = GetExtension(browser_, extension_id);
-  content::WebContents* web_contents = GetActiveWebContents();
-  CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *browser_->profile(),
-                                            *toolbar_model_, *web_contents));
-
-  SitePermissionsHelper permissions_helper(browser_->profile());
-  auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-  auto current_site_access = permissions_manager->GetUserSiteAccess(
-      *extension, web_contents->GetLastCommittedURL());
-  PermissionsManager::ExtensionSiteAccess extension_site_access =
-      permissions_manager->GetSiteAccess(*extension,
-                                         web_contents->GetLastCommittedURL());
-
-  // Grant extension site access when extension is toggled on.
   if (is_on) {
-    DCHECK_EQ(current_site_access,
-              PermissionsManager::UserSiteAccess::kOnClick);
-
-    // Update site access when extension requested host permissions for the
-    // current site (that is, site access was withheld).
-    if (extension_site_access.withheld_site_access ||
-        extension_site_access.withheld_all_sites_access) {
-      // Restore to previous access by looking whether broad site access was
-      // previously granted.
-      PermissionsManager::UserSiteAccess new_site_access =
-          permissions_manager->HasPreviousBroadSiteAccess(extension_id)
-              ? PermissionsManager::UserSiteAccess::kOnAllSites
-              : PermissionsManager::UserSiteAccess::kOnSite;
-      permissions_helper.UpdateSiteAccess(*extension, web_contents,
-                                          new_site_access);
-      return;
-    }
-
-    // Otherwise, grant one-time access (e.g. extension with activeTab is
-    // granted access).
-    extensions::ExtensionActionRunner* action_runner =
-        extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-    if (action_runner) {
-      action_runner->GrantTabPermissions({extension});
-    }
-    return;
-  }
-
-  // Revoke extension's site access when extension is toggled off.
-
-  // Update site access to "on click" when extension requested, and was granted,
-  // host permissions for the current site (that is, extension has site access).
-  if (extension_site_access.has_site_access ||
-      extension_site_access.has_all_sites_access) {
-    DCHECK_NE(current_site_access,
-              PermissionsManager::UserSiteAccess::kOnClick);
-    permissions_helper.UpdateSiteAccess(
-        *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick);
-    return;
-  }
-
-  // Otherwise, extension has one-time access and we need to clear tab
-  // permissions (e.g extension with activeTab was granted one-time access).
-  DCHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
-  extensions::ActiveTabPermissionGranter::FromWebContents(web_contents)
-      ->ClearActiveExtensionAndNotify(extension_id);
-
-  auto* action_runner =
-      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (action_runner) {
-    action_runner->ShowReloadPageBubble({GetExtension(browser_, extension_id)});
+    menu_model_->GrantSiteAccess(extension_id);
+  } else {
+    menu_model_->RevokeSiteAccess(extension_id);
   }
 }
 

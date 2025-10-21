@@ -39,6 +39,12 @@ class ExtensionsMenuViewModel
       const extensions::ExtensionId& extension_id,
       extensions::PermissionsManager::UserSiteAccess site_access);
 
+  // Grants the extension site access to the current site.
+  void GrantSiteAccess(const extensions::ExtensionId& extension_id);
+
+  // Revokes the extension's site access from the current site.
+  void RevokeSiteAccess(const extensions::ExtensionId& extension_id);
+
  private:
   content::WebContents* GetActiveWebContents();
 
