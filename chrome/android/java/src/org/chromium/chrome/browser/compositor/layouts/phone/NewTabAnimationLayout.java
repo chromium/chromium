@@ -610,7 +610,7 @@ public class NewTabAnimationLayout extends Layout {
                     }
                 };
 
-        final Rect finalAnimationRect = finalRect;
+        final Rect finalAnimationRect = new Rect(finalRect);
         mAnimationRunnable =
                 () -> {
                     mAnimationRunnable = null;

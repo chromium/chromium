@@ -69,7 +69,7 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
     // Retains a strong reference to the {@link ShrinkExpandAnimator} on the class to prevent it
     // from being prematurely GC'd when using {@link ObjectAnimator}.
     private @Nullable ShrinkExpandAnimator mExpandAnimator;
-    private @Nullable ObjectAnimator mRectAnimator;
+    private @Nullable ValueAnimator mRectAnimator;
     private @Nullable ValueAnimator mCornerAnimator;
     private @Nullable AnimatorSet mExpandAnimatorSet;
 
@@ -104,7 +104,7 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
 
         mRunOnNextLayoutDelegate = new RunOnNextLayoutDelegate(this);
         mStartRadii = startRadii;
-        mInitialRect = initialRect;
+        mInitialRect = new Rect(initialRect);
         mListener = listener;
         mLogsEnabled = logsEnabled;
 
@@ -114,7 +114,7 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
         mRectView.setLayoutDirection(isRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         addView(mRectView);
         mRectView.setRoundedFillColor(backgroundColor);
-        mRectView.reset(initialRect);
+        mRectView.reset(mInitialRect);
         mRectView.setRoundedCorners(startRadii[0], startRadii[1], startRadii[2], startRadii[3]);
     }
 
@@ -135,13 +135,16 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
         mExpandAnimator =
                 new ShrinkExpandAnimator(
                         mRectView, mInitialRect, finalRect, /* searchBoxHeight= */ 0);
+        mExpandAnimator.setRect(mInitialRect);
+        // Make copies just in case the rects get mutated.
         mRectAnimator =
-                ObjectAnimator.ofObject(
-                        mExpandAnimator,
-                        ShrinkExpandAnimator.RECT,
-                        new RectEvaluator(),
-                        mInitialRect,
-                        finalRect);
+                ValueAnimator.ofObject(
+                        new RectEvaluator(), new Rect(mInitialRect), new Rect(finalRect));
+        mRectAnimator.addUpdateListener(
+                animation -> {
+                    if (mExpandAnimator == null) return;
+                    mExpandAnimator.setRect((Rect) animation.getAnimatedValue());
+                });
 
         mCornerAnimator =
                 RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
