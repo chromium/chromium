@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -633,7 +634,13 @@ TEST_P(InstallFromSyncTest, TwoInstalls) {
                           webapps::InstallResultCode::kSuccessNewInstall));
 }
 
-TEST_P(InstallFromSyncTest, Shutdown) {
+// TODO(crbug.com/453907861): Disabled on Linux UBSan due to failures.
+#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#define MAYBE_Shutdown DISABLED_Shutdown
+#else
+#define MAYBE_Shutdown Shutdown
+#endif
+TEST_P(InstallFromSyncTest, MAYBE_Shutdown) {
   const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page with manifest, but have the manifest fetch cause the system to shut
