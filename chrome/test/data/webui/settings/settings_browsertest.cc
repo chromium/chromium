@@ -954,8 +954,7 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
 }
 
 // TODO(crbug.com/440503425): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
-                       DISABLED_OtherGoogleDataDialog) {
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test, OtherGoogleDataDialog) {
   RunTest("settings/other_google_data_dialog_test.js",
           "runMochaSuite('OtherGoogleDataDialog')");
 }
