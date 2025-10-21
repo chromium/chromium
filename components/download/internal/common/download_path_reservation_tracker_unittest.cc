@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -463,8 +464,9 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
   // Make room for the path with no uniquifier, the |kMaxUniqueFiles|
   // numerically uniquified paths, and then one more for the timestamp
   // uniquified path.
-  std::unique_ptr<MockDownloadItem>
-      items[DownloadPathReservationTracker::kMaxUniqueFiles + 2];
+  std::array<std::unique_ptr<MockDownloadItem>,
+             DownloadPathReservationTracker::kMaxUniqueFiles + 2>
+      items;
 
   // Create |kMaxUniqueFiles + 2| reservations for |path|. The first reservation
   // will have no uniquifier. Then |kMaxUniqueFiles| paths have numeric
@@ -485,10 +487,10 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
       expected_path =
           path.InsertBeforeExtensionASCII(" - 2019-01-23T163530.020");
     }
-    UNSAFE_TODO(items[i]) = CreateDownloadItem(i);
+    items[i] = CreateDownloadItem(i);
     EXPECT_FALSE(IsPathInUse(expected_path));
 
-    CreateReservation(UNSAFE_TODO(items[i]).get(), path,
+    CreateReservation(items[i].get(), path,
                       DownloadPathReservationTracker::UNIQUIFY, expected_result,
                       expected_path);
   }
