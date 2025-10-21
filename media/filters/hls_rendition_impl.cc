@@ -450,6 +450,15 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb,
   base::TimeDelta segment_end;
   std::tie(segment, segment_start, segment_end) = segments_->GetNextSegment();
 
+  if (segment->IsGap()) {
+    TryFillingBuffers(
+        base::BindOnce(
+            [](base::OnceClosure cb, base::TimeDelta) { std::move(cb).Run(); },
+            std::move(cb)),
+        time.value_or(base::Seconds(0)));
+    return;
+  }
+
   // If this segment has a different init segment than the segment before it,
   // we need to include the init segment before we fetch. Alternatively, if
   // we've seeked somewhere and flushed old data, we'll need the init segment

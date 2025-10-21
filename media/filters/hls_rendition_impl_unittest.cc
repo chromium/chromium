@@ -157,6 +157,21 @@ const std::string kSingleSegmentPlaylist =
     "#EXTINF:2.00000,\n"
     "playlist_4500Kb_14551245.ts\n";
 
+const std::string kGapPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:2\n"
+    "#EXT-X-MEDIA-SEQUENCE:0\n"
+    "#EXT-X-PLAYLIST-TYPE:VOD\n"
+    "#EXTINF:2.00000,\n"
+    "media_0.ts\n"
+    "#EXT-X-GAP\n"
+    "#EXTINF:2.00000,\n"
+    "media_1.ts\n"
+    "#EXTINF:2.00000,\n"
+    "media_2.ts\n"
+    "#EXT-X-ENDLIST\n";
+
 }  // namespace
 
 using testing::_;
@@ -1045,6 +1060,44 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
   EXPECT_CALL(*mock_hrh_, Quit(_));
   task_environment_.FastForwardBy(base::Seconds(190));
   rendition->CheckState(base::Seconds(10), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestGapSegmentIsSkipped) {
+  auto rendition = MakeVodRendition(kGapPlaylist);
+  ASSERT_NE(rendition, nullptr);
+  // First check should fetch the first segment.
+  std::string content0 = "content0";
+  RespondToUrl("https://example.com/media_0.ts", content0);
+  RequireAppend(base::as_byte_span(content0));
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  // The buffer is now [0, 2), which is less than the ideal 10s.
+  // The next CheckState should try to fill the buffer.
+  // It will encounter a GAP segment, skip it, and fetch the next one.
+  EXPECT_CALL(
+      *mock_hrh_,
+      ReadMediaSegment(MediaSegmentHasUrl("https://example.com/media_1.ts"), _,
+                       _, _))
+      .Times(0);
+
+  std::string content2 = "content2";
+  RespondToUrl("https://example.com/media_2.ts", content2);
+  RequireAppend(base::as_byte_span(content2));
+  Ranges<base::TimeDelta> after_0;
+  after_0.Add(base::Seconds(0), base::Seconds(2));
+  Ranges<base::TimeDelta> after_2;
+  after_2.Add(base::Seconds(0), base::Seconds(2));
+  after_2.Add(base::Seconds(4), base::Seconds(6));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(after_0))
+      .WillOnce(Return(after_2));
+  rendition->CheckState(base::Seconds(1), 1.0,
                         BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();
 }
