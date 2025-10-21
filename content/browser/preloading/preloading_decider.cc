@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <string_view>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -14,7 +13,6 @@
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_split.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_preload_storage.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
@@ -40,20 +38,6 @@
 namespace content {
 
 namespace {
-
-content::PreloadingDecider::EagernessSet EagernessSetFromFeatureParam(
-    std::string_view value) {
-  content::PreloadingDecider::EagernessSet set;
-  for (std::string_view piece : base::SplitStringPiece(
-           value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    if (piece == "conservative") {
-      set.Put(blink::mojom::SpeculationEagerness::kConservative);
-    } else if (piece == "moderate") {
-      set.Put(blink::mojom::SpeculationEagerness::kModerate);
-    }
-  }
-  return set;
-}
 
 void OnPrefetchDestroyed(WeakDocumentPtr document, const GURL& url) {
   PreloadingDecider* preloading_decider =
@@ -87,10 +71,7 @@ bool PredictionOccursInOtherWebContents(
 class PreloadingDecider::BehaviorConfig {
  public:
   BehaviorConfig()
-      : eager_viewport_heuristic_eagerness_{blink::mojom::SpeculationEagerness::
-                                                kEager},
-        ml_model_eagerness_{blink::mojom::SpeculationEagerness::kModerate},
-        ml_model_enacts_candidates_(
+      : ml_model_enacts_candidates_(
             blink::features::kPreloadingModelEnactCandidates.Get()),
         ml_model_prefetch_moderate_threshold_{std::clamp(
             blink::features::kPreloadingModelPrefetchModerateThreshold.Get(),
@@ -114,12 +95,6 @@ class PreloadingDecider::BehaviorConfig {
     }
 
     CHECK(pointer_down_eagerness_.HasAll(pointer_hover_eagerness_));
-
-    static const base::FeatureParam<std::string> kViewportHeuristicEagerness{
-        &blink::features::kPreloadingModerateViewportHeuristics,
-        "viewport_heuristic_eagerness", "moderate"};
-    moderate_viewport_heuristic_eagerness_ =
-        EagernessSetFromFeatureParam(kViewportHeuristicEagerness.Get());
   }
 
   EagernessSet EagernessSetForPredictor(
@@ -129,12 +104,12 @@ class PreloadingDecider::BehaviorConfig {
     } else if (predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
       return pointer_hover_eagerness_;
     } else if (predictor == preloading_predictor::kModerateViewportHeuristic) {
-      return moderate_viewport_heuristic_eagerness_;
+      return EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
     } else if (predictor == preloading_predictor::kEagerViewportHeuristic) {
-      return eager_viewport_heuristic_eagerness_;
+      return EagernessSet{blink::mojom::SpeculationEagerness::kEager};
     } else if (predictor ==
                preloading_predictor::kPreloadingHeuristicsMLModel) {
-      return ml_model_eagerness_;
+      return EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
     } else {
       NOTREACHED() << "unexpected predictor " << predictor.name() << "/"
                    << predictor.ukm_value();
@@ -182,9 +157,6 @@ class PreloadingDecider::BehaviorConfig {
 
   EagernessSet pointer_down_eagerness_;
   EagernessSet pointer_hover_eagerness_;
-  EagernessSet moderate_viewport_heuristic_eagerness_;
-  const EagernessSet eager_viewport_heuristic_eagerness_;
-  const EagernessSet ml_model_eagerness_;
   const bool ml_model_enacts_candidates_ = false;
   const PreloadingConfidence ml_model_prefetch_moderate_threshold_{
       kNoThreshold};
