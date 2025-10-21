@@ -135,6 +135,14 @@ double CSSMathFunctionValue::ComputeValueInCanonicalUnit(
   return std::isnan(value) ? 0.0 : value;
 }
 
+std::optional<double> CSSMathFunctionValue::GetValueIfKnown() const {
+  std::optional<double> val = expression_->GetValueIfKnown();
+  if (val.has_value()) {
+    return ClampToPermittedRange(CSSValueClampingUtils::ClampDouble(*val));
+  }
+  return val;
+}
+
 bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                  double multiplier) const {
   return expression_->AccumulateLengthArray(length_array, multiplier);

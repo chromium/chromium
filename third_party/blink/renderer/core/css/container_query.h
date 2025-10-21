@@ -7,11 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_selector.h"
-#include "third_party/blink/renderer/core/css/media_query_exp.h"
-#include "third_party/blink/renderer/core/layout/geometry/axis.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
+
+class MediaQueryExpNode;
 
 class CORE_EXPORT ContainerQuery final
     : public GarbageCollected<ContainerQuery> {
@@ -26,10 +25,7 @@ class CORE_EXPORT ContainerQuery final
 
   String ToString() const;
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(query_);
-    visitor->Trace(parent_);
-  }
+  void Trace(Visitor*) const;
 
  private:
   friend class ContainerQueryTest;

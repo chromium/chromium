@@ -6,19 +6,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_MEDIA_QUERY_PARSER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
-#include "third_party/blink/renderer/core/css/media_query_exp.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class MediaQuerySet;
-class CSSParserContext;
-class ContainerQueryParser;
+enum class MediaQueryOperator;
 class CSSIfParser;
+class CSSParserContext;
+class CSSParserTokenStream;
+class ContainerQueryParser;
+class ExecutionContext;
+class MediaQueryExpNode;
+class MediaQuerySet;
 
 class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();

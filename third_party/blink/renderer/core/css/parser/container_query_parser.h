@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
-#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
@@ -15,6 +14,7 @@ namespace blink {
 
 class CSSParserContext;
 class CSSIfParser;
+class MediaQueryExpNode;
 
 class CORE_EXPORT ContainerQueryParser {
   STACK_ALLOCATED();
