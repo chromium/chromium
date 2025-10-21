@@ -499,6 +499,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async setDeepSearchMode_(
       e: CustomEvent<{inDeepSearchMode: boolean}>) {
+    this.inDeepSearchMode_ = e.detail.inDeepSearchMode;
     this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
     this.queryAutocomplete(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
@@ -509,6 +510,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async setCreateImageMode_(
       e: CustomEvent<{inCreateImageMode: boolean}>) {
+    this.inCreateImageMode_ = e.detail.inCreateImageMode;
     this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
     this.queryAutocomplete(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
