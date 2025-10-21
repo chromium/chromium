@@ -93,7 +93,7 @@ class VideoFrameImageUtilTest : public ::testing::Test {
 
     frame->metadata().transformation = kTestTransform;
     auto image =
-        DoCreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
+        DoCreateImageFromVideoFrame(frame, nullptr, nullptr,
                                     /*prefer_tagged_orientation=*/true);
     if (expect_broken_tagging) {
       EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
@@ -101,29 +101,25 @@ class VideoFrameImageUtilTest : public ::testing::Test {
       EXPECT_EQ(image->Orientation(), kTestOrientation);
     }
 
-    image =
-        DoCreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
-                                    /*prefer_tagged_orientation=*/false);
+    image = DoCreateImageFromVideoFrame(frame, nullptr, nullptr,
+                                        /*prefer_tagged_orientation=*/false);
     EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
   }
 
   scoped_refptr<StaticBitmapImage> DoCreateImageFromVideoFrame(
       scoped_refptr<media::VideoFrame> frame,
-      bool allow_zero_copy_images = true,
       CanvasResourceProvider* resource_provider = nullptr,
       media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-      gfx::Rect dest_rect = gfx::Rect(),
       bool prefer_tagged_orientation = true) {
     const auto transform =
         frame->metadata().transformation.value_or(media::kNoTransformation);
-    if (dest_rect.IsEmpty()) {
-      // Since we're copying, the destination is always aligned with the origin.
-      const auto& visible_rect = frame->visible_rect();
-      dest_rect = gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
-      if (transform.rotation == media::VIDEO_ROTATION_90 ||
-          transform.rotation == media::VIDEO_ROTATION_270) {
-        dest_rect.Transpose();
-      }
+    // Since we're copying, the destination is always aligned with the origin.
+    const auto& visible_rect = frame->visible_rect();
+    auto dest_rect =
+        gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
+    if (transform.rotation == media::VIDEO_ROTATION_90 ||
+        transform.rotation == media::VIDEO_ROTATION_270) {
+      dest_rect.Transpose();
     }
 
     std::unique_ptr<CanvasResourceProvider> local_resource_provider;
@@ -279,8 +275,7 @@ TEST_F(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   auto texture_frame = media::CreateSharedImageRGBAFrame(
       fake_context.raster_context_provider(), kTestSize, gfx::Rect(kTestSize),
       base::DoNothing());
-  auto image = DoCreateImageFromVideoFrame(texture_frame,
-                                           /*allow_zero_copy_images=*/false);
+  auto image = DoCreateImageFromVideoFrame(texture_frame);
   ASSERT_TRUE(image->IsTextureBacked());
   TestOrientation(texture_frame, /*expect_broken_tagging=*/true);
 }
@@ -300,14 +295,10 @@ TEST_F(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   ASSERT_TRUE(provider);
   EXPECT_TRUE(provider->IsAccelerated());
 
-  auto image = DoCreateImageFromVideoFrame(texture_frame,
-                                           /*allow_zero_copy_images=*/false,
-                                           provider.get());
+  auto image = DoCreateImageFromVideoFrame(texture_frame, provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
-  image = DoCreateImageFromVideoFrame(texture_frame,
-                                      /*allow_zero_copy_images=*/false,
-                                      provider.get());
+  image = DoCreateImageFromVideoFrame(texture_frame, provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
   ASSERT_FALSE(provider->Recorder().HasRecordedDrawOps());
