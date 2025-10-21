@@ -11,7 +11,8 @@ export function getHtml(this: SearchboxIconElement) {
   return html`<!--_html_template_start_-->
 <div id="container"
     style="--container-bg-color:${this.getContainerBgColor_()};">
-  <img id="image" src="${this.imageSrc_}" @load="${this.onImageLoad_}">
+  <img id="image" src="${this.imageSrc_}" ?hidden="${!this.showImage_}"
+      @load="${this.onImageLoad_}" @error="${this.onImageError_}">
   <div id="icon" style="${this.iconStyle_}" ?hidden="${this.showIconImg_}">
   </div>
   <img id="iconImg" src="${this.iconSrc_}" ?hidden="${!this.showIconImg_}"

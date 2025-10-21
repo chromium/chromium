@@ -5,6 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -32,7 +34,7 @@
 }
 
 /* Entities may feature a dominant color background until image loads. */
-:host-context(cr-searchbox-match[has-image]):host(:not([is-weather-answer])) #container {
+:host([has-image]:not([is-weather-answer])) #container {
   background-color: var(--color-searchbox-results-icon-container-background,
       var(--container-bg-color));
 }
@@ -53,7 +55,7 @@
   width: 100%;
 }
 
-:host-context(cr-searchbox-match[has-image]) #image {
+:host([has-image]) #image {
   display: initial;
 }
 
@@ -116,8 +118,8 @@
   width: var(--cr-searchbox-icon-size-in-searchbox);
 }
 
-:host-context(cr-searchbox-match[has-image]) #icon,
-:host-context(cr-searchbox-match[has-image]) #iconImg {
+:host([has-image]) #icon,
+:host([has-image]) #iconImg {
   display: none;
 }
 
