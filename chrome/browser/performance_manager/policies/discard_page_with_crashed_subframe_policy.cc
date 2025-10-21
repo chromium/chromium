@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -32,10 +33,14 @@ void DiscardPageWithCrashedSubframePolicy::
   // ReloadHiddenTabsWithCrashedSubframes feature.
   bool will_reload = !frame_node->GetPageNode()->IsVisible() &&
                      frame_node->IsRendered() && frame_node->IsActive();
-  if (!will_reload || eligiblity_policy->CanDiscard(
-                          frame_node->GetPageNode(),
-                          DiscardEligibilityPolicy::DiscardReason::URGENT,
-                          base::TimeDelta()) != CanDiscardResult::kEligible) {
+  bool is_eligible =
+      will_reload && eligiblity_policy->CanDiscard(
+                         frame_node->GetPageNode(),
+                         DiscardEligibilityPolicy::DiscardReason::URGENT,
+                         base::TimeDelta()) == CanDiscardResult::kEligible;
+  base::UmaHistogramBoolean("Stability.ChildFrameCrash.PageEligibleToDiscard",
+                            is_eligible);
+  if (!is_eligible) {
     return;
   }
   content::WebContents* web_contents =

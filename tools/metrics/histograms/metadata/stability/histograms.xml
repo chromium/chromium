@@ -323,6 +323,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.ChildFrameCrash.PageEligibleToDiscard"
+    enum="Boolean" expires_after="2026-02-16">
+  <owner>kawasin@google.com</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Logs whether a page with a crashed subframe is eligible to be discarded at
+    DiscardPageWithCrashedSubframePolicy. Logged once per subframe process
+    crash.
+  </summary>
+</histogram>
+
 <histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
     enum="ShownAfterCrashingReason" expires_after="2026-08-24">
   <owner>alexmos@chromium.org</owner>
