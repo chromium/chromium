@@ -28,6 +28,26 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadabilityCheck"/>
 </variants>
 
+<histogram name="ReadAloud.AudioOverviews.PlaybackPositionOnManualClose"
+    enum="PlaybackLocation" expires_after="2026-04-07">
+  <owner>shlomib@google.com</owner>
+  <summary>
+    Android only. Records the playback location at the time when the user
+    manually closes the readaloud player (using the X button). Recorded only in
+    Audio Overviews playback.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.AudioOverviews.TimeToMidLoadingManualClose"
+    units="ms" expires_after="2026-04-07">
+  <owner>shlomib@google.com</owner>
+  <summary>
+    Android only. Recorded when the user closes the player while the playback is
+    still loading. Records how long it takes for users to hit X while the
+    playback is still loading. Recorded only for audio overview playback.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.DurationListened" units="ms"
     expires_after="2026-04-07">
   <owner>andreaxg@google.com</owner>
@@ -295,6 +315,26 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram for recording what speed setting a user selects for the ReadAloud
     playback. Emitted when the ReadAloud speed pref is changed.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.StandardPlayback.PlaybackPositionOnManualClose"
+    enum="PlaybackLocation" expires_after="2026-04-07">
+  <owner>shlomib@google.com</owner>
+  <summary>
+    Android only. Records the playback location at the time when the user
+    manually closes the readaloud player (using the X button). Recorded only in
+    standard playback.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.StandardPlayback.TimeToMidLoadingManualClose"
+    units="ms" expires_after="2026-04-07">
+  <owner>shlomib@google.com</owner>
+  <summary>
+    Android only. Recorded when the user closes the player while the playback is
+    still loading. Records how long it takes for users to hit X while the
+    playback is still loading. Recorded only for standard playbacks.
   </summary>
 </histogram>
 

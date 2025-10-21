@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,6 +39,17 @@ public class ReadAloudMetrics {
             "ReadAloud.DurationScrubbingForwardsSeekbar";
     public static String DURATION_SCRUBBING_BACKWARDS_SEEKBAR =
             "ReadAloud.DurationScrubbingBackwardsSeekbar";
+
+    // Abandonment metrics below.
+    public static String OVERVIEW_PLAYBACK_POSITION_ON_MANUAL_CLOSE =
+            "ReadAloud.AudioOverviews.PlaybackPositionOnManualClose";
+    public static String OVERVIEW_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE =
+            "ReadAloud.AudioOverviews.TimeToMidLoadingManualClose";
+
+    public static String STANDARD_PLAYBACK_POSITION_ON_MANUAL_CLOSE =
+            "ReadAloud.StandardPlayback.PlaybackPositionOnManualClose";
+    public static String STANDARD_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE =
+            "ReadAloud.StandardPlayback.TimeToMidLoadingManualClose";
 
     /**
      * The reason why we clear the prepared message.
@@ -151,6 +163,22 @@ public class ReadAloudMetrics {
         int PLAYBACK_MODE_CHANGE = 12;
         // Be sure to also update enums.xml when updating these values.
         int NUM_ENTRIES = 13;
+    }
+
+    @IntDef({
+        PlaybackLocation.NOT_STARTED,
+        PlaybackLocation.ZERO_TO_5_SECONDS,
+        PlaybackLocation.FIVE_TO_10_SECONDS,
+        PlaybackLocation.TEN_TO_20_SECONDS,
+        PlaybackLocation.OVER_20_SECONDS,
+    })
+    public @interface PlaybackLocation {
+        int NOT_STARTED = 0;
+        int ZERO_TO_5_SECONDS = 1;
+        int FIVE_TO_10_SECONDS = 2;
+        int TEN_TO_20_SECONDS = 3;
+        int OVER_20_SECONDS = 4;
+        int NUM_ENTRIES = 5;
     }
 
     public static void recordDurationMsListened(long durationMs) {
@@ -270,5 +298,41 @@ public class ReadAloudMetrics {
     public static void recordReasonForStoppingPlayback(@ReasonForStoppingPlayback int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 REASON_FOR_STOPPING_PLAYBACK, reason, ReasonForStoppingPlayback.NUM_ENTRIES);
+    }
+
+    public static void recordPlaybackPositionInManualClose(
+            long playbackPositionMs, PlaybackMode mode) {
+        String metric =
+                mode.equals(PlaybackMode.OVERVIEW)
+                        ? OVERVIEW_PLAYBACK_POSITION_ON_MANUAL_CLOSE
+                        : STANDARD_PLAYBACK_POSITION_ON_MANUAL_CLOSE;
+        RecordHistogram.recordEnumeratedHistogram(
+                metric, getPlaybackLocation(playbackPositionMs), PlaybackLocation.NUM_ENTRIES);
+    }
+
+    public static void recordTimeToMidLoadingManualClose(
+            long durationMs, PlaybackMode playbackMode) {
+        String metric =
+                playbackMode.equals(PlaybackMode.OVERVIEW)
+                        ? OVERVIEW_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE
+                        : STANDARD_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE;
+        RecordHistogram.recordMediumTimesHistogram(metric, durationMs);
+    }
+
+    @PlaybackLocation
+    private static int getPlaybackLocation(long playbackPositionMs) {
+        if (playbackPositionMs == 0) {
+            return PlaybackLocation.NOT_STARTED;
+        }
+        if (playbackPositionMs < 5000) {
+            return PlaybackLocation.ZERO_TO_5_SECONDS;
+        }
+        if (playbackPositionMs < 10000) {
+            return PlaybackLocation.FIVE_TO_10_SECONDS;
+        }
+        if (playbackPositionMs < 20000) {
+            return PlaybackLocation.TEN_TO_20_SECONDS;
+        }
+        return PlaybackLocation.OVER_20_SECONDS;
     }
 }

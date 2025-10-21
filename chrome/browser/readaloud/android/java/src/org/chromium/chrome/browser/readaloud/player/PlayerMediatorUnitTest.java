@@ -481,6 +481,71 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testPlaybackCloseInfoRecorded_duringPlaybackCreation_overview() {
+        var playbackPositionAtManualCloseHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.OVERVIEW_PLAYBACK_POSITION_ON_MANUAL_CLOSE,
+                        0); // NOT_STARTED
+        var timeToMidCreationCloseHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.OVERVIEW_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE,
+                        1000); // 1000MS until manual close.
+        mMediator.setPlayback(mPlayback);
+        mMediator.setPlaybackState(PLAYBACK_CREATION);
+        mMediator.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+        mClock.advanceCurrentTimeMillis(1000);
+        mMediator.onCloseClick();
+
+        playbackPositionAtManualCloseHistogram.assertExpected();
+        timeToMidCreationCloseHistogram.assertExpected();
+    }
+
+    @Test
+    public void testPlaybackCloseInfoRecorded_duringPlaybackCreation_standard() {
+        var playbackPositionAtManualCloseHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.STANDARD_PLAYBACK_POSITION_ON_MANUAL_CLOSE,
+                        0); // NOT_STARTED
+        var timeToMidCreationCloseHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.STANDARD_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE,
+                        1000); // 1000MS until manual close.
+        mMediator.setPlayback(mPlayback);
+        mMediator.setPlaybackState(PLAYBACK_CREATION);
+        mMediator.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+        mClock.advanceCurrentTimeMillis(1000);
+        mMediator.onCloseClick();
+
+        playbackPositionAtManualCloseHistogram.assertExpected();
+        timeToMidCreationCloseHistogram.assertExpected();
+    }
+
+    @Test
+    public void testPlaybackCloseInfoRecorded_duringPlayback() {
+        var playbackPositionAtManualCloseHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.OVERVIEW_PLAYBACK_POSITION_ON_MANUAL_CLOSE,
+                        1); // 0-5 seconds
+        var noMidCreationClose =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ReadAloudMetrics.OVERVIEW_PLAYBACK_TIME_TO_MID_LOADING_MANUAL_CLOSE)
+                        .build();
+
+        mMediator.setPlayback(mPlayback);
+        mMediator.setPlaybackState(PLAYBACK_CREATION);
+        mMediator.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+
+        mMediator.setPlaybackState(PLAYING);
+        mModel.set(PlayerProperties.ELAPSED_NANOS, 1 * 1_000_000_000L); // 1s duration.
+
+        mMediator.onCloseClick();
+
+        playbackPositionAtManualCloseHistogram.assertExpected();
+        noMidCreationClose.assertExpected();
+    }
+
+    @Test
     public void testOnPublisherClick() {
         mMediator.onPublisherClick();
         verify(mPlayerCoordinator).hideExpandedPlayer();

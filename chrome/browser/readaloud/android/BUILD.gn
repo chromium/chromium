@@ -86,6 +86,7 @@ android_library("metrics_java") {
 
   deps = [
     "//base:base_java",
+    "//chrome/android/modules/readaloud/public:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -257,8 +258,8 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java",
-    "//third_party/android_deps:guava_java",
     "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:guava_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",
