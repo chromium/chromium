@@ -197,6 +197,9 @@ const std::map<std::string, std::string>& GetExpectedLearnMoreUrlSpecs() {
   return *kExpectedLearnMoreUrlSpecs;
 }
 
+// TODO(crbug.com/452865019): Test utils and tests use raw ptr because
+// AnalysisSettings is not copyable, switching to std::optional requires an
+// overhaul
 AnalysisSettings* OnlyDlpEnabledSettings() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings;

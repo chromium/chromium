@@ -5,7 +5,6 @@
 #include "components/enterprise/connectors/core/analysis_service_settings_base.h"
 
 #include "base/json/json_reader.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/analysis_test_utils.h"
@@ -105,23 +104,23 @@ TEST_P(AnalysisServiceSettingsCloudTest, CloudTest) {
               expected_settings()->cloud_or_local_settings.analysis_url());
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
-    for (const auto& entry : expected_settings()->tags) {
-      const std::string& tag = entry.first;
-      ASSERT_TRUE(analysis_settings.value().tags.count(entry.first));
-      ASSERT_EQ(analysis_settings.value().tags[tag].custom_message.message,
-                entry.second.custom_message.message);
-      if (!analysis_settings.value()
-               .tags[tag]
-               .custom_message.learn_more_url.is_empty()) {
-        ASSERT_EQ(GetExpectedLearnMoreUrlSpecs().at(tag),
-                  analysis_settings.value()
-                      .tags[tag]
-                      .custom_message.learn_more_url.spec());
-        ASSERT_EQ(GetExpectedLearnMoreUrlSpecs().at(tag),
+    for (const auto& [tag, expected_tag_settings] : expected_settings()->tags) {
+      const auto& tag_settings_it = analysis_settings.value().tags.find(tag);
+      ASSERT_NE(analysis_settings.value().tags.end(), tag_settings_it);
+
+      const auto& tag_settings = tag_settings_it->second;
+      ASSERT_EQ(tag_settings.custom_message.message,
+                expected_tag_settings.custom_message.message);
+      if (!tag_settings.custom_message.learn_more_url.is_empty()) {
+        const auto& learn_more_url_spec =
+            GetExpectedLearnMoreUrlSpecs().at(tag);
+        ASSERT_EQ(learn_more_url_spec,
+                  tag_settings.custom_message.learn_more_url.spec());
+        ASSERT_EQ(learn_more_url_spec,
                   service_settings.GetLearnMoreUrl(tag).value().spec());
       }
-      ASSERT_EQ(analysis_settings.value().tags[tag].requires_justification,
-                entry.second.requires_justification);
+      ASSERT_EQ(tag_settings.requires_justification,
+                expected_tag_settings.requires_justification);
     }
   }
 }

@@ -4,17 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 
-#include <variant>
-
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -38,19 +33,12 @@ namespace {
 
 using test::GetExpectedLearnMoreUrlSpecs;
 using test::kEnablePatternIsNotADictSettings;
-using test::kNoDlpDotCom;
-using test::kNoDlpOrMalwareDotCa;
 using test::kNoEnabledPatternsSettings;
-using test::kNoMalwareDotCom;
 using test::kNoProviderSettings;
 using test::kNormalSettings;
-using test::
-    kNormalSettingsDlpRequiresBypassJustification;
+using test::kNormalSettingsDlpRequiresBypassJustification;
 using test::kNormalSettingsWithCustomMessage;
-using test::kOnlyDlpEnabledPatternsAndIrrelevantSettings;
-using test::kOnlyDlpEnabledPatternsSettings;
 using test::kScan1DotCom;
-using test::kScan2DotCom;
 using test::kUrlAndSourceDestinationListSettings;
 using test::NormalDlpAndMalwareSettings;
 using test::NormalDlpSettings;
@@ -508,7 +496,6 @@ class AnalysisServiceSettingsLocalTest
 
     return GetParam().expected_settings;
   }
-  DataRegion data_region() const { return GetParam().data_region; }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -524,7 +511,7 @@ TEST_P(AnalysisServiceSettingsLocalTest, LocalTest) {
                                            *GetServiceProviderConfig());
 
   auto analysis_settings =
-      service_settings.GetAnalysisSettings(url(), data_region());
+      service_settings.GetAnalysisSettings(url(), DataRegion::NO_PREFERENCE);
   ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
@@ -570,85 +557,28 @@ TEST_P(AnalysisServiceSettingsLocalTest, LocalTest) {
   }
 }
 
-// TODO(crbug.com/444237640): Remove redundant test cases.
 INSTANTIATE_TEST_SUITE_P(
     ,
     AnalysisServiceSettingsLocalTest,
     testing::Values(
-        // Validate that the enabled patterns match the expected patterns.
-        TestParam(kScan1DotCom,
-                  kOnlyDlpEnabledPatternsSettings,
-                  OnlyDlpEnabledSettings()),
-        TestParam(kScan2DotCom,
-                  kOnlyDlpEnabledPatternsSettings,
-                  OnlyDlpEnabledSettings()),
-        TestParam(kNoDlpDotCom, kOnlyDlpEnabledPatternsSettings, NoSettings()),
-        TestParam(kNoMalwareDotCom,
-                  kOnlyDlpEnabledPatternsSettings,
-                  NoSettings()),
-        TestParam(kNoDlpOrMalwareDotCa,
-                  kOnlyDlpEnabledPatternsSettings,
-                  NoSettings()),
-
-        // Validate that invalid enable list entries are ignored.
+        // Validate that no settings are returned for various invalid or empty
+        // configurations.
         TestParam(kScan1DotCom, kEnablePatternIsNotADictSettings, NoSettings()),
-        TestParam(kScan2DotCom, kEnablePatternIsNotADictSettings, NoSettings()),
-        TestParam(kScan1DotCom,
-                  kOnlyDlpEnabledPatternsAndIrrelevantSettings,
-                  OnlyDlpEnabledSettings()),
-        TestParam(kScan2DotCom,
-                  kOnlyDlpEnabledPatternsAndIrrelevantSettings,
-                  OnlyDlpEnabledSettings()),
-
-        // kUrlAndSourceDestinationListSettings is invalid and should result in
-        // no settings.
         TestParam(kScan1DotCom,
                   kUrlAndSourceDestinationListSettings,
                   NoSettings()),
-        TestParam(kScan2DotCom,
-                  kUrlAndSourceDestinationListSettings,
-                  NoSettings()),
-
-        // Validate that each URL gets the correct tag on the normal settings.
-        TestParam(kScan1DotCom, kNormalSettings, NormalDlpAndMalwareSettings()),
-        TestParam(kScan2DotCom, kNormalSettings, NoSettings()),
-        TestParam(kNoDlpDotCom, kNormalSettings, NormalMalwareSettings()),
-        TestParam(kNoMalwareDotCom, kNormalSettings, NormalDlpSettings()),
-        TestParam(kNoDlpOrMalwareDotCa, kNormalSettings, NoSettings()),
-
-        // Validate that each URL gets no settings when either the provider is
-        // absent or when there are no enabled patterns.
         TestParam(kScan1DotCom, kNoProviderSettings, NoSettings()),
-        TestParam(kScan2DotCom, kNoProviderSettings, NoSettings()),
-        TestParam(kNoDlpDotCom, kNoProviderSettings, NoSettings()),
-        TestParam(kNoMalwareDotCom, kNoProviderSettings, NoSettings()),
-        TestParam(kNoDlpOrMalwareDotCa, kNoProviderSettings, NoSettings()),
-
         TestParam(kScan1DotCom, kNoEnabledPatternsSettings, NoSettings()),
-        TestParam(kScan2DotCom, kNoEnabledPatternsSettings, NoSettings()),
-        TestParam(kNoDlpDotCom, kNoEnabledPatternsSettings, NoSettings()),
-        TestParam(kNoMalwareDotCom, kNoEnabledPatternsSettings, NoSettings()),
-        TestParam(kNoDlpOrMalwareDotCa,
-                  kNoEnabledPatternsSettings,
-                  NoSettings()),
 
-        // Validate custom messages and bypass justifications.
+        // Validate local analysis settings, custom messages and bypass
+        // justifications.
+        TestParam(kScan1DotCom, kNormalSettings, NormalDlpAndMalwareSettings()),
         TestParam(kScan1DotCom,
                   kNormalSettingsWithCustomMessage,
                   NormalSettingsWithCustomMessage()),
         TestParam(kScan1DotCom,
                   kNormalSettingsDlpRequiresBypassJustification,
-                  NormalSettingsDlpRequiresBypassJustification()),
-
-        // Validate regionalized endpoints.
-        TestParam(kScan1DotCom,
-                  kNormalSettings,
-                  NormalDlpSettings(),
-                  DataRegion::UNITED_STATES),
-        TestParam(kScan1DotCom,
-                  kNormalSettings,
-                  NormalDlpSettings(),
-                  DataRegion::EUROPE)));
+                  NormalSettingsDlpRequiresBypassJustification())));
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -680,37 +610,20 @@ class AnalysisServiceSourceDestinationSettingsTest
   content::BrowserContext* fs_context() const { return profile_; }
   std::string GetSettingsValue() const {
     std::string value = GetParam().settings_value;
-    base::ReplaceFirstSubstringAfterOffset(
-        &value, 0, "%s", is_cloud_ ? "google" : "local_user_agent");
+    base::ReplaceFirstSubstringAfterOffset(&value, 0, "%s", "google");
     return value;
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
-    if (GetParam().expected_settings != NoSettings() && is_cloud_) {
+    if (GetParam().expected_settings != NoSettings()) {
       GURL regionalized_url =
           GURL(GetServiceProviderConfig()
                    ->at("google")
                    .analysis->region_urls[static_cast<int>(data_region())]);
-      std::get<CloudAnalysisSettings>(
-          GetParam().expected_settings->cloud_or_local_settings)
-          .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
       cloud_settings.analysis_url = regionalized_url;
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(cloud_settings));
-    }
-    if (GetParam().expected_settings != NoSettings() && !is_cloud_) {
-      LocalAnalysisSettings local_settings;
-      local_settings.local_path = "path_user";
-      GetParam().expected_settings->cloud_or_local_settings =
-          CloudOrLocalAnalysisSettings(std::move(local_settings));
-
-      // The "local_user_agent" analysis provider only supports the "dlp" tag,
-      // so it is expected that the malware tag is absent from final settings
-      // even when it is included in the policy.
-      GetParam().expected_settings->tags.erase("malware");
-      if (GetParam().expected_settings->tags.empty())
-        return NoSettings();
     }
 
     return GetParam().expected_settings;
@@ -718,7 +631,6 @@ class AnalysisServiceSourceDestinationSettingsTest
   DataRegion data_region() const { return GetParam().data_region; }
 
  protected:
-  bool is_cloud_ = true;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
@@ -750,54 +662,6 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, CloudTest) {
         analysis_settings.value().cloud_or_local_settings.is_cloud_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.analysis_url(),
               expected_settings()->cloud_or_local_settings.analysis_url());
-    ASSERT_EQ(analysis_settings.value().minimum_data_size,
-              expected_settings()->minimum_data_size);
-    for (const auto& entry : expected_settings()->tags) {
-      const std::string& tag = entry.first;
-      ASSERT_TRUE(analysis_settings.value().tags.count(entry.first));
-      ASSERT_EQ(analysis_settings.value().tags[tag].custom_message.message,
-                entry.second.custom_message.message);
-      if (!analysis_settings.value()
-               .tags[tag]
-               .custom_message.learn_more_url.is_empty()) {
-        ASSERT_EQ(GetExpectedLearnMoreUrlSpecs().at(tag),
-                  analysis_settings.value()
-                      .tags[tag]
-                      .custom_message.learn_more_url.spec());
-        ASSERT_EQ(GetExpectedLearnMoreUrlSpecs().at(tag),
-                  service_settings.GetLearnMoreUrl(tag).value().spec());
-      }
-      ASSERT_EQ(analysis_settings.value().tags[tag].requires_justification,
-                entry.second.requires_justification);
-    }
-  }
-}
-
-TEST_P(AnalysisServiceSourceDestinationSettingsTest, LocalTest) {
-  is_cloud_ = false;
-  auto settings = base::JSONReader::Read(GetSettingsValue(),
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(settings.has_value());
-
-  AnalysisServiceSettings service_settings(settings.value(),
-                                           *GetServiceProviderConfig());
-
-  auto analysis_settings = service_settings.GetAnalysisSettings(
-      fs_context(), source_url(), destination_url(), data_region());
-  ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
-  if (analysis_settings.has_value()) {
-    ASSERT_EQ(analysis_settings.value().block_until_verdict,
-              expected_settings()->block_until_verdict);
-    ASSERT_EQ(analysis_settings.value().default_action,
-              expected_settings()->default_action);
-    ASSERT_EQ(analysis_settings.value().block_password_protected_files,
-              expected_settings()->block_password_protected_files);
-    ASSERT_EQ(analysis_settings.value().block_large_files,
-              expected_settings()->block_large_files);
-    ASSERT_TRUE(
-        analysis_settings.value().cloud_or_local_settings.is_local_analysis());
-    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.local_path(),
-              expected_settings()->cloud_or_local_settings.local_path());
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
     for (const auto& entry : expected_settings()->tags) {
