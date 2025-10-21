@@ -71,16 +71,69 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
 
 AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
     const AutofillValuableSpecifics& specifics) {
+  // LINT.IfChange(TrimAutofillValuableSpecificsDataForCaching)
   AutofillValuableSpecifics trimmed_specifics =
       AutofillValuableSpecifics(specifics);
   trimmed_specifics.clear_id();
   trimmed_specifics.clear_is_editable();
-  trimmed_specifics.mutable_loyalty_card()->clear_merchant_name();
-  trimmed_specifics.mutable_loyalty_card()->clear_program_name();
-  trimmed_specifics.mutable_loyalty_card()->clear_program_logo();
-  trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_number();
-  trimmed_specifics.mutable_loyalty_card()->clear_merchant_domains();
-  trimmed_specifics.clear_valuable_data();
+  trimmed_specifics.clear_serialized_chrome_valuables_metadata();
+
+  switch (trimmed_specifics.valuable_data_case()) {
+    case AutofillValuableSpecifics::kLoyaltyCard: {
+      trimmed_specifics.mutable_loyalty_card()->clear_merchant_name();
+      trimmed_specifics.mutable_loyalty_card()->clear_program_name();
+      trimmed_specifics.mutable_loyalty_card()->clear_program_logo();
+      trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_number();
+      trimmed_specifics.mutable_loyalty_card()->clear_merchant_domains();
+      if (trimmed_specifics.mutable_loyalty_card()->ByteSizeLong() == 0) {
+        trimmed_specifics.clear_loyalty_card();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::kVehicleRegistration: {
+      trimmed_specifics.mutable_vehicle_registration()->clear_vehicle_make();
+      trimmed_specifics.mutable_vehicle_registration()->clear_vehicle_model();
+      trimmed_specifics.mutable_vehicle_registration()->clear_vehicle_year();
+      trimmed_specifics.mutable_vehicle_registration()
+          ->clear_vehicle_identification_number();
+      trimmed_specifics.mutable_vehicle_registration()
+          ->clear_vehicle_license_plate();
+      trimmed_specifics.mutable_vehicle_registration()
+          ->clear_license_plate_region();
+      trimmed_specifics.mutable_vehicle_registration()
+          ->clear_license_plate_country();
+      trimmed_specifics.mutable_vehicle_registration()->clear_owner_name();
+      if (trimmed_specifics.mutable_vehicle_registration()->ByteSizeLong() ==
+          0) {
+        trimmed_specifics.clear_vehicle_registration();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::kFlightReservation: {
+      trimmed_specifics.mutable_flight_reservation()->clear_flight_number();
+      trimmed_specifics.mutable_flight_reservation()
+          ->clear_flight_ticket_number();
+      trimmed_specifics.mutable_flight_reservation()
+          ->clear_flight_confirmation_code();
+      trimmed_specifics.mutable_flight_reservation()->clear_passenger_name();
+      trimmed_specifics.mutable_flight_reservation()->clear_departure_airport();
+      trimmed_specifics.mutable_flight_reservation()->clear_arrival_airport();
+      trimmed_specifics.mutable_flight_reservation()
+          ->clear_departure_date_unix_epoch_micros();
+      trimmed_specifics.mutable_flight_reservation()
+          ->clear_arrival_date_unix_epoch_micros();
+      trimmed_specifics.mutable_flight_reservation()->clear_airline_logo();
+      trimmed_specifics.mutable_flight_reservation()->clear_carrier_code();
+      if (trimmed_specifics.mutable_flight_reservation()->ByteSizeLong() == 0) {
+        trimmed_specifics.clear_flight_reservation();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
+      break;
+  }
+
+  // LINT.ThenChange(//components/sync/protocol/autofill_valuable_specifics.proto:AutofillValuableSpecifics)
   return trimmed_specifics;
 }
 }  // namespace autofill

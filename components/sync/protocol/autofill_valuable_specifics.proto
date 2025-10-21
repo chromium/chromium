@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(AutofillValuableSpecifics)
 // This is a copy of google.protobuf.Any.
 message Any {
   // A URL/resource name that uniquely identifies the type of the serialized
@@ -125,3 +126,4 @@ message AutofillValuableSpecifics {
   // across clients.
   optional Any serialized_chrome_valuables_metadata = 4;
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableSpecificsDataForCaching)

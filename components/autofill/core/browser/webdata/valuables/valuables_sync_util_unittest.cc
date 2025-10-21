@@ -73,6 +73,50 @@ TEST(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
             0u);
 }
 
+TEST(VehicleRegistrationSyncUtilTest,
+     TrimAutofillValuableSpecificsDataForCaching) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("some_id");
+  specifics.set_is_editable(true);
+  specifics.mutable_vehicle_registration()->set_vehicle_make("Ford");
+  specifics.mutable_vehicle_registration()->set_vehicle_model("Fiesta");
+  specifics.mutable_vehicle_registration()->set_vehicle_year("2018");
+  specifics.mutable_vehicle_registration()->set_vehicle_identification_number(
+      "VIN123");
+  specifics.mutable_vehicle_registration()->set_vehicle_license_plate("ABC123");
+  specifics.mutable_vehicle_registration()->set_license_plate_region("CA");
+  specifics.mutable_vehicle_registration()->set_license_plate_country("US");
+  specifics.mutable_vehicle_registration()->set_owner_name("John Doe");
+
+  EXPECT_EQ(
+      TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),
+      0u);
+}
+
+TEST(FlightReservationSyncUtilTest,
+     TrimAutofillValuableSpecificsDataForCaching) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("some_id");
+  specifics.set_is_editable(true);
+  specifics.mutable_flight_reservation()->set_flight_number("BA249");
+  specifics.mutable_flight_reservation()->set_flight_ticket_number("12345");
+  specifics.mutable_flight_reservation()->set_flight_confirmation_code(
+      "ABCDEF");
+  specifics.mutable_flight_reservation()->set_passenger_name("Jane Doe");
+  specifics.mutable_flight_reservation()->set_departure_airport("LHR");
+  specifics.mutable_flight_reservation()->set_arrival_airport("AMS");
+  specifics.mutable_flight_reservation()->set_departure_date_unix_epoch_micros(
+      123456789);
+  specifics.mutable_flight_reservation()->set_arrival_date_unix_epoch_micros(
+      987654321);
+  specifics.mutable_flight_reservation()->set_airline_logo("logo_url");
+  specifics.mutable_flight_reservation()->set_carrier_code("BA");
+
+  EXPECT_EQ(
+      TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),
+      0u);
+}
+
 TEST(EntityInstanceSyncUtilTest, CreateEntityDataFromEntityInstance) {
   EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
   std::unique_ptr<syncer::EntityData> entity_data =
