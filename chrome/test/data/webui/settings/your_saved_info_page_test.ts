@@ -8,7 +8,7 @@ import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, PaymentsManagerImpl} f
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -47,6 +47,11 @@ suite('YourSavedInfoPage', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     paymentsManager = new TestPaymentsManager();
     PaymentsManagerImpl.setInstance(paymentsManager);
+
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+      shouldShowPayOverTimeSettings: false,
+    });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
@@ -142,6 +147,58 @@ suite('YourSavedInfoPage', function() {
     assertEquals(1, yourSavedInfoPage.creditCardsCount);
     assertEquals(3, yourSavedInfoPage.ibansCount);
     assertEquals(1, yourSavedInfoPage.payOverTimeIssuersCount);
+  });
+
+  test('PaymentsChipsVisibility', async function() {
+    const paymentsCard =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(`
+        category-reference-card[card-title="${
+            loadTimeData.getString('paymentsTitle')}"]`);
+    assertTrue(!!paymentsCard);
+
+    const getChipLabels = () => {
+      const chips = paymentsCard.shadowRoot!.querySelectorAll('cr-chip');
+      return Array.from(chips).map(
+          chip => chip.querySelector('span')!.textContent.trim());
+    };
+
+    let expectedLabels = [
+      loadTimeData.getString('creditAndDebitCardTitle'),
+      loadTimeData.getString('loyaltyCardsTitle'),
+    ];
+    assertDeepEquals(expectedLabels, getChipLabels());
+
+    // Enable IBANs
+    yourSavedInfoPage.set('enableIbans_', true);
+    await flushTasks();
+    expectedLabels = [
+      loadTimeData.getString('creditAndDebitCardTitle'),
+      loadTimeData.getString('ibanTitle'),
+      loadTimeData.getString('loyaltyCardsTitle'),
+    ];
+    assertDeepEquals(expectedLabels, getChipLabels());
+
+    // Enable Pay over time, disable IBANs
+    yourSavedInfoPage.set('enableIbans_', false);
+    yourSavedInfoPage.set('enablePayOverTime_', true);
+    await flushTasks();
+    expectedLabels = [
+      loadTimeData.getString('creditAndDebitCardTitle'),
+      loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
+      loadTimeData.getString('loyaltyCardsTitle'),
+    ];
+    assertDeepEquals(expectedLabels, getChipLabels());
+
+    // Enable both
+    yourSavedInfoPage.set('enableIbans_', true);
+    await flushTasks();
+    expectedLabels = [
+      loadTimeData.getString('creditAndDebitCardTitle'),
+      loadTimeData.getString('ibanTitle'),
+      loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
+      loadTimeData.getString('loyaltyCardsTitle'),
+    ];
+    assertDeepEquals(expectedLabels, getChipLabels());
   });
 });
 

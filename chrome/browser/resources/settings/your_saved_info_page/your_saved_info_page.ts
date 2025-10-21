@@ -60,7 +60,7 @@ export class SettingsYourSavedInfoPageElement extends
       paymentsCardData_: {
         type: Array,
         computed:
-            'computePaymentsCardData_(creditCardsCount, ibansCount, payOverTimeIssuersCount, loyaltyCardsCount)',
+            'computePaymentsCardData_(creditCardsCount, ibansCount, payOverTimeIssuersCount, loyaltyCardsCount, enableIbans_, enablePayOverTime_)',
       },
       addressesCardData_: {
         type: Array,
@@ -74,6 +74,20 @@ export class SettingsYourSavedInfoPageElement extends
         type: Array,
         computed:
             'computeTravelCardData_(flightReservationsCount, travelInfoCount, vehiclesCount)',
+      },
+
+      enableIbans_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showIbansSettings');
+        },
+      },
+
+      enablePayOverTime_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
+        },
       },
 
       passwordsCount: Number,
@@ -115,6 +129,9 @@ export class SettingsYourSavedInfoPageElement extends
   declare private addressesCardData_: ChipData[];
   declare private identityCardData_: ChipData[];
   declare private travelCardData_: ChipData[];
+
+  declare private enableIbans_: boolean;
+  declare private enablePayOverTime_: boolean;
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -301,28 +318,35 @@ export class SettingsYourSavedInfoPageElement extends
   }
 
   private computePaymentsCardData_(): ChipData[] {
-    return [
+    const cardData: ChipData[] = [
       {
         label: this.i18n('creditAndDebitCardTitle'),
         icon: 'settings20:credit-card',
         counter: this.creditCardsCount,
       },
-      {
+    ];
+
+    if (this.enableIbans_) {
+      cardData.push({
         label: this.i18n('ibanTitle'),
         icon: 'settings20:iban',
         counter: this.ibansCount,
-      },
-      {
+      });
+    }
+    if (this.enablePayOverTime_) {
+      cardData.push({
         label: this.i18n('autofillPayOverTimeSettingsLabel'),
         icon: 'settings20:hourglass',
         counter: this.payOverTimeIssuersCount,
-      },
-      {
-        label: this.i18n('loyaltyCardsTitle'),
-        icon: 'settings20:loyalty-programs',
-        counter: this.loyaltyCardsCount,
-      },
-    ];
+      });
+    }
+
+    cardData.push({
+      label: this.i18n('loyaltyCardsTitle'),
+      icon: 'settings20:loyalty-programs',
+      counter: this.loyaltyCardsCount,
+    });
+    return cardData;
   }
 
   private computeAddressesCardData_(): ChipData[] {
