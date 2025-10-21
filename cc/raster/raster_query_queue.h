@@ -35,11 +35,6 @@ struct CC_EXPORT RasterQuery {
 
   // The time at which the raster buffer was created.
   base::TimeTicks raster_buffer_creation_time;
-
-  // Whether the raster work depends on candidates for hardware accelerated
-  // JPEG or WebP decodes.
-  bool depends_on_hardware_accelerated_jpeg_candidates = false;
-  bool depends_on_hardware_accelerated_webp_candidates = false;
 };
 
 class CC_EXPORT RasterQueryQueue {

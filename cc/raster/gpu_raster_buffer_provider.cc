@@ -216,8 +216,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThread(
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url) {
   RasterQuery query;
-  query.depends_on_hardware_accelerated_jpeg_candidates = false;
-  query.depends_on_hardware_accelerated_webp_candidates = false;
   PlaybackOnWorkerThreadInternal(raster_source, raster_full_rect,
                                  raster_dirty_rect, new_content_id, transform,
                                  playback_settings, url, &query);
