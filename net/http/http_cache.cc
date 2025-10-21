@@ -691,12 +691,12 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
 }
 
 // static
-bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
-  // WARNING: If this function is changed to look at `request->url` in future,
+bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo& request) {
+  // WARNING: If this function is changed to look at `request.url` in future,
   // it will break GenerateCacheKeyForRequestWithAlternateURL(). Add an extra
   // `url` parameter instead.
   if (IsSplitCacheEnabled()) {
-    if (request->network_isolation_key.IsTransient()) {
+    if (request.network_isolation_key.IsTransient()) {
       return false;
     }
   }
@@ -713,7 +713,8 @@ std::string HttpCache::GenerateCacheKey(
     bool is_subframe_document_resource,
     bool is_mainframe_navigation,
     bool is_shared_resource,
-    std::optional<url::Origin> initiator) {
+    std::optional<url::Origin> initiator,
+    bool include_url) {
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
   // SplitCacheByIncludeCredentials feature is enabled.
@@ -751,6 +752,10 @@ std::string HttpCache::GenerateCacheKey(
         {kDoubleKeyPrefix, subframe_document_resource_prefix,
          is_cross_site_main_frame_navigation_prefix,
          *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
+    if (!include_url) {
+      // Remove the final space (kDoubleKeySeparator).
+      isolation_key.pop_back();
+    }
   }
 
   // The key format is:
@@ -759,9 +764,10 @@ std::string HttpCache::GenerateCacheKey(
   // Strip out the reference, username, and password sections of the URL and
   // concatenate with the credential_key, the post_key, and the network
   // isolation key if we are splitting the cache.
-  return base::StringPrintf("%c/%" PRId64 "/%s%s", credential_key,
-                            upload_data_identifier, isolation_key.c_str(),
-                            HttpUtil::SpecForRequest(url).c_str());
+  return base::StringPrintf(
+      "%c/%" PRId64 "/%s%s", credential_key, upload_data_identifier,
+      isolation_key.c_str(),
+      include_url ? HttpUtil::SpecForRequest(url).c_str() : "");
 }
 
 // static
@@ -771,24 +777,38 @@ std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
 }
 
 // static
-std::optional<std::string>
-HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
-    const HttpRequestInfo* request,
-    const GURL& url) {
-  CHECK(request);
-
+std::optional<std::string> HttpCache::GenerateCacheKeyInternal(
+    const HttpRequestInfo& request,
+    const GURL& url,
+    bool include_url) {
   if (!CanGenerateCacheKeyForRequest(request)) {
     return std::nullopt;
   }
 
   const int64_t upload_data_identifier =
-      request->upload_data_stream ? request->upload_data_stream->identifier()
-                                  : int64_t(0);
+      request.upload_data_stream ? request.upload_data_stream->identifier()
+                                 : int64_t{0};
   return GenerateCacheKey(
-      url, request->load_flags, request->network_isolation_key,
-      upload_data_identifier, request->is_subframe_document_resource,
-      request->is_main_frame_navigation, request->is_shared_resource,
-      request->initiator);
+      url, request.load_flags, request.network_isolation_key,
+      upload_data_identifier, request.is_subframe_document_resource,
+      request.is_main_frame_navigation, request.is_shared_resource,
+      request.initiator, include_url);
+}
+
+// static
+std::optional<std::string>
+HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
+    const HttpRequestInfo* request,
+    const GURL& url) {
+  CHECK(request);
+  return GenerateCacheKeyInternal(*request, url, /*include_url=*/true);
+}
+
+// static
+std::optional<std::string> HttpCache::GenerateCachePartitionKeyForRequest(
+    const HttpRequestInfo& request) {
+  return GenerateCacheKeyInternal(request, request.url,
+                                  /*include_url=*/false);
 }
 
 // static

@@ -11143,7 +11143,7 @@ TEST_F(HttpCacheTest, CacheControlNoStore) {
 
 TEST_F(HttpCacheTest, CacheControlNoStore2) {
   // this test is similar to the above test, except that the initial response
-  // is cachable, but when it is validated, no-store is received causing the
+  // is cacheable, but when it is validated, no-store is received causing the
   // cached document to be deleted.
   MockHttpCache cache;
 
@@ -11945,7 +11945,7 @@ TEST_F(HttpCacheTest, ValidLoadOnlyFromCache) {
   transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
   RunTransactionTest(cache.http_cache(), transaction);
 
-  // If the cache entry is checked for validitiy, it should fail.
+  // If the cache entry is checked for validity, it should fail.
   transaction.load_flags = LOAD_ONLY_FROM_CACHE;
   transaction.start_return_code = ERR_CACHE_MISS;
   RunTransactionTest(cache.http_cache(), transaction);
@@ -12177,7 +12177,7 @@ TEST_F(HttpCacheTest, StopCachingSavesEntry) {
   cache.disk_cache()->IsDiskEntryDoomed(request.CacheKey());
 }
 
-// Tests that we handle truncated enries when StopCaching is called.
+// Tests that we handle truncated entries when StopCaching is called.
 TEST_F(HttpCacheTest, StopCachingTruncatedEntry) {
   MockHttpCache cache;
   TestCompletionCallback callback;
@@ -12245,7 +12245,7 @@ class HttpCacheHugeResourceTest
   // depending on the test run configuration.
 
   // Initializes a cache containing a truncated entry containing the first 20
-  // bytes of the reponse body.
+  // bytes of the response body.
   static void SetupTruncatedCacheEntry(MockHttpCache* cache);
 
   // Initializes a cache containing a sparse entry. The first 10 bytes are
@@ -14116,6 +14116,203 @@ TEST_F(HttpCacheTest, PrioritizeCachingFlagSetForMainFrameNavigationRequest) {
   EXPECT_EQ(cache.backend()->GetEntryInMemoryData(request.CacheKey()),
             HINT_HIGH_PRIORITY);
 }
+
+enum class SplitCacheByCredentials { kDisabled, kEnabled };
+enum class SplitCacheByNIK { kDisabled, kEnabled };
+enum class SplitCacheByCrossSiteNav { kDisabled, kEnabled };
+enum class IsSubframeDocumentResource { kNo, kYes };  // Corresponds to bool.
+enum class IsMainFrameNavigation { kNo, kYes };       // Corresponds to bool.
+enum class IsSharedResource { kNo, kYes };            // Corresponds to bool.
+
+struct GenerateCacheKeyTestParams {
+  // Test case name.
+  std::string_view name;
+
+  // Inputs to GenerateCacheKeyForRequest.
+  std::string_view url;
+  int load_flags = LOAD_NORMAL;
+  IsSubframeDocumentResource is_subframe_document_resource =
+      IsSubframeDocumentResource::kNo;
+  IsMainFrameNavigation is_main_frame_navigation = IsMainFrameNavigation::kNo;
+  std::optional<url::Origin> initiator;
+  IsSharedResource is_shared_resource = IsSharedResource::kNo;
+  std::optional<NetworkIsolationKey> network_isolation_key;
+  int64_t upload_data_identifier = 0;
+
+  // Feature flags.
+  SplitCacheByCredentials split_cache_by_credentials =
+      SplitCacheByCredentials::kDisabled;
+  SplitCacheByNIK split_cache_by_nik = SplitCacheByNIK::kDisabled;
+  SplitCacheByCrossSiteNav split_cache_by_cross_site_nav =
+      SplitCacheByCrossSiteNav::kDisabled;
+
+  // Expected cache key.
+  std::optional<std::string> expected_key;
+
+  // Expected cache partition key.
+  std::optional<std::string> expected_partition_key;
+};
+
+class HttpCacheGenerateCacheKeyTest
+    : public ::testing::TestWithParam<GenerateCacheKeyTestParams> {
+ public:
+  HttpCacheGenerateCacheKeyTest() {
+    const GenerateCacheKeyTestParams& param = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    auto enable_or_disable_feature = [&](const base::Feature& feature,
+                                         bool enable) {
+      auto& features = enable ? enabled_features : disabled_features;
+      features.push_back(feature);
+    };
+
+    enable_or_disable_feature(
+        features::kSplitCacheByIncludeCredentials,
+        param.split_cache_by_credentials == SplitCacheByCredentials::kEnabled);
+    enable_or_disable_feature(
+        features::kSplitCacheByNetworkIsolationKey,
+        param.split_cache_by_nik == SplitCacheByNIK::kEnabled);
+    enable_or_disable_feature(
+        features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
+        param.split_cache_by_cross_site_nav ==
+            SplitCacheByCrossSiteNav::kEnabled);
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  static std::pair<std::unique_ptr<UploadDataStream>, HttpRequestInfo>
+  GenerateRequestFromTestParams(const GenerateCacheKeyTestParams& params) {
+    // `upload_data_stream` needs to outlive `request` when used.
+    std::unique_ptr<UploadDataStream> upload_data_stream;
+    HttpRequestInfo request;
+    request.url = GURL(params.url);
+    request.method = "GET";
+    request.load_flags = params.load_flags;
+    if (params.network_isolation_key) {
+      request.network_isolation_key = *params.network_isolation_key;
+      request.network_anonymization_key =
+          NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              *params.network_isolation_key);
+    }
+    request.is_subframe_document_resource =
+        params.is_subframe_document_resource ==
+        IsSubframeDocumentResource::kYes;
+    request.is_main_frame_navigation =
+        params.is_main_frame_navigation == IsMainFrameNavigation::kYes;
+    request.initiator = params.initiator;
+    request.is_shared_resource =
+        params.is_shared_resource == IsSharedResource::kYes;
+
+    if (params.upload_data_identifier != 0) {
+      upload_data_stream = std::make_unique<ElementsUploadDataStream>(
+          std::vector<std::unique_ptr<UploadElementReader>>(),
+          params.upload_data_identifier);
+      request.upload_data_stream = upload_data_stream.get();
+    }
+    return std::pair(std::move(upload_data_stream), std::move(request));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(HttpCacheGenerateCacheKeyTest, GenerateCacheKeyForRequest) {
+  const GenerateCacheKeyTestParams& params = GetParam();
+  const auto& [upload_data_stream, request] =
+      GenerateRequestFromTestParams(params);
+
+  EXPECT_EQ(params.expected_key,
+            HttpCache::GenerateCacheKeyForRequest(&request));
+}
+
+TEST_P(HttpCacheGenerateCacheKeyTest, GenerateCachePartitionKeyForRequest) {
+  const GenerateCacheKeyTestParams& params = GetParam();
+  const auto& [upload_data_stream, request] =
+      GenerateRequestFromTestParams(params);
+
+  EXPECT_EQ(params.expected_partition_key,
+            HttpCache::GenerateCachePartitionKeyForRequest(request));
+}
+
+const GenerateCacheKeyTestParams kGenerateCacheKeyTestParams[] = {
+    {"NoSplitting", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 0, SplitCacheByCredentials::kDisabled,
+     SplitCacheByNIK::kDisabled, SplitCacheByCrossSiteNav::kDisabled,
+     "1/0/http://a.com/", "1/0/"},
+    {"NoSplittingWithUploadData", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 123,
+     SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kDisabled,
+     SplitCacheByCrossSiteNav::kDisabled, "1/123/http://a.com/", "1/123/"},
+    {"SplitByCredentials_NoCookies", "http://a.com/", LOAD_DO_NOT_SAVE_COOKIES,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 0, SplitCacheByCredentials::kEnabled,
+     SplitCacheByNIK::kDisabled, SplitCacheByCrossSiteNav::kDisabled,
+     "0/0/http://a.com/", "0/0/"},
+    {"SplitByCredentials_WithCookies", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 0, SplitCacheByCredentials::kEnabled,
+     SplitCacheByNIK::kDisabled, SplitCacheByCrossSiteNav::kDisabled,
+     "1/0/http://a.com/", "1/0/"},
+    {"SplitByNIK_Basic", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://b.com")),
+                         SchemefulSite(GURL("http://c.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     SplitCacheByCrossSiteNav::kDisabled,
+     "1/0/_dk_http://b.com http://c.com http://a.com/",
+     "1/0/_dk_http://b.com http://c.com"},
+    {"SplitByNIK_SharedResource", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kYes,
+     NetworkIsolationKey(SchemefulSite(GURL("http://b.com")),
+                         SchemefulSite(GURL("http://c.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     SplitCacheByCrossSiteNav::kDisabled, "1/0/http://a.com/", "1/0/"},
+    {"SplitByNIK_TransientNIK", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, NetworkIsolationKey::CreateTransientForTesting(), 0,
+     SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     SplitCacheByCrossSiteNav::kDisabled, std::nullopt, std::nullopt},
+    {"SplitByNIK_SubframeDocument", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kYes, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://b.com")),
+                         SchemefulSite(GURL("http://c.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     SplitCacheByCrossSiteNav::kDisabled,
+     "1/0/_dk_s_http://b.com http://c.com http://a.com/",
+     "1/0/_dk_s_http://b.com http://c.com"},
+    {"SplitByCrossSiteNav_SameSite", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kYes,
+     url::Origin::Create(GURL("http://b.a.com")), IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://c.com")),
+                         SchemefulSite(GURL("http://d.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     SplitCacheByCrossSiteNav::kEnabled,
+     "1/0/_dk_http://c.com http://d.com http://a.com/",
+     "1/0/_dk_http://c.com http://d.com"},
+    {"SplitByCrossSiteNav_CrossSite", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kYes,
+     url::Origin::Create(GURL("http://b.com")), IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://c.com")),
+                         SchemefulSite(GURL("http://d.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     SplitCacheByCrossSiteNav::kEnabled,
+     "1/0/_dk_cn_http://c.com http://d.com http://a.com/",
+     "1/0/_dk_cn_http://c.com http://d.com"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HttpCacheGenerateCacheKeyTest,
+    testing::ValuesIn(kGenerateCacheKeyTestParams),
+    [](const testing::TestParamInfo<GenerateCacheKeyTestParams>& info) {
+      return std::string(info.param.name);
+    });
 
 class HttpCacheNoVarySearchTestBase
     : public HttpCacheTest,

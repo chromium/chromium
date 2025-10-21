@@ -294,6 +294,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       const HttpRequestInfo* request,
       const GURL& url);
 
+  // Generates the cache partition key, which is the cache key not including the
+  // URL. This does include the upload data identifier when needed.
+  static std::optional<std::string> GenerateCachePartitionKeyForRequest(
+      const HttpRequestInfo& request);
+
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP
   // cache is initialized.
@@ -528,7 +533,14 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // (when network state partitioning is enabled) or requests with an opaque
   // initiator (for HTTP cache experiment partition schemes that incorporate the
   // initiator into the cache key).
-  static bool CanGenerateCacheKeyForRequest(const HttpRequestInfo* request);
+  static bool CanGenerateCacheKeyForRequest(const HttpRequestInfo& request);
+
+  // Returns the result of GenerateCacheKey() provided that
+  // CanGenerateCacheKeyForRequest() returned true. Otherwise returns nullopt.
+  static std::optional<std::string> GenerateCacheKeyInternal(
+      const HttpRequestInfo& request,
+      const GURL& url,
+      bool include_url);
 
   // Generates a cache key given the various pieces used to construct the key.
   // Must not be called if a corresponding `CanGenerateCacheKeyForRequest`
@@ -541,7 +553,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       bool is_subframe_document_resource,
       bool is_mainframe_navigation,
       bool is_shared_resource,
-      std::optional<url::Origin> initiator);
+      std::optional<url::Origin> initiator,
+      bool include_url);
 
   // Generates a cache key for `request_info` and informs the backend it should
   // consider it used if it exists.
