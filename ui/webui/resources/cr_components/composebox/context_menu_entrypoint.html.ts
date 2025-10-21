@@ -33,6 +33,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         <div class="suggestion-container">
           <button class="dropdown-item"
               title="${tab.title}" data-index="${index}"
+              aria-label="${this.i18n('addTab')}, ${tab.title}"
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
               @click="${this.addTabContext_}">
