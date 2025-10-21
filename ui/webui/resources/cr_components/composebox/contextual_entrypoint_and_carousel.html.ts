@@ -25,7 +25,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @deep-search-click="${this.onDeepSearchClick_}"
             @create-image-click="${this.onCreateImageClick_}"
             .inCreateImageMode="${this.inCreateImageMode_}"
+            .hasImageFiles="${this.hasImageFiles()}"
             .disabledTabIds="${this.addedTabsIds_}"
+            .fileNum="${this.files_.size}"
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}">
         </composebox-context-menu-entrypoint>

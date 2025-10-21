@@ -138,8 +138,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('files_')) {
-      this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
+    if (changedPrivateProperties.has('files_') ||
+        changedPrivateProperties.has(`inCreateImageMode_`)) {
+      // `inputsDisabled_` decides whether or not the context menu entrypoint is
+      // shown to the user. Only set `inputsDisabled_` to true if
+      // 1. The max number of files is reached and the file count is greater
+      // than one.
+      // 2. The max number of files is reached and there are no images uploaded.
+      // 3. The user has an image uploaded and is in create image mode.
+      this.inputsDisabled_ =
+          (this.files_.size >= this.maxFileCount_ &&
+           (this.maxFileCount_ > 1 || !this.hasImageFiles())) ||
+          (this.hasImageFiles() && this.inCreateImageMode_);
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
     }
@@ -341,6 +351,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     if (!this.realboxLayoutMode) {
       this.showContextMenuDescription_ = !this.showContextMenuDescription_;
       this.inCreateImageMode_ = !this.inCreateImageMode_;
+      if (this.hasImageFiles()) {
+        this.inputsDisabled_ = !this.inputsDisabled_;
+      }
     }
     this.fire('set-create-image-mode',
       {inCreateImageMode: this.inCreateImageMode_});
