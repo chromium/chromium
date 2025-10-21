@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -42,6 +43,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
@@ -359,6 +361,42 @@ public class NtpCustomizationConfigManagerUnitTest {
                         eq(false),
                         eq(NtpBackgroundImageType.DEFAULT),
                         eq(NtpBackgroundImageType.COLOR_FROM_HEX));
+    }
+
+    @Test
+    public void testOnBackgroundImageAvailable_fallback() {
+        testOnBackgroundImageAvailableImpl(
+                /* bitmap= */ null, /* imageInfo= */ null, NtpBackgroundImageType.DEFAULT);
+    }
+
+    @Test
+    public void testOnBackgroundImageAvailable() {
+        BackgroundImageInfo imageInfo = mock(BackgroundImageInfo.class);
+        testOnBackgroundImageAvailableImpl(
+                createBitmap(), imageInfo, NtpBackgroundImageType.IMAGE_FROM_DISK);
+    }
+
+    private void testOnBackgroundImageAvailableImpl(
+            @Nullable Bitmap bitmap,
+            @Nullable BackgroundImageInfo imageInfo,
+            @NtpBackgroundImageType int expectedImageType) {
+        mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
+                NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertEquals(
+                NtpBackgroundImageType.IMAGE_FROM_DISK,
+                mNtpCustomizationConfigManager.getBackgroundImageType());
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertEquals(
+                NtpBackgroundImageType.IMAGE_FROM_DISK,
+                NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
+
+        mNtpCustomizationConfigManager.onBackgroundImageAvailable(bitmap, imageInfo);
+        assertEquals(expectedImageType, mNtpCustomizationConfigManager.getBackgroundImageType());
+        assertEquals(
+                expectedImageType,
+                NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
+        assertEquals(imageInfo, mNtpCustomizationConfigManager.getBackgroundImageInfoForTesting());
     }
 
     private Bitmap createBitmap() {

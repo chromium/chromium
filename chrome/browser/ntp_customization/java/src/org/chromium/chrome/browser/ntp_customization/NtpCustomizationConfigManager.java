@@ -116,16 +116,7 @@ public class NtpCustomizationConfigManager {
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageMatrices();
             NtpCustomizationUtils.readNtpBackgroundImage(
                     (bitmap) -> {
-                        if (bitmap == null) {
-                            // When failed to load image from the disk, resets to the default color.
-                            NtpCustomizationUtils.resetCustomizedColors();
-                            return;
-                        }
-                        notifyBackgroundImageChanged(
-                                bitmap,
-                                imageInfo,
-                                /* fromInitialization= */ true,
-                                NtpBackgroundImageType.DEFAULT);
+                        onBackgroundImageAvailable(bitmap, imageInfo);
                     },
                     EXECUTOR);
         }
@@ -133,6 +124,21 @@ public class NtpCustomizationConfigManager {
         mIsMvtToggleOn =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, true);
+    }
+
+    @VisibleForTesting
+    void onBackgroundImageAvailable(
+            @Nullable Bitmap bitmap, @Nullable BackgroundImageInfo imageInfo) {
+        if (bitmap == null) {
+            // When failed to load image from the disk, resets to the default color.
+            mBackgroundImageType = NtpBackgroundImageType.DEFAULT;
+            cleanupBackgroundImage();
+            NtpCustomizationUtils.resetCustomizedColors();
+            return;
+        }
+
+        notifyBackgroundImageChanged(
+                bitmap, imageInfo, /* fromInitialization= */ true, NtpBackgroundImageType.DEFAULT);
     }
 
     @VisibleForTesting
@@ -315,8 +321,7 @@ public class NtpCustomizationConfigManager {
     public void notifyBackgroundColorChanged(
             Context context, boolean fromInitialization, @NtpBackgroundImageType int oldType) {
         // Clear out image state when switching to a color background.
-        mOriginalBitmap = null;
-        mBackgroundImageInfo = null;
+        cleanupBackgroundImage();
 
         @ColorInt
         int backgroundColor =
@@ -392,6 +397,10 @@ public class NtpCustomizationConfigManager {
         return mNtpThemeColorInfo;
     }
 
+    public @Nullable BackgroundImageInfo getBackgroundImageInfoForTesting() {
+        return mBackgroundImageInfo;
+    }
+
     public int getListenersSizeForTesting() {
         return mHomepageStateListeners.size();
     }
@@ -404,12 +413,17 @@ public class NtpCustomizationConfigManager {
         mIsInitialized = isInitialized;
     }
 
+    /** Cleans up background bitmap image related info. */
+    private void cleanupBackgroundImage() {
+        mBackgroundImageInfo = null;
+        mOriginalBitmap = null;
+    }
+
     public void resetForTesting() {
         mHomepageStateListeners.clear();
         mIsInitialized = false;
         mBackgroundImageType = NtpBackgroundImageType.DEFAULT;
-        mOriginalBitmap = null;
-        mBackgroundImageInfo = null;
+        cleanupBackgroundImage();
         mIsMvtToggleOn = false;
     }
 }
