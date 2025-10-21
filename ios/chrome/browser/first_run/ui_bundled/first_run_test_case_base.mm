@@ -135,7 +135,7 @@
   NSArray* disclaimerStrings = nil;
   switch (FRESigninIntent) {
     case FRESigninIntentRegular:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -179,7 +179,7 @@
       ];
       break;
     case FRESigninIntentSigninWithSyncDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
       // Note: With SyncDisabled, the "benefits" string is not used.
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
@@ -193,7 +193,7 @@
       ];
       break;
     case FRESigninIntentSigninWithPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -206,7 +206,7 @@
       ];
       break;
     case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[

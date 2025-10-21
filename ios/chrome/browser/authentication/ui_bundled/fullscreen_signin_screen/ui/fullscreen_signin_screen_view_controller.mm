@@ -109,8 +109,7 @@ NSString* const kCollaborationSigninHeaderBackground =
         case SigninScreenConsumerScreenIntentWelcomeAndSignin:
         case SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin:
           // Use in the context of the FRE dialog.
-          self.titleText =
-              l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+          self.titleText = [self FRESignInHeaderText];
           self.subtitleText =
               self.syncEnabled
                   ? l10n_util::GetNSString(
@@ -264,6 +263,40 @@ NSString* const kCollaborationSigninHeaderBackground =
 
 #pragma mark - Private
 
+// Generates the promo sign-in header string.
+- (NSString*)promoSignInHeaderText {
+  if (!FRESignInHeaderTextUpdate()) {
+    return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
+  }
+
+  std::string armValue = kFRESignInHeaderTextUpdateParam.Get();
+
+  if (armValue == kFRESignInHeaderTextUpdateParamArm0) {
+    return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_0);
+  } else if (armValue == kFRESignInHeaderTextUpdateParamArm1) {
+    return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_1);
+  }
+
+  return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
+}
+
+// Generates the FRE sign-in header string.
+- (NSString*)FRESignInHeaderText {
+  if (!FRESignInHeaderTextUpdate()) {
+    return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+  }
+
+  std::string armValue = kFRESignInHeaderTextUpdateParam.Get();
+
+  if (armValue == kFRESignInHeaderTextUpdateParamArm0) {
+    return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
+  } else if (armValue == kFRESignInHeaderTextUpdateParamArm1) {
+    return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1);
+  }
+
+  return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+}
+
 // Generates the footer string.
 - (void)generateDisclaimer {
   NSMutableArray<NSString*>* array = [NSMutableArray array];
@@ -336,8 +369,7 @@ NSString* const kCollaborationSigninHeaderBackground =
     }
     case SigninContextStyle::kDefault: {
       // Use in the context of the fullscreen sign-in promo dialog.
-      self.titleText =
-          l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
+      self.titleText = [self promoSignInHeaderText];
       self.subtitleText =
           self.syncEnabled
               ? l10n_util::GetNSString(

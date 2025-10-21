@@ -866,6 +866,16 @@ extern const base::FeatureParam<int> kDefaultBrowserBannerPromoImpressionLimit;
 // Returns whether `kDefaultBrowserBannerPromo` is enabled.
 bool IsDefaultBrowserBannerPromoEnabled();
 
+// Feature to enable different text for the main header text on FRE sign-in
+// promo.
+BASE_DECLARE_FEATURE(kFRESignInHeaderTextUpdate);
+extern const base::FeatureParam<std::string> kFRESignInHeaderTextUpdateParam;
+extern const std::string_view kFRESignInHeaderTextUpdateParamArm0;
+extern const std::string_view kFRESignInHeaderTextUpdateParamArm1;
+
+// Returns whether 'kFRESignInHeaderTextUpdate' is enabled.
+bool FRESignInHeaderTextUpdate();
+
 // Feature to enable different text for the secondary action on FRE sign-in
 // promo.
 BASE_DECLARE_FEATURE(kFRESignInSecondaryActionLabelUpdate);

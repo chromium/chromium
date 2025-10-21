@@ -853,6 +853,20 @@ bool IsDefaultBrowserBannerPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
 }
 
+constexpr base::FeatureParam<std::string> kFRESignInHeaderTextUpdateParam{
+    &kFRESignInHeaderTextUpdate,
+    /*name=*/"FRESignInHeaderTextUpdateParam",
+    /*default_value=*/""};
+
+const std::string_view kFRESignInHeaderTextUpdateParamArm0 = "Arm0";
+const std::string_view kFRESignInHeaderTextUpdateParamArm1 = "Arm1";
+
+BASE_FEATURE(kFRESignInHeaderTextUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool FRESignInHeaderTextUpdate() {
+  return base::FeatureList::IsEnabled(kFRESignInHeaderTextUpdate);
+}
+
 constexpr base::FeatureParam<std::string>
     kFRESignInSecondaryActionLabelUpdateParam{
         &kFRESignInSecondaryActionLabelUpdate,
