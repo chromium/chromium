@@ -278,5 +278,5 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
           *payload, url_loader_->GetFinalURL(),
           net::SchemefulSite(registration_params_.registration_endpoint())
               .GetURL(),
-          wrapped_key_str_, registration_params_.is_wsbeta());
+          wrapped_key_str_);
 }

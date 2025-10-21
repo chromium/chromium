@@ -70,8 +70,6 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
-      !base::FeatureList::IsEnabled(
-          kEnableBoundSessionCredentialsWsbetaBypass) &&
       !base::FeatureList::IsEnabled(kEnableBoundSessionCredentialsContinuity)) {
     return nullptr;
   }

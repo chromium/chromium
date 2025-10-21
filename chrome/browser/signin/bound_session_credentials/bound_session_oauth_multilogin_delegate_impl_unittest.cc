@@ -579,7 +579,6 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
       /*domain=*/".google.com", /*path=*/"/");
   expected_params_1.set_refresh_url(
       "https://accounts.google.com/RotateBoundCookies");
-  expected_params_1.set_is_wsbeta(false);
   EXPECT_CALL(
       mock_bound_session_cookie_refresh_service(),
       RegisterNewBoundSession(BoundSessionParamsEquals(expected_params_1)));
@@ -593,7 +592,6 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
       /*domain=*/".google.com", /*path=*/"/");
   expected_params_2.set_refresh_url(
       "https://accounts.google.com/RotateBoundDifferentCookies");
-  expected_params_2.set_is_wsbeta(false);
   EXPECT_CALL(
       mock_bound_session_cookie_refresh_service(),
       RegisterNewBoundSession(BoundSessionParamsEquals(expected_params_2)));

@@ -49,8 +49,7 @@ BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
     const RegisterBoundSessionPayload& payload,
     const GURL& request_url,
     const GURL& site,
-    std::string_view wrapped_key,
-    bool is_wsbeta = false);
+    std::string_view wrapped_key);
 
 }  // namespace bound_session_credentials
 

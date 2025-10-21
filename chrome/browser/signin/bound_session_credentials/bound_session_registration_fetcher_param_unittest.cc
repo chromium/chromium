@@ -180,7 +180,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidUnrecognizedAlgo) {
   EXPECT_EQ(params.challenge(), kChallenge);
 }
 
-TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaTrue) {
+TEST_F(BoundSessionRegistrationFetcherParamTest, WsbetaIsIgnored) {
   GURL registration_request = GURL("https://www.google.com/registration");
   std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
@@ -193,23 +193,6 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaTrue) {
                      "(ES256 RS256);path=\"startsession\";"
                      "challenge=\"Y2hhbGxlbmdl\";wsbeta=?1")
           .Build(),
-  };
-
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_TRUE(params.is_wsbeta());
-  }
-}
-
-TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaFalse) {
-  GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(ES256 RS256);path=\"startsession\";"
@@ -229,8 +212,12 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaFalse) {
             registration_request, test_cases[i].get());
 
     ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_FALSE(params.is_wsbeta());
+    const BoundSessionRegistrationFetcherParam& param = maybe_params[0];
+    EXPECT_EQ(param.registration_endpoint(),
+              GURL("https://www.google.com/startsession"));
+    EXPECT_THAT(param.supported_algos(),
+                ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+    EXPECT_EQ(param.challenge(), kChallenge);
   }
 }
 

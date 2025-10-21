@@ -101,18 +101,6 @@ TEST(BoundSessionParamsUtilTest, ParamsValidWithCookieDomainWithoutLeadingDot) {
   EXPECT_TRUE(AreParamsValid(params));
 }
 
-TEST(BoundSessionParamsUtilTest, ParamsValidWithoutWsbetaParam) {
-  BoundSessionParams params = CreateValidBoundSessionParams();
-  params.clear_is_wsbeta();
-  EXPECT_TRUE(AreParamsValid(params));
-}
-
-TEST(BoundSessionParamsUtilTest, ParamsValidWithExplicitWsbetaParam) {
-  BoundSessionParams params = CreateValidBoundSessionParams();
-  params.set_is_wsbeta(true);
-  EXPECT_TRUE(AreParamsValid(params));
-}
-
 TEST(BoundSessionParamsUtilTest, ParamsInvalidMissingSessionId) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   params.set_session_id("");
@@ -419,14 +407,12 @@ TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, Valid) {
   const BoundSessionParams params =
       CreateBoundSessionsParamsFromRegistrationPayload(
           payload, /*request_url=*/GURL("https://example.google.com/request"),
-          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret",
-          /*is_wsbeta=*/true);
+          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret");
 
   ASSERT_TRUE(AreParamsValid(params));
   EXPECT_EQ(params.session_id(), "test_session_id");
   EXPECT_EQ(params.refresh_url(), "https://example.google.com/rotate");
   EXPECT_EQ(params.wrapped_key(), "secret");
-  EXPECT_EQ(params.is_wsbeta(), true);
   EXPECT_EQ(params.site(), "https://google.com/");
   const std::vector<bound_session_credentials::Credential>
       expected_credentials = {
@@ -451,8 +437,7 @@ TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidSite) {
   const BoundSessionParams params =
       CreateBoundSessionsParamsFromRegistrationPayload(
           payload, /*request_url=*/GURL("https://example.google.com/request"),
-          /*site=*/GURL(), /*wrapped_key=*/"secret",
-          /*is_wsbeta=*/true);
+          /*site=*/GURL(), /*wrapped_key=*/"secret");
 
   EXPECT_FALSE(AreParamsValid(params));
 }
@@ -471,8 +456,7 @@ TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidRequestUrl) {
   const BoundSessionParams params =
       CreateBoundSessionsParamsFromRegistrationPayload(
           payload, /*request_url=*/GURL(),
-          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret",
-          /*is_wsbeta=*/true);
+          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret");
 
   EXPECT_FALSE(AreParamsValid(params));
 }

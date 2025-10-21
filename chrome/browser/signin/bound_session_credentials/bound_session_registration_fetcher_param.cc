@@ -18,7 +18,6 @@ constexpr char kRegistrationListHeaderName[] =
     "Sec-Session-Google-Registration-List";
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kPathItemKey[] = "path";
-constexpr char kWsbetaItemKey[] = "wsbeta";
 }  // namespace
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
@@ -34,12 +33,10 @@ BoundSessionRegistrationFetcherParam::~BoundSessionRegistrationFetcherParam() =
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge,
-    bool is_wsbeta)
+    std::string challenge)
     : registration_endpoint_(std::move(registration_endpoint)),
       supported_algos_(std::move(supported_algos)),
-      challenge_(std::move(challenge)),
-      is_wsbeta_(is_wsbeta) {}
+      challenge_(std::move(challenge)) {}
 
 // static
 std::vector<BoundSessionRegistrationFetcherParam>
@@ -65,11 +62,10 @@ BoundSessionRegistrationFetcherParam
 BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge,
-    bool is_wsbeta) {
+    std::string challenge) {
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
                                               std::move(supported_algos),
-                                              std::move(challenge), is_wsbeta);
+                                              std::move(challenge));
 }
 
 // static
@@ -94,7 +90,6 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
 
   GURL registration_endpoint;
   std::string challenge;
-  bool is_wsbeta = false;
   for (const auto& [name, value] : item.params) {
     if (value.is_string() && name == kPathItemKey) {
       registration_endpoint = bound_session_credentials::ResolveEndpointPath(
@@ -104,10 +99,6 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
     if (value.is_string() && name == kChallengeItemKey) {
       challenge = value.GetString();
     }
-
-    if (value.is_boolean() && name == kWsbetaItemKey) {
-      is_wsbeta = value.GetBoolean();
-    }
   }
 
   if (!registration_endpoint.is_valid() || challenge.empty()) {
@@ -116,7 +107,7 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
 
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
                                               std::move(supported_algos),
-                                              std::move(challenge), is_wsbeta);
+                                              std::move(challenge));
 }
 
 // static

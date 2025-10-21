@@ -151,30 +151,18 @@ GetThrottlerParamsForRequestCoverage(
       base::Time());
 }
 
-bool IsNewSessionRegistrationEnabled(const PrefService* profile_prefs,
-                                     bool is_wsbeta) {
-  return switches::IsBoundSessionCredentialsEnabled(profile_prefs) ||
-         (is_wsbeta && base::FeatureList::IsEnabled(
-                           kEnableBoundSessionCredentialsWsbetaBypass));
+bool IsNewSessionRegistrationEnabled(const PrefService* profile_prefs) {
+  return switches::IsBoundSessionCredentialsEnabled(profile_prefs);
 }
 
-bool IsSessionInitializationEnabled(const PrefService* profile_prefs,
-                                    bool is_wsbeta) {
+bool IsSessionInitializationEnabled(const PrefService* profile_prefs) {
   // It should always be possible to initialize a session if the registration is
   // enabled.
-  return IsNewSessionRegistrationEnabled(profile_prefs, is_wsbeta) ||
+  return IsNewSessionRegistrationEnabled(profile_prefs) ||
          base::FeatureList::IsEnabled(kEnableBoundSessionCredentialsContinuity);
 }
 
 }  // namespace
-
-BASE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass,
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 BASE_FEATURE(kEnableBoundSessionCredentialsContinuity,
 #if BUILDFLAG(IS_WIN)
@@ -221,7 +209,7 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
   }
 
   for (const auto& params : bound_session_params) {
-    if (IsSessionInitializationEnabled(profile_prefs_, params.is_wsbeta())) {
+    if (IsSessionInitializationEnabled(profile_prefs_)) {
       InitializeBoundSession(params, /*is_new_session=*/false);
     }
   }
@@ -230,7 +218,7 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::BoundSessionParams& params) {
-  if (!IsNewSessionRegistrationEnabled(profile_prefs_, params.is_wsbeta())) {
+  if (!IsNewSessionRegistrationEnabled(profile_prefs_)) {
     return;
   }
 
@@ -380,8 +368,7 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
 
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
     BoundSessionRegistrationFetcherParam registration_params) {
-  if (!IsNewSessionRegistrationEnabled(profile_prefs_,
-                                       registration_params.is_wsbeta())) {
+  if (!IsNewSessionRegistrationEnabled(profile_prefs_)) {
     return;
   }
 
@@ -552,16 +539,7 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params,
     bool is_new_session) {
-  CHECK(IsSessionInitializationEnabled(profile_prefs_,
-                                       bound_session_params.is_wsbeta()));
-  if (bound_session_params.is_wsbeta()) {
-    // It's unusual to register a synthetic trial with a single group. The
-    // purpose of this trial is to be able to filter out the users having
-    // "wsbeta" sessions (thus ignoring the main experiment).
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "BoundSessionCredentialsWsbetaSyntheticTrial", "Enabled",
-        variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  }
+  CHECK(IsSessionInitializationEnabled(profile_prefs_));
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);
