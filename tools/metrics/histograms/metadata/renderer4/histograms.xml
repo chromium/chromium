@@ -22,39 +22,10 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="RasterTaskSchedulingDelayNoAtRasterDecodesType">
-  <variant name=".All"
-      summary="This metric applies to all raster work that doesn't depend on
-               at-raster image decodes."/>
-  <variant name=".TilesWithJpegHwDecodeCandidates"
-      summary="This metric applies only to raster work that depends on JPEGs
-               that are candidates for hardware decode acceleration (and that
-               doesn't depend on at-raster image decodes)."/>
-  <variant name=".TilesWithWebPHwDecodeCandidates"
-      summary="This metric applies only to raster work that depends on WebPs
-               that are candidates for hardware decode acceleration (and that
-               doesn't depend on at-raster image decodes)."/>
-</variants>
-
 <variants name="RasterTaskTypeGpu">
   <variant name=".Gpu" summary="This metric is for only gpu raster."/>
   <variant name=".Oop" summary="This metric is for only oop raster."/>
 </variants>
-
-<histogram
-    name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes{RasterTaskSchedulingDelayNoAtRasterDecodesType}"
-    units="microseconds" expires_after="2022-09-30">
-  <owner>andrescj@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    The wall time elapsed between creating a raster task in the client and being
-    ready to issue raster work to the driver in the GPU process. This includes
-    time decoding and uploading images. Note that this does not count raster
-    tasks that depend on at-raster image decodes. Since this metric is only
-    reported for Chrome OS clients, it has data only from high-resolution
-    clocks. {RasterTaskSchedulingDelayNoAtRasterDecodesType}
-  </summary>
-</histogram>
 
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration{RasterTaskTypeGpu}"
     units="microseconds" expires_after="2023-09-10">
@@ -228,21 +199,6 @@ chromium-metrics-reviews@google.com.
     scrolls with a reason would be count(the reason) / (count(&quot;Not
     scrolling on main (no reason)&quot; + count(&quot;Scrolling on main (any
     reason)&quot;)).
-  </summary>
-</histogram>
-
-<histogram
-    name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes{RasterTaskSchedulingDelayNoAtRasterDecodesType}"
-    units="microseconds" expires_after="2022-09-30">
-  <owner>andrescj@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    The wall time elapsed between creating a raster task in the client and being
-    ready to issue raster work to the driver in the GPU process. This includes
-    time decoding and uploading images. Note that this does not count raster
-    tasks that depend on at-raster image decodes. Since this metric is only
-    reported for Chrome OS clients, it has data only from high-resolution
-    clocks. {RasterTaskSchedulingDelayNoAtRasterDecodesType}
   </summary>
 </histogram>
 

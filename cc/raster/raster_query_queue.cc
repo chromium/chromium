@@ -81,44 +81,12 @@ bool RasterQueryQueue::CheckRasterFinishedQueries() {
     const char* client_name = GetClientNameForMetrics();
 
     if (it->raster_start_query_id) {
+      // TODO(crbug.com/450466845): Remove `raster_start_query_id`, as it now
+      // serves no purpose.
       GLuint64 gpu_raster_start_time = 0u;
       ri->GetQueryObjectui64vEXT(it->raster_start_query_id, GL_QUERY_RESULT_EXT,
                                  &gpu_raster_start_time);
       ri->DeleteQueriesEXT(1, &it->raster_start_query_id);
-
-      // The base::checked_cast<int64_t> should not crash as long as the GPU
-      // process was not compromised: that's because the result of the query
-      // should have been generated using base::TimeDelta::InMicroseconds()
-      // there, so the result should fit in an int64_t.
-      base::TimeDelta raster_scheduling_delay =
-          base::Microseconds(
-              base::checked_cast<int64_t>(gpu_raster_start_time)) -
-          it->raster_buffer_creation_time.since_origin();
-
-      // We expect the clock we're using to be monotonic, so we shouldn't get a
-      // negative scheduling delay.
-      DCHECK_GE(raster_scheduling_delay.InMicroseconds(), 0u);
-      UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
-          base::StringPrintf(
-              "Renderer4.%s.RasterTaskSchedulingDelayNoAtRasterDecodes.All",
-              client_name),
-          raster_scheduling_delay);
-      if (it->depends_on_hardware_accelerated_jpeg_candidates) {
-        UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
-            base::StringPrintf(
-                "Renderer4.%s.RasterTaskSchedulingDelayNoAtRasterDecodes."
-                "TilesWithJpegHwDecodeCandidates",
-                client_name),
-            raster_scheduling_delay);
-      }
-      if (it->depends_on_hardware_accelerated_webp_candidates) {
-        UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
-            base::StringPrintf(
-                "Renderer4.%s.RasterTaskSchedulingDelayNoAtRasterDecodes."
-                "TilesWithWebPHwDecodeCandidates",
-                client_name),
-            raster_scheduling_delay);
-      }
     }
 
     UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(

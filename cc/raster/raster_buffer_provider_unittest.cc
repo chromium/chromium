@@ -545,33 +545,11 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
   base::HistogramTester histogram_tester;
   std::string duration_histogram(
       "Renderer4.Renderer.RasterTaskTotalDuration.Oop");
-  std::string delay_histogram_all_tiles(
-      "Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes.All");
-  std::string delay_histogram_jpeg_tiles(
-      "Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes."
-      "TilesWithJpegHwDecodeCandidates");
-  std::string delay_histogram_webp_tiles(
-      "Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes."
-      "TilesWithWebPHwDecodeCandidates");
   histogram_tester.ExpectTotalCount(duration_histogram, 0);
-  histogram_tester.ExpectTotalCount(delay_histogram_all_tiles, 0);
-  histogram_tester.ExpectTotalCount(delay_histogram_jpeg_tiles, 0);
-  histogram_tester.ExpectTotalCount(delay_histogram_webp_tiles, 0);
   bool has_pending_queries =
       pending_raster_queries_->CheckRasterFinishedQueries();
   EXPECT_FALSE(has_pending_queries);
   histogram_tester.ExpectTotalCount(duration_histogram, 9);
-
-  // Only in ChromeOS, we should be measuring raster scheduling delay (and only
-  // for tasks that don't depend on at-raster image decodes).
-  base::HistogramBase::Count32 expected_delay_histogram_all_tiles_count = 0;
-#if BUILDFLAG(IS_CHROMEOS)
-  if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU) {
-    expected_delay_histogram_all_tiles_count = 5;
-  }
-#endif
-  histogram_tester.ExpectTotalCount(delay_histogram_all_tiles,
-                                    expected_delay_histogram_all_tiles_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(
