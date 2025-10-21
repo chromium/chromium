@@ -25709,18 +25709,6 @@
             ],
             "experiments": [
                 {
-                    "name": "ProcessPriority",
-                    "enable_features": [
-                        "UnimportantFramesPriority",
-                        "UserVisibleProcessPriority"
-                    ],
-                    "disable_features": [
-                        "IsolatesPriorityBestEffortWhenHidden",
-                        "IsolatesPriorityUseProcessPriority",
-                        "RestrictThreadPoolInBackground"
-                    ]
-                },
-                {
                     "name": "IsolatesPriority",
                     "enable_features": [
                         "IsolatesPriorityBestEffortWhenHidden",
@@ -25729,30 +25717,6 @@
                     ],
                     "disable_features": [
                         "RestrictThreadPoolInBackground",
-                        "UserVisibleProcessPriority"
-                    ]
-                },
-                {
-                    "name": "RestrictThreadPoolInBackground",
-                    "enable_features": [
-                        "RestrictThreadPoolInBackground",
-                        "UnimportantFramesPriority"
-                    ],
-                    "disable_features": [
-                        "IsolatesPriorityBestEffortWhenHidden",
-                        "IsolatesPriorityUseProcessPriority",
-                        "UserVisibleProcessPriority"
-                    ]
-                },
-                {
-                    "name": "AllRendererSettings",
-                    "enable_features": [
-                        "IsolatesPriorityBestEffortWhenHidden",
-                        "IsolatesPriorityUseProcessPriority",
-                        "RestrictThreadPoolInBackground",
-                        "UnimportantFramesPriority"
-                    ],
-                    "disable_features": [
                         "UserVisibleProcessPriority"
                     ]
                 },
