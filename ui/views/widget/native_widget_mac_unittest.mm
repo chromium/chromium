@@ -2587,7 +2587,7 @@ TEST_F(NativeWidgetMacTest,
 
 // Tests behavior of window-modal dialogs, displayed as sheets.
 // TODO(crbug.com/453833804): Disabled on ASAN due to flakiness.
-#if BUILDFLAG(IS_MAC) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 #define MAYBE_OnWidgetWindowModalVisibilityChanged \
   DISABLED_OnWidgetWindowModalVisibilityChanged
 #else
