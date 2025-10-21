@@ -404,22 +404,19 @@ Deque<T, InlineCapacity, Allocator>::operator=(Deque&& other) {
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline void Deque<T, InlineCapacity, Allocator>::DestroyAll() {
+  T* begin = buffer_.Buffer();
+  T* end = UNSAFE_TODO(begin + end_);
   if (start_ <= end_) {
-    TypeOperations::Destruct(UNSAFE_TODO(buffer_.Buffer() + start_),
-                             UNSAFE_TODO(buffer_.Buffer() + end_));
-    buffer_.ClearUnusedSlots(UNSAFE_TODO(buffer_.Buffer() + start_),
-                             UNSAFE_TODO(buffer_.Buffer() + end_));
+    UNSAFE_TODO(begin += start_);
+    TypeOperations::Destruct(begin, end);
+    buffer_.ClearUnusedSlots(begin, end);
   } else {
-    TypeOperations::Destruct(buffer_.Buffer(),
-                             UNSAFE_TODO(buffer_.Buffer() + end_));
-    buffer_.ClearUnusedSlots(buffer_.Buffer(),
-                             UNSAFE_TODO(buffer_.Buffer() + end_));
-    TypeOperations::Destruct(
-        UNSAFE_TODO(buffer_.Buffer() + start_),
-        UNSAFE_TODO(buffer_.Buffer() + buffer_.capacity()));
-    buffer_.ClearUnusedSlots(
-        UNSAFE_TODO(buffer_.Buffer() + start_),
-        UNSAFE_TODO(buffer_.Buffer() + buffer_.capacity()));
+    TypeOperations::Destruct(begin, end);
+    buffer_.ClearUnusedSlots(begin, end);
+    T* leading_begin = UNSAFE_TODO(begin + start_);
+    T* leading_end = UNSAFE_TODO(begin + buffer_.capacity());
+    TypeOperations::Destruct(leading_begin, leading_end);
+    buffer_.ClearUnusedSlots(leading_begin, leading_end);
   }
 }
 
@@ -536,25 +533,23 @@ void Deque<T, InlineCapacity, Allocator>::ExpandCapacity() {
   }
   buffer_.AllocateBuffer(new_capacity,
                          VectorOperationOrigin::kRegularModification);
+  T* old_begin = UNSAFE_TODO(old_buffer + start_);
+  T* old_end = UNSAFE_TODO(old_buffer + end_);
   if (start_ <= end_) {
-    TypeOperations::Move(UNSAFE_TODO(old_buffer + start_),
-                         UNSAFE_TODO(old_buffer + end_),
+    TypeOperations::Move(old_begin, old_end,
                          UNSAFE_TODO(buffer_.Buffer() + start_),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(UNSAFE_TODO(old_buffer + start_),
-                             UNSAFE_TODO(old_buffer + end_));
+    buffer_.ClearUnusedSlots(old_begin, old_end);
   } else {
-    TypeOperations::Move(old_buffer, UNSAFE_TODO(old_buffer + end_),
-                         buffer_.Buffer(),
+    TypeOperations::Move(old_buffer, old_end, buffer_.Buffer(),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_buffer, UNSAFE_TODO(old_buffer + end_));
+    buffer_.ClearUnusedSlots(old_buffer, old_end);
+    T* old_buffer_end = UNSAFE_TODO(old_buffer + old_capacity);
     wtf_size_t new_start = buffer_.capacity() - (old_capacity - start_);
-    TypeOperations::Move(UNSAFE_TODO(old_buffer + start_),
-                         UNSAFE_TODO(old_buffer + old_capacity),
+    TypeOperations::Move(old_begin, old_buffer_end,
                          UNSAFE_TODO(buffer_.Buffer() + new_start),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(UNSAFE_TODO(old_buffer + start_),
-                             UNSAFE_TODO(old_buffer + old_capacity));
+    buffer_.ClearUnusedSlots(old_begin, old_buffer_end);
     start_ = new_start;
   }
   buffer_.DeallocateBuffer(old_buffer);
@@ -627,10 +622,10 @@ inline void Deque<T, InlineCapacity, Allocator>::emplace_front(Args&&... args) {
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline void Deque<T, InlineCapacity, Allocator>::pop_front() {
   DCHECK(!empty());
-  TypeOperations::Destruct(&UNSAFE_TODO(buffer_.Buffer()[start_]),
-                           &UNSAFE_TODO(buffer_.Buffer()[start_ + 1]));
-  buffer_.ClearUnusedSlots(&UNSAFE_TODO(buffer_.Buffer()[start_]),
-                           &UNSAFE_TODO(buffer_.Buffer()[start_ + 1]));
+  T* begin = UNSAFE_TODO(buffer_.Buffer() + start_);
+  T* end = UNSAFE_TODO(begin + 1);
+  TypeOperations::Destruct(begin, end);
+  buffer_.ClearUnusedSlots(begin, end);
   if (start_ == buffer_.capacity() - 1)
     start_ = 0;
   else
@@ -644,10 +639,10 @@ inline void Deque<T, InlineCapacity, Allocator>::pop_back() {
     end_ = buffer_.capacity() - 1;
   else
     --end_;
-  TypeOperations::Destruct(&UNSAFE_TODO(buffer_.Buffer()[end_]),
-                           &UNSAFE_TODO(buffer_.Buffer()[end_ + 1]));
-  buffer_.ClearUnusedSlots(&UNSAFE_TODO(buffer_.Buffer()[end_]),
-                           &UNSAFE_TODO(buffer_.Buffer()[end_ + 1]));
+  T* begin = UNSAFE_TODO(buffer_.Buffer() + end_);
+  T* end = UNSAFE_TODO(begin + 1);
+  TypeOperations::Destruct(begin, end);
+  buffer_.ClearUnusedSlots(begin, end);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -672,20 +667,20 @@ inline void Deque<T, InlineCapacity, Allocator>::erase(wtf_size_t position) {
   // Find which segment of the circular buffer contained the remove element,
   // and only move elements in that part.
   if (position >= start_) {
+    T* source_begin = UNSAFE_TODO(buffer + start_);
+    T* destination_begin = UNSAFE_TODO(source_begin + 1);
     TypeOperations::MoveOverlapping(
-        UNSAFE_TODO(buffer + start_), UNSAFE_TODO(buffer + position),
-        UNSAFE_TODO(buffer + start_ + 1),
+        source_begin, UNSAFE_TODO(buffer + position), destination_begin,
         VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(UNSAFE_TODO(buffer + start_),
-                             UNSAFE_TODO(buffer + start_ + 1));
+    buffer_.ClearUnusedSlots(source_begin, destination_begin);
     start_ = (start_ + 1) % buffer_.capacity();
   } else {
+    T* source_end = UNSAFE_TODO(buffer + end_);
+    T* destination_begin = UNSAFE_TODO(buffer + position);
     TypeOperations::MoveOverlapping(
-        UNSAFE_TODO(buffer + position + 1), UNSAFE_TODO(buffer + end_),
-        UNSAFE_TODO(buffer + position),
+        UNSAFE_TODO(destination_begin + 1), source_end, destination_begin,
         VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(UNSAFE_TODO(buffer + end_ - 1),
-                             UNSAFE_TODO(buffer + end_));
+    buffer_.ClearUnusedSlots(UNSAFE_TODO(source_end - 1), source_end);
     end_ = (end_ - 1 + buffer_.capacity()) % buffer_.capacity();
   }
 }
