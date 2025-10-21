@@ -124,7 +124,7 @@ ActorNavigationThrottle::WillProcessResponse() {
       !execution_engine_->ShouldGateNavigation(
           *navigation_handle(),
           base::BindOnce(
-              &ActorNavigationThrottle::OnUserConfirmationDialogDecision,
+              &ActorNavigationThrottle::OnNavigationConfirmationDecision,
               weak_factory_.GetWeakPtr()))) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -136,8 +136,8 @@ ActorNavigationThrottle::WillProcessResponse() {
   return content::NavigationThrottle::DEFER;
 }
 
-void ActorNavigationThrottle::OnUserConfirmationDialogDecision(
-    webui::mojom::UserConfirmationDialogResponsePtr response) {
+void ActorNavigationThrottle::OnNavigationConfirmationDecision(
+    webui::mojom::NavigationConfirmationResponsePtr response) {
   CHECK(!navigation_handle()->IsInPrerenderedMainFrame())
       << "We should not be prompting for pre-rendered frame navigations.";
   if (response->result->is_permission_granted() &&

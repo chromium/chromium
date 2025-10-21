@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, ChromeVersion, ConversationInfo, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, ChromeVersion, ConversationInfo, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -650,6 +650,15 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientRequestToConfirmNavigation: {
+    request: {
+      request: NavigationConfirmationRequestPrivate,
+    },
+    response: {
+      response: NavigationConfirmationResponsePrivate,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyAdditionalContext: {
     request: {
       context: AdditionalContextPrivate,
@@ -929,10 +938,10 @@ export declare interface SelectCredentialDialogResponsePrivate extends
 export declare interface UserConfirmationDialogRequestPrivate extends
     Omit<UserConfirmationDialogRequest, 'onDialogClosed'> {}
 
-export enum UserConfirmationDialogErrorReason {
+export enum ConfirmationRequestErrorReason {
   // The hosting WebUI received the request, but the web client has not
   // subscribed to the request yet. We couldn't show the dialog in this case.
-  DIALOG_PROMISE_NO_SUBSCRIBER = 0,
+  REQUEST_PROMISE_NO_SUBSCRIBER = 0,
   // The task requested a new user confirmation dialog before the current
   // one completed.
   PREEMPTED_BY_NEW_REQUEST = 1,
@@ -940,7 +949,15 @@ export enum UserConfirmationDialogErrorReason {
 
 export declare interface UserConfirmationDialogResponsePrivate extends
     UserConfirmationDialogResponse {
-  errorReason?: UserConfirmationDialogErrorReason;
+  errorReason?: ConfirmationRequestErrorReason;
+}
+
+export declare interface NavigationConfirmationRequestPrivate extends
+    Omit<NavigationConfirmationRequest, 'onConfirmationDecision'> {}
+
+export declare interface NavigationConfirmationResponsePrivate extends
+    NavigationConfirmationResponse {
+  errorReason?: ConfirmationRequestErrorReason;
 }
 
 export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error

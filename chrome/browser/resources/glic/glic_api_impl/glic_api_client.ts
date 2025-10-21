@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AnnotatedPageData, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './request_types.js';
-import {ImageAlphaType, ImageColorType, newTransferableException, SelectCredentialDialogErrorReason, UserConfirmationDialogErrorReason} from './request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './request_types.js';
+import {ConfirmationRequestErrorReason, ImageAlphaType, ImageColorType, newTransferableException, SelectCredentialDialogErrorReason} from './request_types.js';
 
 
 // Web client side of the Glic API.
@@ -289,7 +289,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
           response: {
             permissionGranted: false,
             errorReason:
-                UserConfirmationDialogErrorReason.DIALOG_PROMISE_NO_SUBSCRIBER,
+                ConfirmationRequestErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
           },
         });
         return;
@@ -299,6 +299,33 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         onDialogClosed: resolve,
       };
       this.host.userConfirmationDialogRequestSubject.next(requestWithCallback);
+    });
+  }
+
+  glicWebClientRequestToConfirmNavigation(payload: {
+    request: NavigationConfirmationRequestPrivate,
+  }): Promise<{response: NavigationConfirmationResponsePrivate}> {
+    return new Promise(resolve => {
+      if (!this.host.navigationConfirmationRequestSubject
+               .hasActiveSubscription()) {
+        // Since there is no subscriber, respond to the browser immediately as
+        // if the user denied the request.
+        window.console.warn(
+            'GlicWebClient: no subscriber for ' +
+            'navigationConfirmationRequest()!');
+        resolve({
+          response: {
+            errorReason:
+                ConfirmationRequestErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
+          },
+        });
+        return;
+      }
+      const requestWithCallback: NavigationConfirmationRequest = {
+        ...payload.request,
+        onConfirmationDecision: resolve,
+      };
+      this.host.navigationConfirmationRequestSubject.next(requestWithCallback);
     });
   }
 
@@ -375,6 +402,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       new Subject<SelectCredentialDialogRequest>();
   readonly userConfirmationDialogRequestSubject =
       new Subject<UserConfirmationDialogRequest>();
+  readonly navigationConfirmationRequestSubject =
+      new Subject<NavigationConfirmationRequest>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -993,6 +1022,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   selectUserConfirmationDialogRequestHandler():
       Observable<UserConfirmationDialogRequest> {
     return this.userConfirmationDialogRequestSubject;
+  }
+
+  selectNavigationConfirmationRequestHandler():
+      Observable<NavigationConfirmationRequest> {
+    return this.navigationConfirmationRequestSubject;
   }
 }
 

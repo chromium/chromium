@@ -63,6 +63,7 @@ class ActorKeyedServiceTest : public testing::Test {
 
  protected:
   base::CallbackListSubscription user_confirmation_dialog_subscription_;
+  base::CallbackListSubscription confirm_navigation_subscription_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

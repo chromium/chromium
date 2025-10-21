@@ -694,6 +694,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                     base::BindRepeating(&GlicWebClientHandler::
                                             RequestToShowUserConfirmationDialog,
                                         base::Unretained(this)));
+        request_to_confirm_navigation_subscription_ =
+            actor_service->AddRequestToConfirmNavigationSubscriberCallback(
+                base::BindRepeating(
+                    &GlicWebClientHandler::RequestToConfirmNavigation,
+                    base::Unretained(this)));
       }
     }
 
@@ -1509,6 +1514,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     pinned_tab_data_changed_subscription_ = {};
     request_to_show_credential_selection_dialog_subscription_ = {};
     request_to_show_user_confirmation_dialog_subscription_ = {};
+    request_to_confirm_navigation_subscription_ = {};
     browser_attach_observation_.reset();
     if (glic_service_->zero_state_suggestions_manager()) {
       glic_service_->zero_state_suggestions_manager()->Reset();
@@ -1652,6 +1658,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         std::move(callback));
   }
 
+  void RequestToConfirmNavigation(
+      const actor::TaskId& task_id,
+      const url::Origin& navigation_origin,
+      actor::ActorKeyedService::NavigationConfirmationCallback callback) {
+    web_client_->RequestToConfirmNavigation(
+        actor::webui::mojom::NavigationConfirmationRequest::New(
+            task_id.value(), navigation_origin),
+        std::move(callback));
+  }
+
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
@@ -1672,6 +1688,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       request_to_show_credential_selection_dialog_subscription_;
   base::CallbackListSubscription
       request_to_show_user_confirmation_dialog_subscription_;
+  base::CallbackListSubscription request_to_confirm_navigation_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;

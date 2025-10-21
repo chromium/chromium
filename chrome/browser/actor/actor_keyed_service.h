@@ -186,6 +186,41 @@ class ActorKeyedService : public KeyedService {
       TaskId request_task_id,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
+  // Callback for GlicPageHandler::RequestToConfirmNavigation. The page handler
+  // method forwards the response of the IPC to the web client to its own
+  // callback.
+  using NavigationConfirmationCallback = base::RepeatingCallback<void(
+      webui::mojom::NavigationConfirmationResponsePtr)>;
+
+  // Callback invoked whenever the subscriber receives a new request, which are
+  // created when GlicPageHandler::RequestToConfirmNavigation is invoked. This
+  // callback is immediately invoked when
+  // GlicPageHandler::RequestToConfirmNavigation is called, unlike
+  // NavigationConfirmationCallback, which is invoked when the IPC receives a
+  // response.
+  using RequestToConfirmNavigationSubscriberCallback =
+      base::RepeatingCallback<void(const TaskId&,
+                                   const url::Origin& navigation_origin,
+                                   NavigationConfirmationCallback)>;
+
+  // This is called when GlicPageHandler::CreateWebClient is invoked. It
+  // returns a subscription to requests by the browser to confirm
+  // navigations the actor makes to new origins.
+  // TODO(crbug.com/439672418): Make sure this works when kGlicMultiInstance is
+  // enabled.
+  base::CallbackListSubscription
+  AddRequestToConfirmNavigationSubscriberCallback(
+      RequestToConfirmNavigationSubscriberCallback callback);
+
+  // Notifies the subscribers that the browser is requesting the actor confirm
+  // navigation to a novel origin.
+  void NotifyRequestToConfirmNavigation(const TaskId& task_id,
+                                        const url::Origin& navigation_origin);
+
+  void OnNavigationConfirmationDecision(
+      TaskId request_task_id,
+      webui::mojom::NavigationConfirmationResponsePtr response);
+
   void OnActuationCapabilityChanged(bool has_actuation_capability);
 
   // Returns the acting task for web_contents. Returns nullptr if acting task
@@ -230,6 +265,10 @@ class ActorKeyedService : public KeyedService {
   base::RepeatingCallbackList<
       RequestToShowUserConfirmationDialogSubscriberCallback::RunType>
       request_to_show_user_confirmation_dialog_callback_list_;
+
+  base::RepeatingCallbackList<
+      RequestToConfirmNavigationSubscriberCallback::RunType>
+      request_to_confirm_navigation_callback_list_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

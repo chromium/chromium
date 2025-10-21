@@ -20,7 +20,7 @@ namespace actor {
 
 namespace {
 
-constexpr char kHandleDialogRequestTempl[] =
+constexpr char kHandleUserConfirmationDialogRequest[] =
     R"js(
   (() => {
     window.userConfirmationDialogRequestData = new Promise(resolve => {
@@ -29,13 +29,11 @@ constexpr char kHandleDialogRequestTempl[] =
           // Response will be verified in C++ callback below.
           request.onDialogClosed({
             response: {
-              taskId: request.taskId,
-              permissionGranted: $1,
-            }
+              permissionGranted: true,
+            },
           });
           // Resolve the promise with the request data to be verified.
           resolve({
-            taskId: request.taskId,
             navigationOrigin: request.navigationOrigin,
             downloadId: request.downloadId,
           });
@@ -45,19 +43,42 @@ constexpr char kHandleDialogRequestTempl[] =
   })();
 )js";
 
+constexpr char kHandleNavigationConfirmationTempl[] =
+    R"js(
+  (() => {
+    window.navigationConfirmationRequestData = new Promise(resolve => {
+      client.browser.selectNavigationConfirmationRequestHandler()
+          .subscribe(
+            request => {
+              // Response will be verified in C++ callback below.
+              request.onConfirmationDecision({
+                response: {
+                  permissionGranted: $1,
+                },
+              });
+              // Resolve the promise with the request data to be verified.
+              resolve({
+                navigationOrigin: request.navigationOrigin,
+              });
+            }
+          );
+    });
+  })();
+)js";
+
 }  // namespace
 
-class ExecutionEngineConfirmationDialogInteractiveUiTest
+class ExecutionEngineInteractiveUiTest
     : public glic::test::InteractiveGlicTest {
  public:
-  ExecutionEngineConfirmationDialogInteractiveUiTest() {
+  ExecutionEngineInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                               features::kGlicActor,
                               kGlicCrossOriginNavigationGating},
         /*disabled_features=*/{features::kGlicWarming});
   }
-  ~ExecutionEngineConfirmationDialogInteractiveUiTest() override = default;
+  ~ExecutionEngineInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
@@ -83,7 +104,7 @@ class ExecutionEngineConfirmationDialogInteractiveUiTest
     return ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
   }
 
-  InteractiveTestApi::MultiStep CreateMockUserConfirmationDialog(
+  InteractiveTestApi::MultiStep CreateMockWebClientRequest(
       const std::string_view handle_dialog_js) {
     return InAnyContext(WithElement(
         glic::test::kGlicContentsElementId,
@@ -96,20 +117,26 @@ class ExecutionEngineConfirmationDialogInteractiveUiTest
 
   InteractiveTestApi::MultiStep VerifyUserConfirmationDialogRequest(
       const base::Value::Dict& expected_request) {
-    return InAnyContext(WithElement(
-        glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
-          content::WebContents* glic_contents =
-              AsInstrumentedWebContents(el)->web_contents();
-          static constexpr char kGetRequestData[] =
-              R"js(
-              (() => {
-                return window.userConfirmationDialogRequestData;
-              })();
-            )js";
-          auto eval_result = content::EvalJs(glic_contents, kGetRequestData);
-          const auto& actual_request = eval_result.ExtractDict();
-          ASSERT_EQ(expected_request, actual_request);
-        }));
+    static constexpr char kGetUserConfirmationDialogRequest[] =
+        R"js(
+          (() => {
+            return window.userConfirmationDialogRequestData;
+          })();
+        )js";
+    return VerifyWebClientRequest(kGetUserConfirmationDialogRequest,
+                                  expected_request);
+  }
+
+  InteractiveTestApi::MultiStep VerifyNavigationConfirmationRequest(
+      const base::Value::Dict& expected_request) {
+    static constexpr char kGetNavigationConfirmationRequestData[] =
+        R"js(
+          (() => {
+            return window.navigationConfirmationRequestData;
+          })();
+        )js";
+    return VerifyWebClientRequest(kGetNavigationConfirmationRequestData,
+                                  expected_request);
   }
 
   content::RenderFrameHost* main_frame() {
@@ -136,23 +163,37 @@ class ExecutionEngineConfirmationDialogInteractiveUiTest
     }
   }
 
+  InteractiveTestApi::MultiStep VerifyWebClientRequest(
+      const std::string_view get_request_js,
+      const base::Value::Dict& expected_request) {
+    return InAnyContext(WithElement(
+        glic::test::kGlicContentsElementId,
+        [&, get_request_js](::ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          auto eval_result = content::EvalJs(glic_contents, get_request_js);
+          const auto& actual_request = eval_result.ExtractDict();
+          ASSERT_EQ(expected_request, actual_request);
+        }));
+  }
+
  private:
   TaskId task_id_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
-                       PromptToConfirmCrossOriginNavigation) {
+IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
+                       PromptUserToConfirmNavigation) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CreateMockUserConfirmationDialog(
-                      content::JsReplace(kHandleDialogRequestTempl, true)));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      CreateMockWebClientRequest(kHandleUserConfirmationDialogRequest));
 
   base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
       future;
-  GetActorTask()->GetExecutionEngine()->PromptToConfirmCrossOriginNavigation(
+  GetActorTask()->GetExecutionEngine()->PromptUserToConfirmNavigation(
       url::Origin::Create(GURL("https://www.example.com")),
       future.GetCallback());
 
@@ -167,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
   RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
 }
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
                        CrossOriginNavigationGating_Granted) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -176,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CreateMockUserConfirmationDialog(
-                      content::JsReplace(kHandleDialogRequestTempl, true)));
+                  CreateMockWebClientRequest(content::JsReplace(
+                      kHandleNavigationConfirmationTempl, true)));
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", start_url)));
@@ -189,10 +230,10 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
   ClickTarget("#link", mojom::ActionResultCode::kOk);
   auto expected_request = base::Value::Dict().Set(
       "navigationOrigin", url::Origin::Create(second_url).GetDebugString());
-  RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
+  RunTestSequence(VerifyNavigationConfirmationRequest(expected_request));
 }
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
                        CrossOriginNavigationGating_Denied) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -201,8 +242,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CreateMockUserConfirmationDialog(
-                      content::JsReplace(kHandleDialogRequestTempl, false)));
+                  CreateMockWebClientRequest(content::JsReplace(
+                      kHandleNavigationConfirmationTempl, false)));
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", start_url)));
@@ -214,17 +255,17 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request = base::Value::Dict().Set(
       "navigationOrigin", url::Origin::Create(second_url).GetDebugString());
-  RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
+  RunTestSequence(VerifyNavigationConfirmationRequest(expected_request));
 }
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineConfirmationDialogInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
                        PromptToConfirmDownload) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CreateMockUserConfirmationDialog(
-                      content::JsReplace(kHandleDialogRequestTempl, true)));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      CreateMockWebClientRequest(kHandleUserConfirmationDialogRequest));
 
   base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
       future;

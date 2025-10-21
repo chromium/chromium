@@ -103,8 +103,8 @@ assertNever<CheckEnumCompatibility<
     typeof actorWebUiMojom.SelectCredentialDialogErrorReason,
     typeof requestTypes.SelectCredentialDialogErrorReason>>();
 assertNever<CheckEnumCompatibility<
-    typeof actorWebUiMojom.UserConfirmationDialogErrorReason,
-    typeof requestTypes.UserConfirmationDialogErrorReason>>();
+    typeof actorWebUiMojom.ConfirmationRequestErrorReason,
+    typeof requestTypes.ConfirmationRequestErrorReason>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.MetricUserInputReactionType,
     typeof api.MetricUserInputReactionType>>();

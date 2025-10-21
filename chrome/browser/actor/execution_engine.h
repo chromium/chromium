@@ -133,9 +133,8 @@ class ExecutionEngine : public ToolDelegate {
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
-  void PromptToConfirmCrossOriginNavigation(
-      const url::Origin& navigation_origin,
-      UserConfirmationDialogCallback callback);
+  void PromptUserToConfirmNavigation(const url::Origin& navigation_origin,
+                                     UserConfirmationDialogCallback callback);
   void PromptToConfirmDownload(int32_t download_id,
                                UserConfirmationDialogCallback callback);
 
@@ -143,10 +142,27 @@ class ExecutionEngine : public ToolDelegate {
   void OnUserConfirmation(
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
+  // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
+  // the web client, receives its response. This callback gets the Mojo response
+  // forwarded to it by ActorKeyedService.
+  using NavigationConfirmationCallback = base::OnceCallback<void(
+      webui::mojom::NavigationConfirmationResponsePtr response)>;
+
+  // Called when the browser detects the actor needs to confirm a
+  // client-side-initiated navigation to a novel origin. The web client should
+  // check that the origin is relevant for the task and respond with whether the
+  // actor is permitted to visit the page.
+  void ConfirmCrossOriginNavigation(const url::Origin& navigation_origin,
+                                    NavigationConfirmationCallback callback);
+
+  // Callback when the server responds when asked to confirm navigation.
+  void OnNavigationConfirmation(
+      webui::mojom::NavigationConfirmationResponsePtr response);
+
   static std::string StateToString(State state);
 
   bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
-                            UserConfirmationDialogCallback callback);
+                            NavigationConfirmationCallback callback);
 
   void AddObserver(StateObserver* observer);
 
@@ -204,14 +220,19 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  void OnPromptToConfirmNavigationDecision(
+  void OnPromptUserToConfirmNavigationDecision(
       url::Origin navigation_origin,
       UserConfirmationDialogCallback callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
+  void OnNavigationConfirmationDecision(
+      url::Origin navigation_origin,
+      NavigationConfirmationCallback callback,
+      webui::mojom::NavigationConfirmationResponsePtr response);
+
   bool ShouldGateNavigationInternal(
       content::NavigationHandle& navigation_handle,
-      UserConfirmationDialogCallback callback);
+      NavigationConfirmationCallback callback);
   void LogNavigationGating(content::NavigationHandle& navigation_handle,
                            bool applied_gate);
 
@@ -254,6 +275,7 @@ class ExecutionEngine : public ToolDelegate {
   ToolDelegate::CredentialSelectedCallback credential_selected_callback_;
 
   UserConfirmationDialogCallback user_confirmation_callback_;
+  NavigationConfirmationCallback navigation_confirmation_callback_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

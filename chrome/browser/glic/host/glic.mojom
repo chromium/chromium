@@ -1115,6 +1115,13 @@ interface WebClient {
       actor.webui.mojom.UserConfirmationDialogRequest request)
       => (actor.webui.mojom.UserConfirmationDialogResponse response);
 
+  // Requests the web client confirm navigation to a novel origin
+  // that the model has not yet encountered, but is not sensitive
+  // enough to require structured user confirmation.
+  RequestToConfirmNavigation(
+      actor.webui.mojom.NavigationConfirmationRequest request)
+      => (actor.webui.mojom.NavigationConfirmationResponse response);
+
   // Informs the client that additional context is available.
   NotifyAdditionalContext(AdditionalContext context);
 

@@ -95,19 +95,36 @@ struct UserConfirmationDialogRequest {
 // Either a boolean indicating user decision, or an error.
 union UserConfirmationDialogResult {
   bool permission_granted;
-  UserConfirmationDialogErrorReason error_reason;
+  ConfirmationRequestErrorReason error_reason;
+};
+
+union ConfirmationRequestResult {
+  bool permission_granted;
+  ConfirmationRequestErrorReason error_reason;
 };
 
 struct UserConfirmationDialogResponse {
-  UserConfirmationDialogResult result;
+  ConfirmationRequestResult result;
 };
 
 [Extensible]
-enum UserConfirmationDialogErrorReason {
+enum ConfirmationRequestErrorReason {
   // The hosting WebUI received the request, but the web client has not
   // subscribed to the request yet. We couldn't show the dialog in this case.
-  [Default] kDialogPromiseNoSubscriber = 0,
+  [Default] kRequestPromiseNoSubscriber = 0,
   // The task requested a new user confirmation dialog before the current
   // one completed.
   kPreemptedByNewRequest = 1,
+};
+
+struct NavigationConfirmationRequest {
+  // The task ID that is checking the navigation.
+  int32 task_id;
+  url.mojom.Origin navigation_origin;
+};
+
+// Contains result of a navigation confirmation request.
+// Either a boolean indicating user decision, or an error.
+struct NavigationConfirmationResponse {
+  ConfirmationRequestResult result;
 };

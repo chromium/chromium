@@ -764,6 +764,22 @@ export declare interface GlicBrowserHost {
       (): Observable<UserConfirmationDialogRequest>;
 
   /**
+   * Returns an observable that emits when the browser wants the web client to
+   * confirm a navigation to a novel origin with the model.
+   *
+   * NOTE:
+   * - The browser will only make one request at a time. We might have to
+   * support concurrent PerformActions() in the future. The plan is to
+   * sequence the requests.
+   * - Currently the browser won't cancel the request. The task that issues the
+   * request will yield and wait for the response, or fail the task when it
+   * times out. The web client must also observe `getActorTaskState()` to clean
+   * up the UI elements when the task is no longer active.
+   */
+  selectNavigationConfirmationRequestHandler?
+      (): Observable<NavigationConfirmationRequest>;
+
+  /**
    * Switches to a use a different instance that shows the conversation
    * represented by the provided id. If `info` is not provided, a new instance
    * will be created with an empty conversation. When a new conversation is
@@ -1787,6 +1803,23 @@ export declare interface UserConfirmationDialogResponse {
   permissionGranted: boolean;
 }
 
+export declare interface NavigationConfirmationRequest {
+  // ID of the actor's task.
+  taskId: number;
+  // Origin to request the actor navigate to.
+  navigationOrigin: string;
+
+  // The WebClient must call this function to respond back to the browser when
+  // the confirmation request has a decision.
+  onConfirmationDecision(result: {response: NavigationConfirmationResponse}):
+      void;
+}
+
+export declare interface NavigationConfirmationResponse {
+  // The verdict of the model if the actor can navigate to this origin.
+  permissionGranted?: boolean;
+}
+
 //
 // Types used in presubmit check.
 //
@@ -1810,6 +1843,8 @@ export interface BackwardsCompatibleTypes {
   glicBrowserHostMetrics: GlicBrowserHostMetrics;
   hostRegistry: GlicHostRegistry;
   imageOriginAnnotations: ImageOriginAnnotations;
+  navigationConfirmationRequest: NavigationConfirmationRequest;
+  navigationConfirmationResponse: NavigationConfirmationResponse;
   openPanelInfo: OpenPanelInfo;
   panelOpeningData: PanelOpeningData;
   panelState: PanelState;

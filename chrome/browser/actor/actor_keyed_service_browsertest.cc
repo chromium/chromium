@@ -248,32 +248,31 @@ class ActorKeyedServiceOriginGatingBrowserTest
         /*disabled_features=*/{features::kGlicWarming});
   }
 
-  void CreateMockPromptIPCResponse(
-      std::optional<url::Origin> expected_navigation_origin,
-      bool permission_granted) {
-    user_confirmation_dialog_subscription_ =
-        actor_keyed_service()
-            ->AddRequestToShowUserConfirmationDialogSubscriberCallback(
-                base::BindLambdaForTesting(
-                    [expected_navigation_origin, permission_granted](
-                        const std::optional<url::Origin>& got_navigation_origin,
-                        const std::optional<int32_t> got_download_id,
-                        ActorKeyedService::UserConfirmationDialogCallback
-                            callback) {
-                      EXPECT_EQ(got_navigation_origin,
-                                expected_navigation_origin);
-                      EXPECT_FALSE(got_download_id);
-                      // Send a mock IPC response.
-                      std::move(callback).Run(
-                          webui::mojom::UserConfirmationDialogResponse::New(
-                              webui::mojom::UserConfirmationDialogResult::
-                                  NewPermissionGranted(permission_granted)));
-                    }));
+  void CreateMockNavigationIPCResponse(TaskId expected_task_id,
+                                       url::Origin expected_navigation_origin,
+                                       bool permission_granted) {
+    navigation_confirmation_subscription_ =
+        actor_keyed_service()->AddRequestToConfirmNavigationSubscriberCallback(
+            base::BindLambdaForTesting(
+                [expected_task_id, expected_navigation_origin,
+                 permission_granted](
+                    const TaskId& got_task_id,
+                    const url::Origin& got_navigation_origin,
+                    ActorKeyedService::NavigationConfirmationCallback
+                        callback) {
+                  EXPECT_EQ(got_task_id, expected_task_id);
+                  EXPECT_EQ(got_navigation_origin, expected_navigation_origin);
+                  // Send a mock IPC response.
+                  std::move(callback).Run(
+                      webui::mojom::NavigationConfirmationResponse::New(
+                          webui::mojom::ConfirmationRequestResult::
+                              NewPermissionGranted(permission_granted)));
+                }));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription user_confirmation_dialog_subscription_;
+  base::CallbackListSubscription navigation_confirmation_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceOriginGatingBrowserTest,
@@ -286,11 +285,11 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceOriginGatingBrowserTest,
 
   // Navigate the active tab to the link page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), link_page_url));
-
-  CreateMockPromptIPCResponse(url::Origin::Create(cross_origin_url),
-                              /*permission_granted=*/false);
-
   TaskId task_id = actor_keyed_service()->CreateTask();
+
+  CreateMockNavigationIPCResponse(task_id,
+                                  url::Origin::Create(cross_origin_url),
+                                  /*permission_granted=*/false);
 
   PerformActionsFuture result1;
   actor_keyed_service()->PerformActions(

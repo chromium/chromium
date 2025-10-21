@@ -229,6 +229,31 @@ void ActorKeyedService::OnUserConfirmationDialogDecision(
   }
 }
 
+base::CallbackListSubscription
+ActorKeyedService::AddRequestToConfirmNavigationSubscriberCallback(
+    RequestToConfirmNavigationSubscriberCallback callback) {
+  return request_to_confirm_navigation_callback_list_.Add(std::move(callback));
+}
+
+void ActorKeyedService::NotifyRequestToConfirmNavigation(
+    const TaskId& task_id,
+    const url::Origin& navigation_origin) {
+  request_to_confirm_navigation_callback_list_.Notify(
+      task_id, navigation_origin,
+      base::BindRepeating(&ActorKeyedService::OnNavigationConfirmationDecision,
+                          weak_ptr_factory_.GetWeakPtr(), task_id));
+}
+
+void ActorKeyedService::OnNavigationConfirmationDecision(
+    TaskId request_task_id,
+    webui::mojom::NavigationConfirmationResponsePtr response) {
+  if (auto* task = GetTask(request_task_id)) {
+    task->GetExecutionEngine()->OnNavigationConfirmation(std::move(response));
+  } else {
+    VLOG(1) << "Task not found for task id: " << request_task_id;
+  }
+}
+
 void ActorKeyedService::OnActuationCapabilityChanged(
     bool has_actuation_capability) {
   if (!has_actuation_capability) {
