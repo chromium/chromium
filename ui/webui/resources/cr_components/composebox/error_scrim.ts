@@ -27,6 +27,9 @@ export class ErrorScrimElement extends I18nMixinLit
 
   static override get properties() {
     return {
+      compactMode: {
+        type: Boolean,
+      },
       showErrorScrim_: {
         reflect: true,
         type: Boolean,
@@ -37,6 +40,7 @@ export class ErrorScrimElement extends I18nMixinLit
     };
   }
 
+  accessor compactMode: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
   protected accessor errorMessage_: string = '';
 
@@ -44,15 +48,19 @@ export class ErrorScrimElement extends I18nMixinLit
     super.updated(changedProperties);
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('showErrorScrim_') &&
-        this.showErrorScrim_) {
-      const announcer = getAnnouncerInstance();
-      announcer.announce(this.errorMessage_);
-      const dismissErrorButton =
-          this.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
-      if (dismissErrorButton) {
-        dismissErrorButton.focus();
+    if (changedPrivateProperties.has('showErrorScrim_')) {
+      if (this.showErrorScrim_) {
+        const announcer = getAnnouncerInstance();
+        announcer.announce(this.errorMessage_);
+        const dismissErrorButton =
+            this.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
+        if (dismissErrorButton) {
+          dismissErrorButton.focus();
+        }
       }
+      this.fire('error-scrim-visibility-changed', {
+        showErrorScrim: this.showErrorScrim_,
+      });
     }
   }
 

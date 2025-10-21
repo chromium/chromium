@@ -137,6 +137,8 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       tabSuggestions_: {type: Array},
+      errorScrimVisible_: {type: Boolean},
+      contextFilesSize_: {type: Number},
       realboxLayoutMode: {
         type: String,
         reflect: true,
@@ -177,6 +179,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inputsDisabled_: boolean = false;
   protected accessor lensButtonDisabled_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor errorScrimVisible_: boolean = false;
+  protected accessor contextFilesSize_: number = 0;
   protected lastQueriedInput_: string = '';
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
@@ -189,7 +193,6 @@ export class ComposeboxElement extends I18nMixinLit
   private searchboxListenerIds: number[] = [];
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
-  private contextFilesSize_: number = 0;
 
   private selectedMatch_: AutocompleteMatch|null = null;
 
@@ -256,7 +259,8 @@ export class ComposeboxElement extends I18nMixinLit
     // When the result initially gets set check if dropdown should show.
     if (changedPrivateProperties.has('input_') ||
         changedPrivateProperties.has('result_') ||
-        changedPrivateProperties.has('contextFilesSize_')) {
+        changedPrivateProperties.has('contextFilesSize_') ||
+        changedPrivateProperties.has('errorScrimVisible_')) {
       const prevValue = this.showDropdown_;
       this.showDropdown_ = this.computeShowDropdown_();
       showDropdownUpdated ||= this.showDropdown_ !== prevValue;
@@ -353,6 +357,11 @@ export class ComposeboxElement extends I18nMixinLit
 
     // Don't show dropdown if there's no results.
     if (!this.result_?.matches.length) {
+      return false;
+    }
+
+    // Do not show dropdown if there's an error scrim.
+    if (this.errorScrimVisible_) {
       return false;
     }
 
@@ -532,6 +541,11 @@ export class ComposeboxElement extends I18nMixinLit
 
     await this.updateComplete;
     this.$.input.focus();
+  }
+
+  protected onErrorScrimVisibilityChanged_(
+      e: CustomEvent<{showErrorScrim: boolean}>) {
+    this.errorScrimVisible_ = e.detail.showErrorScrim;
   }
 
   // Sets the input property to compute the cancel button title without using

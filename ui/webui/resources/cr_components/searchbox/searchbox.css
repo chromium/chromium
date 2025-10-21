@@ -415,7 +415,7 @@ cr-searchbox-icon {
 }
 
 :host([ntp-realbox-next-enabled]) #errorScrim {
-  border-radius: inherit;
+  border-radius: 23px;
 }
 
 :host([realbox-layout-mode^='Tall']) {
@@ -489,7 +489,6 @@ cr-searchbox-icon {
 :host([realbox-layout-mode='Compact']) {
   --cr-searchbox-dropdown-padding-top: 12px;
   --cr-searchbox-height: 56px;
-  --error-scrim-flex-direction: row;
 }
 
 :host([realbox-layout-mode='Compact']) #inputWrapper {

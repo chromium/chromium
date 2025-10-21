@@ -10,7 +10,9 @@ export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${this.ntpRealboxNextEnabled ? html`
-<ntp-error-scrim id="errorScrim"></ntp-error-scrim>` : ''}
+<ntp-error-scrim id="errorScrim"
+    ?compact-mode="${this.realboxLayoutMode === 'Compact'}">
+</ntp-error-scrim>` : ''}
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
   <input id="input" class="truncate" type="search" autocomplete="off"
