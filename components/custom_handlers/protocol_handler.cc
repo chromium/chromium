@@ -73,7 +73,7 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
     const GURL& url,
     const std::string& app_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ProtocolHandler(protocol, url, app_id, /*extendion_id*/ std::nullopt,
+  return ProtocolHandler(protocol, url, app_id, /*extension_id=*/std::nullopt,
                          base::Time::Now(),
                          blink::ProtocolHandlerSecurityLevel::kStrict);
 }
@@ -85,7 +85,7 @@ ProtocolHandler ProtocolHandler::CreateExtensionProtocolHandler(
     const std::string& extension_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(
-      protocol, url, /*app_id*/ std::nullopt, extension_id, base::Time::Now(),
+      protocol, url, /*app_id=*/std::nullopt, extension_id, base::Time::Now(),
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
 }
 
@@ -151,7 +151,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     if (app_id_val->is_string())
       app_id = app_id_val->GetString();
     return ProtocolHandler(protocol, GURL(url), app_id,
-                           /*extension_id*/ std::nullopt, time, security_level);
+                           /*extension_id=*/std::nullopt, time, security_level);
   }
 
   if (const base::Value* extension_id_val = value.Find("extension_id")) {
@@ -159,7 +159,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     if (extension_id_val->is_string()) {
       extension_id = extension_id_val->GetString();
     }
-    return ProtocolHandler(protocol, GURL(url), /*app_id*/ std::nullopt,
+    return ProtocolHandler(protocol, GURL(url), /*app_id=*/std::nullopt,
                            extension_id, time, security_level);
   }
 
