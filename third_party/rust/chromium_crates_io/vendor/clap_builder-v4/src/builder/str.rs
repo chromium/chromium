@@ -1,3 +1,6 @@
+#[cfg(feature = "string")]
+use std::borrow::Cow;
+
 /// A UTF-8-encoded fixed string
 ///
 /// <div class="warning">
@@ -71,6 +74,16 @@ impl From<&'static str> for Str {
 impl From<&'_ &'static str> for Str {
     fn from(name: &'_ &'static str) -> Self {
         Self::from_static_ref(name)
+    }
+}
+
+#[cfg(feature = "string")]
+impl From<Cow<'static, str>> for Str {
+    fn from(cow: Cow<'static, str>) -> Self {
+        match cow {
+            Cow::Borrowed(s) => Self::from(s),
+            Cow::Owned(s) => Self::from(s),
+        }
     }
 }
 
@@ -310,5 +323,27 @@ impl std::hash::Hash for Inner {
     #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.as_str().hash(state);
+    }
+}
+
+#[cfg(test)]
+#[cfg(feature = "string")]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[cfg(feature = "string")]
+    fn from_cow_borrowed() {
+        let cow = Cow::Borrowed("hello");
+        let str = Str::from(cow);
+        assert_eq!(str, Str::from("hello"));
+    }
+
+    #[test]
+    #[cfg(feature = "string")]
+    fn from_cow_owned() {
+        let cow = Cow::Owned("world".to_string());
+        let str = Str::from(cow);
+        assert_eq!(str, Str::from("world"));
     }
 }

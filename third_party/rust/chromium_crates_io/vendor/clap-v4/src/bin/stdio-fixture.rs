@@ -5,6 +5,8 @@ fn main() {
     let mut cmd = Command::new("stdio-fixture")
         .version("1.0")
         .long_version("1.0 - a2132c")
+        .term_width(0)
+        .max_term_width(0)
         .arg_required_else_help(true)
         .subcommand(Command::new("more"))
         .subcommand(

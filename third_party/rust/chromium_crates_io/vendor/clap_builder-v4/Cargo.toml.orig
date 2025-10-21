@@ -1,6 +1,6 @@
 [package]
 name = "clap_builder"
-version = "4.5.48"
+version = "4.5.50"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -18,8 +18,7 @@ include.workspace = true
 
 [package.metadata.docs.rs]
 features = ["unstable-doc"]
-rustdoc-args = ["--cfg", "docsrs"]
-cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
 features = ["unstable-doc"]
@@ -72,6 +71,7 @@ unicode-width = { version = "0.2.0", optional = true }
 static_assertions = "1.1.0"
 unic-emoji-char = "0.9.0"
 color-print = "0.3.6"
+snapbox = { version = "0.6.16" }
 
 [lints]
 workspace = true

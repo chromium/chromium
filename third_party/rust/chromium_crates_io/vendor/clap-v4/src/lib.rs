@@ -12,7 +12,7 @@
 //! - [CLI Concepts][_concepts]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.48/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.50/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations
@@ -81,7 +81,7 @@
 //!
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png")]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
 #![warn(clippy::print_stderr)]

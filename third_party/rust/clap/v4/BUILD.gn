@@ -163,7 +163,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "clap"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   cargo_pkg_repository = "https://github.com/clap-rs/clap"
-  cargo_pkg_version = "4.5.48"
+  cargo_pkg_version = "4.5.50"
 
   allow_unsafe = false
 
