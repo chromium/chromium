@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
 #include <cstring>
+#include <string_view>
 #include <variant>
 
 #include "base/compiler_specific.h"
@@ -51,7 +52,7 @@ size_t DawnCachingInterface::LoadData(const void* key,
                                       size_t key_size,
                                       void* value_out,
                                       size_t value_size) {
-  std::string key_str(static_cast<const char*>(key), key_size);
+  std::string_view key_str(static_cast<const char*>(key), key_size);
   if (memory_cache() != nullptr) {
     size_t bytes_read =
         memory_cache()->LoadData(key_str, value_out, value_size);
@@ -216,14 +217,15 @@ DawnCachingInterfaceFactory::CreateDefaultInMemoryBackend() {
 
 namespace detail {
 
-DawnMemoryCache::Entry::Entry(const std::string& key,
+DawnMemoryCache::Entry::Entry(std::string key,
                               const void* value,
                               size_t value_size)
-    : key_(key), data_(static_cast<const char*>(value), value_size) {}
+    : key_(std::move(key)),
+      data_(static_cast<const char*>(value), value_size) {}
 
 DawnMemoryCache::Entry::~Entry() = default;
 
-const std::string& DawnMemoryCache::Entry::Key() const {
+std::string_view DawnMemoryCache::Entry::Key() const {
   return key_;
 }
 
@@ -255,11 +257,11 @@ bool operator<(const std::unique_ptr<DawnMemoryCache::Entry>& lhs,
 }
 
 bool operator<(const std::unique_ptr<DawnMemoryCache::Entry>& lhs,
-               const std::string& rhs) {
+               std::string_view rhs) {
   return lhs->Key() < rhs;
 }
 
-bool operator<(const std::string& lhs,
+bool operator<(std::string_view lhs,
                const std::unique_ptr<DawnMemoryCache::Entry>& rhs) {
   return lhs < rhs->Key();
 }
@@ -268,7 +270,7 @@ DawnMemoryCache::DawnMemoryCache(size_t max_size) : max_size_(max_size) {}
 
 DawnMemoryCache::~DawnMemoryCache() = default;
 
-size_t DawnMemoryCache::LoadData(const std::string& key,
+size_t DawnMemoryCache::LoadData(std::string_view key,
                                  void* value_out,
                                  size_t value_size) {
   // Because we are tracking LRU, even loads modify internal state so mutex is
@@ -288,7 +290,7 @@ size_t DawnMemoryCache::LoadData(const std::string& key,
   return entry->ReadData(value_out, value_size);
 }
 
-void DawnMemoryCache::StoreData(const std::string& key,
+void DawnMemoryCache::StoreData(std::string_view key,
                                 const void* value,
                                 size_t value_size) {
   // Don't need to do anything if we are not storing anything.
@@ -313,7 +315,7 @@ void DawnMemoryCache::StoreData(const std::string& key,
   }
 
   // Evict least used entries until we have enough room to add the new entry.
-  auto entry = std::make_unique<Entry>(key, value, value_size);
+  auto entry = std::make_unique<Entry>(std::string(key), value, value_size);
   DCHECK(entry->TotalSize() == entry_size);
   while (current_size_ + entry_size > max_size_) {
     EvictEntry(lru_.head()->value());

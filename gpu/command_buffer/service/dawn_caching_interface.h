@@ -42,8 +42,8 @@ class GPU_GLES2_EXPORT DawnMemoryCache
  public:
   explicit DawnMemoryCache(size_t max_size);
 
-  size_t LoadData(const std::string& key, void* value_out, size_t value_size);
-  void StoreData(const std::string& key, const void* value, size_t value_size);
+  size_t LoadData(std::string_view key, void* value_out, size_t value_size);
+  void StoreData(std::string_view key, const void* value, size_t value_size);
 
   void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
@@ -54,10 +54,10 @@ class GPU_GLES2_EXPORT DawnMemoryCache
   // Internal entry class for LRU tracking and holding key/value pair.
   class Entry : public base::LinkNode<Entry> {
    public:
-    Entry(const std::string& key, const void* value, size_t value_size);
+    Entry(std::string key, const void* value, size_t value_size);
     ~Entry();
 
-    const std::string& Key() const;
+    std::string_view Key() const;
 
     size_t TotalSize() const;
     size_t DataSize() const;
@@ -73,8 +73,8 @@ class GPU_GLES2_EXPORT DawnMemoryCache
   friend bool operator<(const std::unique_ptr<Entry>& lhs,
                         const std::unique_ptr<Entry>& rhs);
   friend bool operator<(const std::unique_ptr<Entry>& lhs,
-                        const std::string& rhs);
-  friend bool operator<(const std::string& lhs,
+                        std::string_view rhs);
+  friend bool operator<(std::string_view lhs,
                         const std::unique_ptr<Entry>& rhs);
 
   friend class base::RefCounted<DawnMemoryCache>;
