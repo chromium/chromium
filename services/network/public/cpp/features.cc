@@ -606,4 +606,7 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kNetworkServicePerPriorityTaskQueues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseUnexportableKeyServiceInBrowserProcess,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

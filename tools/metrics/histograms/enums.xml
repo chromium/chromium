@@ -9370,6 +9370,8 @@ from previous Chrome versions.
   <int value="-1738416948" label="OptimizationHints:enabled"/>
   <int value="-1738273185"
       label="AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse:disabled"/>
+  <int value="-1738153176"
+      label="UseUnexportableKeyServiceInBrowserProcess:enabled"/>
   <int value="-1738015645" label="ForceAppLanguagePrompt:disabled"/>
   <int value="-1737769448" label="WebUITabStripTabDragIntegration:disabled"/>
   <int value="-1737637342" label="NtpRealboxIsTall:enabled"/>
@@ -17547,6 +17549,8 @@ from previous Chrome versions.
   <int value="1170632919" label="DrawNativeEdgeToEdge:enabled"/>
   <int value="1171266638" label="AndroidWindowControlsOverlay:disabled"/>
   <int value="1173253030" label="ReparentTopLevelNavigationFromPWA:disabled"/>
+  <int value="1173439885"
+      label="UseUnexportableKeyServiceInBrowserProcess:disabled"/>
   <int value="1174027589" label="OmniboxNumWebZpsRelatedSearches:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
   <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>

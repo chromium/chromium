@@ -370,6 +370,14 @@ BASE_DECLARE_FEATURE_PARAM(bool, kNetworkServiceTaskSchedulerURLLoader);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kNetworkServicePerPriorityTaskQueues);
 
+// When enabled the browser process will start an UnexportableKeyService proxy
+// service that can be used by other processes. It will also make the network
+// process start using the proxy. This is needed for example when implementing
+// DBSC for macOS, since access to the Secure Enclave requires higher privileges
+// than what the network process has.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kUseUnexportableKeyServiceInBrowserProcess);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

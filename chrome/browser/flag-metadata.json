@@ -10328,6 +10328,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-unexportable-key-service-in-browser-process",
+    "owners": ["andrikopouslos@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "use-wallpaper-staging-url",
     "owners": [ "cros-customization@google.com", "hsuregan@chromium.org", "khorimoto@chromium.org" ],
     // This flag is required for QA and dogfood testing.

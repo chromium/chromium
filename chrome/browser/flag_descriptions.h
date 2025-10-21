@@ -602,6 +602,14 @@ inline constexpr char kEnableBenchmarkingChoiceDefaultFeatureStates[] =
 inline constexpr char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[] =
     "Match Field Trial Testing Config";
 
+inline constexpr char kUseUnexportableKeyServiceInBrowserProcessName[] =
+    "Enable UnexportableKeyService mojo service in the browser process.";
+inline constexpr char kUseUnexportableKeyServiceInBrowserProcessDescription[] =
+    "When enabled, the browser process will create an Unexportable Key "
+    "Service which can be used by other, less privileged processes. This "
+    "enables DBSC in platforms where access to TPM-like features is "
+    "privileged.";
+
 inline constexpr char kEnableCrossDevicePrefTrackerName[] =
     "Enable Cross-Device Pref Tracker";
 inline constexpr char kEnableCrossDevicePrefTrackerDescription[] =

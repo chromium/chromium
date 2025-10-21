@@ -13338,6 +13338,15 @@ const FeatureEntry kFeatureEntries[] = {
              kAutofillEnableKeyboardAccessoryChipWidthAdjustment)},
 #endif
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    {"use-unexportable-key-service-in-browser-process",
+     flag_descriptions::kUseUnexportableKeyServiceInBrowserProcessName,
+     flag_descriptions::kUseUnexportableKeyServiceInBrowserProcessDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         network::features::kUseUnexportableKeyServiceInBrowserProcess)}
+#endif
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
