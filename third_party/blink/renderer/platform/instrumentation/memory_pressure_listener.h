@@ -6,15 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-
-class NonMainThread;
 
 class PLATFORM_EXPORT MemoryPressureListener : public GarbageCollectedMixin {
  public:
@@ -61,9 +57,6 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   MemoryPressureListenerRegistry& operator=(
       const MemoryPressureListenerRegistry&) = delete;
 
-  void RegisterThread(NonMainThread*) LOCKS_EXCLUDED(threads_lock_);
-  void UnregisterThread(NonMainThread*) LOCKS_EXCLUDED(threads_lock_);
-
   // RegisterClient() and UnregisterClient() work only in the main thread.
   void RegisterClient(MemoryPressureListener*);
   void UnregisterClient(MemoryPressureListener*);
@@ -79,13 +72,9 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
 
   static void SetIsLowEndDeviceForTesting(bool);
 
-  static void ClearThreadSpecificMemory();
-
   static bool is_low_end_device_;
 
   HeapHashSet<WeakMember<MemoryPressureListener>> clients_;
-  HashSet<NonMainThread*> threads_ GUARDED_BY(threads_lock_);
-  base::Lock threads_lock_;
 };
 
 }  // namespace blink

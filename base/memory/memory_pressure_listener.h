@@ -79,6 +79,7 @@ enum class MemoryPressureListenerTag {
   kWorkingSetTrimmerPolicyChromeOS = 46,
   kLruRendererCache = 47,
   kCastMemoryPressureControllerImpl = 48,
+  kFontGlobalContext = 49,
   kMax,
 };
 

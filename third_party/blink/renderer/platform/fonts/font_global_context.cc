@@ -38,7 +38,11 @@ FontGlobalContext* FontGlobalContext::TryGet() {
 
 FontGlobalContext::FontGlobalContext(PassKey)
     : typeface_digest_cache_(kCachesMaxSize),
-      postscript_name_digest_cache_(kCachesMaxSize) {}
+      postscript_name_digest_cache_(kCachesMaxSize),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kFontGlobalContext,
+          this) {}
 
 FontGlobalContext::~FontGlobalContext() = default;
 
@@ -82,21 +86,18 @@ IdentifiableToken FontGlobalContext::GetOrComputePostScriptNameDigest(
   return iter->second;
 }
 
-void FontGlobalContext::ClearMemory() {
-  FontGlobalContext* const context = TryGet();
-  if (!context)
-    return;
-
-  context->font_cache_.Invalidate();
-  context->typeface_digest_cache_.Clear();
-  context->postscript_name_digest_cache_.Clear();
-}
-
 void FontGlobalContext::Init() {
   DCHECK(IsMainThread());
   if (auto* name_lookup = FontGlobalContext::Get().GetFontUniqueNameLookup())
     name_lookup->Init();
   HarfBuzzFace::Init();
+}
+
+void FontGlobalContext::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  font_cache_.Invalidate();
+  typeface_digest_cache_.Clear();
+  postscript_name_digest_cache_.Clear();
 }
 
 }  // namespace blink

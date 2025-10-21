@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
 #include "base/feature_list.h"
-#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
@@ -13,14 +12,10 @@
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -80,16 +75,6 @@ MemoryPressureListenerRegistry& MemoryPressureListenerRegistry::Instance() {
   return *external.Get();
 }
 
-void MemoryPressureListenerRegistry::RegisterThread(NonMainThread* thread) {
-  base::AutoLock lock(threads_lock_);
-  threads_.insert(thread);
-}
-
-void MemoryPressureListenerRegistry::UnregisterThread(NonMainThread* thread) {
-  base::AutoLock lock(threads_lock_);
-  threads_.erase(thread);
-}
-
 MemoryPressureListenerRegistry::MemoryPressureListenerRegistry() = default;
 
 void MemoryPressureListenerRegistry::RegisterClient(
@@ -122,22 +107,6 @@ void MemoryPressureListenerRegistry::OnPurgeMemory() {
     client->OnPurgeMemory();
   ImageDecodingStore::Instance().Clear();
   ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
-
-  // Thread-specific data never issues a layout, so we are safe here.
-  base::AutoLock lock(threads_lock_);
-  for (auto* thread : threads_) {
-    if (!thread->GetTaskRunner())
-      continue;
-
-    PostCrossThreadTask(
-        *thread->GetTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(
-            MemoryPressureListenerRegistry::ClearThreadSpecificMemory));
-  }
-}
-
-void MemoryPressureListenerRegistry::ClearThreadSpecificMemory() {
-  FontGlobalContext::ClearMemory();
 }
 
 void MemoryPressureListenerRegistry::Trace(Visitor* visitor) const {
