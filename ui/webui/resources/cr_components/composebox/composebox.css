@@ -624,7 +624,8 @@
   --text-input-top-spacing: 14px;
 }
 
-:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #input {
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #input,
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #smartCompose {
   --text-input-top-spacing: 8px;
 }
 
