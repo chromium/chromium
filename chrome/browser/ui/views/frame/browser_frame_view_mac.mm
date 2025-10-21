@@ -163,8 +163,19 @@ bool BrowserFrameViewMac::CaptionButtonsOnLeadingEdge() const {
   // In "partial" RTL mode (where the OS is in LTR mode while Chrome is in RTL
   // mode, or vice versa), the traffic lights are on the trailing edge rather
   // than the leading edge.
-  return base::i18n::IsRTL() == (NSApp.userInterfaceLayoutDirection ==
-                                 NSUserInterfaceLayoutDirectionRightToLeft);
+  if (!GetWidget()) {
+    return true;
+  }
+
+  NSWindow* const window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
+  if (!window) {
+    return true;
+  }
+
+  NSUserInterfaceLayoutDirection direction =
+      [window windowTitlebarLayoutDirection];
+  return base::i18n::IsRTL() ==
+         (direction == NSUserInterfaceLayoutDirectionRightToLeft);
 }
 
 gfx::Rect BrowserFrameViewMac::GetBoundsForTabStripRegion(
@@ -495,10 +506,10 @@ BrowserFrameViewMac::GetCaptionButtonBoundsNative() const {
     //  - X axis is inverted in RTL mode only (Mac coordinates are invariant
     //    while Chrome reverses them).
     button_rects.emplace_back(
-        gfx::RectF(is_rtl ? width() - (ns_rect.origin.x + ns_rect.size.width)
-                          : ns_rect.origin.x,
-                   height() - (ns_rect.origin.y + ns_rect.size.height),
-                   ns_rect.size.width, ns_rect.size.height));
+        is_rtl ? width() - (ns_rect.origin.x + ns_rect.size.width)
+               : ns_rect.origin.x,
+        height() - (ns_rect.origin.y + ns_rect.size.height), ns_rect.size.width,
+        ns_rect.size.height);
     const auto& rect = button_rects.back();
     if (rect.IsEmpty()) {
       return result;
@@ -546,6 +557,11 @@ BrowserFrameViewMac::GetCaptionButtonBounds() const {
   } else {
     result.bounds = gfx::RectF(20, 11, 54, 16);
     result.margins = gfx::OutsetsF::VH(11, 20);
+  }
+
+  // Mirror for when caption buttons are on the "wrong" side.
+  if (!CaptionButtonsOnLeadingEdge()) {
+    result.bounds.set_x(width() - (result.bounds.x() + result.bounds.width()));
   }
 
   return result;
