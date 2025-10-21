@@ -502,8 +502,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
         // We don't need to provide a real GPU result.
         result = std::make_unique<CopyOutputSharedImageResult>(
             request->result_format(), request->result_selection(),
-            gpu::ClientSharedImage::CreateForTesting(),
-            CopyOutputResult::ReleaseCallbacks{});
+            gpu::ClientSharedImage::CreateForTesting(), ReleaseCallback());
         break;
       }
       default: {

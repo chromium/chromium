@@ -191,19 +191,14 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
   // Only RGBA can travel across process boundaries, in which case there will be
   // at most one release callback set in the |result|:
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-      result->TakeSharedImageOwnership();
-  // Callbacks can be empty (in case the result is empty or the request had a
-  // blit request), or have exactly 1 element (because a result with RGBA format
-  // can carry 1 texture).
-  DCHECK_LE(release_callbacks.size(), 1UL);
-  if (release_callbacks.empty()) {
+  viz::ReleaseCallback release_callback = result->TakeSharedImageOwnership();
+  if (release_callback.is_null()) {
     return mojo::NullRemote();
   }
 
   mojo::PendingRemote<viz::mojom::TextureReleaser> releaser;
   MakeSelfOwnedReceiver(
-      std::make_unique<TextureReleaserImpl>(std::move(release_callbacks[0])),
+      std::make_unique<TextureReleaserImpl>(std::move(release_callback)),
       releaser.InitWithNewPipeAndPassReceiver());
   return releaser;
 }
@@ -270,7 +265,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
             return true;
           }
 
-          viz::CopyOutputResult::ReleaseCallbacks release_callbacks;
+          viz::ReleaseCallback release_callback;
           auto releaser = data.TakeReleaser<
               mojo::PendingRemote<viz::mojom::TextureReleaser>>();
           // The releaser might be empty if the request included a blit request.
@@ -278,13 +273,12 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
             // Returns a result with a ReleaseCallback that will return here and
             // proxy the callback over mojo to the CopyOutputResult's origin via
             // a mojo::Remote<viz::mojom::TextureReleaser> remote.
-            release_callbacks.emplace_back(
-                base::BindOnce(&Release, std::move(releaser)));
+            release_callback = base::BindOnce(&Release, std::move(releaser));
           }
 
           *out_p = std::make_unique<viz::CopyOutputSharedImageResult>(
               viz::CopyOutputResult::Format::RGBA, rect, *mailbox, *color_space,
-              "ReadStructTraits", std::move(release_callbacks));
+              "ReadStructTraits", std::move(release_callback));
           return true;
         }
       }

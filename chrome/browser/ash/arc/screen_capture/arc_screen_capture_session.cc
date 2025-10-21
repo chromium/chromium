@@ -314,13 +314,12 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   gpu::Mailbox result_mailbox = result->GetSharedImage()->mailbox();
   CHECK(!result_mailbox.IsZero());
 
-  viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-      result->TakeSharedImageOwnership();
-  CHECK_EQ(1u, release_callbacks.size());
+  viz::ReleaseCallback release_callback = result->TakeSharedImageOwnership();
+  CHECK(release_callback);
 
   std::unique_ptr<DesktopTexture> desktop_texture =
       std::make_unique<DesktopTexture>(result_mailbox,
-                                       std::move(release_callbacks[0]));
+                                       std::move(release_callback));
   if (buffer_queue_.empty()) {
     // We don't have a GPU buffer to render to, so put this in a queue to use
     // when we have one.

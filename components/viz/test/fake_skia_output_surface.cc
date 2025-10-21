@@ -273,15 +273,14 @@ void FakeSkiaOutputSurface::CopyOutput(
     CHECK(client_shared_image);
     gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 
-    CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(
+    ReleaseCallback release_callback =
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &FakeSkiaOutputSurface::DestroyCopyOutputTexture,
-            weak_ptr_factory_.GetWeakPtr(), std::move(client_shared_image))));
+            weak_ptr_factory_.GetWeakPtr(), std::move(client_shared_image)));
 
     request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
         CopyOutputResult::Format::RGBA, geometry.result_bounds, local_mailbox,
-        color_space, "CopyOutput", std::move(release_callbacks)));
+        color_space, "CopyOutput", std::move(release_callback)));
     return;
   }
 

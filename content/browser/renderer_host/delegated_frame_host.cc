@@ -496,9 +496,8 @@ void DelegatedFrameHost::DidCopyStaleContent(
       result->GetSharedImage(),
       viz::TransferableResource::ResourceSource::kStaleContent,
       gpu::SyncToken(), /*override=*/{.color_space = gfx::ColorSpace()});
-  viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-      result->TakeSharedImageOwnership();
-  CHECK_EQ(1u, release_callbacks.size());
+  viz::ReleaseCallback release_callback = result->TakeSharedImageOwnership();
+  CHECK(release_callback);
 
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
@@ -510,7 +509,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));
   stale_content_layer_->SetTransferableResource(
-      transfer_resource, std::move(release_callbacks[0]), surface_dip_size_);
+      transfer_resource, std::move(release_callback), surface_dip_size_);
 }
 
 void DelegatedFrameHost::ContinueDelegatedFrameEviction(

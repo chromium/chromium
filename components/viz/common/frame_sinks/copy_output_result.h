@@ -125,11 +125,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   //      client must guarantee that all release callbacks will be run.
   virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage();
 
-  using ReleaseCallbacks = std::vector<ReleaseCallback>;
-
-  // Returns a vector of release callbacks for the contained shared image. The
-  // vector will be empty iff the CopyOutputResult `IsEmpty()` is true.
-  virtual ReleaseCallbacks TakeSharedImageOwnership();
+  // Returns a release callback for the contained shared image. The callback
+  // will be empty iff the CopyOutputResult `IsEmpty()` is true.
+  virtual ReleaseCallback TakeSharedImageOwnership();
 
   //
   // Subsampled YUV format result description
@@ -243,10 +241,10 @@ class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
 };
 
 // Subclass of `CopyOutputResult` that holds `ClientSharedImage`. The owner of
-// the result must take ownership of the shared images if it wants to use them
-// by calling `TakeSharedImageOwnership()`, and then call the `ReleaseCallbacks`
-// when the shared images will no longer be used to release ownership and allow
-// the shared images to be reused or destroyed. If ownership is not claimed, it
+// the result must take ownership of the shared image if it wants to use them
+// by calling `TakeSharedImageOwnership()`, and then call the `ReleaseCallback`
+// when the shared image will no longer be used to release ownership and allow
+// the shared image to be reused or destroyed. If ownership is not claimed, it
 // will be released when this class is destroyed.
 class VIZ_COMMON_EXPORT CopyOutputSharedImageResult : public CopyOutputResult {
  public:
@@ -257,14 +255,14 @@ class VIZ_COMMON_EXPORT CopyOutputSharedImageResult : public CopyOutputResult {
                               const gpu::Mailbox& mailbox,
                               const gfx::ColorSpace& color_space,
                               std::string_view debug_label,
-                              ReleaseCallbacks release_callbacks);
+                              ReleaseCallback release_callback);
 
   // Construct a non-empty shared-image result; `shared_image` must be non-null.
   CopyOutputSharedImageResult(
       Format format,
       const gfx::Rect& rect,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
-      ReleaseCallbacks release_callbacks);
+      ReleaseCallback release_callback);
 
   CopyOutputSharedImageResult(const CopyOutputSharedImageResult&) = delete;
   CopyOutputSharedImageResult& operator=(const CopyOutputSharedImageResult&) =
@@ -274,11 +272,11 @@ class VIZ_COMMON_EXPORT CopyOutputSharedImageResult : public CopyOutputResult {
 
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() override;
 
-  ReleaseCallbacks TakeSharedImageOwnership() override;
+  ReleaseCallback TakeSharedImageOwnership() override;
 
  private:
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  ReleaseCallbacks release_callbacks_;
+  ReleaseCallback release_callback_;
 };
 
 // Output bitmap and metadata.

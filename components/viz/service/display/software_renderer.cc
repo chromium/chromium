@@ -750,8 +750,7 @@ void SoftwareRenderer::CopyDrawnRenderPass(
 
     request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
         CopyOutputResult::Format::RGBA, geometry.result_selection,
-        request->blit_request().shared_image(),
-        CopyOutputResult::ReleaseCallbacks()));
+        request->blit_request().shared_image(), ReleaseCallback()));
 
     return;
   }
