@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/xml/document_xml_tree_viewer.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/core/xml/parser/shared_buffer_reader.h"
+#include "third_party/blink/renderer/core/xml/parser/xhtml_subset.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_scope.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_parser_input.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
@@ -1584,18 +1585,8 @@ static void ExternalSubsetHandler(void* closure,
                                   const xmlChar*) {
   // https://html.spec.whatwg.org/C/#parsing-xhtml-documents:named-character-references
   String ext_id = ToString(external_id);
-  if (ext_id == "-//W3C//DTD XHTML 1.0 Transitional//EN" ||
-      ext_id == "-//W3C//DTD XHTML 1.1//EN" ||
-      ext_id == "-//W3C//DTD XHTML 1.0 Strict//EN" ||
-      ext_id == "-//W3C//DTD XHTML 1.0 Frameset//EN" ||
-      ext_id == "-//W3C//DTD XHTML Basic 1.0//EN" ||
-      ext_id == "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" ||
-      ext_id == "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" ||
-      ext_id == "-//W3C//DTD MathML 2.0//EN" ||
-      ext_id == "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" ||
-      ext_id == "-//WAPFORUM//DTD XHTML Mobile 1.1//EN" ||
-      ext_id == "-//WAPFORUM//DTD XHTML Mobile 1.2//EN") {
-    // Controls if we replace entities or not.
+  // Controls if we replace entities or not.
+  if (MatchesXHTMLSubsetDTD(ext_id)) {
     GetParser(closure)->SetIsXHTMLDocument(true);
   }
 }

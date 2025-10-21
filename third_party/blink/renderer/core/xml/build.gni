@@ -13,6 +13,8 @@ blink_core_sources_xml = [
   "dom_parser.h",
   "parser/shared_buffer_reader.cc",
   "parser/shared_buffer_reader.h",
+  "parser/xhtml_subset.cc",
+  "parser/xhtml_subset.h",
   "parser/xml_document_parser.cc",
   "parser/xml_document_parser.h",
   "parser/xml_document_parser_scope.cc",
