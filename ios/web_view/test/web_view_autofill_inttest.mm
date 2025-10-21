@@ -278,20 +278,16 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
   ASSERT_TRUE(SetFormFieldValue(kTestZipFieldID, kTestZipFieldValue));
 
   // Stub the confirm save callback to save the new profile right away.
-  [[[autofill_controller_delegate_ stub] andDo:^(NSInvocation* invocation) {
+  void (^invocation_handler)(NSInvocation*) = ^(NSInvocation* invocation) {
     void (^decision_handler)(CWVAutofillProfileUserDecision);
     [invocation getArgument:&decision_handler atIndex:5];
     decision_handler(CWVAutofillProfileUserDecisionAccepted);
-  }] autofillController:autofill_controller_
+  };
+  [[[autofill_controller_delegate_ stub] andDo:invocation_handler]
+                    autofillController:autofill_controller_
       confirmSaveForNewAutofillProfile:[OCMArg any]
                             oldProfile:[OCMArg any]
-                       decisionHandler:[OCMArg checkWithBlock:^BOOL(void (
-                                           ^decision_handler)(
-                                           CWVAutofillProfileUserDecision)) {
-                         decision_handler(
-                             CWVAutofillProfileUserDecisionAccepted);
-                         return YES;
-                       }]];
+                       decisionHandler:[OCMArg any]];
   ASSERT_TRUE(SubmitForm());
 
   // Wait for about:blank to be loaded after <form> submitted.
