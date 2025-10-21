@@ -390,9 +390,11 @@ bool Encryptor::IsDecryptionAvailable() const {
 }
 
 bool Encryptor::DefaultEncryptionProviderAvailable() const {
-  return !provider_for_encryption_.empty() &&
-         keys_.contains(provider_for_encryption_) &&
-         keys_.at(provider_for_encryption_).has_value();
+  if (provider_for_encryption_.empty()) {
+    return false;
+  }
+  auto it = keys_.find(provider_for_encryption_);
+  return it != keys_.end() && it->second.has_value();
 }
 
 }  // namespace os_crypt_async
