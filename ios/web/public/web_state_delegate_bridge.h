@@ -59,6 +59,12 @@
 - (void)webState:(web::WebState*)webState
     shouldAllowCutWithDecisionHandler:(void (^)(BOOL))handler;
 
+// Called when a share operation is initiated. The delegate must call `handler`
+// with `YES` to allow the share or `NO` to prevent it.
+// By default, share is allowed.
+- (void)webState:(web::WebState*)webState
+    shouldAllowShareWithDecisionHandler:(void (^)(BOOL))handler;
+
 // Called after the user or a script pasted content into the page.
 - (void)webStateDidFinishClipboardRead:(web::WebState*)webState;
 
@@ -139,6 +145,8 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
                         base::OnceCallback<void(bool)> callback) override;
   void ShouldAllowCut(WebState* source,
                       base::OnceCallback<void(bool)> callback) override;
+  void ShouldAllowShare(WebState* source,
+                        base::OnceCallback<void(bool)> callback) override;
   void DidFinishClipboardRead(WebState* source) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source) override;

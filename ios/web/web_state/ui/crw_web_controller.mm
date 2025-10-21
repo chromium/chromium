@@ -1916,6 +1916,18 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   }
 }
 
+- (void)shouldAllowShareWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowShare(webState,
+                                              base::BindOnce(^(bool allowed) {
+                                                completionHandler(allowed);
+                                              }));
+  } else {
+    completionHandler(YES);
+  }
+}
+
 #pragma mark -  CRWEditMenuBuilder
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {

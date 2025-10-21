@@ -57,6 +57,12 @@ void WebStateDelegate::ShouldAllowCut(WebState* source,
   std::move(callback).Run(true);
 }
 
+void WebStateDelegate::ShouldAllowShare(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
+}
+
 void WebStateDelegate::DidFinishClipboardRead(WebState* source) {}
 
 JavaScriptDialogPresenter* WebStateDelegate::GetJavaScriptDialogPresenter(

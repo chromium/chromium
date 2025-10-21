@@ -21,6 +21,7 @@
 @synthesize copyAllowedRequested = _copyAllowedRequested;
 @synthesize pasteAllowedRequested = _pasteAllowedRequested;
 @synthesize cutAllowedRequested = _cutAllowedRequested;
+@synthesize shareAllowedRequested = _shareAllowedRequested;
 @synthesize didFinishClipboardReadRequested = _didFinishClipboardReadRequested;
 @synthesize permissionsRequestHandled = _permissionsRequestHandled;
 @synthesize authenticationRequested = _authenticationRequested;
@@ -72,6 +73,13 @@
     shouldAllowCutWithDecisionHandler:(void (^)(BOOL))handler {
   _webState = webState;
   _cutAllowedRequested = YES;
+  handler(YES);
+}
+
+- (void)webState:(web::WebState*)webState
+    shouldAllowShareWithDecisionHandler:(void (^)(BOOL))handler {
+  _webState = webState;
+  _shareAllowedRequested = YES;
   handler(YES);
 }
 

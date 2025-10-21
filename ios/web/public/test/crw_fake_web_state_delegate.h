@@ -31,6 +31,9 @@
 @property(nonatomic, readonly) BOOL pasteAllowedRequested;
 // Whether `webState:shouldAllowCutWithDecisionHandler:` has been called or not.
 @property(nonatomic, readonly) BOOL cutAllowedRequested;
+// Whether `webState:shouldAllowShareWithDecisionHandler:` has been called or
+// not.
+@property(nonatomic, readonly) BOOL shareAllowedRequested;
 // Whether `webState:webStateDidFinishClipboardRead:` has been called or not.
 @property(nonatomic, readonly) BOOL didFinishClipboardReadRequested;
 // Whether `javaScriptDialogPresenterForWebState:` has been called or not.

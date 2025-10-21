@@ -100,6 +100,19 @@ void WebStateDelegateBridge::ShouldAllowCut(
   }
 }
 
+void WebStateDelegateBridge::ShouldAllowShare(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowShareWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowShareWithDecisionHandler:base::CallbackToBlock(
+                                                std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
 void WebStateDelegateBridge::DidFinishClipboardRead(WebState* source) {
   if ([delegate_
           respondsToSelector:@selector(webStateDidFinishClipboardRead:)]) {

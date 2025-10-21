@@ -75,6 +75,12 @@ class WebStateDelegate {
   virtual void ShouldAllowCut(WebState* source,
                               base::OnceCallback<void(bool)> callback);
 
+  // Called when a share operation is initiated. The delegate must call
+  // `callback` with `true` to allow the share or `false` to prevent it.
+  // By default, share is allowed.
+  virtual void ShouldAllowShare(WebState* source,
+                                base::OnceCallback<void(bool)> callback);
+
   // Called after the user or a script pasted content into the page.
   virtual void DidFinishClipboardRead(WebState* source);
 
