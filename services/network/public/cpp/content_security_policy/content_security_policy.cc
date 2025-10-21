@@ -1493,7 +1493,6 @@ CSPCheckResult CheckContentSecurityPolicy(
     bool has_followed_redirect,
     CSPContext* context,
     const mojom::SourceLocationPtr& source_location,
-    bool is_form_submission,
     bool is_opaque_fenced_frame) {
   DCHECK(policy->self_origin);
 

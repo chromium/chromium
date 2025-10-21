@@ -107,8 +107,7 @@ CSPCheckResult CheckContentSecurityPolicy(
     bool has_followed_redirect,
     CSPContext* context,
     const mojom::SourceLocationPtr& source_location,
-    bool is_form_submission,
-    bool is_opaque_fenced_frame = false);
+    bool is_opaque_fenced_frame);
 
 // Return true if the set of |policies| contains one "Upgrade-Insecure-request"
 // directive.

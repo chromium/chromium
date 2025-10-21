@@ -47,8 +47,7 @@ CSPCheckResult CSPContext::IsAllowedByCsp(
     if (ShouldCheckPolicy(policy, check_csp_disposition)) {
       result &= CheckContentSecurityPolicy(
           policy, directive_name, url, url_before_redirects,
-          has_followed_redirect, this, source_location, is_form_submission,
-          is_opaque_fenced_frame);
+          has_followed_redirect, this, source_location, is_opaque_fenced_frame);
     }
   }
 

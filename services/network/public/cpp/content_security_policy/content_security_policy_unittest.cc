@@ -1050,7 +1050,8 @@ TEST(ContentSecurityPolicy, NoDirective) {
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       EmptyCSP(), CSPDirectiveName::FormAction, GURL("http://www.example.com"),
-      GURL(), false, &context, SourceLocation(), true));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
   ASSERT_EQ(0u, context.violations().size());
 }
 
@@ -1061,7 +1062,8 @@ TEST(ContentSecurityPolicy, ReportViolation) {
 
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FormAction, GURL("http://www.not-example.com"),
-      GURL("http://www.example.com"), false, &context, SourceLocation(), true));
+      GURL("http://www.example.com"), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 
   ASSERT_EQ(1u, context.violations().size());
   const char console_message[] =
@@ -1084,45 +1086,45 @@ TEST(ContentSecurityPolicy, DirectiveFallback) {
     CSPContextTest context;
     auto policy = EmptyCSP();
     policy->directives[CSPDirectiveName::DefaultSrc] = allow_host("a.com");
-    EXPECT_FALSE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                            GURL("http://b.com"), GURL(), false,
-                                            &context, SourceLocation(), false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://b.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(
         context.violations()[0]->console_message,
         testing::HasSubstr("Note that 'frame-src' was not explicitly set, so "
                            "'default-src' is used as a fallback."));
-    EXPECT_TRUE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                           GURL("http://a.com"), GURL(), false,
-                                           &context, SourceLocation(), false));
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://a.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
     auto policy = EmptyCSP();
     policy->directives[CSPDirectiveName::ChildSrc] = allow_host("a.com");
-    EXPECT_FALSE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                            GURL("http://b.com"), GURL(), false,
-                                            &context, SourceLocation(), false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://b.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(
         context.violations()[0]->console_message,
         testing::HasSubstr("Note that 'frame-src' was not explicitly set, so "
                            "'child-src' is used as a fallback."));
-    EXPECT_TRUE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                           GURL("http://a.com"), GURL(), false,
-                                           &context, SourceLocation(), false));
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://a.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
     auto policy = EmptyCSP();
     policy->directives[CSPDirectiveName::FrameSrc] = allow_host("a.com");
     policy->directives[CSPDirectiveName::ChildSrc] = allow_host("b.com");
-    EXPECT_TRUE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                           GURL("http://a.com"), GURL(), false,
-                                           &context, SourceLocation(), false));
-    EXPECT_FALSE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                            GURL("http://b.com"), GURL(), false,
-                                            &context, SourceLocation(), false));
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://a.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://b.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(context.violations()[0]->console_message,
                 Not(testing::HasSubstr(
@@ -1136,20 +1138,22 @@ TEST(ContentSecurityPolicy, RequestsAllowedWhenBypassingCSP) {
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://example.com/"), GURL(),
-      false, &context, SourceLocation(), false));
+      false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 
   // Register 'https' as bypassing CSP, which should now bypass it entirely.
   context.AddSchemeToBypassCSP("https");
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://example.com/"), GURL(),
-      false, &context, SourceLocation(), false));
+      false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 }
 
 TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
@@ -1159,11 +1163,11 @@ TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://example.com/file.txt"), GURL(), false, &context,
-      SourceLocation(), false));
+      SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://not-example.com/file.txt"), GURL(), false,
-      &context, SourceLocation(), false));
+      &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
 
   // Register 'https' as bypassing CSP, which should now bypass it entirely.
   context.AddSchemeToBypassCSP("https");
@@ -1171,11 +1175,11 @@ TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://example.com/file.txt"), GURL(), false, &context,
-      SourceLocation(), false));
+      SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://not-example.com/file.txt"), GURL(), false,
-      &context, SourceLocation(), false));
+      &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
 }
 
 TEST(ContentSecurityPolicy, BlobAllowedWhenBypassingCSP) {
@@ -1184,20 +1188,24 @@ TEST(ContentSecurityPolicy, BlobAllowedWhenBypassingCSP) {
 
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 
   // Register 'https' as bypassing CSP, which should now bypass it entirely.
   context.AddSchemeToBypassCSP("https");
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 }
 
 TEST(ContentSecurityPolicy, ParseSandbox) {
@@ -2287,7 +2295,7 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
     policy->directives[CSPDirectiveName::DefaultSrc] = allow_host("a.com");
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(
         context.violations()[0]->console_message,
@@ -2295,7 +2303,7 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
                            "set, so 'default-src' is used as a fallback."));
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
@@ -2303,7 +2311,7 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
     policy->directives[CSPDirectiveName::ChildSrc] = allow_host("a.com");
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(
         context.violations()[0]->console_message,
@@ -2311,7 +2319,7 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
                            "set, so 'child-src' is used as a fallback."));
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
@@ -2320,7 +2328,7 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
 
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(
         context.violations()[0]->console_message,
@@ -2328,7 +2336,7 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
                            "set, so 'frame-src' is used as a fallback."));
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
@@ -2337,10 +2345,10 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
     policy->directives[CSPDirectiveName::FrameSrc] = allow_host("b.com");
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_THAT(context.violations()[0]->console_message,
                 Not(testing::HasSubstr(
@@ -2357,7 +2365,6 @@ TEST(ContentSecurityPolicy, FencedFrameSrcOpaqueURL) {
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FencedFrameSrc, GURL("https://a.com"), GURL(),
       /*has_followed_redirect=*/false, &context, SourceLocation(),
-      /*is_form_submission=*/false,
       /*is_opaque_fenced_frame=*/true));
   ASSERT_EQ(1u, context.violations().size());
   const char kConsoleMessage[] =
