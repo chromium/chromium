@@ -3,7 +3,8 @@
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid/#layout-algorithm">
 <link rel="help" href="https://drafts.csswg.org/css-sizing-3/#automatic-minimum-size">
-<meta name="assert" content="Check that masonry item's 'min-width' is honored when sizing 'auto' rows.">
+<meta name="assert" content="Check that masonry item's 'min-height' is honored when sizing 'auto' rows.">
+<link rel="stylesheet" href="/css/support/grid.css">
 <link rel="stylesheet" href="/fonts/ahem.css">
 
 <style>
@@ -63,7 +64,7 @@
 
 <div class="masonry gridAuto constrainedContainer" id="gridAutoMultipleItems">
   <div class="firstRowFirstColumn minHeight60">X<br>X</div>
-  <div class="firstRowSecondColumn minHeight20"">XXX<br>X<br>XX<br>XX</div>
+  <div class="firstRowSecondColumn minHeight20">XXX<br>X<br>XX<br>XX</div>
   <div class="firstRowAutoColumn minConstrainedContainer height50"></div>
 </div>
 
@@ -245,7 +246,7 @@ document.fonts.ready.then(() => {
     testGridRowsValues('gridAutoAndAutoFixedHeightChildren', '200px 50px');
   }, 'Check that min-height is honored when sizing auto rows.');
   test(() => {
-    testGridRowsValues('gridAutoAndAutoOneSpanningOneNonSpannig', '10px 40px');
+    testGridRowsValues('gridAutoAndAutoOneSpanningOneNonSpannig', '20px 30px');
     testGridRowsValues('gridAutoAndAutoOneSpanningMultipleNonSpanning', '40px 20px');
     testGridRowsValues('gridAutoAndMinMaxAutoAutoOneSpanningOneNonSpanning', '40px 30px');
     testGridRowsValues('gridAutoAndMinMaxAutoAutoMultipleSpanning', '35px 35px');

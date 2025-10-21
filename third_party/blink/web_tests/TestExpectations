@@ -1137,7 +1137,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/mas
 # Incorrect OOF position
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-intrinsic-maximums.html [ Failure ]
 # Intrinsic minimum sizing failures
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-automatic-minimum-for-auto.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-intrinsic-track-sizes.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-item-minmax-img-001.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-item-percentage-sizes-001.html [ Failure ]
@@ -1145,7 +1144,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-item-
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-item-percentage-sizes-003.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-minimum-size-grid-items-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/column-minimum-size-grid-items-003.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/row-automatic-minimum-for-auto.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/row-flex-track-intrinsic-sizes.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/row-intrinsic-track-sizes.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/items/row-item-minmax-img-001.html [ Failure ]

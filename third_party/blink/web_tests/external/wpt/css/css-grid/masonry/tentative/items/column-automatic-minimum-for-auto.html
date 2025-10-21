@@ -4,6 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-grid/#layout-algorithm">
 <link rel="help" href="https://drafts.csswg.org/css-sizing-3/#automatic-minimum-size">
 <meta name="assert" content="Check that masonry item's 'min-width' is honored when sizing 'auto' columns.">
+<link rel="stylesheet" href="/css/support/grid.css">
 <link rel="stylesheet" href="/fonts/ahem.css">
 
 <style>
@@ -74,7 +75,7 @@
 <div class="constrainedContainer">
   <div class="masonry gridAuto" id="gridAutoMultipleItems">
     <div class="firstRowFirstColumn minWidth30">XX</div>
-    <div class="secondRowFirstColumn minWidth20"">XXXX XXXX</div>
+    <div class="secondRowFirstColumn minWidth20">XXXX XXXX</div>
     <div class="thirdRowAutoColumn minWidth10">XX XXXXX X</div>
   </div>
 </div>
