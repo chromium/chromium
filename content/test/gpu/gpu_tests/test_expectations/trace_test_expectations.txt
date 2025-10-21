@@ -172,6 +172,7 @@ crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
 crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Skip ]
 crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
 crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ Skip ]
+crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUCachingTraceTest_* [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -276,6 +277,7 @@ crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ win11 qualcomm ] WebGPUTraceTest* [ Failure ]
+[ win11 qualcomm ] WebGPUCachingTraceTest_* [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
