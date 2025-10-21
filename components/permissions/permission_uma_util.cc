@@ -1113,6 +1113,19 @@ void PermissionUmaUtil::PermissionPromptResolved(
         time_to_action);
   }
 
+  if (requests.size() == 1 &&
+      requests[0]->request_type() == RequestType::kGeolocation) {
+    if (const auto* geolocation_options = std::get_if<GeolocationPromptOptions>(
+            &requests[0]->prompt_options())) {
+      base::UmaHistogramEnumeration(
+          base::StrCat(
+              {"Permissions.Prompt.Geolocation.", action_string, ".Accuracy"}),
+          geolocation_options->selected_precise
+              ? GeolocationAccuracy::kPrecise
+              : GeolocationAccuracy::kApproximate);
+    }
+  }
+
   if (permission_action == PermissionAction::IGNORED &&
       ui_disposition !=
           PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE &&
@@ -2303,13 +2316,6 @@ void PermissionUmaUtil::RecordPassageEmbedderMetadataValid(bool valid) {
 // static
 void PermissionUmaUtil::RecordPredictionServiceTimeout(bool timeout) {
   base::UmaHistogramBoolean("Permissions.PredictionService.Timeout", timeout);
-}
-
-// static
-void PermissionUmaUtil::RecordGeolocationAccuracy(
-    GeolocationAccuracy accuracy) {
-  base::UmaHistogramEnumeration(
-      "Permissions.Prompt.Geolocation.AccuracyGranted", accuracy);
 }
 
 // static

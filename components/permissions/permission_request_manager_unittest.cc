@@ -108,6 +108,11 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
+  void Ignore() {
+    manager_->Ignore();
+    task_environment()->RunUntilIdle();
+  }
+
   void OpenHelpCenterLink() {
 #if !BUILDFLAG(IS_ANDROID)
     const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
@@ -2217,5 +2222,103 @@ TEST_F(PermissionRequestManagerTest, PEPCRequestNeverQuiet) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class PermissionRequestManagerApproximateGeolocationTest
+    : public PermissionRequestManagerTest,
+      public testing::WithParamInterface<GeolocationAccuracy> {};
+
+TEST_P(PermissionRequestManagerApproximateGeolocationTest,
+       ReportAccuracyInUmaAOnAccept) {
+  base::HistogramTester histograms;
+  auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
+                                                 /*should_be_seen=*/true, 1);
+
+  GeolocationAccuracy accuracy = GetParam();
+  manager_->SetPromptOptions(
+      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  WaitAndAcceptPromptForRequest(request_geolocation.get());
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.Accepted.Accuracy",
+      /*sample=*/static_cast<int>(accuracy),
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(PermissionRequestManagerApproximateGeolocationTest,
+       ReportAccuracyInUmaOnAcceptThisTime) {
+  base::HistogramTester histograms;
+  auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
+                                                 /*should_be_seen=*/true, 1);
+
+  GeolocationAccuracy accuracy = GetParam();
+  manager_->SetPromptOptions(
+      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  WaitForBubbleToBeShown();
+  AcceptThisTime();
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.AcceptedOnce.Accuracy",
+      /*sample=*/static_cast<int>(accuracy),
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(PermissionRequestManagerApproximateGeolocationTest,
+       ReportAccuracyInUmaOnDeny) {
+  base::HistogramTester histograms;
+  auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
+                                                 /*should_be_seen=*/true, 1);
+
+  GeolocationAccuracy accuracy = GetParam();
+  manager_->SetPromptOptions(
+      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  WaitForBubbleToBeShown();
+  Deny();
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.Denied.Accuracy",
+      /*sample=*/static_cast<int>(accuracy),
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(PermissionRequestManagerApproximateGeolocationTest,
+       ReportAccuracyInUmaOnDismiss) {
+  base::HistogramTester histograms;
+  auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
+                                                 /*should_be_seen=*/true, 1);
+
+  GeolocationAccuracy accuracy = GetParam();
+  manager_->SetPromptOptions(
+      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  WaitForBubbleToBeShown();
+  Closing();
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.Dismissed.Accuracy",
+      /*sample=*/static_cast<int>(accuracy),
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(PermissionRequestManagerApproximateGeolocationTest,
+       ReportAccuracyInUmaOnIgnore) {
+  base::HistogramTester histograms;
+  auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
+                                                 /*should_be_seen=*/true, 1);
+
+  GeolocationAccuracy accuracy = GetParam();
+  manager_->SetPromptOptions(
+      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  WaitForBubbleToBeShown();
+  Ignore();
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.Ignored.Accuracy",
+      /*sample=*/static_cast<int>(accuracy),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(Accuracies,
+                         PermissionRequestManagerApproximateGeolocationTest,
+                         testing::Values(GeolocationAccuracy::kPrecise,
+                                         GeolocationAccuracy::kApproximate));
 
 }  // namespace permissions

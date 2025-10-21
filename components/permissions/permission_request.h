@@ -199,7 +199,7 @@ class PermissionRequest {
   void SetPromptOptions(PromptOptions prompt_options);
 
   // Return stored prompt options.
-  PromptOptions prompt_options() const { return data_->prompt_options; }
+  const PromptOptions& prompt_options() const { return data_->prompt_options; }
 
   virtual const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds()
       const;

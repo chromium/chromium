@@ -196,18 +196,6 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     bool is_final_decision) {
   DCHECK(is_final_decision);
 
-  if (decision == PermissionDecision::kAllow ||
-      decision == PermissionDecision::kAllowThisTime) {
-    const auto* geolocation_options =
-        std::get_if<GeolocationPromptOptions>(&request_data.prompt_options);
-    if (geolocation_options) {
-      PermissionUmaUtil::RecordGeolocationAccuracy(
-          geolocation_options->selected_precise
-              ? GeolocationAccuracy::kPrecise
-              : GeolocationAccuracy::kApproximate);
-    }
-  }
-
   bool is_default_search =
       IsRequestingOriginDSE(request_data.requesting_origin);
   if (decision == PermissionDecision::kAllow &&

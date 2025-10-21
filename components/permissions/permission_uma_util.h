@@ -934,9 +934,6 @@ class PermissionUmaUtil {
   // PermissionBasedPredictionUiSelector ran into a timeout.
   static void RecordPredictionServiceTimeout(bool timeout);
 
-  // Records the accuracy of the geolocation permission request.
-  static void RecordGeolocationAccuracy(GeolocationAccuracy accuracy);
-
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(
       RequestTypeForUma request_type,

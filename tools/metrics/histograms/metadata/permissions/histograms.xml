@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Action">
+  <variant name="Accepted"/>
+  <variant name="AcceptedOnce"/>
+  <variant name="Denied"/>
+  <variant name="Dismissed"/>
+  <variant name="Ignored"/>
+</variants>
+
 <!-- LINT.IfChange(AllPermissionTypes) -->
 
 <variants name="AllPermissionTypes">
@@ -1330,15 +1338,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Permissions.Prompt.Geolocation.AccuracyGranted"
+<histogram name="Permissions.Prompt.Geolocation.{Action}.Accuracy"
     enum="GeolocationAccuracy" expires_after="2026-10-15">
   <owner>tommasin@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Recorded when a geolocation permission prompt is resolved with a grant
-    action (either 'allow' or 'allow this time'). This tracks whether the user
-    granted precise or approximate location. Android only.
+    Recorded when a geolocation permission prompt is resolved. This tracks
+    whether the user granted precise or approximate location.
+
+    Only recorded when the feature flag kApproximateGeolocationPermission is
+    enabled.
   </summary>
+  <token key="Action" variants="Action"/>
 </histogram>
 
 <histogram name="Permissions.Prompt.Has{FaviconType}Favicon" enum="Boolean"
@@ -1646,13 +1658,7 @@ chromium-metrics-reviews@google.com.
     state will be recorded if the user closes the tab or a permission chip gets
     expired.
   </summary>
-  <token key="Action">
-    <variant name="Accepted"/>
-    <variant name="AcceptedOnce"/>
-    <variant name="Denied"/>
-    <variant name="Dismissed"/>
-    <variant name="Ignored"/>
-  </token>
+  <token key="Action" variants="Action"/>
   <token key="Disposition">
     <variant name="AnchoredBubble"/>
     <variant name="CustomModalDialog"/>
@@ -1700,13 +1706,7 @@ chromium-metrics-reviews@google.com.
     <variant name="DidClickLearnMore"/>
     <variant name="DidClickManage"/>
   </token>
-  <token key="Action">
-    <variant name="Accepted"/>
-    <variant name="AcceptedOnce"/>
-    <variant name="Denied"/>
-    <variant name="Dismissed"/>
-    <variant name="Ignored"/>
-  </token>
+  <token key="Action" variants="Action"/>
   <token key="Disposition">
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>
