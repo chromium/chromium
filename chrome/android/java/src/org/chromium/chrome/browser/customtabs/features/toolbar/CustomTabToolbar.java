@@ -67,6 +67,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -170,6 +171,7 @@ import java.util.function.Supplier;
 /** The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs. */
 @NullMarked
 public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickListener {
+    private static final String TAG = "CctToolbar";
     private static final Object ORIGIN_SPAN = new Object();
     private ImageView mIncognitoImageView;
     private @Nullable LinearLayout mCustomActionButtons;
@@ -523,6 +525,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                         ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
                                         ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
                                         false));
+        Log.i(TAG, "fallback-ui-variant: " + buttonVariant + " show: " + show);
         indicator.setVisibility(show ? View.VISIBLE : View.GONE);
         if (!show) return;
 
