@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/model/web_app_comparison.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -60,18 +61,6 @@
 namespace web_app {
 namespace {
 
-sync_pb::WebAppIconInfo_Purpose ConvertIconPurposeToSyncPurpose(
-    apps::IconInfo::Purpose purpose) {
-  switch (purpose) {
-    case apps::IconInfo::Purpose::kAny:
-      return sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY;
-    case apps::IconInfo::Purpose::kMonochrome:
-      return sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_MONOCHROME;
-    case apps::IconInfo::Purpose::kMaskable:
-      return sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_MASKABLE;
-  }
-}
-
 blink::mojom::ManifestImageResource_Purpose
 ConvertIconPurposeToManifestImagePurpose(apps::IconInfo::Purpose app_purpose) {
   switch (app_purpose) {
@@ -93,7 +82,7 @@ void CopyIconsToPendingUpdateInfo(
 
     pending_icon->set_url(icon_info.url.spec());
     sync_pb::WebAppIconInfo_Purpose icon_purpose =
-        ConvertIconPurposeToSyncPurpose(icon_info.purpose);
+        IconInfoPurposeToSyncPurpose(icon_info.purpose);
     pending_icon->set_purpose(icon_purpose);
     if (icon_info.square_size_px.has_value()) {
       pending_icon->set_size_in_px(icon_info.square_size_px.value());
@@ -210,21 +199,6 @@ std::ostream& operator<<(std::ostream& os,
     case web_app::ManifestSilentUpdateCommandStage::
         kDeletingPendingUpdateIconsFromDisk:
       return os << "kDeletingPendingUpdateIconsFromDisk";
-  }
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    ManifestSilentUpdateCommand::PendingInfoComparison value) {
-  switch (value) {
-    case ManifestSilentUpdateCommand::PendingInfoComparison::kNotPending:
-      return os << "kNotPending";
-    case ManifestSilentUpdateCommand::PendingInfoComparison::
-        kHasPendingAndNotEquals:
-      return os << "kHasPendingAndNotEquals";
-    case ManifestSilentUpdateCommand::PendingInfoComparison::
-        kHasPendingAndEquals:
-      return os << "kHasPendingAndEquals";
   }
 }
 
@@ -353,173 +327,6 @@ void ManifestSilentUpdateCommand::StartWithLock(
       params);
 }
 
-bool ManifestSilentUpdateCommand::WebAppComparison::
-    ExistingAppWithoutPendingEqualsNewUpdate() const {
-  return name_equality && primary_icons_equality &&
-         shortcut_menu_item_infos_equality && other_fields_equality;
-}
-
-bool ManifestSilentUpdateCommand::WebAppComparison::
-    ExistingAppWithPendingEqualsNewUpdate() const {
-  // For an app to be considered for an update, in case of available security
-  // sensitive changes (like name and icons), the pending update info in the app
-  // has to either not exist, or if it does, should match the incoming update.
-  bool effective_name_equality;
-  if (name_equality) {
-    effective_name_equality =
-        pending_name_equality == PendingInfoComparison::kNotPending;
-  } else {
-    effective_name_equality =
-        pending_name_equality == PendingInfoComparison::kHasPendingAndEquals;
-  }
-  bool effective_primary_icon_equality;
-  if (primary_icons_equality) {
-    effective_primary_icon_equality =
-        pending_primary_icons_equality == PendingInfoComparison::kNotPending;
-  } else {
-    effective_primary_icon_equality =
-        pending_primary_icons_equality ==
-        PendingInfoComparison::kHasPendingAndEquals;
-  }
-  return effective_name_equality && effective_primary_icon_equality &&
-         other_fields_equality && shortcut_menu_item_infos_equality;
-}
-
-bool ManifestSilentUpdateCommand::WebAppComparison::IsNameChangeOnly() const {
-  return !name_equality && primary_icons_equality &&
-         shortcut_menu_item_infos_equality && other_fields_equality;
-}
-
-bool ManifestSilentUpdateCommand::WebAppComparison::
-    IsSecuritySensitiveChangesOnly() const {
-  return !name_equality && !primary_icons_equality &&
-         shortcut_menu_item_infos_equality && other_fields_equality;
-}
-
-base::Value::Dict ManifestSilentUpdateCommand::WebAppComparison::ToDict()
-    const {
-  return base::Value::Dict()
-      .Set("name_equality", name_equality)
-      .Set("pending_name_equality", base::ToString(pending_name_equality))
-      .Set("primary_icons_equality", primary_icons_equality)
-      .Set("pending_primary_icons_equality",
-           base::ToString(pending_primary_icons_equality))
-      .Set("shortcut_menu_item_infos_equality",
-           shortcut_menu_item_infos_equality)
-      .Set("other_fields_equality", other_fields_equality);
-}
-
-// static
-ManifestSilentUpdateCommand::WebAppComparison
-ManifestSilentUpdateCommand::CompareWebApps(
-    const WebApp& existing_web_app,
-    const WebAppInstallInfo& new_install_info) {
-  CHECK_EQ(existing_web_app.manifest_id(), new_install_info.manifest_id());
-  WebAppComparison diff;
-
-  diff.name_equality = [&]() {
-    std::u16string new_title;
-    base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
-    return new_title == base::UTF8ToUTF16(existing_web_app.untranslated_name());
-  }();
-  diff.pending_name_equality = [&]() {
-    if (!existing_web_app.pending_update_info().has_value() ||
-        !existing_web_app.pending_update_info()->has_name()) {
-      return PendingInfoComparison::kNotPending;
-    }
-    std::u16string new_title;
-    base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
-    return new_title == base::UTF8ToUTF16(
-                            existing_web_app.pending_update_info()->name())
-               ? PendingInfoComparison::kHasPendingAndEquals
-               : PendingInfoComparison::kHasPendingAndNotEquals;
-  }();
-  diff.primary_icons_equality =
-      existing_web_app.trusted_icons() == new_install_info.trusted_icons;
-  diff.pending_primary_icons_equality = [&]() {
-    if (!existing_web_app.pending_update_info().has_value() ||
-        existing_web_app.pending_update_info()->trusted_icons().empty()) {
-      return PendingInfoComparison::kNotPending;
-    }
-    std::optional<std::vector<apps::IconInfo>> transformed = ParseAppIconInfos(
-        "PendingUpdateInfo",
-        existing_web_app.pending_update_info()->trusted_icons());
-    if (transformed == new_install_info.trusted_icons) {
-      return PendingInfoComparison::kHasPendingAndEquals;
-    }
-    return PendingInfoComparison::kHasPendingAndNotEquals;
-  }();
-  diff.shortcut_menu_item_infos_equality =
-      existing_web_app.shortcuts_menu_item_infos() ==
-      new_install_info.shortcuts_menu_item_infos;
-
-  diff.other_fields_equality = [&]() {
-    if (existing_web_app.start_url() != new_install_info.start_url()) {
-      return false;
-    }
-    if (existing_web_app.theme_color() != new_install_info.theme_color) {
-      return false;
-    }
-    if (existing_web_app.scope() != new_install_info.scope) {
-      return false;
-    }
-    if (existing_web_app.display_mode() != new_install_info.display_mode) {
-      return false;
-    }
-    if (existing_web_app.display_mode_override() !=
-        new_install_info.display_override) {
-      return false;
-    }
-    if (existing_web_app.share_target() != new_install_info.share_target) {
-      return false;
-    }
-    if (existing_web_app.protocol_handlers() !=
-        new_install_info.protocol_handlers) {
-      return false;
-    }
-    if (existing_web_app.note_taking_new_note_url() !=
-        new_install_info.note_taking_new_note_url) {
-      return false;
-    }
-    if (existing_web_app.background_color() !=
-        new_install_info.background_color) {
-      return false;
-    }
-    if (existing_web_app.dark_mode_theme_color() !=
-        new_install_info.dark_mode_theme_color) {
-      return false;
-    }
-    if (existing_web_app.dark_mode_background_color() !=
-        new_install_info.dark_mode_background_color) {
-      return false;
-    }
-    if (existing_web_app.launch_handler() != new_install_info.launch_handler) {
-      return false;
-    }
-    if (existing_web_app.permissions_policy() !=
-        new_install_info.permissions_policy) {
-      return false;
-    }
-    if (existing_web_app.scope_extensions() !=
-        new_install_info.scope_extensions) {
-      return false;
-    }
-    if (existing_web_app.related_applications() !=
-        new_install_info.related_applications) {
-      return false;
-    }
-    if (existing_web_app.file_handlers() != new_install_info.file_handlers) {
-      return false;
-    }
-    if (existing_web_app.tab_strip() != new_install_info.tab_strip) {
-      return false;
-    }
-    // Add new manifest properties here to be considered for update.
-    return true;
-  }();
-  return diff;
-}
-
 void ManifestSilentUpdateCommand::SetStage(
     ManifestSilentUpdateCommandStage stage) {
   stage_ = stage;
@@ -638,13 +445,15 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   const WebApp* app = app_lock_->registrar().GetAppById(app_id_);
   CHECK(app);
   is_trusted_install_ = app->IsPolicyInstalledApp() || app->IsPreinstalledApp();
-  web_app_diff_ = CompareWebApps(*app, *new_install_info_);
-  GetMutableDebugValue().Set("web_app_diff", web_app_diff_.ToDict());
+  web_app_comparison_ =
+      WebAppComparison::CompareWebApps(*app, *new_install_info_);
+  GetMutableDebugValue().Set("web_app_comparison",
+                             web_app_comparison_.ToDict());
 
   // First, handle the case where the existing app (without the pending update)
   // matches the new install, so we can clear the pending info (if there was
   // any) and return early.
-  if (web_app_diff_.ExistingAppWithoutPendingEqualsNewUpdate()) {
+  if (web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate()) {
     WritePendingUpdateInfoThenComplete(
         /*pending_update=*/std::nullopt,
         ManifestSilentUpdateCheckResult::kAppUpToDate);
@@ -653,7 +462,7 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
 
   // Exit early if the existing pending update info matches the seen data.
   // Instead of writing pending update info, we simply exit directly.
-  if (web_app_diff_.ExistingAppWithPendingEqualsNewUpdate()) {
+  if (web_app_comparison_.ExistingAppWithPendingEqualsNewUpdate()) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kAppUpToDate);
     return;
@@ -665,7 +474,7 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   // update info.
   // Skip the case where the new name is empty - we will pretend it is the same
   // and update the rest of the information.
-  if (web_app_diff_.IsNameChangeOnly() && !is_trusted_install_) {
+  if (web_app_comparison_.IsNameChangeOnly() && !is_trusted_install_) {
     proto::PendingUpdateInfo update;
     update.set_name(base::UTF16ToUTF8(new_install_info_->title));
     WritePendingUpdateInfoThenComplete(
@@ -682,7 +491,7 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
       app_id_, base::BindOnce(&ManifestSilentUpdateCommand::OnAppIconsLoaded,
                               GetWeakPtr())
                    .Then(barrier.CreateClosure()));
-  if (web_app_diff_.shortcut_menu_item_infos_equality) {
+  if (web_app_comparison_.shortcut_menu_item_infos_equality()) {
     // Since the shortcut menu items did not change, load the existing icons
     // from **disk** for the silent update (which acts like a re-install).
     app_lock_->icon_manager().ReadAllShortcutsMenuIcons(
@@ -694,9 +503,9 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   // Meanwhile, skip downloading icons from the network that we know didn't
   // change, and thus we'll just use what we have on disk.
   IconUrlExtractionOptions icon_fetch_options{
-      .product_icons = !web_app_diff_.primary_icons_equality,
+      .product_icons = !web_app_comparison_.primary_icons_equality(),
       .shortcut_menu_item_icons =
-          !web_app_diff_.shortcut_menu_item_infos_equality};
+          !web_app_comparison_.shortcut_menu_item_infos_equality()};
   manifest_to_install_info_job_->FetchIcons(
       *new_install_info_, *web_contents_, barrier.CreateClosure(),
       /*icon_url_modifications=*/std::nullopt, icon_fetch_options);
@@ -717,21 +526,22 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
 
   const WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
 
-  silent_update_required_ = !web_app_diff_.other_fields_equality ||
-                            !web_app_diff_.shortcut_menu_item_infos_equality;
+  silent_update_required_ =
+      !web_app_comparison_.other_fields_equality() ||
+      !web_app_comparison_.shortcut_menu_item_infos_equality();
   GetMutableDebugValue().Set("silent_update_required",
                              base::ToString(silent_update_required_));
 
   // Copy over any icons that did not have manifest changes, and thus we loaded
   // from disk to avoid hitting the network
   CHECK(new_install_info_);
-  if (web_app_diff_.shortcut_menu_item_infos_equality) {
+  if (web_app_comparison_.shortcut_menu_item_infos_equality()) {
     new_install_info_->shortcuts_menu_item_infos =
         web_app->shortcuts_menu_item_infos();
     new_install_info_->shortcuts_menu_icon_bitmaps =
         existing_shortcuts_menu_icon_bitmaps_;
   }
-  if (web_app_diff_.primary_icons_equality) {
+  if (web_app_comparison_.primary_icons_equality()) {
     new_install_info_->manifest_icons = web_app->manifest_icons();
     new_install_info_->trusted_icons = web_app->trusted_icons();
     new_install_info_->icon_bitmaps = existing_manifest_icon_bitmaps_;
@@ -768,11 +578,11 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
   }
 
   // Both of these cases should have already been handled & exited early.
-  CHECK(!web_app_diff_.ExistingAppWithoutPendingEqualsNewUpdate());
-  CHECK(!web_app_diff_.IsNameChangeOnly());
+  CHECK(!web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate());
+  CHECK(!web_app_comparison_.IsNameChangeOnly());
 
   std::optional<proto::PendingUpdateInfo> pending_update_info;
-  if (!web_app_diff_.name_equality) {
+  if (!web_app_comparison_.name_equality()) {
     pending_update_info = proto::PendingUpdateInfo();
     pending_update_info->set_name(base::UTF16ToUTF8(new_install_info_->title));
     new_install_info_->title = base::UTF8ToUTF16(web_app->untranslated_name());
@@ -780,7 +590,7 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
 
   // Exit early if there are no icon url changes (and only silent update changes
   // with possible name changes).
-  if (web_app_diff_.primary_icons_equality) {
+  if (web_app_comparison_.primary_icons_equality()) {
     // The case where only the name changes and nothing else is handled before
     // fetching icons.
     CHECK(silent_update_required_);

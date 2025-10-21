@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/model/web_app_comparison.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -138,39 +139,6 @@ class ManifestSilentUpdateCommand
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
 
  private:
-  enum class PendingInfoComparison {
-    kNotPending,
-    kHasPendingAndEquals,
-    kHasPendingAndNotEquals
-  };
-  friend std::ostream& operator<<(std::ostream& os, PendingInfoComparison);
-
-  struct WebAppComparison {
-    bool name_equality = false;
-    bool primary_icons_equality = false;
-    bool shortcut_menu_item_infos_equality = false;
-    bool other_fields_equality = false;
-
-    PendingInfoComparison pending_name_equality =
-        PendingInfoComparison::kNotPending;
-    PendingInfoComparison pending_primary_icons_equality =
-        PendingInfoComparison::kNotPending;
-
-    // Returns if the existing app configuration (not considering any pending
-    // update info) matches the `new_install_info`.
-    bool ExistingAppWithoutPendingEqualsNewUpdate() const;
-    // Return if the existing app configuration, with any pending update info
-    // applied, matches the `new_install_info`.
-    bool ExistingAppWithPendingEqualsNewUpdate() const;
-    bool IsNameChangeOnly() const;
-    bool IsSecuritySensitiveChangesOnly() const;
-    base::Value::Dict ToDict() const;
-  };
-
-  static WebAppComparison CompareWebApps(
-      const WebApp& existing_web_app,
-      const WebAppInstallInfo& new_install_info);
-
   void SetStage(ManifestSilentUpdateCommandStage stage);
 
   void OnManifestFetchedAcquireAppLock(
@@ -233,7 +201,7 @@ class ManifestSilentUpdateCommand
   // asynchronously.
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
   bool is_trusted_install_ = false;
-  WebAppComparison web_app_diff_;
+  WebAppComparison web_app_comparison_;
   IconBitmaps existing_manifest_icon_bitmaps_;
   IconBitmaps existing_trusted_icon_bitmaps_;
   IconBitmaps pending_trusted_icon_bitmaps_;
