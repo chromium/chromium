@@ -424,6 +424,12 @@ void SaveCardOfferBubbleViews::ShowThrobber() {
     return;
   }
 
+  // Disable the cardholder name field (if present) to avoid the user modifying
+  // it (to no effect) while the dialog is in the loading state.
+  if (cardholder_name_textfield_) {
+    cardholder_name_textfield_->SetEnabled(false);
+  }
+
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetExtraView({nullptr});
 
