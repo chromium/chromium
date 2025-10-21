@@ -7,8 +7,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/history_embeddings/history_embeddings_features.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
@@ -18,7 +18,7 @@ namespace history_embeddings {
 
 namespace {
 
-using optimization_guide::MockOptimizationGuideModelExecutor;
+using optimization_guide::MockOnDeviceCapability;
 using optimization_guide::MockSession;
 using optimization_guide::
     OptimizationGuideModelExecutionResultStreamingCallback;
@@ -74,10 +74,9 @@ class MockClassifierSession : public MockSession {
   Any any_metadata_;
 };
 
-class MockExecutor : public MockOptimizationGuideModelExecutor {
+class MockExecutor : public MockOnDeviceCapability {
  public:
-  MockExecutor() {
-  }
+  MockExecutor() {}
 };
 
 class HistoryEmbeddingsMlIntentClassifierTest : public testing::Test {
@@ -131,7 +130,7 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ExecutionFails) {
 }
 
 TEST_F(HistoryEmbeddingsMlIntentClassifierTest, FailToCreateSession) {
-  MockOptimizationGuideModelExecutor executor;
+  MockOnDeviceCapability executor;
   EXPECT_CALL(executor, StartSession(_, _)).WillRepeatedly([] {
     return nullptr;
   });

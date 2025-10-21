@@ -35,8 +35,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
   void Start(const std::string& rendered_texts);
 
  private:
-  using ModelExecutorSession =
-      optimization_guide::OptimizationGuideModelExecutor::Session;
+  using ModelExecutorSession = optimization_guide::OnDeviceSession;
 
   void OnSessionCreated(std::unique_ptr<ModelExecutorSession> session);
 

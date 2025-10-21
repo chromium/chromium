@@ -9,8 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {

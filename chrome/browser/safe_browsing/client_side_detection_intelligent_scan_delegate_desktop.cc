@@ -66,8 +66,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry {
           result);
 
   const raw_ptr<ClientSideDetectionIntelligentScanDelegateDesktop> parent_;
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
+  std::unique_ptr<optimization_guide::OnDeviceSession> session_;
   base::UnguessableToken session_id_;
   InquireOnDeviceModelDoneCallback callback_;
   std::string rendered_texts_;
@@ -357,7 +356,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
       eligibility);
 }
 
-std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+std::unique_ptr<optimization_guide::OnDeviceSession>
 ClientSideDetectionIntelligentScanDelegateDesktop::GetModelExecutorSession() {
   return opt_guide_->StartSession(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,

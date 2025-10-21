@@ -10,8 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 
@@ -19,7 +19,7 @@ namespace history_embeddings {
 
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
-using optimization_guide::OptimizationGuideModelExecutionError;
+using optimization_guide::OnDeviceSession;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::SessionConfigParams;
 using optimization_guide::proto::Answer;
@@ -87,9 +87,7 @@ class MlAnswerer::SessionManager {
 
   // Adds a session that contains query and passage context.
   // It exists until this manager resets or gets destroyed.
-  void AddSession(
-      std::unique_ptr<OptimizationGuideModelExecutor::Session> session,
-      std::string url) {
+  void AddSession(std::unique_ptr<OnDeviceSession> session, std::string url) {
     sessions_.push_back(std::move(session));
     urls_.push_back(url);
   }
@@ -267,8 +265,7 @@ class MlAnswerer::SessionManager {
     }
   }
 
-  std::vector<std::unique_ptr<OptimizationGuideModelExecutor::Session>>
-      sessions_;
+  std::vector<std::unique_ptr<OnDeviceSession>> sessions_;
   // URLs associated with sessions by index.
   std::vector<std::string> urls_;
   std::string query_;
@@ -279,7 +276,7 @@ class MlAnswerer::SessionManager {
   base::WeakPtrFactory<SessionManager> weak_ptr_factory_;
 };
 
-MlAnswerer::MlAnswerer(OptimizationGuideModelExecutor* model_executor,
+MlAnswerer::MlAnswerer(OnDeviceCapability* model_executor,
                        ModelQualityLogsUploaderService* logs_uploader)
     : model_executor_(model_executor) {
   if (logs_uploader) {

@@ -9,7 +9,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/strike_database/test_inmemory_strike_database.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
@@ -37,8 +37,8 @@ class MockWalletablePassClient : public WalletablePassClient {
               GetOptimizationGuideDecider,
               (),
               (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideModelExecutor*,
-              GetOptimizationGuideModelExecutor,
+  MOCK_METHOD(optimization_guide::RemoteModelExecutor*,
+              GetRemoteModelExecutor,
               (),
               (override));
   MOCK_METHOD(
@@ -80,7 +80,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_client_, GetOptimizationGuideDecider())
         .WillByDefault(Return(&mock_decider_));
-    ON_CALL(mock_client_, GetOptimizationGuideModelExecutor())
+    ON_CALL(mock_client_, GetRemoteModelExecutor())
         .WillByDefault(Return(&mock_model_executor_));
     ON_CALL(mock_client_, GetStrikeDatabase())
         .WillByDefault(Return(&test_strike_database_));
@@ -94,8 +94,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   optimization_guide::MockOptimizationGuideDecider& mock_decider() {
     return mock_decider_;
   }
-  optimization_guide::MockOptimizationGuideModelExecutor&
-  mock_model_executor() {
+  optimization_guide::MockRemoteModelExecutor& mock_model_executor() {
     return mock_model_executor_;
   }
   MockWalletablePassClient& mock_client() { return mock_client_; }
@@ -125,7 +124,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
  private:
   testing::NiceMock<optimization_guide::MockOptimizationGuideDecider>
       mock_decider_;
-  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       mock_model_executor_;
   strike_database::TestInMemoryStrikeDatabase test_strike_database_;
   testing::NiceMock<MockWalletablePassClient> mock_client_;

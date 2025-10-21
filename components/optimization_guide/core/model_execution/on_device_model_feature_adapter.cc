@@ -12,6 +12,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
@@ -20,7 +21,6 @@
 #include "components/optimization_guide/core/model_execution/simple_response_parser.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {

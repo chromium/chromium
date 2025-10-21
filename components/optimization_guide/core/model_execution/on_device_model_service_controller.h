@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
@@ -34,7 +35,6 @@
 #include "components/optimization_guide/core/model_execution/safety_client.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -93,7 +93,7 @@ class OnDeviceModelServiceController final {
   // Starts a session for `feature`. This will start the service and load the
   // model if it is not already loaded. The session will handle updating
   // context, executing input, and sending the response.
-  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
+  std::unique_ptr<OnDeviceSession> CreateSession(
       ModelBasedCapabilityKey feature,
       const SessionConfigParams& config_params);
 

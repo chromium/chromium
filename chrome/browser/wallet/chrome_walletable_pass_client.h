@@ -11,7 +11,7 @@
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
-class OptimizationGuideModelExecutor;
+class RemoteModelExecutor;
 }  // namespace optimization_guide
 
 namespace strike_database {
@@ -43,8 +43,7 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
       override;
 
-  optimization_guide::OptimizationGuideModelExecutor*
-  GetOptimizationGuideModelExecutor() override;
+  optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() override;
 
   strike_database::StrikeDatabaseBase* GetStrikeDatabase() override;
 

@@ -125,9 +125,9 @@ class ModelBrokerAndroidTest : public testing::Test {
         std::make_unique<ModelInfo>(scam_detection_asset_.model_info()));
   }
 
-  std::unique_ptr<OptimizationGuideModelExecutor::Session>
-  DownloadModelAndCreateSession(ModelBrokerClient& client,
-                                mojom::ModelBasedCapabilityKey feature) {
+  std::unique_ptr<OnDeviceSession> DownloadModelAndCreateSession(
+      ModelBrokerClient& client,
+      mojom::ModelBasedCapabilityKey feature) {
     // Requesting the feature we've provided assets for should succeed.
     base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
     client.CreateSession(feature, SessionConfigParams{}, future.GetCallback());

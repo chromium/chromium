@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/strike_database/strike_database.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -31,8 +31,8 @@ ChromeWalletablePassClient::GetOptimizationGuideDecider() {
   return OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 }
 
-optimization_guide::OptimizationGuideModelExecutor*
-ChromeWalletablePassClient::GetOptimizationGuideModelExecutor() {
+optimization_guide::RemoteModelExecutor*
+ChromeWalletablePassClient::GetRemoteModelExecutor() {
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   return OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

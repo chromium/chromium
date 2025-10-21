@@ -61,8 +61,7 @@ optimization_guide::proto::SummarizerOutputLength ToProtoLength(
 
 AISummarizer::AISummarizer(
     AIContextBoundObjectSet& context_bound_object_set,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session,
+    std::unique_ptr<optimization_guide::OnDeviceSession> session,
     blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
     : AIContextBoundObject(context_bound_object_set),

@@ -12,12 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -37,7 +37,7 @@ class ModelClient final : public TextSafetyClient {
   ~ModelClient() override;
 
   // Construct a session for this capability.
-  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
+  std::unique_ptr<OnDeviceSession> CreateSession(
       const SessionConfigParams& config_params);
 
   // TextSafetyClient:
@@ -83,8 +83,7 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
       mojo::PendingReceiver<mojom::ModelSubscriber> pending);
   ~ModelSubscriber() override;
 
-  using CreateSessionResult =
-      std::unique_ptr<OptimizationGuideModelExecutor::Session>;
+  using CreateSessionResult = std::unique_ptr<OnDeviceSession>;
   using CreateSessionCallback = base::OnceCallback<void(CreateSessionResult)>;
   using ClientCallback = base::OnceCallback<void(base::WeakPtr<ModelClient>)>;
 

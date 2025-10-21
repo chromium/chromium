@@ -13,9 +13,9 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -122,8 +122,7 @@ OptimizationGuideKeyedService* GetOptimizationService(
 PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
     content::WebContents* web_contents,
     ModelQualityLogsUploader* logs_uploader)
-    : web_contents_(web_contents),
-      logs_uploader_(logs_uploader) {}
+    : web_contents_(web_contents), logs_uploader_(logs_uploader) {}
 
 PasswordChangeSubmissionVerifier::~PasswordChangeSubmissionVerifier() = default;
 

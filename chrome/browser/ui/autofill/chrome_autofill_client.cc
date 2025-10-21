@@ -592,8 +592,8 @@ AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
   return AutofillAiModelExecutorFactory::GetForProfile(profile);
 }
 
-optimization_guide::OptimizationGuideModelExecutor*
-ChromeAutofillClient::GetOptimizationGuideModelExecutor() {
+optimization_guide::RemoteModelExecutor*
+ChromeAutofillClient::GetRemoteModelExecutor() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   if (!profile || profile->ShutdownStarted()) {

@@ -1,9 +1,11 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_CAPABILITY_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_CAPABILITY_H_
+
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -21,23 +23,7 @@
 
 namespace optimization_guide {
 
-// The result type of model execution.
-struct OptimizationGuideModelExecutionResult {
-  OptimizationGuideModelExecutionResult();
-  explicit OptimizationGuideModelExecutionResult(
-      base::expected<const proto::Any /*response_metadata*/,
-                     OptimizationGuideModelExecutionError> response,
-      std::unique_ptr<proto::ModelExecutionInfo> execution_info);
-  OptimizationGuideModelExecutionResult(
-      OptimizationGuideModelExecutionResult&& other);
-  ~OptimizationGuideModelExecutionResult();
-  base::expected<const proto::Any /*response_metadata*/,
-                 OptimizationGuideModelExecutionError>
-      response;
-  std::unique_ptr<proto::ModelExecutionInfo> execution_info;
-};
-
-// A response type used for OptimizationGuideModelExecutor::Session.
+// A response type used for OnDeviceSession.
 struct StreamingResponse {
   // The response proto. This may be incomplete until `is_complete` is true.
   // This will contain the full response up to this point in the stream. Callers
@@ -75,13 +61,6 @@ struct OptimizationGuideModelStreamingExecutionResult {
   // true.
   std::unique_ptr<proto::ModelExecutionInfo> execution_info;
 };
-
-// The callback for receiving the model execution result and model quality log
-// entry.
-using OptimizationGuideModelExecutionResultCallback =
-    base::OnceCallback<void(OptimizationGuideModelExecutionResult,
-                            // TODO(372535824): remove this parameter.
-                            std::unique_ptr<ModelQualityLogEntry>)>;
 
 // A callback for receiving a score from the model, or nullopt if the model
 // is not running.
@@ -219,130 +198,136 @@ struct SamplingParamsConfig {
   float default_temperature;
 };
 
-// Interface for model execution.
-class OptimizationGuideModelExecutor {
+// A model session that will save context for future ExecuteModel() calls.
+class OnDeviceSession {
  public:
-  virtual ~OptimizationGuideModelExecutor() = default;
+  virtual ~OnDeviceSession() = default;
 
-  // A model session that will save context for future ExecuteModel() calls.
-  class Session {
-   public:
-    virtual ~Session() = default;
+  virtual const TokenLimits& GetTokenLimits() const = 0;
 
-    virtual const TokenLimits& GetTokenLimits() const = 0;
+  // Sets the input context for this session, replacing any previous context.
+  // This will generate prompt text from the feature config's
+  // "input_context_substitutions". Data provided here (including images) will
+  // be merged with data provided to an ExecuteModel() call and be available
+  // for use in later prompt templates based on the request. Calling this will
+  // cancel any ongoing executions and invoke their 'callback' methods with
+  // the 'kCancelled' error. `callback` will be called with either the number
+  // of tokens processed from `request` or an error.
+  using SetInputCallback = base::OnceCallback<void(
+      base::expected<size_t, OptimizationGuideModelExecutionError>)>;
+  virtual void SetInput(MultimodalMessage request,
+                        SetInputCallback callback) = 0;
 
-    // Sets the input context for this session, replacing any previous context.
-    // This will generate prompt text from the feature config's
-    // "input_context_substitutions". Data provided here (including images) will
-    // be merged with data provided to an ExecuteModel() call and be available
-    // for use in later prompt templates based on the request. Calling this will
-    // cancel any ongoing executions and invoke their 'callback' methods with
-    // the 'kCancelled' error. `callback` will be called with either the number
-    // of tokens processed from `request` or an error.
-    using SetInputCallback = base::OnceCallback<void(
-        base::expected<size_t, OptimizationGuideModelExecutionError>)>;
-    virtual void SetInput(MultimodalMessage request,
-                          SetInputCallback callback) = 0;
+  // Adds context to this session. This will be saved for future Execute()
+  // calls. Calling multiple times will replace previous calls to
+  // AddContext(). Calling this while a ExecuteModel() call is still streaming
+  // a response will cancel the ongoing ExecuteModel() call by calling its
+  // `callback` with the kCancelled error.
+  virtual void AddContext(
+      const google::protobuf::MessageLite& request_metadata) = 0;
 
-    // Adds context to this session. This will be saved for future Execute()
-    // calls. Calling multiple times will replace previous calls to
-    // AddContext(). Calling this while a ExecuteModel() call is still streaming
-    // a response will cancel the ongoing ExecuteModel() call by calling its
-    // `callback` with the kCancelled error.
-    virtual void AddContext(
-        const google::protobuf::MessageLite& request_metadata) = 0;
+  // Gets the probability score of the first token in `text` on top of the
+  // current context. Returns nullopt if there is no on-device session (such
+  // as due to a disconnect).
+  virtual void Score(const std::string& text,
+                     OptimizationGuideModelScoreCallback callback) = 0;
 
-    // Gets the probability score of the first token in `text` on top of the
-    // current context. Returns nullopt if there is no on-device session (such
-    // as due to a disconnect).
-    virtual void Score(const std::string& text,
-                       OptimizationGuideModelScoreCallback callback) = 0;
+  // Execute the model with `request_metadata` and streams the result to
+  // `callback`. The execute call will include context from the last
+  // AddContext() call. Data provided to the last AddContext() call does not
+  // need to be provided here. Calling this while another ExecuteModel() call
+  // is still streaming a response will cancel the previous call by calling
+  // `callback` with the kCancelled error.
+  virtual void ExecuteModel(
+      const google::protobuf::MessageLite& request_metadata,
+      OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
 
-    // Execute the model with `request_metadata` and streams the result to
-    // `callback`. The execute call will include context from the last
-    // AddContext() call. Data provided to the last AddContext() call does not
-    // need to be provided here. Calling this while another ExecuteModel() call
-    // is still streaming a response will cancel the previous call by calling
-    // `callback` with the kCancelled error.
-    virtual void ExecuteModel(
-        const google::protobuf::MessageLite& request_metadata,
-        OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
+  // A consstraint is provided to define structured output requirements for
+  // the response.
+  virtual void ExecuteModelWithResponseConstraint(
+      const google::protobuf::MessageLite& request_metadata,
+      on_device_model::mojom::ResponseConstraintPtr constraint,
+      OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
 
-    // A consstraint is provided to define structured output requirements for
-    // the response.
-    virtual void ExecuteModelWithResponseConstraint(
-        const google::protobuf::MessageLite& request_metadata,
-        on_device_model::mojom::ResponseConstraintPtr constraint,
-        OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
+  // Call `GetSizeInTokens()` from the model to get the size of the given text
+  // in tokens. The result will be passed back through the callback.
+  virtual void GetSizeInTokens(
+      const std::string& text,
+      OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
-    // Call `GetSizeInTokens()` from the model to get the size of the given text
-    // in tokens. The result will be passed back through the callback.
-    virtual void GetSizeInTokens(
-        const std::string& text,
-        OptimizationGuideModelSizeInTokenCallback callback) = 0;
+  // Gets the size in tokens used by request_metadata in tokens as it would be
+  // formatted by a call to `ExecuteModel()`. The result will be passed back
+  // through the callback.
+  virtual void GetExecutionInputSizeInTokens(
+      MultimodalMessageReadView request_metadata,
+      OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
-    // Gets the size in tokens used by request_metadata in tokens as it would be
-    // formatted by a call to `ExecuteModel()`. The result will be passed back
-    // through the callback.
-    virtual void GetExecutionInputSizeInTokens(
-        MultimodalMessageReadView request_metadata,
-        OptimizationGuideModelSizeInTokenCallback callback) = 0;
+  // Gets the size in tokens used by request_metadata as it would be formatted
+  // by a call to `AddContext()`. The result will be passed back through the
+  // callback.
+  virtual void GetContextSizeInTokens(
+      MultimodalMessageReadView request_metadata,
+      OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
-    // Gets the size in tokens used by request_metadata as it would be formatted
-    // by a call to `AddContext()`. The result will be passed back through the
-    // callback.
-    virtual void GetContextSizeInTokens(
-        MultimodalMessageReadView request_metadata,
-        OptimizationGuideModelSizeInTokenCallback callback) = 0;
+  // Return the sampling params for the current session.
+  virtual const SamplingParams GetSamplingParams() const = 0;
 
-    // Return the sampling params for the current session.
-    virtual const SamplingParams GetSamplingParams() const = 0;
+  // Return the capabilities for the current session.
+  virtual on_device_model::Capabilities GetCapabilities() const = 0;
 
-    // Return the capabilities for the current session.
-    virtual on_device_model::Capabilities GetCapabilities() const = 0;
+  // Returns the feature_metadata from the
+  // OnDeviceModelExecutionFeatureConfig.
+  virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
 
-    // Returns the feature_metadata from the
-    // OnDeviceModelExecutionFeatureConfig.
-    virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
+  // Clones the session and associated context. Note that if the parent
+  // session is deleted and cancels context processing after clone, the
+  // context will also be cancelled for the clone.
+  // TODO: crbug.com/396211270 - Make clone independent of parent.
+  virtual std::unique_ptr<OnDeviceSession> Clone() = 0;
 
-    // Clones the session and associated context. Note that if the parent
-    // session is deleted and cancels context processing after clone, the
-    // context will also be cancelled for the clone.
-    // TODO: crbug.com/396211270 - Make clone independent of parent.
-    virtual std::unique_ptr<Session> Clone() = 0;
+  // Sets the priority for this session and any future clones.
+  virtual void SetPriority(on_device_model::mojom::Priority priority) = 0;
+};
 
-    // Sets the priority for this session and any future clones.
-    virtual void SetPriority(on_device_model::mojom::Priority priority) = 0;
-  };
+// Provides capability information about the on-device models to be served by
+// the Optimization Guide.
+class OnDeviceCapability {
+ public:
+  OnDeviceCapability();
+  virtual ~OnDeviceCapability();
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should
-  // not outlive OptimizationGuideModelExecutor.
-  virtual std::unique_ptr<Session> StartSession(
+  // not outlive OnDeviceCapability.
+  virtual std::unique_ptr<OnDeviceSession> StartSession(
       ModelBasedCapabilityKey feature,
-      const SessionConfigParams& config_params) = 0;
-
-  // Executes the model for `feature` with `request_metadata` and invokes the
-  // `callback` with the result.
-  virtual void ExecuteModel(
-      ModelBasedCapabilityKey feature,
-      const google::protobuf::MessageLite& request_metadata,
-      const std::optional<base::TimeDelta>& execution_timeout,
-      OptimizationGuideModelExecutionResultCallback callback) = 0;
+      const SessionConfigParams& config_params);
 
   // Observer for on-device model availability changes.
   virtual void AddOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
-      OnDeviceModelAvailabilityObserver* observer) {}
+      OnDeviceModelAvailabilityObserver* observer);
   virtual void RemoveOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
-      OnDeviceModelAvailabilityObserver* observer) {}
+      OnDeviceModelAvailabilityObserver* observer);
 
   // Returns the capabilities for the on-device model, or empty capabilities if
   // no model is available.
   virtual on_device_model::Capabilities GetOnDeviceCapabilities();
+  virtual OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
+      ModelBasedCapabilityKey feature);
+  // Similar to above, but bumps the priority of related tasks such as computing
+  // the performance class before returning the eligibility.
+  virtual void GetOnDeviceModelEligibilityAsync(
+      ModelBasedCapabilityKey feature,
+      const on_device_model::Capabilities& capabilities,
+      base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback);
+  virtual std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
+      ModelBasedCapabilityKey feature);
+  virtual std::optional<const optimization_guide::proto::Any>
+  GetFeatureMetadata(optimization_guide::ModelBasedCapabilityKey feature);
 };
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_CAPABILITY_H_

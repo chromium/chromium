@@ -35,7 +35,7 @@ using optimization_guide::proto::AutofillAiTypeResponse;
 
 AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     AutofillAiModelCache* model_cache,
-    optimization_guide::OptimizationGuideModelExecutor* model_executor,
+    optimization_guide::RemoteModelExecutor* model_executor,
     optimization_guide::ModelQualityLogsUploaderService* mqls_uploader)
     : model_cache_(CHECK_DEREF(model_cache)),
       model_executor_(CHECK_DEREF(model_executor)),

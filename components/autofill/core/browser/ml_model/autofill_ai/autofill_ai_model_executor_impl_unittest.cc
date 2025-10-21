@@ -25,7 +25,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -66,7 +66,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
 
   MockAutofillAiModelCache& model_cache() { return model_cache_; }
 
-  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
+  optimization_guide::MockRemoteModelExecutor* model_executor() {
     return &model_executor_;
   }
 
@@ -79,7 +79,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
   MockAutofillAiModelCache model_cache_;
-  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
   optimization_guide::TestModelQualityLogsUploaderService mqls_uploader_;
   std::unique_ptr<AutofillAiModelExecutor> engine_;

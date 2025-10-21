@@ -106,9 +106,7 @@ TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
   ModelBrokerClient broker_client(broker.BindAndPassRemote());
 
-  base::test::TestFuture<
-      std::unique_ptr<OptimizationGuideModelExecutor::Session>>
-      session_future;
+  base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
                               SessionConfigParams{},
                               session_future.GetCallback());

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/common/compose/type_conversions.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
