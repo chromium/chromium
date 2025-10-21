@@ -150,6 +150,8 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
       match, line, edit_model, bookmark_model, suggestion_groups_map,
       turl_service);
 
+  mojom_match.value()->has_instant_keyword =
+      match.HasInstantKeyword(turl_service);
   if (mojom_match && !match.HasInstantKeyword(turl_service) &&
       edit_model->IsPopupControlPresentOnMatch(
           OmniboxPopupSelection{line, OmniboxPopupSelection::KEYWORD_MODE})) {
