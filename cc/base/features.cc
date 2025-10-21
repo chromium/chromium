@@ -67,6 +67,8 @@ BASE_FEATURE(kReclaimOldPrepaintTiles, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kReclaimDelayInSeconds{&kSmallerInterestArea,
                                                      "reclaim_delay_s", 30};
 
+BASE_FEATURE(kTileOOMFreezeMitigation, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClearCanvasResourcesInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
