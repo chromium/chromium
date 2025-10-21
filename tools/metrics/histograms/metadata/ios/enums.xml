@@ -996,6 +996,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Camera and Microphone permissions"/>
 </enum>
 
+<!-- LINT.IfChange(IOSPersistTabContextDeleteDirectoryResult) -->
+
+<enum name="IOSPersistTabContextDeleteDirectoryResult">
+  <summary>
+    Result of attempting to delete the persisted tab contexts directory and its
+    contents.
+  </summary>
+  <int value="0" label="Delete Success"/>
+  <int value="1" label="Directory Not Found"/>
+  <int value="2" label="Delete Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h:IOSPersistTabContextDeleteDirectoryResult) -->
+
 <!-- LINT.IfChange(IOSPersistTabContextDeleteResult) -->
 
 <enum name="IOSPersistTabContextDeleteResult">

@@ -26,3 +26,12 @@ const char kPersistTabContextReadTimeHistogram[] =
 
 const char kPersistTabContextDeleteTimeHistogram[] =
     "IOS.PersistTabContext.DeleteTime";
+
+const char kPersistTabContextStorageDifferenceHistogram[] =
+    "IOS.PersistTabContext.StorageDifference";
+
+const char kPersistTabContextPurgeFileResultHistogram[] =
+    "IOS.PersistTabContext.PurgeFileResult";
+
+const char kPersistTabContextDeleteDirectoryResultHistogram[] =
+    "IOS.PersistTabContext.DeleteDirectoryResult";

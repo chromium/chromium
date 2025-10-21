@@ -14,6 +14,9 @@ extern const char kCreateDirectoryResultHistogram[];
 extern const char kPersistTabContextWriteTimeHistogram[];
 extern const char kPersistTabContextReadTimeHistogram[];
 extern const char kPersistTabContextDeleteTimeHistogram[];
+extern const char kPersistTabContextStorageDifferenceHistogram[];
+extern const char kPersistTabContextPurgeFileResultHistogram[];
+extern const char kPersistTabContextDeleteDirectoryResultHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -56,5 +59,18 @@ enum class IOSPersistTabContextDeleteResult {
   kMaxValue = kDeleteFailure,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSPersistTabContextDeleteResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Enum for the IOS.PersistTabContext.DeleteDirectoryResult histogram.
+// LINT.IfChange(IOSPersistTabContextDeleteDirectoryResult)
+enum class IOSPersistTabContextDeleteDirectoryResult {
+  kSuccess = 0,
+  kDirectoryNotFound = 1,
+  kDeleteFailure = 2,
+  kMaxValue = kDeleteFailure,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSPersistTabContextDeleteDirectoryResult)
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_METRICS_PERSIST_TAB_CONTEXT_METRICS_H_

@@ -4671,6 +4671,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PersistTabContext.DeleteDirectoryResult"
+    enum="IOSPersistTabContextDeleteDirectoryResult" expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the outcome when the PersistTabContextBrowserAgent attempts to
+    delete the persisted contexts directory and its contents. This cleanup
+    process is performed for users who do not currently have the Persist Tab
+    Context experiment enabled. This includes users for whom the experiment has
+    been disabled, as well as those who have never been part of the experiment.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PersistTabContext.DeleteResult"
     enum="IOSPersistTabContextDeleteResult" expires_after="2026-03-01">
   <owner>cloutierc@google.com</owner>
@@ -4690,6 +4704,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time taken to successfully delete a serialized page context from disk in
     milliseconds. Time is not logged for failures
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.PurgeFileResult" enum="BooleanSuccess"
+    expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Logs the result of each individual file deletion attempt during the purging
+    of expired persisted tab context files. This is recorded each time
+    `PurgeExpiredPageContexts` tries to delete a file identified as expired.
   </summary>
 </histogram>
 
@@ -4724,6 +4750,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size in bytes of each tab context that is persisted in storage. Logged
     whenever a tab context is saved to storage.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.StorageDifference" units="difference"
+    expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The difference between the number of persisted page context files found in
+    the storage directory and the number of WebStates currently in the
+    WebStateLists of all active Browsers, calculated as (StoredFileCount -
+    WebStateCount). A positive value suggests more persisted files than active
+    tabs, potentially indicating orphaned data. A negative value means fewer
+    persisted files than active tabs. This metric is logged once during the
+    initialization of the PersistTabContextBrowserAgent.
   </summary>
 </histogram>
 
