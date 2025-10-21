@@ -6169,11 +6169,6 @@ void BrowserView::FrameColorsChanged() {
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
   }
-
-  ui::ColorId frame_color_id = browser_widget_->ShouldPaintAsActive()
-                                   ? ui::kColorFrameActive
-                                   : ui::kColorFrameInactive;
-  GetWidget()->SetBackgroundColor(frame_color_id);
 }
 
 void BrowserView::UpdateAccessibleNameForRootView() {

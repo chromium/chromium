@@ -247,11 +247,15 @@ void DesktopWindowTreeHostWin::OnActiveWindowChanged(bool active) {}
 
 void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
 
-void DesktopWindowTreeHostWin::SetBackgroundColor(SkColor background_color) {
+void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
+    ui::ColorProviderKey::ColorMode color_mode,
+    std::optional<SkColor> background_color) {
   UpdateBackdropColorMode();
-  ClearBackgroundPaintBrush();
-  background_paint_brush_ =
-      CreateSolidBrush(skia::SkColorToCOLORREF(background_color));
+  if (background_color) {
+    ClearBackgroundPaintBrush();
+    background_paint_brush_ =
+        CreateSolidBrush(skia::SkColorToCOLORREF(*background_color));
+  }
 }
 
 std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
