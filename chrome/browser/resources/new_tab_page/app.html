@@ -57,7 +57,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     </cr-searchbox>
     ${this.showComposebox_ ? html`
       <ntp-composebox id="composebox" ?is_collapsible="false" ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-        @close-composebox="${this.closeComposebox_}" @composebox-dropdown-visible-changed="${this.onDropdownVisibleChanged_}">
+        @close-composebox="${this.closeComposebox_}" @composebox-dropdown-visible-changed="${this.onDropdownVisibleChanged_}"
+        realbox-layout-mode="${this.realboxLayoutMode_}">
       </ntp-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`

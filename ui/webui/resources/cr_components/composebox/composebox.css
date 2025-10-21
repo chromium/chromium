@@ -214,6 +214,10 @@
   width: 100%;
 }
 
+:host(:not[ntp-realbox-next-enabled]) #input {
+  transition: padding var(--height-expand-duration) var(--standard-curve);
+}
+
 #input {
   animation: color-change 5s infinite;
   background-color: inherit;
@@ -226,7 +230,6 @@
   outline: none;
   position: relative;
   resize: none;
-  transition: padding var(--height-expand-duration) var(--standard-curve);
 }
 
 #input::placeholder {
@@ -604,4 +607,29 @@
   margin-inline-start: var(--text-input-inline-start-spacing);
   margin-top: 8px;
   margin-bottom: 10px;
+}
+
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #iconContainer {
+  display: none;
+}
+
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #textContainer {
+  --text-input-inline-start-spacing: 40px;
+}
+
+:host([ntp-realbox-next-enabled]) #input {
+  --text-input-top-spacing: 14px;
+}
+
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #input {
+  --text-input-top-spacing: 8px;
+}
+
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #context {
+  margin-top: -48px;
+}
+
+:host([expanded_][show-dropdown_][ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) ntp-composebox-dropdown {
+  padding-bottom: 0;
+  padding-top: 8px;
 }
