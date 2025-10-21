@@ -127,7 +127,7 @@ function initialize() {
       }
     });
     addRtcStatsEvent(
-      data.request_type,
+      'navigator.mediaDevices.' + data.request_type,
       [data.rid, 0].join('-'),
       constraints,
       // correlation id.
@@ -141,7 +141,7 @@ function initialize() {
     userMediaTable.updateMedia(data);
     if (data.error) {
       addRtcStatsEvent(
-        data.request_type + 'OnFailure',
+        'navigator.mediaDevices.' + data.request_type + 'OnFailure',
         [data.rid, 0].join('-'),
         {
           error: data.error,
@@ -162,7 +162,7 @@ function initialize() {
         tracks.push(['video', track_data.id, track_data.label, data.stream_id]);
       }
       addRtcStatsEvent(
-        data.request_type + 'OnSuccess',
+        'navigator.mediaDevices.' + data.request_type + 'OnSuccess',
         [data.rid, 0].join('-'),
         tracks,
         // correlation id.

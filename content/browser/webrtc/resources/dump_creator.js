@@ -16,7 +16,6 @@ window.peerConnectionDataStore = peerConnectionDataStore;
 // RTCStats events. Used to create a dump in the file format
 // specified at
 // https://github.com/rtcstats/rtcstats/tree/main/packages/rtcstats-server#rtcstats-dump-file-format
-
 const rtcStatsEvents = [];
 let lastRtcStatsTimestamp = 0;
 export function addRtcStatsEvent(event_name, connection_id,
