@@ -92,12 +92,18 @@ inline constexpr int kSqlBackendStaticResourceSize = 300;
 // The SQL backend only supports stream 0 and stream 1.
 static const int kSqlBackendStreamCount = 2;
 
-// Divisor used to calculate the high and low watermarks for cache eviction.
-// The high watermark is `max_size - (max_size / divisor)`, and the low
-// watermark is `max_size - 2 * (max_size / divisor)`. Eviction is triggered
-// when the cache size exceeds the high watermark and continues until it is
-// below the low watermark.
-inline constexpr int kSqlBackendEvictionMarginDivisor = 20;
+// High watermark for cache eviction, in thousandths (permille) of the max size.
+// Eviction is triggered when the cache size exceeds this.
+inline constexpr int kSqlBackendEvictionHighWaterMarkPermille = 950;
+
+// High watermark for cache eviction during idle time, in thousandths (permille)
+// of the max size. This is lower than the regular high watermark to allow for
+// more proactive eviction when the browser is not busy.
+inline constexpr int kSqlBackendIdleTimeEvictionHighWaterMarkPermille = 925;
+
+// Low watermark for cache eviction, in thousandths (permille) of the max size.
+// Eviction continues until the cache size is below this.
+inline constexpr int kSqlBackendEvictionLowWaterMarkPermille = 900;
 
 // The delay after backend initialization before running a one-time cleanup task
 // to delete doomed entries. This task removes entries that were doomed in a

@@ -25,6 +25,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -79,6 +80,34 @@ bool CheckFakeIndexFile(const base::FilePath& path) {
   base::UmaHistogramEnumeration("Net.SqlDiskCache.FakeIndexFileError", error);
   return error == FakeIndexFileError::kOkNew ||
          error == FakeIndexFileError::kOkExisting;
+}
+
+// Checks if the browser is still idle. This is called within ShouldRunEviction.
+// The purpose of this is to prevent operations from running if the browser is
+// no longer idle in the time between SqlBackendImpl::OnBrowserIdle() being
+// called and the actual processing.
+bool IsBrowserIdle() {
+  return performance_scenarios::CurrentScenariosMatch(
+      performance_scenarios::ScenarioScope::kGlobal,
+      performance_scenarios::kDefaultIdleScenarios);
+}
+
+// Determines whether cache eviction should run based on the urgency and timing.
+// Eviction is triggered under three conditions:
+// 1. Not needed: Eviction is skipped.
+// 2. Idle time: Eviction runs only if it's an idle-time task and the browser
+//    is currently idle.
+// 3. Needed: Eviction runs immediately, regardless of browser state.
+bool ShouldRunEviction(SqlPersistentStore::EvictionUrgency eviction_urgency,
+                       bool is_idle_time_eviction) {
+  switch (eviction_urgency) {
+    case SqlPersistentStore::EvictionUrgency::kNotNeeded:
+      return false;
+    case SqlPersistentStore::EvictionUrgency::kIdleTime:
+      return is_idle_time_eviction && IsBrowserIdle();
+    case SqlPersistentStore::EvictionUrgency::kNeeded:
+      return true;
+  }
 }
 
 // Wraps a OnceCallback. If the returned callback is destroyed without being
@@ -787,6 +816,7 @@ void SqlBackendImpl::OnBrowserIdle() {
   store_->MaybeLoadInMemoryIndex(base::DoNothing());
   store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
   store_->MaybeRunCheckpoint(base::DoNothing());
+  MaybeTriggerEviction(/*is_idle_time_eviction=*/true);
 }
 
 void SqlBackendImpl::OnOptionalEntryOperationFinished(
@@ -821,7 +851,7 @@ void SqlBackendImpl::OnOptionalEntryOperationFinished(
                               ? EntryResult::MakeOpened(new_entry.get())
                               : EntryResult::MakeCreated(new_entry.get()));
 
-  MaybeTriggerEviction();
+  MaybeTriggerEviction(/*is_idle_time_eviction=*/false);
 }
 
 void SqlBackendImpl::OnEntryOperationFinished(
@@ -878,7 +908,7 @@ void SqlBackendImpl::OnSpeculativeCreateEntryFinished(
   } else {
     res_id_or_error->data = result.error();
   }
-  MaybeTriggerEviction();
+  MaybeTriggerEviction(/*is_idle_time_eviction=*/false);
 }
 
 void SqlBackendImpl::ReleaseActiveEntry(SqlEntryImpl& entry) {
@@ -1328,20 +1358,22 @@ int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
   return net::ERR_IO_PENDING;
 }
 
-void SqlBackendImpl::MaybeTriggerEviction() {
-  if (!store_->ShouldStartEviction() || eviction_operation_queued_) {
+void SqlBackendImpl::MaybeTriggerEviction(bool is_idle_time_eviction) {
+  if (eviction_operation_queued_ ||
+      !ShouldRunEviction(store_->GetEvictionUrgency(), is_idle_time_eviction)) {
     return;
   }
   eviction_operation_queued_ = true;
   exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
       base::BindOnce(&SqlBackendImpl::HandleTriggerEvictionOperation,
-                     weak_factory_.GetWeakPtr())));
+                     weak_factory_.GetWeakPtr(), is_idle_time_eviction)));
 }
 
 void SqlBackendImpl::HandleTriggerEvictionOperation(
+    bool is_idle_time_eviction,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   eviction_operation_queued_ = false;
-  if (!store_->ShouldStartEviction()) {
+  if (!ShouldRunEviction(store_->GetEvictionUrgency(), is_idle_time_eviction)) {
     return;
   }
   std::vector<SqlPersistentStore::ResId> excluded_ids_vec;
@@ -1356,7 +1388,7 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
   base::flat_set<SqlPersistentStore::ResId> excluded_ids(
       base::sorted_unique, std::move(excluded_ids_vec));
   store_->StartEviction(
-      std::move(excluded_ids),
+      std::move(excluded_ids), is_idle_time_eviction,
       base::BindOnce([](SqlPersistentStore::Error result) {}));
 }
 

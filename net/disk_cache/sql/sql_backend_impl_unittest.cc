@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -32,6 +34,11 @@
 
 using net::test::IsError;
 using net::test::IsOk;
+
+using performance_scenarios::InputScenario;
+using performance_scenarios::LoadingScenario;
+using performance_scenarios::PerformanceScenarioTestHelper;
+using performance_scenarios::ScenarioScope;
 
 namespace disk_cache {
 namespace {
@@ -118,6 +125,13 @@ class SqlBackendImplTest : public testing::Test {
       return true;
     }
     return false;
+  }
+
+  // Synchronously gets the total size of all entries.
+  int64_t GetSizeOfAllEntries(SqlBackendImpl& backend) {
+    base::test::TestFuture<int64_t> future;
+    backend.GetSqlStoreForTest()->GetSizeOfAllEntries(future.GetCallback());
+    return future.Get();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -1849,6 +1863,52 @@ TEST_F(SqlBackendImplTest,
 
   entry1->Close();
   entry2->Close();
+}
+
+TEST_F(SqlBackendImplTest, IdleTimeEviction) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kIdleTimeHighWatermark =
+      kMaxBytes * kSqlBackendIdleTimeEvictionHighWaterMarkPermille /
+      1000;  // 9250
+  auto buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(1000, 'x'));
+
+  auto backend = CreateBackendAndInit(kMaxBytes);
+
+  // Add entries to be above idle time watermark.
+  int i = 0;
+  while (GetSizeOfAllEntries(*backend) <= kIdleTimeHighWatermark) {
+    TestEntryResultCompletionCallback cb;
+    EntryResult result = cb.GetResult(backend->CreateEntry(
+        base::StringPrintf("key%d", i++), net::HIGHEST, cb.callback()));
+    ASSERT_THAT(result.net_error(), IsOk());
+    auto* entry = result.ReleaseEntry();
+    net::TestCompletionCallback write_cb;
+    EXPECT_EQ(
+        write_cb.GetResult(entry->WriteData(1, 0, buffer.get(), buffer->size(),
+                                            write_cb.callback(), false)),
+        buffer->size());
+    entry->Close();
+  }
+
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+  // Set the state to idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  // Trigger idle time eviction.
+  backend->OnBrowserIdle();
+
+  net::TestCompletionCallback flush_cb;
+  backend->FlushQueueForTest(flush_cb.callback());
+  EXPECT_THAT(flush_cb.WaitForResult(), IsOk());
+
+  // Eviction should have run and reduced the size.
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+  EXPECT_LE(GetSizeOfAllEntries(*backend), kLowWatermark);
 }
 
 }  // namespace

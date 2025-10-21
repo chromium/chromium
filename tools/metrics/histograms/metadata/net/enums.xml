@@ -3040,6 +3040,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="18" label="NotInitialized"/>
   <int value="19" label="CheckSumError"/>
   <int value="20" label="DatabaseClosed"/>
+  <int value="21" label="AbortedDueToBrowserActivity"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->

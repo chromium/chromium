@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <limits>
 #include <optional>
+#include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -21,6 +22,7 @@
 #include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -118,6 +120,7 @@ using InMemoryIndexAndDoomedResIdsOrError =
     base::expected<InMemoryIndexAndDoomedResIds, Error>;
 using RangeResultOrError = base::expected<RangeResult, Error>;
 using Int64OrError = base::expected<int64_t, Error>;
+using EvictionUrgency = SqlPersistentStore::EvictionUrgency;
 using OptionalEntryInfoWithIdAndKeyOrError =
     base::expected<OptionalEntryInfoWithIdAndKey, Error>;
 
@@ -127,26 +130,25 @@ using OptionalEntryInfoWithIdAndKeyOrError =
 // sequence that an eviction might be necessary without requiring an extra
 // cross-sequence call to check the cache size.
 template <typename ResultType>
-struct ResultAndEvictionRequested {
-  ResultAndEvictionRequested(ResultType result, bool eviction_requested)
-      : result(std::move(result)), eviction_requested(eviction_requested) {}
-  ~ResultAndEvictionRequested() = default;
-  ResultAndEvictionRequested(ResultAndEvictionRequested&&) = default;
+struct ResultAndEvictionUrgency {
+  ResultAndEvictionUrgency(ResultType result, EvictionUrgency eviction_urgency)
+      : result(std::move(result)), eviction_urgency(eviction_urgency) {}
+  ~ResultAndEvictionUrgency() = default;
+  ResultAndEvictionUrgency(ResultAndEvictionUrgency&&) = default;
 
   // The actual result of the operation.
   ResultType result;
 
-  // True if the cache size has exceeded the high watermark, signaling that an
-  // eviction task should be considered.
-  bool eviction_requested;
+  // The urgency of eviction.
+  EvictionUrgency eviction_urgency;
 };
 
-using ErrorAndEvictionRequested = ResultAndEvictionRequested<Error>;
+using ErrorAndEvictionRequested = ResultAndEvictionUrgency<Error>;
 using EntryInfoOrErrorAndEvictionRequested =
-    ResultAndEvictionRequested<EntryInfoOrError>;
-using IntOrErrorAndEvictionRequested = ResultAndEvictionRequested<IntOrError>;
+    ResultAndEvictionUrgency<EntryInfoOrError>;
+using IntOrErrorAndEvictionRequested = ResultAndEvictionUrgency<IntOrError>;
 using ResIdListOrErrorAndEvictionRequested =
-    ResultAndEvictionRequested<ResIdListOrError>;
+    ResultAndEvictionUrgency<ResIdListOrError>;
 
 bool IsBlobSizeValid(int64_t blob_start,
                      int64_t blob_end,
@@ -326,10 +328,13 @@ class Backend {
                 : PreferredCacheSize(
                       base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1),
                       type)),
-        high_watermark_(max_bytes_ -
-                        max_bytes_ / kSqlBackendEvictionMarginDivisor),
-        low_watermark_(max_bytes_ -
-                       2 * (max_bytes_ / kSqlBackendEvictionMarginDivisor)),
+        high_watermark_(max_bytes_ * kSqlBackendEvictionHighWaterMarkPermille /
+                        1000),
+        idle_time_high_watermark_(
+            max_bytes_ * kSqlBackendIdleTimeEvictionHighWaterMarkPermille /
+            1000),
+        low_watermark_(max_bytes_ * kSqlBackendEvictionLowWaterMarkPermille /
+                       1000),
         db_(sql::DatabaseOptions()
                 .set_exclusive_locking(true)
 #if BUILDFLAG(IS_WIN)
@@ -435,6 +440,7 @@ class Backend {
       base::TimeTicks start_time);
   ResIdListOrErrorAndEvictionRequested RunEviction(
       base::flat_set<ResId> excluded_res_ids,
+      bool is_idle_time_eviction,
       base::TimeTicks start_time);
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndex();
   bool MaybeRunCheckpoint();
@@ -510,7 +516,10 @@ class Backend {
       bool& corruption_detected);
   ResIdListOrError RunEvictionInternal(
       const base::flat_set<ResId>& excluded_res_ids,
-      bool& corruption_detected);
+      bool is_idle_time_eviction,
+      bool& corruption_detected,
+      base::TimeDelta& time_to_select_entries,
+      base::TimeDelta& time_to_delete_entries);
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndexInternal();
 
   // Trims blobs that overlap with the new write range [offset, end), and
@@ -587,8 +596,18 @@ class Backend {
 
   // Checks if the total size of entries exceeds the high watermark and the
   // database is open, to determine if eviction should be initiated.
-  bool ShouldStartEviction() const {
-    return db_.is_open() && (GetSizeOfAllEntries() > high_watermark_);
+  EvictionUrgency GetEvictionUrgency() const {
+    if (!db_.is_open()) {
+      return EvictionUrgency::kNotNeeded;
+    }
+    const int64_t current_size = GetSizeOfAllEntries();
+    if (current_size > high_watermark_) {
+      return EvictionUrgency::kNeeded;
+    }
+    if (current_size > idle_time_high_watermark_) {
+      return EvictionUrgency::kIdleTime;
+    }
+    return EvictionUrgency::kNotNeeded;
   }
 
   void MaybeCrashIfCorrupted(bool corruption_detected) {
@@ -599,6 +618,7 @@ class Backend {
   const base::FilePath path_;
   const int64_t max_bytes_;
   const int64_t high_watermark_;
+  const int64_t idle_time_high_watermark_;
   const int64_t low_watermark_;
   sql::Database db_;
   sql::MetaTable meta_table_;
@@ -783,7 +803,7 @@ EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
                    });
   MaybeCrashIfCorrupted(corruption_detected);
   return EntryInfoOrErrorAndEvictionRequested(std::move(result),
-                                              ShouldStartEviction());
+                                              GetEvictionUrgency());
 }
 
 EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key,
@@ -889,7 +909,7 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
                    });
   MaybeCrashIfCorrupted(corruption_detected);
   return EntryInfoOrErrorAndEvictionRequested(std::move(result),
-                                              ShouldStartEviction());
+                                              GetEvictionUrgency());
 }
 
 EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
@@ -977,7 +997,7 @@ ErrorAndEvictionRequested Backend::DoomEntry(const CacheEntryKey& key,
                      dict.Add("corruption_detected", corruption_detected);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ErrorAndEvictionRequested(result, ShouldStartEviction());
+  return ErrorAndEvictionRequested(result, GetEvictionUrgency());
 }
 
 Error Backend::DoomEntryInternal(ResId res_id, bool& corruption_detected) {
@@ -1052,7 +1072,7 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return ErrorAndEvictionRequested(result, ShouldStartEviction());
+  return ErrorAndEvictionRequested(result, GetEvictionUrgency());
 }
 
 Error Backend::DeleteDoomedEntryInternal(ResId res_id) {
@@ -1167,7 +1187,7 @@ ResIdListOrErrorAndEvictionRequested Backend::DeleteLiveEntry(
                    });
   MaybeCrashIfCorrupted(corruption_detected);
   return ResIdListOrErrorAndEvictionRequested(std::move(result),
-                                              ShouldStartEviction());
+                                              GetEvictionUrgency());
 }
 
 ResIdListOrError Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
@@ -1254,7 +1274,7 @@ ErrorAndEvictionRequested Backend::DeleteAllEntries(
                      PopulateTraceDetails(result, store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ErrorAndEvictionRequested(result, ShouldStartEviction());
+  return ErrorAndEvictionRequested(result, GetEvictionUrgency());
 }
 
 Error Backend::DeleteAllEntriesInternal(bool& corruption_detected) {
@@ -1324,7 +1344,7 @@ ResIdListOrErrorAndEvictionRequested Backend::DeleteLiveEntriesBetween(
                    });
   MaybeCrashIfCorrupted(corruption_detected);
   return ResIdListOrErrorAndEvictionRequested(std::move(result),
-                                              ShouldStartEviction());
+                                              GetEvictionUrgency());
 }
 
 ResIdListOrError Backend::DeleteLiveEntriesBetweenInternal(
@@ -1523,9 +1543,8 @@ ErrorAndEvictionRequested Backend::UpdateEntryHeaderAndLastUsed(
                      PopulateTraceDetails(result, store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ErrorAndEvictionRequested(result, ShouldStartEviction());
+  return ErrorAndEvictionRequested(result, GetEvictionUrgency());
 }
-
 Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     const CacheEntryKey& key,
     ResId res_id,
@@ -1606,7 +1625,7 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
                      PopulateTraceDetails(result, store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ErrorAndEvictionRequested(result, ShouldStartEviction());
+  return ErrorAndEvictionRequested(result, GetEvictionUrgency());
 }
 
 Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
@@ -2322,23 +2341,52 @@ Backend::OpenLatestEntryBeforeResIdInternal(ResId res_id_cursor,
 
 ResIdListOrErrorAndEvictionRequested Backend::RunEviction(
     base::flat_set<ResId> excluded_res_ids,
+    bool is_idle_time_eviction,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT0("disk_cache", "SqlBackend.RunEviction");
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.RunEviction", "data",
+                     [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("is_idle_time_eviction", is_idle_time_eviction);
+                     });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = RunEvictionInternal(excluded_res_ids, corruption_detected);
-  RecordTimeAndErrorResultHistogram(
-      "RunEviction", posting_delay, timer.Elapsed(),
-      result.error_or(Error::kOk), corruption_detected);
+  base::TimeDelta time_to_select_entries;
+  base::TimeDelta time_to_delete_entries;
+  auto result = RunEvictionInternal(excluded_res_ids, is_idle_time_eviction,
+                                    corruption_detected, time_to_select_entries,
+                                    time_to_delete_entries);
+  const std::string_view kMethodName =
+      is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
+  RecordTimeAndErrorResultHistogram(kMethodName, posting_delay, timer.Elapsed(),
+                                    result.error_or(Error::kOk),
+                                    corruption_detected);
   MaybeCrashIfCorrupted(corruption_detected);
+  if (result.has_value()) {
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat({kHistogramPrefix, kMethodName, ".TimeToSelectEntries"}),
+        time_to_select_entries);
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat({kHistogramPrefix, kMethodName, ".TimeToDeleteEntries"}),
+        time_to_delete_entries);
+    base::UmaHistogramCounts1000(
+        base::StrCat({kHistogramPrefix, kMethodName, ".EntryCount"}),
+        result->size());
+  }
+
   return ResIdListOrErrorAndEvictionRequested(std::move(result),
-                                              ShouldStartEviction());
+                                              GetEvictionUrgency());
 }
 
 ResIdListOrError Backend::RunEvictionInternal(
     const base::flat_set<ResId>& excluded_res_ids,
-    bool& corruption_detected) {
+    bool is_idle_time_eviction,
+    bool& corruption_detected,
+    base::TimeDelta& time_to_select_entries,
+    base::TimeDelta& time_to_delete_entries) {
+  if (is_idle_time_eviction && !IsBrowserIdle()) {
+    return base::unexpected(Error::kAbortedDueToBrowserActivity);
+  }
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return base::unexpected(db_error);
   }
@@ -2348,6 +2396,7 @@ ResIdListOrError Backend::RunEvictionInternal(
     return base::unexpected(Error::kFailedToExecute);
   }
 
+  base::ElapsedTimer timer_for_select_entries;
   ResIdList res_ids_to_be_deleted;
   int64_t entry_count_delta = 0;
   // Use checked numerics to safely update the total cache size.
@@ -2359,6 +2408,9 @@ ResIdListOrError Backend::RunEvictionInternal(
         SQL_FROM_HERE, GetQuery(Query::kRunEviction_SelectLiveResources)));
     while (size_to_be_removed > checked_removed_total_size.ValueOrDie() &&
            statement.Step()) {
+      if (is_idle_time_eviction && !IsBrowserIdle()) {
+        return base::unexpected(Error::kAbortedDueToBrowserActivity);
+      }
       const ResId res_id = ResId(statement.ColumnInt64(0));
       if (excluded_res_ids.contains(res_id)) {
         continue;
@@ -2376,8 +2428,13 @@ ResIdListOrError Backend::RunEvictionInternal(
       }
     }
   }
+  time_to_select_entries = timer_for_select_entries.Elapsed();
 
+  base::ElapsedTimer timer_for_delete_entries;
   for (const auto& res_id_to_be_deleted : res_ids_to_be_deleted) {
+    if (is_idle_time_eviction && !IsBrowserIdle()) {
+      return base::unexpected(Error::kAbortedDueToBrowserActivity);
+    }
     if (Error delete_result = DeleteBlobsByResId(res_id_to_be_deleted);
         delete_result != Error::kOk) {
       return base::unexpected(delete_result);
@@ -2389,6 +2446,8 @@ ResIdListOrError Backend::RunEvictionInternal(
       return base::unexpected(Error::kFailedToExecute);
     }
   }
+  time_to_delete_entries = timer_for_delete_entries.Elapsed();
+
   auto error = UpdateStoreStatusAndCommitTransaction(
       transaction, entry_count_delta, checked_total_size_delta.ValueOrDie(),
       corruption_detected);
@@ -2651,7 +2710,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                         IndexMismatchLocation::kDoomEntry);
                   }
                 }
-                weak_ptr->eviction_requested_ = result.eviction_requested;
+                weak_ptr->eviction_urgency_ = result.eviction_urgency;
                 // We should not run the callback when `this` was deleted.
                 std::move(callback).Run(std::move(result.result));
               }
@@ -2689,6 +2748,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                     weak_ptr->index_.has_value()) {
                   weak_ptr->index_->Clear();
                 }
+                weak_ptr->eviction_urgency_ = result.eviction_urgency;
                 // We should not run the callback when `this` was deleted.
                 std::move(callback).Run(std::move(result.result));
               }
@@ -2785,15 +2845,20 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .WithArgs(res_id_cursor, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  bool ShouldStartEviction() override {
-    return !eviction_in_progress_ && eviction_requested_;
+  EvictionUrgency GetEvictionUrgency() override {
+    if (eviction_in_progress_) {
+      return EvictionUrgency::kNotNeeded;
+    }
+    return eviction_urgency_;
   }
   void StartEviction(base::flat_set<ResId> excluded_res_ids,
+                     bool is_idle_time_eviction,
                      ErrorCallback callback) override {
     CHECK(!eviction_in_progress_);
     eviction_in_progress_ = true;
     backend_.AsyncCall(&Backend::RunEviction)
-        .WithArgs(std::move(excluded_res_ids), base::TimeTicks::Now())
+        .WithArgs(std::move(excluded_res_ids), is_idle_time_eviction,
+                  base::TimeTicks::Now())
         .Then(base::BindOnce(
             [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
                ErrorCallback callback,
@@ -2808,13 +2873,12 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                     }
                   }
                 }
-                weak_ptr->eviction_requested_ = result.eviction_requested;
+                weak_ptr->eviction_urgency_ = result.eviction_urgency;
                 std::move(callback).Run(result.result.error_or(Error::kOk));
               }
             },
             weak_factory_.GetWeakPtr(), std::move(callback)));
   }
-
   int64_t MaxFileSize() const override { return max_file_size_; }
   int64_t MaxSize() const override { return max_size_; }
   void GetEntryCount(Int32Callback callback) const override {
@@ -2908,15 +2972,15 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
 
   // Like `WrapCallback`, but also updates the `eviction_requested_` flag.
   template <typename ResultType>
-  base::OnceCallback<void(ResultAndEvictionRequested<ResultType>)>
+  base::OnceCallback<void(ResultAndEvictionUrgency<ResultType>)>
   WrapCallbackWithEvictionRequested(
       base::OnceCallback<void(ResultType)> callback) {
     return base::BindOnce(
         [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
            base::OnceCallback<void(ResultType)> callback,
-           ResultAndEvictionRequested<ResultType> result) {
+           ResultAndEvictionUrgency<ResultType> result) {
           if (weak_ptr) {
-            weak_ptr->eviction_requested_ = result.eviction_requested;
+            weak_ptr->eviction_urgency_ = result.eviction_urgency;
             // We should not run the callback when `this` was deleted.
             std::move(callback).Run(std::move(result.result));
           }
@@ -2942,7 +3006,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                 }
               }
             }
-            weak_ptr->eviction_requested_ = result.eviction_requested;
+            weak_ptr->eviction_urgency_ = result.eviction_urgency;
             // We should not run the callback when `this` was deleted.
             std::move(callback).Run(std::move(result.result));
           }
@@ -2965,7 +3029,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                 }
               }
             }
-            weak_ptr->eviction_requested_ = result.eviction_requested;
+            weak_ptr->eviction_urgency_ = result.eviction_urgency;
             // We should not run the callback when `this` was deleted.
             std::move(callback).Run(
                 std::move(result.result.error_or(Error::kOk)));
@@ -2985,7 +3049,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   int64_t max_size_ = 0;
   int64_t max_file_size_ = 0;
   bool eviction_in_progress_ = false;
-  bool eviction_requested_ = false;
+  EvictionUrgency eviction_urgency_ = EvictionUrgency::kNotNeeded;
   bool strict_corruption_check_enabled_ = false;
 
   // Whether loading of the in-memory index has been triggered.

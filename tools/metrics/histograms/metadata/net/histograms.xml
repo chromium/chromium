@@ -173,6 +173,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OpenOrCreateEntry"/>
   <variant name="ReadEntryData"/>
   <variant name="RunEviction"/>
+  <variant name="RunEvictionOnIdleTime"/>
   <variant name="UpdateEntryHeaderAndLastUsed"/>
   <variant name="UpdateEntryLastUsedByKey"/>
   <variant name="UpdateEntryLastUsedByResId"/>
@@ -7781,6 +7782,40 @@ chromium-metrics-reviews@google.com.
   <token key="TimeType">
     <variant name="FailureTime"/>
     <variant name="SuccessTime"/>
+  </token>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{EvictionType}.EntryCount"
+    units="entries" expires_after="2026-01-20">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the number of entries deleted during a single eviction run in the
+    SQL-based disk cache. This is recorded after the eviction is finished.
+  </summary>
+  <token key="EvictionType">
+    <variant name="RunEviction"/>
+    <variant name="RunEvictionOnIdleTime"/>
+  </token>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{EvictionType}.{TimeType}"
+    units="microseconds" expires_after="2026-01-20">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the time taken to {TimeType} during a single eviction run in the
+    SQL-based disk cache. This is recorded after the eviction is finished. The
+    histogram is not reported on Windows machines without high resolution
+    clocks.
+  </summary>
+  <token key="EvictionType">
+    <variant name="RunEviction"/>
+    <variant name="RunEvictionOnIdleTime"/>
+  </token>
+  <token key="TimeType">
+    <variant name="TimeToDeleteEntries" summary="delete entries"/>
+    <variant name="TimeToSelectEntries" summary="select entries for deletion"/>
   </token>
 </histogram>
 

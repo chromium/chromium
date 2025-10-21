@@ -72,9 +72,17 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kNotInitialized = 18,
     kCheckSumError = 19,
     kDatabaseClosed = 20,
-    kMaxValue = kDatabaseClosed
+    kAbortedDueToBrowserActivity = 21,
+    kMaxValue = kAbortedDueToBrowserActivity
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
+
+  // Represents the urgency of cache eviction.
+  enum class EvictionUrgency {
+    kNotNeeded,
+    kIdleTime,
+    kNeeded,
+  };
 
   // Holds information about a specific cache entry.
   struct NET_EXPORT_PRIVATE EntryInfo {
@@ -297,16 +305,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       OptionalEntryInfoWithIdAndKeyCallback callback) = 0;
 
   // Checks if cache eviction should be initiated. This is typically called by
-  // the backend after an operation that increases the cache size. Returns true
-  // if the cache size has exceeded the high watermark and an eviction is not
-  // already in progress.
-  virtual bool ShouldStartEviction() = 0;
+  // the backend after an operation that increases the cache size.
+  virtual EvictionUrgency GetEvictionUrgency() = 0;
 
   // Starts the eviction process to reduce the cache size. This method removes
   // the least recently used entries until the total cache size is below the
   // low watermark. Entries with ResId in `excluded_res_ids` (typically active
   // entries) will not be evicted. `callback` is invoked upon completion.
   virtual void StartEviction(base::flat_set<ResId> excluded_res_ids,
+                             bool is_idle_time_eviction,
                              ErrorCallback callback) = 0;
 
   // The maximum size of an individual cache entry's data stream.

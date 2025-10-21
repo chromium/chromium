@@ -408,9 +408,11 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Synchronous wrapper for StartEviction.
   SqlPersistentStore::Error StartEviction(
-      base::flat_set<SqlPersistentStore::ResId> excluded_res_ids) {
+      base::flat_set<SqlPersistentStore::ResId> excluded_res_ids,
+      bool is_idle_time_eviction) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->StartEviction(std::move(excluded_res_ids), future.GetCallback());
+    store_->StartEviction(std::move(excluded_res_ids), is_idle_time_eviction,
+                          future.GetCallback());
     return future.Take();
   }
 
@@ -3691,11 +3693,12 @@ TEST_F(SqlPersistentStoreTest,
   // Use a small max_bytes to make it easy to cross the high watermark.
   const int64_t kMaxBytes = 10000;
   const int64_t kHighWatermark =
-      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
   CreateStore(kMaxBytes);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
 
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   // Add entries until the size is just over the high watermark.
   int i = 0;
@@ -3706,20 +3709,22 @@ TEST_F(SqlPersistentStoreTest,
     // Before the size exceeds the watermark, ShouldStartEviction should be
     // false.
     if (GetSizeOfAllEntries() <= kHighWatermark) {
-      EXPECT_FALSE(store_->ShouldStartEviction());
+      EXPECT_NE(store_->GetEvictionUrgency(),
+                SqlPersistentStore::EvictionUrgency::kNeeded);
     }
   }
 
   // The last CreateEntry() pushed the size over the high watermark.
-  EXPECT_TRUE(store_->ShouldStartEviction());
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 }
 
 TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
   const int64_t kMaxBytes = 10000;
   const int64_t kHighWatermark =
-      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
   const int64_t kLowWatermark =
-      kMaxBytes - 2 * (kMaxBytes / kSqlBackendEvictionMarginDivisor);  // 9000
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
 
   CreateStore(kMaxBytes);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
@@ -3741,10 +3746,12 @@ TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
   const int64_t size_before_eviction = GetSizeOfAllEntries();
   const int32_t count_before_eviction = GetEntryCount();
   EXPECT_GT(size_before_eviction, kHighWatermark);
-  EXPECT_TRUE(store_->ShouldStartEviction());
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   // Start eviction.
-  ASSERT_EQ(StartEviction({}), SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
 
   // After eviction, size should be <= low watermark.
   const int64_t size_after_eviction = GetSizeOfAllEntries();
@@ -3771,15 +3778,16 @@ TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
     EXPECT_TRUE(result->has_value());
   }
 
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 }
 
 TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
   const int64_t kMaxBytes = 10000;
   const int64_t kHighWatermark =
-      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
   const int64_t kLowWatermark =
-      kMaxBytes - 2 * (kMaxBytes / kSqlBackendEvictionMarginDivisor);  // 9000
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
 
   CreateStore(kMaxBytes);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
@@ -3803,13 +3811,15 @@ TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
   const int64_t size_before_eviction = GetSizeOfAllEntries();
   const int32_t count_before_eviction = GetEntryCount();
   EXPECT_GT(size_before_eviction, kHighWatermark);
-  EXPECT_TRUE(store_->ShouldStartEviction());
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   // Exclude the oldest entry.
   base::flat_set<SqlPersistentStore::ResId> excluded_res_ids = {*first_res_id};
 
   // Start eviction.
-  ASSERT_EQ(StartEviction(std::move(excluded_res_ids)),
+  ASSERT_EQ(StartEviction(std::move(excluded_res_ids),
+                          /*is_idle_time_eviction=*/false),
             SqlPersistentStore::Error::kOk);
 
   // After eviction, size should be <= low watermark.
@@ -3834,13 +3844,14 @@ TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
     EXPECT_FALSE(result->has_value());
   }
 
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 }
 
 TEST_F(SqlPersistentStoreTest, ShouldStartEvictionReturnsFalseWhileInProgress) {
   const int64_t kMaxBytes = 10000;
   const int64_t kHighWatermark =
-      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
 
   CreateStore(kMaxBytes);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
@@ -3853,19 +3864,23 @@ TEST_F(SqlPersistentStoreTest, ShouldStartEvictionReturnsFalseWhileInProgress) {
     ASSERT_TRUE(create_result.has_value());
   }
 
-  EXPECT_TRUE(store_->ShouldStartEviction());
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   base::test::TestFuture<SqlPersistentStore::Error> future;
-  store_->StartEviction({}, future.GetCallback());
+  store_->StartEviction({}, /*is_idle_time_eviction=*/false,
+                        future.GetCallback());
 
   // While eviction is in progress, ShouldStartEviction should return false.
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   // Let eviction finish.
   ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
 
   // After eviction, size is below watermark, so it should still be false.
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 }
 
 int64_t CheckedGetFileSize(const base::FilePath& file_path) {
@@ -4216,7 +4231,8 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
                 .error(),
             SqlPersistentStore::Error::kFailedForTesting);
 
-  EXPECT_EQ(StartEviction({}), SqlPersistentStore::Error::kFailedForTesting);
+  EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kFailedForTesting);
 
   EXPECT_FALSE(
       OpenLatestEntryBeforeResId(
@@ -4307,7 +4323,8 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
           SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()))
           .has_value());
 
-  EXPECT_EQ(StartEviction({}), SqlPersistentStore::Error::kDatabaseClosed);
+  EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kDatabaseClosed);
 
   EXPECT_TRUE(LoadInMemoryIndex(SqlPersistentStore::Error::kDatabaseClosed));
 }
@@ -4319,24 +4336,112 @@ TEST_F(SqlPersistentStoreTest,
   CreateStore(kMaxBytes);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
 
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   // Add entries until the size is just over the high watermark.
   int i = 0;
-  while (!store_->ShouldStartEviction()) {
+  while (store_->GetEvictionUrgency() !=
+         SqlPersistentStore::EvictionUrgency::kNeeded) {
     const CacheEntryKey key(base::StringPrintf("key%d", i++));
     auto create_result = CreateEntry(key);
     ASSERT_TRUE(create_result.has_value());
   }
 
-  EXPECT_TRUE(store_->ShouldStartEviction());
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
 
   store_->RazeAndPoisonForTesting();
 
   EXPECT_EQ(CreateEntry(CacheEntryKey("test")).error(),
             SqlPersistentStore::Error::kDatabaseClosed);
 
-  EXPECT_FALSE(store_->ShouldStartEviction());
+  EXPECT_NE(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEvictionUrgency) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  const int64_t kIdleTimeHighWatermark =
+      kMaxBytes * kSqlBackendIdleTimeEvictionHighWaterMarkPermille /
+      1000;  // 9250
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNotNeeded);
+
+  // Add entries until the size is just over the idle time high watermark.
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kIdleTimeHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+  }
+
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kIdleTime);
+
+  // Add more entries until the size is just over the high watermark.
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+  }
+
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
+}
+
+TEST_F(SqlPersistentStoreTest, IdleTimeEviction) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kIdleTimeHighWatermark =
+      kMaxBytes * kSqlBackendIdleTimeEvictionHighWaterMarkPermille /
+      1000;  // 9250
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add entries to trigger idle time eviction.
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kIdleTimeHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+  }
+
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kIdleTime);
+
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+
+  // Set the state to non-idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kVisiblePageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  // Idle time eviction should be aborted
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/true),
+            SqlPersistentStore::Error::kAbortedDueToBrowserActivity);
+
+  // Set the state to idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  // Start idle time eviction.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/true),
+            SqlPersistentStore::Error::kOk);
+
+  // Eviction should have run and reduced the size.
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+  EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
 }
 
 }  // namespace disk_cache
