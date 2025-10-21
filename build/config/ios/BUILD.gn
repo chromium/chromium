@@ -271,6 +271,15 @@ config("xctest_config") {
 # called from Swift, you need to include the path to the modulemap.
 config("enable_swift_cxx_interop") {
   swiftflags = [ "-cxx-interoperability-mode=default" ]
+
+  # TODO(crbug.com/451945291): Move the following compiler flags to
+  # build/config/compiler/BUILD.gn when Swift/C++ interop is enabled by default.
+  # The '-std=c++' flag is not allowed with 'Objective-C'.
+  if (use_cxx23) {
+    swiftflags += [ "-Xcc=-std=c++23" ]
+  } else {
+    swiftflags += [ "-Xcc=-std=c++20" ]
+  }
 }
 
 group("xctest") {
