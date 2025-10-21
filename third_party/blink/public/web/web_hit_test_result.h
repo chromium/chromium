@@ -54,6 +54,9 @@ class BLINK_EXPORT WebHitTestResult {
   // The node that was hit (only one for point-based tests).
   WebNode GetNode() const;
 
+  // The node or pseudo-node that was hit (only one for point-based tests).
+  WebNode GetNodeOrPseudoNode() const;
+
   // The element containing the node that was hit (only one for point-based
   // tests).
   WebElement GetElement() const;

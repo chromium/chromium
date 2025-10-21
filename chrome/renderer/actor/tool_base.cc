@@ -95,7 +95,7 @@ ToolBase::ResolveResult ToolBase::ResolveTarget(
     const blink::WebHitTestResult hit_test_result =
         frame_->GetWebFrame()->FrameWidget()->HitTestResultAt(
             resolved_target.point);
-    resolved_target.node = hit_test_result.GetNode();
+    resolved_target.node = hit_test_result.GetNodeOrPseudoNode();
   } else if (target.is_dom_node_id()) {
     int32_t dom_node_id = target.get_dom_node_id();
     resolved_target.node = GetNodeFromId(frame_.get(), dom_node_id);

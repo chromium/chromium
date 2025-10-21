@@ -214,6 +214,55 @@ IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
                       "() => document.getElementById('input2').value", ""));
 }
 
+// Tests that typing at coordinates succeed
+IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest, TypeActionCoordinatesSucceeds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTypingTestTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
+
+  const std::string_view kTypedString = "test";
+
+  gfx::Rect current_bounds;
+  auto type_in_current_bounds = base::BindLambdaForTesting(
+      // Capture the rect by reference to get its value at execution time.
+      [this, &current_bounds, kTypedString]() {
+        gfx::Point coordinate = current_bounds.CenterPoint();
+        Actions action =
+            actor::MakeType(tab_handle_, coordinate, kTypedString,
+                            /*follow_by_enter=*/false,
+                            optimization_guide::proto::TypeAction::TypeMode::
+                                TypeAction_TypeMode_DELETE_EXISTING);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kTypingTestTabId),
+      GetPageContextFromFocusedTab(),
+      // First test case - input in a form
+      GetClientRect(kTypingTestTabId, "input", current_bounds),
+      ExecuteAction(type_in_current_bounds),
+      WaitForJsResult(kTypingTestTabId,
+                      "()=>document.getElementById('input').value",
+                      kTypedString),
+      // Second test case - editable div
+      GetClientRect(kTypingTestTabId, "editableDiv", current_bounds),
+      ExecuteAction(type_in_current_bounds),
+      WaitForJsResult(kTypingTestTabId,
+                      "()=>document.getElementById('editableDiv').textContent",
+                      kTypedString),
+      // Third test case - input obscured by pseudo-element. Just try to click
+      // and type on the container.
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kTypingTestTabId, "pseudoContainer", current_bounds),
+      ExecuteAction(type_in_current_bounds),
+      WaitForJsResult(kTypingTestTabId,
+                      "()=>document.getElementById('pseudoInput').value",
+                      kTypedString));
+}
+
 // Tests that attempting to type at an out-of-bounds coordinate fails.
 IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
                        TypeActionOffScreenCoordinateFails) {

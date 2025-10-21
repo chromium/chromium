@@ -12,6 +12,32 @@
         width: 50px;
         height: 50px;
       }
+      #pseudoContainer {
+        position: relative;
+        width: 200px;
+        height: 40px;
+      }
+      #pseudoContainer::after {
+        content: 'Placeholder text';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+      #pseudoInput {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      #pseudoContainer:focus-within::after {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -24,6 +50,10 @@
     <!-- tabindex="0" makes the div focusable -->
     <div id="focusableDiv" tabindex="0" class="input-event-test"></div>
     <div id="unfocusableDiv" class="input-event-test"></div>
+    <!-- This div contains an ::after CSS pseudo-element that obscures the input -->
+    <div id="pseudoContainer">
+      <input id="pseudoInput" class="input-event-test" type="text">
+    </div>
     <script>
       let input_event_log = [];
       let log_handler = e => {
@@ -49,6 +79,10 @@
       }
       document.body.addEventListener('keydown', body_log_handler);
       document.body.addEventListener('keyup', body_log_handler);
+
+      document.getElementById('pseudoContainer').addEventListener('click', (ev) => {
+        document.getElementById('pseudoInput').focus();
+      });
     </script>
   </body>
 </html>
