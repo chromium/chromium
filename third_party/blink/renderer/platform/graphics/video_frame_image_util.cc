@@ -131,7 +131,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
-          gfx::Rect(resource_provider->Size()), video_renderer,
+          video_renderer,
           /*ignore_video_transformation=*/prefer_tagged_orientation,
           /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb)) {
     return nullptr;
@@ -148,13 +148,11 @@ bool DrawVideoFrameIntoResourceProvider(
     scoped_refptr<media::VideoFrame> frame,
     CanvasResourceProvider* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
-    const gfx::Rect& dest_rect,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool ignore_video_transformation,
     bool reinterpret_video_as_srgb) {
   DCHECK(frame);
   DCHECK(resource_provider);
-  DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
 
   // This method should only be called with context providers supporting OOP-R.
   CHECK(!raster_context_provider ||
@@ -195,7 +193,7 @@ bool DrawVideoFrameIntoResourceProvider(
   }
 
   media::PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect = gfx::RectF(dest_rect);
+  params.dest_rect = gfx::RectF(resource_provider->Size());
   params.transformation =
       ignore_video_transformation
           ? media::kNoTransformation

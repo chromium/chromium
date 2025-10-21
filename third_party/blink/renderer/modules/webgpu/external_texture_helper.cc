@@ -428,11 +428,10 @@ ExternalTexture CreateExternalTexture(
         sync_token, /*use_visible_rect=*/true);
     resource_provider->EndExternalWrite(sync_token);
   } else {
-    const gfx::Rect dest_rect = gfx::Rect(media_video_frame->natural_size());
     // Delegate video transformation to Dawn.
     if (!DrawVideoFrameIntoResourceProvider(
             std::move(media_video_frame), resource_provider,
-            raster_context_provider, dest_rect, video_renderer,
+            raster_context_provider, video_renderer,
             /* ignore_video_transformation */ true)) {
       return {};
     }
