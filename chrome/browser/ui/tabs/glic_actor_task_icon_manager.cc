@@ -70,11 +70,12 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
 
   // TODO(crbug.com/446734119): Instead ActorTask should hold a glic
   // InstanceId and use that to retrieve the instance.
-  glic::GlicInstance* instance = window_controller_->GetInstances().front();
-  if (!instance) {
+  std::vector<glic::GlicInstance*> instances =
+      window_controller_->GetInstances();
+  if (instances.empty()) {
     return;
   }
-
+  glic::GlicInstance* instance = instances.front();
   if (features::kGlicActorUiNudgeRedesign.Get()) {
     UpdateTaskNudge();
   } else {

@@ -157,6 +157,8 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
   WithTestParams() {
     if (GetParam().multi_instance) {
       test_param_features_.InitAndEnableFeature(features::kGlicMultiInstance);
+    } else {
+      test_param_features_.InitAndDisableFeature(features::kGlicMultiInstance);
     }
   }
 

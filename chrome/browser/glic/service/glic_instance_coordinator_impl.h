@@ -66,7 +66,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
   void OnInstanceVisibilityChanged(GlicInstance* instance,
                                    bool is_showing) override;
-  void OnInstanceActivationChanged(GlicInstance* instance, bool is_active) override;
+  void OnInstanceActivationChanged(GlicInstance* instance,
+                                   bool is_active) override;
   void SwitchConversation(
       GlicInstanceImpl& source_instance,
       const ShowOptions& options,
@@ -130,6 +131,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
+  bool HasWarmedInstanceForTesting() const {
+    return warmed_instance_ != nullptr;
+  }
 
  private:
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
