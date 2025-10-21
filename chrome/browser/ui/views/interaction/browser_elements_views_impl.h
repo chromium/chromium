@@ -28,7 +28,9 @@ class BrowserElementsViewsImpl : public BrowserElementsViews {
  private:
   // BrowserElementsViews:
   ui::ElementContext GetContext() override;
+  views::Widget* GetPrimaryWindowWidget() override;
   void TearDown() override;
+  bool IsInitialized() const override;
 
   raw_ptr<views::View> context_view_ = nullptr;
 };

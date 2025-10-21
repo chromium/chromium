@@ -34,7 +34,9 @@ class BrowserElementsWebUiBrowser : public BrowserElementsViews {
  private:
   // BrowserElements:
   ui::ElementContext GetContext() override;
+  views::Widget* GetPrimaryWindowWidget() override;
   void TearDown() override;
+  bool IsInitialized() const override;
 
   raw_ptr<views::Widget> browser_widget_ = nullptr;
 };

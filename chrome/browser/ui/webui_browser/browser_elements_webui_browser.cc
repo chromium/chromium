@@ -48,3 +48,11 @@ ui::ElementContext BrowserElementsWebUiBrowser::GetContext() {
 
   return views::ElementTrackerViews::GetContextForWidget(browser_widget_);
 }
+
+views::Widget* BrowserElementsWebUiBrowser::GetPrimaryWindowWidget() {
+  return browser_widget_;
+}
+
+bool BrowserElementsWebUiBrowser::IsInitialized() const {
+  return browser_widget_ != nullptr;
+}

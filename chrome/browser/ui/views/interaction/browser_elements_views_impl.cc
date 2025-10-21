@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -24,9 +25,20 @@ void BrowserElementsViewsImpl::Init(views::View* view) {
 }
 
 void BrowserElementsViewsImpl::TearDown() {
+  BrowserElementsViews::TearDown();
   context_view_ = nullptr;
 }
 
 ui::ElementContext BrowserElementsViewsImpl::GetContext() {
-  return views::ElementTrackerViews::GetContextForView(context_view_);
+  return context_view_
+             ? views::ElementTrackerViews::GetContextForView(context_view_)
+             : ui::ElementContext();
+}
+
+views::Widget* BrowserElementsViewsImpl::GetPrimaryWindowWidget() {
+  return context_view_ ? context_view_->GetWidget() : nullptr;
+}
+
+bool BrowserElementsViewsImpl::IsInitialized() const {
+  return context_view_ != nullptr;
 }

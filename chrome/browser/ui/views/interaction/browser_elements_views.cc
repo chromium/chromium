@@ -8,12 +8,27 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
+DEFINE_TYPED_IDENTIFIER_VALUE(views::WebView,
+                              kActiveContentsWebViewRetrievalId);
+
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(BrowserElementsViews)
 
 BrowserElementsViews::BrowserElementsViews(BrowserWindowInterface& browser)
     : BrowserElements(browser) {}
 
 BrowserElementsViews::~BrowserElementsViews() = default;
+
+views::Widget* BrowserElementsViews::GetPrimaryWindowWidget() {
+  const auto context = GetContext();
+  return context
+             ? views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
+                   context)
+             : nullptr;
+}
+
+void BrowserElementsViews::TearDown() {
+  retrieval_callbacks_.clear();
+}
 
 // static
 BrowserElementsViews* BrowserElementsViews::From(
