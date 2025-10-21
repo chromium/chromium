@@ -148,6 +148,7 @@ dependencies {
 
     // Used by LeakCanary.
     compileLatest 'androidx.work:work-runtime:+'
+    compileLatest 'androidx.work:work-multiprocess:+'
 
     // testCompile targets have test_only = true.
     androidTestCompileLatest 'androidx.fragment:fragment-testing:+'
