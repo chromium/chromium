@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -1711,9 +1712,19 @@ void RenderViewContextMenu::AppendLinkItems() {
       Browser* const browser = GetBrowser();
       if (base::FeatureList::IsEnabled(features::kSideBySide) && browser &&
           browser->is_type_normal()) {
+        int string_id = IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW;
+        tabs::TabInterface* tab =
+            tabs::TabInterface::MaybeGetFromContents(GetWebContents());
+        if (tab && tab->IsSplit()) {
+          split_tabs::SplitTabData* split_data =
+              browser->tab_strip_model()->GetSplitData(tab->GetSplit().value());
+          string_id = split_data->ListTabs()[base::i18n::IsRTL() ? 1 : 0] == tab
+                          ? IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW
+                          : IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW;
+        }
+
         menu_model_.AddItemWithStringIdAndIcon(
-            IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
-            IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+            IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, string_id,
             ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
                                            kTabMenuIconSize));
         const int command_index =

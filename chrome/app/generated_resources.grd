@@ -657,6 +657,12 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" desc="The name of the open a link in split view command">
             Open link in split view
           </message>
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW" desc="The name of the open a link in left side of a split view command">
+            Open link in left view
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW" desc="The name of the open a link in right side of a split view command">
+            Open link in right view
+          </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKINPROFILES" desc="The name of the open a link as a different user context menu">
             Open link as
           </message>
@@ -968,6 +974,12 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" desc="In Title Case: The name of the open a link in split view command">
             Open Link in Split View
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW" desc="In Title Case: The name of the open a link in left side of a split view command">
+            Open Link in Left View
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW" desc="In Title Case: The name of the open a link in right side of a split view command">
+            Open Link in Right View
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKINPROFILES" desc="In Title Case: The name of the open a link as a different user context menu">
             Open Link as
