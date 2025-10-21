@@ -12402,7 +12402,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledFirstJob",
+                    "params": {
+                        "tcp_based_attempt_delay_behavior": "first_job"
+                    },
                     "enable_features": [
                         "HappyEyeballsV3"
                     ]
