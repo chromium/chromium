@@ -88,6 +88,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataService.MemoryMapCacheSize" units="count"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Records the size of the assets cache used when using a shared memory region.
+    If the cache is over the size limit, a dump without crashing is triggered.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataService.WinLastError" enum="WinGetLastError"
     expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>
