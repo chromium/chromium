@@ -75,9 +75,9 @@ source_set("autofill") {
       "address_bubbles_controller.h",
       "address_bubbles_icon_controller.h",
       "address_editor_controller.h",
-      "autofill_ai/save_or_update_autofill_ai_data_controller.cc",
-      "autofill_ai/save_or_update_autofill_ai_data_controller.h",
-      "autofill_ai/save_or_update_autofill_ai_data_controller_impl.h",
+      "autofill_ai/autofill_ai_import_data_controller.cc",
+      "autofill_ai/autofill_ai_import_data_controller.h",
+      "autofill_ai/autofill_ai_import_data_controller_impl.h",
       "autofill_context_menu_manager.h",
       "autofill_field_promo_controller.h",
       "autofill_field_promo_controller_impl.h",
@@ -194,7 +194,7 @@ source_set("impl") {
       "address_bubbles_controller.cc",
       "address_bubbles_icon_controller.cc",
       "address_editor_controller.cc",
-      "autofill_ai/save_or_update_autofill_ai_data_controller_impl.cc",
+      "autofill_ai/autofill_ai_import_data_controller_impl.cc",
       "autofill_context_menu_manager.cc",
       "autofill_field_promo_controller_impl.cc",
       "autofill_popup_controller_impl.cc",
@@ -348,8 +348,8 @@ source_set("test_support") {
     sources += [ "autofill_keyboard_accessory_controller_impl_test_api.h" ]
   } else {
     sources += [
-      "autofill_ai/mock_save_or_update_ai_data_controller.cc",
-      "autofill_ai/mock_save_or_update_ai_data_controller.h",
+      "autofill_ai/mock_autofill_ai_import_data_controller.cc",
+      "autofill_ai/mock_autofill_ai_import_data_controller.h",
       "autofill_popup_controller_impl_test_api.h",
       "mock_autofill_popup_controller.cc",
       "mock_autofill_popup_controller.h",
@@ -470,7 +470,7 @@ if (!is_android) {
 
     sources = [
       "address_bubbles_controller_browsertest.cc",
-      "autofill_ai/save_or_update_autofill_ai_data_controller_impl_browsertest.cc",
+      "autofill_ai/autofill_ai_import_data_controller_impl_browsertest.cc",
       "autofill_context_menu_manager_browsertest.cc",
       "delete_address_profile_dialog_controller_impl_browsertest.cc",
       "edit_address_profile_dialog_controller_impl_browsertest.cc",

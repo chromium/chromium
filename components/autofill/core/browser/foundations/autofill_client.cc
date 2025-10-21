@@ -54,30 +54,28 @@ AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
 AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
     AutofillClient::PopupOpenArgs&&) = default;
 
-AutofillClient::EntitySaveOrUpdatePromptResult::EntitySaveOrUpdatePromptResult(
+AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
     bool did_user_decline,
     std::optional<EntityInstance> entity)
     : did_user_decline(did_user_decline), entity(std::move(entity)) {}
 
-AutofillClient::EntitySaveOrUpdatePromptResult::
-    EntitySaveOrUpdatePromptResult() = default;
+AutofillClient::EntityImportPromptResult::EntityImportPromptResult() = default;
 
-AutofillClient::EntitySaveOrUpdatePromptResult::EntitySaveOrUpdatePromptResult(
-    const AutofillClient::EntitySaveOrUpdatePromptResult&) = default;
+AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
+    const AutofillClient::EntityImportPromptResult&) = default;
 
-AutofillClient::EntitySaveOrUpdatePromptResult::EntitySaveOrUpdatePromptResult(
-    AutofillClient::EntitySaveOrUpdatePromptResult&&) = default;
+AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
+    AutofillClient::EntityImportPromptResult&&) = default;
 
-AutofillClient::EntitySaveOrUpdatePromptResult&
-AutofillClient::EntitySaveOrUpdatePromptResult::operator=(
-    const AutofillClient::EntitySaveOrUpdatePromptResult&) = default;
+AutofillClient::EntityImportPromptResult&
+AutofillClient::EntityImportPromptResult::operator=(
+    const AutofillClient::EntityImportPromptResult&) = default;
 
-AutofillClient::EntitySaveOrUpdatePromptResult&
-AutofillClient::EntitySaveOrUpdatePromptResult::operator=(
-    AutofillClient::EntitySaveOrUpdatePromptResult&&) = default;
+AutofillClient::EntityImportPromptResult&
+AutofillClient::EntityImportPromptResult::operator=(
+    AutofillClient::EntityImportPromptResult&&) = default;
 
-AutofillClient::EntitySaveOrUpdatePromptResult::
-    ~EntitySaveOrUpdatePromptResult() = default;
+AutofillClient::EntityImportPromptResult::~EntityImportPromptResult() = default;
 
 version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
@@ -329,10 +327,10 @@ AutofillClient::GetMqlsUploadService() {
   return nullptr;
 }
 
-void AutofillClient::ShowEntitySaveOrUpdateBubble(
+void AutofillClient::ShowEntityImportBubble(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
-    EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback) {}
+    EntityImportPromptResultCallback prompt_closed_callback) {}
 
 void AutofillClient::ShowEmailVerifiedToast() {
   NOTIMPLEMENTED();

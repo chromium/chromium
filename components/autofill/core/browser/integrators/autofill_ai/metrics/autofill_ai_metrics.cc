@@ -66,13 +66,13 @@ std::string_view EntityRecordTypeToMetricsString(
 
 // LINT.IfChange(EntityPromptTypeToMetricsString)
 std::string_view EntityPromptTypeToMetricsString(
-    AutofillClient::AutofillAiPromptTypes prompt_type) {
+    AutofillClient::AutofillAiImportPromptType prompt_type) {
   switch (prompt_type) {
-    case AutofillClient::AutofillAiPromptTypes::kSave:
+    case AutofillClient::AutofillAiImportPromptType::kSave:
       return "SavePrompt";
-    case AutofillClient::AutofillAiPromptTypes::kUpdate:
+    case AutofillClient::AutofillAiImportPromptType::kUpdate:
       return "UpdatePrompt";
-    case AutofillClient::AutofillAiPromptTypes::kMigrate:
+    case AutofillClient::AutofillAiImportPromptType::kMigrate:
       return "MigratePrompt";
   }
   NOTREACHED();

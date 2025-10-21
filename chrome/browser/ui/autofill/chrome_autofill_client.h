@@ -237,11 +237,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
       plus_addresses::hats::SurveyType survey_type) final;
   optimization_guide::ModelQualityLogsUploaderService* GetMqlsUploadService()
       override;
-  void ShowEntitySaveOrUpdateBubble(
+  void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
-      EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
-      override;
+      EntityImportPromptResultCallback prompt_closed_callback) override;
   void ShowEmailVerifiedToast() final;
 
   // TODO(crbug.com/407666146): Create a test API.

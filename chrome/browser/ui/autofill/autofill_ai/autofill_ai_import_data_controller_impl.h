@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_IMPL_H_
 
 #include <optional>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
@@ -27,27 +27,27 @@ class EntityInstance;
 // data bubble.
 // TODO(crbug.com/361434879): Introduce tests when this class has more than
 // simple forwarding method.
-class SaveOrUpdateAutofillAiDataControllerImpl
+class AutofillAiImportDataControllerImpl
     : public AutofillBubbleControllerBase,
-      public SaveOrUpdateAutofillAiDataController,
-      public content::WebContentsUserData<
-          SaveOrUpdateAutofillAiDataControllerImpl> {
+      public AutofillAiImportDataController,
+      public content::WebContentsUserData<AutofillAiImportDataControllerImpl> {
  public:
-  SaveOrUpdateAutofillAiDataControllerImpl(
-      const SaveOrUpdateAutofillAiDataControllerImpl&) = delete;
-  SaveOrUpdateAutofillAiDataControllerImpl& operator=(
-      const SaveOrUpdateAutofillAiDataControllerImpl&) = delete;
-  ~SaveOrUpdateAutofillAiDataControllerImpl() override;
+  AutofillAiImportDataControllerImpl(
+      const AutofillAiImportDataControllerImpl&) = delete;
+  AutofillAiImportDataControllerImpl& operator=(
+      const AutofillAiImportDataControllerImpl&) = delete;
+  ~AutofillAiImportDataControllerImpl() override;
 
-  // SaveOrUpdateAutofillAiDataController:
+  // AutofillAiImportDataController:
   void ShowPrompt(EntityInstance new_entity,
                   std::optional<EntityInstance> old_entity,
-                  AutofillClient::EntitySaveOrUpdatePromptResultCallback
-                      save_prompt_acceptance_callback) override;
+                  AutofillClient::EntityImportPromptResultCallback
+                      prompt_closed_callback) override;
   void OnSaveButtonClicked() override;
   base::optional_ref<const EntityInstance> GetAutofillAiData() const override;
-  void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
-  base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() override;
+  void OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleClosedReason closed_reason) override;
+  base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override;
   std::u16string GetDialogTitle() const override;
   std::u16string GetPrimaryAccountEmail() const override;
   bool IsWalletableEntity() const override;
@@ -68,7 +68,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   void OnVisibilityChanged(content::Visibility visibility) override;
 
  protected:
-  explicit SaveOrUpdateAutofillAiDataControllerImpl(
+  explicit AutofillAiImportDataControllerImpl(
       content::WebContents* web_contents,
       const std::string& app_locale);
 
@@ -77,18 +77,17 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   void DoShowBubble() override;
 
  private:
-  friend class content::WebContentsUserData<
-      SaveOrUpdateAutofillAiDataControllerImpl>;
-  friend class SaveOrUpdateAutofillAiDataControllerImplTest;
+  friend class content::WebContentsUserData<AutofillAiImportDataControllerImpl>;
+  friend class AutofillAiImportDataControllerImplTest;
 
-  // Configures the controller's state for the Autofill AI data save/update
-  // prompt. `new_entity` is the data detected on the page, `old_entity` is the
-  // existing data to be updated (if any), and `save_prompt_acceptance_callback`
-  // is the callback to run upon user decision.
-  void SetupPrompt(EntityInstance new_entity,
-                   std::optional<EntityInstance> old_entity,
-                   AutofillClient::EntitySaveOrUpdatePromptResultCallback
-                       save_prompt_acceptance_callback);
+  // Configures the controller's state for the Autofill AI data
+  // save/update/migrate prompt. `new_entity` is the data detected on the page,
+  // `old_entity` is the existing data to be updated (if any), and
+  // `prompt_closed_callback` is the callback to run upon user decision.
+  void SetupPrompt(
+      EntityInstance new_entity,
+      std::optional<EntityInstance> old_entity,
+      AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
 
   // The browser's locale when the object was instantiated.
   const std::string app_locale_;
@@ -103,8 +102,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.
-  AutofillClient::EntitySaveOrUpdatePromptResultCallback
-      save_prompt_acceptance_callback_;
+  AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
 
   // Whether the bubble should be re-shown when the current web_contents becomes
   // visible. This is true when the user has clicked a link in the bubble that
@@ -112,12 +110,12 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   // focusing back on the tab should re-open it.
   bool reopen_bubble_when_web_contents_becomes_visible_ = false;
 
-  base::WeakPtrFactory<SaveOrUpdateAutofillAiDataControllerImpl>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<AutofillAiImportDataControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_IMPL_H_

@@ -124,7 +124,7 @@ optimization_guide::proto::AutofillAiFieldEventType GetFieldEventType(
 }
 
 optimization_guide::proto::AutofillAiPromptUserDecision GetUserDecision(
-    AutofillClient::EntitySaveOrUpdatePromptResult decision) {
+    AutofillClient::EntityImportPromptResult decision) {
   if (decision.did_user_decline) {
     return optimization_guide::proto::AUTOFILL_AI_PROMPT_USER_DECISION_DECLINED;
   } else if (!decision.did_user_decline && !decision.entity) {
@@ -135,13 +135,13 @@ optimization_guide::proto::AutofillAiPromptUserDecision GetUserDecision(
 }
 
 optimization_guide::proto::AutofillAiPromptType GetPromptType(
-    AutofillClient::AutofillAiPromptTypes prompt_type) {
+    AutofillClient::AutofillAiImportPromptType prompt_type) {
   switch (prompt_type) {
-    case AutofillClient::AutofillAiPromptTypes::kSave:
+    case AutofillClient::AutofillAiImportPromptType::kSave:
       return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_SAVE_ENTITY;
-    case AutofillClient::AutofillAiPromptTypes::kUpdate:
+    case AutofillClient::AutofillAiImportPromptType::kUpdate:
       return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_UPDATE_ENTITY;
-    case AutofillClient::AutofillAiPromptTypes::kMigrate:
+    case AutofillClient::AutofillAiImportPromptType::kMigrate:
       return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_MIGRATE_ON_SAVE;
   }
 }
@@ -259,13 +259,13 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
   builder.Record(client_->GetUkmRecorder());
 }
 
-void AutofillAiUkmLogger::LogSaveOrUpdatePromptResult(
-    AutofillClient::AutofillAiPromptTypes prompt_type,
+void AutofillAiUkmLogger::LogImportPromptResult(
+    AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityType entity_type,
     EntityInstance::RecordType record_type,
     uint64_t form_session_id,
     const std::string& domain,
-    AutofillClient::EntitySaveOrUpdatePromptResult result,
+    AutofillClient::EntityImportPromptResult result,
     ukm::SourceId ukm_source_id) {
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();

@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_BROWSERTEST_CC_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_BROWSERTEST_CC_H_
 
-#include "chrome/browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 
 #include <tuple>
 #include <utility>
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/ui/autofill/autofill_ai/mock_save_or_update_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -31,17 +31,17 @@ namespace {
 using ::testing::Bool;
 using ::testing::Combine;
 using EntityAttributeUpdateDetails =
-    SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails;
+    AutofillAiImportDataController::EntityAttributeUpdateDetails;
 using EntityAttributeUpdateType =
-    SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType;
+    AutofillAiImportDataController::EntityAttributeUpdateType;
 using TestParameterType = std::tuple<bool, bool>;
 
-class SaveOrUpdateAutofillAiDataBubbleViewBrowsertest
+class AutofillAiImportDataBubbleViewBrowsertest
     : public UiBrowserTest,
       public testing::WithParamInterface<TestParameterType> {
  public:
-  SaveOrUpdateAutofillAiDataBubbleViewBrowsertest() = default;
-  ~SaveOrUpdateAutofillAiDataBubbleViewBrowsertest() override = default;
+  AutofillAiImportDataBubbleViewBrowsertest() = default;
+  ~AutofillAiImportDataBubbleViewBrowsertest() override = default;
 
   // BrowserTestBase:
   void SetUpOnMainThread() override {
@@ -76,7 +76,7 @@ class SaveOrUpdateAutofillAiDataBubbleViewBrowsertest
   }
 
   void ShowUi(const std::string& name) override {
-    auto bubble = std::make_unique<SaveOrUpdateAutofillAiDataBubbleView>(
+    auto bubble = std::make_unique<AutofillAiImportDataBubbleView>(
         nullptr, browser()->tab_strip_model()->GetActiveWebContents(),
         &mock_controller());
     bubble->set_has_parent(false);
@@ -96,18 +96,18 @@ class SaveOrUpdateAutofillAiDataBubbleViewBrowsertest
 
   void WaitForUserDismissal() override {}
 
-  MockSaveOrUpdateAutofillAiDataController& mock_controller() {
+  MockAutofillAiImportDataController& mock_controller() {
     return mock_controller_;
   }
 
  private:
-  raw_ptr<SaveOrUpdateAutofillAiDataBubbleView> bubble_ = nullptr;
-  testing::NiceMock<MockSaveOrUpdateAutofillAiDataController> mock_controller_;
+  raw_ptr<AutofillAiImportDataBubbleView> bubble_ = nullptr;
+  testing::NiceMock<MockAutofillAiImportDataController> mock_controller_;
 };
 
 // `TypicalPassportCase` here and in other test(s) means that this test creates
 // a dialog that is close to what most users will see.
-IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        TypicalPassportCase_Save) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        TypicalPassportCase_Update) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        WalletableEntity_Save) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        WalletableEntity_Update) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
 }
 
 // This tests corner cases related to attribute names and values sizes.
-IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Update) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
 }
 
 // This tests corner cases related to attribute names and values sizes.
-IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Save) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
@@ -297,9 +297,9 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+    AutofillAiImportDataBubbleViewBrowsertest,
     Combine(/*is_dark_mode=*/Bool(), /*is_rtl=*/Bool()),
-    SaveOrUpdateAutofillAiDataBubbleViewBrowsertest::GetTestSuffix);
+    AutofillAiImportDataBubbleViewBrowsertest::GetTestSuffix);
 
 }  // namespace
 }  // namespace autofill

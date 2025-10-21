@@ -106,7 +106,7 @@ class AutofillAiManager {
   struct EntityImportPromptCandidate {
     EntityImportPromptCandidate() = delete;
     EntityImportPromptCandidate(
-        AutofillClient::AutofillAiPromptTypes prompt_type,
+        AutofillClient::AutofillAiImportPromptType prompt_type,
         const EntityInstance& candidate_entity,
         std::optional<EntityInstance::EntityId> existing_entity_id);
     EntityImportPromptCandidate(const EntityImportPromptCandidate&);
@@ -116,7 +116,7 @@ class AutofillAiManager {
     ~EntityImportPromptCandidate();
 
     // The type of prompt that this candidate is meant for.
-    AutofillClient::AutofillAiPromptTypes prompt_type;
+    AutofillClient::AutofillAiImportPromptType prompt_type;
     // The entity that the user would get if they accept the possibly shown
     // save/update/migrate prompt.
     EntityInstance candidate_entity;
@@ -181,13 +181,12 @@ class AutofillAiManager {
 
   // Updates the `EntityDataManager` and the save strike database depending on
   // the prompt `result`.
-  void HandleSavePromptResult(
-      const GURL& form_url,
-      uint64_t form_session_id,
-      const std::string& domain,
-      ukm::SourceId ukm_source_id,
-      const EntityInstance& entity,
-      AutofillClient::EntitySaveOrUpdatePromptResult result);
+  void HandleSavePromptResult(const GURL& form_url,
+                              uint64_t form_session_id,
+                              const std::string& domain,
+                              ukm::SourceId ukm_source_id,
+                              const EntityInstance& entity,
+                              AutofillClient::EntityImportPromptResult result);
 
   // Updates the `EntityDataManager` and the update strike database depending on
   // the prompt `result`.
@@ -196,7 +195,7 @@ class AutofillAiManager {
       const std::string& domain,
       ukm::SourceId ukm_source_id,
       const EntityInstance::EntityId& entity_uuid,
-      AutofillClient::EntitySaveOrUpdatePromptResult result);
+      AutofillClient::EntityImportPromptResult result);
 
   // Updates the `EntityDataManager` by deleting a local entity and moving it to
   // the Google Wallet server. Updates the strike database depending on the
@@ -208,7 +207,7 @@ class AutofillAiManager {
       ukm::SourceId ukm_source_id,
       const EntityInstance& entity,
       EntityInstance::EntityId local_entity,
-      AutofillClient::EntitySaveOrUpdatePromptResult result);
+      AutofillClient::EntityImportPromptResult result);
 
   LogManager* GetCurrentLogManager();
 

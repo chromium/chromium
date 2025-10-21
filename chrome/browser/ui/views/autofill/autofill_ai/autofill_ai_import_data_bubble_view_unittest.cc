@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/autofill_ai/mock_save_or_update_ai_data_controller.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -33,13 +33,13 @@ namespace autofill {
 namespace {
 
 using EntityAttributeUpdateDetails =
-    SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails;
+    AutofillAiImportDataController::EntityAttributeUpdateDetails;
 using EntityAttributeUpdateType =
-    SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType;
-class SaveOrUpdateAutofillAiDataBubbleViewTest : public ChromeViewsTestBase {
+    AutofillAiImportDataController::EntityAttributeUpdateType;
+class AutofillAiImportDataBubbleViewTest : public ChromeViewsTestBase {
  public:
-  SaveOrUpdateAutofillAiDataBubbleViewTest() = default;
-  ~SaveOrUpdateAutofillAiDataBubbleViewTest() override = default;
+  AutofillAiImportDataBubbleViewTest() = default;
+  ~AutofillAiImportDataBubbleViewTest() override = default;
 
   // views::ViewsTestBase:
   void SetUp() override {
@@ -56,8 +56,8 @@ class SaveOrUpdateAutofillAiDataBubbleViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  SaveOrUpdateAutofillAiDataBubbleView& view() { return *view_; }
-  MockSaveOrUpdateAutofillAiDataController& mock_controller() {
+  AutofillAiImportDataBubbleView& view() { return *view_; }
+  MockAutofillAiImportDataController& mock_controller() {
     return mock_controller_;
   }
 
@@ -74,11 +74,11 @@ class SaveOrUpdateAutofillAiDataBubbleViewTest : public ChromeViewsTestBase {
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<SaveOrUpdateAutofillAiDataBubbleView> view_ = nullptr;
-  testing::NiceMock<MockSaveOrUpdateAutofillAiDataController> mock_controller_;
+  raw_ptr<AutofillAiImportDataBubbleView> view_ = nullptr;
+  testing::NiceMock<MockAutofillAiImportDataController> mock_controller_;
 };
 
-void SaveOrUpdateAutofillAiDataBubbleViewTest::CreateViewAndShow() {
+void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
   // The bubble needs the parent as an anchor.
   views::Widget::InitParams params =
       CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -109,25 +109,25 @@ void SaveOrUpdateAutofillAiDataBubbleViewTest::CreateViewAndShow() {
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
       .WillByDefault(testing::Return(details));
 
-  auto view_unique = std::make_unique<SaveOrUpdateAutofillAiDataBubbleView>(
+  auto view_unique = std::make_unique<AutofillAiImportDataBubbleView>(
       anchor_widget_->GetContentsView(), web_contents_.get(),
       &mock_controller_);
   view_ = view_unique.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(view_unique))->Show();
 }
 
-TEST_F(SaveOrUpdateAutofillAiDataBubbleViewTest, HasCloseButton) {
+TEST_F(AutofillAiImportDataBubbleViewTest, HasCloseButton) {
   CreateViewAndShow();
   EXPECT_TRUE(view().ShouldShowCloseButton());
 }
 
-TEST_F(SaveOrUpdateAutofillAiDataBubbleViewTest, AcceptInvokesTheController) {
+TEST_F(AutofillAiImportDataBubbleViewTest, AcceptInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(mock_controller(), OnSaveButtonClicked);
   view().AcceptDialog();
 }
 
-TEST_F(SaveOrUpdateAutofillAiDataBubbleViewTest, CancelInvokesTheController) {
+TEST_F(AutofillAiImportDataBubbleViewTest, CancelInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(mock_controller(), OnBubbleClosed);
   view().CancelDialog();

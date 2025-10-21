@@ -166,17 +166,17 @@ void AutofillAiLogger::OnDidFillField(const FormStructure& form,
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }
 
-void AutofillAiLogger::OnSaveOrUpdatePromptResult(
-    AutofillClient::AutofillAiPromptTypes prompt_type,
+void AutofillAiLogger::OnImportPromptResult(
+    AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityType entity_type,
     EntityInstance::RecordType record_type,
     uint64_t form_session_id,
     const std::string& domain,
-    AutofillClient::EntitySaveOrUpdatePromptResult result,
+    AutofillClient::EntityImportPromptResult result,
     ukm::SourceId ukm_source_id) {
-  ukm_logger_.LogSaveOrUpdatePromptResult(prompt_type, entity_type, record_type,
-                                          form_session_id, domain, result,
-                                          ukm_source_id);
+  ukm_logger_.LogImportPromptResult(prompt_type, entity_type, record_type,
+                                    form_session_id, domain, result,
+                                    ukm_source_id);
 }
 
 void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,

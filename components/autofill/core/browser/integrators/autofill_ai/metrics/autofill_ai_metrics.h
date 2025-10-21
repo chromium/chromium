@@ -38,7 +38,7 @@ std::string_view EntityRecordTypeToMetricsString(
     EntityInstance::RecordType record_type);
 
 std::string_view EntityPromptTypeToMetricsString(
-    AutofillClient::AutofillAiPromptTypes prompt_type);
+    AutofillClient::AutofillAiImportPromptType prompt_type);
 
 }  // namespace autofill
 

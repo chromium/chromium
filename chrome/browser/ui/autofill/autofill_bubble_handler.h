@@ -19,7 +19,7 @@ class AutofillProfile;
 class AutofillBubbleBase;
 class OfferNotificationBubbleController;
 class SaveAddressBubbleController;
-class SaveOrUpdateAutofillAiDataController;
+class AutofillAiImportDataController;
 class UpdateAddressBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
@@ -61,7 +61,7 @@ class AutofillBubbleHandler {
 
   virtual AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      SaveOrUpdateAutofillAiDataController* controller) = 0;
+      AutofillAiImportDataController* controller) = 0;
 
   // Opens a save address bubble. The bubble's lifecycle is controlled by its
   // widget, and the controller must handle the widget closing to invalidate

@@ -181,6 +181,26 @@ class AutofillClient {
     kMaxValue = kAutoDeclined,
   };
 
+  // Represents the user's possible decisions or outcomes in response to a
+  // prompt related to AutofillAi saving, updating, or migrating.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AutofillAiBubbleClosedReason {
+    // Bubble closed reason not specified.
+    kUnknown = 0,
+    // The user explicitly accepted the bubble.
+    kAccepted = 1,
+    // The user explicitly cancelled the bubble.
+    kCancelled = 2,
+    // The user explicitly closed the bubble (via the close button or the ESC).
+    kClosed = 3,
+    // The bubble was not interacted with.
+    kNotInteracted = 4,
+    // The bubble lost focus and was closed.
+    kLostFocus = 5,
+    kMaxValue = kLostFocus
+  };
+
   // Describes the types of Iph shown by Autofill and anchored to a field.
   enum class IphFeature {
     kAutofillAi,
@@ -233,16 +253,15 @@ class AutofillClient {
 
   // Contains the result of a user interaction with the save/update AutofillAi
   // prompt.
-  struct EntitySaveOrUpdatePromptResult final {
-    EntitySaveOrUpdatePromptResult();
-    EntitySaveOrUpdatePromptResult(bool did_user_decline,
-                                   std::optional<EntityInstance> entity);
-    EntitySaveOrUpdatePromptResult(const EntitySaveOrUpdatePromptResult&);
-    EntitySaveOrUpdatePromptResult(EntitySaveOrUpdatePromptResult&&);
-    EntitySaveOrUpdatePromptResult& operator=(
-        const EntitySaveOrUpdatePromptResult&);
-    EntitySaveOrUpdatePromptResult& operator=(EntitySaveOrUpdatePromptResult&&);
-    ~EntitySaveOrUpdatePromptResult();
+  struct EntityImportPromptResult final {
+    EntityImportPromptResult();
+    EntityImportPromptResult(bool did_user_decline,
+                             std::optional<EntityInstance> entity);
+    EntityImportPromptResult(const EntityImportPromptResult&);
+    EntityImportPromptResult(EntityImportPromptResult&&);
+    EntityImportPromptResult& operator=(const EntityImportPromptResult&);
+    EntityImportPromptResult& operator=(EntityImportPromptResult&&);
+    ~EntityImportPromptResult();
 
     // Whether the user explicitly declined the dialog.
     bool did_user_decline = false;
@@ -250,13 +269,18 @@ class AutofillClient {
     // Non-empty iff the prompt was accepted.
     std::optional<EntityInstance> entity;
   };
-  using EntitySaveOrUpdatePromptResultCallback =
-      base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
+  using EntityImportPromptResultCallback =
+      base::OnceCallback<void(EntityImportPromptResult result)>;
 
   // The types of prompts that AutofillAi can show to the user after a form
   // submission. The values are ordered by decreasing priority of being shown
   // vis-a-vis each other.
-  enum class AutofillAiPromptTypes { kSave = 0, kUpdate = 1, kMigrate = 2 };
+  enum class AutofillAiImportPromptType {
+    kSave = 0,
+    kUpdate = 1,
+    kMigrate = 2,
+    kMaxValue = kMigrate
+  };
 
   // Specifies the type of the address save prompt.
   enum class SaveAddressBubbleType {
@@ -730,10 +754,10 @@ class AutofillClient {
   // Shows a bubble asking whether the user wants to save or update Autofill AI
   // data. `old_entity` is present in the update cases. It is used to give users
   // a better understanding of what was updated.
-  virtual void ShowEntitySaveOrUpdateBubble(
+  virtual void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
-      EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback);
+      EntityImportPromptResultCallback prompt_closed_callback);
 
   virtual void ShowEmailVerifiedToast();
 

@@ -828,11 +828,11 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
 }
 
 TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
-  test_api(manager()).logger().OnSaveOrUpdatePromptResult(
-      AutofillClient::AutofillAiPromptTypes::kUpdate,
+  test_api(manager()).logger().OnImportPromptResult(
+      AutofillClient::AutofillAiImportPromptType::kUpdate,
       EntityType(EntityTypeName::kPassport), EntityInstance::RecordType::kLocal,
       /*form_session_id=*/kFormSession, "myform_root.com",
-      AutofillClient::EntitySaveOrUpdatePromptResult(
+      AutofillClient::EntityImportPromptResult(
           /*did_user_decline=*/false, test::GetPassportEntityInstance()),
       /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 1u);

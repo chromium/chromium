@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_
 
 #include <optional>
 #include <string>
@@ -18,26 +18,10 @@ namespace autofill {
 
 class EntityInstance;
 
-// Interface that exposes controller functionality to the save Autofill AI data
-// bubble.
-class SaveOrUpdateAutofillAiDataController {
+// Interface that exposes controller functionality to the save/update/migrate
+// Autofill AI data bubble.
+class AutofillAiImportDataController {
  public:
-  enum class AutofillAiBubbleClosedReason {
-    // Bubble closed reason not specified.
-    kUnknown,
-    // The user explicitly accepted the bubble.
-    kAccepted,
-    // The user explicitly cancelled the bubble.
-    kCancelled,
-    // The user explicitly closed the bubble (via the close button or the ESC).
-    kClosed,
-    // The bubble was not interacted with.
-    kNotInteracted,
-    // The bubble lost focus and was closed.
-    kLostFocus,
-    kMaxValue = kLostFocus
-  };
-
   enum class EntityAttributeUpdateType {
     kNewEntityAttributeAdded,
     kNewEntityAttributeUpdated,
@@ -64,14 +48,14 @@ class SaveOrUpdateAutofillAiDataController {
     EntityAttributeUpdateType update_type{};
   };
 
-  SaveOrUpdateAutofillAiDataController() = default;
-  SaveOrUpdateAutofillAiDataController(
-      const SaveOrUpdateAutofillAiDataController&) = delete;
-  SaveOrUpdateAutofillAiDataController& operator=(
-      const SaveOrUpdateAutofillAiDataController&) = delete;
-  virtual ~SaveOrUpdateAutofillAiDataController() = default;
+  AutofillAiImportDataController() = default;
+  AutofillAiImportDataController(const AutofillAiImportDataController&) =
+      delete;
+  AutofillAiImportDataController& operator=(
+      const AutofillAiImportDataController&) = delete;
+  virtual ~AutofillAiImportDataController() = default;
 
-  static SaveOrUpdateAutofillAiDataController* GetOrCreate(
+  static AutofillAiImportDataController* GetOrCreate(
       content::WebContents* web_contents,
       const std::string& app_locale);
 
@@ -80,8 +64,8 @@ class SaveOrUpdateAutofillAiDataController {
   // of what was changed.
   virtual void ShowPrompt(EntityInstance new_entity,
                           std::optional<EntityInstance> old_entity,
-                          AutofillClient::EntitySaveOrUpdatePromptResultCallback
-                              save_prompt_acceptance_callback) = 0;
+                          AutofillClient::EntityImportPromptResultCallback
+                              prompt_acceptance_callback) = 0;
 
   // Called when the user accepts to save or update Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;
@@ -117,11 +101,12 @@ class SaveOrUpdateAutofillAiDataController {
       const = 0;
 
   // Called when the Autofill AI data bubble is closed.
-  virtual void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) = 0;
+  virtual void OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleClosedReason closed_reason) = 0;
 
-  virtual base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() = 0;
+  virtual base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_

@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_SAVE_OR_UPDATE_AI_DATA_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_SAVE_OR_UPDATE_AI_DATA_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_
 
-#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 
 class EntityInstance;
 
-class MockSaveOrUpdateAutofillAiDataController
-    : public SaveOrUpdateAutofillAiDataController {
+class MockAutofillAiImportDataController
+    : public AutofillAiImportDataController {
  public:
-  MockSaveOrUpdateAutofillAiDataController();
-  ~MockSaveOrUpdateAutofillAiDataController() override;
+  MockAutofillAiImportDataController();
+  ~MockAutofillAiImportDataController() override;
 
   MOCK_METHOD(void,
               ShowPrompt,
               (EntityInstance,
                std::optional<EntityInstance>,
-               AutofillClient::EntitySaveOrUpdatePromptResultCallback),
+               AutofillClient::EntityImportPromptResultCallback),
               (override));
   MOCK_METHOD(base::optional_ref<const EntityInstance>,
               GetAutofillAiData,
@@ -39,16 +39,18 @@ class MockSaveOrUpdateAutofillAiDataController
   MOCK_METHOD(bool, IsSavePrompt, (), (const override));
   MOCK_METHOD(void, OnGoToWalletLinkClicked, (), (override));
   MOCK_METHOD((int), GetTitleImagesResourceId, (), (const override));
-  MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
-  base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() override {
+  MOCK_METHOD(void,
+              OnBubbleClosed,
+              (AutofillClient::AutofillAiBubbleClosedReason),
+              (override));
+  base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<SaveOrUpdateAutofillAiDataController> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<AutofillAiImportDataController> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_SAVE_OR_UPDATE_AI_DATA_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_

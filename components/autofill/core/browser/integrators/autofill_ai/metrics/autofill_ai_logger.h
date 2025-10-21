@@ -46,13 +46,13 @@ class AutofillAiLogger {
                       const EntityInstance& entity_filled,
                       ukm::SourceId ukm_source_id);
 
-  void OnSaveOrUpdatePromptResult(
-      AutofillClient::AutofillAiPromptTypes prompt_type,
+  void OnImportPromptResult(
+      AutofillClient::AutofillAiImportPromptType prompt_type,
       EntityType entity_type,
       EntityInstance::RecordType record_type,
       uint64_t form_session_id,
       const std::string& domain,
-      AutofillClient::EntitySaveOrUpdatePromptResult result,
+      AutofillClient::EntityImportPromptResult result,
       ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into
