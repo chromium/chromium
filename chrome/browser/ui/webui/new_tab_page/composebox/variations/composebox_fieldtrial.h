@@ -68,6 +68,9 @@ extern const base::FeatureParam<bool> kShowCreateImageTool;
 // Whether to show a series of cycling placeholder texts on the search input UI.
 extern const base::FeatureParam<bool> kCyclingPlaceholders;
 
+// Whether to show the submit button in the composebox.
+extern const base::FeatureParam<bool> kShowSubmit;
+
 bool IsNtpComposeboxEnabled(Profile* profile);
 
 // Helper to create a QueryControllerConfigParams object from the feature

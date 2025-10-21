@@ -215,6 +215,8 @@ const base::FeatureParam<bool> kShowCreateImageTool(&kNtpComposebox,
                                                     "ShowCreateImageTool",
                                                     false);
 
+const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
+
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
     "ContextMenuMaxTabSuggestions",
