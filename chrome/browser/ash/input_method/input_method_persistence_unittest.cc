@@ -77,15 +77,6 @@ class InputMethodPersistenceTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 
-TEST_F(InputMethodPersistenceTest, TestLifetime) {
-  {
-    InputMethodPersistence persistence(
-        TestingBrowserProcess::GetGlobal()->local_state(), &mock_manager_);
-    EXPECT_EQ(1, mock_manager_.add_observer_count());
-  }
-  EXPECT_EQ(1, mock_manager_.remove_observer_count());
-}
-
 TEST_F(InputMethodPersistenceTest, TestPrefPersistenceByState) {
   InputMethodPersistence persistence(
       TestingBrowserProcess::GetGlobal()->local_state(), &mock_manager_);
@@ -93,45 +84,39 @@ TEST_F(InputMethodPersistenceTest, TestPrefPersistenceByState) {
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kLogin);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
-  persistence.InputMethodChanged(&mock_manager_,
-                                 ProfileManager::GetActiveUserProfile(), false);
+  persistence.PersistInputMethod(ProfileManager::GetActiveUserProfile());
   VerifyPrefs("", "", kInputId1);
 
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kNormal);
   mock_manager_.SetCurrentInputMethodId(kInputId2);
-  persistence.InputMethodChanged(&mock_manager_,
-                                 ProfileManager::GetActiveUserProfile(), false);
+  persistence.PersistInputMethod(ProfileManager::GetActiveUserProfile());
   VerifyPrefs(kInputId2, "", kInputId1);
 
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kLock);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
-  persistence.InputMethodChanged(&mock_manager_,
-                                 ProfileManager::GetActiveUserProfile(), false);
+  persistence.PersistInputMethod(ProfileManager::GetActiveUserProfile());
   VerifyPrefs(kInputId2, "", kInputId1);
 
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kNormal);
   TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
-  persistence.InputMethodChanged(&mock_manager_,
-                                 ProfileManager::GetActiveUserProfile(), false);
+  persistence.PersistInputMethod(ProfileManager::GetActiveUserProfile());
   VerifyPrefs(kInputId2, "", kInputId1);
   TestingBrowserProcess::GetGlobal()->SetShuttingDown(false);
 
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kLogin);
   mock_manager_.SetCurrentInputMethodId(kInputId2);
-  persistence.InputMethodChanged(&mock_manager_,
-                                 ProfileManager::GetActiveUserProfile(), false);
+  persistence.PersistInputMethod(ProfileManager::GetActiveUserProfile());
   VerifyPrefs(kInputId2, "", kInputId2);
 
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kNormal);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
-  persistence.InputMethodChanged(&mock_manager_,
-                                 ProfileManager::GetActiveUserProfile(), false);
+  persistence.PersistInputMethod(ProfileManager::GetActiveUserProfile());
   VerifyPrefs(kInputId1, kInputId2, kInputId2);
 }
 

@@ -9,20 +9,22 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
 class PrefService;
+class Profile;
 
 namespace ash {
 namespace input_method {
 
-// Observes input method and session state changes, and persists input method
+class InputMethodManager;
+
+// Handles input method and session state changes, and persists input method
 // changes to the BrowserProcess local state or to the user preferences,
 // according to the session state.
-class InputMethodPersistence : public InputMethodManager::Observer {
+class InputMethodPersistence {
  public:
-  // Constructs an instance that will observe input method changes on the
+  // Constructs an instance that will react to input method changes on the
   // provided InputMethodManager. The client is responsible for calling
   // OnSessionStateChange whenever the InputMethodManager::UISessionState
   // changes.
@@ -34,16 +36,14 @@ class InputMethodPersistence : public InputMethodManager::Observer {
   InputMethodPersistence(const InputMethodPersistence&) = delete;
   InputMethodPersistence& operator=(const InputMethodPersistence&) = delete;
 
-  ~InputMethodPersistence() override;
+  ~InputMethodPersistence();
 
   // This method does not instantiate the object. It must be called after
   // ash::input_method::Initialize();
   static InputMethodPersistence* GetInstance();
 
-  // InputMethodManager::Observer overrides.
-  void InputMethodChanged(InputMethodManager* manager,
-                          Profile* profile,
-                          bool show_message) override;
+  // Called when the current input method is changed.
+  void PersistInputMethod(Profile* profile);
 
   // Update user last input method ID for login screen.
   void SetUserLastLoginInputMethodId(const std::string& input_method_id,

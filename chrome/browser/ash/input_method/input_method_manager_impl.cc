@@ -1075,6 +1075,7 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       delegate_(std::move(delegate)),
+      persistence_(std::make_unique<InputMethodPersistence>(local_state, this)),
       util_(delegate_.get()),
       keyboard_(std::move(ime_keyboard)),
       enable_extension_loading_(enable_extension_loading),
@@ -1095,11 +1096,6 @@ InputMethodManagerImpl::InputMethodManagerImpl(
       component_extension_ime_manager_->GetAllIMEAsInputMethodDescriptor();
   util_.ResetInputMethods(descriptors);
 
-  // InputMethodPersistence ctor calls back a virtual method of
-  // InputMethodManager. Hence, it can not be instantiated from the ctor
-  // initialization list.
-  persistence_ = std::make_unique<InputMethodPersistence>(local_state, this);
-
   // We should not use ALL_BROWSERS_CLOSING here since logout might be cancelled
   // by JavaScript after ALL_BROWSERS_CLOSING is sent (crosbug.com/11055).
   on_app_terminating_subscription_ =
@@ -1108,10 +1104,6 @@ InputMethodManagerImpl::InputMethodManagerImpl(
 }
 
 InputMethodManagerImpl::~InputMethodManagerImpl() {
-  // Ensure that `persistence_` gets reset prior to `observers_` since it is
-  // itself an observer.
-  persistence_.reset();
-
   if (candidate_window_controller_.get()) {
     candidate_window_controller_->RemoveObserver(this);
   }
@@ -1236,6 +1228,8 @@ void InputMethodManagerImpl::NotifyInputMethodChanged(bool show_message,
     LOG(ERROR) << "Failed to change keyboard layout to "
                << state_->GetCurrentInputMethod().keyboard_layout();
   }
+
+  persistence_->PersistInputMethod(state_->GetProfile());
 
   // Update input method indicators (e.g. "US", "DV") in Chrome windows.
   for (auto& observer : observers_) {

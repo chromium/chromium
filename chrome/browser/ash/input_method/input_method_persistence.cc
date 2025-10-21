@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash::input_method {
@@ -68,31 +69,24 @@ InputMethodPersistence::InputMethodPersistence(
       input_method_manager_(input_method_manager) {
   CHECK(!g_input_method_persistence);
   g_input_method_persistence = this;
-
-  input_method_manager_->AddObserver(this);
 }
 
 InputMethodPersistence::~InputMethodPersistence() {
-  input_method_manager_->RemoveObserver(this);
-
   CHECK_EQ(g_input_method_persistence, this);
   g_input_method_persistence = nullptr;
 }
 
-void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
-                                                Profile* profile,
-                                                bool show_message) {
+void InputMethodPersistence::PersistInputMethod(Profile* profile) {
   if (!g_browser_process || g_browser_process->IsShuttingDown()) {
     return;
   }
 
-  DCHECK_EQ(input_method_manager_, manager);
   const std::string current_input_method =
-      manager->GetActiveIMEState()->GetCurrentInputMethod().id();
+      input_method_manager_->GetActiveIMEState()->GetCurrentInputMethod().id();
   // Save the new input method id depending on the current browser state.
-  switch (manager->GetActiveIMEState()->GetUIStyle()) {
+  switch (input_method_manager_->GetActiveIMEState()->GetUIStyle()) {
     case InputMethodManager::UIStyle::kLogin:
-      if (!manager->IsLoginKeyboard(current_input_method)) {
+      if (!input_method_manager_->IsLoginKeyboard(current_input_method)) {
         DVLOG(1) << "Only keyboard layouts are supported: "
                  << current_input_method;
         return;
