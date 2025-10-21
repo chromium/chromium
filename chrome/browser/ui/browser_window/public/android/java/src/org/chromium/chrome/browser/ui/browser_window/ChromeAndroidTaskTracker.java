@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -62,9 +63,14 @@ public interface ChromeAndroidTaskTracker {
      *
      * @param createParams The {@link AndroidBrowserWindowCreateParams} that will determine the
      *     newly created {@code Activity}'s startup state.
+     * @param callback The callback to be invoked with the native {@code AndroidBrowserWindow}
+     *     pointer once the task becomes active. May be {@code null} for synchronous creation.
      * @return The pending {@link ChromeAndroidTask}.
+     * @see BrowserWindowCreatorBridge
      */
-    ChromeAndroidTask createPendingTask(AndroidBrowserWindowCreateParams createParams);
+    ChromeAndroidTask createPendingTask(
+            AndroidBrowserWindowCreateParams createParams,
+            @Nullable JniOnceCallback<Long> callback);
 
     /**
      * Returns the {@link ChromeAndroidTask} with the given {@code taskId}.

@@ -20,7 +20,7 @@ final class BrowserWindowCreatorBridge {
     static long createBrowserWindow(AndroidBrowserWindowCreateParams createParams) {
         ChromeAndroidTaskTracker tracker = ChromeAndroidTaskTrackerFactory.getInstance();
         assert tracker != null;
-        ChromeAndroidTask task = tracker.createPendingTask(createParams);
+        ChromeAndroidTask task = tracker.createPendingTask(createParams, null);
         return task.getOrCreateNativeBrowserWindowPtr();
     }
 }

@@ -14,6 +14,7 @@ import androidx.annotation.GuardedBy;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -95,10 +96,12 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     @Override
-    public ChromeAndroidTask createPendingTask(AndroidBrowserWindowCreateParams createParams) {
+    public ChromeAndroidTask createPendingTask(
+            AndroidBrowserWindowCreateParams createParams,
+            @Nullable JniOnceCallback<Long> callback) {
         synchronized (mTasksLock) {
             int pendingId = IdSequencer.next();
-            var pendingTask = new ChromeAndroidTaskImpl(pendingId, createParams);
+            var pendingTask = new ChromeAndroidTaskImpl(pendingId, createParams, callback);
             mPendingTasks.put(pendingId, pendingTask);
 
             // Apply a non-default initial show state if needed.
