@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Composebox.Session.File.Browser.UploadFailureCount.{ComposeboxFileTypes}"
-    units="count" expires_after="2026-01-20">
+    units="count" expires_after="2026-04-19">
   <owner>jennserrano@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
