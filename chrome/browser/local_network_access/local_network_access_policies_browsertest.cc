@@ -23,6 +23,15 @@ constexpr char kLnaPath[] =
     "/set-header"
     "?Access-Control-Allow-Origin: *";
 
+constexpr char kWorkerHtmlPath[] =
+    "/local_network_access/fetch-from-worker-as-public-address.html";
+
+constexpr char kSharedWorkerHtmlPath[] =
+    "/local_network_access/fetch-from-shared-worker-as-public-address.html";
+
+constexpr char kServiceWorkerHtmlPath[] =
+    "/local_network_access/fetch-from-service-worker-as-public-address.html";
+
 class LocalNetworkAccessPoliciesBrowserTest
     : public LocalNetworkAccessBrowserTestBase {};
 
@@ -75,6 +84,108 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
                 web_contents(),
                 content::JsReplace("fetch($1).then(response => response.ok)",
                                    https_server().GetURL("b.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       CheckEnterprisePolicyOptOutDedicatedWorker) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies,
+            policy::key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
+            std::optional<base::Value>(true));
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_worker($1);";
+  // URL fetched, body is just the header that's set.
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinDedicatedWorker, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       CheckEnterprisePolicyOptOutServiceWorker) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies,
+            policy::key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
+            std::optional<base::Value>(true));
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kServiceWorkerHtmlPath)));
+
+  EXPECT_EQ("ready", content::EvalJs(web_contents(), "setup();"));
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_service_worker($1);";
+  // Fetched URL
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       CheckEnterprisePolicyOptOutSharedWorker) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies,
+            policy::key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
+            std::optional<base::Value>(true));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kSharedWorkerHtmlPath)));
+
+  // Enable auto-deny of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_shared_worker($1);";
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinSharedWorker, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       CheckEnterprisePolicyOptOutIframeNav) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies,
+            policy::key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
+            std::optional<base::Value>(true));
+  UpdateProviderPolicy(policies);
+
+  GURL initial_url =
+      https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
+  GURL nav_url = https_server().GetURL("c.com", "/defaultresponse");
+  GURL iframe_url = https_server().GetURL(
+      "b.com",
+      "/local_network_access/"
+      "client-redirect-treat-as-public-address.html?url=" +
+          nav_url.spec());
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  content::TestNavigationManager iframe_url_nav_manager(web_contents(),
+                                                        iframe_url);
+  content::TestNavigationManager nav_url_nav_manager(web_contents(), nav_url);
+  std::string_view script_template = R"(
+    const child = document.createElement("iframe");
+    child.src = $1;
+    child.allow = "local-network-access";
+    document.body.appendChild(child);
+  )";
+  EXPECT_THAT(content::EvalJs(web_contents(),
+                              content::JsReplace(script_template, iframe_url)),
+              content::EvalJsResult::IsOk());
+  // Check that the child iframe was successfully fetched.
+  ASSERT_TRUE(iframe_url_nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(iframe_url_nav_manager.was_successful());
+
+  ASSERT_TRUE(nav_url_nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(nav_url_nav_manager.was_successful());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
