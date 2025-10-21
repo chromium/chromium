@@ -70,11 +70,10 @@ define_regex_type!(
     /// a match.
     ///
     /// The type of the DFA used by a `Regex` corresponds to the `A` type
-    /// parameter, which must satisfy the [`Automaton`] trait. Typically,
-    /// `A` is either a [`dense::DFA`](crate::dfa::dense::DFA) or a
-    /// [`sparse::DFA`](crate::dfa::sparse::DFA), where dense DFAs use more
-    /// memory but search faster, while sparse DFAs use less memory but search
-    /// more slowly.
+    /// parameter, which must satisfy the [`Automaton`] trait. Typically, `A`
+    /// is either a [`dense::DFA`] or a [`sparse::DFA`], where dense DFAs use
+    /// more memory but search faster, while sparse DFAs use less memory but
+    /// search more slowly.
     ///
     /// # Crate features
     ///

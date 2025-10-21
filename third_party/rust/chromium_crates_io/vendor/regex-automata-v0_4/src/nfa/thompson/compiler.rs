@@ -563,6 +563,28 @@ pub enum WhichCaptures {
     /// This is useful when capture states are either not needed (for example,
     /// if one is only trying to build a DFA) or if they aren't supported (for
     /// example, a reverse NFA).
+    ///
+    /// # Warning
+    ///
+    /// Callers must be exceedingly careful when using this
+    /// option. In particular, not all regex engines support
+    /// reporting match spans when using this option (for example,
+    /// [`PikeVM`](crate::nfa::thompson::pikevm::PikeVM) or
+    /// [`BoundedBacktracker`](crate::nfa::thompson::backtrack::BoundedBacktracker)).
+    ///
+    /// Perhaps more confusingly, using this option with such an
+    /// engine means that an `is_match` routine could report `true`
+    /// when `find` reports `None`. This is generally not something
+    /// that _should_ happen, but the low level control provided by
+    /// this crate makes it possible.
+    ///
+    /// Similarly, any regex engines (like [`meta::Regex`](crate::meta::Regex))
+    /// should always return `None` from `find` routines when this option is
+    /// used, even if _some_ of its internal engines could find the match
+    /// boundaries. This is because inputs from user data could influence
+    /// engine selection, and thus influence whether a match is found or not.
+    /// Indeed, `meta::Regex::find` will always return `None` when configured
+    /// with this option.
     None,
 }
 

@@ -2132,7 +2132,19 @@ impl<'i, 'c> Lazy<'i, 'c> {
             unit,
             empty_builder,
         );
-        let save_state = !self.as_ref().state_builder_fits_in_cache(&builder);
+        // This is subtle, but if we *might* clear the cache, then we should
+        // try to save the current state so that we can re-map its ID after
+        // cache clearing. We *might* clear the cache when either the new
+        // state can't fit in the cache or when the number of transitions has
+        // reached the maximum. Even if either of these conditions is true,
+        // the cache might not be cleared if we can reuse an existing state.
+        // But we don't know that at this point. Moreover, we don't save the
+        // current state every time because it is costly.
+        //
+        // TODO: We should try to find a way to make this less subtle and error
+        // prone. ---AG
+        let save_state = !self.as_ref().state_builder_fits_in_cache(&builder)
+            || self.cache.trans.len() >= LazyStateID::MAX;
         if save_state {
             self.save_state(current);
         }
@@ -2761,7 +2773,7 @@ impl<'i, 'c> LazyRef<'i, 'c> {
         let needed = self.cache.memory_usage()
             + self.memory_usage_for_one_more_state(state.memory_usage());
         trace!(
-            "lazy DFA cache capacity check: {:?} ?<=? {:?}",
+            "lazy DFA cache capacity state check: {:?} ?<=? {:?}",
             needed,
             self.dfa.cache_capacity
         );
@@ -2773,6 +2785,11 @@ impl<'i, 'c> LazyRef<'i, 'c> {
     fn state_builder_fits_in_cache(&self, state: &StateBuilderNFA) -> bool {
         let needed = self.cache.memory_usage()
             + self.memory_usage_for_one_more_state(state.as_bytes().len());
+        trace!(
+            "lazy DFA cache capacity state builder check: {:?} ?<=? {:?}",
+            needed,
+            self.dfa.cache_capacity
+        );
         needed <= self.dfa.cache_capacity
     }
 

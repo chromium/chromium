@@ -1860,6 +1860,12 @@ impl StartTable<Vec<u8>> {
             let new_start_id = remap[dfa.to_index(old_start_id)];
             sl.set_start(anchored, sty, new_start_id);
         }
+        if let Some(ref mut id) = sl.universal_start_anchored {
+            *id = remap[dfa.to_index(*id)];
+        }
+        if let Some(ref mut id) = sl.universal_start_unanchored {
+            *id = remap[dfa.to_index(*id)];
+        }
         Ok(sl)
     }
 }

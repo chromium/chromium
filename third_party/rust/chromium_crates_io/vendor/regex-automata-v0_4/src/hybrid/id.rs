@@ -180,7 +180,7 @@ impl LazyStateID {
     const MASK_QUIT: usize = 1 << (LazyStateID::MAX_BIT - 2);
     const MASK_START: usize = 1 << (LazyStateID::MAX_BIT - 3);
     const MASK_MATCH: usize = 1 << (LazyStateID::MAX_BIT - 4);
-    const MAX: usize = LazyStateID::MASK_MATCH - 1;
+    pub(crate) const MAX: usize = LazyStateID::MASK_MATCH - 1;
 
     /// Create a new lazy state ID.
     ///

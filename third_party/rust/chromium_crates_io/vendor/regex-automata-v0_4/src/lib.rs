@@ -603,10 +603,9 @@ enables `alloc` and `nfa-thompson`.
 )]
 // We generally want all types to impl Debug.
 #![warn(missing_debug_implementations)]
-// No clue why this thing is still unstable because it's pretty amazing. This
-// adds Cargo feature annotations to items in the rustdoc output. Which is
+// This adds Cargo feature annotations to items in the rustdoc output. Which is
 // sadly hugely beneficial for this crate due to the number of features.
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs_regex, feature(doc_cfg))]
 
 // I have literally never tested this crate on 16-bit, so it is quite
 // suspicious to advertise support for it. But... the regex crate, at time
