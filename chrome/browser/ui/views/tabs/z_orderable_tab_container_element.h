@@ -31,6 +31,8 @@ class ZOrderableTabContainerElement {
 
   views::View* view() const { return child_; }
 
+  float z_value_for_testing() const { return z_value_; }
+
  private:
   // Determines the 'height' of `child`, which should be used to determine the
   // paint order of TabContainer's children.  Larger z-values should be painted

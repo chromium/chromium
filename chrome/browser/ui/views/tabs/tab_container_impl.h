@@ -164,6 +164,15 @@ class TabContainerImpl : public TabContainer,
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
+  const std::vector<ZOrderableTabContainerElement>& GetZOrderCacheForTesting()
+      const {
+    return z_ordered_children_cache_;
+  }
+
+  // Used to simulate PaintChildren in unittests which is the only time in which
+  // the production containers should check/update the zorder.
+  void UpdateZOrderCacheForTesting();
+
  private:
   // Used during a drop session of a url. Tracks the position of the drop as
   // well as a window used to highlight where the drop occurs.
@@ -334,6 +343,12 @@ class TabContainerImpl : public TabContainer,
 
   bool IsValidModelIndex(int model_index) const;
 
+  void MarkZOrderCacheDirty() { z_order_cache_dirty_ = true; }
+
+  // Recalculates the zorder cache if dirty.
+  // (see implementation of PaintChildren)
+  void UpdateZOrderCacheIfDirty();
+
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
 
   // There is a one-to-one mapping between each of the
@@ -396,6 +411,9 @@ class TabContainerImpl : public TabContainer,
   bool in_tab_close_ = false;
 
   base::RepeatingCallback<int()> available_width_callback_;
+
+  std::vector<ZOrderableTabContainerElement> z_ordered_children_cache_;
+  bool z_order_cache_dirty_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_IMPL_H_

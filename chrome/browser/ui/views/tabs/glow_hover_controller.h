@@ -54,6 +54,8 @@ class GlowHoverController : public views::AnimationDelegateViews {
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
+  gfx::SlideAnimation* animation_for_testing() { return &animation_; }
+
  private:
   // View we're drawing to.
   raw_ptr<views::View> view_;

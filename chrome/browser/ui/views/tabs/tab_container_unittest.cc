@@ -7,8 +7,10 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
@@ -29,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/event.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
@@ -1265,4 +1268,204 @@ TEST_F(TabContainerTest,
 
   EXPECT_EQ(tab_container_->GetPreferredSize().width(),
             correct_collapsed_pref_width);
+}
+
+TEST_F(TabContainerTest, ZOrder_MixedScenario) {
+  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  Tab* pinned_tab =
+      AddTab(0, std::nullopt, TabActive::kActive, TabPinned::kPinned);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  Tab* grouped_tab = AddTab(1, group);
+  Tab* regular_tab = AddTab(2);
+  tab_slot_controller_->set_active_tab(pinned_tab);
+  container_impl->CompleteAnimationAndLayout();
+
+  // Hover over the grouped tab.
+  grouped_tab->tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  grouped_tab->tab_style_views()
+      ->GetHoverControllerForTesting()
+      ->animation_for_testing()
+      ->End();
+  container_impl->CompleteAnimationAndLayout();
+
+  TabGroupHeader* group_header = container_impl->GetGroupViews(group)->header();
+  TabGroupUnderline* group_underline =
+      container_impl->GetGroupViews(group)->underline();
+
+  container_impl->UpdateZOrderCacheForTesting();
+  const auto& z_order_cache = container_impl->GetZOrderCacheForTesting();
+  auto it_pinned =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == pinned_tab; });
+  auto it_grouped =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == grouped_tab; });
+  auto it_regular =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == regular_tab; });
+  auto it_header =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == group_header; });
+  auto it_underline =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == group_underline; });
+
+  // The pinned tab is active, so it should be last.
+  EXPECT_EQ(it_pinned, std::prev(z_order_cache.end()));
+
+  // The group header and underline should be after the grouped tab and the
+  // regular tab.
+  EXPECT_LT(it_grouped, it_header);
+  EXPECT_LT(it_regular, it_header);
+  EXPECT_LT(it_grouped, it_underline);
+  EXPECT_LT(it_regular, it_underline);
+
+  // The grouped tab is hovered, so it should be after the regular tab.
+  EXPECT_LT(it_regular, it_grouped);
+}
+
+TEST_F(TabContainerTest, ZOrder_TabGroup) {
+  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  Tab* regular_tab = AddTab(0);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  Tab* grouped_tab = AddTab(1, group);
+  container_impl->CompleteAnimationAndLayout();
+
+  TabGroupHeader* group_header = container_impl->GetGroupViews(group)->header();
+  TabGroupUnderline* group_underline =
+      container_impl->GetGroupViews(group)->underline();
+
+  container_impl->UpdateZOrderCacheForTesting();
+  const auto& z_order_cache = container_impl->GetZOrderCacheForTesting();
+  auto it_regular =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == regular_tab; });
+  auto it_grouped =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == grouped_tab; });
+  auto it_header =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == group_header; });
+  auto it_underline =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == group_underline; });
+
+  EXPECT_LT(it_regular, it_header);
+  EXPECT_LT(it_grouped, it_header);
+  EXPECT_LT(it_regular, it_underline);
+  EXPECT_LT(it_grouped, it_underline);
+}
+
+TEST_F(TabContainerTest, ZOrder_PinnedTab) {
+  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  Tab* pinned_tab =
+      AddTab(0, std::nullopt, TabActive::kInactive, TabPinned::kPinned);
+  Tab* regular_tab = AddTab(1);
+  container_impl->CompleteAnimationAndLayout();
+
+  container_impl->UpdateZOrderCacheForTesting();
+  const auto& z_order_cache = container_impl->GetZOrderCacheForTesting();
+  auto it_pinned =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == pinned_tab; });
+  auto it_regular =
+      std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                   [&](const auto& e) { return e.view() == regular_tab; });
+
+  EXPECT_LT(it_pinned, it_regular);
+
+  // Make the pinned tab active.
+  tab_slot_controller_->set_active_tab(pinned_tab);
+  container_impl->SetActiveTab(std::nullopt, 0);
+  container_impl->CompleteAnimationAndLayout();
+
+  container_impl->UpdateZOrderCacheForTesting();
+  const auto& z_order_cache2 = container_impl->GetZOrderCacheForTesting();
+  auto it_pinned2 =
+      std::find_if(z_order_cache2.begin(), z_order_cache2.end(),
+                   [&](const auto& e) { return e.view() == pinned_tab; });
+  auto it_regular2 =
+      std::find_if(z_order_cache2.begin(), z_order_cache2.end(),
+                   [&](const auto& e) { return e.view() == regular_tab; });
+
+  EXPECT_LT(it_regular2, it_pinned2);
+}
+
+TEST_F(TabContainerTest, ZOrder_HoveredTabIsAfterNormalTab) {
+  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  Tab* tab1 = AddTab(0);
+  Tab* tab2 = AddTab(1);
+  container_impl->CompleteAnimationAndLayout();
+
+  // Hover over the first tab.
+  tab1->tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  tab1->tab_style_views()
+      ->GetHoverControllerForTesting()
+      ->animation_for_testing()
+      ->End();
+  container_impl->CompleteAnimationAndLayout();
+
+  container_impl->UpdateZOrderCacheForTesting();
+  const auto& z_order_cache = container_impl->GetZOrderCacheForTesting();
+  auto it1 = std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                          [&](const auto& e) { return e.view() == tab1; });
+  auto it2 = std::find_if(z_order_cache.begin(), z_order_cache.end(),
+                          [&](const auto& e) { return e.view() == tab2; });
+
+  EXPECT_LT(it2, it1);
+}
+
+TEST_F(TabContainerTest, ZOrder_ActiveTabIsLast) {
+  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  AddTab(0);
+  AddTab(1, std::nullopt, TabActive::kActive);
+  AddTab(2);
+  container_impl->CompleteAnimationAndLayout();
+
+  container_impl->UpdateZOrderCacheForTesting();
+  const auto& z_order_cache = container_impl->GetZOrderCacheForTesting();
+  EXPECT_EQ(z_order_cache.back().view(), container_impl->GetTabAtModelIndex(1));
+}
+
+TEST_F(TabContainerTest, ZOrderCacheUpdatesAfterCRUDOperations) {
+  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 0u);
+
+  AddTab(0);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 1u);
+
+  AddTab(1);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 2u);
+
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 4u);
+
+  RemoveTab(1);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 3u);
+
+  AddTab(1);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 4u);
+
+  RemoveTabFromGroup(0);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 2u);
+
+  MoveTab(0, 1);
+  container_impl->CompleteAnimationAndLayout();
+  container_impl->UpdateZOrderCacheForTesting();
+  EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 2u);
 }

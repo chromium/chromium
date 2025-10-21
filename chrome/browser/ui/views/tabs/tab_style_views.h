@@ -79,6 +79,8 @@ class TabStyleViews {
   // Returns the progress (0 to 1) of the hover animation.
   virtual double GetHoverAnimationValue() const = 0;
 
+  virtual GlowHoverController* GetHoverControllerForTesting() = 0;
+
   const TabStyle* tab_style() const { return tab_style_; }
 
  private:

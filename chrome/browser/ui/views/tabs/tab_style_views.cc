@@ -103,6 +103,10 @@ class TabStyleViewsImpl : public TabStyleViews {
   // Returns the progress (0 to 1) of the hover animation.
   double GetHoverAnimationValue() const override;
 
+  GlowHoverController* GetHoverControllerForTesting() override {
+    return hover_controller_.get();
+  }
+
   // Scales `bounds` by scale and aligns so that adjacent tabs meet up exactly
   // during painting.
   gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
