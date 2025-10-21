@@ -82,6 +82,10 @@ namespace remoting {
 std::string GetHostHash();
 }
 
+namespace safe_browsing {
+std::string Md5AsHexForBodyDigest(std::string_view data);
+}
+
 namespace shell_util {
 std::string Md5AsBase32ForUserSpecificRegistrySuffix(std::string_view str);
 }
@@ -140,6 +144,8 @@ class CRYPTO_EXPORT Md5 {
   friend std::string content::Md5OfPixelsAsHexForWebTests(
       base::span<const uint8_t> pixels);
   friend std::string remoting::GetHostHash();
+  friend std::string safe_browsing::Md5AsHexForBodyDigest(
+      std::string_view data);
   friend uint32_t blink::MD5Hash32ForBackgroundTracingHelper(
       std::string_view str);
   friend std::string shell_util::Md5AsBase32ForUserSpecificRegistrySuffix(
