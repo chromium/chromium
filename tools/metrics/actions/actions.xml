@@ -49882,6 +49882,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.WhatsNew.CarouselScrollButtonClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on a carousel scroll button.</description>
+</action>
+
+<action name="UserEducation.WhatsNew.CtaClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on a CTA.</description>
+</action>
+
 <action name="UserEducation.WhatsNew.EditionShown{ActionType}">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -49896,6 +49908,12 @@ should be able to be added at any place in this file.
     <variant name=".Spark" summary="Spark edition."/>
     <variant name=".TestEdition" summary="Test edition."/>
   </token>
+</action>
+
+<action name="UserEducation.WhatsNew.FeatureTileNavigation">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on a feature tile.</description>
 </action>
 
 <action
@@ -49920,6 +49938,18 @@ should be able to be added at any place in this file.
   </description>
   <token key="UserEducation_WhatsNew_Module_Type"
       variants="UserEducation_WhatsNew_Module_Type"/>
+</action>
+
+<action name="UserEducation.WhatsNew.NavClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked any navigation.</description>
+</action>
+
+<action name="UserEducation.WhatsNew.NextButtonClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on the next button.</description>
 </action>
 
 <action name="UserEducation.WhatsNew.PauseClicked">

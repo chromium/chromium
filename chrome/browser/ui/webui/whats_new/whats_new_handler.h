@@ -71,6 +71,14 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
       const std::string& module_name,
       whats_new::mojom::ModulePosition position) override;
   void RecordBrowserCommandExecuted() override;
+  void RecordQrCodeToggled(bool expanded) override;
+  void RecordNavClick() override;
+  void RecordFeatureTileNavigation() override;
+  void RecordCarouselScrollButtonClick() override;
+  void RecordExpandMediaToggled(const std::string& module_name,
+                                bool expanded) override;
+  void RecordCtaClick() override;
+  void RecordNextButtonClick() override;
 
   // Makes a request to show a HaTS survey.
   void TryShowHatsSurveyWithTimeout();

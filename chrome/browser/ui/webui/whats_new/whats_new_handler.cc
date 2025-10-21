@@ -221,6 +221,42 @@ void WhatsNewHandler::RecordModuleRestartClicked(
   base::UmaHistogramEnumeration(histogram_name, position);
 }
 
+void WhatsNewHandler::RecordQrCodeToggled(bool expanded) {
+  base::UmaHistogramBoolean("UserEducation.WhatsNew.QrCodeExpanded", expanded);
+}
+
+void WhatsNewHandler::RecordNavClick() {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.NavClick"));
+}
+
+void WhatsNewHandler::RecordFeatureTileNavigation() {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.FeatureTileNavigation"));
+}
+
+void WhatsNewHandler::RecordCarouselScrollButtonClick() {
+  base::RecordAction(base::UserMetricsAction(
+      "UserEducation.WhatsNew.CarouselScrollButtonClick"));
+}
+
+void WhatsNewHandler::RecordExpandMediaToggled(const std::string& module_name,
+                                               bool expanded) {
+  std::string histogram_name = "UserEducation.WhatsNew.ExpandMedia.";
+  histogram_name.append(module_name);
+  base::UmaHistogramBoolean(histogram_name, expanded);
+}
+
+void WhatsNewHandler::RecordCtaClick() {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.CtaClick"));
+}
+
+void WhatsNewHandler::RecordNextButtonClick() {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.NextButtonClick"));
+}
+
 void WhatsNewHandler::GetServerUrl(bool is_staging,
                                    GetServerUrlCallback callback) {
   GURL result = GURL("");
