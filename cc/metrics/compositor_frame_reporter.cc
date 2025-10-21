@@ -1856,8 +1856,24 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
       }
     }
 
-    // TODO(crbug.com/444425897): Make sure TreesInViz changes show up in
-    // Perfetto.
+    if (stage.stage_type ==
+        StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame) {
+      DCHECK(processed_trees_in_viz_breakdown_);
+      for (auto it = processed_trees_in_viz_breakdown_->CreateIterator();
+           it.IsValid(); it.Advance()) {
+        base::TimeTicks start_time = it.GetStartTime();
+        base::TimeTicks end_time = it.GetEndTime();
+        if (start_time >= end_time) {
+          continue;
+        }
+        const char* breakdown_name =
+            GetTreesInVizBreakdownName(it.GetBreakdown());
+        TRACE_EVENT_BEGIN(kTraceCategory,
+                          perfetto::StaticString{breakdown_name}, trace_track,
+                          start_time);
+        TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
+      }
+    }
 
     TRACE_EVENT_END(kTraceCategory, trace_track, stage.end_time);
   }
@@ -2118,6 +2134,7 @@ void CompositorFrameReporter::ReportPaintMetric() const {
       /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
 }
 
+// TODO(crbug.com/454006102): Report EventLatency for TreesInViz mode
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
   for (const auto& event_metrics : events_metrics_) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
