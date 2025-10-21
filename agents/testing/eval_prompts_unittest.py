@@ -637,6 +637,11 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.mock_setup_promptfoo = setup_promptfoo_patcher.start()
         self.addCleanup(setup_promptfoo_patcher.stop)
 
+        from_cipd_patcher = mock.patch(
+            'promptfoo_installation.FromCipdPromptfooInstallation')
+        self.mock_from_cipd = from_cipd_patcher.start()
+        self.addCleanup(from_cipd_patcher.stop)
+
         perform_chromium_setup_patcher = mock.patch(
             'eval_prompts._perform_chromium_setup')
         self.mock_perform_chromium_setup = (
