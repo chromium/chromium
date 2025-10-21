@@ -420,7 +420,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
 }
 
 // static
-void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
+void IOSPromoBubble::ShowPromoBubble(Anchor anchor,
                                      views::Button* highlighted_button,
                                      Profile* profile,
                                      IOSPromoType promo_type,
@@ -465,8 +465,7 @@ void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
   }
 
   auto promo_bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_model_builder.Build(), anchor_view,
-      views::BubbleBorder::TOP_RIGHT);
+      dialog_model_builder.Build(), anchor.view, anchor.arrow);
 
   if (ios_promo_config.with_header) {
     promo_bubble->SetFootnoteView(CreateContentView(

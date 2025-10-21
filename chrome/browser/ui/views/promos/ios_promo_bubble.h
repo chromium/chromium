@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "ui/views/bubble/bubble_border.h"
+
 namespace views {
 class BubbleDialogDelegate;
 class Button;
@@ -27,6 +30,12 @@ class IOSPromoBubble {
  public:
   class IOSPromoBubbleDelegate;
 
+  // Specifies how the bubble should be anchored.
+  struct Anchor {
+    raw_ptr<views::View> view;
+    views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
+  };
+
   IOSPromoBubble(const IOSPromoBubble&) = delete;
   IOSPromoBubble& operator=(const IOSPromoBubble&) = delete;
 
@@ -38,7 +47,7 @@ class IOSPromoBubble {
   //   be null if no button should be highlighted. profile: The user's profile.
   //   promo_type: The feature being highlighted in the promo.
   //   bubble_type: The type of bubble to show (e.g., QR code or reminder).
-  static void ShowPromoBubble(views::View* anchor_view,
+  static void ShowPromoBubble(Anchor anchor,
                               views::Button* highlighted_button,
                               Profile* profile,
                               IOSPromoType promo_type,

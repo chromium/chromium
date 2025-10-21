@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -56,8 +57,8 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
   switch (promo_type) {
     case IOSPromoType::kPassword:
       IOSPromoBubble::ShowPromoBubble(
-          toolbar_button_provider->GetAnchorView(
-              kActionShowPasswordsBubbleOrPage),
+          {toolbar_button_provider->GetAnchorView(
+              kActionShowPasswordsBubbleOrPage)},
           toolbar_button_provider->GetPageActionView(
               kActionShowPasswordsBubbleOrPage),
           profile, IOSPromoType::kPassword, bubble_type);
@@ -69,32 +70,41 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
               : toolbar_button_provider->GetPageActionIconView(
                     PageActionIconType::kAutofillAddress);
 
-      IOSPromoBubble::ShowPromoBubble(toolbar_button_provider->GetAnchorView(
-                                          kActionShowAddressesBubbleOrPage),
+      IOSPromoBubble::ShowPromoBubble({toolbar_button_provider->GetAnchorView(
+                                          kActionShowAddressesBubbleOrPage)},
                                       highlighted_button, profile,
                                       IOSPromoType::kAddress, bubble_type);
       break;
     }
     case IOSPromoType::kPayment:
       IOSPromoBubble::ShowPromoBubble(
-          toolbar_button_provider->GetAnchorView(
-              kActionShowPaymentsBubbleOrPage),
+          {toolbar_button_provider->GetAnchorView(
+              kActionShowPaymentsBubbleOrPage)},
           toolbar_button_provider->GetPageActionIconView(
               PageActionIconType::kSaveCard),
           profile, IOSPromoType::kPayment, bubble_type);
       break;
     case IOSPromoType::kEnhancedBrowsing:
       IOSPromoBubble::ShowPromoBubble(
-          browser_view->toolbar()->app_menu_button(),
+          {browser_view->toolbar()->app_menu_button()},
           /*highlighted_button=*/nullptr, profile,
           IOSPromoType::kEnhancedBrowsing, bubble_type);
       break;
-    case IOSPromoType::kLens:
-      IOSPromoBubble::ShowPromoBubble(
-          browser_view->toolbar()->app_menu_button(),
-          /*highlighted_button=*/nullptr, profile, IOSPromoType::kLens,
-          bubble_type);
+    case IOSPromoType::kLens: {
+      SidePanel* side_panel = browser_view->contents_height_side_panel();
+      IOSPromoBubble::Anchor anchor = {side_panel};
+      if (side_panel) {
+        anchor.arrow = side_panel->IsRightAligned()
+                           ? views::BubbleBorder::LEFT_CENTER
+                           : views::BubbleBorder::RIGHT_CENTER;
+      } else {
+        anchor.view = browser_view->toolbar()->app_menu_button();
+      }
+      IOSPromoBubble::ShowPromoBubble(anchor,
+                                      /*highlighted_button=*/nullptr, profile,
+                                      IOSPromoType::kLens, bubble_type);
       break;
+    }
   }
 }
 

@@ -37,7 +37,7 @@ class IOSPasswordPromoBubbleTest : public DialogBrowserTest {
             ->toolbar_button_provider();
     // Test for iOS Promo Bubble for Desktop Passwords promo.
     IOSPromoBubble::ShowPromoBubble(
-        button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage),
+        {button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage)},
         button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage),
         browser()->profile(), IOSPromoType::kPassword,
         IOSPromoBubbleType::kQRCode);
@@ -61,7 +61,7 @@ class IOSAddressPromoBubbleTest : public DialogBrowserTest {
 
     // Test for iOS Promo Bubble for Desktop Address promo.
     IOSPromoBubble::ShowPromoBubble(
-        button_provider->GetAnchorView(kActionShowAddressesBubbleOrPage),
+        {button_provider->GetAnchorView(kActionShowAddressesBubbleOrPage)},
         button_provider->GetPageActionIconView(
             PageActionIconType::kAutofillAddress),
         browser()->profile(), IOSPromoType::kAddress,
@@ -85,7 +85,7 @@ class IOSPaymentPromoBubbleTest : public DialogBrowserTest {
             ->toolbar_button_provider();
     // Test for iOS Promo Bubble for Desktop Payment promo.
     IOSPromoBubble::ShowPromoBubble(
-        button_provider->GetAnchorView(kActionShowPaymentsBubbleOrPage),
+        {button_provider->GetAnchorView(kActionShowPaymentsBubbleOrPage)},
         button_provider->GetPageActionIconView(PageActionIconType::kSaveCard),
         browser()->profile(), IOSPromoType::kPayment,
         IOSPromoBubbleType::kQRCode);
@@ -108,7 +108,7 @@ class IOSEnhancedBrowsingPromoBubbleTest : public DialogBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser());
     // Test for iOS Promo Bubble for Enhanced Browsing promo.
     IOSPromoBubble::ShowPromoBubble(
-        browser_view->toolbar()->app_menu_button(),
+        {browser_view->toolbar()->app_menu_button()},
         /*highlighted_button=*/nullptr, browser()->profile(),
         IOSPromoType::kEnhancedBrowsing, IOSPromoBubbleType::kReminder);
   }
@@ -127,10 +127,10 @@ class IOSLensPromoBubbleTest : public DialogBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     // Test for iOS Promo Bubble for Lens promo.
-    IOSPromoBubble::ShowPromoBubble(browser_view->toolbar()->app_menu_button(),
-                                    /*highlighted_button=*/nullptr,
-                                    browser()->profile(), IOSPromoType::kLens,
-                                    IOSPromoBubbleType::kReminder);
+    IOSPromoBubble::ShowPromoBubble(
+        {browser_view->toolbar()->app_menu_button()},
+        /*highlighted_button=*/nullptr, browser()->profile(),
+        IOSPromoType::kLens, IOSPromoBubbleType::kReminder);
   }
 };
 
