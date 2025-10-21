@@ -338,10 +338,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   ManifestUpdateManagerBrowserTest()
       : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
-            AppIdentityUpdate::kSkipped)) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kWebAppPredictableAppUpdating);
-  }
+            AppIdentityUpdate::kSkipped)) {}
   ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =
       delete;
   ManifestUpdateManagerBrowserTest& operator=(

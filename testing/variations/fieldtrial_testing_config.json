@@ -8775,25 +8775,6 @@
             ]
         }
     ],
-    "DesktopPWAsPredictableAppUpdating": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SilentPolicyAndDefaultAppUpdating",
-                        "WebAppPredictableAppUpdating"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopUAOnConnectedDisplays": [
         {
             "platforms": [
