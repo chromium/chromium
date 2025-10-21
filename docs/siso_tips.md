@@ -147,7 +147,49 @@ and see how build works.
 
 `--fs_keep_tainted` will keep modified output files.
 
-## Use siso other than third_party/siso/cipd/siso
+## Use siso other than current release version.
 
-Set the siso binary path in environment variable `SISO_PATH`,
-so `depot_tools/siso` use it instead of `third_party/siso/cipd/siso`.
+If you want to use different CIPD version than `siso_version` in `DEPS`,
+you can use `custom_vars` in `.gclient`.
+
+e.g. To use the latest, non-released version,
+
+```
+solutions = [
+ {
+    "name": "src",
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    ...,
+    "custom_vars": {
+       "siso_version": "latest",
+       ...
+    },
+ },
+]
+```
+
+or to use specific version,
+
+```
+      # Git revision is for https://chromium.googlesource.com/build repo,
+      # and the CIPD package for the git revision needs to be exist in
+      # https://chrome-infra-packages.appspot.com/p/build/siso
+      "siso_version": "git_revision:<git_revision>",
+```
+
+Once you modified `.gclient`, run `gclient sync`.
+
+Or if you might want to pin depot_tools version (for autoninja, siso
+wrapper), checkout specific version of depot_tools, and run
+`update_depot_tools_toggle.py --disable`.
+
+If you want to use locally built Siso, Set the siso binary path in
+environment variable `SISO_PATH`, so `depot_tools/siso` use it instead
+of `third_party/siso/cipd/siso`.
+
+e.g.
+
+```shell
+$ export SISO_PATH=$HOME/go/bin/siso
+```
+
