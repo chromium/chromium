@@ -1,6 +1,6 @@
 {
-  "version": "73.3",
-  "log_list_timestamp": "2025-10-20T12:55:11Z",
+  "version": "74.1",
+  "log_list_timestamp": "2025-10-21T12:54:45Z",
   "operators": [
     {
       "name": "Google",
@@ -1170,6 +1170,23 @@
           "temporal_interval": {
             "start_inclusive": "2026-01-01T00:00:00Z",
             "end_exclusive": "2026-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "IPng Networks 'Halloumi2026h2a'",
+          "log_id": "JuNkblhpISO8ND9HJDWbN5LNJFqI2BXTkzP9mRirRyM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEiGh4zMsdukTgrdk9iPIwz9OfU9TQVi4Mxufpmnlrzv3ivJcxVhrST4XQSeQoF5LlFVIU6PL4IzrYl12BUWn9rQ==",
+          "submission_url": "https://halloumi2026h2a.log.ct.ipng.ch/",
+          "monitoring_url": "https://halloumi2026h2a.mon.ct.ipng.ch/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-22T07:30:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
           }
         },
         {
