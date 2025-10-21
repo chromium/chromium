@@ -47,16 +47,10 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
     bool resource_has_previous_content,
-    bool depends_on_at_raster_decodes,
-    bool depends_on_hardware_accelerated_jpeg_candidates,
-    bool depends_on_hardware_accelerated_webp_candidates)
+    bool depends_on_at_raster_decodes)
     : client_(client),
       resource_has_previous_content_(resource_has_previous_content),
-      depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
-      depends_on_hardware_accelerated_jpeg_candidates_(
-          depends_on_hardware_accelerated_jpeg_candidates),
-      depends_on_hardware_accelerated_webp_candidates_(
-          depends_on_hardware_accelerated_webp_candidates) {
+      depends_on_at_raster_decodes_(depends_on_at_raster_decodes) {
   if (!in_use_resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>(
         in_use_resource.size(), in_use_resource.format(),
@@ -158,11 +152,9 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes) {
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
-  return std::make_unique<RasterBufferImpl>(
-      this, resource, resource_has_previous_content,
-      depends_on_at_raster_decodes,
-      /*depends_on_hardware_accelerated_jpeg_candidates=*/false,
-      /*depends_on_hardware_accelerated_webp_candidates=*/false);
+  return std::make_unique<RasterBufferImpl>(this, resource,
+                                            resource_has_previous_content,
+                                            depends_on_at_raster_decodes);
 }
 
 void GpuRasterBufferProvider::Flush() {
@@ -224,10 +216,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThread(
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url) {
   RasterQuery query;
-  query.depends_on_hardware_accelerated_jpeg_candidates =
-      depends_on_hardware_accelerated_jpeg_candidates_;
-  query.depends_on_hardware_accelerated_webp_candidates =
-      depends_on_hardware_accelerated_webp_candidates_;
+  query.depends_on_hardware_accelerated_jpeg_candidates = false;
+  query.depends_on_hardware_accelerated_webp_candidates = false;
   PlaybackOnWorkerThreadInternal(raster_source, raster_full_rect,
                                  raster_dirty_rect, new_content_id, transform,
                                  playback_settings, url, &query);
