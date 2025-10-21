@@ -21,6 +21,12 @@ import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
+export enum ComposeboxMode {
+  DEFAULT = '',
+  DEEP_SEARCH = 'deep-search',
+  CREATE_IMAGE = 'create-image',
+}
+
 export interface ContextualEntrypointAndCarouselElement {
   $: {
     fileInput: HTMLInputElement,
@@ -146,6 +152,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       } else {
         this.addFileContext_([file.file!], file.objectUrl !== null);
       }
+    }
+  }
+
+  setInitialMode(mode: ComposeboxMode) {
+    switch (mode) {
+      case ComposeboxMode.DEEP_SEARCH:
+        this.onDeepSearchClick_();
+        break;
+      case ComposeboxMode.CREATE_IMAGE:
+        this.onCreateImageClick_();
+        break;
     }
   }
 
@@ -309,16 +326,20 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected onDeepSearchClick_() {
-    this.showContextMenuDescription_ = !this.showContextMenuDescription_;
-    this.inputsDisabled_ = !this.inputsDisabled_;
-    this.inDeepSearchMode_ = !this.inDeepSearchMode_;
+    if (!this.realboxLayoutMode) {
+      this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+      this.inputsDisabled_ = !this.inputsDisabled_;
+      this.inDeepSearchMode_ = !this.inDeepSearchMode_;
+    }
     this.fire(
         'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
   }
 
   protected onCreateImageClick_() {
-    this.showContextMenuDescription_ = !this.showContextMenuDescription_;
-    this.inCreateImageMode_ = !this.inCreateImageMode_;
+    if (!this.realboxLayoutMode) {
+      this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+      this.inCreateImageMode_ = !this.inCreateImageMode_;
+    }
     this.fire('set-create-image-mode',
       {inCreateImageMode: this.inCreateImageMode_});
   }

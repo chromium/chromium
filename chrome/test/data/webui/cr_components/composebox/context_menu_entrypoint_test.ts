@@ -329,6 +329,11 @@ suite('ContextMenuEntrypoint', () => {
     entrypoint.remove();
     entrypoint = document.createElement('composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
+    // Simulate parent component behavior of listening for event and changing
+    // property.
+    entrypoint.addEventListener('deep-search-click', () => {
+      entrypoint.inputsDisabled = !entrypoint.inputsDisabled;
+    });
     await entrypoint.updateComplete;
 
     await openContextMenuWithSuggestions([]);
