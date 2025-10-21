@@ -79,7 +79,6 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasResourceProvider* resource_provider = nullptr,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-    const gfx::Rect& dest_rect = gfx::Rect(),
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
 

@@ -147,8 +147,7 @@ class VideoFrameImageUtilTest : public ::testing::Test {
       CHECK(resource_provider);
     }
     return CreateImageFromVideoFrame(std::move(frame), resource_provider,
-                                     video_renderer, dest_rect,
-                                     prefer_tagged_orientation);
+                                     video_renderer, prefer_tagged_orientation);
   }
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
@@ -367,43 +366,6 @@ TEST_F(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
     ASSERT_TRUE(provider);
     EXPECT_FALSE(provider->IsAccelerated());
   }
-}
-
-TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
-                                   test_sii_.get());
-
-  auto provider = CreateResourceProviderForVideoFrame(
-      gfx::Size(16, 16), kTestFormat, kTestAlphaType, kTestColorSpace, nullptr);
-  ASSERT_TRUE(provider);
-  EXPECT_FALSE(provider->IsAccelerated());
-
-  auto image = DoCreateImageFromVideoFrame(cpu_frame, true, provider.get(),
-                                           nullptr, gfx::Rect(kTestSize));
-  ASSERT_FALSE(image);
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderDestRect) {
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
-                                   test_sii_.get());
-
-  auto provider = CreateResourceProviderForVideoFrame(
-      gfx::Size(128, 128), kTestFormat, kTestAlphaType, kTestColorSpace,
-      nullptr);
-  ASSERT_TRUE(provider);
-  EXPECT_FALSE(provider->IsAccelerated());
-
-  auto image = DoCreateImageFromVideoFrame(cpu_frame, true, provider.get(),
-                                           nullptr, gfx::Rect(16, 16, 64, 64));
-  ASSERT_TRUE(image);
-  task_environment_.RunUntilIdle();
 }
 
 }  // namespace blink

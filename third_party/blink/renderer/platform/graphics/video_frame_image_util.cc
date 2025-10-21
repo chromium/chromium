@@ -113,22 +113,14 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasResourceProvider* resource_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
-    const gfx::Rect& dest_rect,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
-  gfx::Rect final_dest_rect = dest_rect;
   if (!resource_provider) {
     DLOG(ERROR) << "An external CanvasResourceProvider must be provided";
-    return nullptr;
-  } else if (!gfx::Rect(resource_provider->Size()).Contains(final_dest_rect)) {
-    DLOG(ERROR)
-        << "Provided CanvasResourceProvider is too small. Expected at least "
-        << final_dest_rect.ToString() << " got "
-        << resource_provider->Size().ToString();
     return nullptr;
   }
 
@@ -139,7 +131,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
-          final_dest_rect, video_renderer,
+          gfx::Rect(resource_provider->Size()), video_renderer,
           /*ignore_video_transformation=*/prefer_tagged_orientation,
           /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb)) {
     return nullptr;

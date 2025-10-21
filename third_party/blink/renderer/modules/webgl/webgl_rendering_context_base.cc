@@ -6627,7 +6627,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       std::move(media_video_frame),
       image_cache.GetCanvasResourceProvider(dest_rect.size(), format,
                                             alpha_type, color_space),
-      video_renderer, dest_rect, /*prefer_tagged_orientation=*/false,
+      video_renderer, /*prefer_tagged_orientation=*/false,
       /*reinterpret_video_as_srgb=*/!params.unpack_colorspace_conversion);
   if (!image)
     return;
