@@ -14351,6 +14351,34 @@
             ]
         }
     ],
+    "IncreaseHttp3Usage": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithAll_20251006",
+                    "params": {
+                        "AdditionalDelay": "100ms",
+                        "DelayMainJobWithAvailableSpdySession": "false",
+                        "QuicHandshakeTimeout": "15s",
+                        "QuicMaxPacketSize": "1230"
+                    },
+                    "enable_features": [
+                        "AdditionalDelayMainJob",
+                        "ConfigureQuicHints",
+                        "ExtendQuicHandshakeTimeout",
+                        "LowerQuicMaxPacketSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncreasedCmdBufferParseSlice": [
         {
             "platforms": [
