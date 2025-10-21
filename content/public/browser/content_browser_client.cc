@@ -61,6 +61,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/capture/content/screen_enumerator.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -891,6 +892,18 @@ bool ContentBrowserClient::CanCreateWindow(
 SpeechRecognitionManagerDelegate*
 ContentBrowserClient::CreateSpeechRecognitionManagerDelegate() {
   return nullptr;
+}
+
+std::unique_ptr<optimization_guide::ModelBrokerClient>
+ContentBrowserClient::CreateModelBrokerClient(BrowserContext* browser_context) {
+  return nullptr;
+}
+
+media::mojom::AvailabilityStatus
+ContentBrowserClient::GetOnDeviceSpeechRecognitionAvailabilityStatus(
+    BrowserContext* context,
+    const std::string& language) {
+  return media::mojom::AvailabilityStatus::kUnavailable;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

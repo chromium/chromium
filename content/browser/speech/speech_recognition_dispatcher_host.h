@@ -67,8 +67,9 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
       const url::Origin& origin,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
-      const std::string& accept_language,
-      bool can_render_frame_use_on_device);
+      const std::string& language,
+      bool can_render_frame_use_on_device,
+      bool on_device_available);
 
   int CreateSession(
       const SpeechRecognitionSessionConfig& config,
