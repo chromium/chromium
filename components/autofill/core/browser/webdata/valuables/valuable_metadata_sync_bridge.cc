@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -147,8 +148,8 @@ ValuableMetadataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   sync_pb::AutofillValuableMetadataSpecifics
       trimmed_autofill_valuable_metadata_specifics =
-          entity_specifics.autofill_valuable_metadata();
-  // TODO(crbug.com/436551488): Trim unknown values.
+          TrimAutofillValuableMetadataSpecificsDataForCaching(
+              entity_specifics.autofill_valuable_metadata());
 
   // If all fields are cleared from the valuable metadata specifics, return a
   // fresh EntitySpecifics to avoid caching a few residual bytes.

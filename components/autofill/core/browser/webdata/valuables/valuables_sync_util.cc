@@ -10,6 +10,7 @@
 
 namespace autofill {
 
+using sync_pb::AutofillValuableMetadataSpecifics;
 using sync_pb::AutofillValuableSpecifics;
 
 AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
@@ -136,4 +137,17 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
   // LINT.ThenChange(//components/sync/protocol/autofill_valuable_specifics.proto:AutofillValuableSpecifics)
   return trimmed_specifics;
 }
+
+AutofillValuableMetadataSpecifics
+TrimAutofillValuableMetadataSpecificsDataForCaching(
+    const sync_pb::AutofillValuableMetadataSpecifics& specifics) {
+  // LINT.IfChange(TrimAutofillValuableMetadataSpecificsDataForCaching)
+  AutofillValuableMetadataSpecifics trimmed_specifics(specifics);
+  trimmed_specifics.clear_valuable_id();
+  trimmed_specifics.clear_use_count();
+  trimmed_specifics.clear_last_used_date_unix_epoch_micros();
+  // LINT.ThenChange(//components/sync/protocol/autofill_valuable_metadata_specifics.proto:AutofillValuableMetadataSpecifics)
+  return trimmed_specifics;
+}
+
 }  // namespace autofill

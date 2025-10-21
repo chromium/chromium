@@ -1678,6 +1678,7 @@ source_set("unit_tests") {
     "webdata/payments/autofill_wallet_usage_data_sync_bridge_unittest.cc",
     "webdata/payments/payments_autofill_table_unittest.cc",
     "webdata/payments/payments_sync_bridge_util_unittest.cc",
+    "webdata/valuables/valuable_metadata_sync_bridge_unittest.cc",
     "webdata/valuables/valuable_sync_bridge_unittest.cc",
     "webdata/valuables/valuables_sync_util_unittest.cc",
     "webdata/valuables/valuables_table_unittest.cc",

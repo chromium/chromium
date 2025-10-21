@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(AutofillValuableMetadataSpecifics)
 // Usage metadata for Google Wallet passes.
 message AutofillValuableMetadataSpecifics {
   // The id of the Valuabe this metadata belongs to. Used as the client tag.
@@ -25,3 +26,4 @@ message AutofillValuableMetadataSpecifics {
   // The timestamp of the last use of the Valuable.
   optional int64 last_used_date_unix_epoch_micros = 3;
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableMetadataSpecificsDataForCaching)

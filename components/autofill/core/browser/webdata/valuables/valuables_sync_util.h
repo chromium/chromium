@@ -35,6 +35,13 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
 sync_pb::AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
     const sync_pb::AutofillValuableSpecifics& specifics);
 
+// Clears all supported fields from `specifics`. Supported
+// fields are all fields in the protobuf definition that have already been
+// included in the client version.
+sync_pb::AutofillValuableMetadataSpecifics
+TrimAutofillValuableMetadataSpecificsDataForCaching(
+    const sync_pb::AutofillValuableMetadataSpecifics& specifics);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLES_SYNC_UTIL_H_
