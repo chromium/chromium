@@ -219,6 +219,8 @@ ComposeboxQueryController::ComposeboxQueryController(
   use_separate_request_ids_for_multi_context_viewport_images_ =
       feature_params
           ->use_separate_request_ids_for_multi_context_viewport_images;
+  clear_previous_state_on_session_start_ =
+      feature_params->clear_previous_state_on_session_start;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -227,14 +229,21 @@ ComposeboxQueryController::ComposeboxQueryController(
 ComposeboxQueryController::~ComposeboxQueryController() = default;
 
 void ComposeboxQueryController::NotifySessionStarted() {
+  if (clear_previous_state_on_session_start_) {
+    ClearAllState();
+  }
   FetchClusterInfo();
 }
 
 void ComposeboxQueryController::NotifySessionAbandoned() {
-  ClearFiles();
-  ClearClusterInfo();
+  ClearAllState();
   SetQueryControllerState(QueryControllerState::kOff);
   session_id_++;
+}
+
+void ComposeboxQueryController::ClearAllState() {
+  ClearFiles();
+  ClearClusterInfo();
 }
 
 lens::LensOverlayRequestId

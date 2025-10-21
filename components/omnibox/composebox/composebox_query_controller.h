@@ -239,6 +239,8 @@ class ComposeboxQueryController {
     // Does nothing if `enable_multi_context_input_flow` is false or if
     // `enable_viewport_images` is false.
     bool use_separate_request_ids_for_multi_context_viewport_images = true;
+    // Whether or not to clear state upon starting a new session.
+    bool clear_previous_state_on_session_start = false;
   };
 
   ComposeboxQueryController(
@@ -364,6 +366,9 @@ class ComposeboxQueryController {
   scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
  private:
+  // Clears all state for this session.
+  void ClearAllState();
+
   // Updates the internal suggest inputs state with the given file's request id.
   // Updates the file upload status to kProcessingSuggestSignalsReady if the
   // inputs are ready and the status is kProcessing.
@@ -531,6 +536,9 @@ class ComposeboxQueryController {
   // Does nothing if `enable_multi_context_input_flow_` is false or if
   // `enable_viewport_images_` is false.
   bool use_separate_request_ids_for_multi_context_viewport_images_;
+
+  // Whether or not to clear state upon starting a new session.
+  bool clear_previous_state_on_session_start_;
 
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
