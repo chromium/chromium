@@ -1319,4 +1319,137 @@ TEST_F(PermissionsDelegationUmaUtilTest,
   histogram_tester_.ExpectTotalCount(
       "Permissions.PredictionService.Action.Geolocation.Likely.Loud", 0);
 }
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionService_Notifications_Gesture_VeryUnlikely) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood*/
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back*/ false,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications.Gesture",
+      PermissionRequestLikelihood::kVeryUnlikely, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionService_Notifications_NoGesture_VeryUnlikely) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood*/
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back*/ false,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications.NoGesture",
+      PermissionRequestLikelihood::kVeryUnlikely, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionService_Notifications_NoGesture_VeryLikely) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood*/
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back*/ false,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications.NoGesture",
+      PermissionRequestLikelihood::kVeryLikely, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionService_Geolocation_Gesture_VeryLikely) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood*/
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back*/ false,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation.Gesture",
+      PermissionRequestLikelihood::kVeryLikely, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionService_Geolocation_NoGesture_NoLikelihood) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back*/ false,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false);
+
+  histogram_tester_.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.Gesture", 0);
+}
 }  // namespace permissions

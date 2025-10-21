@@ -1122,6 +1122,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.PredictionService.{PermissionType}{Gesture}"
+    enum="PermissionRequestLikelihood" expires_after="2026-09-30">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the grant likelihood of a permission request based on whether a
+    gesture was associated with it. This is recorded by the prediction service
+    for Notifications and Geolocation permissions.
+  </summary>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="Gesture" variants="PermissionRequestGesture"/>
+</histogram>
+
 <histogram name="Permissions.PredictionServiceSource.{PermissionType}"
     enum="PermissionPredictionSource" expires_after="2026-03-15">
   <owner>elklm@chromium.org</owner>

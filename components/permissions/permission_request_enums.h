@@ -36,6 +36,23 @@ enum class PermissionRequestRelevance {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PermissionRequestLikelihood)
+enum class PermissionRequestLikelihood {
+  kUnspecified = 0,
+  kVeryUnlikely = 1,
+  kUnlikely = 2,
+  kNeutral = 3,
+  kLikely = 4,
+  kVeryLikely = 5,
+
+  // Always keep at the end.
+  kMaxValue = kVeryLikely,
+};
+// LINT.ThenChange(
+// tools/metrics/histograms/metadata/permissions/enums.xml:PermissionRequestLikelihood)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(PermissionAiRelevanceModel)
 enum class PermissionAiRelevanceModel {
   kUnknown = 0,

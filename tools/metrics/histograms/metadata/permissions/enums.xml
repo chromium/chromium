@@ -239,6 +239,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionRequestLikelihood) -->
+
+<enum name="PermissionRequestLikelihood">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Very Unlikely"/>
+  <int value="2" label="Unlikely"/>
+  <int value="3" label="Neutral"/>
+  <int value="4" label="Likely"/>
+  <int value="5" label="Very Likely"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/permissions/permission_request_enums.h:PermissionRequestLikelihood) -->
+
 <!-- LINT.IfChange(PermissionRequestRelevance) -->
 
 <enum name="PermissionRequestRelevance">
