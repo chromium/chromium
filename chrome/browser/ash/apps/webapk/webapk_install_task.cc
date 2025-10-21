@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
+#include "chrome/browser/ash/apps/webapk/webapk_install_task.h"
 
 #include <algorithm>
 #include <utility>
@@ -18,8 +18,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
+#include "chrome/browser/ash/apps/webapk/webapk_prefs.h"
+#include "chrome/browser/ash/apps/webapk/webapk_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"

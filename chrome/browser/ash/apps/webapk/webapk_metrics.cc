@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
+#include "chrome/browser/ash/apps/webapk/webapk_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"

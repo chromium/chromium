@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_INSTALL_TASK_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_INSTALL_TASK_H_
+#ifndef CHROME_BROWSER_ASH_APPS_WEBAPK_WEBAPK_INSTALL_TASK_H_
+#define CHROME_BROWSER_ASH_APPS_WEBAPK_WEBAPK_INSTALL_TASK_H_
 
 #include <memory>
 #include <optional>
@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
+#include "chrome/browser/ash/apps/webapk/webapk_metrics.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
@@ -103,4 +103,4 @@ class WebApkInstallTask {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_INSTALL_TASK_H_
+#endif  // CHROME_BROWSER_ASH_APPS_WEBAPK_WEBAPK_INSTALL_TASK_H_

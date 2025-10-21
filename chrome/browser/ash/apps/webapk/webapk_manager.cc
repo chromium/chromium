@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
+#include "chrome/browser/ash/apps/webapk/webapk_manager.h"
 
 #include <optional>
 
@@ -14,10 +14,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/webapk/webapk_install_queue.h"
+#include "chrome/browser/ash/apps/webapk/webapk_metrics.h"
+#include "chrome/browser/ash/apps/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"

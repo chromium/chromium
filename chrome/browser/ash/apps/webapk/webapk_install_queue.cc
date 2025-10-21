@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
+#include "chrome/browser/ash/apps/webapk/webapk_install_queue.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
+#include "chrome/browser/ash/apps/webapk/webapk_install_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

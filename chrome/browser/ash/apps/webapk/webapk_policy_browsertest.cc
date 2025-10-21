@@ -8,12 +8,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
+#include "chrome/browser/ash/apps/webapk/webapk_prefs.h"
+#include "chrome/browser/ash/apps/webapk/webapk_test_server.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
@@ -51,7 +51,7 @@ class WebApkPolicyBrowserTest : public policy::PolicyTest {
 
   void SetUpOnMainThread() override {
     PolicyTest::SetUpOnMainThread();
-    arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
+    arc::SetArcPlayStoreEnabledForProfile(GetProfile(), true);
 
     webapk_test_server_ = std::make_unique<apps::WebApkTestServer>();
     webapk_test_server_->SetUpAndStartServer(embedded_test_server());
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DefaultInstallWebApk) {
       embedded_test_server()->GetURL("/web_share_target/charts.html");
 
   PrefChangeRegistrar pref_registrar;
-  pref_registrar.Init(browser()->profile()->GetPrefs());
+  pref_registrar.Init(GetProfile()->GetPrefs());
 
   // Wait for the pref to be set, which is the last stage of WebAPK
   // installation.
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DefaultInstallWebApk) {
   run_loop.Run();
 
   ASSERT_TRUE(received_webapk_request());
-  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(browser()->profile()),
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(GetProfile()),
               testing::ElementsAre(app_id));
 }
 
@@ -126,6 +126,6 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DisabledByPolicy) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(received_webapk_request());
-  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(browser()->profile()),
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(GetProfile()),
               testing::IsEmpty());
 }

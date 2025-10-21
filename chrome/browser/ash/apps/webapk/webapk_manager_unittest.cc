@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
+#include "chrome/browser/ash/apps/webapk/webapk_manager.h"
 
 #include <memory>
 #include <vector>
@@ -14,12 +14,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/apps/webapk/webapk_install_queue.h"
+#include "chrome/browser/ash/apps/webapk/webapk_install_task.h"
+#include "chrome/browser/ash/apps/webapk/webapk_metrics.h"
+#include "chrome/browser/ash/apps/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"

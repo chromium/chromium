@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_PREFS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_PREFS_H_
+#ifndef CHROME_BROWSER_ASH_APPS_WEBAPK_WEBAPK_PREFS_H_
+#define CHROME_BROWSER_ASH_APPS_WEBAPK_WEBAPK_PREFS_H_
 
 #include <optional>
 #include <string>
@@ -57,4 +57,4 @@ base::flat_set<std::string> GetUpdateNeededAppIds(Profile* profile);
 }  // namespace webapk_prefs
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_PREFS_H_
+#endif  // CHROME_BROWSER_ASH_APPS_WEBAPK_WEBAPK_PREFS_H_
