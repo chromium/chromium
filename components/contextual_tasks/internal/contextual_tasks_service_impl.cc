@@ -118,19 +118,32 @@ void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
   RemoveTaskInternal(task_id, TriggerSource::kLocal);
 }
 
-void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
-                                                 const Thread& thread) {
-  auto it = tasks_.find(task_id);
-  bool is_new_task = (it == tasks_.end());
-  if (is_new_task) {
-    // Task not found, but we have a task ID. Create the task on the fly.
-    it =
-        tasks_
-            .emplace(task_id, ContextualTask(task_id, supports_ephemeral_only_))
-            .first;
+void ContextualTasksServiceImpl::UpdateThreadForTask(
+    const base::Uuid& task_id,
+    ThreadType thread_type,
+    const std::string& server_id,
+    std::optional<std::string> conversation_turn_id,
+    std::optional<std::string> title) {
+  auto [it, is_new_task] = FindOrCreateTask(task_id, thread_type, server_id);
+
+  // If a thread already exists and its server ID does not match the new server
+  // ID, it indicates a mismatch or an attempt to update a different thread, so
+  // we return.
+  std::optional<Thread> thread = it->second.GetThread();
+  if (thread.has_value() && thread->server_id != server_id) {
+    return;
   }
 
-  it->second.AddThread(thread);
+  // Determine the new title and conversation turn ID. If provided, use them;
+  // otherwise, retain the existing values if a thread already exists.
+  const std::string& new_title =
+      title.value_or(thread.has_value() ? thread->title : "");
+  const std::string& new_conversation_turn_id = conversation_turn_id.value_or(
+      thread.has_value() ? thread->conversation_turn_id : "");
+
+  // Add or update the thread information within the task.
+  it->second.AddThread(
+      Thread(thread_type, server_id, new_title, new_conversation_turn_id));
 
   if (is_new_task) {
     contextual_task_sync_bridge_->OnTaskAddedLocally(it->second);
@@ -140,47 +153,6 @@ void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
                                   TriggerSource::kLocal));
   } else {
     contextual_task_sync_bridge_->OnTaskUpdatedLocally(it->second);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
-                       weak_ptr_factory_.GetWeakPtr(), it->second,
-                       TriggerSource::kLocal));
-  }
-}
-
-void ContextualTasksServiceImpl::UpdateThreadTurnId(
-    const base::Uuid& task_id,
-    ThreadType thread_type,
-    const std::string& server_id,
-    const std::string& conversation_turn_id) {
-  auto it = tasks_.find(task_id);
-  bool is_new_task = (it == tasks_.end());
-  if (is_new_task) {
-    it =
-        tasks_
-            .emplace(task_id, ContextualTask(task_id, supports_ephemeral_only_))
-            .first;
-  }
-
-  std::optional<Thread> thread = it->second.GetThread();
-  if (thread.has_value() && thread->server_id != server_id) {
-    return;
-  }
-
-  if (!thread.has_value()) {
-    it->second.AddThread(
-        Thread(thread_type, server_id, "", conversation_turn_id));
-  } else {
-    thread->conversation_turn_id = conversation_turn_id;
-    it->second.AddThread(thread.value());
-  }
-
-  if (is_new_task) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
-                                  weak_ptr_factory_.GetWeakPtr(), it->second,
-                                  TriggerSource::kLocal));
-  } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
@@ -201,6 +173,19 @@ void ContextualTasksServiceImpl::RemoveThreadFromTask(
       DeleteTask(task_id);
     }
   }
+}
+
+std::optional<ContextualTask> ContextualTasksServiceImpl::GetTaskFromServerId(
+    ThreadType thread_type,
+    const std::string& server_id) {
+  for (const auto& pair : tasks_) {
+    std::optional<Thread> thread = pair.second.GetThread();
+    if (thread.has_value() && thread->type == thread_type &&
+        thread->server_id == server_id) {
+      return pair.second;
+    }
+  }
+  return std::nullopt;
 }
 
 void ContextualTasksServiceImpl::AttachUrlToTask(const base::Uuid& task_id,
@@ -386,6 +371,33 @@ void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
   for (const auto& task_id : tasks_to_delete) {
     RemoveTaskInternal(task_id, TriggerSource::kRemote);
   }
+}
+
+std::pair<std::map<base::Uuid, ContextualTask>::iterator, bool>
+ContextualTasksServiceImpl::FindOrCreateTask(const base::Uuid& task_id,
+                                             ThreadType thread_type,
+                                             const std::string& server_id) {
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    return {it, /*is_new_task=*/false};
+  }
+
+  // Task not found, but we have a task ID. Create the task on the fly unless
+  // we already have a task for this server ID.
+  std::optional<ContextualTask> existing_task =
+      GetTaskFromServerId(thread_type, server_id);
+  if (existing_task.has_value()) {
+    // TODO(nyquist): This is a temporary solution to avoid creating
+    // duplicate tasks. We should remove this once we have a better solution
+    // for handling out-of-sync tasks.
+    it = tasks_.find(existing_task->GetTaskId());
+    return {it, /*is_new_task=*/false};
+  }
+
+  it =
+      tasks_.emplace(task_id, ContextualTask(task_id, supports_ephemeral_only_))
+          .first;
+  return {it, /*is_new_task=*/true};
 }
 
 void ContextualTasksServiceImpl::RemoveTaskInternal(const base::Uuid& task_id,

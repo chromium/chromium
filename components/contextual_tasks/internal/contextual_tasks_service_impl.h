@@ -66,15 +66,17 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   void GetTasks(base::OnceCallback<void(std::vector<ContextualTask>)> callback)
       const override;
   void DeleteTask(const base::Uuid& task_id) override;
-  void AddThreadToTask(const base::Uuid& task_id,
-                       const Thread& thread) override;
+  void UpdateThreadForTask(const base::Uuid& task_id,
+                           ThreadType thread_type,
+                           const std::string& server_id,
+                           std::optional<std::string> conversation_turn_id,
+                           std::optional<std::string> title) override;
   void RemoveThreadFromTask(const base::Uuid& task_id,
                             ThreadType type,
                             const std::string& server_id) override;
-  void UpdateThreadTurnId(const base::Uuid& task_id,
-                          ThreadType thread_type,
-                          const std::string& server_id,
-                          const std::string& conversation_turn_id) override;
+  std::optional<ContextualTask> GetTaskFromServerId(
+      ThreadType thread_type,
+      const std::string& server_id) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
   void AssociateTabWithTask(const base::Uuid& task_id,
@@ -98,6 +100,14 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
  private:
   friend class ContextualTasksServiceImplTest;
+
+  // Finds a task by its ID, or creates a new one if it doesn't exist.
+  // Returns an iterator to the task in the map and a boolean indicating whether
+  // the task was newly created.
+  std::pair<std::map<base::Uuid, ContextualTask>::iterator, bool>
+  FindOrCreateTask(const base::Uuid& task_id,
+                   ThreadType thread_type,
+                   const std::string& server_id);
 
   void RemoveTaskInternal(const base::Uuid& task_id, TriggerSource source);
 

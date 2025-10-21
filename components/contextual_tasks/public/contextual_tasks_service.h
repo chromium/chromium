@@ -97,15 +97,18 @@ class ContextualTasksService : public KeyedService {
   // When assigning a thread to a task_id that does not have a registered
   // task, the ContextualTask is created on the fly. We do not automatically
   // create tasks when removing threads.
-  virtual void AddThreadToTask(const base::Uuid& task_id,
-                               const Thread& thread) = 0;
+  virtual void UpdateThreadForTask(
+      const base::Uuid& task_id,
+      ThreadType thread_type,
+      const std::string& server_id,
+      std::optional<std::string> conversation_turn_id,
+      std::optional<std::string> title) = 0;
   virtual void RemoveThreadFromTask(const base::Uuid& task_id,
                                     ThreadType type,
                                     const std::string& server_id) = 0;
-  virtual void UpdateThreadTurnId(const base::Uuid& task_id,
-                                  ThreadType thread_type,
-                                  const std::string& server_id,
-                                  const std::string& conversation_turn_id) = 0;
+  virtual std::optional<ContextualTask> GetTaskFromServerId(
+      ThreadType thread_type,
+      const std::string& server_id) = 0;
 
   // Methods related to attaching URLs to tasks.
   virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;

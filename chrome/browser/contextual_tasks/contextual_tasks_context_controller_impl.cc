@@ -57,10 +57,14 @@ void ContextualTasksContextControllerImpl::DeleteTask(
   service_->DeleteTask(task_id);
 }
 
-void ContextualTasksContextControllerImpl::AddThreadToTask(
+void ContextualTasksContextControllerImpl::UpdateThreadForTask(
     const base::Uuid& task_id,
-    const Thread& thread) {
-  service_->AddThreadToTask(task_id, thread);
+    ThreadType thread_type,
+    const std::string& server_id,
+    std::optional<std::string> conversation_turn_id,
+    std::optional<std::string> title) {
+  service_->UpdateThreadForTask(task_id, thread_type, server_id,
+                                conversation_turn_id, title);
 }
 
 void ContextualTasksContextControllerImpl::RemoveThreadFromTask(
@@ -70,13 +74,11 @@ void ContextualTasksContextControllerImpl::RemoveThreadFromTask(
   service_->RemoveThreadFromTask(task_id, type, server_id);
 }
 
-void ContextualTasksContextControllerImpl::UpdateThreadTurnId(
-    const base::Uuid& task_id,
+std::optional<ContextualTask>
+ContextualTasksContextControllerImpl::GetTaskFromServerId(
     ThreadType thread_type,
-    const std::string& server_id,
-    const std::string& conversation_turn_id) {
-  service_->UpdateThreadTurnId(task_id, thread_type, server_id,
-                               conversation_turn_id);
+    const std::string& server_id) {
+  return service_->GetTaskFromServerId(thread_type, server_id);
 }
 
 void ContextualTasksContextControllerImpl::AttachUrlToTask(
