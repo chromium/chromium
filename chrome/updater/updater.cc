@@ -39,6 +39,7 @@
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
 #include "chrome/updater/ipc/ipc_support.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/usage_stats_permissions.h"
@@ -60,6 +61,8 @@
 #include "chrome/updater/app/server/win/updater_service_delegate.h"
 #include "chrome/updater/util/win_util.h"
 #include "partition_alloc/page_allocator.h"
+#elif BUILDFLAG(IS_MAC)
+#include "base/apple/foundation_util.h"
 #endif
 
 // Instructions For Windows.
@@ -145,6 +148,8 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
       << "Failed to disable COM exception handling.";
   base::win::RegisterInvalidParamHandler();
   VLOG(1) << GetUACState();
+#elif BUILDFLAG(IS_MAC)
+  base::apple::SetBaseBundleIDOverride(MAC_BUNDLE_IDENTIFIER_STRING);
 #endif
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
