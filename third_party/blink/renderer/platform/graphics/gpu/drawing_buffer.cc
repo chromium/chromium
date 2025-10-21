@@ -1936,14 +1936,14 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // format matches shared image format. This is necessary for Graphite where
   // IOSurfaces are always used to allow sharing between ANGLE and Dawn.
   if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBA_8888 &&
-      gpu::IsFormatSupportedForSIWithNativeBuffer(
-          viz::SinglePlaneFormat::kBGRA_8888,
-          ContextProvider()->GetCapabilities())) {
+      ContextProvider()->GetCapabilities().gpu_memory_buffer_formats.Has(
+          viz::SinglePlaneSharedImageFormatToBufferFormat(
+              viz::SinglePlaneFormat::kBGRA_8888))) {
     color_buffer_format_ = viz::SinglePlaneFormat::kBGRA_8888;
   } else if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
-             gpu::IsFormatSupportedForSIWithNativeBuffer(
-                 viz::SinglePlaneFormat::kBGRX_8888,
-                 ContextProvider()->GetCapabilities())) {
+             ContextProvider()->GetCapabilities().gpu_memory_buffer_formats.Has(
+                 viz::SinglePlaneSharedImageFormatToBufferFormat(
+                     viz::SinglePlaneFormat::kBGRX_8888))) {
     color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -1977,15 +1977,16 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // Intel GPUs (i8xx) don't support RGBX overlays.
       if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
           allow_bgrx &&
-          gpu::IsFormatSupportedForSIWithNativeBuffer(
-              viz::SinglePlaneFormat::kBGRX_8888,
-              ContextProvider()->GetCapabilities())) {
+          ContextProvider()->GetCapabilities().gpu_memory_buffer_formats.Has(
+              viz::SinglePlaneSharedImageFormatToBufferFormat(
+                  viz::SinglePlaneFormat::kBGRX_8888))) {
         color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
       }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-      if (gpu::IsFormatSupportedForSIWithNativeBuffer(
-              color_buffer_format_, ContextProvider()->GetCapabilities())) {
+      if (ContextProvider()->GetCapabilities().gpu_memory_buffer_formats.Has(
+              viz::SinglePlaneSharedImageFormatToBufferFormat(
+                  color_buffer_format_))) {
         usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
         if (low_latency_enabled()) {
           usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;

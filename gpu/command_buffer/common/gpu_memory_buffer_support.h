@@ -18,14 +18,6 @@ using GpuMemoryBufferFormatSet = base::
 static_assert(static_cast<int>(gfx::BufferFormat::R_8) == 0);
 static_assert(static_cast<int>(gfx::BufferFormat::LAST) < 64);
 
-struct Capabilities;
-
-// Returns true if creating a shared image with |format| is
-// supported by |capabilities|.
-GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsFormatSupportedForSIWithNativeBuffer(
-    viz::SharedImageFormat format,
-    const Capabilities& capabilities);
-
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_
