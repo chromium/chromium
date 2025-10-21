@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.GroupBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -161,8 +162,14 @@ class KeyboardAccessoryMediator
      *     bar.
      */
     private void setBarContents(List<BarItem> scrollableItems) {
-        // TODO: crbug.com/450830784 - Group the first 2 or 3 suggestions to conditionally limit
-        // their width.
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_WIDTH_ADJUSTMENT)) {
+            // TODO: crbug.com/385172647 - Create groups only for the docked keyboard accessory.
+            scrollableItems = createGroupBarItem(scrollableItems);
+        }
         // TODO(crbug.com/441006939): Show dismiss on first launch too.
         List<BarItem> fixedBarItems = new ArrayList<BarItem>();
         if (mIsLargeFormFactorSupplier.get()
@@ -176,6 +183,31 @@ class KeyboardAccessoryMediator
         mModel.get(BAR_ITEMS_FIXED).set(fixedBarItems);
         mModel.get(BAR_ITEMS).set(scrollableItems);
         mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
+    }
+
+    private List<BarItem> createGroupBarItem(List<BarItem> scrollableItems) {
+        List<ActionBarItem> autofillBarItems = new ArrayList<>();
+        // Collect at most 3 Autofill suggestions that are in the beginning of the list.
+        for (int i = 0; i < scrollableItems.size() && autofillBarItems.size() < 3; i++) {
+            if (scrollableItems.get(i) instanceof AutofillBarItem autofillBarItem) {
+                autofillBarItems.add(autofillBarItem);
+            } else {
+                // Stop collection Autofill suggestions when the first item of a different type is
+                // encountered.
+                break;
+            }
+        }
+        // If there are not enough Autofill suggestions in the beginning of the list, do not create
+        // a chip group for chip width adjustment.
+        if (autofillBarItems.size() < 2) {
+            return scrollableItems;
+        }
+        // Otherwise, substitute the first Autofill suggestions with a suggestion group to
+        // dynamically limit their screen width in the Keyboard Accessory.
+        scrollableItems.removeAll(autofillBarItems);
+        GroupBarItem groupBarItem = new GroupBarItem(autofillBarItems);
+        scrollableItems.add(0, groupBarItem);
+        return scrollableItems;
     }
 
     private List<BarItem> collectItemsToRetain(@AccessoryAction int actionType) {

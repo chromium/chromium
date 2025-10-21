@@ -130,16 +130,17 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     /** Switching fields should re-scroll the keyboard accessory to the left. */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "crbug.com/377939398")
     public void testSwitchFieldsRescrollsKeyboardAccessory() throws TimeoutException {
         startAtTestPage(FakeKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("EMAIL_ADDRESS", 8);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        // Scroll to the second position and check it actually happened.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mHelper.getAccessoryBarView().scrollToPosition(2);
-                });
+        // Scroll to the tab switcher and check that the scroll offset is greater than zero.
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)));
         CriteriaHelper.pollUiThread(
                 () -> {
                     return mHelper.getAccessoryBarView().computeHorizontalScrollOffset() > 0;

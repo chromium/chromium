@@ -869,6 +869,15 @@ inline constexpr char
         "Chrome "
         "KeyboardAccessory";
 
+inline constexpr char
+    kAutofillEnableKeyboardAccessoryChipWidthAdjustmentName[] =
+        "Enable Keyboard Accessory chip width adjustment";
+inline constexpr char
+    kAutofillEnableKeyboardAccessoryChipWidthAdjustmentDescription[] =
+        "When enabled, Keyboard accessory limits the width of the first chip "
+        "or "
+        "the first 2 chips to display a part of the next chip.";
+
 inline constexpr char kAutofillEnableLoyaltyCardsFillingName[] =
     "Enable Autofill support for filling loyalty cards";
 inline constexpr char kAutofillEnableLoyaltyCardsFillingDescription[] =
