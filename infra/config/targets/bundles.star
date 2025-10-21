@@ -2660,6 +2660,17 @@ targets.bundle(
     },
 )
 
+# The same as gpu_dawn_isolated_scripts, but with suites removed that are
+# run on the standalone Dawn builders.
+targets.bundle(
+    name = "dawn_chromium_isolated_scripts",
+    targets = [
+        "gpu_dawn_common_isolated_scripts",
+        "gpu_dawn_webgpu_blink_web_tests",
+        "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
+    ],
+)
+
 targets.bundle(
     name = "desktop_chromium_isolated_scripts",
     targets = [
