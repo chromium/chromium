@@ -376,7 +376,8 @@ void ToolbarView::Init() {
   back_ = container_view_->AddChildView(std::move(back));
   forward_ = container_view_->AddChildView(std::move(forward));
   if (features::IsWebUIReloadButtonEnabled()) {
-    auto reload_webview = std::make_unique<ReloadButtonWebView>(browser_);
+    auto reload_webview = std::make_unique<ReloadButtonWebView>(
+        browser_, browser_->command_controller());
     reload_webview_ = container_view_->AddChildView(std::move(reload_webview));
   } else {
     std::unique_ptr<ReloadButton> reload = std::make_unique<ReloadButton>(
@@ -567,8 +568,9 @@ void ToolbarView::Update(WebContents* tab) {
     pinned_toolbar_actions_container_->UpdateAllIcons();
   }
 
-  if (reload_) {
-    reload_->SetMenuEnabled(chrome::IsDebuggerAttachedToCurrentTab(browser_));
+  if (ReloadControl* reload_control = GetReloadButton(); reload_control) {
+    reload_control->SetMenuEnabled(
+        chrome::IsDebuggerAttachedToCurrentTab(browser_));
   }
 }
 

@@ -29,9 +29,7 @@ class Profile;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-class ReloadButton : public ToolbarButton,
-                     public ReloadControl,
-                     public ui::SimpleMenuModel::Delegate {
+class ReloadButton : public ToolbarButton, public ReloadControl {
   METADATA_HEADER(ReloadButton, ToolbarButton)
 
  public:
@@ -45,10 +43,6 @@ class ReloadButton : public ToolbarButton,
   void SetVectorIconsForMode(Mode mode,
                              const gfx::VectorIcon& icon,
                              const gfx::VectorIcon& touch_icon);
-
-  // Gets/Sets whether reload drop-down menu is enabled.
-  bool GetMenuEnabled() const;
-  void SetMenuEnabled(bool enable);
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -69,6 +63,8 @@ class ReloadButton : public ToolbarButton,
 
   // ReloadControl overrides:
   void ChangeMode(Mode mode, bool force) override;
+  bool GetMenuEnabled() const override;
+  void SetMenuEnabled(bool is_menu_enabled) override;
   views::View* GetAsViewClassForTesting() override;
 
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -119,7 +115,7 @@ class ReloadButton : public ToolbarButton,
   base::TimeDelta mode_switch_timer_delay_;
 
   // Indicates if reload menu is enabled.
-  bool menu_enabled_ = false;
+  bool is_menu_enabled_ = false;
 
   // TESTING ONLY
   // True if we should pretend the button is hovered.

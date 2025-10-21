@@ -113,11 +113,11 @@ void ReloadButton::SetVectorIconsForMode(Mode mode,
 }
 
 bool ReloadButton::GetMenuEnabled() const {
-  return menu_enabled_;
+  return is_menu_enabled_;
 }
 
-void ReloadButton::SetMenuEnabled(bool enable) {
-  menu_enabled_ = enable;
+void ReloadButton::SetMenuEnabled(bool is_menu_enabled) {
+  is_menu_enabled_ = is_menu_enabled;
   UpdateAccessibleHasPopup();
   UpdateCachedTooltipText();
 }
@@ -148,13 +148,13 @@ void ReloadButton::PaintButtonContents(gfx::Canvas* canvas) {
 
 void ReloadButton::UpdateCachedTooltipText() {
   int reload_tooltip =
-      menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
+      is_menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
   SetTooltipText(l10n_util::GetStringUTF16(
       visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP));
 }
 
 bool ReloadButton::ShouldShowMenu() {
-  return menu_enabled_ && (visible_mode_ == Mode::kReload);
+  return is_menu_enabled_ && (visible_mode_ == Mode::kReload);
 }
 
 void ReloadButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
@@ -278,7 +278,7 @@ void ReloadButton::OnStopToReloadTimer() {
 }
 
 void ReloadButton::UpdateAccessibleHasPopup() {
-  if (menu_enabled_ && menu_model()) {
+  if (is_menu_enabled_ && menu_model()) {
     GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
   } else {
     GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kNone);
