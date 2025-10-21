@@ -203,7 +203,7 @@ public class PageZoomUma {
 
     /** Log that the user clicked the immersive mode button. */
     public static void logImmersiveModeClicked() {
-        RecordUserAction.record(PAGE_ZOOM_INDICATOR_CLICKED);
+        RecordUserAction.record(PAGE_ZOOM_IMMERSIVE_MODE_CLICKED);
     }
 
     private static void recordUsageMetric(@AccessibilityPageZoomUsageType int usageType) {
