@@ -120,6 +120,10 @@ inline void CollectDescendantSelectorIdentifierHashes(
         case CSSSelector::kPseudoParent: {
           // If we have a one-element :is(), :where() or &, treat it
           // as if the given list was written out as a normal descendant.
+          //
+          // TODO: Consider whether we can do the same here as for subject
+          // filters further down, so that e.g. :is(.a.b, .c.a) would at least
+          // add the hash for .a.
           const CSSSelector* selector_list = selector.SelectorListOrParent();
           if (selector_list &&
               CSSSelectorList::Next(*selector_list) == nullptr) {
@@ -222,13 +226,31 @@ void SelectorFilter::CollectSubjectIdentifierHashes(
           case CSSSelector::kPseudoIs:
           case CSSSelector::kPseudoWhere:
           case CSSSelector::kPseudoParent: {
-            // If we have a one-element :is(), :where() or &, treat
-            // as if the given list was written out as a normal subject.
-            const CSSSelector* selector_list = current->SelectorListOrParent();
-            if (selector_list &&
-                CSSSelectorList::Next(*selector_list) == nullptr) {
-              CollectSubjectIdentifierHashes(
-                  selector_list, attributes_to_exclude, subject_filter);
+            // If we have a :is(), :where() or &, and all alternatives share
+            // one or more bits (for instance because there is only one
+            // alternative), we can require those bits.
+            //
+            // If the list is empty, this ends up requiring all bits, which is
+            // fine (since :is() can never match anything anyway). The exception
+            // is if an empty list signifies parent-for-scope.
+            if (current->GetPseudoType() == CSSSelector::kPseudoParent &&
+                !current->SelectorListOrParent()) {
+              // & for @scope (as opposed to & for nesting). We don't know
+              // what this ends up pointing to, so we also cannot add
+              // anything to the filter.
+            } else {
+              Element::TinyBloomFilter intersection =
+                  ~Element::TinyBloomFilter{0};
+              for (const CSSSelector* sub_selector =
+                       current->SelectorListOrParent();
+                   sub_selector;
+                   sub_selector = CSSSelectorList::Next(*sub_selector)) {
+                Element::TinyBloomFilter sub_filter = 0;
+                CollectSubjectIdentifierHashes(
+                    sub_selector, attributes_to_exclude, sub_filter);
+                intersection &= sub_filter;
+              }
+              subject_filter |= intersection;
             }
             break;
           }
