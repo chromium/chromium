@@ -797,6 +797,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       panel_opening_data->panel_state = host().GetPanelState(this).Clone();
       panel_opening_data->invocation_source =
           mojom::InvocationSource::kUnsupported;
+      base::UmaHistogramBoolean("Glic.Host.OpenedInRegularTab", true);
       web_client_->NotifyPanelWillOpen(std::move(panel_opening_data),
                                        base::DoNothing());
     }
@@ -1349,6 +1350,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void PanelWillOpen(glic::mojom::PanelOpeningDataPtr panel_opening_data,
                      PanelWillOpenCallback done) override {
+    base::UmaHistogramBoolean("Glic.Host.OpenedInRegularTab", false);
     web_client_->NotifyPanelWillOpen(
         std::move(panel_opening_data),
         base::BindOnce(

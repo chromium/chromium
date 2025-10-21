@@ -517,6 +517,18 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
+<histogram name="Glic.Host.OpenedInRegularTab" enum="Boolean"
+    expires_after="2026-09-30">
+  <owner>carlosk@chromium.org</owner>
+  <owner>birnie@chromium.org</owner>
+  <summary>
+    Histogram that records whether the Glic WebUI is being opened in a regular
+    browser tab (records true; expected for development purposes) instead of its
+    expected container types (records false). Recorded when the web client is
+    about to be notified about it being opened.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Host.WebClientState.{Event}"
     enum="GlicDetailedWebClientState" expires_after="2026-03-22">
   <owner>harringtond@chromium.org</owner>
