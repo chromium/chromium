@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash/md5.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -71,9 +70,10 @@ base::expected<SkBitmap, std::string> LoadIcon(
 class ShortcutCreatorLinuxTest : public testing::Test {
  protected:
   const GURL kUrl = GURL("https://example.com/test?query=1s&basdf");
-  // The hash is the result of applying MD5 to the kUrl above.
+  // The hash is the result of applying SHA-256 to the kUrl above.
   const std::string kShortcutBaseName =
-      "shortcut-c0439743e18462397982265de7846820.png";
+      "shortcut-"
+      "19ac64003b6046f6ff0528fca09135468f5f86b3b4835ae39a9c4aa18751e9d8.png";
 
   base::FilePath GetShortcutIconDir() {
     return profile_path_.GetPath().AppendASCII("Web Shortcut Icons");

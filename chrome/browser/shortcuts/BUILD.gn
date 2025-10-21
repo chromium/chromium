@@ -41,6 +41,7 @@ source_set("shortcuts") {
       "//components/webapps/common",
       "//components/webapps/common:mojo_bindings",
       "//content/public/browser",
+      "//crypto",
       "//mojo/public/cpp/bindings",
       "//skia",
       "//third_party/blink/public/common",
