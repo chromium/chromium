@@ -348,6 +348,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetIsBackground(properties_->is_background);
     builder.SetIsMuted(properties_->is_muted);
     builder.SetPlayerID(player_id_.value());
+    builder.SetRendererType(static_cast<int64_t>(properties_->renderer_type));
     if (clamped_duration_ms.has_value())
       builder.SetDuration(*clamped_duration_ms);
 

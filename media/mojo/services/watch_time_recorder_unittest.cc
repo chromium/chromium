@@ -742,6 +742,8 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
     EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
+    EXPECT_UKM(UkmEntry::kRendererTypeName,
+               static_cast<int64_t>(properties->renderer_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
     EXPECT_UKM(UkmEntry::kRebuffersCountName, 0);
     EXPECT_UKM(UkmEntry::kCompletedRebuffersCountName, 0);
