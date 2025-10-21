@@ -243,6 +243,9 @@ allow_unsafe = true
 # https://github.com/rust-lang/ (and we already implicitly trust maintainers of
 # `rustc`).
 allow_unsafe = true
+# TODO: Remove multiple versions of the `hashbrown` crate:
+# hashbrown@0.15.5, hashbrown@0.16.0
+multiversion_cleanup_bug = "https://crbug.com/454033406"
 
 [crate.heck.extra_kv]
 allow_unsafe = false

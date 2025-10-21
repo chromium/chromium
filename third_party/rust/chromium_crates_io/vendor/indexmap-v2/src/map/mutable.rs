@@ -18,7 +18,8 @@ use super::{
 /// `use` this trait to enable its methods for `IndexMap`.
 ///
 /// This trait is sealed and cannot be implemented for types outside this crate.
-pub trait MutableKeys: private::Sealed {
+#[expect(private_bounds)]
+pub trait MutableKeys: Sealed {
     type Key;
     type Value;
 
@@ -103,11 +104,12 @@ where
 /// `use` this trait to enable its methods for `Entry`.
 ///
 /// This trait is sealed and cannot be implemented for types outside this crate.
-pub trait MutableEntryKey: private::Sealed {
+#[expect(private_bounds)]
+pub trait MutableEntryKey: Sealed {
     type Key;
 
-    /// Gets a mutable reference to the entry's key, either within the map if occupied,
-    /// or else the new key that was used to find the entry.
+    /// Gets a mutable reference to the entry's key, either within the map if
+    /// occupied, or else the new key that was used to find the entry.
     fn key_mut(&mut self) -> &mut Self::Key;
 }
 
@@ -154,12 +156,10 @@ impl<K, V> MutableEntryKey for IndexedEntry<'_, K, V> {
     }
 }
 
-mod private {
-    pub trait Sealed {}
+trait Sealed {}
 
-    impl<K, V, S> Sealed for super::IndexMap<K, V, S> {}
-    impl<K, V> Sealed for super::Entry<'_, K, V> {}
-    impl<K, V> Sealed for super::OccupiedEntry<'_, K, V> {}
-    impl<K, V> Sealed for super::VacantEntry<'_, K, V> {}
-    impl<K, V> Sealed for super::IndexedEntry<'_, K, V> {}
-}
+impl<K, V, S> Sealed for IndexMap<K, V, S> {}
+impl<K, V> Sealed for Entry<'_, K, V> {}
+impl<K, V> Sealed for OccupiedEntry<'_, K, V> {}
+impl<K, V> Sealed for VacantEntry<'_, K, V> {}
+impl<K, V> Sealed for IndexedEntry<'_, K, V> {}

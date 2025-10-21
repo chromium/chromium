@@ -93,7 +93,8 @@ impl<K, V> Slice<K, V> {
         self.entries.get(range).map(Slice::from_slice)
     }
 
-    /// Returns a mutable slice of key-value pairs in the given range of indices.
+    /// Returns a mutable slice of key-value pairs in the given range of
+    /// indices.
     ///
     /// Valid indices are `0 <= index < self.len()`.
     pub fn get_range_mut<R: RangeBounds<usize>>(&mut self, range: R) -> Option<&mut Self> {
@@ -204,7 +205,8 @@ impl<K, V> Slice<K, V> {
         Values::new(&self.entries)
     }
 
-    /// Return an iterator over mutable references to the the values of the map slice.
+    /// Return an iterator over mutable references to the the values of the map
+    /// slice.
     pub fn values_mut(&mut self) -> ValuesMut<'_, K, V> {
         ValuesMut::new(&mut self.entries)
     }
@@ -216,12 +218,13 @@ impl<K, V> Slice<K, V> {
 
     /// Search over a sorted map for a key.
     ///
-    /// Returns the position where that key is present, or the position where it can be inserted to
-    /// maintain the sort. See [`slice::binary_search`] for more details.
+    /// Returns the position where that key is present, or the position where it
+    /// can be inserted to maintain the sort. See [`slice::binary_search`]
+    /// for more details.
     ///
-    /// Computes in **O(log(n))** time, which is notably less scalable than looking the key up in
-    /// the map this is a slice from using [`IndexMap::get_index_of`], but this can also position
-    /// missing keys.
+    /// Computes in **O(log(n))** time, which is notably less scalable than
+    /// looking the key up in the map this is a slice from using
+    /// [`IndexMap::get_index_of`], but this can also position missing keys.
     pub fn binary_search_keys(&self, x: &K) -> Result<usize, usize>
     where
         K: Ord,
@@ -231,8 +234,9 @@ impl<K, V> Slice<K, V> {
 
     /// Search over a sorted map with a comparator function.
     ///
-    /// Returns the position where that value is present, or the position where it can be inserted
-    /// to maintain the sort. See [`slice::binary_search_by`] for more details.
+    /// Returns the position where that value is present, or the position where
+    /// it can be inserted to maintain the sort. See
+    /// [`slice::binary_search_by`] for more details.
     ///
     /// Computes in **O(log(n))** time.
     #[inline]
@@ -245,8 +249,9 @@ impl<K, V> Slice<K, V> {
 
     /// Search over a sorted map with an extraction function.
     ///
-    /// Returns the position where that value is present, or the position where it can be inserted
-    /// to maintain the sort. See [`slice::binary_search_by_key`] for more details.
+    /// Returns the position where that value is present, or the position where
+    /// it can be inserted to maintain the sort. See
+    /// [`slice::binary_search_by_key`] for more details.
     ///
     /// Computes in **O(log(n))** time.
     #[inline]
@@ -264,8 +269,7 @@ impl<K, V> Slice<K, V> {
     where
         K: PartialOrd,
     {
-        // TODO(MSRV 1.82): self.entries.is_sorted_by(|a, b| a.key <= b.key)
-        self.is_sorted_by_key(|k, _| k)
+        self.entries.is_sorted_by(|a, b| a.key <= b.key)
     }
 
     /// Checks if this slice is sorted using the given comparator function.
@@ -274,17 +278,7 @@ impl<K, V> Slice<K, V> {
     where
         F: FnMut(&'a K, &'a V, &'a K, &'a V) -> bool,
     {
-        // TODO(MSRV 1.82): self.entries
-        //     .is_sorted_by(move |a, b| cmp(&a.key, &a.value, &b.key, &b.value))
-        let mut iter = self.entries.iter();
-        match iter.next() {
-            Some(mut prev) => iter.all(move |next| {
-                let sorted = cmp(&prev.key, &prev.value, &next.key, &next.value);
-                prev = next;
-                sorted
-            }),
-            None => true,
-        }
+        self.entries.is_sorted_by(move |a, b| cmp(&a.key, &a.value, &b.key, &b.value))
     }
 
     /// Checks if this slice is sorted using the given sort-key function.
@@ -294,21 +288,12 @@ impl<K, V> Slice<K, V> {
         F: FnMut(&'a K, &'a V) -> T,
         T: PartialOrd,
     {
-        // TODO(MSRV 1.82): self.entries
-        //     .is_sorted_by_key(move |a| sort_key(&a.key, &a.value))
-        let mut iter = self.entries.iter().map(move |a| sort_key(&a.key, &a.value));
-        match iter.next() {
-            Some(mut prev) => iter.all(move |next| {
-                let sorted = prev <= next;
-                prev = next;
-                sorted
-            }),
-            None => true,
-        }
+        self.entries.is_sorted_by_key(move |a| sort_key(&a.key, &a.value))
     }
 
-    /// Returns the index of the partition point of a sorted map according to the given predicate
-    /// (the index of the first element of the second partition).
+    /// Returns the index of the partition point of a sorted map according to
+    /// the given predicate (the index of the first element of the second
+    /// partition).
     ///
     /// See [`slice::partition_point`] for more details.
     ///
@@ -318,13 +303,13 @@ impl<K, V> Slice<K, V> {
     where
         P: FnMut(&K, &V) -> bool,
     {
-        self.entries
-            .partition_point(move |a| pred(&a.key, &a.value))
+        self.entries.partition_point(move |a| pred(&a.key, &a.value))
     }
 
     /// Get an array of `N` key-value pairs by `N` indices
     ///
-    /// Valid indices are *0 <= index < self.len()* and each index needs to be unique.
+    /// Valid indices are *0 <= index < self.len()* and each index needs to be
+    /// unique.
     pub fn get_disjoint_mut<const N: usize>(
         &mut self,
         indices: [usize; N],
@@ -339,7 +324,8 @@ impl<K, V> Slice<K, V> {
         &mut self,
         indices: [Option<usize>; N],
     ) -> Result<[Option<(&K, &mut V)>; N], GetDisjointMutError> {
-        // SAFETY: Can't allow duplicate indices as we would return several mutable refs to the same data.
+        // SAFETY: Can't allow duplicate indices as we would return several mutable refs
+        // to the same data.
         let len = self.len();
         for i in 0..N {
             if let Some(idx) = indices[i] {
@@ -355,8 +341,9 @@ impl<K, V> Slice<K, V> {
         let out = indices.map(|idx_opt| {
             match idx_opt {
                 Some(idx) => {
-                    // SAFETY: The base pointer is valid as it comes from a slice and the reference is always
-                    // in-bounds & unique as we've already checked the indices above.
+                    // SAFETY: The base pointer is valid as it comes from a slice and the reference
+                    // is always in-bounds & unique as we've already checked the
+                    // indices above.
                     let kv = unsafe { (*(entries_ptr.add(idx))).ref_mut() };
                     Some(kv)
                 }
@@ -437,9 +424,7 @@ where
     V: PartialEq<V2>,
 {
     fn eq(&self, other: &Slice<K2, V2>) -> bool {
-        slice_eq(&self.entries, &other.entries, |b1, b2| {
-            b1.key == b2.key && b1.value == b2.value
-        })
+        slice_eq(&self.entries, &other.entries, |b1, b2| b1.key == b2.key && b1.value == b2.value)
     }
 }
 

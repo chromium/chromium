@@ -5,10 +5,10 @@ extern crate test;
 use fnv::FnvHasher;
 use std::hash::BuildHasherDefault;
 use std::hash::Hash;
+use std::hint::black_box;
 use std::sync::LazyLock;
 type FnvBuilder = BuildHasherDefault<FnvHasher>;
 
-use test::black_box;
 use test::Bencher;
 
 use indexmap::IndexMap;

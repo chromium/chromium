@@ -33,8 +33,10 @@ impl<'a, S> From<&'a S> for &'a OneShot<str>
 where
     S: AsRef<str>,
 {
+    #[allow(unsafe_code)]
     fn from(s: &'a S) -> Self {
         let s: &str = s.as_ref();
+        // SAFETY: OneShot is a `repr(transparent)` wrapper
         unsafe { &*(s as *const str as *const OneShot<str>) }
     }
 }
@@ -130,9 +132,7 @@ fn lookup_hashmap_10_000_exist_string_oneshot(b: &mut Bencher) {
     for &key in &keys {
         map.insert(OneShot(key.to_string()), 1);
     }
-    let lookups = (5000..c)
-        .map(|x| OneShot(x.to_string()))
-        .collect::<Vec<_>>();
+    let lookups = (5000..c).map(|x| OneShot(x.to_string())).collect::<Vec<_>>();
     b.iter(|| {
         let mut found = 0;
         for key in &lookups {
@@ -168,9 +168,7 @@ fn lookup_indexmap_10_000_exist_string_oneshot(b: &mut Bencher) {
     for &key in &keys {
         map.insert(OneShot(key.to_string()), 1);
     }
-    let lookups = (5000..c)
-        .map(|x| OneShot(x.to_string()))
-        .collect::<Vec<_>>();
+    let lookups = (5000..c).map(|x| OneShot(x.to_string())).collect::<Vec<_>>();
     b.iter(|| {
         let mut found = 0;
         for key in &lookups {

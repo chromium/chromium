@@ -1,6 +1,3 @@
-// We *mostly* avoid unsafe code, but `Slice` allows it for DST casting.
-#![deny(unsafe_code)]
-#![warn(rust_2018_idioms)]
 #![no_std]
 
 //! [`IndexMap`] is a hash table where the iteration order of the key-value
@@ -31,8 +28,8 @@
 //! * `std`: Enables features which require the Rust standard library. For more
 //!   information see the section on [`no_std`].
 //! * `rayon`: Enables parallel iteration and other parallel methods.
-//! * `serde`: Adds implementations for [`Serialize`] and [`Deserialize`]
-//!   to [`IndexMap`] and [`IndexSet`]. Alternative implementations for
+//! * `serde`: Adds implementations for [`Serialize`] and [`Deserialize`] to
+//!   [`IndexMap`] and [`IndexSet`]. Alternative implementations for
 //!   (de)serializing [`IndexMap`] as an ordered sequence are available in the
 //!   [`map::serde_seq`] module.
 //! * `arbitrary`: Adds implementations for the [`arbitrary::Arbitrary`] trait
@@ -60,7 +57,7 @@
 //! ### Alternate Hashers
 //!
 //! [`IndexMap`] and [`IndexSet`] have a default hasher type
-//! [`S = RandomState`][std::collections::hash_map::RandomState],
+//! [`S = RandomState`][std::hash::RandomState],
 //! just like the standard `HashMap` and `HashSet`, which is resistant to
 //! HashDoS attacks but not the most performant. Type aliases can make it easier
 //! to use alternate hashers:
@@ -79,7 +76,7 @@
 //!
 //! ### Rust Version
 //!
-//! This version of indexmap requires Rust 1.63 or later.
+//! This version of indexmap requires Rust 1.82 or later.
 //!
 //! The indexmap 2.x release series will use a carefully considered version
 //! upgrade policy, where in a later 2.x version, we will raise the minimum
@@ -95,10 +92,11 @@
 //!   [`with_capacity`][IndexMap::with_capacity] is unavailable without `std`.
 //!   Use methods [`IndexMap::default`], [`with_hasher`][IndexMap::with_hasher],
 //!   [`with_capacity_and_hasher`][IndexMap::with_capacity_and_hasher] instead.
-//!   A no-std compatible hasher will be needed as well, for example
-//!   from the crate `twox-hash`.
+//!   A no-std compatible hasher will be needed as well, for example from the
+//!   crate `twox-hash`.
 //! - Macros [`indexmap!`] and [`indexset!`] are unavailable without `std`. Use
-//!   the macros [`indexmap_with_default!`] and [`indexset_with_default!`] instead.
+//!   the macros [`indexmap_with_default!`] and [`indexset_with_default!`]
+//!   instead.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -158,11 +156,7 @@ where
     V: Clone,
 {
     fn clone(&self) -> Self {
-        Bucket {
-            hash: self.hash,
-            key: self.key.clone(),
-            value: self.value.clone(),
-        }
+        Bucket { hash: self.hash, key: self.key.clone(), value: self.value.clone() }
     }
 
     fn clone_from(&mut self, other: &Self) {
@@ -220,9 +214,7 @@ enum TryReserveErrorKind {
 // These are not `From` so we don't expose them in our public API.
 impl TryReserveError {
     fn from_alloc(error: alloc::collections::TryReserveError) -> Self {
-        Self {
-            kind: TryReserveErrorKind::Std(error),
-        }
+        Self { kind: TryReserveErrorKind::Std(error) }
     }
 
     fn from_hashbrown(error: hashbrown::TryReserveError) -> Self {
@@ -255,12 +247,11 @@ impl core::fmt::Display for TryReserveError {
     }
 }
 
-#[cfg(feature = "std")]
-#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
-impl std::error::Error for TryReserveError {}
+impl core::error::Error for TryReserveError {}
 
 // NOTE: This is copied from the slice module in the std lib.
-/// The error type returned by [`get_disjoint_indices_mut`][`IndexMap::get_disjoint_indices_mut`].
+/// The error type returned by
+/// [`get_disjoint_indices_mut`][`IndexMap::get_disjoint_indices_mut`].
 ///
 /// It indicates one of two possible errors:
 /// - An index is out-of-bounds.
@@ -285,6 +276,4 @@ impl core::fmt::Display for GetDisjointMutError {
     }
 }
 
-#[cfg(feature = "std")]
-#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
-impl std::error::Error for GetDisjointMutError {}
+impl core::error::Error for GetDisjointMutError {}

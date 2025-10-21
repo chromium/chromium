@@ -517,10 +517,7 @@ where
 
     // Check both iteration order and hash lookups
     assert!(map.keys().eq(vec.iter()));
-    assert!(vec
-        .iter()
-        .enumerate()
-        .all(|(i, x)| { map.get_index_of(x) == Some(i) }));
+    assert!(vec.iter().enumerate().all(|(i, x)| { map.get_index_of(x) == Some(i) }));
     TestResult::passed()
 }
 
@@ -544,10 +541,7 @@ where
 
     // Check both iteration order and hash lookups
     assert!(map.keys().eq(vec.iter()));
-    assert!(vec
-        .iter()
-        .enumerate()
-        .all(|(i, x)| { map.get_index_of(x) == Some(i) }));
+    assert!(vec.iter().enumerate().all(|(i, x)| { map.get_index_of(x) == Some(i) }));
     TestResult::passed()
 }
 
@@ -573,10 +567,7 @@ where
 
     // Check both iteration order and hash lookups
     assert!(map.keys().eq(vec.iter()));
-    assert!(vec
-        .iter()
-        .enumerate()
-        .all(|(i, x)| { map.get_index_of(x) == Some(i) }));
+    assert!(vec.iter().enumerate().all(|(i, x)| { map.get_index_of(x) == Some(i) }));
     TestResult::passed()
 }
 
@@ -829,8 +820,7 @@ quickcheck_limit! {
 
 fn assert_sorted_by_key<I, Key, X>(iterable: I, key: Key)
 where
-    I: IntoIterator,
-    I::Item: Ord + Clone + Debug,
+    I: IntoIterator<Item: Ord + Clone + Debug>,
     Key: Fn(&I::Item) -> X,
     X: Ord,
 {
@@ -856,11 +846,7 @@ impl Arbitrary for Alpha {
     fn arbitrary(g: &mut Gen) -> Self {
         let len = usize::arbitrary(g) % g.size();
         let len = min(len, 16);
-        Alpha(
-            (0..len)
-                .map(|_| ALPHABET[usize::arbitrary(g) % ALPHABET.len()] as char)
-                .collect(),
-        )
+        Alpha((0..len).map(|_| ALPHABET[usize::arbitrary(g) % ALPHABET.len()] as char).collect())
     }
 
     fn shrink(&self) -> Box<dyn Iterator<Item = Self>> {

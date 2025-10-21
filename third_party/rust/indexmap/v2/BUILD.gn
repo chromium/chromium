@@ -49,13 +49,13 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A hash table with consistent order and fast iteration."
   cargo_pkg_repository = "https://github.com/indexmap-rs/indexmap"
-  cargo_pkg_version = "2.11.4"
+  cargo_pkg_version = "2.12.0"
 
   allow_unsafe = true
 
   deps = [
     "//third_party/rust/equivalent/v1:lib",
-    "//third_party/rust/hashbrown/v0_15:lib",
+    "//third_party/rust/hashbrown/v0_16:lib",
   ]
   features = [
     "default",
