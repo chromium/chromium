@@ -39,13 +39,10 @@ class CrxCacheSynchronous {
   virtual std::multimap<std::string, std::string> ListHashesByAppId() const = 0;
   virtual base::expected<base::FilePath, UnpackerError> GetByHash(
       const std::string& hash) const = 0;
-  virtual base::expected<base::FilePath, UnpackerError> GetByFp(
-      const std::string& fp) const = 0;
   virtual base::expected<base::FilePath, UnpackerError> Put(
       const base::FilePath& file,
       const std::string& app_id,
-      const std::string& hash,
-      const std::string& fp) = 0;
+      const std::string& hash) = 0;
   virtual void RemoveAll(const std::string& app_id) = 0;
   virtual void RemoveIfNot(const std::vector<std::string>& app_ids) = 0;
 };
@@ -53,8 +50,8 @@ class CrxCacheSynchronous {
 // CrxCacheImpl uses a metadata.json file of the following format:
 // {
 //   "hashes": {
-//     "hash1": {"appid": "appid1", "fp": "fingerprint1"},
-//     "hash2": {"appid": "appid1", "fp": "fingerprint1"},
+//     "hash1": {"appid": "appid1"},
+//     "hash2": {"appid": "appid1"},
 //      ...
 //   }
 // }
@@ -73,13 +70,10 @@ class CrxCacheImpl : public CrxCacheSynchronous {
   std::multimap<std::string, std::string> ListHashesByAppId() const override;
   base::expected<base::FilePath, UnpackerError> GetByHash(
       const std::string& hash) const override;
-  base::expected<base::FilePath, UnpackerError> GetByFp(
-      const std::string& fp) const override;
   base::expected<base::FilePath, UnpackerError> Put(
       const base::FilePath& file,
       const std::string& app_id,
-      const std::string& hash,
-      const std::string& fp) override;
+      const std::string& hash) override;
   void RemoveAll(const std::string& app_id) override;
   void RemoveIfNot(const std::vector<std::string>& app_ids) override;
 
@@ -162,29 +156,10 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::GetByHash(
   return cache_root_.AppendUTF8(hash);
 }
 
-base::expected<base::FilePath, UnpackerError> CrxCacheImpl::GetByFp(
-    const std::string& fp) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* hashes_key = nullptr;
-  if (!metadata_->GetValue("hashes", &hashes_key) || !hashes_key->is_dict()) {
-    return base::unexpected(UnpackerError::kCrxCacheMetadataCorrupted);
-  }
-  for (const auto [hash, value] : hashes_key->GetDict()) {
-    if (value.is_dict()) {
-      const std::string* item_fp = value.GetDict().FindString("fp");
-      if (item_fp && fp == *item_fp) {
-        return cache_root_.AppendUTF8(hash);
-      }
-    }
-  }
-  return base::unexpected(UnpackerError::kCrxCacheFileNotCached);
-}
-
 base::expected<base::FilePath, UnpackerError> CrxCacheImpl::Put(
     const base::FilePath& file,
     const std::string& app_id,
-    const std::string& hash,
-    const std::string& fp) {
+    const std::string& hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath dest = cache_root_.AppendUTF8(hash);
   if (file == dest) {
@@ -207,7 +182,6 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::Put(
   // Update metadata.
   base::Value::Dict data;
   data.Set("appid", app_id);
-  data.Set("fp", fp);
   metadata_->SetValue(base::StrCat({"hashes.", hash}),
                       base::Value(std::move(data)), 0);
   return dest;
@@ -267,16 +241,10 @@ class CrxCacheError : public CrxCacheSynchronous {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return base::unexpected(UnpackerError::kCrxCacheNotProvided);
   }
-  base::expected<base::FilePath, UnpackerError> GetByFp(
-      const std::string& fp) const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return base::unexpected(UnpackerError::kCrxCacheNotProvided);
-  }
   base::expected<base::FilePath, UnpackerError> Put(
       const base::FilePath& file,
       const std::string& app_id,
-      const std::string& hash,
-      const std::string& fp) override {
+      const std::string& hash) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return base::unexpected(UnpackerError::kCrxCacheNotProvided);
   }
@@ -321,26 +289,15 @@ void CrxCache::GetByHash(
       .Then(std::move(callback));
 }
 
-void CrxCache::GetByFp(
-    const std::string& fp,
-    base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
-        callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_.AsyncCall(&CrxCacheSynchronous::GetByFp)
-      .WithArgs(fp)
-      .Then(std::move(callback));
-}
-
 void CrxCache::Put(
     const base::FilePath& file,
     const std::string& app_id,
     const std::string& hash,
-    const std::string& fp,
     base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_.AsyncCall(&CrxCacheSynchronous::Put)
-      .WithArgs(file, app_id, hash, fp)
+      .WithArgs(file, app_id, hash)
       .Then(std::move(callback));
 }
 

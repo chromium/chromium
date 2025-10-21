@@ -225,8 +225,7 @@ base::OnceClosure InstallOperation(
         callback) {
   state_tracker.Run(ComponentState::kUpdating);
   crx_cache->Put(
-      // TODO(crbug.com/399617574): Remove FP.
-      crx_file, id, file_hash, /*fp=*/{},
+      crx_file, id, file_hash,
       base::BindOnce(
           &Unpack,
           base::BindOnce(

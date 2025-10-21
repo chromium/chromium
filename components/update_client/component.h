@@ -350,8 +350,6 @@ class Component {
   // The error reported by the update checker.
   int update_check_error_ = 0;
 
-  base::FilePath payload_path_;
-
   // The byte counts below are valid for the current url being fetched.
   // |total_bytes| is equal to the size of the CRX file and |downloaded_bytes|
   // represents how much has been downloaded up to that point. A value of -1

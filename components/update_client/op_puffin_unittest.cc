@@ -75,7 +75,7 @@ TEST_F(PuffOperationTest, Success) {
   base::FilePath old_file = CopyToTemp("puffin_patch_test/puffin_app_v1.crx3");
 
   cache->Put(
-      old_file, "appid", "hash1", "prev_fp",
+      old_file, "appid", "hash1",
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
@@ -121,7 +121,7 @@ TEST_F(PuffOperationTest, BadPatch) {
   base::FilePath old_file = CopyToTemp("puffin_patch_test/puffin_app_v1.crx3");
 
   cache->Put(
-      old_file, "appid", "hash1", "prev_fp",
+      old_file, "appid", "hash1",
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
@@ -238,7 +238,7 @@ TEST_F(PuffOperationTest, OutHashMismatch) {
   base::FilePath old_file = CopyToTemp("puffin_patch_test/puffin_app_v1.crx3");
 
   cache->Put(
-      old_file, "appid", "hash1", "prev_fp",
+      old_file, "appid", "hash1",
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());

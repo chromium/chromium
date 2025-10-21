@@ -81,7 +81,7 @@ TEST_F(ZucchiniOperationTest, Success) {
   base::FilePath old_file = CopyToTemp("zucchini_patch_test/app1.zip");
 
   cache->Put(
-      old_file, "appid", "hash1", {},
+      old_file, "appid", "hash1",
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
@@ -126,7 +126,7 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
   base::FilePath old_file = CopyToTemp("zucchini_patch_test/app1.zip");
 
   cache->Put(
-      old_file, "appid", "hash1", {},
+      old_file, "appid", "hash1",
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
@@ -243,7 +243,7 @@ TEST_F(ZucchiniOperationTest, OutHashMismatch) {
   base::FilePath old_file = CopyToTemp("zucchini_patch_test/app1.zip");
 
   cache->Put(
-      old_file, "appid", "hash1", {},
+      old_file, "appid", "hash1",
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
