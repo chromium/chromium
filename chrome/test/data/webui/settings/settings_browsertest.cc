@@ -294,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_MainPage) {
   RunTest("settings/settings_main_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/441873882): Re-enable this test
-IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_SettingsMain) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsMain) {
   RunTest("settings/settings_main_plugins_test.js", "mocha.run()");
 }
 
