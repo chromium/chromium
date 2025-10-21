@@ -2427,7 +2427,8 @@ void NetworkContext::PreconnectSockets(
   net::HttpNetworkSession* session = factory->GetSession();
   net::HttpStreamFactory* http_stream_factory = session->http_stream_factory();
   http_stream_factory->PreconnectStreams(
-      base::saturated_cast<int32_t>(num_streams), request_info);
+      base::saturated_cast<int32_t>(num_streams), request_info,
+      base::OnceClosure());
 }
 
 #if BUILDFLAG(IS_P2P_ENABLED)

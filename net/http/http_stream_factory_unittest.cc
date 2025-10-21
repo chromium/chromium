@@ -201,35 +201,6 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
   base::WeakPtrFactory<MockWebSocketHandshakeStream> weak_ptr_factory_{this};
 };
 
-// HttpStreamFactory subclass that can wait until a preconnect is complete.
-class MockHttpStreamFactoryForPreconnect : public HttpStreamFactory {
- public:
-  explicit MockHttpStreamFactoryForPreconnect(HttpNetworkSession* session)
-      : HttpStreamFactory(session) {}
-  ~MockHttpStreamFactoryForPreconnect() override = default;
-
-  void WaitForPreconnects() {
-    while (!preconnect_done_) {
-      waiting_for_preconnect_ = true;
-      loop_.Run();
-      waiting_for_preconnect_ = false;
-    }
-  }
-
- private:
-  // HttpStreamFactory methods.
-  void OnPreconnectsCompleteInternal() override {
-    preconnect_done_ = true;
-    if (waiting_for_preconnect_) {
-      loop_.QuitWhenIdle();
-    }
-  }
-
-  bool preconnect_done_ = false;
-  bool waiting_for_preconnect_ = false;
-  base::RunLoop loop_;
-};
-
 class StreamRequester : public HttpStreamRequest::Delegate {
  public:
   explicit StreamRequester(HttpNetworkSession* session) : session_(session) {}
@@ -458,10 +429,8 @@ void PreconnectHelperForURL(int num_streams,
                             SecureDnsPolicy secure_dns_policy,
                             HttpNetworkSession* session) {
   HttpNetworkSessionPeer peer(session);
-  auto mock_factory =
-      std::make_unique<MockHttpStreamFactoryForPreconnect>(session);
-  auto* mock_factory_ptr = mock_factory.get();
-  peer.SetHttpStreamFactory(std::move(mock_factory));
+  auto factory = std::make_unique<HttpStreamFactory>(session);
+  peer.SetHttpStreamFactory(std::move(factory));
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -472,8 +441,10 @@ void PreconnectHelperForURL(int num_streams,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  session->http_stream_factory()->PreconnectStreams(num_streams, request);
-  mock_factory_ptr->WaitForPreconnects();
+  base::RunLoop run_loop;
+  session->http_stream_factory()->PreconnectStreams(num_streams, request,
+                                                    run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 void PreconnectHelper(const TestCase& test, HttpNetworkSession* session) {

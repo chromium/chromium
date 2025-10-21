@@ -2329,7 +2329,8 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
 
   // Preconnect a socket.
-  session->http_stream_factory()->PreconnectStreams(1, request);
+  session->http_stream_factory()->PreconnectStreams(1, request,
+                                                    base::OnceClosure());
   // Wait for the preconnect to complete.
   // TODO(davidben): Some way to wait for an idle socket count might be handy.
   base::RunLoop().RunUntilIdle();
@@ -23248,7 +23249,7 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   // Preconnect an SSL socket.  A preconnect is needed because connect jobs are
   // cancelled when a normal transaction is cancelled.
   HttpStreamFactory* http_stream_factory = session->http_stream_factory();
-  http_stream_factory->PreconnectStreams(1, ssl_request);
+  http_stream_factory->PreconnectStreams(1, ssl_request, base::OnceClosure());
   EXPECT_EQ(0, GetIdleSocketCountInTransportSocketPool(session.get()));
 
   // Start the HTTP request.  Pool should stall.
@@ -27380,11 +27381,13 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
 
     request.network_isolation_key = preconnect1_isolation_key;
     request.network_anonymization_key = preconnect1_anonymization_key;
-    session->http_stream_factory()->PreconnectStreams(1, request);
+    session->http_stream_factory()->PreconnectStreams(1, request,
+                                                      base::OnceClosure());
 
     request.network_isolation_key = preconnect2_isolation_key;
     request.network_anonymization_key = preconnect2_anonymization_key;
-    session->http_stream_factory()->PreconnectStreams(1, request);
+    session->http_stream_factory()->PreconnectStreams(1, request,
+                                                      base::OnceClosure());
 
     request.network_isolation_key = network_isolation_key_for_request;
     request.network_anonymization_key = network_anonymization_key_for_request;

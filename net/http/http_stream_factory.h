@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/host_port_pair.h"
@@ -169,7 +170,12 @@ class NET_EXPORT HttpStreamFactory {
   // Requests that enough connections for |num_streams| be opened.
   //
   // TODO: Make this take StreamRequestInfo instead.
-  void PreconnectStreams(int num_streams, HttpRequestInfo& info);
+  // TODO(crbug.com/crbug.com/40843081): Change `callback` to
+  // CompletionOnceCallback so that the caller can check the result. Currently
+  // TransportClientSocketPool doesn't plumb errors correctly.
+  void PreconnectStreams(int num_streams,
+                         HttpRequestInfo& info,
+                         base::OnceClosure callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamRequestTest, SetPriority);
@@ -201,9 +207,6 @@ class NET_EXPORT HttpStreamFactory {
       bool enable_ip_based_pooling_for_h2,
       bool enable_alternative_services,
       const NetLogWithSource& net_log);
-
-  // Called when the Preconnect completes. Used for testing.
-  virtual void OnPreconnectsCompleteInternal() {}
 
   // Called when the JobController finishes service. Delete the JobController
   // from |job_controller_set_|.

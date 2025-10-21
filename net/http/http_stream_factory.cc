@@ -235,13 +235,16 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStreamInternal(
 }
 
 void HttpStreamFactory::PreconnectStreams(int num_streams,
-                                          HttpRequestInfo& request_info) {
+                                          HttpRequestInfo& request_info,
+                                          base::OnceClosure callback) {
   // Ignore invalid URLs. This matches the behavior of
   // URLRequestJobFactory::CreateJob(). Passing very long valid GURLs over Mojo
   // can result in invalid URLs, so can't rely on callers sending only valid
   // URLs.
   if (!request_info.url.is_valid()) {
-    OnPreconnectsCompleteInternal();
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
   }
 
@@ -257,7 +260,7 @@ void HttpStreamFactory::PreconnectStreams(int num_streams,
       /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
   JobController* job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));
-  job_controller_raw_ptr->Preconnect(num_streams);
+  job_controller_raw_ptr->Preconnect(num_streams, std::move(callback));
 }
 
 void HttpStreamFactory::OnJobControllerComplete(JobController* controller) {

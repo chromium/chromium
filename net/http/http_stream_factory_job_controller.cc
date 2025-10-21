@@ -236,13 +236,15 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::JobController::Start(
   return request;
 }
 
-void HttpStreamFactory::JobController::Preconnect(int num_streams) {
+void HttpStreamFactory::JobController::Preconnect(int num_streams,
+                                                  base::OnceClosure callback) {
   DCHECK(!main_job_);
   DCHECK(!alternative_job_);
   DCHECK(is_preconnect_);
 
   stream_type_ = HttpStreamRequest::HTTP_STREAM;
   num_streams_ = num_streams;
+  preconnect_callback_ = std::move(callback);
 
   RunLoop(OK);
   // `this` may be deleted at this point.
@@ -583,7 +585,9 @@ void HttpStreamFactory::JobController::OnPreconnectsComplete(Job* job,
   main_job_.reset();
   preconnect_backup_job_.reset();
   ResetErrorStatusForJobs();
-  factory_->OnPreconnectsCompleteInternal();
+  if (preconnect_callback_) {
+    std::move(preconnect_callback_).Run();
+  }
   MaybeNotifyFactoryOfCompletion();
 }
 
@@ -764,7 +768,7 @@ void HttpStreamFactory::JobController::RunLoop(int result) {
     return;
   }
 
-  if (switched_to_http_stream_pool_ && !is_preconnect_) {
+  if (switched_to_http_stream_pool_) {
     // The request is handed over to the HttpStreamPool. Complete `this`.
     DCHECK_EQ(rv, OK);
     MaybeNotifyFactoryOfCompletion();
@@ -1553,14 +1557,13 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       advertised_alt_svc_.info, advertised_alt_svc_.state, allowed_alpns,
       request_info_.load_flags, proxy_info_, net_log_);
   if (is_preconnect_) {
+    auto split_callback = base::SplitOnceCallback(
+        base::IgnoreArgs<int>(std::move(preconnect_callback_)));
     int rv = session_->http_stream_pool()->Preconnect(
         std::move(pool_request_info), num_streams_,
-        base::BindOnce(&JobController::OnPoolPreconnectsComplete,
-                       ptr_factory_.GetWeakPtr()));
-    if (rv != ERR_IO_PENDING) {
-      TaskRunner(priority_)->PostTask(
-          FROM_HERE, base::BindOnce(&JobController::OnPoolPreconnectsComplete,
-                                    ptr_factory_.GetWeakPtr(), rv));
+        std::move(split_callback.first));
+    if (rv != ERR_IO_PENDING && split_callback.second) {
+      std::move(split_callback.second).Run(rv);
     }
     return;
   }
@@ -1570,12 +1573,6 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       std::exchange(request_, nullptr), std::exchange(delegate_, nullptr),
       std::move(pool_request_info), priority_, allowed_bad_certs_,
       enable_ip_based_pooling_for_h2_, enable_alternative_services_);
-}
-
-void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
-  CHECK(switched_to_http_stream_pool_);
-  factory_->OnPreconnectsCompleteInternal();
-  MaybeNotifyFactoryOfCompletion();
 }
 
 void HttpStreamFactory::JobController::NotifyOnStreamCreationAttempted(

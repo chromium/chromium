@@ -670,9 +670,10 @@ void HttpStreamPool::JobController::ResetJobAndInvokePreconnectCallback(
     int status) {
   CHECK(!alternative_job_);
   CHECK_EQ(origin_job_.get(), job);
-  CHECK(preconnect_callback_);
   origin_job_.reset();
-  std::move(preconnect_callback_).Run(status);
+  if (preconnect_callback_) {
+    std::move(preconnect_callback_).Run(status);
+  }
 }
 
 void HttpStreamPool::JobController::SetJobResult(Job* job, int status) {

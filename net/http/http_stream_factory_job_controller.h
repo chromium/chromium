@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -68,7 +69,7 @@ class HttpStreamFactory::JobController
       HttpStreamRequest::StreamType stream_type,
       RequestPriority priority);
 
-  void Preconnect(int num_streams);
+  void Preconnect(int num_streams, base::OnceClosure callback);
 
   // From HttpStreamRequest::Helper.
   // Returns the LoadState for Request.
@@ -298,10 +299,6 @@ class HttpStreamFactory::JobController
   // destroyed.
   void SwitchToHttpStreamPool();
 
-  // Called when `this` asked the HttpStreamPool to handle a preconnect and
-  // the preconnect completed. Used to notify the factory of completion.
-  void OnPoolPreconnectsComplete(int rv);
-
   bool disable_cert_verification_network_fetches() const;
 
   const raw_ptr<HttpStreamFactory> factory_;
@@ -396,6 +393,7 @@ class HttpStreamFactory::JobController
   ProxyInfo proxy_info_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   int num_streams_ = 0;
+  base::OnceClosure preconnect_callback_;
   HttpStreamRequest::StreamType stream_type_;
   RequestPriority priority_ = IDLE;
 

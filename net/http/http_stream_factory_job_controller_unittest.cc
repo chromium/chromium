@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -661,6 +662,93 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
   EXPECT_FALSE(tcp_data_->socket());
 }
 
+// Tests that a synchronous preconnect completes (succeeded internally). Note
+// that even if the preconnecting socket completes synchronously, both the HEv3
+// and non-HEv3 paths use PostTask() so the callback is called asynchronously.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest, PreconnectSyncOk) {
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  SetPreconnect();
+  Initialize(request_info);
+
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(
+      /*num_streams=*/1, run_loop.QuitClosure());
+  run_loop.Run();
+
+  if (happy_eyeballs_v3_enabled()) {
+    EXPECT_EQ(session_->http_stream_pool()->TotalIdleStreamCount(), 1u);
+  } else {
+    TransportClientSocketPool* socket_pool =
+        reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
+            HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct()));
+    EXPECT_EQ(socket_pool->IdleSocketCount(), 1u);
+  }
+}
+
+// Tests that an asynchronous preconnect completes (succeeded internally).
+TEST_P(HttpStreamFactoryJobControllerDualPathTest, PreconnectAsyncOk) {
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  SetPreconnect();
+  Initialize(request_info);
+
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(
+      /*num_streams=*/1, run_loop.QuitClosure());
+  run_loop.Run();
+
+  if (happy_eyeballs_v3_enabled()) {
+    EXPECT_EQ(session_->http_stream_pool()->TotalIdleStreamCount(), 1u);
+  } else {
+    TransportClientSocketPool* socket_pool =
+        reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
+            HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct()));
+    EXPECT_EQ(socket_pool->IdleSocketCount(), 1u);
+  }
+}
+
+// Tests that an asynchronous preconnect (failed internally).
+TEST_P(HttpStreamFactoryJobControllerDualPathTest, PreconnectAsyncFail) {
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  SetPreconnect();
+  Initialize(request_info);
+
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(
+      /*num_streams=*/1, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+// Tests that destroying session and pools doesn't invoke a preconnect callback.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest, PreconnectDestroySession) {
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  SetPreconnect();
+  Initialize(request_info);
+
+  bool called = false;
+  job_controller_->Preconnect(
+      /*num_streams=*/1, base::BindLambdaForTesting([&]() { called = false; }));
+  DestroySession();
+  ASSERT_FALSE(called);
+}
+
 // Test the case of preconnecting to an origin with an alt service record, where
 // establishing an H3 connection succeeds quickly, and so TCP should not be
 // attempted.
@@ -680,7 +768,7 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
   SetAlternativeService(request_info, alternative_service);
 
   base::RunLoop run_loop;
-  job_controller_->Preconnect(1);
+  job_controller_->Preconnect(1, base::OnceClosure());
 
   // Wait for preconnect to complete.
   base::RunLoop().RunUntilIdle();
@@ -730,7 +818,7 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
       server, NetworkAnonymizationKey());
 
   base::RunLoop run_loop;
-  job_controller_->Preconnect(1);
+  job_controller_->Preconnect(1, base::OnceClosure());
 
   // Wait for preconnect to complete.
   base::RunLoop().RunUntilIdle();
@@ -4643,7 +4731,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   session_->http_server_properties()->SetSupportsSpdy(
       server, NetworkAnonymizationKey(), true);
 
-  job_controller_->Preconnect(/*num_streams=*/5);
+  job_controller_->Preconnect(/*num_streams=*/5, base::OnceClosure());
   // Only one job is started.
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->alternative_job());
@@ -4698,7 +4786,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   session_->http_server_properties()->SetSupportsSpdy(
       server, kNetworkAnonymizationKey1, true);
 
-  job_controller_->Preconnect(/*num_streams=*/5);
+  job_controller_->Preconnect(/*num_streams=*/5, base::OnceClosure());
   // Only one job is started.
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->alternative_job());
@@ -4738,7 +4826,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
-    job_controller_ptr->Preconnect(/*num_streams=*/5);
+    job_controller_ptr->Preconnect(/*num_streams=*/5, base::OnceClosure());
     // Five jobs should be started.
     EXPECT_TRUE(job_controller_ptr->main_job());
     EXPECT_FALSE(job_controller_ptr->alternative_job());
@@ -4873,7 +4961,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
       /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
   auto* job_controller_ptr = job_controller.get();
   HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller));
-  job_controller_ptr->Preconnect(1);
+  job_controller_ptr->Preconnect(1, base::OnceClosure());
   EXPECT_TRUE(job_controller_ptr->main_job());
   EXPECT_FALSE(job_controller_ptr->alternative_job());
 
@@ -4997,7 +5085,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   auto* preconnect_job_controller_ptr = preconnect_job_controller.get();
   HttpStreamFactoryPeer::AddJobController(factory_,
                                           std::move(preconnect_job_controller));
-  preconnect_job_controller_ptr->Preconnect(1);
+  preconnect_job_controller_ptr->Preconnect(1, base::OnceClosure());
   base::RunLoop().RunUntilIdle();
 
   // The SpdySession is available for IP based pooling when the host resolution
@@ -5397,7 +5485,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultiplePreconnects) {
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
-    job_controller_ptr->Preconnect(1);
+    job_controller_ptr->Preconnect(1, base::OnceClosure());
     EXPECT_TRUE(job_controller_ptr->main_job());
     EXPECT_FALSE(job_controller_ptr->alternative_job());
   }
@@ -5621,7 +5709,7 @@ class HttpStreamFactoryJobControllerPreconnectTest
 
  protected:
   void Preconnect(int num_streams) {
-    job_controller_->Preconnect(num_streams);
+    job_controller_->Preconnect(num_streams, base::OnceClosure());
     // Only one job is started.
     EXPECT_TRUE(job_controller_->main_job());
     EXPECT_FALSE(job_controller_->alternative_job());
@@ -7142,7 +7230,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectDnsAlpnH3) {
 
   Initialize(HttpRequestInfo());
   CreateJobController(request_info);
-  job_controller_->Preconnect(/*num_streams=*/5);
+  job_controller_->Preconnect(/*num_streams=*/5, base::OnceClosure());
   // Only one job is started.
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->alternative_job());
@@ -7178,7 +7266,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   CreateJobController(request_info);
   // Preconnect must succeed using the existing session.
-  job_controller_->Preconnect(/*num_streams=*/1);
+  job_controller_->Preconnect(/*num_streams=*/1, base::OnceClosure());
   ASSERT_TRUE(job_controller_->main_job());
   EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
             job_controller_->main_job()->job_type());
@@ -7197,7 +7285,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectNoDnsAlpnH3) {
 
   Initialize(HttpRequestInfo());
   CreateJobController(request_info);
-  job_controller_->Preconnect(/*num_streams=*/1);
+  job_controller_->Preconnect(/*num_streams=*/1, base::OnceClosure());
   // Only one job is started.
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->alternative_job());
@@ -7259,7 +7347,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
                                          443);
   SetAlternativeService(request_info, alternative_service);
 
-  job_controller_->Preconnect(/*num_streams=*/1);
+  job_controller_->Preconnect(/*num_streams=*/1, base::OnceClosure());
   // Only one job is started.
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->alternative_job());
@@ -7481,12 +7569,11 @@ TEST_F(HttpStreamFactoryJobControllerPoolTest, Preconnect) {
   request_info.url = GURL("http://www.example.com");
   Initialize(request_info);
 
-  job_controller_->Preconnect(/*num_streams=*/1);
-  // No jobs should be created.
-  ASSERT_FALSE(job_controller_->main_job());
-  ASSERT_FALSE(job_controller_->alternative_job());
-
-  RunUntilIdle();
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(
+      /*num_streams=*/1, run_loop.QuitClosure());
+  run_loop.Run();
+  // `job_controller_` is deleted at this point and should not be accessed.
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
   ASSERT_EQ(pool()->TotalIdleStreamCount(), 1u);
 }
@@ -7508,14 +7595,13 @@ TEST_F(HttpStreamFactoryJobControllerPoolTest, PreconnectSync) {
   group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
 
   // Preconnect should complete immediately as we already have an idle stream.
-  job_controller_->Preconnect(/*num_streams=*/1);
-  // No jobs should be created.
-  ASSERT_FALSE(job_controller_->main_job());
-  ASSERT_FALSE(job_controller_->alternative_job());
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(
+      /*num_streams=*/1, run_loop.QuitClosure());
+  // `job_controller_` is deleted at this point and should not be accessed.
   ASSERT_EQ(pool()->TotalIdleStreamCount(), 1u);
 
-  // Need RunUntilIdle() because the completion notification is delayed.
-  RunUntilIdle();
+  run_loop.Run();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 

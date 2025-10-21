@@ -587,7 +587,9 @@ void HttpStreamPool::OnPreconnectComplete(JobController* job_controller,
                                           CompletionOnceCallback callback,
                                           int rv) {
   OnJobControllerComplete(job_controller);
-  std::move(callback).Run(rv);
+  if (callback) {
+    std::move(callback).Run(rv);
+  }
 }
 
 void HttpStreamPool::CheckConsistency() {
