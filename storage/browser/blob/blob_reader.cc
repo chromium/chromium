@@ -18,7 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "components/file_access/scoped_file_access_delegate.h"
+#include "components/file_access/scoped_file_access.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -515,7 +515,7 @@ BlobReader::Status BlobReader::ReadItem() {
       GetOrCreateFileReaderAtIndex(current_item_index_);
   if (!reader)
     return ReportError(net::ERR_FILE_NOT_FOUND);
-  return ReadFileItem(reader, bytes_to_read, item.file_access());
+  return ReadFileItem(reader, bytes_to_read);
 }
 
 void BlobReader::AdvanceItem() {
@@ -559,11 +559,8 @@ void BlobReader::ReadBytesItem(const BlobDataItem& item, int bytes_to_read) {
   AdvanceBytesRead(bytes_to_read);
 }
 
-BlobReader::Status BlobReader::ReadFileItem(
-    FileStreamReader* reader,
-    int bytes_to_read,
-    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-        file_access) {
+BlobReader::Status BlobReader::ReadFileItem(FileStreamReader* reader,
+                                            int bytes_to_read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!io_pending_)
       << "Can't begin IO while another IO operation is pending.";
