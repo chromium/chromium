@@ -45,8 +45,20 @@ class PageContentExtractionService;
 
 namespace contextual_cueing {
 
+enum class PageContextIneligibilityType {
+  kNone = 0,
+  kOptimizationMetadata = 1,
+  kPageContext = 2,
+
+  // New values above this line. Update
+  // ContextualCueingZeroStateSuggestionsPageContextIneligibilityType in
+  // contextual_cueing/enums.xml.
+  kMaxValue = kPageContext,
+};
+
 using PageContextCallbackList = base::OnceCallbackList<void(
-    std::optional<optimization_guide::proto::ZeroStatePageContext>)>;
+    base::expected<optimization_guide::proto::ZeroStatePageContext,
+                   PageContextIneligibilityType>)>;
 using PageContextCallback = PageContextCallbackList::CallbackType;
 
 // Processes necessary information about the page to generate zero state

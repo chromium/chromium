@@ -33,7 +33,8 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       "request for %llu tabs",
       requested_tabs.size()));
   auto barrier_callback = base::BarrierCallback<
-      std::optional<optimization_guide::proto::ZeroStatePageContext>>(
+      base::expected<optimization_guide::proto::ZeroStatePageContext,
+                     PageContextIneligibilityType>>(
       requested_tabs.size(),
       base::BindOnce(&ZeroStateSuggestionsRequest::OnAllPageContextExtracted,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -102,16 +103,31 @@ ZeroStateSuggestionsRequest::GetRequestedTabs() const {
 
 void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
     const std::vector<
-        std::optional<optimization_guide::proto::ZeroStatePageContext>>&
+        base::expected<optimization_guide::proto::ZeroStatePageContext,
+                       PageContextIneligibilityType>>&
         zero_state_page_contexts) {
   // Filter for page contexts that are available.
   std::vector<optimization_guide::proto::ZeroStatePageContext>
       filtered_page_contexts;
+  PageContextIneligibilityType latest_ineligibility_type =
+      PageContextIneligibilityType::kNone;
   for (const auto& zero_state_page_context : zero_state_page_contexts) {
-    if (zero_state_page_context) {
+    if (zero_state_page_context.has_value()) {
       filtered_page_contexts.push_back(*zero_state_page_context);
+    } else {
+      latest_ineligibility_type = zero_state_page_context.error();
     }
   }
+
+  std::string engagement_type =
+      pending_base_request_.is_fre() ? "FRE" : "Reengagement";
+  base::UmaHistogramEnumeration(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      latest_ineligibility_type);
+  base::UmaHistogramEnumeration(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason." +
+          engagement_type,
+      latest_ineligibility_type);
 
   // No content to generate suggestions. Return empty.
   if (filtered_page_contexts.empty()) {

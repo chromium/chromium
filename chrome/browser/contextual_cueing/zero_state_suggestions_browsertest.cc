@@ -215,6 +215,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicFlow) {
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions", true,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      PageContextIneligibilityType::kNone, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
@@ -323,6 +326,12 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
       "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
       "ValidSuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      PageContextIneligibilityType::kOptimizationMetadata, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason.FRE",
+      PageContextIneligibilityType::kOptimizationMetadata, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, NoResultFromHints) {
@@ -463,6 +472,14 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      PageContextIneligibilityType::kOptimizationMetadata, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason."
+      "Reengagement",
+      PageContextIneligibilityType::kOptimizationMetadata, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
@@ -497,6 +514,14 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
               future.GetCallback()));
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      PageContextIneligibilityType::kOptimizationMetadata, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason."
+      "Reengagement",
+      PageContextIneligibilityType::kOptimizationMetadata, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
@@ -608,6 +633,13 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions", true,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      PageContextIneligibilityType::kNone, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason."
+      "Reengagement",
+      PageContextIneligibilityType::kNone, 1);
 }
 
 }  // namespace contextual_cueing

@@ -23,6 +23,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ContextualCueingGlicSuggestionsEngagementType">
+  <variant name="" summary="All requests"/>
+  <variant name=".FRE" summary="When suggestions are fetched for the FRE"/>
+  <variant name=".Reengagement"
+      summary="When suggestions are fetched for reengagement"/>
+</variants>
+
 <!-- LINT.IfChange(OptType) -->
 
 <variants name="ContextualCueingOptimizationType">
@@ -78,6 +85,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualCueing.GlicSuggestions.PageContextIneligibilityReason{EngagementType}"
+    enum="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Recorded every time a request for Glic suggestions is made. Records the
+    reason for why the page context for the request may have been ineligible.
+    The histogram is split by engagement type (FRE v. reengagement).
+  </summary>
+  <token key="EngagementType"
+      variants="ContextualCueingGlicSuggestionsEngagementType"/>
+</histogram>
+
+<histogram
     name="ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions"
     enum="Boolean" expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
@@ -108,12 +130,8 @@ chromium-metrics-reviews@google.com.
         summary="When valid suggestions are returned as a result of a
                  suggestions fetch"/>
   </token>
-  <token key="EngagementType">
-    <variant name="" summary=""/>
-    <variant name=".FRE" summary="When suggestions are fetched for the FRE"/>
-    <variant name=".Reengagement"
-        summary="When suggestions are fetched for reengagement"/>
-  </token>
+  <token key="EngagementType"
+      variants="ContextualCueingGlicSuggestionsEngagementType"/>
 </histogram>
 
 <histogram

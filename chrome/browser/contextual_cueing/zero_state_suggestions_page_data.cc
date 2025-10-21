@@ -361,7 +361,8 @@ void ZeroStateSuggestionsPageData::InvokePageContextCallbacksIfComplete() {
   // Check if we are allowed to request suggestions for this page.
   if (!IsEligibleForContextualSuggestions(optimization_decision_,
                                           optimization_metadata_)) {
-    page_context_callbacks_.Notify(std::nullopt);
+    page_context_callbacks_.Notify(
+        base::unexpected(PageContextIneligibilityType::kOptimizationMetadata));
     return;
   }
 
@@ -375,9 +376,12 @@ void ZeroStateSuggestionsPageData::InvokePageContextCallbacksIfComplete() {
         "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true);
   }
 
-  page_context_callbacks_.Notify(
-      has_page_context ? std::make_optional(ConstructPageContextProto())
-                       : std::nullopt);
+  if (has_page_context) {
+    page_context_callbacks_.Notify(base::ok(ConstructPageContextProto()));
+  } else {
+    page_context_callbacks_.Notify(
+        base::unexpected(PageContextIneligibilityType::kPageContext));
+  }
 }
 
 const GURL ZeroStateSuggestionsPageData::GetUrl() const {

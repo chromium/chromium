@@ -129,6 +129,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->
 
+<enum name="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType">
+  <int value="0" label="None"/>
+  <int value="1" label="Optimization Metadata">
+    The optimization metadata returned for the page (or all pages, if a pinned
+    tabs request) deemed the request ineligible.
+  </int>
+  <int value="2" label="Page context">
+    The page context fetched for the page (or all pages, if a pinned tabs
+    request) was invalid.
+  </int>
+</enum>
+
 </enums>
 
 </histogram-configuration>
