@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
-import static org.chromium.components.permissions.PermissionsAndroidFeatureList.sApproximateGeolocationPermission;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
@@ -190,17 +188,17 @@ public class InstalledWebappPermissionStore {
         Set<String> origins = getStoredOrigins();
         origins.remove(origin.toString());
 
-        var geolocationType =
-                sApproximateGeolocationPermission.isEnabled()
-                        ? ContentSettingsType.GEOLOCATION_WITH_OPTIONS
-                        : ContentSettingsType.GEOLOCATION;
         mPreferences
                 .edit()
                 .putStringSet(KEY_ALL_ORIGINS, origins)
                 .remove(createPermissionKey(ContentSettingsType.NOTIFICATIONS, origin))
                 .remove(createPermissionSettingKey(ContentSettingsType.NOTIFICATIONS, origin))
-                .remove(createPermissionKey(geolocationType, origin))
-                .remove(createPermissionSettingKey(geolocationType, origin))
+                .remove(createPermissionKey(ContentSettingsType.GEOLOCATION, origin))
+                .remove(createPermissionSettingKey(ContentSettingsType.GEOLOCATION, origin))
+                .remove(createPermissionKey(ContentSettingsType.GEOLOCATION_WITH_OPTIONS, origin))
+                .remove(
+                        createPermissionSettingKey(
+                                ContentSettingsType.GEOLOCATION_WITH_OPTIONS, origin))
                 .remove(createAppNameKey(origin))
                 .remove(createPackageNameKey(origin))
                 .remove(createAllDelegateAppsKey(origin))

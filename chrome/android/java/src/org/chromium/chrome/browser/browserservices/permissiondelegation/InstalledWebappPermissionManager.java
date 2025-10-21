@@ -130,7 +130,8 @@ public class InstalledWebappPermissionManager {
         NotificationChannelPreserver.restoreChannelIfNeeded(origin);
 
         InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.NOTIFICATIONS);
-        InstalledWebappBridge.notifyPermissionsChange(getGeolocationType());
+        InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.GEOLOCATION);
+        InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
     }
 
     @UiThread
