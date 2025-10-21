@@ -696,6 +696,39 @@
             ]
         }
     ],
+    "AndroidComposeplate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledV2",
+                    "params": {
+                        "v2_enabled": "true"
+                    },
+                    "enable_features": [
+                        "AndroidComposeplate"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidComposeplate"
+                    ]
+                },
+                {
+                    "name": "Enabled_HideIncognitoButton",
+                    "params": {
+                        "hide_incognito_button": "true"
+                    },
+                    "enable_features": [
+                        "AndroidComposeplate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopWebPrefsLargeDisplays": [
         {
             "platforms": [
