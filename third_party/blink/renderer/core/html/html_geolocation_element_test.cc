@@ -6,7 +6,9 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,12 +24,14 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -124,7 +128,10 @@ class TestPermissionService : public PermissionService {
   void RequestPageEmbeddedPermission(
       Vector<PermissionDescriptorPtr> permissions,
       mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptors,
-      RequestPageEmbeddedPermissionCallback) override {}
+      RequestPageEmbeddedPermissionCallback callback) override {
+    std::move(callback).Run(
+        mojom::blink::EmbeddedPermissionControlResult::kGranted);
+  }
   void RequestPermission(PermissionDescriptorPtr permission,
                          bool user_gesture,
                          RequestPermissionCallback) override {}
@@ -256,6 +263,8 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
   }
 
  private:
+  ScopedBypassPepcSecurityForTestingForTest bypass_pepc_security_for_testing_{
+      /*enabled=*/true};
   TestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support_;
 };
@@ -737,6 +746,134 @@ TEST_F(HTMLGeolocationElementSimTest, GeolocationInitializeGrantedText) {
   DOMRect* rect = geolocation_element->GetBoundingClientRect();
   EXPECT_NE(0, rect->width());
   EXPECT_NE(0, rect->height());
+}
+
+TEST_F(HTMLGeolocationElementSimTest, InvalidDisplayStyleElement) {
+  auto* geolocation_element = CreateGeolocationElement(GetDocument());
+  geolocation_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("display: contents; position: absolute;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/false);
+
+  geolocation_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("display: block; position: absolute;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/true);
+}
+
+TEST_F(HTMLGeolocationElementSimTest, BadContrastDisablesElement) {
+  auto* geolocation_element = CreateGeolocationElement(GetDocument());
+  // Red on white is sufficient contrast.
+  geolocation_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: white;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/true);
+
+  // Red on purple is not sufficient contrast.
+  geolocation_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/false);
+
+  // Purple on yellow is sufficient contrast, the element will be re-enabled
+  // after a delay.
+  geolocation_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: yellow; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/true);
+}
+
+class HTMLGeolocationElementIntersectionTest
+    : public HTMLGeolocationElementSimTest {
+ public:
+  static constexpr int kViewportWidth = 800;
+  static constexpr int kViewportHeight = 600;
+
+ protected:
+  HTMLGeolocationElementIntersectionTest() = default;
+
+  void SetUp() override {
+    HTMLGeolocationElementSimTest::SetUp();
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
+    WebView().MainFrameWidget()->Resize(
+        gfx::Size(kViewportWidth, kViewportHeight));
+  }
+
+  void TearDown() override {
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
+    HTMLGeolocationElementSimTest::TearDown();
+  }
+
+  void WaitForIntersectionVisibilityChanged(
+      HTMLGeolocationElement* element,
+      HTMLGeolocationElement::IntersectionVisibility visibility) {
+    // The intersection observer might only detect elements that enter/leave
+    // the viewport after a cycle is complete.
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(element->IntersectionVisibilityForTesting(), visibility);
+  }
+};
+
+TEST_F(HTMLGeolocationElementIntersectionTest, IntersectionChanged) {
+  GetDocument().GetSettings()->SetDefaultFontSize(12);
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+    <div id='heading' style='height: 100px;'></div>
+    <geolocation id='geo'></geolocation>
+    <div id='trailing' style='height: 700px;'></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* geolocation_element = To<HTMLGeolocationElement>(
+      GetDocument().QuerySelector(AtomicString("geolocation")));
+  WaitForIntersectionVisibilityChanged(
+      geolocation_element,
+      HTMLGeolocationElement::IntersectionVisibility::kFullyVisible);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/true);
+
+  GetDocument().View()->LayoutViewport()->ScrollBy(
+      ScrollOffset(0, kViewportHeight), mojom::blink::ScrollType::kUser);
+  WaitForIntersectionVisibilityChanged(
+      geolocation_element,
+      HTMLGeolocationElement::IntersectionVisibility::kOutOfViewportOrClipped);
+  EXPECT_FALSE(geolocation_element->IsClickingEnabled());
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/false);
+
+  GetDocument().View()->LayoutViewport()->ScrollBy(
+      ScrollOffset(0, -kViewportHeight), mojom::blink::ScrollType::kUser);
+
+  // The element is fully visible now but unclickable for a short delay.
+  WaitForIntersectionVisibilityChanged(
+      geolocation_element,
+      HTMLGeolocationElement::IntersectionVisibility::kFullyVisible);
+  EXPECT_FALSE(geolocation_element->IsClickingEnabled());
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(geolocation_element->IsClickingEnabled(),
+            /*expected_enabled=*/true);
+
+  EXPECT_EQ(geolocation_element->IntersectionVisibilityForTesting(),
+            HTMLGeolocationElement::IntersectionVisibility::kFullyVisible);
+  EXPECT_TRUE(geolocation_element->IsClickingEnabled());
 }
 
 }  // namespace blink

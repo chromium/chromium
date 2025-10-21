@@ -115,6 +115,8 @@ class CORE_EXPORT HTMLPermissionElement
   // blink::Node:
   void DefaultEventHandler(Event&) override;
 
+  void HandleActivation(Event&, base::OnceClosure on_success);
+
   bool PermissionsGranted() const {
     return aggregated_permission_status_.has_value() &&
            aggregated_permission_status_ ==
@@ -165,6 +167,7 @@ class CORE_EXPORT HTMLPermissionElement
   friend class RegistrationWaiter;
   friend class HTMLPermissionElementIntersectionTest;
   friend class HTMLPermissionElementLayoutChangeTest;
+  friend class HTMLGeolocationElementIntersectionTest;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTestBase, GetTypeAttribute);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
@@ -187,6 +190,12 @@ class CORE_EXPORT HTMLPermissionElement
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, GeolocationStatusChange);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
                            GeolocationInitializeGrantedText);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
+                           InvalidDisplayStyleElement);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
+                           BadContrastDisablesElement);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementIntersectionTest,
+                           IntersectionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,

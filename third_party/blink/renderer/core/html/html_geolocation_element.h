@@ -76,6 +76,7 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
                                 mojom::blink::PermissionStatus) override;
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
+  void OnActivated();
   void GetCurrentPosition();
   void WatchPosition();
   // Callback for Geolocation::getCurrentPosition. It is called when the

@@ -1097,6 +1097,43 @@ void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
   intersection_rect_ = intersection_rect;
 }
 
+void HTMLPermissionElement::HandleActivation(Event& event,
+                                             base::OnceClosure on_success) {
+  event.SetDefaultHandled();
+  if (event.IsFullyTrusted() ||
+      RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
+    // TODO(crbug.com/352496162): After confirming all permission requests
+    // eventually call |OnEmbeddedPermissionsDecided|, block multiple
+    // permission requests when one is in progress, instead of temporairly
+    // disallowing them.
+    if (pending_request_created_ &&
+        base::TimeTicks::Now() - *pending_request_created_ <
+            kDefaultDisableTimeout) {
+      AddConsoleError(
+          "The permission element already has a request in progress.");
+      RecordUserInteractionAccepted(false);
+      return;
+    }
+
+    bool is_user_interaction_enabled = IsClickingEnabled();
+    RecordUserInteractionAccepted(is_user_interaction_enabled);
+    if (is_user_interaction_enabled) {
+      std::move(on_success).Run();
+    }
+  } else {
+    // For automated testing purposes this behavior can be overridden by
+    // adding '--enable-features=BypassPepcSecurityForTesting' to the
+    // command line when launching the browser.
+    AddConsoleError(
+        "The permission element can only be activated by actual user "
+        "clicks.");
+    RecordUserInteractionAccepted(false);
+    base::UmaHistogramEnumeration(
+        "Blink.PermissionElement.UserInteractionDeniedReason",
+        UserInteractionDeniedReason::kUntrustedEvent);
+  }
+}
+
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
   if (fallback_mode_) {
     HTMLElement::DefaultEventHandler(event);
@@ -1104,39 +1141,10 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
   }
 
   if (event.type() == event_type_names::kDOMActivate) {
-    event.SetDefaultHandled();
-    if (event.IsFullyTrusted() ||
-        RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
-      // TODO(crbug.com/352496162): After confirming all permission requests
-      // eventually call |OnEmbeddedPermissionsDecided|, block multiple
-      // permission requests when one is in progress, instead of temporairly
-      // disallowing them.
-      if (pending_request_created_ &&
-          base::TimeTicks::Now() - *pending_request_created_ <
-              kDefaultDisableTimeout) {
-        AddConsoleError(
-            "The permission element already has a request in progress.");
-        RecordUserInteractionAccepted(false);
-        return;
-      }
-
-      bool is_user_interaction_enabled = IsClickingEnabled();
-      RecordUserInteractionAccepted(is_user_interaction_enabled);
-      if (is_user_interaction_enabled) {
-        RequestPageEmbededPermissions();
-      }
-    } else {
-      // For automated testing purposes this behavior can be overridden by
-      // adding '--enable-features=BypassPepcSecurityForTesting' to the
-      // command line when launching the browser.
-      AddConsoleError(
-          "The permission element can only be activated by actual user "
-          "clicks.");
-      RecordUserInteractionAccepted(false);
-      base::UmaHistogramEnumeration(
-          "Blink.PermissionElement.UserInteractionDeniedReason",
-          UserInteractionDeniedReason::kUntrustedEvent);
-    }
+    HandleActivation(
+        event,
+        blink::BindOnce(&HTMLPermissionElement::RequestPageEmbededPermissions,
+                        WrapWeakPersistent(this)));
     return;
   }
 

@@ -138,15 +138,21 @@ void HTMLGeolocationElement::DidFinishLifecycleUpdate(
   }
 }
 
+void HTMLGeolocationElement::OnActivated() {
+  if (FastHasAttribute(html_names::kAutolocateAttr)) {
+    MaybeTriggerAutolocate(ForceAutolocate::kYes);
+  } else {
+    RequestGeolocation();
+  }
+}
+
 void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
   // We consume the click event here if the permission is already granted
   // and propagate any other events to the parent HTMLPermissionElement.
   if (event.type() == event_type_names::kDOMActivate && PermissionsGranted()) {
-    if (FastHasAttribute(html_names::kAutolocateAttr)) {
-      MaybeTriggerAutolocate(ForceAutolocate::kYes);
-    } else {
-      RequestGeolocation();
-    }
+    HandleActivation(event,
+                     blink::BindOnce(&HTMLGeolocationElement::OnActivated,
+                                     WrapWeakPersistent(this)));
     return;
   }
   HTMLPermissionElement::DefaultEventHandler(event);
