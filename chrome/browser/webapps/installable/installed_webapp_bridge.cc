@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
+#include "base/memory/safety_checks.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -20,6 +21,24 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ScopedJavaLocalRef;
+
+namespace {
+
+// TODO(crbug.com/391248369): Remove this class once the bug gets fixed, and
+// replace the usages of PermissionCallbackWithAMSC with
+// InstalledWebappBridge::PermissionCallback.
+//
+// This class `PermissionCallbackWithAMSC` is needed because
+// `InstalledWebappBridge::PermissionCallback` is just a type alias to
+// `base::OnceCallback` and we don't want to burden all base::OnceCallbacks
+// just because of this UaF issue. This class allows us to apply the
+// `ADVANCED_MEMORY_SAFETY_CHECKS` macro to PermissionCallback only.
+class PermissionCallbackWithAMSC
+    : public InstalledWebappBridge::PermissionCallback {
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+};
+
+}  // namespace
 
 static void JNI_InstalledWebappBridge_NotifyPermissionsChange(JNIEnv* env,
                                                               jlong j_provider,
@@ -35,8 +54,7 @@ static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
                                                             jlong callback_ptr,
                                                             int setting) {
   DCHECK_LE(setting, static_cast<int>(PermissionDecision::kMaxValue));
-  auto* callback = reinterpret_cast<InstalledWebappBridge::PermissionCallback*>(
-      callback_ptr);
+  auto* callback = reinterpret_cast<PermissionCallbackWithAMSC*>(callback_ptr);
   std::move(*callback).Run(
       static_cast<PermissionDecision>(static_cast<PermissionDecision>(setting)),
       /*is_final_decision=*/true);
@@ -84,7 +102,7 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
   // dialog, but as the dialog is modal, the only other thing the user can do
   // is quit Chrome which will also free the pointer. The callback pointer will
   // be destroyed in RunPermissionCallback.
-  auto* callback_ptr = new PermissionCallback(std::move(callback));
+  auto* callback_ptr = new PermissionCallbackWithAMSC(std::move(callback));
 
   Java_InstalledWebappBridge_decidePermission(
       env, static_cast<int>(type), origin_url.spec(), last_committed_url.spec(),
