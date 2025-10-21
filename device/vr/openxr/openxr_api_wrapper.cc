@@ -1670,7 +1670,7 @@ std::optional<gfx::Transform> OpenXrApiWrapper::GetBaseSpaceFromSpace(
 
   // TODO(crbug.com/41495208): Check for crash dumps.
   std::array<float, 16> transform_data;
-  base_space_from_space.GetColMajorF(transform_data.data());
+  base_space_from_space.GetColMajorF(transform_data);
   bool contains_nan = std::ranges::any_of(
       transform_data, [](const float f) { return std::isnan(f); });
 

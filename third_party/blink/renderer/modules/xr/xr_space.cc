@@ -103,7 +103,7 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
 
   // TODO(https://crbug.com/1522245): Check for crash dumps.
   std::array<float, 16> transform_data;
-  other_offset_from_offset.GetColMajorF(transform_data.data());
+  other_offset_from_offset.GetColMajorF(transform_data);
   bool contains_nan = std::ranges::any_of(
       transform_data, [](const float f) { return std::isnan(f); });
 

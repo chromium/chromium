@@ -158,8 +158,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
     controller_data.pose_data.is_valid = is_valid;
-    device_to_origin.GetColMajorF(
-        controller_data.pose_data.device_to_origin.data());
+    device_to_origin.GetColMajorF(controller_data.pose_data.device_to_origin);
     UpdateControllerAndWait(index, controller_data);
   }
 
@@ -809,7 +808,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerInputRegistered) {
 
 std::string TransformToColMajorString(const gfx::Transform& t) {
   std::array<float, 16> array;
-  t.GetColMajorF(array.data());
+  t.GetColMajorF(array);
   std::string array_string = "[";
   for (const auto& val : array) {
     array_string += base::NumberToString(val) + ",";

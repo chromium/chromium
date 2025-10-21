@@ -110,9 +110,6 @@ Transform Transform::ColMajor(base::span<const double, 16> a) {
 }
 
 // static
-Transform Transform::ColMajorF(const float a[16]) {
-  return ColMajorF(UNSAFE_TODO(base::span(a, base::fixed_extent<16>())));
-}
 
 Transform Transform::ColMajorF(base::span<const float, 16> a) {
   if (AllTrue(Float4{a[1], a[2], a[3], a[4]} == Float4{0, 0, 0, 0} &
@@ -124,20 +121,12 @@ Transform Transform::ColMajorF(base::span<const float, 16> a) {
                    a[10], a[11], a[12], a[13], a[14], a[15]);
 }
 
-void Transform::GetColMajor(double a[16]) const {
-  return GetColMajor(UNSAFE_TODO(base::span(a, base::fixed_extent<16>())));
-}
-
 void Transform::GetColMajor(base::span<double, 16> a) const {
   if (!full_matrix_) [[likely]] {
     AxisTransform2dToColMajor(axis_2d_, a);
   } else {
     matrix_.GetColMajor(a);
   }
-}
-
-void Transform::GetColMajorF(float a[16]) const {
-  return GetColMajorF(UNSAFE_TODO(base::span(a, base::fixed_extent<16>())));
 }
 
 void Transform::GetColMajorF(base::span<float, 16> a) const {

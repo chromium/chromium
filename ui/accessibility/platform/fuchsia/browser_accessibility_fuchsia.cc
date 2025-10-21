@@ -389,7 +389,7 @@ fuchsia_ui_gfx::Mat4 BrowserAccessibilityFuchsia::GetFuchsiaTransform() const {
 
   // Convert to fuchsia's transform type.
   std::array<float, 16> mat = {};
-  transform.GetColMajorF(mat.data());
+  transform.GetColMajorF(mat);
   return {{.matrix = mat}};
 }
 

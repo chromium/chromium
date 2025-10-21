@@ -24,7 +24,7 @@ NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
 
 gfx::Transform DOMFloat32ArrayToTransform(NotShared<DOMFloat32Array> m) {
   CHECK_EQ(m->length(), 16u);
-  return gfx::Transform::ColMajorF(m->Data());
+  return gfx::Transform::ColMajorF(m->AsSpan().first<16>());
 }
 
 // Normalize to have length = 1.0

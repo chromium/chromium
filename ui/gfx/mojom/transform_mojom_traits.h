@@ -20,7 +20,7 @@ struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
     if (transform.IsIdentity())
       return std::nullopt;
     std::array<float, 16> matrix;
-    transform.GetColMajorF(matrix.data());
+    transform.GetColMajorF(matrix);
     return matrix;
   }
 
@@ -31,7 +31,7 @@ struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
       out->MakeIdentity();
       return true;
     }
-    *out = gfx::Transform::ColMajorF(matrix.data());
+    *out = gfx::Transform::ColMajorF(base::span(matrix).first<16>());
     return true;
   }
 };

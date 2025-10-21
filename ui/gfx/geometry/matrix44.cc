@@ -103,17 +103,9 @@ ALWAYS_INLINE bool InverseWithDouble4Cols(Double4& c0,
 
 }  // anonymous namespace
 
-void Matrix44::GetColMajor(double dst[16]) const {
-  return GetColMajor(UNSAFE_TODO(base::span(dst, base::fixed_extent<16>())));
-}
-
 void Matrix44::GetColMajor(base::span<double, 16> dst) const {
   base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
   dst.copy_from(src);
-}
-
-void Matrix44::GetColMajorF(float dst[16]) const {
-  return GetColMajorF(UNSAFE_TODO(base::span(dst, base::fixed_extent<16>())));
 }
 
 void Matrix44::GetColMajorF(base::span<float, 16> dst) const {
