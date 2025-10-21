@@ -297,10 +297,16 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     if args.promptfoo_bin:
         promptfoo = promptfoo_installation.PreinstalledPromptfooInstallation(
             args.promptfoo_bin)
-    else:
+    elif args.promptfoo_revision or args.promptfoo_version:
         promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
         promptfoo = promptfoo_installation.setup_promptfoo(
             promptfoo_dir, args.promptfoo_revision, args.promptfoo_version)
+    else:
+        # This should be the default case. Specifying the bin or installing
+        # from npm/src should only be done for testing purposes. The cipd
+        # version is pinned which allows us to validate it before changing it.
+        promptfoo = promptfoo_installation.FromCipdPromptfooInstallation()
+        promptfoo.setup(args.verbose)
 
     if args.sandbox and not _fetch_sandbox_image():
         return 1

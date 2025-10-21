@@ -675,7 +675,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
 
         self.mock_perform_chromium_setup.assert_called_once_with(force=False,
                                                                  build=True)
-        self.mock_setup_promptfoo.assert_called_once()
+        self.mock_setup_promptfoo.assert_not_called()
         self.mock_worker_pool.assert_called_once()
         self.mock_worker_pool.return_value.queue_tests.assert_called_once_with(
             [pathlib.Path('/test/a.yaml')])
