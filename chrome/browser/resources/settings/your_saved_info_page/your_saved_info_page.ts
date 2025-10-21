@@ -60,7 +60,7 @@ export class SettingsYourSavedInfoPageElement extends
       paymentsCardData_: {
         type: Array,
         computed:
-            'computePaymentsCardData_(creditCardsCount, ibansCount, payOverTimeIssuersCount)',
+            'computePaymentsCardData_(creditCardsCount, ibansCount, payOverTimeIssuersCount, loyaltyCardsCount)',
       },
       addressesCardData_: {
         type: Array,
@@ -320,6 +320,7 @@ export class SettingsYourSavedInfoPageElement extends
       {
         label: this.i18n('loyaltyCardsTitle'),
         icon: 'settings20:loyalty-programs',
+        counter: this.loyaltyCardsCount,
       },
     ];
   }
