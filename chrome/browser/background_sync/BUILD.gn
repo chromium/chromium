@@ -37,6 +37,7 @@ source_set("impl") {
   deps = [
     ":background_sync",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/engagement",
     "//chrome/browser/search_engines",
     "//chrome/common:chrome_features",
     "//components/content_settings/core/browser",

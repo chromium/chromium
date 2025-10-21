@@ -27,6 +27,7 @@ source_set("impl") {
   ]
   deps = [
     ":content_index",
+    "//chrome/browser/engagement",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
@@ -43,6 +44,7 @@ source_set("unit_tests") {
     ":content_index",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/engagement",
     "//chrome/browser/history",
     "//chrome/test:test_support",
     "//components/history/core/browser",

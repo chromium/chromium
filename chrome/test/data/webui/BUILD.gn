@@ -90,7 +90,10 @@ source_set("browser_tests") {
       "webview/webui_webview_browsertest.cc",
     ]
 
-    deps += [ "//chrome/browser/signin:signin_promo" ]
+    deps += [
+      "//chrome/browser/engagement",
+      "//chrome/browser/signin:signin_promo",
+    ]
 
     if (is_chrome_branded) {
       sources += [ "media_router/cast_feedback_ui_browsertest.cc" ]

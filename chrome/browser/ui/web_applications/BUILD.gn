@@ -172,6 +172,7 @@ source_set("impl") {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/engagement",
       "//chrome/browser/infobars",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/notifications",
