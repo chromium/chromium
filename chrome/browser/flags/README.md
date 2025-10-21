@@ -35,7 +35,9 @@ initialized when the check is run, there are two ways of proceeding:
 1.  Declare a
     [CachedFlag](https://source.chromium.org/chromium/chromium/src/+/main:components/cached_flags/android/java/src/org/chromium/components/cached_flags/CachedFlag.java)
     in ChromeFeatureList, which returns a value cached from the previous run,
-    and add it to `ChromeFeatureList.sFlagsCachedFullBrowser`.
+    and add it to `ChromeFeatureList.sFlagsCachedFullBrowser`. Refer to the
+    inline documentation of `CachedFlag` for more details and caveats with this
+    approach.
 2.  Declare a
     [MutableFlagWithSafeDefault](https://source.chromium.org/chromium/chromium/src/+/main:base/android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java)
     in ChromeFeatureList, which returns a default value when native is not

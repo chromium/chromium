@@ -38,6 +38,10 @@ import java.util.function.Supplier;
  *       Consider this the source of truth for whether the flag is turned on in the current session.
  * </ul>
  *
+ * <p>Caveat: The status of a CachedFlag in Java code can be different from the status of the
+ * corresponding flag in c++ code. Native code should not rely on consistency between the CachedFlag
+ * and base::Feature value, and use IsJavaDrivenFeatureEnabled.
+ *
  * <p>Metrics caveat: For cached flags that are queried before native is initialized, when a new
  * experiment configuration is received the metrics reporting system will record metrics as if the
  * experiment is enabled despite the experimental behavior not yet taking effect. This will be
