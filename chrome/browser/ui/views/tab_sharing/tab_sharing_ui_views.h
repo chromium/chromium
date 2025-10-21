@@ -202,7 +202,6 @@ class TabSharingUIViews : public TabSharingUI,
   const std::u16string capturer_name_;
 
   raw_ptr<content::WebContents, DanglingUntriaged> shared_tab_;
-  std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
   const url_formatter::SchemeDisplay shared_tab_scheme_display_;
   std::u16string shared_tab_name_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;

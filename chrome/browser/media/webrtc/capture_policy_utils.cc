@@ -241,4 +241,13 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents) {
 #endif
 }
 
+bool CapturerRestrictedToSameOrigin(content::WebContents* capturer) {
+  if (!capturer) {
+    return false;
+  }
+  return GetAllowedCaptureLevel(
+             capturer->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
+             capturer) == AllowedScreenCaptureLevel::kSameOrigin;
+}
+
 }  // namespace capture_policy

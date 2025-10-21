@@ -136,16 +136,6 @@ url::Origin GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
   return rfh->GetLastCommittedOrigin();
 }
 
-bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
-  WebContents* capturer = WebContentsFromId(capturer_id);
-  if (!capturer) {
-    return false;
-  }
-  return capture_policy::GetAllowedCaptureLevel(
-             GetOriginFromId(capturer_id).GetURL(), capturer) ==
-         AllowedScreenCaptureLevel::kSameOrigin;
-}
-
 TabRole GetTabRole(bool is_capturing_tab, bool is_captured_tab) {
   if (is_capturing_tab && is_captured_tab) {
     return TabRole::kSelfCapturingTab;
@@ -189,7 +179,8 @@ TabSharingUIViews::TabSharingUIViews(
       can_focus_capturer_(GetOriginFromId(capturer).scheme() !=
                           extensions::kExtensionScheme),
       capturer_restricted_to_same_origin_(
-          CapturerRestrictedToSameOrigin(capturer)),
+          capture_policy::CapturerRestrictedToSameOrigin(
+              WebContentsFromId(capturer))),
       shared_tab_media_id_(media_id),
       capturer_name_(std::move(capturer_name)),
       shared_tab_(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(
@@ -204,15 +195,6 @@ TabSharingUIViews::TabSharingUIViews(
 
   Observe(shared_tab_);
   shared_tab_name_ = GetSharedTabName(shared_tab_, shared_tab_scheme_display_);
-
-  if (capturer_restricted_to_same_origin_) {
-    // base::Unretained is safe here because we own the origin observer, so it
-    // cannot outlive us.
-    shared_tab_origin_observer_ = std::make_unique<SameOriginObserver>(
-        shared_tab_, capturer_origin_,
-        base::BindRepeating(&TabSharingUIViews::StopCaptureDueToPolicy,
-                            base::Unretained(this)));
-  }
 
   WebContents* const capturer_wc = WebContentsFromId(capturer_);
   if (capturer_wc) {
@@ -564,14 +546,6 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
       /*stop=*/base::DoNothing(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
-}
-
-void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
-  DCHECK(shared_tab_ == contents);
-  StopSharing();
-  // We use |contents| rather than |shared_tab_| here because |shared_tab_| is
-  // cleared by the call to StopSharing().
-  capture_policy::ShowCaptureTerminatedDialog(contents);
 }
 
 void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,

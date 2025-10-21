@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -102,7 +103,8 @@ class MediaStreamCaptureIndicator
       content::WebContents* web_contents,
       const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUI> ui = nullptr,
-      const std::u16string application_title = std::u16string());
+      const std::u16string application_title = std::u16string(),
+      std::optional<content::DesktopMediaID> media_id = std::nullopt);
 
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;

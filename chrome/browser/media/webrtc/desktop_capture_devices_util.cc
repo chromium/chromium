@@ -308,7 +308,8 @@ void CreateMediaStreamCaptureIndicatorUI(
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
           ->RegisterMediaStream(web_contents, devices,
-                                std::move(notification_ui), application_title);
+                                std::move(notification_ui), application_title,
+                                media_id);
   std::move(on_media_stream_capture_indicator_ui_created_callback)
       .Run(std::move(devices), std::move(capture_indicator_ui));
 }

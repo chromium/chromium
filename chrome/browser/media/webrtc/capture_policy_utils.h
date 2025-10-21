@@ -77,6 +77,8 @@ bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents);
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
+bool CapturerRestrictedToSameOrigin(content::WebContents* capturer);
+
 }  // namespace capture_policy
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_CAPTURE_POLICY_UTILS_H_
