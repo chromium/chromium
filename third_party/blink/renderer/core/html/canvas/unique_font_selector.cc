@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -47,7 +48,11 @@ const Font* UniqueFontSelector::FindOrCreateFont(
     auto& value = lru_list_.back();
     // Allow the cache size to exceed MaxFonts() within the same frame.
     if (value.generation == frame_generation_) {
-      break;
+      // However, it should not exceed MaxFonts() * 2.
+      if (!RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() ||
+          lru_list_.size() <= max_size * 2) {
+        break;
+      }
     }
     font_cache_.erase(value.description);
     lru_list_.pop_back();

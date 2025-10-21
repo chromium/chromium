@@ -661,6 +661,7 @@ blink_core_tests_html = [
   "canvas/html_canvas_element_test.cc",
   "canvas/image_data_test.cc",
   "canvas/text_metrics_test.cc",
+  "canvas/unique_font_selector_test.cc",
   "custom/custom_element_definition_test.cc",
   "custom/custom_element_descriptor_test.cc",
   "custom/custom_element_reaction_queue_test.cc",

@@ -39,6 +39,7 @@ class CORE_EXPORT UniqueFontSelector
 
  private:
   friend class OffscreenCanvasTest;
+  friend class UniqueFontSelectorTest;
 
   // MemoryPressureListener override:
   void OnPurgeMemory() override;
