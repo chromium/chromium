@@ -177,6 +177,48 @@ bool VerifySha512(base::span<const uint8_t> key,
   return Verify(crypto::hash::HashKind::kSha512, key, data, hmac);
 }
 
+HmacSigner::HmacSigner(crypto::hash::HashKind kind,
+                       base::span<const uint8_t> key)
+    : kind_(kind), finished_(false) {
+  CHECK(HMAC_Init_ex(ctx_.get(), key.data(), key.size(),
+                     crypto::hash::EVPMDForHashKind(kind), nullptr));
+}
+
+HmacSigner::~HmacSigner() = default;
+
+void HmacSigner::Update(base::span<const uint8_t> data) {
+  CHECK(!finished_);
+  CHECK(HMAC_Update(ctx_.get(), data.data(), data.size()));
+}
+
+void HmacSigner::Finish(base::span<uint8_t> result) {
+  CHECK(!finished_);
+  finished_ = true;
+  unsigned int len = result.size();
+  CHECK(HMAC_Final(ctx_.get(), result.data(), &len));
+  CHECK(len == result.size());
+}
+
+std::vector<uint8_t> HmacSigner::Finish() {
+  std::vector<uint8_t> result(crypto::hash::DigestSizeForHashKind(kind_));
+  Finish(result);
+  return result;
+}
+
+HmacVerifier::HmacVerifier(crypto::hash::HashKind kind,
+                           base::span<const uint8_t> key)
+    : signer_(kind, key) {}
+HmacVerifier::~HmacVerifier() = default;
+
+void HmacVerifier::Update(base::span<const uint8_t> data) {
+  signer_.Update(data);
+}
+
+bool HmacVerifier::Finish(base::span<const uint8_t> expected_signature) {
+  std::vector<uint8_t> result = signer_.Finish();
+  return crypto::SecureMemEqual(result, expected_signature);
+}
+
 }  // namespace hmac
 
 }  // namespace crypto

@@ -453,3 +453,26 @@ TEST(HMACTest, OneShotWrongLengthDies) {
                                  big_hmac),
       "");
 }
+
+TEST(HMACTest, StreamingSha512) {
+  // RFC 4231 test case 3:
+  std::vector<uint8_t> key(20, 0xaa);
+  std::vector<uint8_t> data1(32, 0xdd);
+  std::vector<uint8_t> data2(18, 0xdd);
+  std::vector<uint8_t> expected;
+  CHECK(base::HexStringToBytes(
+      "fa73b0089d56a284efb0f0756c890be9b1b5dbdd8ee81a3655f83e33b2279d39"
+      "bf3e848279a722c806b485a47e67c807b946a337bee8942674278859e13292fb",
+      &expected));
+
+  crypto::hmac::HmacSigner signer(crypto::hash::kSha512, key);
+  signer.Update(data1);
+  signer.Update(data2);
+  auto result = signer.Finish();
+  EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
+
+  crypto::hmac::HmacVerifier verifier(crypto::hash::kSha512, key);
+  verifier.Update(data1);
+  verifier.Update(data2);
+  EXPECT_TRUE(verifier.Finish(result));
+}

@@ -17,14 +17,18 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 #include "crypto/hash.h"
+#include "crypto/secure_util.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
 
 namespace crypto {
 
 // TODO(https://issues.chromium.org/issues/374334448): Rework this interface and
 // delete much of it.
+// Deprecated; don't add new uses. See the interfaces below this class instead.
 class CRYPTO_EXPORT HMAC {
  public:
   // The set of supported hash functions. Extend as required.
@@ -148,6 +152,45 @@ CRYPTO_EXPORT void Sign(crypto::hash::HashKind kind,
                                         base::span<const uint8_t> key,
                                         base::span<const uint8_t> data,
                                         base::span<const uint8_t> hmac);
+
+// Streaming sign and verify interfaces. In general you should only use these if
+// you are taking the HMAC of multiple chunks of data and want to avoid making
+// an intermediate copy - otherwise the one-shot interfaces are simpler to use.
+//
+// These classes don't impose any requirements on key sizes.
+//
+// After you call Finish() on an instance of these classes, it is illegal to
+// call Update() or Finish() on it again.
+class CRYPTO_EXPORT HmacSigner {
+ public:
+  HmacSigner(crypto::hash::HashKind kind, base::span<const uint8_t> key);
+  ~HmacSigner();
+
+  void Update(base::span<const uint8_t> data);
+  void Finish(base::span<uint8_t> result);
+  std::vector<uint8_t> Finish();
+
+ private:
+  const crypto::hash::HashKind kind_;
+  bool finished_;
+  bssl::ScopedHMAC_CTX ctx_;
+};
+
+class CRYPTO_EXPORT HmacVerifier {
+ public:
+  HmacVerifier(crypto::hash::HashKind kind, base::span<const uint8_t> key);
+  ~HmacVerifier();
+
+  void Update(base::span<const uint8_t> data);
+
+  // Returns whether the signature of all the data passed in via Update() so far
+  // matches |expected_signature|. This function tolerates the expected
+  // signature being the wrong length (by returning false in that case).
+  [[nodiscard]] bool Finish(base::span<const uint8_t> expected_signature);
+
+ private:
+  HmacSigner signer_;
+};
 
 }  // namespace hmac
 
