@@ -60,6 +60,7 @@ source_set("impl") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/common:channel_info",

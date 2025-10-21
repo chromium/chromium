@@ -4,7 +4,9 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,15 +15,29 @@
 
 namespace contextual_tasks {
 
+namespace {
+
+// Convenience macro for emitting OPTIMIZATION_GUIDE_LOGs where
+// optimization_keyed_service_ is defined.
+#define AUTO_CONTEXT_LOG(message)                                            \
+  OPTIMIZATION_GUIDE_LOG(                                                    \
+      optimization_guide_common::mojom::LogSource::CONTEXTUAL_TASKS_CONTEXT, \
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),       \
+      (message))
+
+}  // namespace
+
 ContextualTasksContextService::ContextualTasksContextService(
     Profile* profile,
     passage_embeddings::PageEmbeddingsService* page_embeddings_service,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-    passage_embeddings::Embedder* embedder)
+    passage_embeddings::Embedder* embedder,
+    OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : profile_(profile),
       page_embeddings_service_(page_embeddings_service),
       embedder_metadata_provider_(embedder_metadata_provider),
-      embedder_(embedder) {
+      embedder_(embedder),
+      optimization_guide_keyed_service_(optimization_guide_keyed_service) {
   scoped_observation_.Observe(embedder_metadata_provider_);
 }
 
@@ -30,7 +46,10 @@ ContextualTasksContextService::~ContextualTasksContextService() = default;
 void ContextualTasksContextService::GetRelevantTabsForQuery(
     const std::string& query,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
+  AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s", query));
+
   if (!is_embedder_available_) {
+    AUTO_CONTEXT_LOG("Embedder not available");
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<content::WebContents*>({})));
@@ -40,10 +59,12 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   // Force active tab embedding to be processed.
   page_embeddings_service_->ProcessAllEmbeddings();
 
+  AUTO_CONTEXT_LOG("Submitted query to embedder");
   embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kUrgent, {query},
       base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     std::move(callback)));
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
@@ -52,6 +73,7 @@ void ContextualTasksContextService::EmbedderMetadataUpdated(
 }
 
 void ContextualTasksContextService::OnQueryEmbeddingReady(
+    const std::string& query,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     std::vector<std::string> passages,
     std::vector<passage_embeddings::Embedding> embeddings,
@@ -59,14 +81,21 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     passage_embeddings::ComputeEmbeddingsStatus status) {
   // Query embedding was not successfully generated.
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+    AUTO_CONTEXT_LOG(
+        base::StringPrintf("Query embedding for %s failed", query));
     std::move(callback).Run({});
     return;
   }
   // Unexpected output size. Just return.
   if (embeddings.size() != 1u) {
+    AUTO_CONTEXT_LOG(base::StringPrintf(
+        "Query embedding for %s had unexpected output", query));
     std::move(callback).Run({});
     return;
   }
+
+  AUTO_CONTEXT_LOG(
+      base::StringPrintf("Processing query embedding for %s", query));
 
   passage_embeddings::Embedding query_embedding = embeddings[0];
 
@@ -92,9 +121,20 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
       std::vector<passage_embeddings::PassageEmbedding>
           web_contents_embeddings =
               page_embeddings_service_->GetEmbeddings(web_contents);
+      AUTO_CONTEXT_LOG(base::StringPrintf(
+          "Comparing query embedding to %llu embeddings for %s",
+          web_contents_embeddings.size(),
+          web_contents->GetLastCommittedURL().spec()));
       for (const auto& embedding : web_contents_embeddings) {
+        float similarity_score = embedding.embedding.ScoreWith(query_embedding);
+        AUTO_CONTEXT_LOG(
+            base::StringPrintf("Similarity with passage %s and query %s: %f",
+                               embedding.passage, query, similarity_score));
         // TODO: crbug.com/452056256 - Make comparing score configurable.
-        if (embedding.embedding.ScoreWith(query_embedding) > 0.5) {
+        if (similarity_score > 0.5) {
+          AUTO_CONTEXT_LOG(
+              base::StringPrintf("Adding %s to relevant set",
+                                 web_contents->GetLastCommittedURL().spec()));
           relevant_web_contents.push_back(web_contents);
           break;
         }

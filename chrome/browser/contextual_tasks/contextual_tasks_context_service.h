@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
+class OptimizationGuideKeyedService;
 class Profile;
 
 namespace content {
@@ -37,7 +38,8 @@ class ContextualTasksContextService
       Profile* profile,
       passage_embeddings::PageEmbeddingsService* page_embeddings_service,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-      passage_embeddings::Embedder* embedder);
+      passage_embeddings::Embedder* embedder,
+      OptimizationGuideKeyedService* optimization_guide_keyed_service);
   ContextualTasksContextService(const ContextualTasksContextService&) = delete;
   ContextualTasksContextService operator=(
       const ContextualTasksContextService&) = delete;
@@ -53,8 +55,9 @@ class ContextualTasksContextService
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
 
-  // Callback invoked when the embedding for the query is ready.
+  // Callback invoked when the embedding for `query` is ready.
   void OnQueryEmbeddingReady(
+      const std::string& query,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
@@ -70,6 +73,7 @@ class ContextualTasksContextService
   raw_ptr<passage_embeddings::EmbedderMetadataProvider>
       embedder_metadata_provider_;
   raw_ptr<passage_embeddings::Embedder> embedder_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,
                           passage_embeddings::EmbedderMetadataObserver>

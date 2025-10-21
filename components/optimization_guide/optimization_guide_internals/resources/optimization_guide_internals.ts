@@ -287,6 +287,9 @@ function getLogSource(logSource: number) {
   if (logSource === 8) {
     return 'BUILT_IN_AI';
   }
+  if (logSource === 9) {
+    return 'CONTEXTUAL_TASKS_CONTEXT';
+  }
   return logSource.toString();
 }
 

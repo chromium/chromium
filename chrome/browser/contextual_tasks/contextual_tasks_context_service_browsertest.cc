@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
@@ -138,7 +139,9 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
                       profile,
                       passage_embeddings::PageEmbeddingsServiceFactory::
                           GetForProfile(profile),
-                      embedder_metadata_provider, embedder);
+                      embedder_metadata_provider, embedder,
+                      OptimizationGuideKeyedServiceFactory::GetForProfile(
+                          profile));
                 },
                 &embedder_metadata_provider_, &embedder_));
   }
