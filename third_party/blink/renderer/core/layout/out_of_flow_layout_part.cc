@@ -2172,8 +2172,12 @@ struct NonOverflowingCandidate {
   std::optional<wtf_size_t> try_fallback_index;
   // The result of TryCalculateOffset.
   OutOfFlowLayoutPart::OffsetInfo offset_info;
+  NonOverflowingScrollRange non_overflowing_range;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(offset_info); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(offset_info);
+    visitor->Trace(non_overflowing_range);
+  }
 };
 
 EPositionTryOrder ToLogicalPositionTryOrder(
@@ -2342,7 +2346,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       // Also check if it fits the containing block after applying scroll offset
       // (i.e. the scroll-adjusted inset-modified containing block).
       if (try_fit_available_space) {
-        if (offset_info || RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+        if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+          non_overflowing_scroll_ranges.push_back(non_overflowing_range);
+        } else if (offset_info) {
           non_overflowing_scroll_ranges.push_back(non_overflowing_range);
           if (!non_overflowing_range.Contains(GetAnchorOffset(
                   node_info.node, style, anchor_evaluator.AnchorQuery()))) {
@@ -2361,8 +2367,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       }
 
       if (offset_info) {
-        NonOverflowingCandidate candidate{iter.TryFallbackIndex(),
-                                          *offset_info};
+        NonOverflowingCandidate candidate{iter.TryFallbackIndex(), *offset_info,
+                                          non_overflowing_range};
         if (find_last_successful_option &&
             iter.TryFallbackIndex() == last_successful_index) {
           // The last successful option still fits.
@@ -2430,6 +2436,12 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       // Move the iterator to the chosen candidate.
       iter.MoveToChosenTryFallbackIndex(
           non_overflowing_candidates.front().try_fallback_index);
+      // If we have a successful non-overflowing candidate, we only want to
+      // invalidate when this candidate becomes invalid.
+      if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+        non_overflowing_scroll_ranges = {
+            non_overflowing_candidates.front().non_overflowing_range};
+      }
     }
     // Once the position-try-fallbacks placement has been decided, calculate the
     // offset again, using the non-base style.
