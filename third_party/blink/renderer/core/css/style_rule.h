@@ -48,7 +48,7 @@ namespace blink {
 class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
-class CustomEnvBindings;
+class MixinParameterBindings;
 class ExecutionContext;
 class URLPattern;
 
@@ -153,7 +153,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   // and with the given custom @env bindings. For new_parent,
   // see CSSSelector::Renest().
   StyleRuleBase* Clone(StyleRule* new_parent,
-                       const CustomEnvBindings* env_bindings);
+                       const MixinParameterBindings* mixin_parameter_bindings);
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
@@ -172,32 +172,34 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   const uint8_t type_;
 };
 
-// A set of custom @env bindings at some given point in the stylesheet,
+// A set of custom mixin bindings at some given point in the stylesheet,
 // i.e., which variable has which value (and which type is it supposed
 // to match; we cannot check this when binding, so it needs to happen
-// when substituting). Created when we @apply a mixin or similar;
-// StyleRules and other interested parties can point to a CustomEnvBindings,
+// when substituting). Created when we @apply a mixin; StyleRules and
+// other interested parties can point to a MixinParameterBindings,
 // which contains its own bindings and then point backwards to the
 // next set of upper bindings (if any), and so on in a linked list.
-class CustomEnvBindings : public GarbageCollected<CustomEnvBindings> {
+//
+// This will be converted to function context at the time of application.
+class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
  public:
-  CustomEnvBindings(
+  MixinParameterBindings(
       HashMap<String, std::pair<String, CSSSyntaxDefinition>> bindings,
-      const CustomEnvBindings* previous_in_env_chain)
+      const MixinParameterBindings* previous_in_env_chain)
       : bindings_(bindings),
-        previous_in_env_chain_(previous_in_env_chain),
+        parent_mixin_(previous_in_env_chain),
         hash_(ComputeHash()) {}
 
   const std::pair<String, CSSSyntaxDefinition>* Lookup(
       const String& variable_name) const;
-  void Trace(Visitor* visitor) const { visitor->Trace(previous_in_env_chain_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(parent_mixin_); }
 
   // NOTE: Equality here is only used for the MPC, where false negatives
   // are OK. In particular, we compare bindings one level at a time;
   // if we have an entry for e.g. “--foo: bar;” and the other side
   // does not, we will return false even if a _parent_ of the other side
   // does.
-  bool operator==(const CustomEnvBindings& other) const;
+  bool operator==(const MixinParameterBindings& other) const;
 
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
@@ -208,7 +210,7 @@ class CustomEnvBindings : public GarbageCollected<CustomEnvBindings> {
   unsigned ComputeHash() const;
 
   HashMap<String, std::pair<String, CSSSyntaxDefinition>> bindings_;
-  Member<const CustomEnvBindings> previous_in_env_chain_;
+  Member<const MixinParameterBindings> parent_mixin_;
   unsigned hash_;
 };
 
@@ -237,12 +239,14 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
  public:
   // Use these to allocate the right amount of memory for the StyleRule.
-  static StyleRule* Create(base::span<CSSSelector> selectors,
-                           CSSPropertyValueSet* properties,
-                           const CustomEnvBindings* env_bindings = nullptr) {
+  static StyleRule* Create(
+      base::span<CSSSelector> selectors,
+      CSSPropertyValueSet* properties,
+      const MixinParameterBindings* mixin_parameter_bindings = nullptr) {
     return MakeGarbageCollected<StyleRule>(
         AdditionalBytesForSelectors(selectors.size()),
-        base::PassKey<StyleRule>(), selectors, properties, env_bindings);
+        base::PassKey<StyleRule>(), selectors, properties,
+        mixin_parameter_bindings);
   }
   static StyleRule* Create(base::span<CSSSelector> selectors,
                            CSSLazyPropertyParser* lazy_property_parser) {
@@ -275,7 +279,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   StyleRule(base::PassKey<StyleRule>,
             base::span<CSSSelector> selector_vector,
             CSSPropertyValueSet*,
-            const CustomEnvBindings*);
+            const MixinParameterBindings*);
   StyleRule(base::PassKey<StyleRule>,
             base::span<CSSSelector> selector_vector,
             CSSLazyPropertyParser*);
@@ -332,7 +336,9 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   GCedHeapVector<Member<StyleRuleBase>>* ChildRules() {
     return child_rules_.Get();
   }
-  const CustomEnvBindings* EnvBindings() const { return env_bindings_; }
+  const MixinParameterBindings* GetMixinParameterBindings() const {
+    return mixin_parameter_bindings_;
+  }
   void EnsureChildRules() {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).
@@ -367,7 +373,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   mutable Member<CSSPropertyValueSet> properties_;
   mutable Member<CSSLazyPropertyParser> lazy_property_parser_;
   Member<GCedHeapVector<Member<StyleRuleBase>>> child_rules_;
-  Member<const CustomEnvBindings> env_bindings_;
+  Member<const MixinParameterBindings> mixin_parameter_bindings_;
 };
 
 class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {

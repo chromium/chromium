@@ -108,7 +108,7 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
   for (unsigned i = 0; i < pre_import_layer_statement_rules_.size(); ++i) {
     pre_import_layer_statement_rules_[i] = To<StyleRuleLayerStatement>(
         o.pre_import_layer_statement_rules_[i]->Clone(
-            /*new_parent=*/nullptr, /*env_bindings=*/nullptr));
+            /*new_parent=*/nullptr, /*mixin_parameter_bindings=*/nullptr));
   }
 
   // FIXME: Copy import rules.
@@ -122,8 +122,9 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
   // Copying child rules is a strict point for deferred property parsing, so
   // there is no need to copy lazy parsing state here.
   for (unsigned i = 0; i < child_rules_.size(); ++i) {
-    child_rules_[i] = o.child_rules_[i]->Clone(/*new_parent=*/nullptr,
-                                               /*env_bindings=*/nullptr);
+    child_rules_[i] =
+        o.child_rules_[i]->Clone(/*new_parent=*/nullptr,
+                                 /*mixin_parameter_bindings=*/nullptr);
   }
 }
 

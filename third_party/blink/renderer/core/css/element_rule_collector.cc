@@ -432,7 +432,7 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, /*env_bindings=*/nullptr,
+      property_set, /*mixin_parameter_bindings=*/nullptr,
       {.link_match_type = static_cast<uint8_t>(
            AdjustLinkMatchType(inside_link_, link_match_type)),
        .is_inline_style = is_inline_style,
@@ -449,7 +449,7 @@ void ElementRuleCollector::AddTryStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, /*env_bindings=*/nullptr,
+      property_set, /*mixin_parameter_bindings=*/nullptr,
       {.link_match_type = static_cast<uint8_t>(
            AdjustLinkMatchType(inside_link_, link_match_type)),
        .valid_property_filter =
@@ -467,7 +467,7 @@ void ElementRuleCollector::AddTryTacticsStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, /*env_bindings=*/nullptr,
+      property_set, /*mixin_parameter_bindings=*/nullptr,
       {.link_match_type = static_cast<uint8_t>(
            AdjustLinkMatchType(inside_link_, link_match_type)),
        .origin = CascadeOrigin::kAuthor,
@@ -1257,7 +1257,8 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   // Now transfer the set of matched rules over to our list of declarations.
   for (const MatchedRule& matched_rule : matched_rules_) {
     result_.AddMatchedProperties(
-        &matched_rule.Rule()->Properties(), matched_rule.Rule()->EnvBindings(),
+        &matched_rule.Rule()->Properties(),
+        matched_rule.Rule()->GetMixinParameterBindings(),
         {.link_match_type = static_cast<uint8_t>(
              AdjustLinkMatchType(inside_link_, matched_rule.LinkMatchType())),
          .valid_property_filter = static_cast<uint8_t>(

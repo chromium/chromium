@@ -49,7 +49,7 @@ class CORE_EXPORT CachedMatchedProperties final
   // HeapHashSet which is slower to iterate.
   struct Key {
     UntracedMember<CSSPropertyValueSet> properties;
-    UntracedMember<const CustomEnvBindings> env_bindings;
+    UntracedMember<const MixinParameterBindings> mixin_parameter_bindings;
     MatchedProperties::Data data;
   };
   Vector<Key> matched_properties;

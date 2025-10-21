@@ -21,7 +21,7 @@ class CSSValue;
 class CORE_EXPORT CSSSyntaxDefinition {
  public:
   // Leaves an undefined state; only exists so that we can store it in
-  // a hash table (in CustomEnvBindings).
+  // a hash table (in MixinParameterBindings).
   CSSSyntaxDefinition() = default;
 
   // https://drafts.csswg.org/css-values-5/#css-syntax

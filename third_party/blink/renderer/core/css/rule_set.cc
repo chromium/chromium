@@ -1075,8 +1075,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       const StyleRuleMixin* mixin = apply_mixins_stack.back().mixin;
       const StyleRuleApplyMixin* apply =
           apply_mixins_stack.back().invoking_apply_rule;
-      const CustomEnvBindings* env_bindings =
-          apply_mixins_stack.back().env_bindings;
+      const MixinParameterBindings* mixin_parameter_bindings =
+          apply_mixins_stack.back().mixin_parameter_bindings;
 
       // Verify that the mixin actually has a @contents parameter.
       // Otherwise, @contents is illegal and ignored.
@@ -1097,8 +1097,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
           rules_to_add = contents_rule->FakeParentRuleForFallback();
         }
         if (rules_to_add && rules_to_add->ChildRules()) {
-          rules_to_add =
-              To<StyleRule>(rules_to_add->Clone(parent_rule, env_bindings));
+          rules_to_add = To<StyleRule>(
+              rules_to_add->Clone(parent_rule, mixin_parameter_bindings));
           AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium,
                         mixins, add_rule_flags, container_query, cascade_layer,
                         style_scope, apply_mixins_stack);
@@ -1166,21 +1166,22 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
         // For now, we just don't add a binding (effectively option 2).
       }
     }
-    CustomEnvBindings* env_bindings = MakeGarbageCollected<CustomEnvBindings>(
-        bindings, apply_mixins_stack.empty()
-                      ? nullptr
-                      : apply_mixins_stack.back().env_bindings);
+    MixinParameterBindings* mixin_parameter_bindings =
+        MakeGarbageCollected<MixinParameterBindings>(
+            bindings, apply_mixins_stack.empty()
+                          ? nullptr
+                          : apply_mixins_stack.back().mixin_parameter_bindings);
 
     apply_mixins_stack.push_back(
         ApplyingMixin{.mixin = mixin_rule,
                       .invoking_apply_rule = apply_mixin_rule,
-                      .env_bindings = env_bindings});
-    AddChildRules(
-        parent_rule,
-        To<StyleRuleMixin>(mixin_rule->Clone(parent_rule, env_bindings))
-            ->ChildRules(),
-        medium, mixins, add_rule_flags, container_query, cascade_layer,
-        style_scope, apply_mixins_stack);
+                      .mixin_parameter_bindings = mixin_parameter_bindings});
+    AddChildRules(parent_rule,
+                  To<StyleRuleMixin>(
+                      mixin_rule->Clone(parent_rule, mixin_parameter_bindings))
+                      ->ChildRules(),
+                  medium, mixins, add_rule_flags, container_query,
+                  cascade_layer, style_scope, apply_mixins_stack);
     apply_mixins_stack.pop_back();
 
     // If the @mixin we are applying (or currently: any @mixin) was defined

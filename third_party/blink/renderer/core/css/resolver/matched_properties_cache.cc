@@ -73,9 +73,10 @@ CachedMatchedProperties::CachedMatchedProperties(
     : entries({Entry{style, parent_style, clock}}) {
   matched_properties.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
-    matched_properties.emplace_back(new_matched_properties.properties,
-                                    new_matched_properties.env_bindings,
-                                    new_matched_properties.data_);
+    matched_properties.emplace_back(
+        new_matched_properties.properties,
+        new_matched_properties.mixin_parameter_bindings,
+        new_matched_properties.data_);
   }
 }
 
@@ -243,8 +244,8 @@ bool CachedMatchedProperties::CorrespondsTo(
     if (lookup_it.data_ != cached_it.data) {
       return false;
     }
-    if (!base::ValuesEquivalent(lookup_it.env_bindings.Get(),
-                                cached_it.env_bindings.Get())) {
+    if (!base::ValuesEquivalent(lookup_it.mixin_parameter_bindings.Get(),
+                                cached_it.mixin_parameter_bindings.Get())) {
       return false;
     }
   }
@@ -257,7 +258,7 @@ void CachedMatchedProperties::RefreshKey(
   for (auto [lookup_it, cached_it] :
        base::zip(lookup_properties, matched_properties)) {
     cached_it.properties = lookup_it.properties;
-    cached_it.env_bindings = lookup_it.env_bindings;
+    cached_it.mixin_parameter_bindings = lookup_it.mixin_parameter_bindings;
   }
 }
 
@@ -382,10 +383,10 @@ void MatchedPropertiesCache::Trace(Visitor* visitor) const {
 
 static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
                                         const LivenessBroker& info) {
-  for (const auto& [properties, env_bindings, metadata] :
+  for (const auto& [properties, mixin_parameter_bindings, metadata] :
        value.matched_properties) {
     if (!info.IsHeapObjectAlive(properties) ||
-        !info.IsHeapObjectAlive(env_bindings) ||
+        !info.IsHeapObjectAlive(mixin_parameter_bindings) ||
         properties->ModifiedSinceHashing()) {
       return true;
     }

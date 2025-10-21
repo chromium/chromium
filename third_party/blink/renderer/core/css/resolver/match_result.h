@@ -81,22 +81,22 @@ struct CORE_EXPORT MatchedProperties {
   };
 
   MatchedProperties(CSSPropertyValueSet* properties_arg,
-                    const CustomEnvBindings* env_bindings_arg,
+                    const MixinParameterBindings* mixin_parameter_bindings_arg,
                     const Data& data_arg)
       : properties(properties_arg),
-        env_bindings(env_bindings_arg),
+        mixin_parameter_bindings(mixin_parameter_bindings_arg),
         data_(data_arg) {}
 
   void Trace(Visitor*) const;
 
   Member<CSSPropertyValueSet> properties;
-  Member<const CustomEnvBindings> env_bindings;
+  Member<const MixinParameterBindings> mixin_parameter_bindings;
   Data data_;
 };
 
 struct SameSizeAsMatchedProperties {
   Member<void*> properties;
-  Member<void*> env_bindings;
+  Member<void*> mixin_parameter_bindings;
   uint8_t data_[8];
 };
 
@@ -130,9 +130,10 @@ class CORE_EXPORT MatchResult {
   MatchResult(const MatchResult&) = delete;
   MatchResult& operator=(const MatchResult&) = delete;
 
-  void AddMatchedProperties(const CSSPropertyValueSet* properties,
-                            const CustomEnvBindings* env_bindings,
-                            MatchedProperties::Data types);
+  void AddMatchedProperties(
+      const CSSPropertyValueSet* properties,
+      const MixinParameterBindings* mixin_parameter_bindings,
+      MatchedProperties::Data types);
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void BeginAddingAuthorRulesForTreeScope(const TreeScope&);

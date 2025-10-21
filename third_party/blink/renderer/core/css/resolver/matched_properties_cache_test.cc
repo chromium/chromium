@@ -32,7 +32,7 @@ class MatchedPropertiesCacheTestKey {
                                 const TreeScope& tree_scope) {
     auto* set = css_test_helpers::ParseDeclarationBlock(block_text);
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
-    result_.AddMatchedProperties(set, /*env_bindings=*/nullptr,
+    result_.AddMatchedProperties(set, /*mixin_parameter_bindings=*/nullptr,
                                  {.origin = CascadeOrigin::kAuthor});
     return result_;
   }
