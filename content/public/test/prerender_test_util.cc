@@ -116,16 +116,14 @@ std::string BuildScriptElementSpeculationRules(
                                                {ss.str()}, nullptr);
 }
 
-// TODO(crbug.com/428500219): Move these patterns to preloading_test_util.cc,
-// and merge them to BuildScriptElementSpeculationRules.
+// TODO(crbug.com/428500219): Move these patterns to preloading_test_util.cc.
 constexpr char kAddSpeculationRulePrerenderUntilScriptScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
     script.text = `{
       "prerender_until_script": [{
         "source": "list",
-        "urls": [$1],
-        "eagerness": $2
+        "urls": [$1]
       }]
     }`;
     document.head.appendChild(script);
@@ -684,12 +682,10 @@ void PrerenderTestHelper::AddPrerendersAsync(
   }
 }
 
-void PrerenderTestHelper::AddPrerenderUntilScriptAsync(
-    const GURL& url,
-    blink::mojom::SpeculationEagerness eagerness) {
+void PrerenderTestHelper::AddPrerenderUntilScriptAsync(const GURL& url) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  std::string script = JsReplace(kAddSpeculationRulePrerenderUntilScriptScript,
-                                 url, ConvertEagernessToString(eagerness));
+  std::string script =
+      JsReplace(kAddSpeculationRulePrerenderUntilScriptScript, url);
 
   // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
   // because some test pages have ContentSecurityPolicy and EvalJs cannot work

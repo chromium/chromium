@@ -49,17 +49,13 @@ void OnPrefetchDestroyed(WeakDocumentPtr document, const GURL& url) {
   }
 }
 
-void OnPrerenderCanceled(WeakDocumentPtr document,
-                         const GURL& url,
-                         blink::mojom::SpeculationAction action) {
+void OnPrerenderCanceled(WeakDocumentPtr document, const GURL& url) {
   PreloadingDecider* preloading_decider =
       PreloadingDecider::GetForCurrentDocument(
           document.AsRenderFrameHostIfValid());
-  // TODO(https://crbug.com/428500219): After allowing prerender-until-script to
-  // be upgraded to prerender, rewrite this logic. For now only one of them can
-  // be triggered so it should be safe.
   if (preloading_decider) {
-    preloading_decider->OnPreloadDiscarded({url, action});
+    preloading_decider->OnPreloadDiscarded(
+        {url, blink::mojom::SpeculationAction::kPrerender});
   }
 }
 
@@ -362,23 +358,8 @@ void PreloadingDecider::MaybeEnactCandidate(
     PreloadingConfidence confidence,
     bool fallback_to_preconnect,
     EagernessSet eagerness_to_exclude) {
-  if (const auto [found, added_prediction] = MaybePrerenderForAction(
-          url, blink::mojom::SpeculationAction::kPrerender, enacting_predictor,
-          confidence, eagerness_to_exclude);
-      found) {
-    // If the prediction is associated with another WebContents, don't duplicate
-    // it here.
-    if (!added_prediction) {
-      AddPreloadingPrediction(url, enacting_predictor, confidence);
-    }
-    // Here it does not trigger prerender-until-script for the same URL. It is
-    // intended because only the most aggressive attempt matters.
-    return;
-  }
-
-  if (const auto [found, added_prediction] = MaybePrerenderForAction(
-          url, blink::mojom::SpeculationAction::kPrerenderUntilScript,
-          enacting_predictor, confidence, eagerness_to_exclude);
+  if (const auto [found, added_prediction] = MaybePrerender(
+          url, enacting_predictor, confidence, eagerness_to_exclude);
       found) {
     // If the prediction is associated with another WebContents, don't duplicate
     // it here.
@@ -766,14 +747,13 @@ bool PreloadingDecider::ShouldWaitForPrefetchResult(const GURL& url) {
   return !prefetcher_.IsPrefetchAttemptFailedOrDiscarded(url);
 }
 
-std::pair<bool, bool> PreloadingDecider::MaybePrerenderForAction(
+std::pair<bool, bool> PreloadingDecider::MaybePrerender(
     const GURL& url,
-    blink::mojom::SpeculationAction action,
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence,
     EagernessSet eagerness_to_exclude) {
   std::pair<bool, bool> result{false, false};
-  SpeculationCandidateKey key{url, action};
+  SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrerender};
   std::vector<std::optional<std::string>> merged_tags =
       GetMergedSpeculationTagsFromSuitableCandidates(
           key, enacting_predictor, confidence, eagerness_to_exclude);
@@ -805,15 +785,8 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerenderForAction(
 }
 
 bool PreloadingDecider::ShouldWaitForPrerenderResult(const GURL& url) {
-  auto it = std::find_if(
-      processed_candidates_.begin(), processed_candidates_.end(),
-      [&](const auto& processed_candidate) {
-        const SpeculationCandidateKey& key = processed_candidate.first;
-        return key.first == url &&
-               (key.second == blink::mojom::SpeculationAction::kPrerender ||
-                key.second ==
-                    blink::mojom::SpeculationAction::kPrerenderUntilScript);
-      });
+  auto it = processed_candidates_.find(
+      {url, blink::mojom::SpeculationAction::kPrerender});
   if (it == processed_candidates_.end()) {
     return false;
   }

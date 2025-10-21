@@ -210,10 +210,7 @@ class PrerenderTestHelper {
       const std::string& target_hint,
       std::optional<std::string> ruleset_tag = std::nullopt,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
-  void AddPrerenderUntilScriptAsync(
-      const GURL& url,
-      blink::mojom::SpeculationEagerness eagerness =
-          blink::mojom::SpeculationEagerness::kImmediate);
+  void AddPrerenderUntilScriptAsync(const GURL& url);
 
   void AddPrefetchAsync(const GURL& prefetch_url);
 
