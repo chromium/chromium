@@ -836,8 +836,6 @@ static_library("browser") {
     "ntp_tiles/chrome_most_visited_sites_factory.h",
     "ntp_tiles/chrome_popular_sites_factory.cc",
     "ntp_tiles/chrome_popular_sites_factory.h",
-    "offline_items_collection/offline_content_aggregator_factory.cc",
-    "offline_items_collection/offline_content_aggregator_factory.h",
     "omnibox/contextual_session_service_factory.cc",
     "omnibox/contextual_session_service_factory.h",
     "omnibox/contextual_session_web_contents_helper.cc",
@@ -1788,7 +1786,6 @@ static_library("browser") {
     # headers are componentized:
     # - c/b/download/download_request_limiter.h
     # - c/b/download/background_download_service_factory.h
-    # - c/b/offline_items_collection/offline_content_aggregator_factory.h
     "//chrome/browser/background_fetch:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
@@ -1800,11 +1797,6 @@ static_library("browser") {
     # headers get componentized:
     # - c/b/chrome_content_browser_client.h
     "//chrome/browser/btm:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
-    # headers get componentized:
-    # - c/b/offline_items_collection/offline_content_aggregator_factory.h
-    "//chrome/browser/content_index:impl",
   ]
 
   public_deps = [
@@ -1931,6 +1923,7 @@ static_library("browser") {
     "//chrome/browser/notifications",
     "//chrome/browser/notifications/scheduler:factory",
     "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/offline_items_collection",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:impl",
@@ -2275,7 +2268,6 @@ static_library("browser") {
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/ntp_tiles",
-    "//components/offline_items_collection/core",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core",
     "//components/offline_pages/core/background:background_offliner",
@@ -3645,6 +3637,11 @@ static_library("browser") {
       # headers get componentized:
       # - c/b/android/tab_android.h
       "//chrome/browser/complex_tasks:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependencies when the following
+      # headers get componentized:
+      # - c/b/android/service_tab_launcher.h
+      "//chrome/browser/content_index:impl",
     ]
 
     if (safe_browsing_mode == 2) {

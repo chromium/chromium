@@ -29,6 +29,7 @@ source_set("impl") {
     ":content_index",
     "//chrome/browser/engagement",
     "//chrome/browser/metrics",
+    "//chrome/browser/offline_items_collection",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",

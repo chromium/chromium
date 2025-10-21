@@ -8752,6 +8752,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/offline_items_collection",
       "//chrome/browser/shortcuts:unit_tests",
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:unit_tests",
