@@ -684,6 +684,8 @@ DataTypeSet EncryptableUserTypes() {
   // originate from outside Chrome.
   encryptable_user_types.Remove(PLUS_ADDRESS);
   encryptable_user_types.Remove(PLUS_ADDRESS_SETTING);
+  // Valuable metadata is accessed on the server.
+  encryptable_user_types.Remove(AUTOFILL_VALUABLE_METADATA);
 
   return encryptable_user_types;
 }
