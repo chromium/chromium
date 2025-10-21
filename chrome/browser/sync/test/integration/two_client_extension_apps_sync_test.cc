@@ -70,6 +70,9 @@ class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
   ~TwoClientExtensionAppsSyncTest() override = default;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Chrome Apps are fully deprecated on all platforms except ChromeOS.
+
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(StartWithNoApps)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
@@ -446,6 +449,58 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                    ->enabled_extensions()
                    .Contains(kHostedAppId0));
 }
+
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
+                       E2E_ENABLED(UninstallOnWML)) {
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
+  ASSERT_TRUE(SetupClients());
+
+  auto appid1 = InstallHostedApp(GetProfile(0), 0);
+  auto appid2 = InstallHostedApp(GetProfile(1), 0);
+  EXPECT_EQ(appid1, appid2);
+
+  int i = 1;
+
+  const int kNumCommonApps = 4;
+  for (int j = 0; j < kNumCommonApps; ++i, ++j) {
+    InstallHostedApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(1), i);
+  }
+
+  ASSERT_TRUE(SetupSync());
+  const int kNumProfile0Apps = 10;
+  for (int j = 0; j < kNumProfile0Apps; ++i, ++j) {
+    InstallHostedApp(GetProfile(0), i);
+  }
+
+  const int kNumProfile1Apps = 10;
+  for (int j = 0; j < kNumProfile1Apps; ++i, ++j) {
+    InstallHostedApp(GetProfile(1), i);
+  }
+
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // Chrome App installs via sync are disabled on WML.
+  ASSERT_FALSE(apps_helper::HasSameApps(GetProfile(0), GetProfile(1)));
+
+  ASSERT_TRUE(
+      GetExtensionRegistry(GetProfile(0))->GetInstalledExtension(appid1));
+  ASSERT_TRUE(
+      GetExtensionRegistry(GetProfile(1))->GetInstalledExtension(appid2));
+
+  UninstallApp(GetProfile(0), 0);
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // Uninstalls are still sync-ed and applied on WML devices.
+  ASSERT_FALSE(
+      GetExtensionRegistry(GetProfile(0))->GetInstalledExtension(appid1));
+  ASSERT_FALSE(
+      GetExtensionRegistry(GetProfile(1))->GetInstalledExtension(appid1));
+}
+
+#endif
 
 // TODO(akalin): Add tests exercising:
 //   - Offline installation/uninstallation behavior

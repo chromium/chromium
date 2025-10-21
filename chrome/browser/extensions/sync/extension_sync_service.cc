@@ -566,6 +566,7 @@ void ExtensionSyncService::ApplySyncData(
       id, profile_, extension_sync_data.incognito_enabled());
   extension = nullptr;  // No longer safe to use.
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Set app-specific data.
   if (extension_sync_data.is_app()) {
     // The corresponding validation of this value during ExtensionSyncData
@@ -584,12 +585,21 @@ void ExtensionSyncService::ApplySyncData(
       app_sorting->SetPageOrdinal(id, extension_sync_data.page_ordinal());
     }
   }
+#endif
 
   // Notify the AccountExtensionTracker of an incoming extension via sync.
   if (!extension_sync_data.is_app() && state != NOT_INSTALLED) {
     DCHECK(ShouldPromoteToAccountExtension(extension_sync_data));
     AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataReceived(id);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Chrome Apps are deprecated on WML, so we do not want to sync new apps
+  // installed on other devices.
+  if (extension_sync_data.is_app()) {
+    return;
+  }
+#endif
 
   // Finally, trigger installation/update as required.
   bool check_for_updates = false;
