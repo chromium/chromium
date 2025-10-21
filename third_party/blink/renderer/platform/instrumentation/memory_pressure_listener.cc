@@ -12,7 +12,6 @@
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -105,7 +104,6 @@ void MemoryPressureListenerRegistry::OnPurgeMemory() {
   CHECK(IsMainThread());
   for (auto& client : clients_)
     client->OnPurgeMemory();
-  ImageDecodingStore::Instance().Clear();
   ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 
