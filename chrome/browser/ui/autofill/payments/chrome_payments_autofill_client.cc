@@ -1030,6 +1030,15 @@ void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
 #endif
 }
 
+void ChromePaymentsAutofillClient::SetTouchToFillVisible(bool visible) {
+#if BUILDFLAG(IS_ANDROID)
+  GetTouchToFillPaymentMethodController()->SetVisible(visible);
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
 PaymentsDataManager& ChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }

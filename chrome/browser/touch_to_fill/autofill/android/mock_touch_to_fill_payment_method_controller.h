@@ -118,6 +118,7 @@ class MockTouchToFillPaymentMethodController
               (override));
 
   MOCK_METHOD(void, Hide, (), (override));
+  MOCK_METHOD(void, SetVisible, (bool visible), (override));
 };
 
 }  // namespace autofill

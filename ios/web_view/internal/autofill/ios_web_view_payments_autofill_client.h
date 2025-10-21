@@ -170,6 +170,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(const AutofillErrorDialogContext& context) override;
   void HideTouchToFillPaymentMethod() override;
+  void SetTouchToFillVisible(bool visible) override;
   PaymentsDataManager& GetPaymentsDataManager() final;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;

@@ -341,6 +341,8 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillError(
 
 void IOSWebViewPaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+void IOSWebViewPaymentsAutofillClient::SetTouchToFillVisible(bool visible) {}
+
 PaymentsDataManager&
 IOSWebViewPaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();

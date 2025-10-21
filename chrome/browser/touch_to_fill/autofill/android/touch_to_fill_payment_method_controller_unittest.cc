@@ -113,6 +113,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               (const TouchToFillPaymentMethodViewController& controller,
                const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
   MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, SetVisible, (bool visible));
 };
 
 class MockTouchToFillDelegateAndroidImpl
@@ -676,6 +677,28 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
   payment_method_controller().OnBnplIssuerSuggestionSelected(
       nullptr, /*issuer_id=*/"affirm");
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest, SetVisibleHidesSheet) {
+  EXPECT_CALL(*mock_view_, SetVisible(false));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+
+  payment_method_controller().SetVisible(false);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest, SetVisibleShowsSheet) {
+  EXPECT_CALL(*mock_view_, SetVisible(true));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+
+  payment_method_controller().SetVisible(true);
 }
 
 }  // namespace

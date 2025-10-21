@@ -393,6 +393,8 @@ bool TestPaymentsAutofillClient::ShowTouchToFillError(
 
 void TestPaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+void TestPaymentsAutofillClient::SetTouchToFillVisible(bool visible) {}
+
 PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }

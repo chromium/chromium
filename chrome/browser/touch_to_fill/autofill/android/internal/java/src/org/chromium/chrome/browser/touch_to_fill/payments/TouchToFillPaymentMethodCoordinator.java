@@ -148,6 +148,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
         mMediator.hideSheet();
     }
 
+    @Override
+    public void setVisible(boolean visible) {
+        mMediator.setVisible(visible);
+    }
+
     /**
      * Connects the given model with the given view using Model Change Processors.
      *

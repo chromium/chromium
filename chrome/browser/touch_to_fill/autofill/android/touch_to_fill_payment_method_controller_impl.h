@@ -77,6 +77,7 @@ class TouchToFillPaymentMethodControllerImpl
   bool ShowBnplIssuerTos(
       const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) override;
   void Hide() override;
+  void SetVisible(bool visible) override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

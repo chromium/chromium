@@ -846,6 +846,18 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testSetVisibleHidesAndShowsProgressScreen() {
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        mCoordinator.setVisible(false);
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(false));
+
+        mCoordinator.setVisible(true);
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+    }
+
+    @Test
     public void testBnplSelectionProgressHeaderBackButtonReshowsHomeScreen() {
         // Show the credit card list first to populate the mediator's suggestions.
         mCoordinator.showPaymentMethods(

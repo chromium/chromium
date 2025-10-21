@@ -557,6 +557,8 @@ bool IOSChromePaymentsAutofillClient::ShowTouchToFillError(
 
 void IOSChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+void IOSChromePaymentsAutofillClient::SetTouchToFillVisible(bool visible) {}
+
 PaymentsDataManager& IOSChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }

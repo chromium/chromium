@@ -666,6 +666,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // platform.
   virtual void HideTouchToFillPaymentMethod() = 0;
 
+  // Sets the Touch To Fill surface visibility to `visible`. Should be called
+  // only if the feature is supported by the platform.
+  virtual void SetTouchToFillVisible(bool visible) = 0;
+
   // Return the `PaymentsDataManager` which is payments-specific version of
   // PersonalDataManager. It has two main responsibilities:
   // - Caching the payments related data stored in `AutofillTable` for

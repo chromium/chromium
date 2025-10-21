@@ -696,6 +696,10 @@ class TouchToFillPaymentMethodMediator {
         onDismissed(BottomSheetController.StateChangeReason.NONE);
     }
 
+    void setVisible(boolean visible) {
+        mModel.set(VISIBLE, visible);
+    }
+
     public void onDismissed(@StateChangeReason int reason) {
         // TODO(b/332193789): Add IBAN-related metrics.
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.

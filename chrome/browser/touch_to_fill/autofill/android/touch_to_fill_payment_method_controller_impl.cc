@@ -230,6 +230,12 @@ void TouchToFillPaymentMethodControllerImpl::Hide() {
   }
 }
 
+void TouchToFillPaymentMethodControllerImpl::SetVisible(bool visible) {
+  if (view_) {
+    view_->SetVisible(visible);
+  }
+}
+
 void TouchToFillPaymentMethodControllerImpl::WebContentsDestroyed() {
   Hide();
 }

@@ -116,6 +116,9 @@ class TouchToFillPaymentMethodController
 
   // Hides the surface if it is currently shown.
   virtual void Hide() = 0;
+
+  // Sets the surface visibility to `visible`.
+  virtual void SetVisible(bool visible) = 0;
 };
 
 }  // namespace autofill

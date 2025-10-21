@@ -184,4 +184,11 @@ interface TouchToFillPaymentMethodComponent {
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();
+
+    /**
+     * Sets the bottom sheet visibility.
+     *
+     * @param visible The value to set the bottom sheet visibility to.
+     */
+    void setVisible(boolean visible);
 }

@@ -52,6 +52,7 @@ class TouchToFillPaymentMethodView {
       const TouchToFillPaymentMethodViewController& controller,
       const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) = 0;
   virtual void Hide() = 0;
+  virtual void SetVisible(bool visible) = 0;
 };
 
 }  // namespace autofill

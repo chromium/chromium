@@ -140,6 +140,11 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
+    private void setVisible(boolean visible) {
+        mComponent.setVisible(visible);
+    }
+
+    @CalledByNative
     private static AutofillSuggestion createAutofillSuggestion(
             @JniType("std::u16string") String label,
             @JniType("std::u16string") String secondaryLabel,

@@ -347,4 +347,11 @@ void TouchToFillPaymentMethodViewImpl::Hide() {
   }
 }
 
+void TouchToFillPaymentMethodViewImpl::SetVisible(bool visible) {
+  if (java_object_) {
+    Java_TouchToFillPaymentMethodViewBridge_setVisible(
+        base::android::AttachCurrentThread(), java_object_, visible);
+  }
+}
+
 }  // namespace autofill

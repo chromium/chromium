@@ -66,6 +66,7 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
       const TouchToFillPaymentMethodViewController& controller,
       const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) override;
   void Hide() override;
+  void SetVisible(bool visible) override;
 
   // The corresponding Java TouchToFillPaymentMethodViewBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
