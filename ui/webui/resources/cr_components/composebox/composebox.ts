@@ -221,12 +221,12 @@ export class ComposeboxElement extends I18nMixinLit
     ];
 
     this.eventTracker_.add(this.$.input, 'input', () => {
-      this.submitEnabled_ = this.input_.trim().length > 0;
+      this.submitEnabled_ = this.computeSubmitEnabled_();
     });
     this.eventTracker_.add(this.$.context, 'on-context-files-changed',
         (e: CustomEvent<{files: number}>) => {
           this.contextFilesSize_ = e.detail.files;
-          this.submitEnabled_ = this.contextFilesSize_ > 0;
+          this.submitEnabled_ = this.computeSubmitEnabled_();
         });
     this.$.input.focus();
     // For realbox next, the zps autocomplete query is triggered after
@@ -305,6 +305,10 @@ export class ComposeboxElement extends I18nMixinLit
         // If there was already text in the input do not clear it.
         this.input_ = '';
         this.submitEnabled_ = false;
+      } else {
+        // For typed queries reset the input back to typed value when
+        // focus leaves the match.
+        this.input_ = this.lastQueriedInput_;
       }
     }
     if (changedPrivateProperties.has('smartComposeInlineHint_')) {
@@ -394,6 +398,10 @@ export class ComposeboxElement extends I18nMixinLit
     // the selected match. If typed suggest is not enabled and input_ is used,
     // the dropdown will hide if the user keys down over zps matches.
     return this.showZps && !this.lastQueriedInput_;
+  }
+
+  private computeSubmitEnabled_() {
+    return this.input_.trim().length > 0 || this.contextFilesSize_ > 0;
   }
 
   protected shouldShowSuggestionActivityLink_() {
@@ -646,7 +654,12 @@ export class ComposeboxElement extends I18nMixinLit
     } else if (e.key === 'Tab') {
       // If focus goes past the last match, unselect the last match.
       if (this.selectedMatchIndex_ === this.result_.matches.length - 1) {
-        this.$.matches.unselect();
+        const focusedMatchElem =
+            this.shadowRoot.activeElement?.shadowRoot?.activeElement;
+        const focusedButtonElem = focusedMatchElem?.shadowRoot?.activeElement;
+        if (focusedButtonElem?.id === 'remove') {
+          this.$.matches.unselect();
+        }
       }
       return;
     }
