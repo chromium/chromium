@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
@@ -325,6 +327,13 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   if (glic_side_panel_coordinator && glic_side_panel_coordinator->IsShowing()) {
     recorder->set_nudge_decision(
         NudgeDecision::kNudgeNotShownSidePanelForTabShowing);
+    return true;
+  }
+
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+  if (actor_service && actor_service->IsActiveOnTab(*tab_interface)) {
+    recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownActorActiveOnTab);
     return true;
   }
 

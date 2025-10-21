@@ -59,7 +59,10 @@ source_set("impl") {
     "//url",
   ]
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/glic",
+    ]
   }
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]

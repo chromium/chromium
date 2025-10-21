@@ -91,6 +91,12 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but the user already has the feature
     side panel open in the tab.
   </int>
+  <int value="15"
+      label="The nudge was not shown as the browser actor was active on the
+             tab">
+    The page was eligible for the nudge, but the browser actor is currently
+    active on the tab.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->
