@@ -89,6 +89,9 @@
             (FakeSystemIdentity*)identity
                                        assertVisible:(BOOL)assertVisible;
 
+// Opens settings > identity > account menu.
++ (void)openAccountsListFromSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_TEST_SIGNIN_EARL_GREY_UI_TEST_UTIL_H_

@@ -410,4 +410,24 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   }
 }
 
++ (void)openAccountsListFromSettings {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap "Manage accounts on this device" to get to the accounts view.
+  // First scroll down so that the button is visible.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Now tap the "Manage accounts on this device" button.
+  id<GREYMatcher> manageAccountsButtonMatcher =
+      grey_allOf(grey_text(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM)),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:manageAccountsButtonMatcher]
+      performAction:grey_tap()];
+}
+
 @end
