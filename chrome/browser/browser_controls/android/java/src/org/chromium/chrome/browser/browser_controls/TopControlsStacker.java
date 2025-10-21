@@ -131,6 +131,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private int mTotalHeight;
     private int mMinHeight;
     private @Nullable BrowserControlsOffsetTagsInfo mTopControlsOffsetTagInfo;
+    private boolean mIsMinHeightShrinking;
 
     /**
      * Constructs the top controls stacker, which is used to calculate heights and offsets for any
@@ -217,11 +218,15 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         recalculateLayerRestingOffsets();
         updateTopControlsHeight(animate);
 
-        repositionLayers(
-                mBrowserControlsSizer.getTopControlOffset(),
-                mBrowserControlsSizer.getTopControlsMinHeightOffset(),
-                animate,
-                isBrowserControlsVisibilityForced());
+        // When reposition happening when browser controls is overriding offsets, we need to
+        // reposition immediately.
+        if (mBrowserControlsSizer.offsetOverridden()) {
+            repositionLayers(
+                    mBrowserControlsSizer.getTopControlOffset(),
+                    mBrowserControlsSizer.getTopControlsMinHeightOffset(),
+                    animate,
+                    isBrowserControlsVisibilityForced());
+        }
 
         // Add more implementations here when necessary (e.g. offset calculation)
     }
@@ -264,7 +269,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
             totalHeight += layer.getTopControlHeight();
 
-            boolean hasMinHeight = shouldLayerScrollOff(layer);
+            boolean hasMinHeight = doesLayerHasMinHeight(layer);
             if (hasMinHeight) {
                 minHeight += layer.getTopControlHeight();
 
@@ -307,12 +312,14 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private void repositionLayers(
             int initialTopOffset,
             int initialTopControlsMinHeightOffset,
-            boolean animated,
+            boolean requestNewFrame,
             boolean offsetsAppliedByBrowser) {
         if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()
                 || !ChromeFeatureList.sTopControlsRefactorV2.isEnabled()) return;
 
-        // 1. Calculate the offset based on the current layer position.
+        // 1. Calculate the offset based on the current layer position. In this step, the controls
+        // are classified into scrollable and non-scrollable layer, and all the layers are display
+        // at its full height.
         SparseIntArray yOffsetOfLayers = new SparseIntArray();
         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !offsetsAppliedByBrowser) {
             // If offset can be handled by render, put layers at their resting positions.
@@ -329,13 +336,114 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                     yOffsetOfLayers, initialTopOffset, initialTopControlsMinHeightOffset);
         }
 
-        // 2. Animation. Adjust yOffsets based on layer's animation status.
-        if (animated && initialTopOffset != 0) {
-            // TODO: Add animation logic
-            Log.v(TAG, "Animation logic not supported yet.");
+        // 2. Adjustments. The previous step assumes all the layers are display in full height at
+        // resting state. When animating size changes, one or more layer(s) could be in its
+        // showing / hiding phase, and the other layers needs to shift accordingly.
+        //
+        // Compare and fix the yOffset with the previous mLayerOffsets if reposition
+        // is caused by an animated browser controls height adjustment. This needs to run in a
+        // different loop to cooperate browser controls height reduction, as we need to still push
+        // updates to layer that's changed from visible -> hidden.
+        boolean hasAnimatingLayer = false;
+        for (@TopControlType int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+            if (layer == null) continue;
+            hasAnimatingLayer =
+                    layer.getTopControlVisibility() != TopControlVisibility.VISIBLE
+                            && layer.getTopControlVisibility() != TopControlVisibility.HIDDEN;
+            if (hasAnimatingLayer) {
+                break;
+            }
         }
 
-        // 3. Dispatch yOffset to layers after cleanup.
+        // The algorithm adjust layer's offset based on whether the control is showing or hiding.
+        if (requestNewFrame && initialTopOffset != 0 && hasAnimatingLayer) {
+            // When animated size change, the browser controls will try to ensure it snaps to its
+            // resting position. We'll use the minHeight as comparison first, then compare the
+            // topOffset.
+            boolean isShrinking;
+
+            if (initialTopControlsMinHeightOffset != mMinHeight) {
+                isShrinking = initialTopControlsMinHeightOffset > mMinHeight;
+                mIsMinHeightShrinking = isShrinking;
+            } else {
+                // At the last frame of minHeight shrinking (initialTopControlsMinHeightOffset ==
+                // mMinHeight) while browser controls is scrolled off (thus initialTopOffset < 0),
+                // we need to manually correct the |isShrinking| so the layer adjustment below
+                // is towards the correct direction. We keep this as mIsMinHeightShrinking so it
+                // remembers the minHeight movement direction from the previous frame.
+                isShrinking = mIsMinHeightShrinking || (initialTopOffset > 0);
+                mIsMinHeightShrinking = false;
+            }
+
+            // adjustedYOffset represents the the expected start for the current layer. The default
+            // is 0 so if the first layer is hiding, it can be used as a fallback value.
+            int adjustedYOffset = 0;
+            for (@TopControlType int type : STACK_ORDER) {
+                TopControlLayer layer = mControls.get(type);
+                if (isLayerHidden(layer)) continue;
+
+                if (layer.getTopControlVisibility() == TopControlVisibility.HIDING_BOTTOM_ANCHOR) {
+                    // If the current layer is hiding in progress with bottom anchor, it will be
+                    // disconnected with the top layer's bottom. As on initialTopOffset approach
+                    // to 0, it will trend towards the layer's full height.
+                    // NOTE: This does not support adjustment for more than one layer.
+                    int accumulatedMovements = 0;
+                    if (doesLayerHasMinHeight(layer)) {
+                        accumulatedMovements =
+                                Math.max(
+                                        0,
+                                        layer.getTopControlHeight()
+                                                - initialTopControlsMinHeightOffset);
+                    } else {
+                        accumulatedMovements =
+                                Math.max(0, layer.getTopControlHeight() - initialTopOffset);
+                    }
+                    adjustedYOffset = adjustedYOffset - accumulatedMovements;
+                } else if (layer.getTopControlVisibility()
+                        == TopControlVisibility.SHOWING_TOP_ANCHOR) {
+                    // When the layer is top-anchored, we adjust its position to resting offset
+                    // as soon as it is ready to be shown.
+                    int restingOffsets = mLayerRestingOffsets.get(type);
+                    if (adjustedYOffset < restingOffsets
+                            && adjustedYOffset + layer.getTopControlHeight() >= restingOffsets) {
+                        adjustedYOffset = restingOffsets;
+                    }
+                } else {
+                    adjustedYOffset = yOffsetOfLayers.get(type, adjustedYOffset);
+                }
+
+                // If layer does not have a previousYOffset, meaning this is the first time
+                // it is getting repositioned. When the layer is showing bottom anchor, we need to
+                // adjust the layer up so its bottom it's connect to the next layer.
+                int previousYOffset;
+                if (layer.getTopControlVisibility() == TopControlVisibility.SHOWING_BOTTOM_ANCHOR) {
+                    previousYOffset = adjustedYOffset - layer.getTopControlHeight();
+                } else {
+                    previousYOffset = mLayerYOffset.get(type, adjustedYOffset);
+                }
+
+                if (isShrinking) {
+                    // When layers are shrinking, none of the layers should move downwards.
+                    // (e.g. yOffset should decrease)
+                    adjustedYOffset = Math.min(adjustedYOffset, previousYOffset);
+                } else {
+                    // When browser controls growing, none of the layers should move upwards.
+                    // (e.g. yOffset should increase)
+                    adjustedYOffset = Math.max(adjustedYOffset, previousYOffset);
+                }
+                yOffsetOfLayers.put(type, adjustedYOffset);
+
+                // Increase the layerYOffset, so it represents the bottom of the current layer
+                // as well as the expect starting point for the next layer.
+                adjustedYOffset += layer.getTopControlHeight();
+            }
+        }
+
+        // 3. Dispatch yOffset to layers after cleanup, also tells layer to clean up its state
+        //   when they are at resting.
+        boolean controlsAtResting =
+                initialTopOffset == 0 || initialTopOffset == mMinHeight - mTotalHeight;
         for (int type : STACK_ORDER) {
             TopControlLayer layer = mControls.get(type);
             if (layer == null) continue;
@@ -344,12 +452,11 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             int yOffset = yOffsetOfLayers.get(type, -layer.getTopControlHeight());
             if (layer.getTopControlVisibility() == TopControlVisibility.HIDDEN) {
                 mLayerYOffset.delete(type);
-                yOffset = -layer.getTopControlHeight();
             } else {
                 mLayerYOffset.put(type, yOffset);
             }
 
-            layer.onBrowserControlsOffsetUpdate(yOffset);
+            layer.onBrowserControlsOffsetUpdate(yOffset, controlsAtResting);
         }
     }
 
@@ -376,7 +483,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             // stack order.
             if (isLayerHiding(layer)) continue;
 
-            boolean hasMinHeight = shouldLayerScrollOff(layer);
+            boolean hasMinHeight = doesLayerHasMinHeight(layer);
             int layerHeight = layer.contributesToTotalHeight() ? layer.getTopControlHeight() : 0;
 
             validationHeight += layerHeight;
@@ -406,7 +513,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         logIfHeightMismatch(mTotalHeight, mMinHeight, validationHeight, validationMinHeight);
     }
 
-    private boolean shouldLayerScrollOff(TopControlLayer layer) {
+    private boolean doesLayerHasMinHeight(TopControlLayer layer) {
         if (layer.getScrollBehavior() == ScrollBehavior.NEVER_SCROLLABLE) {
             return true;
         }

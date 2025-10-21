@@ -117,6 +117,8 @@ public interface TopControlLayer {
      * </pre>
      *
      * @param layerYOffset The offset for the layer in the top controls.
+     * @param reachRestingPosition Whether the layer is at its resting position, either fully shown
+     *     or hidden. This is used when layer is showing / hiding, so it can change its visibility.
      */
-    default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
+    default void onBrowserControlsOffsetUpdate(int layerYOffset, boolean reachRestingPosition) {}
 }
