@@ -2891,7 +2891,7 @@ Ist der Wert auf „<ph name="ENABLED_ENUM_VALUE" />“ gesetzt, werden Entität
 Wenn der Wert auf „<ph name="DISABLED_ENUM_VALUE" />“ gesetzt ist, werden Entitäten nicht erkannt und es können keine Aktionen dafür ausgeführt werden.
 Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden Entitäten erkannt und es können nur durch langes Drücken Aktionen dafür ausgeführt werden.</translation>
 <translation id="3010907817113180883">Häufigkeit der Erhebung des Geräteaktivität-Heartbeats in Millisekunden.</translation>
-<translation id="3015732569734756809">Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfbewegungen steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
+<translation id="3015732569734756809">Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfgesten steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
 
 Wenn diese Richtlinie auf „true“ gesetzt ist, ist die Mimik-Steuerung auf dem Anmeldebildschirm immer aktiviert.
 
@@ -10692,7 +10692,7 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
 <translation id="8319678975002906774">Mit dieser Richtlinie legst du für bestimmte Ursprünge die Werte für die verwaltete Konfiguration fest</translation>
 <translation id="8320149248919453401">Akkulademodus</translation>
 <translation id="8320576119308783142">Bildschirmtastatur in passenden Situationen anzeigen.</translation>
-<translation id="8321089199245028304">Mit dieser Richtlinie wird die Bedienungshilfe „Mimik-Steuerung“ aktiviert. Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfbewegungen steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
+<translation id="8321089199245028304">Mit dieser Richtlinie wird die Bedienungshilfe „Mimik-Steuerung“ aktiviert. Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfgesten steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
 
 Wenn diese Richtlinie aktiviert ist, ist die Mimik-Steuerung immer aktiviert.
 
