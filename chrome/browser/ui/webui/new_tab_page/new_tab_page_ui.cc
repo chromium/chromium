@@ -597,12 +597,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   source->AddBoolean("composeboxShowDeepSearchButton",
-                     aim_eligibility_service &&
-                         aim_eligibility_service->IsDeepSearchEligible() &&
-                         ntp_composebox::kShowToolsAndModels.Get());
+                     ntp_composebox::IsDeepSearchEnabled(profile));
   source->AddBoolean("composeboxShowCreateImageButton",
-                     ntp_composebox::kShowToolsAndModels.Get() &&
-                         ntp_composebox::kShowCreateImageTool.Get());
+                     ntp_composebox::IsCreateImagesEnabled(profile));
 
   bool show_pdf_upload = aim_eligibility_service &&
                          aim_eligibility_service->IsPdfUploadEligible() &&

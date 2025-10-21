@@ -1641,12 +1641,14 @@ const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
     {"ShowComposeboxZps", "true"},
+    {"ForceToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"},
     {"ShowComposeboxZps", "true"},
+    {"ForceToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"MaxNumFiles", "5"},
@@ -1655,6 +1657,7 @@ const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowComposeboxZps", "true"},
     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"},
+    {"ForceToolsAndModels", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
