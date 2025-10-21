@@ -780,7 +780,7 @@ void GlicMetrics::DidRequestContextFromTab(content::WebContents& web_contents) {
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-void GlicMetrics::SetStartingMode(mojom::WebClientMode mode) {
+void GlicMetrics::SetWebClientMode(mojom::WebClientMode mode) {
   input_mode_ = mode;
 }
 

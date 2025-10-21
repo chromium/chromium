@@ -323,6 +323,7 @@ chromium-metrics-reviews@google.com.
   <int value="67" label="OnContextUploadCompleted"/>
   <int value="68" label="OnContextUploadStarted"/>
   <int value="69" label="SetActuationOnWebSetting"/>
+  <int value="70" label="OnModeChange"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

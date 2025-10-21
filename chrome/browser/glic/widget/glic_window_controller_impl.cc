@@ -685,7 +685,6 @@ void GlicWindowControllerImpl::MaybeResetPanelPostionOnShow(
 void GlicWindowControllerImpl::ClientReadyToShow(
     const mojom::OpenPanelInfo& open_info) {
   DVLOG(1) << "Glic client ready to show " << open_info.web_client_mode;
-  glic_service_->metrics()->SetStartingMode(open_info.web_client_mode);
   glic_service_->metrics()->OnGlicWindowOpenAndReady();
   if (open_info.panelSize.has_value()) {
     Resize(*open_info.panelSize, open_info.resizeDuration, base::DoNothing());

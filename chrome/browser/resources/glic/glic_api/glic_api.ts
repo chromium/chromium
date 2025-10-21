@@ -159,6 +159,14 @@ export declare interface GlicBrowserHost {
   getChromeVersion(): Promise<ChromeVersion>;
 
   /**
+   * Notifies the browser that the web client has switched modes. Note that this
+   * call does not change any aspect of the panel itself (e.g. resize-ability).
+   *
+   * @param newMode the mode the web client switched into.
+   */
+  onModeChange?(newMode: WebClientMode): void;
+
+  /**
    * Sets the size of the glic window to the specified dimensions. Resolves when
    * the animation finishes, is interrupted, or immediately if the window
    * doesn't exist yet, in which case the size will be used as the initial size
@@ -199,6 +207,7 @@ export declare interface GlicBrowserHost {
 
   /**
    * Returns the model quality client ID.
+   *
    * IMPORTANT: callers must verify that getHostCapabilities() includes
    * HostCapability.GET_MODEL_QUALITY_CLIENT_ID before calling this API.
    * Checking that it's defined is not sufficient. In older Chromium versions

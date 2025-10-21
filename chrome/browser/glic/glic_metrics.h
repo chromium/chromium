@@ -368,8 +368,9 @@ class GlicMetrics {
   // Must be called when context is requested from a tab.
   void DidRequestContextFromTab(content::WebContents& web_contents);
 
-  // Sets the starting input mode of the web client.
-  void SetStartingMode(mojom::WebClientMode mode);
+  // Sets the input mode of the web client. Should be called when the panel is
+  // opened and in every subsequent mode change.
+  void SetWebClientMode(mojom::WebClientMode mode);
 
   mojom::WebClientModel current_model() const { return current_model_; }
 

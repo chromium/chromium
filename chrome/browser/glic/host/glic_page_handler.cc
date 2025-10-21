@@ -880,6 +880,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
   }
 
+  void OnModeChange(glic::mojom::WebClientMode new_mode) override {
+    glic_service_->metrics()->SetWebClientMode(new_mode);
+  }
+
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
@@ -1348,12 +1352,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPanelWillOpen(
         std::move(panel_opening_data),
         base::BindOnce(
-            [](PanelWillOpenCallback done, glic::mojom::OpenPanelInfoPtr info) {
+            [](PanelWillOpenCallback done, GlicMetrics* metrics,
+               glic::mojom::OpenPanelInfoPtr info) {
               base::UmaHistogramEnumeration("Glic.Api.NotifyPanelWillOpen",
                                             info->web_client_mode);
+              metrics->SetWebClientMode(info->web_client_mode);
               std::move(done).Run(std::move(info));
             },
-            std::move(done)));
+            std::move(done), glic_service_->metrics()));
   }
 
   void PanelWasClosed(base::OnceClosure done) override {

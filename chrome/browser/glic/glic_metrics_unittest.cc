@@ -585,7 +585,7 @@ TEST_F(GlicMetricsTest, LogGetContextForActorFromTabError_UnknownMode) {
 
 TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_ChangingModes) {
   // Simulates the client starting in text mode and later switching to audio.
-  metrics_->SetStartingMode(mojom::WebClientMode::kText);
+  metrics_->SetWebClientMode(mojom::WebClientMode::kText);
   metrics_->LogGetContextFromFocusedTabError(
       GlicGetContextFromTabError::kWebContentsChanged);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
