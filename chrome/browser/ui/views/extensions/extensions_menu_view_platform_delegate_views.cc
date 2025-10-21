@@ -367,25 +367,10 @@ void ExtensionsMenuViewPlatformDelegateViews::OnSiteAccessSelected(
 
 void ExtensionsMenuViewPlatformDelegateViews::OnSiteSettingsToggleButtonPressed(
     bool is_on) {
-  content::WebContents* web_contents = GetActiveWebContents();
-  const url::Origin& origin =
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   PermissionsManager::UserSiteSetting site_setting =
       is_on ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
             : PermissionsManager::UserSiteSetting::kBlockAllExtensions;
-
-  extensions::TabHelper::FromWebContents(web_contents)
-      ->SetReloadRequired(site_setting);
-  PermissionsManager::Get(browser_->profile())
-      ->UpdateUserSiteSetting(origin, site_setting);
-
-  if (is_on) {
-    base::RecordAction(
-        base::UserMetricsAction("Extensions.Menu.AllowByExtensionSelected"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("Extensions.Menu.ExtensionsBlockedSelected"));
-  }
+  menu_model_->UpdateSiteSetting(site_setting);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnExtensionToggleSelected(

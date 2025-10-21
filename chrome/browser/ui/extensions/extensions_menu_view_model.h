@@ -45,6 +45,10 @@ class ExtensionsMenuViewModel
   // Revokes the extension's site access from the current site.
   void RevokeSiteAccess(const extensions::ExtensionId& extension_id);
 
+  // Update the extension's site setting for the current site.
+  void UpdateSiteSetting(
+      extensions::PermissionsManager::UserSiteSetting site_setting);
+
  private:
   content::WebContents* GetActiveWebContents();
 

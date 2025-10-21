@@ -294,3 +294,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
                 *extension, web_contents->GetLastCommittedURL()),
             PermissionsManager::UserSiteAccess::kOnClick);
 }
+
+// Tests that the extensions menu view model correctly updates the site setting
+// for an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, UpdateSiteSetting) {
+  // Add extension that requests host permissions.
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "<all_urls>");
+
+  // Navigate to a site the extension has site access to.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+  auto origin = url::Origin::Create(url);
+
+  // Verify default initial site setting is "customize by extension".
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(origin),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // Update site setting to "block all extensions".
+  menu_model()->UpdateSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(origin),
+            PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+}

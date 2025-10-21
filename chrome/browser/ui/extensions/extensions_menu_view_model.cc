@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
@@ -93,6 +94,22 @@ void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
       break;
     default:
       NOTREACHED() << "Unknown site access";
+  }
+}
+
+void LogSiteSettingsUpdate(PermissionsManager::UserSiteSetting site_setting) {
+  switch (site_setting) {
+    case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.AllowByExtensionSelected"));
+      break;
+    case PermissionsManager::UserSiteSetting::kBlockAllExtensions:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.ExtensionsBlockedSelected"));
+      break;
+    case PermissionsManager::UserSiteSetting::kGrantAllExtensions:
+    default:
+      NOTREACHED() << "Invalid site setting update";
   }
 }
 
@@ -228,6 +245,20 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
   if (action_runner) {
     action_runner->ShowReloadPageBubble({GetExtension(*profile, extension_id)});
   }
+}
+
+void ExtensionsMenuViewModel::UpdateSiteSetting(
+    extensions::PermissionsManager::UserSiteSetting site_setting) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  const url::Origin& origin =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  extensions::TabHelper::FromWebContents(web_contents)
+      ->SetReloadRequired(site_setting);
+  PermissionsManager::Get(browser_->GetProfile())
+      ->UpdateUserSiteSetting(origin, site_setting);
+
+  LogSiteSettingsUpdate(site_setting);
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {
