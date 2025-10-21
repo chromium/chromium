@@ -36,13 +36,6 @@ void LogGpuBlocked(GpuBlockedReason reason) {
 
 DISABLE_CFI_DLSYM
 DeviceInfo QueryDeviceInfoInternal(const ChromeMLAPI& api) {
-  DeviceInfo query_device_info;
-  if (base::FeatureList::IsEnabled(kOnDeviceModelAllowGpuForTesting)) {
-    query_device_info.gpu_blocked_reason = GpuBlockedReason::kNotBlocked;
-    query_device_info.supports_fp16 = true;
-    return query_device_info;
-  }
-
   static crash_reporter::CrashKeyString<256> blocklist_key(
       "ChromeML-blocklist");
   blocklist_key.Set(kGpuBlockList.Get());
@@ -62,6 +55,7 @@ DeviceInfo QueryDeviceInfoInternal(const ChromeMLAPI& api) {
   if (!device) {
     device = &gpu_info.active_gpu();
   }
+  DeviceInfo query_device_info;
   if (device->IsSoftwareRenderer()) {
     query_device_info.gpu_blocked_reason = GpuBlockedReason::kBlocklisted;
     return query_device_info;
@@ -131,6 +125,14 @@ BASE_FEATURE(kOnDeviceModelAllowGpuForTesting,
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 DeviceInfo QueryDeviceInfo(const ChromeMLAPI& api, bool log_histogram) {
+  if (base::FeatureList::IsEnabled(kOnDeviceModelAllowGpuForTesting)) {
+    // Each test can use its own override. Don't use cache.
+    DeviceInfo query_device_info;
+    query_device_info.gpu_blocked_reason = GpuBlockedReason::kNotBlocked;
+    query_device_info.supports_fp16 = true;
+    return query_device_info;
+  }
+
   static base::NoDestructor<DeviceInfo> cache;
   if (cache->gpu_blocked_reason == GpuBlockedReason::kGpuConfigError) {
     *cache = QueryDeviceInfoInternal(api);
