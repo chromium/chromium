@@ -2808,6 +2808,27 @@
             ]
         }
     ],
+    "AutofillImproveSubmissionDetectionV3": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_All",
+                    "enable_features": [
+                        "AutofillFixFormTracking",
+                        "AutofillReplaceCachedWebElementsByRendererIds"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillImprovedLabels": [
         {
             "platforms": [
