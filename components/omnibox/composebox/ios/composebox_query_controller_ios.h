@@ -18,7 +18,7 @@ class ComposeboxQueryControllerIOS : public ComposeboxQueryController {
  protected:
   // ComposeboxQueryController overrides:
   void CreateImageUploadRequest(
-      const base::UnguessableToken& file_token,
+      lens::LensOverlayRequestId request_id,
       const std::vector<uint8_t>& image_data,
       std::optional<lens::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback) override;

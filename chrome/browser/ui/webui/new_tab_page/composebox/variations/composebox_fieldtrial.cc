@@ -147,6 +147,8 @@ CreateQueryControllerConfigParams() {
       kSuppressLnsSurfaceParamIfNoImage.Get();
   config_params->enable_multi_context_input_flow = kMaxNumFiles.Get() > 1;
   config_params->enable_viewport_images = kEnableViewportImages.Get();
+  config_params->use_separate_request_ids_for_multi_context_viewport_images =
+      kUseSeparateRequestIdsForMultiContextViewportImages.Get();
   return config_params;
 }
 
@@ -164,6 +166,12 @@ const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
     &kNtpComposebox,
     "SuppressLnsSurfaceParamIfNoImage",
     true);
+
+const base::FeatureParam<bool>
+    kUseSeparateRequestIdsForMultiContextViewportImages(
+        &kNtpComposebox,
+        "UseSeparateRequestIdsForMultiContextViewportImages",
+        true);
 
 const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",

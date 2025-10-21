@@ -214,6 +214,9 @@ ComposeboxQueryController::ComposeboxQueryController(
   enable_multi_context_input_flow_ =
       feature_params->enable_multi_context_input_flow;
   enable_viewport_images_ = feature_params->enable_viewport_images;
+  use_separate_request_ids_for_multi_context_viewport_images_ =
+      feature_params
+          ->use_separate_request_ids_for_multi_context_viewport_images;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -258,6 +261,25 @@ ComposeboxQueryController::GetNextRequestId(
   return request_id;
 }
 
+lens::LensOverlayRequestId
+ComposeboxQueryController::GetRequestIdForViewportImage(
+    const base::UnguessableToken& file_token) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (file_info == nullptr) {
+    return lens::LensOverlayRequestId();
+  }
+
+  if (enable_multi_context_input_flow_ &&
+      use_separate_request_ids_for_multi_context_viewport_images_) {
+    // Create a new request id for the viewport image upload request.
+    file_info->viewport_request_id_ = request_id_generator_.GetNextRequestId(
+        lens::RequestIdUpdateMode::kMultiContextUploadRequest,
+        lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+    return *file_info->viewport_request_id_;
+  }
+  return *file_info->request_id_;
+}
+
 GURL ComposeboxQueryController::CreateSearchUrl(
     std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) {
   num_files_in_request_ = 0;
@@ -285,6 +307,14 @@ GURL ComposeboxQueryController::CreateSearchUrl(
               *file_info->request_id_);
           has_image_upload |=
               MediaTypeHasImage(file_info->request_id_->media_type());
+
+          // Add the viewport request id to the contextual inputs if it exists.
+          if (file_info->viewport_request_id_) {
+            auto* viewport_contextual_input = contextual_inputs->add_inputs();
+            viewport_contextual_input->mutable_request_id()->CopyFrom(
+                *file_info->viewport_request_id_);
+            has_image_upload = true;
+          }
         }
       }
 
@@ -380,6 +410,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
       enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot.has_value();
 #endif  // BUILDFLAG(IS_IOS)
+  // For the multi-context input flow, whether or not to use the _AND_IMAGE
+  // media type depends on whether or not to use separate request ids for the
+  // viewport image upload request.
+  bool use_has_viewport_media_type =
+      has_viewport_screenshot &&
+      (!enable_multi_context_input_flow_ ||
+       !use_separate_request_ids_for_multi_context_viewport_images_);
   // Unlike image uploads, PDF / page content uploads need to increment the
   // long context id instead of the image sequence id.
   current_file_info.request_id_ = GetNextRequestId(
@@ -393,7 +430,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
                         : lens::RequestIdUpdateMode::kPageContentRequest)),
       current_file_info.mime_type_,
       lens::MimeTypeToMediaType(current_file_info.mime_type_,
-                                has_viewport_screenshot));
+                                use_has_viewport_media_type));
 
   // Update the file upload status to processing. This will notify the UI
   // to fetch suggestions at the earliest possible time. The suggest inputs are
@@ -747,16 +784,11 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
 #endif  // !BUILDFLAG(IS_IOS)
 
 void ComposeboxQueryController::CreateImageUploadRequest(
-    const base::UnguessableToken& file_token,
+    lens::LensOverlayRequestId request_id,
     const std::vector<uint8_t>& image_data,
     std::optional<lens::ImageEncodingOptions> image_options,
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
-  FileInfo* file_info = GetFileInfo(file_token);
-  if (!file_info) {
-    return;
-  }
-
   CHECK(image_options.has_value());
   data_decoder::DecodeImageIsolated(
       image_data, data_decoder::mojom::ImageCodec::kDefault,
@@ -764,7 +796,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
       /*max_size_in_bytes=*/std::numeric_limits<int64_t>::max(),
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ComposeboxQueryController::ProcessDecodedImageAndContinue,
-                     weak_ptr_factory_.GetWeakPtr(), *file_info->request_id_,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
                      image_options.value(), std::move(callback)));
 #endif  // !BUILDFLAG(IS_IOS)
 }
@@ -786,7 +818,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       contextual_input_data->viewport_screenshot_bytes.has_value()) {
     CHECK(image_options.has_value());
     CreateImageUploadRequest(
-        file_token,
+        GetRequestIdForViewportImage(file_token),
         // Pass ownership of the viewport screenshot bytes to the callback.
         std::move(contextual_input_data->viewport_screenshot_bytes.value()),
         std::move(image_options),
@@ -804,7 +836,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
     ProcessDecodedImageAndContinue(
-        *file_info->request_id_, image_options.value(),
+        GetRequestIdForViewportImage(file_token), image_options.value(),
         base::BindOnce(
             &ComposeboxQueryController::
                 AddPageIndexToImageUploadRequestAndContinue,
@@ -849,7 +881,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
             contextual_input_data->context_input->size() == 1);
       // TODO(crbug.com/441142455): Support image context via SkBitmap.
       CreateImageUploadRequest(
-          file_token,
+          *file_info->request_id_,
           // Pass ownership of the contextual input data to the callback.
           std::move(contextual_input_data->context_input->front().bytes_),
           std::move(image_options),

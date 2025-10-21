@@ -152,6 +152,11 @@ class ComposeboxQueryController {
       return request_id_.get();
     }
 
+    // Gets a pointer to the viewport request ID for this request for testing.
+    lens::LensOverlayRequestId* GetViewportRequestIdForTesting() {
+      return viewport_request_id_.get();
+    }
+
    private:
     friend class ComposeboxQueryController;
     friend class ComposeboxQueryControllerIOS;
@@ -165,6 +170,11 @@ class ComposeboxQueryController {
 
     // The request ID for this request. Set by StartFileUploadFlow().
     std::unique_ptr<lens::LensOverlayRequestId> request_id_;
+
+    // The request ID for the viewport associated with this request, if it is
+    // different from the request ID. Set by StartFileUploadFlow() when
+    // use_separate_request_ids_for_multi_context_viewport_images_ is true.
+    std::unique_ptr<lens::LensOverlayRequestId> viewport_request_id_;
 
     // The headers to attach to the request. Will be set asynchronously after
     // StartFileUploadFlow() is called.
@@ -224,6 +234,11 @@ class ComposeboxQueryController {
     bool enable_multi_context_input_flow = false;
     // Whether to enable viewport images.
     bool enable_viewport_images = false;
+    // Whether or not to send viewport images with separate request ids from
+    // their associated page context, for the multi-context input flow.
+    // Does nothing if `enable_multi_context_input_flow` is false or if
+    // `enable_viewport_images` is false.
+    bool use_separate_request_ids_for_multi_context_viewport_images = true;
   };
 
   ComposeboxQueryController(
@@ -240,10 +255,18 @@ class ComposeboxQueryController {
   virtual void NotifySessionStarted();
   virtual void NotifySessionAbandoned();
 
+  // Returns the next request ID for the given update mode and media type.
+  // Updates the suggest inputs with the new request ID.
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
       lens::RequestIdUpdateMode update_mode,
       lens::MimeType mime_type,
       lens::LensOverlayRequestId_MediaType media_type);
+
+  // Returns a request id to use for the viewport image upload request for the
+  // given file info, setting the viewport request id on the file info if it is
+  // different from the request id.
+  lens::LensOverlayRequestId GetRequestIdForViewportImage(
+      const base::UnguessableToken& file_token);
 
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.
@@ -294,7 +317,7 @@ class ComposeboxQueryController {
   // Creates the request body proto for an image and calls the callback with the
   // request.
   virtual void CreateImageUploadRequest(
-      const base::UnguessableToken& file_token,
+      lens::LensOverlayRequestId request_id,
       const std::vector<uint8_t>& image_data,
       std::optional<lens::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback);
@@ -495,6 +518,12 @@ class ComposeboxQueryController {
   // TODO(crbug.com/448647393): Remove this once the server supports viewport
   // images for multi-context input.
   bool enable_viewport_images_;
+
+  // Whether or not to send viewport images with separate request ids from
+  // their associated page context, for the multi-context input flow.
+  // Does nothing if `enable_multi_context_input_flow_` is false or if
+  // `enable_viewport_images_` is false.
+  bool use_separate_request_ids_for_multi_context_viewport_images_;
 
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 

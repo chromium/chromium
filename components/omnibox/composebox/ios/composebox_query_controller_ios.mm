@@ -17,15 +17,10 @@
 #import "third_party/lens_server_proto/lens_overlay_server.pb.h"
 
 void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
-    const base::UnguessableToken& file_token,
+    lens::LensOverlayRequestId request_id,
     const std::vector<uint8_t>& image_data,
     std::optional<lens::ImageEncodingOptions> image_options,
     RequestBodyProtoCreatedCallback callback) {
-  FileInfo* file_info = GetFileInfo(file_token);
-  if (!file_info) {
-    return;
-  }
-
   CHECK(image_options.has_value());
   // On iOS, we use UIImage for decoding and resizing.
   NSData* image_ns_data = [NSData dataWithBytes:image_data.data()
@@ -48,6 +43,6 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
                      ref_counted_logs, image_options.value()),
       base::BindOnce(&ComposeboxQueryController::
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
-                     *file_info->request_id_, CreateClientContext(),
-                     ref_counted_logs, std::move(callback)));
+                     request_id, CreateClientContext(), ref_counted_logs,
+                     std::move(callback)));
 }
