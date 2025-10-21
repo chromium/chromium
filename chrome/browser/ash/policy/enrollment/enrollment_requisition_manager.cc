@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "build/config/cuttlefish/buildflags.h"
+#include "build/config/squid/buildflags.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -28,6 +29,7 @@ const char EnrollmentRequisitionManager::kSharkRequisition[] = "shark";
 const char EnrollmentRequisitionManager::kDemoRequisition[] = "cros-demo-mode";
 const char EnrollmentRequisitionManager::kCuttlefishRequisition[] =
     "cuttlefish";
+const char EnrollmentRequisitionManager::kSquidRequisition[] = "squid";
 
 // static
 void EnrollmentRequisitionManager::Initialize() {
@@ -129,6 +131,14 @@ bool EnrollmentRequisitionManager::IsCuttlefishDevice() {
 #else
   return false;
 #endif  // BUILDFLAG(PLATFORM_CUTTLEFISH)
+}
+
+bool EnrollmentRequisitionManager::IsSquidDevice() {
+#if BUILDFLAG(PLATFORM_SQUID)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(PLATFORM_SQUID)
 }
 
 // static

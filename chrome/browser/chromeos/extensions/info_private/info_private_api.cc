@@ -19,10 +19,12 @@
 #include "base/values.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "build/config/cuttlefish/buildflags.h"
+#include "build/config/squid/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
@@ -68,6 +70,9 @@ constexpr std::string_view kPropertyMeetDevice = "isMeetDevice";
 
 // Key which corresponds to the isCuttlefishDevice property in JS.
 constexpr std::string_view kPropertyCuttlefishDevice = "isCuttlefishDevice";
+
+// Key which corresponds to the isSquidDevice property in JS.
+constexpr std::string_view kPropertySquidDevice = "isSquidDevice";
 
 // Key which corresponds to the home provider property.
 constexpr std::string_view kPropertyHomeProvider = "homeProvider";
@@ -316,6 +321,11 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
 #else
     return std::make_unique<base::Value>(false);
 #endif
+  }
+
+  if (property_name == kPropertySquidDevice) {
+    return std::make_unique<base::Value>(
+        policy::EnrollmentRequisitionManager::IsSquidDevice());
   }
 
   if (property_name == kPropertyHomeProvider) {

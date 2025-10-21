@@ -3177,6 +3177,12 @@ void WizardController::UpdateOobeConfiguration() {
             << policy::EnrollmentRequisitionManager::kCuttlefishRequisition;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
         policy::EnrollmentRequisitionManager::kCuttlefishRequisition);
+  } else if (policy::EnrollmentRequisitionManager::IsSquidDevice()) {
+    VLOG(1) << "Using default Device Requisition value for Squid build "
+               "configuration"
+            << policy::EnrollmentRequisitionManager::kSquidRequisition;
+    policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        policy::EnrollmentRequisitionManager::kSquidRequisition);
   } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     VLOG(1) << "Using default Device Requisition value for CFM build "
                "configuration"

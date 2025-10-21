@@ -50,6 +50,7 @@ static_library("enrollment") {
 
   deps = [
     "//build/config/cuttlefish:buildflags",
+    "//build/config/squid:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/policy/dev_mode",
