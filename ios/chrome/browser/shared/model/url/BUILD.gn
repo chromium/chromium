@@ -20,10 +20,7 @@ source_set("url") {
 }
 
 source_set("constants") {
-  sources = [
-    "chrome_url_constants.cc",
-    "chrome_url_constants.h",
-  ]
+  sources = [ "chrome_url_constants.h" ]
 
   deps = [
     "//base",

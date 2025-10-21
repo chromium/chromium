@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <XCTest/XCTest.h>
 
 #import "base/apple/foundation_util.h"
@@ -159,8 +154,7 @@ using chrome_test_util::ForwardButton;
 // Tests that all URLs on chrome://chrome-urls page load without error.
 - (void)testChromeURLsLoadWithoutError {
   // Load WebUI pages and verify they load without any error.
-  for (size_t i = 0; i < kNumberOfChromeHostURLs; ++i) {
-    const char* host = kChromeHostURLs[i];
+  for (const std::string_view host : kChromeHostURLs) {
     // Exclude non-WebUI pages, as they do not go through a "loading" phase.
     if (host == kChromeUINewTabHost) {
       continue;
