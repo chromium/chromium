@@ -15,14 +15,12 @@ import sys
 _SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-sys.path.append(
-    os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
+sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
 from devil.android.tools import script_common
 from devil.android.sdk import adb_wrapper
 from devil.utils import logging_common
 
-sys.path.append(
-    os.path.join(_SRC_ROOT, 'build', 'android'))
+sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
 import devil_chromium
 from pylib.local.emulator import avd
 
@@ -73,6 +71,14 @@ def _add_avd_config_argument(parser, required=True):
 def _add_common_arguments(parser):
   logging_common.AddLoggingArguments(parser)
   script_common.AddEnvironmentArguments(parser)
+
+
+def get_avd_configs():
+  """Returns a list of AvdConfig objects for all avd configs."""
+  configs = []
+  for path_obj in pathlib.Path(__file__).parent.glob('proto/*.textpb'):
+    configs.append(avd.AvdConfig(str(path_obj)))
+  return configs
 
 
 def main(raw_args):
@@ -271,28 +277,28 @@ def main(raw_args):
       help='Path to the dir that contains the avd config files. '
       'Default to the sibling dir "proto" of this "avd.py" script, if neither '
       '"--avd-config-path" nor this argument is set.')
-  subparser.add_argument(
-      '--json-output',
-      type=os.path.realpath,
-      metavar='PATH',
-      help='Dump json output to the given path.')
+  subparser.add_argument('--json-output',
+                         type=os.path.realpath,
+                         metavar='PATH',
+                         help='Dump json output to the given path.')
 
   def list_cmd(args):
-    files = set()
     if args.avd_config:
-      files.add(args.avd_config)
-    if args.avd_config_dir:
-      files.update(pathlib.Path(args.avd_config_dir).glob('*.textpb'))
-    if not args.avd_config and not args.avd_config_dir:
-      files.update(pathlib.Path(__file__).parent.glob('proto/*.textpb'))
+      avd_configs = [avd.AvdConfig(args.avd_config)]
+    elif args.avd_config_dir:
+      avd_configs = []
+      for path_obj in pathlib.Path(args.avd_config_dir).glob('*.textpb'):
+        avd_configs.append(avd.AvdConfig(str(path_obj)))
+    else:
+      avd_configs = get_avd_configs()
 
-    if not files:
+    if not avd_configs:
       print('No avd config files found.')
       return 0
 
     avd_procs = _detect_emulator_processes()
 
-    avd_configs = [avd.AvdConfig(os.path.relpath(f)) for f in sorted(files)]
+    avd_configs.sort(key=lambda c: c.avd_proto_path)
     metadata = [config.GetMetadata() for config in avd_configs]
     for row in metadata:
       cur_avd_procs = _avd_procs_for_config(row['avd_proto_path'], avd_procs)
