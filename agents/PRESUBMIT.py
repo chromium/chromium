@@ -39,6 +39,7 @@ def CheckPylint(input_api, output_api):
                 # Often produces non-actionable warnings.
                 'duplicate-code',
             ],
+            files_to_skip=[r'.*/cipd/.*'],
         ))
 
 

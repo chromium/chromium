@@ -297,7 +297,8 @@ def _get_gemini_cli_arguments(
     except (ValueError, TypeError):
         return None, f'Failed to parse timeout from {unparsed_timeout}'
 
-    gemini_cli_bin = provider_vars.get('gemini_cli_bin', 'gemini')
+    gemini_cli_bin = provider_vars.get('gemini_cli_bin',
+                                       gemini_helpers.get_gemini_executable())
     command = [
         gemini_cli_bin,
         '-y',

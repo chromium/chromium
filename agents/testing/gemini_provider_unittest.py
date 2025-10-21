@@ -273,6 +273,13 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         self.mock_get_system_prompt = get_system_prompt_patcher.start()
         self.addCleanup(get_system_prompt_patcher.stop)
 
+        gemini_helpers_patcher = unittest.mock.patch(
+            'gemini_provider.gemini_helpers.get_gemini_executable')
+        self.mock_gemini_helpers = gemini_helpers_patcher.start()
+        self.addCleanup(gemini_helpers_patcher.stop)
+        self.mock_gemini_helpers.return_value = 'gemini'
+
+
     def test_default_arguments(self):
         """Tests that default arguments are correct."""
         provider_vars = {}
