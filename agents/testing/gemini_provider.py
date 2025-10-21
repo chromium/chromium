@@ -234,7 +234,7 @@ def _get_sandbox_flags() -> tuple[list[str], str]:
 
 def _configure_gemini_cli(home_dir: pathlib.Path,
                           telemetry_outfile: pathlib.Path) -> None:
-    """Configures gemini-cli via its settings.json file.
+    """Configures gemini-cli via its settings files.
 
     Args:
         home_dir: The path to the directory being used as the home directory.
@@ -256,6 +256,22 @@ def _configure_gemini_cli(home_dir: pathlib.Path,
 
     with open(settings_file, 'w', encoding='utf-8') as outfile:
         json.dump(settings_json, outfile)
+
+    # Add trusted folders. This is necessary for the corp version
+    # but is a good safeguard for the 3p version
+    trusted_folders_file = gemini_dir / 'trustedFolders.json'
+    if os.path.exists(trusted_folders_file):
+        with open(trusted_folders_file, 'r', encoding='utf-8') as infile:
+            trusted_folders_json = json.load(infile)
+    else:
+        trusted_folders_json = {}
+
+    trusted_folders_json.setdefault(os.getcwd(), 'TRUST_FOLDER')
+
+    with open(trusted_folders_file, 'w', encoding='utf-8') as outfile:
+        json.dump(trusted_folders_json, outfile)
+    logging.debug('Wrote trusted folder %s: %s', trusted_folders_file,
+                  trusted_folders_json)
 
 
 def _get_gemini_cli_arguments(
@@ -480,10 +496,10 @@ def _run_gemini_cli_with_telemetry_output(
     if error:
         return {'error': error}
 
+    _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
     _install_extensions(provider_config.get('extensions', DEFAULT_EXTENSIONS),
                         home_dir=gcli_arguments.home_dir)
     _apply_changes(provider_config.get('changes', []))
-    _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
 
     process = None
     combined_output: list[str] = []

@@ -220,6 +220,38 @@ class ConfigureGeminiCliUnittest(fake_filesystem_unittest.TestCase):
             },
         })
 
+    def test_creates_trusted_folders_file(self):
+        """Tests that a new trusted folders file is created."""
+        home_dir = pathlib.Path('/fake/home')
+        telemetry_outfile = pathlib.Path('/fake/telemetry.json')
+
+        gemini_provider._configure_gemini_cli(home_dir, telemetry_outfile)
+
+        trusted_folders_file = home_dir / '.gemini' / 'trustedFolders.json'
+        self.assertTrue(os.path.exists(trusted_folders_file))
+        with open(trusted_folders_file, 'r', encoding='utf-8') as f:
+            trusted_folders = json.load(f)
+        self.assertEqual(trusted_folders, {os.getcwd(): 'TRUST_FOLDER'})
+
+    def test_updates_existing_trusted_folders_file(self):
+        """Tests that an existing trusted folders file is updated."""
+        home_dir = pathlib.Path('/fake/home')
+        telemetry_outfile = pathlib.Path('/fake/telemetry.json')
+        gemini_dir = home_dir / '.gemini'
+        os.makedirs(gemini_dir)
+        trusted_folders_file = gemini_dir / 'trustedFolders.json'
+        with open(trusted_folders_file, 'w', encoding='utf-8') as f:
+            json.dump({'/other/path': 'TRUST_FOLDER'}, f)
+
+        gemini_provider._configure_gemini_cli(home_dir, telemetry_outfile)
+
+        with open(trusted_folders_file, 'r', encoding='utf-8') as f:
+            trusted_folders = json.load(f)
+        self.assertEqual(trusted_folders, {
+            '/other/path': 'TRUST_FOLDER',
+            os.getcwd(): 'TRUST_FOLDER'
+        })
+
 
 class GetGeminiCliArgumentsUnittest(unittest.TestCase):
     """Unit tests for the `_get_gemini_cli_arguments` function."""
