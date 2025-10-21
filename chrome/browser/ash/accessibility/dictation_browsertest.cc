@@ -1537,7 +1537,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
 // active. Also verifies that ChromeVox announces hints when they are shown in
 // the Dictation UI.
 // TODO(crbug.com/453928508): Flaky on Linux ChromiumOS MSan Tests.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ChromeVoxAnnouncesHints DISABLED_ChromeVoxAnnouncesHints
 #else
 #define MAYBE_ChromeVoxAnnouncesHints ChromeVoxAnnouncesHints
