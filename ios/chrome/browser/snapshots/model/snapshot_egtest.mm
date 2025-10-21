@@ -106,6 +106,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithRedColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"red"];
   [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Take a snapshot of the first cell in the tab grid.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
@@ -138,12 +139,20 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
   GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
 }
 
-// TODO(crbug.com/443715006): Re-enable the test.
-- (void)DISABLED_testTwoColorsSnapshot {
+// Tests the snapshot of the page filled with 2 colors. The upper side is green
+// and the lower side is blue in the page.
+- (void)testTwoColorsSnapshot {
+  // TODO(crbug.com/453575683): Re-enable the test.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
   [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Take a snapshot of the first cell in the tab grid.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
@@ -159,7 +168,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 
   // Check a color of the upper side in the image.
   {
-    const CGPoint pos = CGPointMake(width / 2, height / 2 - 10);
+    const CGPoint pos = CGPointMake(width / 2, height / 4);
     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
     [self getColorAtPoint:pos
                     image:image
@@ -202,7 +211,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 // and the lower side is blue in the page. A snapshot is taken 2 times with the
 // same position before and after scrolling down.
 - (void)testSnapshotWithScrollDown {
-  // TODO(crbug.com/452906291): Re-enable the test.
+  // TODO(crbug.com/453575683): Re-enable the test.
 #if TARGET_OS_SIMULATOR
   if (@available(iOS 26.1, *)) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
@@ -215,6 +224,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
   // Take a snapshot of the first cell in the tab grid.
   {
     [ChromeEarlGreyUI openTabGrid];
+    [ChromeEarlGreyUI waitForAppToIdle];
     EDORemoteVariable<UIImage*>* tabGridSnapshot =
         [[EDORemoteVariable alloc] init];
     [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
@@ -260,6 +270,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 
   // Go back to the tab grid.
   [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Take a snapshot of the first cell in the tab grid again. The snapshot
   // should be updated.
