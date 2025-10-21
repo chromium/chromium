@@ -276,7 +276,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     contextual_registry->ResetActiveEntryFor(
         SidePanelEntry::PanelType::kContent);
   }
-  SetCurrentKey(unique_key);
+  SetCurrentKey(entry->type(), unique_key);
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
     side_panel_toolbar_pinning_controller_->UpdateActiveState(
         entry->key(), entry->should_show_ephemerally_in_toolbar());
@@ -396,7 +396,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // callback inside current_entry->OnEntryHidden() is calling Close() to
   // trigger race condition.
   SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
-  SetCurrentKey(std::nullopt);
+  SetCurrentKey(type, std::nullopt);
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   }

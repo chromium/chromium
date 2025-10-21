@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
@@ -243,7 +244,8 @@ void WebUIBrowserPageHandler::LaunchDevToolsForBrowser() {
 }
 
 void WebUIBrowserPageHandler::OnSidePanelClosed() {
-  GetBrowserWindow()->GetWebUIBrowserSidePanelUI()->OnSidePanelClosed();
+  GetBrowserWindow()->GetWebUIBrowserSidePanelUI()->OnSidePanelClosed(
+      SidePanelEntry::PanelType::kContent);
 }
 
 void WebUIBrowserPageHandler::Minimize() {

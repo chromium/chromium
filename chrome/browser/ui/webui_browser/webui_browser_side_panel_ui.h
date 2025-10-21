@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 
 class Browser;
@@ -33,7 +34,7 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
 
   content::WebContents* GetWebContentsForId(SidePanelEntryId entry_id) const;
 
-  void OnSidePanelClosed();
+  void OnSidePanelClosed(SidePanelEntry::PanelType type);
 
  private:
   // SidePanelUIBase:

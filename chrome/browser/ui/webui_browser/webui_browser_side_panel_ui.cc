@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -140,7 +141,7 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
   current_side_panel_view_->SetProperty(
       views::kDetachedViewFocusManagerKey,
       GetWebUIBrowserWindow()->widget()->GetFocusManager());
-  SetCurrentKey(unique_key);
+  SetCurrentKey(entry->type(), unique_key);
   GetWebUIBrowserWindow()->ShowSidePanel(entry->key());
 
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
@@ -201,13 +202,14 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
   Close(/*suppress_animations=*/true);
 }
 
-void WebUIBrowserSidePanelUI::OnSidePanelClosed() {
+void WebUIBrowserSidePanelUI::OnSidePanelClosed(
+    SidePanelEntry::PanelType type) {
   if (!current_key()) {
     return;
   }
 
   SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
-  SetCurrentKey(std::nullopt);
+  SetCurrentKey(type, std::nullopt);
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   }

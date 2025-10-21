@@ -115,8 +115,9 @@ void SidePanelUIBase::NotifyShownCallbacksFor(SidePanelEntry::PanelType type) {
   panel_data_[type]->shown_callback_list.Notify();
 }
 
-void SidePanelUIBase::SetCurrentKey(std::optional<UniqueKey> new_key) {
-  panel_data_[SidePanelEntry::PanelType::kContent]->current_key = new_key;
+void SidePanelUIBase::SetCurrentKey(SidePanelEntry::PanelType type,
+                                    std::optional<UniqueKey> new_key) {
+  panel_data_[type]->current_key = new_key;
 }
 
 std::optional<SidePanelUIBase::UniqueKey> SidePanelUIBase::GetUniqueKeyForKey(
