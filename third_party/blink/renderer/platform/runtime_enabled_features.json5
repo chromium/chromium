@@ -5724,8 +5724,10 @@
     },
     {
       name: "WebIdentityDigitalCredentialsCreation",
+      origin_trial_feature_name: "WebIdentityDigitalCredentialsCreation",
+      origin_trial_allows_third_party: true,
       public: true,
-      status: "test",
+      status: "experimental",
       base_feature: "none",
     },
     // Kill switch for making BigInt handling in WebIDL use ToBigInt.
