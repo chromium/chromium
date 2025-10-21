@@ -1414,7 +1414,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
               testing::IsEmpty());
 }
 
-// Win-ASAN is flaky.
+// Note: Win-ASAN is flaky.
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
   DISABLED_testGetContextFromFocusedTabWithAllRequestedData
@@ -1442,6 +1442,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
               testing::IsEmpty());
 }
 
+// Note: PDF support is a necessary preconition for this test.
 #if BUILDFLAG(ENABLE_PDF)
 #define MAYBE_testGetContextFromFocusedTabWithPdfFile \
   testGetContextFromFocusedTabWithPdfFile
@@ -1481,7 +1482,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                       GlicGetContextFromTabError::kPermissionDenied, 1)))));
 }
 
-// TODO(harringtond): Fix this, it hangs.
+// TODO(crbug.com/454083080): Fix this, it hangs.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();
 }
@@ -2074,6 +2075,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
   ContinueJsTest();
 }
 
+// TODO(crbug.com/454001121): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        DISABLED_testTabDataUpdateOnUrlChangeForPinnedTab) {
   NavigateTabAndOpenGlicFloating();
@@ -2514,7 +2516,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataUpdates) {
   ContinueJsTest();
 }
 
-// TODO(https://crbug.com/449764057): Flakes/fails on all by windows.
+// TODO(crbug.com/449764057): Flakes/fails on all by windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_testGetPageMetadataOnNavigation testGetPageMetadataOnNavigation
 #else
@@ -2624,8 +2626,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAdditionalContext) {
   ContinueJsTest();
 }
 
-// TODO(gklassen): Re-enable this test once I figure out how to doscard the tab
-// while preserving the test harness.
+// TODO(crbug.com/454086033): Re-enable this test once I figure out how to
+// doscard the tab while preserving the test harness.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        DISABLED_testGetPageMetadataWebContentsChanged) {
   // Runs the JS test until the first `advanceToNextStep()`.

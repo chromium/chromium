@@ -312,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-// TODO: Re-nable this test when there is a glic state for post-resize.
+// TODO(crbug.com/454088252): Re-enable this test when there is a glic state for
+// post-resize.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        DISABLED_CloseWithContextMenu) {
   RunTestSequence(
@@ -325,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-// Flaky on macOS: https://crbug.com/401158115
+// TODO(crbug.com/401158115): Flaky on macOS
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_OpenMenuItemShows DISABLED_OpenMenuItemShows
 #else
@@ -874,19 +875,26 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
           WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)));
 }
 
+// TODO(crbug.com/454091592): Fix and re-enable.
 // These tests for dragging across multiple displays is for mac-only.
 // On Windows11, this test times out in calling WaitForDisplaySizes() when
 // setting up the virtual displays.
-#if BUILDFLAG(IS_MAC)
-class GlicWindowControllerMultipleDisplaysUiTest
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_GlicWindowControllerMultipleDisplaysUiTest \
+  DISABLED_GlicWindowControllerMultipleDisplaysUiTest
+#else
+#define MAYBE_GlicWindowControllerMultipleDisplaysUiTest \
+  GlicWindowControllerMultipleDisplaysUiTest
+#endif
+class MAYBE_GlicWindowControllerMultipleDisplaysUiTest
     : public GlicWindowControllerUiTest {
  public:
-  GlicWindowControllerMultipleDisplaysUiTest() = default;
-  GlicWindowControllerMultipleDisplaysUiTest(
-      const GlicWindowControllerMultipleDisplaysUiTest&) = delete;
-  GlicWindowControllerMultipleDisplaysUiTest& operator=(
-      const GlicWindowControllerMultipleDisplaysUiTest&) = delete;
-  ~GlicWindowControllerMultipleDisplaysUiTest() override = default;
+  MAYBE_GlicWindowControllerMultipleDisplaysUiTest() = default;
+  MAYBE_GlicWindowControllerMultipleDisplaysUiTest(
+      const MAYBE_GlicWindowControllerMultipleDisplaysUiTest&) = delete;
+  MAYBE_GlicWindowControllerMultipleDisplaysUiTest& operator=(
+      const MAYBE_GlicWindowControllerMultipleDisplaysUiTest&) = delete;
+  ~MAYBE_GlicWindowControllerMultipleDisplaysUiTest() override = default;
 
   // Create virtual displays as needed, ensuring 2 displays are available for
   // testing multi-screen functionality.
@@ -954,7 +962,7 @@ class GlicWindowControllerMultipleDisplaysUiTest
 };
 
 // TODO(crbug.com/399703468): Flaky on Mac. Test is targeted for Mac only.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_GlicWindowControllerMultipleDisplaysUiTest,
                        DISABLED_MoveDetachedGlicWindowToSecondDisplay) {
   if (!SetUpVirtualDisplays()) {
     return;
@@ -971,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
 
 // TODO(crbug.com/399703468): Flaky on Mac. Test is targeted for Mac only.
 IN_PROC_BROWSER_TEST_F(
-    GlicWindowControllerMultipleDisplaysUiTest,
+    MAYBE_GlicWindowControllerMultipleDisplaysUiTest,
     DISABLED_DetachAttachedGlicWindowAndMoveToSecondDisplay) {
   if (!SetUpVirtualDisplays()) {
     return;
@@ -984,6 +992,5 @@ IN_PROC_BROWSER_TEST_F(
                   InAnyContext(DetachGlicWindow(), MoveWidgetToSecondDisplay(),
                                CheckWidgetMovedToSecondaryDisplay(true)));
 }
-#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace glic

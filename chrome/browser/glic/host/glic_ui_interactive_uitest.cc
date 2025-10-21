@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, CanAttachWithBrowserWindow) {
                   CheckMockElementChecked({"#canAttachCheckbox"}, true));
 }
 
-// DISABLED: Not reliable yet.
+// TODO(crbug.com/454087646): Not reliable yet.
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DISABLED_CanNotAttachWithMinimizedBrowser) {
   RunTestSequence(
@@ -480,7 +480,7 @@ class GlicUiQuickLoadingSequenceWithPreloadTest
   ~GlicUiQuickLoadingSequenceWithPreloadTest() override = default;
 };
 
-// See https://crbug.com/418639389 - these probably need to be broken into unit
+// TODO(crbug.com/418639389): these probably need to be broken into unit
 // tests with only integration tests for the messaging being passed back and
 // forth; slow test runners can cause any time limit to be overrun.
 IN_PROC_BROWSER_TEST_F(GlicUiQuickLoadingSequenceWithPreloadTest,
