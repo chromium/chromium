@@ -409,6 +409,7 @@ using enum OmniboxKeyboardAction;
   // clearsOnInsertion calls selectAll which remove preEditing.
   self.clearsOnInsertion = YES;
   self.preEditing = YES;
+  [self.heightDelegate textViewContentChanged:self];
 }
 
 /// Exits pre-edit state.
@@ -434,6 +435,7 @@ using enum OmniboxKeyboardAction;
                             range:NSMakeRange(0, self.attributedText.length)];
     self.attributedText = attributedText;
   }
+  [self.heightDelegate textViewContentChanged:self];
 }
 
 #pragma mark - UITextView

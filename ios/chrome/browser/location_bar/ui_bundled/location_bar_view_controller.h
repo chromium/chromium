@@ -22,6 +22,7 @@
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @protocol FakeboxButtonsSnapshotProvider;
 @protocol HelpCommands;
+@class LocationBarViewController;
 @protocol LensCommands;
 @protocol LensOverlayCommands;
 @protocol LocationBarOffsetProvider;
@@ -79,6 +80,10 @@ class Tracker;
 
 // Decides if AI Hub new badge should show.
 - (BOOL)shouldShowAIHubNewFeatureBadge;
+
+// Edit state required `height` changed.
+- (void)locationBarViewController:(LocationBarViewController*)controller
+         didChangeEditStateHeight:(CGFloat)height;
 
 @end
 

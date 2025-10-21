@@ -391,7 +391,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
                 textColor:color
             textInputTint:color
                  iconTint:color
-      presentationContext:OmniboxPresentationContext::kLocationBar];
+      presentationContext:OmniboxPresentationContext::kNTPHeader];
   omnibox.textInput.placeholder = self.placeholderText;
   [omnibox.textInput setText:@""];
   omnibox.translatesAutoresizingMaskIntoConstraints = NO;

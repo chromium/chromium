@@ -174,6 +174,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 @synthesize contractedConstraints = _contractedConstraints;
 @synthesize contractedNoMarginConstraints = _contractedNoMarginConstraints;
 @synthesize contentView = _contentView;
+@synthesize locationBarHeight = _locationBarHeight;
 
 #pragma mark - Public
 
@@ -317,6 +318,17 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   return _bannerPromo.intrinsicContentSize.height * progress;
 }
 
+- (void)setLocationBarHeight:(CGFloat)locationBarHeight {
+  /// Location bar height is only handled by this property in multiline omnibox.
+  CHECK(IsMultilineBrowserOmniboxEnabled(), base::NotFatalUntil::M200);
+  if (locationBarHeight == _locationBarHeight) {
+    return;
+  }
+  _locationBarHeight = locationBarHeight;
+  self.locationBarContainerHeight.constant = locationBarHeight;
+  [self invalidateIntrinsicContentSize];
+}
+
 #pragma mark - Properties
 
 - (void)setMatchNTPHeight:(BOOL)matchNTPHeight {
@@ -358,10 +370,16 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
   BOOL isTopOmnibox = self.locationBarView != nil;
   if (isTopOmnibox) {
-    height += self.matchNTPHeight
-                  ? content_suggestions::FakeToolbarHeight()
-                  : ToolbarExpandedHeight(
-                        self.traitCollection.preferredContentSizeCategory);
+    if (self.matchNTPHeight) {
+      height += content_suggestions::FakeToolbarHeight();
+    } else if (IsMultilineBrowserOmniboxEnabled()) {
+      height += self.locationBarHeight +
+                LocationBarVerticalMargins(
+                    self.traitCollection.preferredContentSizeCategory);
+    } else {
+      height += ToolbarExpandedHeight(
+          self.traitCollection.preferredContentSizeCategory);
+    }
   }
 
   if (IsDefaultBrowserBannerPromoEnabled() && _bannerPromoDisplayed) {

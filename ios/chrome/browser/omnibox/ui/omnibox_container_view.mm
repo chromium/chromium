@@ -64,8 +64,13 @@ const CGFloat kClearButtonSize = 28.0f;
 
 /// Whether the omnibox is using the text view instead of the text field.
 bool UseTextView(OmniboxPresentationContext presentation_context) {
-  return base::FeatureList::IsEnabled(kIOSOmniboxUseTextView) &&
-         presentation_context == OmniboxPresentationContext::kAIMPrototype;
+  if (presentation_context == OmniboxPresentationContext::kLocationBar) {
+    return IsMultilineBrowserOmniboxEnabled();
+  } else if (presentation_context ==
+             OmniboxPresentationContext::kAIMPrototype) {
+    return base::FeatureList::IsEnabled(kIOSOmniboxUseTextView);
+  }
+  return NO;
 }
 
 /// Creates and configures the leading image view.
@@ -172,6 +177,8 @@ UIButton* CreateClearButton() {
   NSLayoutConstraint* _textInputHeightConstraint;
 }
 
+@synthesize heightDelegate = _heightDelegate;
+
 #pragma mark - Public
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -263,6 +270,11 @@ UIButton* CreateClearButton() {
   return self;
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self updateTextViewHeight];
+}
+
 - (void)setLeadingImage:(UIImage*)image
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
   _leadingImageView.image = image;
@@ -328,6 +340,7 @@ UIButton* CreateClearButton() {
     _textInputHeightConstraint.constant = newHeight;
   }
   _textView.scrollEnabled = size.height > maxHeight;
+  [self.heightDelegate textFieldViewContaining:self didChangeHeight:newHeight];
 }
 
 #pragma mark - TextFieldViewContaining

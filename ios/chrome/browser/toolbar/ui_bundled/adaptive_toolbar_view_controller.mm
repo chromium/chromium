@@ -242,6 +242,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self updateProgressBarVisibility];
 }
 
+- (void)setLocationBarHeight:(CGFloat)height {
+  [self.view setLocationBarHeight:height];
+}
+
 #pragma mark - ToolbarConsumer
 
 - (void)setCanGoForward:(BOOL)canGoForward {

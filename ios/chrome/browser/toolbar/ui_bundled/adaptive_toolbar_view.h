@@ -52,6 +52,9 @@ enum class ToolbarTabGroupState;
 // Button taking the full size of the toolbar. Expands the toolbar when tapped.
 @property(nonatomic, strong, readonly) UIButton* collapsedToolbarButton;
 
+// Height of the location bar.
+@property(nonatomic, assign) CGFloat locationBarHeight;
+
 // Sets the location bar view containing the omnibox.
 - (void)setLocationBarView:(UIView*)locationBarView;
 

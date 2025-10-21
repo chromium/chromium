@@ -9,6 +9,8 @@
 enum class OmniboxPresentationContext {
   // The omnibox is presented in the location bar.
   kLocationBar,
+  // The omnibox is presented in the NTP header view.
+  kNTPHeader,
   // The omnibox is presented in the Lens overlay.
   kLensOverlay,
   // The omnibox is presented in the AIM prototype.

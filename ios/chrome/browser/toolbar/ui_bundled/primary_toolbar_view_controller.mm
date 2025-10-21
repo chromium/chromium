@@ -315,9 +315,17 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 }
 
 - (void)setLocationBarHeightExpanded {
-  [self setLocationBarContainerHeight:LocationBarHeight(
-                                          self.traitCollection
-                                              .preferredContentSizeCategory)];
+  if (IsMultilineBrowserOmniboxEnabled()) {
+    // With multine omnibox the location bar edit state height is managed by the
+    // toolbar coordinator.
+    self.view.locationBarContainer.layer.cornerRadius =
+        LocationBarHeight(self.traitCollection.preferredContentSizeCategory) /
+        2;
+  } else {
+    [self setLocationBarContainerHeight:LocationBarHeight(
+                                            self.traitCollection
+                                                .preferredContentSizeCategory)];
+  }
   self.view.matchNTPHeight = NO;
 }
 

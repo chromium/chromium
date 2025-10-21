@@ -19,6 +19,10 @@ CGFloat ToolbarCollapsedHeight(UIContentSizeCategory category);
 // `category`, rounded to the nearest lower pixel.
 CGFloat ToolbarExpandedHeight(UIContentSizeCategory category);
 
+// Returns the vertical margins of the location bar, based on the `category`.
+// LocationBarHeight + LocationBarVerticalMargins = ToolbarExpandedHeight;
+CGFloat LocationBarVerticalMargins(UIContentSizeCategory category);
+
 // Returns the height of the location bar, based on the `category`, rounded to
 // the nearest lower pixel.
 CGFloat LocationBarHeight(UIContentSizeCategory category);

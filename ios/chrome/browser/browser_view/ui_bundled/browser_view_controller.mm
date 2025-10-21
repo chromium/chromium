@@ -330,6 +330,9 @@ const CGFloat kTopDynamicIslandInset = 24;
 // Height constraint for the secondary toolbar.
 @property(nonatomic, strong)
     NSLayoutConstraint* secondaryToolbarHeightConstraint;
+// Keyboard height stored for the secondary toolbar, used when updating the
+// multiline omnibox height while editing.
+@property(nonatomic, assign) CGFloat secondaryToolbarKeyboardHeight;
 // Current Fullscreen progress for the footers.
 @property(nonatomic, assign) CGFloat footerFullscreenProgress;
 // Y-dimension offset for placement of the header.
@@ -1319,6 +1322,11 @@ const CGFloat kTopDynamicIslandInset = 24;
   }
   if (IsDiamondPrototypeEnabled()) {
     return kDiamondToolbarHeight;
+  }
+  if (IsMultilineBrowserOmniboxEnabled() &&
+      self.secondaryToolbarKeyboardHeight) {
+    return self.secondaryToolbarKeyboardHeight +
+           self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
   }
   // Add the safe area inset to the toolbar height.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.bottom;
@@ -2784,6 +2792,12 @@ const CGFloat kTopDynamicIslandInset = 24;
       [self primaryToolbarHeightWithInset];
   self.secondaryToolbarHeightConstraint.constant =
       [self secondaryToolbarHeightWithInset];
+
+  if (IsMultilineBrowserOmniboxEnabled()) {
+    [self.toolbarCoordinator
+        setBottomOmniboxOffsetForPopup:self.secondaryToolbarHeightConstraint
+                                           .constant];
+  }
   [self updateForFullscreenProgress:self.footerFullscreenProgress];
 }
 
@@ -2804,6 +2818,7 @@ const CGFloat kTopDynamicIslandInset = 24;
                                        duration:(NSTimeInterval)duration
                                           curve:(UIViewAnimationCurve)curve {
   CHECK(ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET);
+  self.secondaryToolbarKeyboardHeight = keyboardHeight;
   CGFloat keyboardAttachedOffset =
       keyboardHeight +
       self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;

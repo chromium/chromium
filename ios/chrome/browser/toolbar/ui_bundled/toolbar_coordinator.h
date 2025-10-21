@@ -37,7 +37,9 @@
     popupPresenterDelegate;
 /// Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
-
+/// Temporary storing the keyboard height here. Used when updating the bottom
+/// omnibox size while editing.
+@property(nonatomic, assign) CGFloat keyboardHeight;
 /// Initializes this coordinator with its `browser` and a nil base view
 /// controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
