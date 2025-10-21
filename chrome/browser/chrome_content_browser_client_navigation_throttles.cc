@@ -110,12 +110,8 @@
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
-#include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "extensions/browser/extension_navigation_throttle.h"
-#include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -165,7 +161,12 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
 #include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "chrome/browser/extensions/user_script_listener.h"
+#include "extensions/browser/extension_navigation_throttle.h"
+#include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
@@ -346,7 +347,7 @@ void CreateAndAddChromeThrottlesForNavigation(
   Profile* profile =
       Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(profile)) {
     registry.AddThrottle(
