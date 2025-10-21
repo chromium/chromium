@@ -91,8 +91,8 @@ class TestPermissionManager : public MockPermissionManager {
       url = render_frame_host->GetLastCommittedOrigin().GetURL();
     }
 
-    if (override_status_.contains(url)) {
-      return PermissionResult(override_status_[url]);
+    if (auto it = override_status_.find(url); it != override_status_.end()) {
+      return PermissionResult(it->second);
     }
 
     return PermissionResult(PermissionStatus::ASK);
