@@ -107,7 +107,7 @@ cr-most-visited {
 
 /* When a dropdown menu is opened, scrim is applied and OGB is behind it. */
 :host([dropdown-is-visible_]) #oneGoogleBarStackingContext {
-  z-index: -1;
+  z-index: 0;
 }
 
 #oneGoogleBarScrim {
