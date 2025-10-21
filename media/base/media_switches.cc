@@ -858,12 +858,12 @@ BASE_FEATURE(kFailUrlProvisionFetcherForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables hardware secure decryption if supported by hardware and CDM.
-// NOTE: This feature is experimental and not officially supported. Users may
-// encounter issues; enabling is discouraged.
+// NOTE: For Windows platform, hardware secure decryption is available via
+// PlayReady SL3000.
 // TODO(xhwang): Currently this is only used for development of new features.
 // Apply this to Android and ChromeOS as well where hardware secure decryption
 // is already available.
-BASE_FEATURE(kHardwareSecureDecryption, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHardwareSecureDecryption, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // By default, a codec is not supported for hardware secure decryption if it
 // does not support clear lead. This option forces the support for testing.
