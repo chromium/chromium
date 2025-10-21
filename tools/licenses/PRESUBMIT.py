@@ -9,9 +9,13 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPythonTests(input_api, output_api):
+  local_path = input_api.PresubmitLocalPath()
+  path = lambda *p: input_api.os_path.join(local_path, *p)
+  unit_tests = [
+      path('spdx_writer_test.py'),
+      path('tests', 'integration_test.py'),
+  ]
   return input_api.RunTests(
-      input_api.canned_checks.GetUnitTestsInDirectory(
-          input_api,
-          output_api,
-          input_api.PresubmitLocalPath(),
-          files_to_check=[r'.+_(?:unit)?test\.py$']))
+      input_api.canned_checks.GetUnitTests(input_api,
+                                           output_api,
+                                           unit_tests=unit_tests))
