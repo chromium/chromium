@@ -162,7 +162,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   // IPC message handlers.
 
-  void EnsureConnected();
+  void EnsureConnected(int connection_timeout);
 
 #if BUILDFLAG(IS_WIN)
   const mojo::Remote<mojom::FontCacheWin>& GetFontCacheWin();

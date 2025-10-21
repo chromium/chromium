@@ -755,7 +755,8 @@ void ChildThreadImpl::Init(const Options& options) {
   main_thread_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ChildThreadImpl::EnsureConnected,
-                     channel_connected_factory_->GetWeakPtr()),
+                     channel_connected_factory_->GetWeakPtr(),
+                     connection_timeout),
       base::Seconds(connection_timeout));
 
   // In single-process mode, there is no need to synchronize trials to the
@@ -904,8 +905,9 @@ void ChildThreadImpl::OnProcessFinalRelease() {
 
 void ChildThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {}
 
-void ChildThreadImpl::EnsureConnected() {
-  VLOG(0) << "ChildThreadImpl::EnsureConnected()";
+void ChildThreadImpl::EnsureConnected(int connection_timeout) {
+  VLOG(0) << "Terminating current process after " << connection_timeout
+          << " seconds with no connection.";
   base::Process::TerminateCurrentProcessImmediately(0);
 }
 

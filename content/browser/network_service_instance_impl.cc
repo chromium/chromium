@@ -610,7 +610,8 @@ network::mojom::NetworkService* GetNetworkService() {
           CreateInProcessNetworkService(std::move(receiver));
         } else {
           if (service_was_bound)
-            LOG(ERROR) << "Network service crashed, restarting service.";
+            LOG(ERROR) << "Network service crashed or was terminated, "
+                          "restarting service.";
           ServiceProcessHost::Options options;
           options.WithDisplayName(u"Network Service");
           if (g_network_service_crashes_on_next_startup) {
