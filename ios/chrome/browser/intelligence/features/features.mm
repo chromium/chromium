@@ -203,6 +203,21 @@ bool IsZeroStateSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kZeroStateSuggestions);
 }
 
+const char kZeroStateSuggestionsPlacementAIHub[] =
+    "ZeroStateSuggestionsPlacementAIHub";
+const char kZeroStateSuggestionsPlacementAskGemini[] =
+    "ZeroStateSuggestionsPlacementAskGemini";
+
+bool IsZeroStateSuggestionsAIHubEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kZeroStateSuggestions, kZeroStateSuggestionsPlacementAIHub, false);
+}
+
+bool IsZeroStateSuggestionsAskGeminiEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kZeroStateSuggestions, kZeroStateSuggestionsPlacementAskGemini, false);
+}
+
 BASE_FEATURE(kGeminiFullChatHistory, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiFullChatHistoryEnabled() {

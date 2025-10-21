@@ -162,6 +162,17 @@ BASE_DECLARE_FEATURE(kZeroStateSuggestions);
 // Returns true if zero-state suggestions are enabled.
 bool IsZeroStateSuggestionsEnabled();
 
+// Parameter names for the zero-state suggestions placement.
+extern const char kZeroStateSuggestionsPlacementAIHub[];
+extern const char kZeroStateSuggestionsPlacementAskGemini[];
+
+// Returns true if zero-state suggestions should be executed in the AI Hub.
+bool IsZeroStateSuggestionsAIHubEnabled();
+
+// Returns true if zero-state suggestions should be executed in the Ask Gemini
+// overlay.
+bool IsZeroStateSuggestionsAskGeminiEnabled();
+
 // Feature flag for showing full chat history in the floaty.
 BASE_DECLARE_FEATURE(kGeminiFullChatHistory);
 bool IsGeminiFullChatHistoryEnabled();
