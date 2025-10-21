@@ -37,6 +37,11 @@
 // Human readable name of the associated service. Used by passwords only.
 @property(nonatomic, readonly) NSString* serviceName;
 
+// eTLD+1 of the `serviceIdentifier`. Used by passwords only. It is only
+// populated by the browser, hence it might be nil until the next credential
+// migration runs in the browser.
+@property(nonatomic, readonly) NSString* registryControlledDomain;
+
 // Attached note to the credential. Used by passwords only.
 @property(nonatomic, readonly) NSString* note;
 

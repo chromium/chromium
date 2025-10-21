@@ -20,6 +20,7 @@ ArchivableCredential* TestCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
+                              registryControlledDomain:@"example.com"
                                               username:@"user"
                                                   note:@"note"];
 }
@@ -55,6 +56,7 @@ TEST_F(MemoryCredentialStoreTest, update) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"
                                         serviceName:@"other_serviceName"
+                           registryControlledDomain:@"example.com"
                                            username:@"other_user"
                                                note:@"other_note"];
 

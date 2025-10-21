@@ -27,15 +27,17 @@ class CredentialStoreUtilTest : public PlatformTest {
 
 ArchivableCredential* GetTestCredential(NSString* index) {
   return [[ArchivableCredential alloc]
-        initWithFavicon:@"favicon"
-                   gaia:nil
-               password:[@"password" stringByAppendingString:index]
-                   rank:5
-       recordIdentifier:[@"recordIdentifier" stringByAppendingString:index]
-      serviceIdentifier:@"serviceIdentifier"
-            serviceName:@"serviceName"
-               username:[@"user" stringByAppendingString:index]
-                   note:@"note"];
+               initWithFavicon:@"favicon"
+                          gaia:nil
+                      password:[@"password" stringByAppendingString:index]
+                          rank:5
+              recordIdentifier:[@"recordIdentifier"
+                                   stringByAppendingString:index]
+             serviceIdentifier:@"serviceIdentifier"
+                   serviceName:@"serviceName"
+      registryControlledDomain:@"example.com"
+                      username:[@"user" stringByAppendingString:index]
+                          note:@"note"];
 }
 
 // Returns true iff `container` contains a credential with username @"userN"

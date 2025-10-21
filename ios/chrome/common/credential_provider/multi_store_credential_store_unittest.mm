@@ -25,6 +25,7 @@ ArchivableCredential* TestCredential(NSString* user) {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
+                              registryControlledDomain:@"example.com"
                                               username:user
                                                   note:@"note"];
 }

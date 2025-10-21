@@ -29,6 +29,7 @@ TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
+                           registryControlledDomain:@"example.com"
                                            username:@"user"
                                                note:@"note"];
   ASPasswordCredentialIdentity* credentialIdentity =

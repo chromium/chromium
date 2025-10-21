@@ -18,7 +18,11 @@ namespace {
 
 NSString* const url1 = @"http://www.example.com";
 NSString* const url2 = @"http://www.example2.com";
-NSString* const url3 = @"http://www.example2.com";
+NSString* const url3 = @"http://www.example3.com";
+
+NSString* const domain1 = @"example.com";
+NSString* const domain2 = @"example2.com";
+NSString* const domain3 = @"example3.com";
 
 NSString* const user1 = @"user1";
 NSString* const user2 = @"user2";
@@ -31,7 +35,8 @@ NSData* StringToData(std::string str) {
 constexpr int64_t kJan1st2024 = 1704085200;
 
 ArchivableCredential* TestPasswordCredential(NSString* username,
-                                             NSString* url) {
+                                             NSString* url,
+                                             NSString* domain) {
   return [[ArchivableCredential alloc] initWithFavicon:nil
                                                   gaia:nil
                                               password:@"qwerty123"
@@ -39,6 +44,7 @@ ArchivableCredential* TestPasswordCredential(NSString* username,
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:url
                                            serviceName:url
+                              registryControlledDomain:domain
                                               username:username
                                                   note:@"note"];
 }
@@ -80,22 +86,22 @@ void PasskeyRequestDetailsTest::TearDown() {}
 
 // Tests that the allowed credentials list works as expected.
 TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
-  id<Credential> credential1 = TestPasswordCredential(user1, url1);
-  id<Credential> credential2 = TestPasswordCredential(user2, url1);
-  id<Credential> credential3 = TestPasswordCredential(user1, url2);
+  id<Credential> credential1 = TestPasswordCredential(user1, url1, domain1);
+  id<Credential> credential2 = TestPasswordCredential(user2, url2, domain2);
+  id<Credential> credential3 = TestPasswordCredential(user1, url2, domain2);
   id<Credential> credential4 = TestPasskeyCredential(user3, url1);
   NSArray<id<Credential>>* credentials =
       @[ credential1, credential2, credential3, credential4 ];
 
   // Matching credential 1.
   PasskeyRequestDetails* details =
-      [[PasskeyRequestDetails alloc] initWithURL:url1
+      [[PasskeyRequestDetails alloc] initWithURL:@"www.example.com"
                                         username:user1
                              excludedCredentials:nil];
   EXPECT_TRUE([details hasMatchingPassword:credentials]);
 
   // Matching credential 2.
-  details = [[PasskeyRequestDetails alloc] initWithURL:url1
+  details = [[PasskeyRequestDetails alloc] initWithURL:@"www.abc.example2.com"
                                               username:user2
                                    excludedCredentials:nil];
   EXPECT_TRUE([details hasMatchingPassword:credentials]);
@@ -104,7 +110,7 @@ TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
   EXPECT_FALSE([details hasMatchingPassword:@[]]);
 
   // Matching no credential.
-  details = [[PasskeyRequestDetails alloc] initWithURL:url2
+  details = [[PasskeyRequestDetails alloc] initWithURL:@"www.example23.com"
                                               username:user2
                                    excludedCredentials:nil];
   EXPECT_FALSE([details hasMatchingPassword:credentials]);
@@ -118,7 +124,7 @@ TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
 
 // Tests that the excluded credentials list works as expected.
 TEST_F(PasskeyRequestDetailsTest, ExcludedPasskey) {
-  id<Credential> credential1 = TestPasswordCredential(user1, url1);
+  id<Credential> credential1 = TestPasswordCredential(user1, url1, domain1);
   id<Credential> credential2 = TestPasskeyCredential(user2, url2);
   id<Credential> credential3 = TestPasskeyCredential(user3, url3);
   NSData* id2 = credential2.credentialId;

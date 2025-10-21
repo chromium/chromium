@@ -134,6 +134,10 @@ using base::SysUTF16ToNSString;
   NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
+  // CPE does not have required //net deps to fetch eTLD+1. Leave it empty here,
+  // the value will be overriden whenever the browser is foregrounded.
+  NSString* registryControlledDomain = nil;
+
   return [[ArchivableCredential alloc] initWithFavicon:nil
                                                   gaia:gaia
                                               password:password
@@ -141,6 +145,7 @@ using base::SysUTF16ToNSString;
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:identifier
                                            serviceName:url.host ?: identifier
+                              registryControlledDomain:registryControlledDomain
                                               username:username
                                                   note:note];
 }

@@ -29,6 +29,7 @@
                recordIdentifier:(NSString*)recordIdentifier
               serviceIdentifier:(NSString*)serviceIdentifier
                     serviceName:(NSString*)serviceName
+       registryControlledDomain:(NSString*)registryControlledDomain
                        username:(NSString*)username
                            note:(NSString*)note NS_DESIGNATED_INITIALIZER;
 

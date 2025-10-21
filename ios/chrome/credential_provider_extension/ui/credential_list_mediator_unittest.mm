@@ -74,6 +74,7 @@ ArchivableCredential* TestPasswordCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"http://www.example.com"
                                            serviceName:@"example.com"
+                              registryControlledDomain:@"example.com"
                                               username:@"username_value"
                                                   note:@"note"];
 }
@@ -87,6 +88,7 @@ ArchivableCredential* TestPasswordCredential2() {
                                    recordIdentifier:@"recordIdentifier2"
                                   serviceIdentifier:@"http://www.example2.com"
                                         serviceName:@"example2.com"
+                           registryControlledDomain:@"example2.com"
                                            username:@"username_value2"
                                                note:@"note2"];
 }

@@ -229,13 +229,18 @@
     return NO;
   }
 
-  NSUInteger credentialIndex = [credentials indexOfObjectPassingTest:^BOOL(
-                                                id<Credential> credential,
-                                                NSUInteger idx, BOOL* stop) {
-    return !credential.isPasskey &&
-           [credential.username isEqualToString:self.userName] &&
-           [credential.serviceName isEqualToString:self.relyingPartyIdentifier];
-  }];
+  NSString* rpID = self.relyingPartyIdentifier;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        NSString* domainSuffix = [NSString
+            stringWithFormat:@".%@", credential.registryControlledDomain];
+        BOOL matchingDomain =
+            [rpID isEqualToString:credential.registryControlledDomain] ||
+            [rpID hasSuffix:domainSuffix];
+        return !credential.isPasskey && matchingDomain &&
+               [credential.username isEqualToString:self.userName];
+      }];
   return credentialIndex != NSNotFound;
 }
 

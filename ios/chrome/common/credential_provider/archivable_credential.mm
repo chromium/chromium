@@ -17,6 +17,7 @@ NSString* const kACRankKey = @"rank";
 NSString* const kACRecordIdentifierKey = @"recordIdentifier";
 NSString* const kACServiceIdentifierKey = @"serviceIdentifier";
 NSString* const kACServiceNameKey = @"serviceName";
+NSString* const kACRegistryControlledDomainKey = @"registryControlledDomain";
 NSString* const kACUserKey = @"user";
 NSString* const kACNoteKey = @"note";
 NSString* const kACSyncIdKey = @"syncId";
@@ -67,6 +68,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @synthesize recordIdentifier = _recordIdentifier;
 @synthesize serviceIdentifier = _serviceIdentifier;
 @synthesize serviceName = _serviceName;
+@synthesize registryControlledDomain = _registryControlledDomain;
 @synthesize username = _username;
 @synthesize note = _note;
 @synthesize syncId = _syncId;
@@ -111,6 +113,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                 recordIdentifier:credential.recordIdentifier
                serviceIdentifier:credential.serviceIdentifier
                      serviceName:credential.serviceName
+        registryControlledDomain:credential.registryControlledDomain
                         username:credential.username
                             note:credential.note];
   }
@@ -124,6 +127,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                recordIdentifier:(NSString*)recordIdentifier
               serviceIdentifier:(NSString*)serviceIdentifier
                     serviceName:(NSString*)serviceName
+       registryControlledDomain:(NSString*)registryControlledDomain
                        username:(NSString*)username
                            note:(NSString*)note {
   self = [super init];
@@ -135,6 +139,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _recordIdentifier = recordIdentifier;
     _serviceIdentifier = serviceIdentifier;
     _serviceName = serviceName;
+    _registryControlledDomain = registryControlledDomain;
     _username = username;
     _note = note;
   }
@@ -222,6 +227,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
            stringsAreEqual(self.serviceIdentifier,
                            otherCredential.serviceIdentifier) &&
            stringsAreEqual(self.serviceName, otherCredential.serviceName) &&
+           stringsAreEqual(self.registryControlledDomain,
+                           otherCredential.registryControlledDomain) &&
            stringsAreEqual(self.username, otherCredential.username) &&
            stringsAreEqual(self.note, otherCredential.note) &&
            dataAreEqual(self.syncId, otherCredential.syncId) &&
@@ -275,6 +282,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     [coder encodeInt64:self.rank forKey:kACRankKey];
     [coder encodeObject:self.serviceIdentifier forKey:kACServiceIdentifierKey];
     [coder encodeObject:self.serviceName forKey:kACServiceNameKey];
+    [coder encodeObject:self.registryControlledDomain
+                 forKey:kACRegistryControlledDomainKey];
     [coder encodeObject:self.note forKey:kACNoteKey];
   }
 }
@@ -304,16 +313,19 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 
   } else {
     // Use the password initializer
-    return [self
-          initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
-                     gaia:[coder decodeNSStringForKey:kACGaiaKey]
-                 password:[coder decodeNSStringForKey:kACPasswordKey]
-                     rank:[coder decodeInt64ForKey:kACRankKey]
-         recordIdentifier:[coder decodeNSStringForKey:kACRecordIdentifierKey]
-        serviceIdentifier:[coder decodeNSStringForKey:kACServiceIdentifierKey]
-              serviceName:[coder decodeNSStringForKey:kACServiceNameKey]
-                 username:[coder decodeNSStringForKey:kACUserKey]
-                     note:[coder decodeNSStringForKey:kACNoteKey]];
+    return [self initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
+                            gaia:[coder decodeNSStringForKey:kACGaiaKey]
+                        password:[coder decodeNSStringForKey:kACPasswordKey]
+                            rank:[coder decodeInt64ForKey:kACRankKey]
+                recordIdentifier:
+                    [coder decodeNSStringForKey:kACRecordIdentifierKey]
+               serviceIdentifier:
+                   [coder decodeNSStringForKey:kACServiceIdentifierKey]
+                     serviceName:[coder decodeNSStringForKey:kACServiceNameKey]
+        registryControlledDomain:
+            [coder decodeNSStringForKey:kACRegistryControlledDomainKey]
+                        username:[coder decodeNSStringForKey:kACUserKey]
+                            note:[coder decodeNSStringForKey:kACNoteKey]];
   }
 }
 

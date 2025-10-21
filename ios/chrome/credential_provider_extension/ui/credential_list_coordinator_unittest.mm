@@ -33,6 +33,7 @@ ArchivableCredential* TestPasswordCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"http://www.example.com"
                                            serviceName:nil
+                              registryControlledDomain:@"example.com"
                                               username:@"username_value"
                                                   note:@"note"];
 }
