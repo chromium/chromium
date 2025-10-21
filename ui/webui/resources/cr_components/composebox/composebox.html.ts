@@ -65,7 +65,8 @@ export function getHtml(this: ComposeboxElement) {
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
             @match-focusin="${this.onMatchFocusin_}"
             @match-click="${this.onMatchClick_}"
-            ?hidden="${!this.showDropdown_}">
+            ?hidden="${!this.showDropdown_}"
+            .lastQueriedInput=${this.lastQueriedInput_}>
         </ntp-composebox-dropdown>
       </contextual-entrypoint-and-carousel>
     </div>
