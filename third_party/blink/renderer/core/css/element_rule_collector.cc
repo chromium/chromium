@@ -514,7 +514,12 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     const SelectorChecker& checker,
     SelectorChecker::SelectorCheckingContext& context) {
   bool force_starting_style = false;
-  probe::ForceStartingStyle(context.element, &force_starting_style);
+  Element* originating_element =
+      context.element->IsPseudoElement()
+          ? &To<PseudoElement>(context.element)->UltimateOriginatingElement()
+          : context.element;
+  probe::ForceStartingStyle(originating_element, &force_starting_style);
+
   bool reject_starting_styles = (style_recalc_context_.is_ensuring_style ||
                                  style_recalc_context_.old_style ||
                                  mode_ != SelectorChecker::kResolvingStyle) &&
