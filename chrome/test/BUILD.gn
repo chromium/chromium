@@ -9828,6 +9828,8 @@ test("unit_tests") {
     sources += [
       "../browser/policy/cloud/cloud_policy_invalidator_unittest.cc",
       "../browser/policy/cloud/fm_registration_token_uploader_unittest.cc",
+      "../browser/policy/developer_tools_policy_checker_factory_unittest.cc",
+      "../browser/policy/developer_tools_policy_checker_unittest.cc",
       "../browser/policy/developer_tools_policy_handler_unittest.cc",
     ]
 

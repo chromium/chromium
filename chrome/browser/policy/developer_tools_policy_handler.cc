@@ -272,19 +272,6 @@ void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
 }
 
-// static
-void DeveloperToolsPolicyHandler::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  // The default for this pref is |kDisallowedForForceInstalledExtensions|, both
-  // for managed and for unmanaged users. This is fine for unmanaged users too,
-  // because even if they have force-installed extensions (which could happen
-  // e.g. through GPO for Chrome on Windows), developer tools should be disabled
-  // for these by default.
-  registry->RegisterIntegerPref(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(Availability::kDisallowedForForceInstalledExtensions));
-}
-
 policy::DeveloperToolsPolicyHandler::Availability
 DeveloperToolsPolicyHandler::GetEffectiveAvailability(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
