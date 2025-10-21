@@ -44,20 +44,21 @@ namespace blink {
 
 namespace {
 
-const LayoutBlockFlow& GetInlineFormattingContext(const Node& node) {
+const LayoutBlockFlow* GetInlineFormattingContext(const Node& node) {
   const LayoutBlockFlow* block_flow =
       OffsetMapping::GetInlineFormattingContextOf(*node.GetLayoutObject());
   // For <textarea>, ignore internal anonymous IFCs for backward compatibility.
   if (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
-      block_flow->IsAnonymous() && node.IsInUserAgentShadowRoot()) {
+      block_flow && block_flow->IsAnonymous() &&
+      node.IsInUserAgentShadowRoot()) {
     for (const LayoutBlock* parent = block_flow->ContainingBlock(); parent;
          parent = parent->ContainingBlock()) {
       if (!parent->IsAnonymous() && parent->IsLayoutBlockFlow()) {
-        return *To<LayoutBlockFlow>(parent);
+        return To<LayoutBlockFlow>(parent);
       }
     }
   }
-  return *block_flow;
+  return block_flow;
 }
 
 }  // namespace
@@ -356,9 +357,9 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
   if (IsExplicitFindBoundary(start_node) || IsExplicitFindBoundary(end_node))
     return false;
 
-  const LayoutBlockFlow& start_block_flow =
+  const LayoutBlockFlow* start_block_flow =
       GetInlineFormattingContext(start_node);
-  const LayoutBlockFlow& end_block_flow = GetInlineFormattingContext(end_node);
+  const LayoutBlockFlow* end_block_flow = GetInlineFormattingContext(end_node);
   if (start_block_flow != end_block_flow)
     return false;
 
