@@ -18,6 +18,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -98,6 +99,10 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
   }
 
   // mojom::SecureEmbedHost implementation
+  MOCK_METHOD(void,
+              SetLocalSurfaceId,
+              (const ::viz::LocalSurfaceId& local_surface_id),
+              (override));
   void SetSecureEmbed(
       mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override {
     secure_embed_.Bind(std::move(secure_embed));
