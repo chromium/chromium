@@ -91,6 +91,12 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
   SharedImageBackingType GetBackingType() override;
   bool IsFormatSupported(viz::SharedImageFormat format);
+  bool IsSupportedForMappableBuffer(SharedImageUsageSet usage,
+                                    viz::SharedImageFormat format,
+                                    gfx::GpuMemoryBufferType gmb_type);
+  static bool CopyNativeBufferToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory);
 
  private:
   struct FormatInfo {

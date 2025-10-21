@@ -144,11 +144,14 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
       std::vector<SyncToken> sync_token_dependencies,
       uint64_t release_count,
       base::OnceCallback<void(bool)> callback);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
   // Crashes the GPU process. This functionality is added here because
   // of instability when creating a new tab just to navigate to

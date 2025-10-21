@@ -197,11 +197,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       const std::vector<gpu::SyncToken>& sync_token_dependencies,
       uint64_t release_count,
       CopyToGpuMemoryBufferAsyncCallback callback) override;
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory,
       CopyNativeGmbToSharedMemoryAsyncCallback callback) override;
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void WaitForTokenInRange(int32_t routing_id,
                            int32_t start,
                            int32_t end,
@@ -615,7 +617,9 @@ void GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync(
   scheduler_->ScheduleTask(Scheduler::Task(it->second, std::move(run_on_main),
                                            sync_token_dependencies, release));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 void GpuChannelMessageFilter::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory,
@@ -632,7 +636,7 @@ void GpuChannelMessageFilter::CopyNativeGmbToSharedMemoryAsync(
           ->CopyNativeBufferToSharedMemoryAsync(std::move(buffer_handle),
                                                 std::move(shared_memory)));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 void GpuChannelMessageFilter::WaitForTokenInRange(
     int32_t routing_id,

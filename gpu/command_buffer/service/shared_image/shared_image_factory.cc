@@ -305,6 +305,7 @@ SharedImageFactory::SharedImageFactory(
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
         feature_info.get(), gpu_preferences_,
         context_state_->vk_context_provider());
+    ahb_factory_ = ahb_factory.get();
     factories_.push_back(std::move(ahb_factory));
   }
 #elif BUILDFLAG(IS_OZONE)
@@ -547,9 +548,16 @@ bool SharedImageFactory::CreateSharedImage(
 
   bool use_compound = false;
   std::unique_ptr<SharedImageBacking> backing;
-  SharedImageBackingFactory* factory =
-      GetFactoryByUsage(usage, format, size, {}, gmb_type);
-
+  SharedImageBackingFactory* factory = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  if (ahb_factory_ &&
+      ahb_factory_->IsSupportedForMappableBuffer(usage, format, gmb_type)) {
+    factory = ahb_factory_;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (!factory) {
+    factory = GetFactoryByUsage(usage, format, size, {}, gmb_type);
+  }
   if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER &&
       !IsSharedBetweenThreads(usage)) {
     // Check if CompoundImageBacking can be created. CompoundImageBacking holds
@@ -728,6 +736,10 @@ bool SharedImageFactory::CopyNativeBufferToSharedMemoryAsync(
 #if BUILDFLAG(IS_WIN)
   return D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
       std::move(buffer_handle), std::move(shared_memory));
+#elif BUILDFLAG(IS_ANDROID)
+  return AHardwareBufferImageBackingFactory::
+      CopyNativeBufferToSharedMemoryAsync(std::move(buffer_handle),
+                                          std::move(shared_memory));
 #else
   return false;
 #endif

@@ -158,7 +158,9 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
 #elif BUILDFLAG(IS_WIN)
   handle.dxgi_handle_ = dxgi_handle_.Clone();
 #elif BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
+  if (android_hardware_buffer.is_valid()) {
+    handle.android_hardware_buffer = android_hardware_buffer.Clone();
+  }
 #endif
   handle.region_ = region_.Duplicate();
   return handle;

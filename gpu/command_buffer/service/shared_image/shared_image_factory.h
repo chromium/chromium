@@ -40,6 +40,10 @@ class D3DImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
+#if BUILDFLAG(IS_ANDROID)
+class AHardwareBufferImageBackingFactory;
+#endif
+
 class GPU_GLES2_EXPORT SharedImageFactory {
  public:
   // All objects passed are expected to outlive this class.
@@ -243,6 +247,10 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   uint32_t texture_target_for_io_surfaces_;
 #endif
   gpu::GpuDriverBugWorkarounds workarounds_;
+
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<AHardwareBufferImageBackingFactory> ahb_factory_ = nullptr;
+#endif
 
   raw_ptr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;
   base::WeakPtrFactory<SharedImageFactory> weak_ptr_factory_{this};

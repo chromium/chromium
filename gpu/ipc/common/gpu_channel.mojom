@@ -236,7 +236,7 @@ interface GpuChannel {
   // Note that this method has some similar functionality but is different than
   // above CopyToGpuMemoryBufferAsync in the sense that above method is only
   // used for shared memory GMBs whereas this method is used for native GMBs.
-  [EnableIf=is_win]
+  [EnableIf=is_win|is_android]
   CopyNativeGmbToSharedMemoryAsync(gfx.mojom.GpuMemoryBufferHandle
       buffer_handle, mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
                      => (bool success);

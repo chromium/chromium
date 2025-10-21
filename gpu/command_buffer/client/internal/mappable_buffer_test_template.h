@@ -62,6 +62,10 @@
 #include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/client/internal/mappable_buffer_ahb.h"
+#endif
+
 namespace gpu {
 
 template <typename MappableBufferType>
@@ -104,6 +108,11 @@ class MappableBufferTest : public testing::Test {
       case gfx::DXGI_SHARED_HANDLE:
         return MappableBufferDXGI::CreateFromHandleForTesting(std::move(handle),
                                                               size, format);
+#endif
+#if BUILDFLAG(IS_ANDROID)
+      case gfx::ANDROID_HARDWARE_BUFFER:
+        return MappableBufferAHB::CreateFromHandleForTesting(std::move(handle),
+                                                             size, format);
 #endif
       default:
         NOTREACHED();
@@ -203,9 +212,13 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
     };
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+#if BUILDFLAG(IS_ANDROID)
+          format != viz::MultiPlaneFormat::kNV12) {
+#else
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
                    format, usage)) {
+#endif
         continue;
       }
 
@@ -224,6 +237,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
   const gfx::Size kBufferSize(8, 8);
 
@@ -412,6 +426,7 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
     buffer->Unmap();
   }
 }
+#endif
 
 TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
   const gfx::Size kBufferSize(8, 8);
@@ -433,9 +448,13 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
     };
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+#if BUILDFLAG(IS_ANDROID)
+          format != viz::MultiPlaneFormat::kNV12) {
+#else
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
                    format, usage)) {
+#endif
         continue;
       }
 
@@ -462,11 +481,12 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
 // from a GpuMemoryBuffer implementation in order to be conformant.
 REGISTER_TYPED_TEST_SUITE_P(MappableBufferTest,
                             CreateFromHandle,
+#if !BUILDFLAG(IS_ANDROID)
                             CreateFromHandleSmallBuffer,
                             Map,
                             PersistentMap,
+#endif
                             SerializeAndDeserialize);
-
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_TEST_TEMPLATE_H_

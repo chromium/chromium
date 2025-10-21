@@ -32,6 +32,13 @@ component("internal") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "mappable_buffer_ahb.cc",
+      "mappable_buffer_ahb.h",
+    ]
+  }
+
   configs += [
     "//gpu/command_buffer/client:implementation",
     "//third_party/khronos:khronos_headers",

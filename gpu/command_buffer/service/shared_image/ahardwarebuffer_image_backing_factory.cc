@@ -9,6 +9,7 @@
 
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
+#include <android/hardware_buffer.h>
 #include <dawn/webgpu_cpp.h>
 #include <unistd.h>
 
@@ -53,9 +54,11 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/buildflags.h"
@@ -241,7 +244,6 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
     SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-
 }  // namespace
 
 // Implementation of SharedImageBacking that holds an AHardwareBuffer. This
@@ -1094,7 +1096,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
-  if (!ValidateUsage(usage, size, format)) {
+  if (!ValidateUsage(usage, size, format) &&
+      !IsSupportedForMappableBuffer(usage, format, handle.type)) {
     return nullptr;
   }
 
@@ -1116,6 +1119,91 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
 
 SharedImageBackingType AHardwareBufferImageBackingFactory::GetBackingType() {
   return SharedImageBackingType::kAHardwareBuffer;
+}
+
+bool AHardwareBufferImageBackingFactory::IsSupportedForMappableBuffer(
+    SharedImageUsageSet usage,
+    viz::SharedImageFormat format,
+    gfx::GpuMemoryBufferType gmb_type) {
+  if (format != viz::MultiPlaneFormat::kNV12) {
+    return false;
+  }
+  if (gmb_type != gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER) {
+    return false;
+  }
+  constexpr SharedImageUsageSet kMappableUsage =
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_CPU_READ;
+  if (!kMappableUsage.HasAll(usage)) {
+    return false;
+  }
+  return true;
+}
+
+// static
+bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  if (buffer_handle.type != gfx::ANDROID_HARDWARE_BUFFER) {
+    return false;
+  }
+
+  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
+  if (!mapping.IsValid()) {
+    return false;
+  }
+
+  base::android::ScopedHardwareBufferHandle ahb_handle =
+      buffer_handle.android_hardware_buffer.Clone();
+  AHardwareBuffer* hardware_buffer = ahb_handle.get();
+  if (!hardware_buffer) {
+    return false;
+  }
+
+  if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
+    return false;
+  }
+
+  AHardwareBuffer_Desc desc;
+  base::AndroidHardwareBufferCompat::GetInstance().Describe(hardware_buffer,
+                                                            &desc);
+
+  if (desc.format != AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420) {
+    return false;
+  }
+
+  CHECK(desc.usage & (AHARDWAREBUFFER_USAGE_CPU_READ_RARELY |
+                      AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN));
+
+  base::span<uint8_t> dst_buffer = mapping.GetMemoryAsSpan<uint8_t>();
+  const size_t required_size =
+      static_cast<size_t>(desc.width) * desc.height * 3 / 2;
+  if (dst_buffer.size() < required_size) {
+    return false;
+  }
+
+  void* src_data = nullptr;
+  int fence = -1;
+  int ret = base::AndroidHardwareBufferCompat::GetInstance().Lock(
+      hardware_buffer, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, fence, nullptr,
+      &src_data);
+  if (ret != 0) {
+    return false;
+  }
+
+  const uint8_t* src_y = static_cast<uint8_t*>(src_data);
+  const int src_y_stride = desc.stride;
+  const int src_uv_stride = desc.stride;
+  const int dst_stride = desc.width;
+
+  int result =
+      libyuv::NV12Copy(src_y, src_y_stride, src_y + src_y_stride * desc.height,
+                       src_uv_stride, dst_buffer.data(), dst_stride,
+                       dst_buffer.subspan(desc.height * dst_stride).data(),
+                       dst_stride, desc.width, desc.height);
+
+  base::AndroidHardwareBufferCompat::GetInstance().Unlock(hardware_buffer,
+                                                          &fence);
+  return result == 0;
 }
 
 }  // namespace gpu

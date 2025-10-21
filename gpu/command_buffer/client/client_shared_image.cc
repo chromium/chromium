@@ -13,6 +13,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include <optional>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
@@ -49,6 +50,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/client/internal/mappable_buffer_ahb.h"
 #endif
 
 namespace gpu {
@@ -231,7 +236,9 @@ ClientSharedImage::CreateMappableBufferFromHandle(
 #endif
 #if BUILDFLAG(IS_ANDROID)
     case gfx::ANDROID_HARDWARE_BUFFER:
-      return nullptr;
+      return MappableBufferAHB::CreateFromHandle(
+          std::move(handle), size, format,
+          std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
     default:
       // TODO(dcheng): Remove default case (https://crbug.com/676224).

@@ -135,7 +135,9 @@ void GpuChannelHost::CopyToGpuMemoryBufferAsync(
       mailbox, std::move(sync_token_dependencies), release_count,
       std::move(callback));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 void GpuChannelHost::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
@@ -149,7 +151,7 @@ void GpuChannelHost::CopyNativeGmbToSharedMemoryAsync(
   GetGpuChannel().CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 void GpuChannelHost::DelayedEnsureFlush(uint32_t deferred_message_id) {
   AutoLock lock(deferred_message_lock_);

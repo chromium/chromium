@@ -26,7 +26,7 @@ ClientSharedImageInterface::ClientSharedImageInterface(
     : gpu_channel_(std::move(channel)),
       proxy_(proxy),
       shared_memory_pool_(
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
           base::MakeRefCounted<base::UnsafeSharedMemoryPool>()
 #else
           nullptr
@@ -264,17 +264,24 @@ void ClientSharedImageInterface::UpdateSharedImage(
     const Mailbox& mailbox) {
   proxy_->UpdateSharedImage(sync_token, std::move(d3d_shared_fence), mailbox);
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 void ClientSharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_WIN)
   CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+#elif BUILDFLAG(IS_ANDROID)
+  CHECK_EQ(buffer_handle.type,
+           gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER);
+#endif
   CHECK(memory_region.IsValid());
   proxy_->CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 ClientSharedImageInterface::SwapChainSharedImages
 ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
