@@ -76,6 +76,11 @@ interface VizMain {
   [EnableIf=is_android]
   SetHostProcessId(int32 pid);
 
+  // Send NotifyWorkloadIncrease hint for the ADPF (Android Dynamic Performance
+  // Framework) session.
+  [EnableIf=is_android]
+  NotifyWorkloadIncrease();
+
   // Initiates the devtools enabled stream connection for the Viz Debugger.
   // This is only called if the flag --enable-viz-devtools is used.
   [EnableIf=use_viz_debugger]

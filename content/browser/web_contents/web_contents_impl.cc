@@ -87,6 +87,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/audio_stream_monitor.h"
@@ -7354,6 +7355,20 @@ void WebContentsImpl::ReadyToCommitNavigation(
   // caches this state for the active main frame only.
   if (navigation_handle->IsInPrimaryMainFrame()) {
     SetCaptureHandleConfig(blink::mojom::CaptureHandleConfig::New());
+  }
+
+  // Notify the OS that the workload is about to increase for main frame
+  // navigations only. This a trade off between latency and power - we don't
+  // want to do it for every navigation.
+  if (navigation_handle->IsInMainFrame()) {
+    auto* gpu_process_host =
+        GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false);
+    if (gpu_process_host) {
+      auto* host = gpu_process_host->gpu_host();
+      if (host) {
+        host->NotifyWorkloadIncrease();
+      }
+    }
   }
 
   observers_.NotifyObservers(&WebContentsObserver::ReadyToCommitNavigation,

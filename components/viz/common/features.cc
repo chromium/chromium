@@ -286,6 +286,13 @@ BASE_FEATURE(kEnableADPFSeparateRendererMainSession,
 // threads in the session changes.
 BASE_FEATURE(kEnableADPFSetThreads, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Chrome uses notifyWorkloadIncrease ADPF(Android Dynamic
+// Performance Framework) method before CrRendererMain starts running a heavy
+// workload during page load.
+// Supported only on Android >= 16.
+BASE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Chrome uses notifyWorkloadReset method on viz wakeup instead of
 // sending a timing report with a fake actual duration > target duration.
 // Supported only on Android >= 16.

@@ -172,6 +172,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 
   void SetProcessId(base::ProcessId pid);
   void OnProcessCrashed();
+  void NotifyWorkloadIncrease();
 
   // Adds a connection error handler for the GpuService.
   void AddConnectionErrorHandler(base::OnceClosure handler);

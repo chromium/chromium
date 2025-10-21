@@ -57,6 +57,11 @@ using pAPerformanceHint_notifyWorkloadReset =
             bool cpu,
             bool gpu,
             const char* identifier);
+using pAPerformanceHint_notifyWorkloadIncrease =
+    int (*)(APerformanceHintSession* session,
+            bool cpu,
+            bool gpu,
+            const char* identifier);
 }
 
 namespace viz {
@@ -77,6 +82,12 @@ class HintSessionFactoryImpl;
 bool ShouldUseWorkloadReset() {
   return android_get_device_api_level() > __ANDROID_API_V__ &&
          base::FeatureList::IsEnabled(features::kEnableADPFWorkloadReset);
+}
+
+bool ShouldUseWorkloadIncrease() {
+  return android_get_device_api_level() > __ANDROID_API_V__ &&
+         base::FeatureList::IsEnabled(
+             features::kEnableADPFWorkloadIncreaseOnPageLoad);
 }
 
 struct AdpfMethods {
@@ -106,6 +117,9 @@ struct AdpfMethods {
     if (ShouldUseWorkloadReset()) {
       LOAD_FUNCTION(main_dl_handle, APerformanceHint_notifyWorkloadReset);
     }
+    if (ShouldUseWorkloadIncrease()) {
+      LOAD_FUNCTION(main_dl_handle, APerformanceHint_notifyWorkloadIncrease);
+    }
   }
 
   ~AdpfMethods() = default;
@@ -120,6 +134,8 @@ struct AdpfMethods {
   pAPerformanceHint_closeSession APerformanceHint_closeSessionFn;
   pAPerformanceHint_setThreads APerformanceHint_setThreadsFn;
   pAPerformanceHint_notifyWorkloadReset APerformanceHint_notifyWorkloadResetFn;
+  pAPerformanceHint_notifyWorkloadIncrease
+      APerformanceHint_notifyWorkloadIncreaseFn;
 };
 
 class AdpfHintSession : public HintSession {
@@ -138,7 +154,7 @@ class AdpfHintSession : public HintSession {
       const base::flat_set<base::PlatformThreadId>& thread_ids) override;
 
   void NotifyWorkloadReset() override;
-
+  void NotifyWorkloadIncrease() override;
   void WakeUp();
 
  private:
@@ -161,6 +177,7 @@ class HintSessionFactoryImpl : public HintSessionFactory {
       base::TimeDelta target_duration,
       HintSession::SessionType type) override;
   void WakeUp() override;
+  void NotifyWorkloadIncrease() override;
   base::flat_set<base::PlatformThreadId> GetSessionThreadIds(
       base::flat_set<base::PlatformThreadId> transient_thread_ids,
       HintSession::SessionType type) override;
@@ -253,6 +270,17 @@ void AdpfHintSession::NotifyWorkloadReset() {
   TRACE_EVENT_INSTANT("android.adpf", "NotifyWorkloadReset", "retval", retval);
 }
 
+void AdpfHintSession::NotifyWorkloadIncrease() {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  if (ShouldUseWorkloadIncrease()) {
+    int retval = AdpfMethods::Get().APerformanceHint_notifyWorkloadIncreaseFn(
+        hint_session_, /*cpu=*/true, /*gpu=*/false,
+        /*identifier=*/"page-load");
+    TRACE_EVENT_INSTANT("android.adpf", "NotifyWorkloadIncrease", "retval",
+                        retval);
+  }
+}
+
 void AdpfHintSession::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
   if (ShouldUseWorkloadReset()) {
@@ -315,6 +343,13 @@ void HintSessionFactoryImpl::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (auto& session : hint_sessions_) {
     session->WakeUp();
+  }
+}
+
+void HintSessionFactoryImpl::NotifyWorkloadIncrease() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (auto& session : hint_sessions_) {
+    session->NotifyWorkloadIncrease();
   }
 }
 
