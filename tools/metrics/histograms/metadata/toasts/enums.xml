@@ -69,6 +69,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SharedGroups is now available after version update"/>
   <int value="20"
       label="Autofilled email got automatically verified by the browser"/>
+  <int value="21" label="Sharing image with Gemini failed"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
