@@ -232,17 +232,41 @@ def _get_sandbox_flags() -> tuple[list[str], str]:
     return sandbox_flags, ''
 
 
+def _configure_gemini_cli(home_dir: pathlib.Path,
+                          telemetry_outfile: pathlib.Path) -> None:
+    """Configures gemini-cli via its settings.json file.
+
+    Args:
+        home_dir: The path to the directory being used as the home directory.
+        telemetry_outfile: The path to the file to write telemetry data to.
+    """
+    gemini_dir = home_dir / '.gemini'
+    os.makedirs(gemini_dir, exist_ok=True)
+
+    settings_file = gemini_dir / 'settings.json'
+    if os.path.exists(settings_file):
+        with open(settings_file, 'r', encoding='utf-8') as infile:
+            settings_json = json.load(infile)
+    else:
+        settings_json = {}
+
+    settings_json.setdefault('telemetry', {})
+    settings_json['telemetry']['enabled'] = True
+    settings_json['telemetry']['outfile'] = str(telemetry_outfile)
+
+    with open(settings_file, 'w', encoding='utf-8') as outfile:
+        json.dump(settings_json, outfile)
+
+
 def _get_gemini_cli_arguments(
         provider_vars: dict[str, Any], provider_config: dict[str, Any],
-        user_prompt: str, telemetry_outfile: pathlib.Path
-) -> tuple[GeminiCliArguments | None, str]:
+        user_prompt: str) -> tuple[GeminiCliArguments | None, str]:
     """Collects arguments relevant to starting/running gemini-cli.
 
     Args:
         provider_vars: The key/value variables given to the provider.
         provider_config: The config parsed from the test's YAML config file.
         user_prompt: The user prompt to pass to gemini-cli.
-        telemetry_outfile: The file to write gemini-cli telemetry data to.
 
     Returns:
         A tuple (arguments, error). On success, |arguments| will be a
@@ -261,9 +285,6 @@ def _get_gemini_cli_arguments(
     command = [
         gemini_cli_bin,
         '-y',
-        '--telemetry',
-        '--telemetry-outfile',
-        str(telemetry_outfile),
     ]
 
     sandbox_flags = []
@@ -455,14 +476,14 @@ def _run_gemini_cli_with_telemetry_output(
 
     gcli_arguments, error = _get_gemini_cli_arguments(provider_vars,
                                                       provider_config,
-                                                      user_prompt,
-                                                      telemetry_outfile)
+                                                      user_prompt)
     if error:
         return {'error': error}
 
     _install_extensions(provider_config.get('extensions', DEFAULT_EXTENSIONS),
                         home_dir=gcli_arguments.home_dir)
     _apply_changes(provider_config.get('changes', []))
+    _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
 
     process = None
     combined_output: list[str] = []
