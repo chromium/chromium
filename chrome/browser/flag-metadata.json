@@ -3549,6 +3549,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-extensions-for-corp-desktop-android",
+    "owners": ["jamescook@chromium.org", "al-extensions-eng@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-external-display-hdr10",
     "owners": [ "sashamcintosh@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 140

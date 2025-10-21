@@ -351,11 +351,11 @@
 #include "components/unexportable_keys/features.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/pdf_features.h"
@@ -13313,6 +13313,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProfileSignalsReportingEnabledDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          enterprise_signals::features::kProfileSignalsReportingEnabled)},
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    {"enable-extensions-for-corp-desktop-android",
+     flag_descriptions::kEnableExtensionsForCorpDesktopAndroidName,
+     flag_descriptions::kEnableExtensionsForCorpDesktopAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         extensions_features::kEnableExtensionsForCorpDesktopAndroid)},
+#endif
 
     // Add new entries above this line.
 

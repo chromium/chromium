@@ -530,6 +530,12 @@ inline constexpr char kDevToolsStartingStyleDebuggingName[] =
 inline constexpr char kDevToolsStartingStyleDebuggingDescription[] =
     "Enables the debugging of @starting-style in the elements panel.";
 
+inline constexpr char kEnableExtensionsForCorpDesktopAndroidName[] =
+    "Enable extensions for corporate desktop Android dogfooders";
+inline constexpr char kEnableExtensionsForCorpDesktopAndroidDescription[] =
+    "Enables extensions for corporate (google.com and managedchrome.com) "
+    "desktop Android dogfooders. Does nothing for other domains.";
+
 inline constexpr char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
 inline constexpr char kEnableSeamlessSigninDescription[] =
     "Enables the Seamless Sign-in flow that signs in the user without showing "

@@ -11008,6 +11008,8 @@ from previous Chrome versions.
   <int value="-1165112418" label="PwaUpdateDialogForName:enabled"/>
   <int value="-1164940780" label="AutofillParseIBANFields:disabled"/>
   <int value="-1164858657" label="CrostiniUsbAllowUnsupported:disabled"/>
+  <int value="-1164578243"
+      label="EnableExtensionsForCorpDesktopAndroid:enabled"/>
   <int value="-1164012332" label="SysUiShouldHoldbackForest:enabled"/>
   <int value="-1163777157" label="ContextualSearchSimplifiedServer:disabled"/>
   <int value="-1163718295" label="AndroidHubFloatingActionButton:enabled"/>
@@ -14450,6 +14452,7 @@ from previous Chrome versions.
   <int value="67343657"
       label="LensOverlayTextSelectionContextMenuEntrypoint:disabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
+  <int value="68263546" label="EnableExtensionsForCorpDesktopAndroid:disabled"/>
   <int value="68506319" label="TabStripGroupCollapseAndroid:disabled"/>
   <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
