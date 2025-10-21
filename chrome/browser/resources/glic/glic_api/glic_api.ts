@@ -1967,6 +1967,8 @@ export enum ActorTaskStopReason {
   TASK_COMPLETE = 0,
   // Actor task was stopped by the user.
   STOPPED_BY_USER = 1,
+  // Actor task was stopped because the model reported a failure.
+  MODEL_ERROR = 2,
 }
 
 ///////////////////////////////////////////////

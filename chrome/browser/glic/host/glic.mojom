@@ -213,6 +213,8 @@ enum ActorTaskStopReason {
   [Default] kTaskComplete = 0,
   // Actor task was stopped by the user.
   kStoppedByUser = 1,
+  // Actor task was stopped because the model reported a failure.
+  [MinVersion=1] kModelError = 2,
 };
 
 // @generate glic_api
