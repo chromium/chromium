@@ -149,8 +149,7 @@ void AddSharedTabGroupDataToFakeServer(
   sync_pb::SyncEntity::CollaborationMetadata metadata;
   metadata.set_collaboration_id(collaboration_id.value());
 
-  std::string gaia_id =
-      base::SysNSStringToUTF8([FakeSystemIdentity fakeIdentity3].gaiaID);
+  std::string gaia_id = [FakeSystemIdentity fakeIdentity3].gaiaId.ToString();
   metadata.mutable_creation_attribution()->set_obfuscated_gaia_id(gaia_id);
   metadata.mutable_last_update_attribution()->set_obfuscated_gaia_id(gaia_id);
 
