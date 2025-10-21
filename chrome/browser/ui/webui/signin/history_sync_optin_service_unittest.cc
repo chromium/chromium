@@ -24,7 +24,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -139,7 +142,8 @@ class CrashingObserver : public HistorySyncOptinHelper::Observer {
       observation_{this};
 };
 
-class HistorySyncOptinServiceTest : public testing::Test {
+class HistorySyncOptinServiceTest : public testing::Test,
+                                    public testing::WithParamInterface<bool> {
  public:
   HistorySyncOptinServiceTest() {
     feature_list_.InitAndEnableFeature(
@@ -161,14 +165,31 @@ class HistorySyncOptinServiceTest : public testing::Test {
 
   AccountInfo MakePrimaryAccountAvailable(
       std::string email,
-      IdentityTestEnvironmentProfileAdaptor* identity_test_env_adaptor) {
+      IdentityTestEnvironmentProfileAdaptor* identity_test_env_adaptor,
+      bool with_managed_account_info_available) {
     AccountInfo account_info =
         identity_test_env_adaptor->identity_test_env()
             ->MakePrimaryAccountAvailable(email, signin::ConsentLevel::kSignin);
+    if (with_managed_account_info_available) {
+      account_info =
+          UpdateAccountManagementInfo(account_info, identity_test_env_adaptor);
+    }
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.locale = "en";
+    account_info.picture_url = "https://example.com";
+    identity_test_env_adaptor->identity_test_env()->UpdateAccountInfoForAccount(
+        account_info);
+    return account_info;
+  }
 
-    if (email == kMainEmail) {
+  AccountInfo UpdateAccountManagementInfo(
+      AccountInfo& account_info,
+      IdentityTestEnvironmentProfileAdaptor* identity_test_env_adaptor) {
+    if (account_info.email == kMainEmail) {
       account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
-    } else if (email == kManagedEmail || email == kManagedEmail2) {
+    } else if (account_info.email == kManagedEmail ||
+               account_info.email == kManagedEmail2) {
       account_info.hosted_domain = "example.com";
     } else {
       NOTREACHED();
@@ -177,6 +198,8 @@ class HistorySyncOptinServiceTest : public testing::Test {
         account_info);
     return account_info;
   }
+
+  bool IsManagedAccountInfoAvailableInAdvance() { return GetParam(); }
 
   ~HistorySyncOptinServiceTest() override = default;
 
@@ -200,9 +223,10 @@ class HistorySyncOptinServiceTest : public testing::Test {
   std::unique_ptr<HistorySyncOptinService> service_;
 };
 
-TEST_F(HistorySyncOptinServiceTest, StartFlow) {
+TEST_P(HistorySyncOptinServiceTest, StartFlow) {
   AccountInfo account_info =
-      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get());
+      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get(),
+                                  IsManagedAccountInfoAvailableInAdvance());
   SyncServiceFactory::GetForProfile(profile_.get())
       ->GetUserSettings()
       ->SetSelectedTypes(
@@ -217,11 +241,15 @@ TEST_F(HistorySyncOptinServiceTest, StartFlow) {
       account_info, std::move(delegate),
       signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
+  if (!IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(account_info, identity_test_env_adaptor_.get());
+  }
 }
 
-TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
+TEST_P(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
   AccountInfo account_info =
-      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get());
+      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get(),
+                                  IsManagedAccountInfoAvailableInAdvance());
   SyncServiceFactory::GetForProfile(profile_.get())
       ->GetUserSettings()
       ->SetSelectedTypes(
@@ -244,6 +272,9 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
       account_info, std::move(delegate),
       signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
+  if (!IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(account_info, identity_test_env_adaptor_.get());
+  }
 
   // A second flow cannot be started.
   flow_started = service_->StartHistorySyncOptinFlow(
@@ -273,14 +304,15 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
 // Tests that when a new managed profile is created as a result of accepting
 // management tearing down the service tied to the originating profile due not
 // affect the history sync flow of the new profile, which proceeds normally.
-TEST_F(HistorySyncOptinServiceTest,
+TEST_P(HistorySyncOptinServiceTest,
        FlowInProgressDuringOriginalProfileTeardown) {
   base::test::TestFuture<void> future;
   base::HistogramTester histogram_tester;
 
   // Sign-in with the managed user account to the existing `profile_`.
   AccountInfo original_managed_account_info = MakePrimaryAccountAvailable(
-      kManagedEmail, identity_test_env_adaptor_.get());
+      kManagedEmail, identity_test_env_adaptor_.get(),
+      IsManagedAccountInfoAvailableInAdvance());
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager.SetUp());
@@ -316,8 +348,26 @@ TEST_F(HistorySyncOptinServiceTest,
   EXPECT_CALL(*disclaimer_service, EnsureManagedProfileForAccount)
       .WillOnce([&](const CoreAccountId&, signin_metrics::AccessPoint,
                     base::OnceCallback<void(Profile*, bool)> callback) {
+        // Sign-in to the new managed profile the user.
         MakePrimaryAccountAvailable(original_managed_account_info.email,
-                                    &new_profile_adaptor);
+                                    &new_profile_adaptor,
+                                    IsManagedAccountInfoAvailableInAdvance());
+        signin::AccountsMutator* account_mutator =
+            identity_test_env_adaptor_->identity_test_env()
+                ->identity_manager()
+                ->GetAccountsMutator();
+        account_mutator->MoveAccount(new_profile_adaptor.identity_test_env()
+                                         ->identity_manager()
+                                         ->GetAccountsMutator(),
+                                     original_managed_account_info.account_id);
+
+        CHECK(!identity_test_env_adaptor_->identity_test_env()
+                   ->identity_manager()
+                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+        CHECK(new_profile_adaptor.identity_test_env()
+                  ->identity_manager()
+                  ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(std::move(callback), new_managed_profile, true));
@@ -325,6 +375,16 @@ TEST_F(HistorySyncOptinServiceTest,
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindLambdaForTesting([&]() { service_->Shutdown(); }));
+
+        // Trigger an update of the account info. It should have no effect on
+        // the flow (i.e. no double triggering of any method).
+        AccountInfo updated_info =
+            new_profile_adaptor.identity_test_env()
+                ->identity_manager()
+                ->FindExtendedAccountInfo(original_managed_account_info);
+        updated_info.full_name = "updated name";
+        new_profile_adaptor.identity_test_env()->UpdateAccountInfoForAccount(
+            updated_info);
       });
 
   auto original_delegate =
@@ -351,6 +411,11 @@ TEST_F(HistorySyncOptinServiceTest,
       original_managed_account_info, std::move(original_delegate),
       signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
+
+  if (!IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(original_managed_account_info,
+                                identity_test_env_adaptor_.get());
+  }
   EXPECT_TRUE(future.Wait());
   // Wait for the original service to be reset.
   service_observer.WaitForReset();
@@ -364,14 +429,15 @@ TEST_F(HistorySyncOptinServiceTest,
 
 // Regression test for crbug.com/452313094, to ensure flows for managed accounts
 // invoke only once the HistorySyncOptinHelper::ShowHistorySyncOptinScreen.
-TEST_F(HistorySyncOptinServiceTest,
+TEST_P(HistorySyncOptinServiceTest,
        MakesSingleHistorySyncOptinScreenInvocation) {
   base::test::TestFuture<void> future;
   base::HistogramTester histogram_tester;
 
   // Sign-in with the managed user account to the existing `profile_`.
   AccountInfo original_managed_account_info = MakePrimaryAccountAvailable(
-      kManagedEmail, identity_test_env_adaptor_.get());
+      kManagedEmail, identity_test_env_adaptor_.get(),
+      IsManagedAccountInfoAvailableInAdvance());
 
   // Do not sync history, tabs and tab groups.
   DisableHistorySync(profile_.get());
@@ -399,6 +465,10 @@ TEST_F(HistorySyncOptinServiceTest,
       original_managed_account_info, std::move(delegate),
       signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
+  if (!IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(original_managed_account_info,
+                                identity_test_env_adaptor_.get());
+  }
   EXPECT_TRUE(future.Wait());
 
   histogram_tester.ExpectUniqueSample(
@@ -409,10 +479,11 @@ TEST_F(HistorySyncOptinServiceTest,
 
 // Regression test ensuring that the service doesn't destruct prematurely it's
 // objects (including the helper), while they are still in use.
-TEST_F(HistorySyncOptinServiceTest,
+TEST_P(HistorySyncOptinServiceTest,
        MultipleObserversDoNotCrashOnFlowCompletion) {
   AccountInfo account_info =
-      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get());
+      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get(),
+                                  IsManagedAccountInfoAvailableInAdvance());
   DisableHistorySync(profile_.get());
 
   auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
@@ -430,7 +501,9 @@ TEST_F(HistorySyncOptinServiceTest,
   service_->StartHistorySyncOptinFlow(
       account_info, std::move(delegate),
       signin_metrics::AccessPoint::kAccountMenu);
-
+  if (!IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(account_info, identity_test_env_adaptor_.get());
+  }
   HistorySyncOptinHelper* helper =
       service_->GetHistorySyncOptinHelperForTesting();
   ASSERT_TRUE(helper);
@@ -443,3 +516,12 @@ TEST_F(HistorySyncOptinServiceTest,
   // Completing the flow results in destructing the helper, but this should
   // happen only when it is no longer in use.
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HistorySyncOptinServiceTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "WithManagementInfoKnownInAdvance"
+                                      : "WithManagementInfoFetchedLater";
+                         });

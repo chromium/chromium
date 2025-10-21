@@ -612,7 +612,6 @@ void HistorySyncOptinHelperInBrowser::
     ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
         const AccountInfo& managed_account_info) {
   CHECK_EQ(account_info().account_id, managed_account_info.account_id);
-  CHECK(AccountIsManaged(account_info()) == signin::Tribool::kTrue);
   management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
       kManagementDisclaimerComplete;
   AwaitSyncStartupAndShowHistorySyncScreen();
