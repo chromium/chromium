@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
@@ -46,6 +45,15 @@
 #include "base/mac/mac_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/auto_reset.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -73,9 +81,9 @@ enum class WindowState {
 class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
   NotificationsApiTest() = default;
-  ~NotificationsApiTest() override = default;
   NotificationsApiTest(const NotificationsApiTest&) = delete;
   NotificationsApiTest& operator=(const NotificationsApiTest&) = delete;
+  ~NotificationsApiTest() override = default;
 
   const Extension* LoadExtensionAndWait(
       const std::string& test_name) {
@@ -173,13 +181,21 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   void LaunchPlatformApp(const Extension* extension) {
-    apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+    apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
+        apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      apps::chrome_app_deprecation::kAllowUserInstalledChromeApps};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::AutoReset<bool> enable_chrome_apps_{
+      &extensions::testing::g_enable_chrome_apps_for_testing, true};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
