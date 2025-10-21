@@ -89,6 +89,10 @@ const base::FeatureParam<bool> kEnablePageContentExtraction(
     "EnablePageContentExtraction",
     true);
 
+const base::FeatureParam<bool> kUseDynamicCues(&kContextualCueing,
+                                               "UseDynamicCues",
+                                               false);
+
 const base::FeatureParam<bool> kExtractInnerTextForZeroStateSuggestions(
     &kGlicZeroStateSuggestions,
     "ZSSExtractInnerText",

@@ -58,6 +58,9 @@ extern const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay;
 // count of words client signal.
 extern const base::FeatureParam<bool> kEnablePageContentExtraction;
 
+// Whether or not to use static or dynamic cue texts based on the page.
+extern const base::FeatureParam<bool> kUseDynamicCues;
+
 // Whether to enable extraction of inner text for zero state suggestions.
 extern const base::FeatureParam<bool> kExtractInnerTextForZeroStateSuggestions;
 

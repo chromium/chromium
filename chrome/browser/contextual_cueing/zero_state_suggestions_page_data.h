@@ -141,12 +141,6 @@ class ZeroStateSuggestionsPageData
   // for the page.
   void InvokePageContextCallbacksIfComplete();
 
-  // If `optimization_metadata_` contains everything necessary to determine a
-  // suggestions result, run `suggestions_callbacks_` to return those
-  // suggestions. This method itself also returns true if suggestions are sent
-  // via the callbacks as a result of execution.
-  bool ReturnSuggestionsFromOptimizationMetadataIfPossible();
-
   bool work_done() const {
     return inner_text_done_ && annotated_page_content_done_ &&
            optimization_metadata_done_;

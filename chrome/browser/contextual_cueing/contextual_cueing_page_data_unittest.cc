@@ -4,8 +4,10 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +47,7 @@ TEST_F(ContextualCueingPageDataTest, Basic) {
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("basic label");
+  config->set_dynamic_cue_label("should not use this label");
 
   ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
                                           std::move(metadata),
@@ -175,6 +178,50 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
 
   // Second basic condition should get picked.
   config = metadata.add_cueing_configurations();
+  config->set_cue_label("basic label");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("basic label", future.Get().value());
+}
+
+class ContextualCueingPageDataTestDynamicCue
+    : public ContextualCueingPageDataTest {
+ public:
+  void SetUp() override {
+    ContextualCueingPageDataTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kContextualCueing, {{"UseDynamicCues", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContextualCueingPageDataTestDynamicCue, Basic) {
+  base::test::TestFuture<
+      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_cue_label("should not use this label");
+  config->set_dynamic_cue_label("dynamic label");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("dynamic label", future.Get().value());
+}
+
+TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
+  base::test::TestFuture<
+      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("basic label");
 
   ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
