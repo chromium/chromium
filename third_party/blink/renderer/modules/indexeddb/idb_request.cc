@@ -767,12 +767,10 @@ void IDBRequest::AssignNewMetrics(AsyncTraceState metrics) {
   if (GetExecutionContext()) {
     std::ignore = GetExecutionContext()->GetScheduler()->AddLifecycleObserver(
         FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
-        BindRepeating(
-            [](scheduler::SchedulingLifecycleState lifecycle_state) {
-              base::UmaHistogramEnumeration(
-                  "WebCore.IndexedDB.SchedulingLifecycleState", lifecycle_state,
-                  scheduler::SchedulingLifecycleState::kStopped);
-            }));
+        BindRepeating([](scheduler::SchedulingLifecycleState lifecycle_state) {
+          base::UmaHistogramEnumeration(
+              "WebCore.IndexedDB.SchedulingLifecycleState", lifecycle_state);
+        }));
   }
 
   metrics_.set_is_fg_client(transaction_ &&
