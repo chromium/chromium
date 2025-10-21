@@ -851,24 +851,7 @@ TEST_F(LensOverlayUrlBuilderTest, ShouldOpenSearchURLInNewTab) {
   EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(results_url_unimodal));
   EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(results_url_multimodal));
   EXPECT_TRUE(lens::ShouldOpenSearchURLInNewTab(results_url_shopping_mode));
-  EXPECT_TRUE(lens::ShouldOpenSearchURLInNewTab(results_url_aim_mode));
-}
-
-TEST_F(LensOverlayUrlBuilderTest,
-       ShouldOpenSearchURLInNewTabWithAimInSidePanelFlag) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeaturesAndParameters(
-      {{lens::features::kLensOverlay,
-        {
-            {"results-search-url", kResultsSearchBaseUrl},
-        }},
-       {lens::features::kLensSearchAimM3,
-        {{"open-aim-in-side-panel", "true"}}}},
-      /*disabled_features=*/{});
-  const GURL base_results_url = GURL(kResultsSearchBaseUrl);
-  const GURL results_url_mgt_mode =
-      GURL(std::string(kResultsSearchBaseUrl) + "?udm=50");
-  EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(results_url_mgt_mode));
+  EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(results_url_aim_mode));
 }
 
 TEST_F(LensOverlayUrlBuilderTest, URLsMatchWithoutTextFragment) {

@@ -54,16 +54,9 @@ bool IsLensOverlayContextualSearchboxEnabled() {
 }
 
 bool IsAimM3Enabled(Profile* profile) {
-  // Lens has a feature param to bypass eligibility (both server & local)
-  // altogether. Unsure if this is necessary, but since it's default true, it
-  // can't hurt.
-  if (!lens::features::ShouldUseAimEligibilityService()) {
-    return lens::features::IsAimM3Enabled();
-  }
-
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       AimEligibilityServiceFactory::GetForProfile(profile),
-      lens::features::kLensSearchAimM3);
+      lens::features::kLensSearchAimM3, lens::features::kLensSearchAimM3EnUs);
 }
 
 bool ShouldShowLensOverlayEduActionChip(Profile* profile) {

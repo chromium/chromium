@@ -89,6 +89,7 @@ BASE_FEATURE(kLensSearchNotFoundOnPageToast,
 BASE_FEATURE(kLensOverlayStraightToSrp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchAimM3, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensSearchAimM3EnUs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchReinvocationAffordance,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -513,9 +514,6 @@ const base::FeatureParam<int> kLensOverlayEduActionChipMaxShownCount{
 constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
     &kLensOverlayStraightToSrp, "query", ""};
 
-constexpr base::FeatureParam<bool> kUseAimEligibilityService{
-    &kLensSearchAimM3, "use-aim-eligibility-service", true};
-
 constexpr base::FeatureParam<bool> kOpenAimInSidePanel{
     &kLensSearchAimM3, "open-aim-in-side-panel", true};
 
@@ -526,7 +524,7 @@ constexpr base::FeatureParam<bool> kSidePanelGhostLoaderDisabledForAim{
     &kLensSearchAimM3, "side-panel-ghost-loader-disabled-for-aim", true};
 
 constexpr base::FeatureParam<bool> kContextualizeOnFocus{
-    &kLensSearchAimM3, "contextualize-on-focus", false};
+    &kLensSearchAimM3, "contextualize-on-focus", true};
 
 constexpr base::FeatureParam<bool> kCloseOverlayOnAimTransition{
     &kLensSearchAimM3, "close-overlay-on-aim-transition", true};
@@ -535,7 +533,7 @@ constexpr base::FeatureParam<bool> kEnableFloatingGForHeader{
     &kLensSearchAimM3, "enable-floating-g-for-header", false};
 
 constexpr base::FeatureParam<bool> kEnableClientSideHeader{
-    &kLensSearchAimM3, "enable-client-side-header", false};
+    &kLensSearchAimM3, "enable-client-side-header", true};
 
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
     &kLensOverlayEntrypointLabelAlt, "id", 0};
@@ -1039,33 +1037,20 @@ bool IsUpdatedClientContextEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayUpdatedClientContext);
 }
 
-bool IsAimM3Enabled() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3);
-}
-
-bool ShouldUseAimEligibilityService() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kUseAimEligibilityService.Get();
-}
-
 bool ShouldShowAimInSidePanel() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kOpenAimInSidePanel.Get();
+  return kOpenAimInSidePanel.Get();
 }
 
 bool GetAimSearchboxEnabled() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kAimSearchboxEnabled.Get();
+  return kAimSearchboxEnabled.Get();
 }
 
 bool GetSidePanelGhostLoaderDisabledForAim() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kSidePanelGhostLoaderDisabledForAim.Get();
+  return kSidePanelGhostLoaderDisabledForAim.Get();
 }
 
 bool GetShouldComposeboxContextualizeOnFocus() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kContextualizeOnFocus.Get();
+  return kContextualizeOnFocus.Get();
 }
 
 bool GetAimSuggestionsEnabled() {
@@ -1075,18 +1060,15 @@ bool GetAimSuggestionsEnabled() {
 }
 
 bool ShouldCloseOverlayOnAimTransition() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kCloseOverlayOnAimTransition.Get();
+  return kCloseOverlayOnAimTransition.Get();
 }
 
 bool GetEnableFloatingGForHeader() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kEnableFloatingGForHeader.Get();
+  return kEnableFloatingGForHeader.Get();
 }
 
 bool GetEnableClientSideHeader() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
-         kEnableClientSideHeader.Get();
+  return kEnableClientSideHeader.Get();
 }
 
 bool GetEnableLensButtonInSearchbox() {

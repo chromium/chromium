@@ -111,9 +111,13 @@ BASE_DECLARE_FEATURE(kLensSearchNotFoundOnPageToast);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayStraightToSrp);
 
-// Enables AIM follow ups with the Lens overlay results side panel.
+// Enables AIM follow ups with the Lens overlay results side panel globally.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchAimM3);
+
+// Enables AIM follow ups with the Lens overlay results side panel in en-US.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchAimM3EnUs);
 
 // Enables the Lens button in the AIM Searchbox for reinvocation of selection
 // overlay.
@@ -806,16 +810,6 @@ extern bool ShowContextualSearchboxZeroPrefixSuggest();
 // Whether to use the updated client context.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsUpdatedClientContextEnabled();
-
-// Whether the AIM M3 flag is enabled. This does not check individual params
-// such as whether to show AIM in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsAimM3Enabled();
-
-// Whether to use the AIM eligibility service to check eligibility for AIM
-// features.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShouldUseAimEligibilityService();
 
 // Whether to show open AIM search pages in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)

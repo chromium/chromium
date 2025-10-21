@@ -117,7 +117,8 @@ class LensSidePanelPixelTest : public InteractiveBrowserTest {
         {{lens::features::kLensOverlay, {}},
          {lens::features::kLensSearchAimM3,
           {{"use-aim-eligibility-service", "false"},
-           {"enable-client-side-header", "true"}}}},
+           {"enable-client-side-header", "true"},
+          {"contextualize-on-focus", "false"}}}},
         /*disabled_features=*/{});
   }
 
