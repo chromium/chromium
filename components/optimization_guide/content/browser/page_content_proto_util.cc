@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
@@ -1114,6 +1115,28 @@ std::optional<TargetNodeInfo> FindNodeWithID(
   return FindNodeWithIDRecursive(annotated_page_content.root_node(),
                                  main_frame_doc_id, document_identifier,
                                  content_node_id);
+}
+
+content::RenderFrameHost* GetRenderFrameForDocumentIdentifier(
+    content::WebContents& web_contents,
+    std::string_view target_document_token) {
+  content::RenderFrameHost* render_frame = nullptr;
+  web_contents.ForEachRenderFrameHostWithAction(
+      [&target_document_token, &render_frame](content::RenderFrameHost* rfh) {
+        // Skip inactive frame and its children.
+        if (!rfh->IsActive()) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        auto* user_data =
+            DocumentIdentifierUserData::GetForCurrentDocument(rfh);
+        if (user_data &&
+            user_data->serialized_token() == target_document_token) {
+          render_frame = rfh;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return render_frame;
 }
 
 RenderFrameInfo::RenderFrameInfo() = default;

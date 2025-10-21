@@ -17,6 +17,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "url/origin.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace optimization_guide {
 
 struct RenderFrameInfo {
@@ -82,6 +86,10 @@ std::optional<optimization_guide::TargetNodeInfo> FindNodeWithID(
     const std::string_view document_identifier,
     const int dom_node_id);
 
+// Returns the `RenderFrameHost` for a `DocumentIdentifier::serialized_token()`.
+content::RenderFrameHost* GetRenderFrameForDocumentIdentifier(
+    content::WebContents& web_contents,
+    std::string_view target_document_token);
 
 // Returns the URL to use for frame metadata given the Document's
 // `committed_url` and `committed_origin`. The `committed_url` may not be a

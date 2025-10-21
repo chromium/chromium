@@ -57,27 +57,6 @@ RenderFrameHost* GetRootFrameForWidget(content::WebContents& web_contents,
 
 }  // namespace
 
-content::RenderFrameHost* GetRenderFrameForDocumentIdentifier(
-    content::WebContents& web_contents,
-    std::string_view target_document_token) {
-  RenderFrameHost* render_frame = nullptr;
-  web_contents.ForEachRenderFrameHostWithAction([&target_document_token,
-                                                 &render_frame](
-                                                    RenderFrameHost* rfh) {
-    // Skip inactive frame and its children.
-    if (!rfh->IsActive()) {
-      return RenderFrameHost::FrameIterationAction::kSkipChildren;
-    }
-    auto* user_data = DocumentIdentifierUserData::GetForCurrentDocument(rfh);
-    if (user_data && user_data->serialized_token() == target_document_token) {
-      render_frame = rfh;
-      return RenderFrameHost::FrameIterationAction::kStop;
-    }
-    return RenderFrameHost::FrameIterationAction::kContinue;
-  });
-  return render_frame;
-}
-
 RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
                                           PageTarget target) {
   tabs::TabInterface* tab = tab_handle.Get();
@@ -98,8 +77,9 @@ RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
 
   CHECK(std::holds_alternative<DomNode>(target));
 
-  content::RenderFrameHost* target_frame = GetRenderFrameForDocumentIdentifier(
-      *tab->GetContents(), std::get<DomNode>(target).document_identifier);
+  content::RenderFrameHost* target_frame =
+      optimization_guide::GetRenderFrameForDocumentIdentifier(
+          *tab->GetContents(), std::get<DomNode>(target).document_identifier);
 
   // After finding the target frame, walk up to its local root.
   return GetLocalRoot(target_frame);

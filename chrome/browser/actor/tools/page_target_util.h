@@ -15,7 +15,6 @@
 
 namespace content {
 class RenderFrameHost;
-class WebContents;
 }  // namespace content
 
 namespace optimization_guide::proto {
@@ -23,11 +22,6 @@ class AnnotatedPageContent;
 }  // namespace optimization_guide::proto
 
 namespace actor {
-
-// Returns the `RenderFrameHost` for a `DocumentIdentifier::serialized_token()`.
-content::RenderFrameHost* GetRenderFrameForDocumentIdentifier(
-    content::WebContents& web_contents,
-    std::string_view target_document_token);
 
 // Returns the `RenderFrameHost` for a `PageTarget`.
 content::RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,

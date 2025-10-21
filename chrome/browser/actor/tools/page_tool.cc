@@ -66,8 +66,10 @@ bool ValidateTargetFrameCandidate(
     return false;
   }
 
-  RenderFrameHost* apc_target_frame = GetRenderFrameForDocumentIdentifier(
-      web_contents, target_node_info->document_identifier.serialized_token());
+  RenderFrameHost* apc_target_frame =
+      optimization_guide::GetRenderFrameForDocumentIdentifier(
+          web_contents,
+          target_node_info->document_identifier.serialized_token());
 
   // Only return the candidate if its RenderWidgetHost matches the target
   // and it's also a local root frame(i.e. has no parent or parent has
