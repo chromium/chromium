@@ -9,6 +9,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 
+// Local Network Access browser tests related to iframes.
+//
 namespace local_network_access {
 
 // Path to a response that passes Local Network Access checks.

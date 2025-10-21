@@ -24,6 +24,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace local_network_access {
+
 LocalNetworkAccessBrowserTestBase::LocalNetworkAccessBrowserTestBase()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
   // Some builders run with field_trial disabled, need to enable this
