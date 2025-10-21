@@ -220,10 +220,13 @@ constexpr CGFloat kShadowOpacity = 0.12;
     [searchStackView.trailingAnchor
         constraintLessThanOrEqualToAnchor:shortcutStackView.leadingAnchor],
     [searchStackView.topAnchor
-        constraintEqualToAnchor:layoutGuide.topAnchor
+        constraintEqualToAnchor:_effectView ? _effectView.contentView.topAnchor
+                                            : layoutGuide.topAnchor
                        constant:kSearchStackViewTopMargin],
     [searchStackView.bottomAnchor
-        constraintEqualToAnchor:layoutGuide.bottomAnchor
+        constraintEqualToAnchor:_effectView
+                                    ? _effectView.contentView.bottomAnchor
+                                    : layoutGuide.bottomAnchor
                        constant:-kSearchStackViewBottomMargin],
     [shortcutStackView.topAnchor
         constraintEqualToAnchor:searchStackView.topAnchor],
