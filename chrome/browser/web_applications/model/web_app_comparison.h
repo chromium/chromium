@@ -16,7 +16,7 @@ namespace web_app {
 class WebApp;
 struct WebAppInstallInfo;
 
-enum class WebAppComparisonPendingInfoComparison {
+enum class PendingUpdateComparison {
   // There is no pending update info on the existing app.
   kNotPending,
   // There is pending update info on the existing app, but it does not equal the
@@ -27,8 +27,7 @@ enum class WebAppComparisonPendingInfoComparison {
   kHasPendingAndEquals,
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         WebAppComparisonPendingInfoComparison value);
+std::ostream& operator<<(std::ostream& os, PendingUpdateComparison value);
 
 // This class is a result of comparing a `WebApp` on disk with new
 // `WebAppInstallInfo` from a web page. It contains information about what is
@@ -55,7 +54,7 @@ class WebAppComparison {
 
   // The same comparison as `name_equality()` but with the
   // `existing_web_app` pending update info.
-  WebAppComparisonPendingInfoComparison pending_name_equality() const {
+  PendingUpdateComparison pending_name_equality() const {
     return pending_name_equality_;
   }
 
@@ -66,7 +65,7 @@ class WebAppComparison {
 
   // The same comparison as `primary_icons_equality()` but with the
   // `existing_web_app` pending update info.
-  WebAppComparisonPendingInfoComparison pending_primary_icons_equality() const {
+  PendingUpdateComparison pending_primary_icons_equality() const {
     return pending_primary_icons_equality_;
   }
 
@@ -90,10 +89,12 @@ class WebAppComparison {
   bool ExistingAppWithPendingEqualsNewUpdate() const;
 
   // Returns true if the only thing that has changed is the name of the app.
+  // This does not consider any pending update info.
   bool IsNameChangeOnly() const;
 
   // Returns true if the only things that have changed are security sensitive
   // fields (name and icons).
+  // This does not consider any pending update info.
   bool IsSecuritySensitiveChangesOnly() const;
 
   // Returns a `base::Value::Dict` representation of this object, useful for
@@ -102,12 +103,12 @@ class WebAppComparison {
 
  private:
   bool name_equality_ = false;
-  WebAppComparisonPendingInfoComparison pending_name_equality_ =
-      WebAppComparisonPendingInfoComparison::kNotPending;
+  PendingUpdateComparison pending_name_equality_ =
+      PendingUpdateComparison::kNotPending;
 
   bool primary_icons_equality_ = false;
-  WebAppComparisonPendingInfoComparison pending_primary_icons_equality_ =
-      WebAppComparisonPendingInfoComparison::kNotPending;
+  PendingUpdateComparison pending_primary_icons_equality_ =
+      PendingUpdateComparison::kNotPending;
 
   bool shortcut_menu_item_infos_equality_ = false;
   bool other_fields_equality_ = false;

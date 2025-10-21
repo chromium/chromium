@@ -14,14 +14,13 @@
 
 namespace web_app {
 
-std::ostream& operator<<(std::ostream& os,
-                         WebAppComparisonPendingInfoComparison value) {
+std::ostream& operator<<(std::ostream& os, PendingUpdateComparison value) {
   switch (value) {
-    case WebAppComparisonPendingInfoComparison::kNotPending:
+    case PendingUpdateComparison::kNotPending:
       return os << "kNotPending";
-    case WebAppComparisonPendingInfoComparison::kHasPendingAndNotEquals:
+    case PendingUpdateComparison::kHasPendingAndNotEquals:
       return os << "kHasPendingAndNotEquals";
-    case WebAppComparisonPendingInfoComparison::kHasPendingAndEquals:
+    case PendingUpdateComparison::kHasPendingAndEquals:
       return os << "kHasPendingAndEquals";
   }
 }
@@ -43,22 +42,19 @@ bool WebAppComparison::ExistingAppWithPendingEqualsNewUpdate() const {
   bool effective_name_equality;
   if (name_equality_) {
     effective_name_equality =
-        pending_name_equality_ ==
-        WebAppComparisonPendingInfoComparison::kNotPending;
+        pending_name_equality_ == PendingUpdateComparison::kNotPending;
   } else {
     effective_name_equality =
-        pending_name_equality_ ==
-        WebAppComparisonPendingInfoComparison::kHasPendingAndEquals;
+        pending_name_equality_ == PendingUpdateComparison::kHasPendingAndEquals;
   }
   bool effective_primary_icon_equality;
   if (primary_icons_equality_) {
     effective_primary_icon_equality =
-        pending_primary_icons_equality_ ==
-        WebAppComparisonPendingInfoComparison::kNotPending;
+        pending_primary_icons_equality_ == PendingUpdateComparison::kNotPending;
   } else {
     effective_primary_icon_equality =
         pending_primary_icons_equality_ ==
-        WebAppComparisonPendingInfoComparison::kHasPendingAndEquals;
+        PendingUpdateComparison::kHasPendingAndEquals;
   }
   return effective_name_equality && effective_primary_icon_equality &&
          other_fields_equality_ && shortcut_menu_item_infos_equality_;
@@ -101,29 +97,29 @@ WebAppComparison WebAppComparison::CompareWebApps(
   diff.pending_name_equality_ = [&]() {
     if (!existing_web_app.pending_update_info().has_value() ||
         !existing_web_app.pending_update_info()->has_name()) {
-      return WebAppComparisonPendingInfoComparison::kNotPending;
+      return PendingUpdateComparison::kNotPending;
     }
     std::u16string new_title;
     base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
     return new_title == base::UTF8ToUTF16(
                             existing_web_app.pending_update_info()->name())
-               ? WebAppComparisonPendingInfoComparison::kHasPendingAndEquals
-               : WebAppComparisonPendingInfoComparison::kHasPendingAndNotEquals;
+               ? PendingUpdateComparison::kHasPendingAndEquals
+               : PendingUpdateComparison::kHasPendingAndNotEquals;
   }();
   diff.primary_icons_equality_ =
       existing_web_app.trusted_icons() == new_install_info.trusted_icons;
   diff.pending_primary_icons_equality_ = [&]() {
     if (!existing_web_app.pending_update_info().has_value() ||
         existing_web_app.pending_update_info()->trusted_icons().empty()) {
-      return WebAppComparisonPendingInfoComparison::kNotPending;
+      return PendingUpdateComparison::kNotPending;
     }
     std::optional<std::vector<apps::IconInfo>> transformed = ParseAppIconInfos(
         "PendingUpdateInfo",
         existing_web_app.pending_update_info()->trusted_icons());
     if (transformed == new_install_info.trusted_icons) {
-      return WebAppComparisonPendingInfoComparison::kHasPendingAndEquals;
+      return PendingUpdateComparison::kHasPendingAndEquals;
     }
-    return WebAppComparisonPendingInfoComparison::kHasPendingAndNotEquals;
+    return PendingUpdateComparison::kHasPendingAndNotEquals;
   }();
   diff.shortcut_menu_item_infos_equality_ =
       existing_web_app.shortcuts_menu_item_infos() ==
