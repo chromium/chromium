@@ -1374,7 +1374,7 @@
       inherited: false,
     },
     {
-      name: "InBaseSelectAppearance",
+      name: "InBaseAppearance",
       inherited: true,
       field_template: "primitive",
       type_name: "bool",

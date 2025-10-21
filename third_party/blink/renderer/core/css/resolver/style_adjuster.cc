@@ -510,17 +510,15 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
   }
 }
 
-static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
-                                      HTMLElement& element) {
-  if (builder.HasBaseSelectAppearance()) {
-    HTMLSelectElement* select = DynamicTo<HTMLSelectElement>(element);
-    if (!select) {
-      select = HTMLSelectElement::GetSelectForPopoverPickerElement(&element);
-    }
-    if (select && !select->SupportsBaseAppearance()) {
-      builder.SetInBaseSelectAppearance(false);
+// static
+void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
+                                              HTMLElement& element) {
+  if (builder.HasBaseAppearance()) {
+    if (element.SupportsBaseAppearance(builder.Appearance())) {
+      builder.SetInBaseAppearance(true);
     } else {
-      builder.SetInBaseSelectAppearance(true);
+      // TODO(crbug.com/393500003): Don't set InBaseAppearance to false here.
+      builder.SetInBaseAppearance(false);
     }
   }
 

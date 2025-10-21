@@ -55,6 +55,7 @@ class StyleAdjuster {
                                     const ComputedStyle& layout_parent_style,
                                     const Element*,
                                     Document*);
+  static void AdjustStyleForHTMLElement(ComputedStyleBuilder&, HTMLElement&);
 
  private:
   static bool IsEditableElement(Element*, const ComputedStyleBuilder&);

@@ -63,6 +63,7 @@ enum class AppearanceValue {
   kSearchFieldCancelButton,
   kSliderVertical,
   kBaseSelect,
+  kBase,
 };
 
 }  // namespace blink

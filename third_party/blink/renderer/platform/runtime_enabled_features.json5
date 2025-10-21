@@ -558,6 +558,14 @@
       depends_on: ["AOMAriaRelationshipProperties"],
     },
     {
+      // appearance:base for in-page form controls.
+      // https://drafts.csswg.org/css-forms-1/
+      // https://issues.chromium.org/issues/450139531
+      // https://chromestatus.com/feature/5104958101913600
+      name: "AppearanceBase",
+      status: "experimental",
+    },
+    {
       name: "AppTitle",
       status: "experimental",
       origin_trial_feature_name: "AppTitle",

@@ -21,7 +21,7 @@ const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
 
-  if (parent_style.EffectiveAppearance() == AppearanceValue::kBaseSelect) {
+  if (parent_style.HasBaseEffectiveAppearance()) {
     return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
   }
 

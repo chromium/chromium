@@ -1462,6 +1462,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id == CSSValueID::kTextfield ||
               value_id == CSSValueID::kTextarea ||
               value_id == CSSValueID::kBaseSelect) ||
+             (RuntimeEnabledFeatures::AppearanceBaseEnabled() &&
+              value_id == CSSValueID::kBase) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
               value_id == CSSValueID::kSliderVertical) ||

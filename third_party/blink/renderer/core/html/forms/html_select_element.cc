@@ -1757,17 +1757,6 @@ bool HTMLSelectElement::IsPopoverPickerElement(const Element* element) {
   return false;
 }
 
-// static
-HTMLSelectElement* HTMLSelectElement::GetSelectForPopoverPickerElement(
-    const Element* element) {
-  if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
-    if (element->ShadowPseudoId() == shadow_element_names::kPickerSelect) {
-      return DynamicTo<HTMLSelectElement>(root->host());
-    }
-  }
-  return nullptr;
-}
-
 bool HTMLSelectElement::IsAppearanceBase() const {
   return select_type_->IsAppearanceBase();
 }
@@ -1969,7 +1958,12 @@ String HTMLSelectElement::MultipleOptionsSelectedText(
                             localized_number_string);
 }
 
-bool HTMLSelectElement::SupportsBaseAppearance() const {
+bool HTMLSelectElement::SupportsBaseAppearanceInternal(
+    BaseAppearanceValue appearance_value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled() &&
+      appearance_value == BaseAppearanceValue::kBase) {
+    return false;
+  }
   if (!IsMultiple() ||
       RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
     // Single-selects are always supported. When

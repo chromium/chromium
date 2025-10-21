@@ -9377,11 +9377,11 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   if (HTMLSelectElement::IsPopoverPickerElement(this)) {
     HTMLSelectElement* select = To<HTMLSelectElement>(OwnerShadowHost());
     if (const ComputedStyle* select_style = select->GetComputedStyle()) {
-      // The picker isn't allowed to have appearance:base-select unless the
+      // The picker isn't allowed to have base appearance unless the
       // select does too.
       bool is_base_appearance =
-          style.EffectiveAppearance() == AppearanceValue::kBaseSelect &&
-          select_style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
+          SupportsBaseAppearance(style.EffectiveAppearance()) &&
+          select->SupportsBaseAppearance(select_style->EffectiveAppearance());
       select->SetIsAppearanceBasePickerForDisplayNone(is_base_appearance);
       if (!is_base_appearance) {
         return true;
@@ -12803,5 +12803,26 @@ void Element::VerifyBloomFilterTreeConsistencyIncludingChildren() const {
   }
 }
 #endif
+
+namespace {
+std::optional<Element::BaseAppearanceValue> ToBaseAppearanceValue(
+    AppearanceValue appearance_value) {
+  switch (appearance_value) {
+    case AppearanceValue::kBaseSelect:
+      return Element::BaseAppearanceValue::kBaseSelect;
+    case AppearanceValue::kBase:
+      return Element::BaseAppearanceValue::kBase;
+    default:
+      return std::nullopt;
+  }
+}
+}  // namespace
+
+bool Element::SupportsBaseAppearance(AppearanceValue appearance_value) const {
+  if (auto base_appearance_value = ToBaseAppearanceValue(appearance_value)) {
+    return SupportsBaseAppearanceInternal(*base_appearance_value);
+  }
+  return false;
+}
 
 }  // namespace blink

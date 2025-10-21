@@ -188,7 +188,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     HTMLDivElement::DidRecalcStyle(change);
     if (auto* style = GetComputedStyle()) {
       AppearanceState new_appearance_state =
-          style->EffectiveAppearance() == AppearanceValue::kBaseSelect
+          SupportsBaseAppearance(style->EffectiveAppearance())
               ? AppearanceState::kAppearanceBase
               : AppearanceState::kAppearanceNotBase;
       auto* select = ParentSelect();
@@ -220,8 +220,16 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     }
   }
 
+  bool SupportsBaseAppearanceInternal(
+      BaseAppearanceValue appearance_value) const override {
+    if (auto* select = ParentSelect()) {
+      return select->SupportsBaseAppearanceInternal(appearance_value);
+    }
+    return false;
+  }
+
  private:
-  HTMLSelectElement* ParentSelect() {
+  HTMLSelectElement* ParentSelect() const {
     if (auto* shadowroot = DynamicTo<ShadowRoot>(parentNode())) {
       HTMLSelectElement* select =
           DynamicTo<HTMLSelectElement>(shadowroot->host());
@@ -632,7 +640,7 @@ HTMLElement* MenuListSelectType::PopoverPickerElement() const {
 bool MenuListSelectType::IsAppearanceBase() const {
   DCHECK(select_);
   if (auto* style = select_->GetComputedStyle()) {
-    return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
+    return select_->SupportsBaseAppearance(style->EffectiveAppearance());
   }
   return false;
 }
@@ -645,9 +653,7 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
   }
   DCHECK(popover_);
   if (auto* style = popover_->GetComputedStyle()) {
-    bool is_base_appearance =
-        style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
-    return is_base_appearance;
+    return popover_->SupportsBaseAppearance(style->EffectiveAppearance());
   }
   // In the case that the picker is closed and doesn't have a computed style, we
   // can use this value which is set during style recalc before the style gets
@@ -925,7 +931,7 @@ void MenuListSelectType::DidDetachLayoutTree() {
 void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
   if (auto* style = select_->GetComputedStyle()) {
     bool is_appearance_base_select =
-        style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
+        select_->SupportsBaseAppearance(style->EffectiveAppearance());
     if (is_appearance_base_select_ != is_appearance_base_select) {
       if (PopupIsVisible()) {
         // The picker, as the result of CSS, changed `appearance` values upon
@@ -1866,7 +1872,7 @@ bool ListBoxSelectType::IsAppearanceBase() const {
   }
   DCHECK(select_);
   if (auto* style = select_->GetComputedStyle()) {
-    return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
+    return select_->SupportsBaseAppearance(style->EffectiveAppearance());
   }
   return false;
 }

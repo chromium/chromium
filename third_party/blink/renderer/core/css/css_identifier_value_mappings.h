@@ -275,6 +275,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(AppearanceValue e)
     case AppearanceValue::kBaseSelect:
       value_id_ = CSSValueID::kBaseSelect;
       break;
+    case AppearanceValue::kBase:
+      value_id_ = CSSValueID::kBase;
+      break;
   }
 }
 
@@ -313,6 +316,8 @@ inline AppearanceValue CSSIdentifierValue::ConvertTo() const {
       return AppearanceValue::kTextArea;
     case CSSValueID::kBaseSelect:
       return AppearanceValue::kBaseSelect;
+    case CSSValueID::kBase:
+      return AppearanceValue::kBase;
     default:
       NOTREACHED();
   }

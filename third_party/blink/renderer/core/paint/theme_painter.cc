@@ -239,6 +239,7 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
       // Supported appearance values don't need CSS border painting.
       return false;
     case AppearanceValue::kBaseSelect:
+    case AppearanceValue::kBase:
       return true;
     case AppearanceValue::kNone:
     case AppearanceValue::kAuto:

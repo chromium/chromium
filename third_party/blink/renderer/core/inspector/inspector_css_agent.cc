@@ -2156,7 +2156,7 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
 
   bool is_appearance_base = false;
   if (auto* computed_style = element->GetComputedStyle()) {
-    is_appearance_base = computed_style->InBaseSelectAppearance();
+    is_appearance_base = computed_style->InBaseAppearance();
   }
   *extra_fields = protocol::CSS::ComputedStyleExtraFields::create()
                       .setIsAppearanceBase(is_appearance_base)

@@ -280,18 +280,14 @@ class CORE_EXPORT HTMLSelectElement final
   // callers already have an Element instead of a Node, and if we only had the
   // Node version then there would be an extra call to DynamicTo<Element> every
   // time.
-  // GetSelectForPopoverPickerElement runs the same check and returns the
-  // corresponding select element if the element is a popover picker element,
-  // otherwise null.
   static bool IsPopoverPickerElement(const Node*);
   static bool IsPopoverPickerElement(const Element*);
-  static HTMLSelectElement* GetSelectForPopoverPickerElement(const Element*);
 
   // Returns true if this select element supports being rendered with base
   // appearance. Otherwise, applying appearance:base-select to this element
   // should not enable base appearance or do anything different from
   // appearance:auto.
-  bool SupportsBaseAppearance() const;
+  bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;
 
   // <select> supports appearance:base-select on both the main element and
   // ::picker(select). IsAppearanceBase returns true if the main element has

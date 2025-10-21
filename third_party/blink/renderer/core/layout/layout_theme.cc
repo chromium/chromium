@@ -204,14 +204,10 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
     case AppearanceValue::kMediaVolumeSliderThumb:
     case AppearanceValue::kMediaControl:
       return appearance;
-    case AppearanceValue::kBaseSelect: {
-      const HTMLSelectElement* select = DynamicTo<HTMLSelectElement>(element);
-      if (!select) {
-        select = HTMLSelectElement::GetSelectForPopoverPickerElement(element);
-      }
-      return select && select->SupportsBaseAppearance() ? appearance
-                                                        : auto_appearance;
-    }
+    case AppearanceValue::kBaseSelect:
+    case AppearanceValue::kBase:
+      return element->SupportsBaseAppearance(appearance) ? appearance
+                                                         : auto_appearance;
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto

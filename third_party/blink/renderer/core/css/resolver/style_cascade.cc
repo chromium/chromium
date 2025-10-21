@@ -2260,8 +2260,8 @@ bool StyleCascade::ResolveAutoBaseInto(CSSParserTokenStream& stream,
   // Note that the InBaseSelectAppearance() flag is set by StyleAdjuster,
   // which hasn't happened yet. Therefore we also need to check
   // HasBaseSelectAppearance() here.
-  bool has_base_appearance = state_.StyleBuilder().HasBaseSelectAppearance() ||
-                             state_.StyleBuilder().InBaseSelectAppearance();
+  bool has_base_appearance = state_.StyleBuilder().HasBaseAppearance() ||
+                             state_.StyleBuilder().InBaseAppearance();
 
   if (has_base_appearance) {
     // We want to the second argument.
