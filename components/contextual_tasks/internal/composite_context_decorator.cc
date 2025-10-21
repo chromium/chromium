@@ -21,7 +21,9 @@ namespace contextual_tasks {
 
 std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
     favicon::FaviconService* favicon_service,
-    history::HistoryService* history_service) {
+    history::HistoryService* history_service,
+    std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
+        additional_decorators) {
   std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
       decorators;
   decorators.emplace(ContextualTaskContextSource::kFallbackTitle,
@@ -32,6 +34,11 @@ std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
   decorators.emplace(
       ContextualTaskContextSource::kHistoryService,
       std::make_unique<HistoryContextDecorator>(history_service));
+
+  for (auto& decorator : additional_decorators) {
+    decorators.emplace(decorator.first, std::move(decorator.second));
+  }
+
   return std::make_unique<CompositeContextDecorator>(std::move(decorators));
 }
 

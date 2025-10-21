@@ -8,6 +8,17 @@
 
 namespace contextual_tasks {
 
+UrlAttachmentDecoratorData::UrlAttachmentDecoratorData() = default;
+UrlAttachmentDecoratorData::~UrlAttachmentDecoratorData() = default;
+UrlAttachmentDecoratorData::UrlAttachmentDecoratorData(
+    const UrlAttachmentDecoratorData&) = default;
+UrlAttachmentDecoratorData& UrlAttachmentDecoratorData::operator=(
+    const UrlAttachmentDecoratorData&) = default;
+UrlAttachmentDecoratorData::UrlAttachmentDecoratorData(
+    UrlAttachmentDecoratorData&&) = default;
+UrlAttachmentDecoratorData& UrlAttachmentDecoratorData::operator=(
+    UrlAttachmentDecoratorData&&) = default;
+
 UrlAttachment::UrlAttachment(const GURL& url) : url_(url) {}
 
 UrlAttachment::~UrlAttachment() = default;
@@ -17,6 +28,9 @@ GURL UrlAttachment::GetURL() const {
 }
 
 std::u16string UrlAttachment::GetTitle() const {
+  if (!decorator_data_.tab_strip_data.title.empty()) {
+    return decorator_data_.tab_strip_data.title;
+  }
   if (!decorator_data_.history_data.title.empty()) {
     return decorator_data_.history_data.title;
   }
@@ -25,6 +39,10 @@ std::u16string UrlAttachment::GetTitle() const {
 
 gfx::Image UrlAttachment::GetFavicon() const {
   return decorator_data_.favicon_data.image;
+}
+
+bool UrlAttachment::IsOpen() const {
+  return decorator_data_.tab_strip_data.is_open_in_tab_strip;
 }
 
 UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorDataForTesting() {

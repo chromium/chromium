@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXT_DECORATOR_H_
 #define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXT_DECORATOR_H_
 
+#include <map>
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 
 namespace favicon {
 class FaviconService;
@@ -21,7 +23,6 @@ namespace contextual_tasks {
 
 class CompositeContextDecorator;
 class ContextDecorator;
-struct ContextualTaskContext;
 struct UrlAttachment;
 struct UrlAttachmentDecoratorData;
 
@@ -29,7 +30,9 @@ struct UrlAttachmentDecoratorData;
 // default set of ContextDecorators.
 std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
     favicon::FaviconService* favicon_service,
-    history::HistoryService* history_service);
+    history::HistoryService* history_service,
+    std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
+        additional_decorators);
 
 // Abstract interface for a decorator that enriches a ContextualTaskContext
 // with additional metadata. The enrichment process is asynchronous.
