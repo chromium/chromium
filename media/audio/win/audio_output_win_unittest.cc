@@ -452,8 +452,9 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
     data_ = base::AlignedUninit<uint8_t>(
         packet_size_ + sizeof(AudioOutputBufferParameters),
         AudioBus::kChannelAlignment);
-    audio_data_ = data_.as_span().subspan(sizeof(AudioOutputBufferParameters));
-    audio_bus_ = AudioBus::WrapMemory(params, output_buffer()->audio);
+    audio_data_ =
+        data_.as_span().subspan<sizeof(AudioOutputBufferParameters)>();
+    audio_bus_ = AudioBus::WrapMemory(params, audio_data_);
   }
   ~SyncSocketSource() override {}
 

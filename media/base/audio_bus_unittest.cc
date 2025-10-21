@@ -147,16 +147,6 @@ class AudioBusTest : public testing::Test {
     }
   }
 
-  // TODO(crbug.com/373960632): remove this when all ctors take spans.
-  std::vector<float*> GetRawPointers(std::vector<AlignedFloatArray>& data) {
-    std::vector<float*> result;
-    result.reserve(data_.size());
-    for (AlignedFloatArray& array : data) {
-      result.push_back(array.as_span().data());
-    }
-    return result;
-  }
-
   std::vector<AlignedFloatArray> data_;
 };
 
@@ -328,15 +318,6 @@ TEST_F(AudioBusTest, CopyTo) {
 
   {
     SCOPED_TRACE("Created");
-    CopyTest(bus1.get(), bus2.get());
-  }
-  {
-    SCOPED_TRACE("Wrapped Memory - raw pointer");
-    // Try a copy to an AudioBus wrapping a memory block.
-    auto data =
-        base::AlignedUninit<uint8_t>(memory_size, AudioBus::kChannelAlignment);
-
-    bus2 = AudioBus::WrapMemory(params, data.data());
     CopyTest(bus1.get(), bus2.get());
   }
   {
