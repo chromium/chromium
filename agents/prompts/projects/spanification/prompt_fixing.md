@@ -20,7 +20,7 @@ ______________________________________________________________________
 
 ### **Workflow: A Step-by-Step Guide**
 
-You must follow this precise workflow for each file:
+You must follow this precise workflow:
 
 1. **Analyze the Initial State & Locate Unsafe Code:** I will give you the path
    to a C++ file. Your first step is to determine how the unsafe code is marked:
@@ -28,27 +28,29 @@ You must follow this precise workflow for each file:
    - **Scenario A: File contains `#pragma allow_unsafe_buffers`**
      1. Remove the entire code block containing the pragma:
 
-```c
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(...)
-#pragma allow_unsafe_buffers
-#endif
-```
+   ```c
+   #ifdef UNSAFE_BUFFERS_BUILD
+   // TODO(...)
+   #pragma allow_unsafe_buffers
+   #endif
+   ```
 
-```
- 2. Compile the modified file. It will provide you with the full, unmodified Clang error output.
- 3. The compiler errors are your guide. They will point directly to the lines of code with unsafe buffer usage.
-```
+   2. Compile the modified file. It will provide you with the full, unmodified
+      Clang error output. Use the section "How to compile" below for the exact
+      command.
+
+   3. The compiler errors are your guide. They will point directly to the lines
+      of code with unsafe buffer usage.
 
 - **Scenario B: File contains `UNSAFE_TODO` macros**
   1. The `UNSAFE_TODO` macros pinpoint specific lines of code. Your first step
      is to verify if they are still unsafe.
   2. Remove all `UNSAFE_TODO(...)` wrappers, but leave the code they contain
      untouched.
-  3. Compile the modified file.
-     1. **If compilation fails with an unsafe buffer error:** The errors confirm
-        the issue. Use these errors as your guide and proceed to Step 2 (Gather
-        Context).
+  3. Compile the modified file and run the tests.
+     1. **If compilation or tests fails with an unsafe buffer error:** The
+        errors confirm the issue. Use these errors as your guide and proceed to
+        Step 2 (Gather Context).
      2. **If compilation succeeds:** The `UNSAFE_TODO` was no longer necessary.
         The fix is simply the removal of the macros. Proceed directly to Step 5
         (Self-Review).
@@ -68,22 +70,30 @@ You must follow this precise workflow for each file:
 3. **Fix the Unsafe Code:** Apply the principles and patterns from the sections
    below to resolve the identified issues.
 
-   - Focus your changes *strictly* on fixing the reported errors or
-     `UNSAFE_TODO` blocks.
+   - Focus your changes on fixing the reported errors or `UNSAFE_TODO` blocks.
    - Do not refactor unrelated code, change program logic, or reformat the file.
-     The goal is a minimal, correct fix.
+     The goal is a minimal, correct fix. However, you may address some slight
+     formatting issues / simplifications if they are directly related to your
+     fix.
    - When you change a function signature, you **must** find and update all of
      its call sites.
 
 4. **Verify the Fix:**
 
    - Compile the code with your fixes applied. The compilation must succeed
-     without errors.
+     without errors. Use the section "How to compile" below for the exact
+     command.
+
+   - Run tests. All tests must pass successfully. Use the section "How to run
+     tests" below for the exact command.
+
+   - If either compilation or tests fail, you must return to Step 3 (Fix the
+     Unsafe Code) and iterate until both pass successfully.
 
 5. **Self-Review:** Before generating the final output, you must review your own
    changes from the perspective of a human reviewer.
 
-   - **Get the diff:** Run `git diff origin/main` to see your changes.
+   - **Get the diff:** Run `git diff HEAD` to see your changes.
    - **Check for adherence to principles:** Does the change follow all the core
      principles outlined in this prompt?
    - **Look for simpler solutions:** Is there a simpler, more idiomatic way to
@@ -92,8 +102,12 @@ You must follow this precise workflow for each file:
      Is the change clear and easy to understand? If not, you must go back and
      refine your changes.
 
-6. **Generate Final Output:** Once compilation and self-review pass, provide the
-   following:
+6. **Format** Run `git cl format` to ensure your code adheres to Chromium's
+   style guidelines.
+
+7. **Generate Final Output:** Once compilation, test, self-review pass, and
+   formatting are complete, you must generate the final output. You must
+   provide:
 
    - **The complete, modified version of the file.**
    - **A commit message** in a file named `gemini_out/commit_message.md`. The
@@ -112,31 +126,37 @@ You must follow this precise workflow for each file:
 }
 ```
 
-7. **Completion:** Quit and exit when the task is successfully completed or
+8. **Completion:** Quit and exit when the task is successfully completed or
    after 30 turns.
 
 ______________________________________________________________________
 
 ### **How to compile**
 
-Use `vpython3 tools/utr -f -B try -b {BUILDER} compile` for compiling. The
-command will compile everything. DO NOT ALTER the command line, DO NOT ADD
-filename or target.
+Always run `autoninja ./out/UTR{BUILDER} --quiet` to compile, where `{BUILDER}`
+is one of:
 
-#### **Find {BUILDER}**
+- linux-rel
+- linux-win-cross-rel
+- android-14-x64-rel
 
-- You should use the builder based on the current running platform, as mapped
-  below:
-  - Linux: linux-rel
-  - Windows: linux-win-cross-rel
-  - macOS: linux-mac-arm64-cross-rel
-  - Android: android-x64-rel
-- When compiling platform specific code, you should use the corresponding
-  builder. You can identify the platform by:
-  - the filename like `policy_loader_win.cc`
-  - the file containing platform specific headers like `#include <windows.h>`
-  - code that wrapped with `#if BUILDFLAG(IS_WIN)`.
-  - If not sure, just use the builder for the current platform.
+The `--quiet` flag is important to reduce the amount of output. DO NOT ALTER the
+command line in any way, other than replacing `{BUILDER}`.
+
+Run every builder to ensure cross-platform coverage.
+
+### **How to run tests**
+
+Run tests only on changed files with:
+`./tools/autotest.py --out-dir ./out/{BUILDER} --run-changed` where `{BUILDER}`
+is one of:
+
+- linux-rel
+- linux-win-cross-rel
+- android-14-x64-rel
+
+DO NOT ALTER the command line in any way, other than replacing `{BUILDER}`. Run
+every builder to ensure cross-platform coverage.
 
 ______________________________________________________________________
 
