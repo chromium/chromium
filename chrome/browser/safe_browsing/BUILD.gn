@@ -579,6 +579,8 @@ static_library("advanced_protection") {
     "advanced_protection_status_manager.h",
     "advanced_protection_status_manager_factory.cc",
     "advanced_protection_status_manager_factory.h",
+    "application_advanced_protection_status_detector.cc",
+    "application_advanced_protection_status_detector.h",
   ]
 
   if (is_android) {
@@ -596,6 +598,7 @@ static_library("advanced_protection") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
@@ -639,6 +642,7 @@ source_set("unit_tests") {
   sources = [
     "advanced_protection_status_manager_factory_unittest.cc",
     "advanced_protection_status_manager_unittest.cc",
+    "application_advanced_protection_status_detector_unittest.cc",
   ]
 
   deps = [
