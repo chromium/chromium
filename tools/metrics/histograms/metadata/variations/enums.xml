@@ -47,6 +47,17 @@ chromium-metrics-reviews@google.com.
   <int value="1003" label="No such file"/>
 </enum>
 
+<!-- LINT.IfChange(SeedSource) -->
+
+<enum name="SeedSource">
+  <int value="0" label="No Source"/>
+  <int value="1" label="Local State"/>
+  <int value="2" label="Seed File"/>
+  <int value="3" label="Old Seed File"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/variations/seed_reader_writer.h:SeedSource) -->
+
 <enum name="UserChannels">
   <int value="-1" label="Unknown"/>
   <int value="0" label="Canary"/>
@@ -245,6 +256,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Day changed"/>
 </enum>
 
+<!-- LINT.IfChange(VariationsSeedLoadResult) -->
+
 <enum name="VariationsSeedLoadResult">
   <int value="0" label="Seed Loaded Successfully"/>
   <int value="1" label="Seed Empty"/>
@@ -257,7 +270,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Seed Load Interrupted"/>
   <int value="9" label="Seed Load Other Failure"/>
   <int value="10" label="Seed Exceeds Uncompressed Size Limit"/>
+  <int value="11" label="Error Reading Seed File"/>
+  <int value="12" label="Seed Error Parsing To Proto"/>
+  <int value="13" label="ZSTD Content Size Error"/>
+  <int value="14" label="Seed Corrupt ZSTD Data"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/variations/metrics.h:LoadSeedResult) -->
 
 <enum name="VariationsSeedStoreResult">
   <int value="0" label="Success"/>

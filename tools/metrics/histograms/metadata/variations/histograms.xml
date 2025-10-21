@@ -575,6 +575,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Variations.SeedFileReadResult.{SeedFile}"
+    enum="VariationsSeedLoadResult" expires_after="2026-06-22">
+  <owner>rcanoaparicio@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the result of reading the seed file. This metric is emitted only by
+    clients in the seed file treatment group.
+  </summary>
+  <token key="SeedFile">
+    <variant name="Latest" summary="Read result for latest seed file."/>
+    <variant name="Safe" summary="Read result for safe seed file."/>
+  </token>
+</histogram>
+
 <histogram name="Variations.SeedFileWriteEmptySeed.{SeedFile}"
     enum="BooleanEmpty" expires_after="2026-03-22">
   <owner>caitlinfischer@google.com</owner>
@@ -676,6 +690,19 @@ chromium-metrics-reviews@google.com.
     processing time increase, see whether Variations.AppliedSeed.Size and
     Variations.AppliedSeed.StudyCount increased at the same time.
   </summary>
+</histogram>
+
+<histogram name="Variations.SeedSource.{SeedFile}" enum="SeedSource"
+    expires_after="2026-06-22">
+  <owner>rcanoaparicio@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the source where the seed was read from successfully.
+  </summary>
+  <token key="SeedFile">
+    <variant name="Latest" summary="Read result for latest seed file."/>
+    <variant name="Safe" summary="Read result for safe seed file."/>
+  </token>
 </histogram>
 
 <histogram name="Variations.SeedStoreResult" enum="VariationsSeedStoreResult"

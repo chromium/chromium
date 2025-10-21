@@ -27,6 +27,7 @@ enum class FirstRunSeedImportResult {
 // numeric values should never be reused.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.variations
+// LINT.IfChange(LoadSeedResult)
 enum class LoadSeedResult {
   kSuccess = 0,
   kEmpty = 1,
@@ -39,8 +40,13 @@ enum class LoadSeedResult {
   kLoadInterrupted = 8,
   kLoadOtherFailure = 9,
   kExceedsUncompressedSizeLimit = 10,
-  kMaxValue = kExceedsUncompressedSizeLimit,
+  kErrorReadingFile = 11,
+  kSeedInfoParseToProtoError = 12,
+  kZstdContentSizeError = 13,
+  kCorruptZstd = 14,
+  kMaxValue = kCorruptZstd,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsSeedLoadResult)
 
 // The result of attempting to store a variations seed received from the server.
 //

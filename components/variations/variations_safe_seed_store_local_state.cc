@@ -13,8 +13,14 @@
 namespace variations {
 namespace {
 
-// The name of the seed file that stores the safe seed data.
+// The name of the seed file that stores the safe seed data and other
+// seed-related information in a compressed proto.
 const base::FilePath::CharType kSafeSeedFilename[] =
+    FILE_PATH_LITERAL("VariationsSafeSeedV2");
+
+// Name of the old safe seed file. It stores only the seed data gzip-compressed.
+// TODO(rcanoaparicio): Remove this once the experiment has ended.
+const base::FilePath::CharType kOldSafeSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSafeSeedV1");
 
 }  // namespace
@@ -25,13 +31,15 @@ VariationsSafeSeedStoreLocalState::VariationsSafeSeedStoreLocalState(
     version_info::Channel channel,
     const EntropyProviders* entropy_providers)
     : local_state_(local_state),
-      seed_reader_writer_(std::make_unique<SeedReaderWriter>(
-          local_state,
-          seed_file_dir,
-          kSafeSeedFilename,
-          kSafeSeedFieldsPrefs,
-          channel,
-          entropy_providers)) {}
+      seed_reader_writer_(
+          std::make_unique<SeedReaderWriter>(local_state,
+                                             seed_file_dir,
+                                             kSafeSeedFilename,
+                                             kOldSafeSeedFilename,
+                                             kSafeSeedFieldsPrefs,
+                                             channel,
+                                             entropy_providers,
+                                             /*histogram_suffix=*/"Safe")) {}
 
 VariationsSafeSeedStoreLocalState::~VariationsSafeSeedStoreLocalState() =
     default;

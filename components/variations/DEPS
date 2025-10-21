@@ -17,4 +17,5 @@ include_rules = [
   "+third_party/protobuf",
   "+third_party/smhasher",
   "+third_party/zlib/google",
+  "+third_party/zstd",
 ]

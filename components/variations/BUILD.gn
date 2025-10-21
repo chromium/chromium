@@ -142,6 +142,15 @@ component("variations") {
     "//third_party/zlib/google:compression_utils",
   ]
 
+  if (!is_android) {
+    # ZSTD is not supported on Android due to binary size increase. See
+    # crbug.com/40196713.
+    deps += [
+      "//third_party/zstd:compress",
+      "//third_party/zstd:decompress",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "android/variations_seed_bridge.cc",

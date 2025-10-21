@@ -58,12 +58,18 @@ const uint8_t kPublicKey[] = {
     0xc5, 0xef, 0x20, 0xc6, 0xa3, 0x10, 0xbf,
 };
 
-
 // LINT.IfChange
-// The name of the seed file that stores the latest seed data.
+// The name of the seed file that stores the latest seed data and other
+// seed-related information in a compressed proto.
 const base::FilePath::CharType kSeedFilename[] =
+    FILE_PATH_LITERAL("VariationsSeedV2");
+// LINT.ThenChange(/components/variations/variations_safe_seed_store_local_state.cc,
+// /chrome/browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc)
+
+// Name of the old seed file. It stores only the seed data gzip-compressed.
+// TODO(crbug.com/411431524): Remove this once the experiment has ended.
+const base::FilePath::CharType kOldSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSeedV1");
-// LINT.ThenChange(/testing/scripts/variations_seed_access_helper.py, /components/variations/variations_seed_store.cc, /components/variations/service/variations_field_trial_creator_unittest.cc, /chrome/browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc)
 
 // Returns true if |signature| is empty and if the command-line flag to accept
 // empty seed signature is specified.
@@ -230,9 +236,11 @@ VariationsSeedStore::VariationsSeedStore(
           std::make_unique<SeedReaderWriter>(local_state,
                                              seed_file_dir,
                                              kSeedFilename,
+                                             kOldSeedFilename,
                                              kRegularSeedFieldsPrefs,
                                              channel,
-                                             entropy_providers)) {
+                                             entropy_providers,
+                                             /*histogram_suffix=*/"Latest")) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));

@@ -31,8 +31,8 @@ class EntropyProviders;
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V7";
-const char kSeedFilesGroup[] = "SeedFiles_V7";
+const char kControlGroup[] = "Control_V8";
+const char kSeedFilesGroup[] = "SeedFiles_V8";
 
 // A sentinel value that may be stored as the latest variations seed value in
 // to indicate that the latest seed is identical to the safe seed. Used to avoid
@@ -116,11 +116,23 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   using ReadSeedDataCallback = base::OnceCallback<void(ReadSeedDataResult)>;
 
+  // LINT.IfChange(SeedSource)
+  enum class SeedSource {
+    kNoSource = 0,
+    kLocalState = 1,
+    kSeedFile = 2,
+    kOldSeedFile = 3,
+    kMaxValue = kOldSeedFile,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:SeedSource)
+
   // `local_state` provides access to the local state prefs. Must not be null.
   // `seed_file_dir` denotes the directory for storing a seed file. Note that
   // Android Webview intentionally uses an empty path as it uses only local
   // state to store seeds.
   // `seed_filename` is the base name of a file in which seed data is stored.
+  // `old_seed_filename` is the base name of the file that may contain the seed
+  // data only. Deprecated after SeedFiles_V8.
   // `fields_prefs` is a variations pref struct (kRegularSeedFieldsPrefs or
   // kSafeSeedFieldsPrefs) denoting the prefs for the fields for the type of
   // seed being stored.
@@ -132,9 +144,11 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
                    base::FilePath::StringViewType seed_filename,
+                   base::FilePath::StringViewType old_seed_filename,
                    const SeedFieldsPrefs& fields_prefs,
                    version_info::Channel channel,
                    const EntropyProviders* entropy_providers,
+                   std::string_view histogram_suffix,
                    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
                        base::ThreadPool::CreateSequencedTaskRunner(
                            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -219,15 +233,38 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     return stored_seed_data_;
   }
 
- private:
-  // The storage format of the seed. Seed-file-based seeds are compressed while
-  // local-state-based seeds are compressed and base64 encoded.
-  enum class SeedStorageFormat { kCompressed, kCompressedAndBase64Encoded };
+  // Compresses the contents using the same function as SeedReaderWriter for
+  // writing to the seed file. This is needed because the compression function
+  // is different on Android.
+  static std::string CompressForSeedFileForTesting(std::string_view contents);
 
-  // Callback for GetSeedData(). The arguments are the storage format, the seed
-  // data, and the signature.
-  using GetSeedDataCallback =
-      base::OnceCallback<void(SeedStorageFormat, std::string, std::string)>;
+  // Uncompresses the contents using the same function as SeedReaderWriter for
+  // reading from the seed file. This is needed because the decompression
+  // function is different on Android.
+  static bool UncompressFromSeedFileForTesting(
+      std::string_view compressed_contents,
+      std::string* uncompressed_contents);
+
+ private:
+  // The storage format of the seed data.
+  // - kCompressed: the seed is compressed. This is used for backward
+  // compatibility with the old seed files.
+  // - kCompressedAndBase64Encoded: the seed is compressed and base64 encoded
+  // for local state based seeds.
+  // - kRaw: the seed data is not compressed or encoded. Since it's stored
+  // together with other seed related info in the seed file, all the fields are
+  // compressed and decompressed when reading from disk, the seed data is
+  // stored raw in memory.
+  enum class SeedStorageFormat {
+    kCompressed,  // Deprecated.
+    kCompressedAndBase64Encoded,
+    kRaw
+  };
+
+  // Callback for GetSeedDataFromLocalState(). The arguments are the storage
+  // format, the seed data, and the signature.
+  using GetSeedDataCallback = base::OnceCallback<
+      void(SeedStorageFormat, std::string_view, std::string_view)>;
 
   // Returns the serialized data to be written to disk. This is done
   // asynchronously during the write process.
@@ -264,6 +301,19 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // in `local state_`, additionally clears it.
   void ReadSeedFile();
 
+  // Reads the seed data from the old seed file. Returns true if the read is
+  // successful.
+  // TODO(crbug.com/417138763): Remove this once the migration is complete.
+  bool ReadOldSeedFile();
+
+  // Reads the seed data from local state.
+  void ReadSeedFromLocalState();
+
+  // Reads the seed data and signature from the seed file and calls
+  // `done_callback` with the result.
+  static void ReadSeedFromFile(GetSeedDataCallback done_callback,
+                               base::FilePath file_path);
+
   // Schedules a write of `base64_seed_data` to `local_state_`. Fields with
   // zero/empty values will be ignored. If you want to clear the seed file, use
   // ScheduleSeedFileClear() instead.
@@ -285,14 +335,18 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // `LoadSeedResult::kSuccess`.
   void ProcessStoredSeedDataAndRunCallback(ReadSeedDataCallback done_callback,
                                            SeedStorageFormat storage_format,
-                                           std::string seed_data,
-                                           std::string signature);
+                                           std::string_view seed_data,
+                                           std::string_view signature);
 
-  // Calls `done_callback` with the result of the load. If the seed file needs
-  // to be read, the read will be done in a background thread. The seed data
+  // Calls `done_callback` with the result of the load. The seed data
   // won't be processed, if the seed needs to be used, use ReadSeedData()
   // instead.
-  void GetSeedData(GetSeedDataCallback done_callback);
+  void GetSeedDataFromLocalState(GetSeedDataCallback done_callback);
+
+  // Reads the seed data from the seed file and calls `done_callback` with the
+  // result. If the seed file needs to be read, the read will be done in a
+  // background thread.
+  void GetSeedDataFromSeedFile(ReadSeedDataCallback done_callback);
 
   // Returns true if a write is scheduled but has not yet completed.
   bool HasPendingWrite() const;
@@ -326,9 +380,10 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // seed-related info.
   StoredSeedInfo stored_seed_info_;
 
-  // Seed data stored in memory. It will be set to std::nullopt if the seed data
-  // is not stored in memory. In contrast, empty string means the seed data is
-  // empty, so it doesn't need to be read from disk.
+  // The raw seed data stored in memory. It will be set to std::nullopt if the
+  // seed data is not stored in memory. In contrast, empty string means the seed
+  // data is empty, so it doesn't need to be read from disk.
+  // TODO(crbug.com/452912040): move field to `stored_seed_info_`.
   std::optional<std::string> stored_seed_data_;
 
   // Whether to keep the seed data in memory. This is used to avoid storing the
@@ -337,6 +392,13 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Note: if the seed data is empty or kIdenticalToSafeSeedSentinel, it
   // will be kept in memory even if this is true.
   bool seed_purgeable_from_memory_ = false;
+
+  // Path to the old seed file.
+  // TODO(crbug.com/411431524): Remove this once the experiment has ended.
+  base::FilePath old_seed_file_path_;
+
+  // Suffix to be used for histograms, either "Latest" or "Safe".
+  const std::string histogram_suffix_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
