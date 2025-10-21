@@ -318,9 +318,9 @@
 
   <!-- Content area context menu. -->
   <if expr="use_titlecase">
-    <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt" translateable="false">Create Image with Gemini in Chrome</message>
+    <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt" translateable="false">Create Image with Gemini</message>
   </if>
   <if expr="not use_titlecase">
-    <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt" translateable="false">Create image with Gemini in Chrome</message>
+    <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt" translateable="false">Create image with Gemini</message>
   </if>
 </grit-part>
