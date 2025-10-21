@@ -78,7 +78,7 @@ public class ProxyTest {
                 NullPointerException.class,
                 () ->
                         Proxy.createHttpProxy(
-                                /* scheme= */ Proxy.HTTPS,
+                                /* scheme= */ Proxy.SCHEME_HTTPS,
                                 /* host= */ "this-hostname-does-not-exist.com",
                                 /* port= */ 8080,
                                 Executors.newSingleThreadExecutor(),
@@ -94,7 +94,7 @@ public class ProxyTest {
                 NullPointerException.class,
                 () ->
                         Proxy.createHttpProxy(
-                                /* scheme= */ Proxy.HTTP,
+                                /* scheme= */ Proxy.SCHEME_HTTP,
                                 /* host= */ null,
                                 /* port= */ 8080,
                                 Executors.newSingleThreadExecutor(),
@@ -110,7 +110,7 @@ public class ProxyTest {
                 NullPointerException.class,
                 () ->
                         Proxy.createHttpProxy(
-                                /* scheme= */ Proxy.HTTP,
+                                /* scheme= */ Proxy.SCHEME_HTTP,
                                 /* host= */ "this-hostname-does-not-exist.com",
                                 /* port= */ 8080,
                                 null,
@@ -158,7 +158,7 @@ public class ProxyTest {
                 Mockito.mock(Proxy.HttpConnectCallback.class, Mockito.CALLS_REAL_METHODS);
         Proxy proxy =
                 Proxy.createHttpProxy(
-                        /* scheme= */ Proxy.HTTPS,
+                        /* scheme= */ Proxy.SCHEME_HTTPS,
                         /* host= */ "this-hostname-does-not-exist.com",
                         /* port= */ 8080,
                         Executors.newSingleThreadExecutor(),
@@ -229,7 +229,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTPS,
+                                                                /* scheme= */ Proxy.SCHEME_HTTPS,
                                                                 /* host= */ "this-hostname-does-not-exist.com",
                                                                 /* port= */ 8080,
                                                                 Executors.newSingleThreadExecutor(),
@@ -271,7 +271,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTPS,
+                                                                /* scheme= */ Proxy.SCHEME_HTTPS,
                                                                 /* host= */ "this-hostname-does-not-exist.com",
                                                                 /* port= */ 8080,
                                                                 Executors.newSingleThreadExecutor(),
@@ -325,7 +325,7 @@ public class ProxyTest {
                             })
                     .when(brokenProxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(brokenProxyCallback)
                     .onResponseReceived(any(), anyInt());
 
@@ -340,7 +340,7 @@ public class ProxyTest {
                             })
                     .when(workingProxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(workingProxyCallback)
                     .onResponseReceived(any(), anyInt());
 
@@ -352,7 +352,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ brokenProxyServer
                                                                             .getPort(),
@@ -360,7 +360,7 @@ public class ProxyTest {
                                                                             .newSingleThreadExecutor(),
                                                                     /* callback= */ brokenProxyCallback),
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ workingProxyServer
                                                                             .getPort(),
@@ -437,7 +437,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
@@ -497,7 +497,7 @@ public class ProxyTest {
                         })
                 .when(proxyCallback)
                 .onBeforeRequest(any());
-        Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+        Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                 .when(proxyCallback)
                 .onResponseReceived(any(), anyInt());
         mTestRule
@@ -508,7 +508,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
@@ -567,7 +567,7 @@ public class ProxyTest {
                         })
                 .when(proxyCallback)
                 .onBeforeRequest(any());
-        Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+        Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                 .when(proxyCallback)
                 .onResponseReceived(any(), anyInt());
         mTestRule
@@ -578,7 +578,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
@@ -637,7 +637,7 @@ public class ProxyTest {
                         })
                 .when(proxyCallback)
                 .onBeforeRequest(any());
-        Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+        Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                 .when(proxyCallback)
                 .onResponseReceived(any(), anyInt());
         mTestRule
@@ -650,7 +650,7 @@ public class ProxyTest {
                                     ProxyOptions.fromProxyList(
                                             Arrays.asList(
                                                     Proxy.createHttpProxy(
-                                                            /* scheme= */ Proxy.HTTP,
+                                                            /* scheme= */ Proxy.SCHEME_HTTP,
                                                             /* host= */ "localhost",
                                                             /* port= */ mNativeTestServer.getPort(),
                                                             Executors.newSingleThreadExecutor(),
@@ -704,7 +704,7 @@ public class ProxyTest {
                         })
                 .when(proxyCallback)
                 .onBeforeRequest(any());
-        Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+        Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                 .when(proxyCallback)
                 .onResponseReceived(anyList(), anyInt());
         mTestRule
@@ -715,7 +715,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
@@ -767,7 +767,7 @@ public class ProxyTest {
                             })
                     .when(proxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proxyCallback)
                     .onResponseReceived(anyList(), anyInt());
             mTestRule
@@ -778,7 +778,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -861,7 +861,7 @@ public class ProxyTest {
                             })
                     .when(proxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.CLOSE)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE)
                     .when(proxyCallback)
                     .onResponseReceived(anyList(), anyInt());
             mTestRule
@@ -872,7 +872,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -940,7 +940,7 @@ public class ProxyTest {
                     .onResponseReceived(anyList(), anyInt());
             Proxy proxy =
                     Proxy.createHttpProxy(
-                            /* scheme= */ Proxy.HTTP,
+                            /* scheme= */ Proxy.SCHEME_HTTP,
                             /* host= */ "localhost",
                             /* port= */ proxyServer.getPort(),
                             (Runnable r) -> {
@@ -1018,7 +1018,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1090,7 +1090,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1164,7 +1164,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1233,7 +1233,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1298,7 +1298,7 @@ public class ProxyTest {
                             })
                     .when(proxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proxyCallback)
                     .onResponseReceived(anyList(), anyInt());
 
@@ -1310,7 +1310,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1380,7 +1380,7 @@ public class ProxyTest {
                             })
                     .when(proxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proxyCallback)
                     .onResponseReceived(anyList(), anyInt());
 
@@ -1392,7 +1392,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1455,7 +1455,7 @@ public class ProxyTest {
                             })
                     .when(proxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proxyCallback)
                     .onResponseReceived(anyList(), anyInt());
 
@@ -1467,7 +1467,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1533,7 +1533,7 @@ public class ProxyTest {
                             })
                     .when(proxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proxyCallback)
                     .onResponseReceived(any(), anyInt());
 
@@ -1545,7 +1545,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1616,7 +1616,7 @@ public class ProxyTest {
                             })
                     .when(proceedProxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proceedProxyCallback)
                     .onResponseReceived(any(), anyInt());
 
@@ -1628,7 +1628,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1636,7 +1636,7 @@ public class ProxyTest {
                                                                             .newSingleThreadExecutor(),
                                                                     /* callback= */ requestCancelProxyCallback),
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1711,7 +1711,7 @@ public class ProxyTest {
                             })
                     .when(responseCancelProxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.CLOSE)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE)
                     .when(responseCancelProxyCallback)
                     .onResponseReceived(any(), anyInt());
 
@@ -1726,7 +1726,7 @@ public class ProxyTest {
                             })
                     .when(proceedProxyCallback)
                     .onBeforeRequest(any());
-            Mockito.doReturn(Proxy.HttpConnectCallback.PROCEED)
+            Mockito.doReturn(Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED)
                     .when(proceedProxyCallback)
                     .onResponseReceived(any(), anyInt());
 
@@ -1738,7 +1738,7 @@ public class ProxyTest {
                                             ProxyOptions.fromProxyList(
                                                     Arrays.asList(
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1746,7 +1746,7 @@ public class ProxyTest {
                                                                             .newSingleThreadExecutor(),
                                                                     /* callback= */ responseCancelProxyCallback),
                                                             Proxy.createHttpProxy(
-                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* scheme= */ Proxy.SCHEME_HTTP,
                                                                     /* host= */ "localhost",
                                                                     /* port= */ proxyServer
                                                                             .getPort(),
@@ -1813,7 +1813,7 @@ public class ProxyTest {
         public @Proxy.HttpConnectCallback.OnResponseReceivedAction int onResponseReceived(
                 @NonNull List<Pair<String, String>> responseHeaders, int statusCode) {
             mOnResponseReceivedInvocationTimes.getAndIncrement();
-            return Proxy.HttpConnectCallback.PROCEED;
+            return Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED;
         }
     }
 
@@ -1853,7 +1853,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
@@ -1893,7 +1893,7 @@ public class ProxyTest {
         public @Proxy.HttpConnectCallback.OnResponseReceivedAction int onResponseReceived(
                 @NonNull List<Pair<String, String>> responseHeaders, int statusCode) {
             super.onResponseReceived(responseHeaders, statusCode);
-            return Proxy.HttpConnectCallback.PROCEED;
+            return Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED;
         }
     }
 
@@ -1902,7 +1902,7 @@ public class ProxyTest {
         public @Proxy.HttpConnectCallback.OnResponseReceivedAction int onResponseReceived(
                 @NonNull List<Pair<String, String>> responseHeaders, int statusCode) {
             super.onResponseReceived(responseHeaders, statusCode);
-            return Proxy.HttpConnectCallback.CLOSE;
+            return Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE;
         }
     }
 
@@ -1943,14 +1943,14 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
                                                                 /* callback= */ closeDuringRequestProxyCallback),
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
@@ -2024,7 +2024,7 @@ public class ProxyTest {
                                         ProxyOptions.fromProxyList(
                                                 Arrays.asList(
                                                         Proxy.createHttpProxy(
-                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* scheme= */ Proxy.SCHEME_HTTP,
                                                                 /* host= */ "localhost",
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),

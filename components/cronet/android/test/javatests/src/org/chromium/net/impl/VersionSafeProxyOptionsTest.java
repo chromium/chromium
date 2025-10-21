@@ -81,7 +81,7 @@ public class VersionSafeProxyOptionsTest {
                 new ProxyOptions(
                         Arrays.asList(
                                 new Proxy(
-                                        Proxy.HTTP,
+                                        Proxy.SCHEME_HTTP,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
@@ -107,7 +107,7 @@ public class VersionSafeProxyOptionsTest {
                 new ProxyOptions(
                         Arrays.asList(
                                 new Proxy(
-                                        Proxy.HTTP,
+                                        Proxy.SCHEME_HTTP,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
@@ -130,7 +130,7 @@ public class VersionSafeProxyOptionsTest {
                 new ProxyOptions(
                         Arrays.asList(
                                 new Proxy(
-                                        Proxy.HTTPS,
+                                        Proxy.SCHEME_HTTPS,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
@@ -156,7 +156,7 @@ public class VersionSafeProxyOptionsTest {
                 new ProxyOptions(
                         Arrays.asList(
                                 new Proxy(
-                                        Proxy.HTTPS,
+                                        Proxy.SCHEME_HTTPS,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
@@ -182,13 +182,13 @@ public class VersionSafeProxyOptionsTest {
                 new ProxyOptions(
                         Arrays.asList(
                                 new Proxy(
-                                        Proxy.HTTPS,
+                                        Proxy.SCHEME_HTTPS,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
                                         httpsProxyCallback),
                                 new Proxy(
-                                        Proxy.HTTP,
+                                        Proxy.SCHEME_HTTP,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),

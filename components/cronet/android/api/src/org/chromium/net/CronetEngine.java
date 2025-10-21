@@ -526,7 +526,7 @@ public abstract class CronetEngine {
          * cause connectivity problems in some scenarios where a system proxy configuration is
          * present. In such scenarios, users might end up with no internet access, unless {@link
          * ProxyOptions} has been configured with a final, {@code null}, fallback. Refer to {@link
-         * ProxyOption} documentation.
+         * ProxyOptions} documentation.
          *
          * @param proxyOptions ProxyOptions to be used for {@link UrlRequest}, {@link
          *     BiridirectionalStream} and connections established by the {@link CronetEngine}

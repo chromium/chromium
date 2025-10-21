@@ -52,6 +52,6 @@ final class VersionSafeProxyCallback {
     boolean onTunnelHeadersReceived(
             @NonNull List<Pair<String, String>> responseHeaders, int statusCode) {
         return mBackend.onResponseReceived(responseHeaders, statusCode)
-                == Proxy.HttpConnectCallback.PROCEED;
+                == Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED;
     }
 }

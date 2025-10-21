@@ -74,9 +74,9 @@ final class VersionSafeProxyOptions {
                 proxyProtoBuilder.setHost(proxy.getHost());
                 proxyProtoBuilder.setPort(proxy.getPort());
                 @org.chromium.net.Proxy.Scheme int scheme = proxy.getScheme();
-                if (scheme == org.chromium.net.Proxy.HTTP) {
+                if (scheme == org.chromium.net.Proxy.SCHEME_HTTP) {
                     proxyProtoBuilder.setScheme(org.chromium.net.impl.proto.ProxyScheme.HTTP);
-                } else if (scheme == org.chromium.net.Proxy.HTTPS) {
+                } else if (scheme == org.chromium.net.Proxy.SCHEME_HTTPS) {
                     proxyProtoBuilder.setScheme(org.chromium.net.impl.proto.ProxyScheme.HTTPS);
                 } else {
                     throw new AssertionError(

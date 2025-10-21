@@ -384,8 +384,8 @@ public abstract class org.chromium.net.Proxy$HttpConnectCallback {
   public int onResponseReceived(java.util.List<android.util.Pair<java.lang.String, java.lang.String>>, int);
   public java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>> onBeforeTunnelRequest();
   public org.chromium.net.Proxy$HttpConnectCallback();
-  public static final int CLOSE;
-  public static final int PROCEED;
+  public static final int RESPONSE_ACTION_CLOSE;
+  public static final int RESPONSE_ACTION_PROCEED;
   public void onBeforeRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
   public void onBeforeTunnelRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
 }
@@ -401,6 +401,8 @@ public final class org.chromium.net.Proxy {
   public org.chromium.net.Proxy(int, java.lang.String, int, org.chromium.net.Proxy$HttpConnectCallback);
   public static final int HTTP;
   public static final int HTTPS;
+  public static final int SCHEME_HTTP;
+  public static final int SCHEME_HTTPS;
   public static org.chromium.net.Proxy createHttpProxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$HttpConnectCallback);
 }
 public interface org.chromium.net.ProxyOptions$Experimental extends java.lang.annotation.Annotation {
@@ -684,4 +686,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: b327cd7c1d7372770c4cc35834b5a340
+Stamp: 12558b61a9bb199457f6c5b7de8c9a82
