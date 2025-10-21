@@ -344,7 +344,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
   constexpr int kBottomMarginWhenNoButton = 24;
-  constexpr int kSubtitleBottomMarginInfoBelow = 12;
+  constexpr int kSubtitleBottomMarginInfoBelow = 4;
+  constexpr int kSubtitleBottomMarginButtonBelow = 12;
   constexpr int kButtonBottomMargin = 28;
 
   // Vertical view structure when all elements are present. Square brackets []
@@ -359,10 +360,9 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Label: Title
   // Optional:
   //     Label: Email Subtitle (optional)
-  //     [kEmailSubtitleBottomMarginWithInfoBelow] (or
-  //     [kSubtitleBottomMarginInfoBelow])
+  //     [kSubtitleBottomMarginInfoBelow] or [kSubtitleBottomMarginButtonBelow]
   //     Label: Subtitle (optional)
-  //     [kSubtitleBottomMarginWithButton] (or [kSubtitleBottomMarginInfoBelow])
+  //     [kSubtitleBottomMarginButtonBelow] or [kBottomMarginWhenNoButton]
   // Optional:
   //     Button: maybe with an image inside
   //     [kButtonBottomMargin]
@@ -474,8 +474,9 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   const bool has_subtitle = !params.subtitle.empty();
   if (!params.email_subtitle.empty()) {
     const int email_subtitle_bottom_margin =
-        has_button || has_subtitle ? kSubtitleBottomMarginInfoBelow
-                                   : kBottomMarginWhenNoButton;
+        has_subtitle ? kSubtitleBottomMarginInfoBelow
+                     : (has_button ? kSubtitleBottomMarginButtonBelow
+                                   : kBottomMarginWhenNoButton);
     identity_info_container_->AddChildView(
         views::Builder<views::Label>()
             .SetText(params.email_subtitle)
@@ -492,8 +493,9 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   }
 
   if (has_subtitle) {
-    const int subtitle_bottom_margin =
-        has_button ? kSubtitleBottomMarginInfoBelow : kBottomMarginWhenNoButton;
+    const int subtitle_bottom_margin = has_button
+                                           ? kSubtitleBottomMarginButtonBelow
+                                           : kBottomMarginWhenNoButton;
     identity_info_container_->AddChildView(
         views::Builder<views::Label>()
             .SetText(params.subtitle)
