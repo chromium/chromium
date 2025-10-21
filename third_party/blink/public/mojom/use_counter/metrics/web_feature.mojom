@@ -4697,7 +4697,8 @@ enum WebFeature {
   kOBSOLETE_V8AILanguageModel_MeasureInputUsage_Method = 5388,
   kCredentialsGetImmediateMediationWithWebAuthnOnly = 5389,
   kCredentialsGetImmediateMediationWithWebAuthnAndPasswords = 5390,
-  kOBSOLETENonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller = 5391,
+  kOBSOLETENonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller =
+      5391,
   kTranslator_Create = 5392,
   kTranslator_Availability = 5393,
   kTranslator_SourceLanguage = 5394,
@@ -5022,6 +5023,8 @@ enum WebFeature {
   kWebRTCLocalNetworkAccessLocalToLoopback = 5707,
   kIdentityDigitalCredentialsCreation = 5708,
   kIdentityDigitalCredentialsCreationSuccess = 5709,
+  kFedCmErrorCodeAttribute = 5710,
+  kFedCmErrorErrorAttribute = 5711,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
