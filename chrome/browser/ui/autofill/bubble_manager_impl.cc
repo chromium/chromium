@@ -274,7 +274,7 @@ void BubbleManagerImpl::AddToPendingQueue(
   }
 }
 
-void BubbleManagerImpl::ProcessPendingBubbles() {
+void BubbleManagerImpl::ProcessPendingBubbles(bool tab_entered_foreground) {
   if (handling_show_request_ || handling_tab_will_enter_background_request_ ||
       (active_bubble_controller_ &&
        active_bubble_controller_->IsShowingBubble())) {
@@ -309,7 +309,11 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
   base::TimeDelta time_in_queue = now - it->time_added;
   pending_bubbles_queue_.erase(it);
 
-  base::UmaHistogramEnumeration("Autofill.Bubble.Queue.ShownFromQueue",
+  std::string bubble_shown_metric = "Autofill.Bubble.Queue.ShownFromQueue";
+  if (tab_entered_foreground) {
+    bubble_shown_metric += "OnTabVisible";
+  }
+  base::UmaHistogramEnumeration(bubble_shown_metric,
                                 next_controller_to_show->GetBubbleType());
   base::UmaHistogramTimes(
       base::StrCat(
@@ -329,7 +333,7 @@ void BubbleManagerImpl::OnBubbleHiddenByController(
   if (active_bubble_controller_.get() == controller_weak_ptr.get()) {
     active_bubble_controller_ = nullptr;
     if (show_next_bubble) {
-      ProcessPendingBubbles();
+      ProcessPendingBubbles(/*tab_entered_foreground=*/false);
     }
   } else {
     // The hidden bubble was not the active one, so remove it from the queue.
@@ -398,7 +402,7 @@ void BubbleManagerImpl::TabWillEnterBackground(
 void BubbleManagerImpl::TabDidEnterForeground(
     tabs::TabInterface* tab_interface) {
   if (!active_bubble_controller_) {
-    ProcessPendingBubbles();
+    ProcessPendingBubbles(/*tab_entered_foreground=*/true);
   } else if (!active_bubble_controller_->IsShowingBubble()) {
     // This can happen if a tab created in background becomes visible.
     active_bubble_controller_->ShowBubble();

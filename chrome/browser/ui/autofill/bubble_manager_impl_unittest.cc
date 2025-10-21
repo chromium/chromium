@@ -967,6 +967,10 @@ TEST_F(BubbleManagerImplTest, TabDeactivated_ShowAddsToQueue) {
   tab_interface()->Activate();
 
   EXPECT_TRUE(address_controller->IsShowingBubble());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Bubble.Queue.ShownFromQueueOnTabVisible",
+      BubbleType::kSaveUpdateAddress, 1);
 }
 
 }  // namespace autofill

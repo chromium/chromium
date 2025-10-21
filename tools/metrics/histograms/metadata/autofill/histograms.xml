@@ -2262,7 +2262,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Logs, per bubble type, when a bubble from the queue is shown to the user.
-    This metric is recorded when the bubble is shown.
+    This metric is recorded when the bubble is shown after the user acted upon
+    another bubble.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Queue.ShownFromQueueOnTabVisible"
+    enum="AutofillBubbleType" expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs, per bubble type, when a bubble from the queue is shown to the user
+    when the tab became visible. This metric is recorded when the bubble is
+    shown.
   </summary>
 </histogram>
 

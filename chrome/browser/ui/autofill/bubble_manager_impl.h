@@ -58,7 +58,7 @@ class BubbleManagerImpl : public BubbleManager {
 
   // Checks the pending bubbles queue and shows the highest-priority one if no
   // bubble is currently active.
-  void ProcessPendingBubbles();
+  void ProcessPendingBubbles(bool tab_entered_foreground);
 
   // Shows the given controller, sets it as the active one, and ensures
   // it's removed from the pending queue.
