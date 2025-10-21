@@ -66,6 +66,7 @@ export class ContextMenuEntrypointElement extends
         reflect: true,
         type: Boolean,
       },
+      entrypointName: {type: String},
     };
   }
 
@@ -73,6 +74,7 @@ export class ContextMenuEntrypointElement extends
   accessor showContextMenuDescription: boolean = false;
   accessor inCreateImageMode: boolean = false;
   accessor disabledTabIds: Set<number> = new Set();
+  accessor entrypointName: string = '';
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor tabPreviewUrl_: string = '';
   protected accessor tabPreviewsEnabled_: boolean =
@@ -88,6 +90,9 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onEntrypointClick_() {
+    const metricName =
+        'NewTabPage.' + this.entrypointName + '.ContextMenuEntry.Clicked';
+    chrome.metricsPrivate.recordBoolean(metricName, true);
     const entrypoint =
         this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
     assert(entrypoint);
