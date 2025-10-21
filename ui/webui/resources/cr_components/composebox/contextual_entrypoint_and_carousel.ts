@@ -184,12 +184,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return {file, errorMessage};
   }
 
-  resetContextFiles(): ComposeboxFile[] {
-    const existingFiles = Array.from(this.files_.values());
+  resetContextFiles() {
     this.files_ = new Map();
     this.addedTabsIds_ = new Set();
-    this.showFileCarousel_ = false;
-    return existingFiles;
   }
 
   resetModes() {
