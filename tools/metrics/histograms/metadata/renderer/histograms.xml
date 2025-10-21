@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ContentProduction.CommitToUnhideDelay" units="ms"
-    expires_after="2025-10-31">
+    expires_after="2026-03-08">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ContentProduction.DelayFromUnhide" units="ms"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
