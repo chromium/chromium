@@ -98,13 +98,6 @@ def _per_test_modifications(
   return values.DictValueBuilder(mod_builders)
 
 
-class SkylabSuite(Exception):
-
-  def __init__(self, suite_type: str, suite: str):
-    return super().__init__(f'skylab suite "{suite}" with'
-                            f' suite_type "{suite_type}" is not supported')
-
-
 _BROWSER_CONFIG_MAPPING = {
     'android-chromium': 'ANDROID_CHROMIUM',
     'android-chromium-monochrome': 'ANDROID_CHROMIUM_MONOCHROME',
@@ -312,16 +305,11 @@ def main(argv: list[str]):
           if builders is not None and builder_name not in builders:
             continue
 
-          try:
-            edits_by_builder[builder_name] = _compute_edits(
-                builder_name,
-                builder_config,
-                test_suite_exceptions,
-            )
-          except SkylabSuite:
-            if builders is not None:
-              raise
-
+          edits_by_builder[builder_name] = _compute_edits(
+              builder_name,
+              builder_config,
+              test_suite_exceptions,
+          )
           if builders is not None:
             builders.remove(builder_name)
             if not builders:
