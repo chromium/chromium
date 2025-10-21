@@ -1169,6 +1169,33 @@ RenderFrameHostImpl* OpenWindowFromBlob(RenderFrameHostImpl* parent) {
   return OpenWindowFromURL(parent, blob_url);
 }
 
+RenderFrameHostImpl* GetFirstChild(RenderFrameHostImpl& parent) {
+  CHECK_NE(parent.child_count(), 0ul);
+  return parent.child_at(0)->current_frame_host();
+}
+
+// Adds a child iframe sourced from `url` to the given `parent` document.
+// Does not wait for the child frame to load - this must be done separately.
+//
+// `parent` must not be nullptr.
+void AddChildFromURLWithoutWaiting(RenderFrameHostImpl* parent,
+                                   std::string_view url) {
+  // Define a variable for better indentation.
+  constexpr std::string_view kScriptTemplate = R"(
+    const child = document.createElement("iframe");
+    child.src = $1;
+    document.body.appendChild(child);
+  )";
+
+  EXPECT_EQ(true, ExecJs(parent, JsReplace(kScriptTemplate, url)));
+}
+
+// Convenience overload for absolute URLs.
+void AddChildFromURLWithoutWaiting(RenderFrameHostImpl* parent,
+                                   const GURL& url) {
+  return AddChildFromURLWithoutWaiting(parent, url.spec());
+}
+
 }  // namespace
 
 // ===============================
@@ -2963,6 +2990,355 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   ExpectFetchSharedWorkerScriptResult(
       true, EvalJs(root_frame_host(),
                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+// ======================
+// NAVIGATION FETCH TESTS
+// ======================
+//
+// These tests verify the behavior of the browser when navigating across IP
+// address spaces.
+//
+// Iframe navigations are effectively treated as subresource fetches of the
+// initiator document: they are handled by checking the resource's address space
+// against the initiator document's address space.
+//
+// Top-level navigations are never blocked.
+//
+// TODO(crbug.com/40263397): Revisit this when top-level navigations are
+// subject to Private Network Access checks.
+
+// This test verifies that  iframe requests:
+//  - from an insecure page served from a public IP address
+//  - to a loopback IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeFromInsecurePublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+  GURL url = InsecureLoopbackURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  AddChildFromURLWithoutWaiting(root_frame_host(), url);
+  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  RenderFrameHostImpl* child_frame = GetFirstChild(*root_frame_host());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  // Blocked before we ever sent a request.
+  EXPECT_THAT(
+      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(url),
+      IsEmpty());
+}
+
+// Same as above, testing the "treat-as-public-address" CSP directive.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeFromInsecureTreatAsPublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  GURL url = InsecureLoopbackURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  AddChildFromURLWithoutWaiting(root_frame_host(), url);
+  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+}
+
+// This test verifies that when an iframe navigation fails due to LNA, the
+// iframe navigates to an error page, even if it had previously committed a
+// document.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeFailedNavigationCommitsErrorPage) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  // First add a child frame, which successfully commits a document.
+  AddChildFromURL(root_frame_host(), "/empty.html");
+
+  GURL url = InsecureLoopbackURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  // Then try to navigate that frame in a way that fails LNA checks.
+  EXPECT_TRUE(ExecJs(
+      root_frame_host(),
+      JsReplace("document.getElementsByTagName('iframe')[0].src = $1;", url)));
+  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  RenderFrameHostImpl* child_frame = GetFirstChild(*root_frame_host());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  // Blocked before we ever sent a request.
+  EXPECT_THAT(
+      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(url),
+      IsEmpty());
+}
+
+// This test verifies that iframe requests:
+//  - from a secure page served from a public IP address
+//  - to a loopback IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeFromSecurePublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  GURL url = SecureLoopbackURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  AddChildFromURLWithoutWaiting(root_frame_host(), url);
+  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  RenderFrameHostImpl* child_frame = GetFirstChild(*root_frame_host());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  // Blocked before we ever sent a request.
+  EXPECT_THAT(
+      SecureLoopbackServer().request_observer().RequestMethodsForUrl(url),
+      IsEmpty());
+}
+
+// Same as above, testing the "treat-as-public-address" CSP directive.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeFromSecureTreatAsPublicToLoopbackIsNotBlocked) {
+  GURL initiator_url = SecureLoopbackURL(kTreatAsPublicAddressPath);
+  EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  GURL url = OtherSecureLoopbackURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  AddChildFromURLWithoutWaiting(root_frame_host(), url);
+  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  RenderFrameHostImpl* child_frame = GetFirstChild(*root_frame_host());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  // Blocked before we ever sent a request.
+  EXPECT_THAT(
+      SecureLoopbackServer().request_observer().RequestMethodsForUrl(url),
+      IsEmpty());
+}
+
+// Form submissions from the main frame are not blocked as we do not block main
+// frame navigations.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    FormSubmissionFromInsecurePublicToLoopbackIsNotBlockedInMainFrame) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  GURL url = InsecureLoopbackURL(kDefaultPath);
+  TestNavigationManager navigation_manager(shell()->web_contents(), url);
+
+  std::string_view script_template = R"(
+    const form = document.createElement("form");
+    form.action = $1;
+    form.method = "post";
+    document.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
+
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  // Check that the form submission was not blocked.
+  EXPECT_TRUE(navigation_manager.was_successful());
+}
+
+// Form submissions
+//  - from a secure page served from a public IP address
+//  - to a loopback IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    FormSubmissionFromSecurePublicToLoopbackIsBlockedInChildFrame) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  GURL url = SecureLoopbackURL(kDefaultPath);
+  TestNavigationManager navigation_manager(shell()->web_contents(), url);
+
+  std::string_view script_template = R"(
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    const childDoc = iframe.contentDocument;
+    const form = childDoc.createElement("form");
+    form.action = $1;
+    form.method = "post";
+    childDoc.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
+
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  // Failed navigation.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The URL is the form target URL, to allow for reloading.
+  // The origin is opaque though, a symptom of the failed navigation.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+// Form submissions
+//  - from a secure page served from a public IP address
+//  - to a loopback IP address
+//  - using a GET method
+// are blocked.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    FormSubmissionGetFromSecurePublicToLoopbackIsBlockedInChildFrame) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  GURL target_url = SecureLoopbackURL(kDefaultPath);
+
+  // The page navigates to `url` followed by an empty query: '?'.
+  GURL expected_url = GURL(target_url.spec() + "?");
+  TestNavigationManager navigation_manager(shell()->web_contents(),
+                                           expected_url);
+
+  std::string_view script_template = R"(
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    const childDoc = iframe.contentDocument;
+    const form = childDoc.createElement("form");
+    form.action = $1;
+    form.method = "get";
+    childDoc.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(), JsReplace(script_template, target_url)));
+
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  // Failed navigation.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The URL is the form target URL, to allow for reloading.
+  // The origin is opaque though, a symptom of the failed navigation.
+  EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       SiblingNavigationFromInsecurePublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  // Named targeting only works if the initiator is one of:
+  //
+  //  - the target's parent -> uninteresting
+  //  - the target's opener -> implies the target is a main frame
+  //  - same-origin with the target -> the only option left
+  //
+  // Thus we use CSP: treat-as-public-address to place the initiator in a
+  // different IP address space as its same-origin target.
+  GURL initiator_url = InsecureLoopbackURL(kTreatAsPublicAddressPath);
+  GURL target_url = InsecureLoopbackURL(kDefaultPath);
+
+  constexpr std::string_view kScriptTemplate = R"(
+    function addChild(name, src) {
+      return new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.name = name;
+        iframe.src = src;
+        iframe.onload = () => resolve(iframe);
+        document.body.appendChild(iframe);
+      });
+    }
+
+    Promise.all([
+      addChild("initiator", $1),
+      addChild("target", "/empty.html"),
+    ]).then(() => true);
+  )";
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         JsReplace(kScriptTemplate, initiator_url)));
+
+  ASSERT_EQ(2ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* initiator =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(initiator->GetLastCommittedURL(), initiator_url);
+
+  TestNavigationManager navigation_manager(shell()->web_contents(), target_url);
+
+  EXPECT_TRUE(
+      ExecJs(initiator, JsReplace("window.open($1, 'target')", target_url)));
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  // Request was blocked before it was even sent.
+  EXPECT_THAT(SecureLoopbackServer().request_observer().RequestMethodsForUrl(
+                  target_url),
+              IsEmpty());
 }
 
 }  // namespace content
