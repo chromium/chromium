@@ -1409,6 +1409,39 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_THAT(GetEntityInstances(), testing::UnorderedElementsAre(new_entity));
 }
 
+// If the original entity is stored in the server but the updated entity is a
+// local entity, no update prompt should happen. This could happen if the user
+// has an original server entity but then opts out of the feature. In this
+// scenario only local entities are created, however update prompts should not
+// move a server entity to a local entity.
+TEST_F(AutofillAiManagerImportFormTest,
+       WallatableEntity_Update_RecordType_ServerToLocal_DoNotOfferUpdate) {
+  using enum AttributeTypeName;
+  // The submitted form will have license plate info.
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({VEHICLE_VIN, VEHICLE_LICENSE_PLATE});
+
+  // The current entity however does not.
+  EntityInstance existing_entity_without_license_plate =
+      test::GetVehicleEntityInstance(
+          {.plate = nullptr,
+           .record_type = EntityInstance::RecordType::kServerWallet});
+  AddOrUpdateEntityInstance(existing_entity_without_license_plate);
+
+  // Set the filled values to be the same as the ones already stored in the
+  // existing entity, and also fill the expiry date.
+  form->field(0)->set_value(GetValueFromEntity(
+      existing_entity_without_license_plate, AttributeType(kVehicleVin)));
+  form->field(1)->set_value(u"12345");
+
+  // Disable the wallet feature.
+  autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+  ASSERT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_UpdateInfo) {
   using enum AttributeTypeName;
   std::unique_ptr<FormStructure> form =

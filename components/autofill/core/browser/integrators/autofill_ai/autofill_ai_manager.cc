@@ -704,6 +704,12 @@ AutofillAiManager::GetEntitySaveAndUpdatePromptCandidates(
           IsUpdateBlockedByStrikeDatabase(saved_entity.guid())) {
         continue;
       }
+      // Do not update a server entity into a local entity.
+      if (saved_entity.record_type() ==
+              EntityInstance::RecordType::kServerWallet &&
+          observed_entity.record_type() == EntityInstance::RecordType::kLocal) {
+        continue;
+      }
       // This will contain the attributes of the new to-be-updated entity.
       base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
           new_attributes = std::move(mergeability->mergeable_attributes);
