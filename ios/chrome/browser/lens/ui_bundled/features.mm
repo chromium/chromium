@@ -6,24 +6,24 @@
 
 #import "base/metrics/field_trial_params.h"
 
-BASE_FEATURE(kLensFiltersAblationModeEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensFiltersAblationModeEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kLensFiltersAblationMode[] = "LensFilterAblationMode";
 
 int LensFiltersAblationMode() {
   return base::GetFieldTrialParamByFeatureAsInt(kLensFiltersAblationModeEnabled,
-                                                kLensFiltersAblationMode, 0);
+                                                kLensFiltersAblationMode,
+                                                /*default_value=*/1);
 }
 
-BASE_FEATURE(kLensTranslateToggleModeEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensTranslateToggleModeEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kLensTranslateToggleMode[] = "LensTranslateToggleMode";
 
 int LensTranslateToggleMode() {
   return base::GetFieldTrialParamByFeatureAsInt(kLensTranslateToggleModeEnabled,
-                                                kLensTranslateToggleMode, 0);
+                                                kLensTranslateToggleMode,
+                                                /*default_value=*/1);
 }
 
 BASE_FEATURE(kLensWebPageLoadOptimizationEnabled,

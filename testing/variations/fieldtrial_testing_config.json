@@ -13557,27 +13557,6 @@
             ]
         }
     ],
-    "IOSLensUnification": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "LensFilterAblationMode": "1",
-                        "LensTranslateToggleMode": "1"
-                    },
-                    "enable_features": [
-                        "EnableLensViewFinderUnifiedExperience",
-                        "LensFiltersAblationModeEnabled",
-                        "LensTranslateToggleModeEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSLogApplicationStorageSizeMetrics": [
         {
             "platforms": [
