@@ -1914,11 +1914,20 @@ void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
             manager.GetServerPredictionsForForm(form_id,
                                                 field_ids_for_renderer_form));
         break;
-      case FieldTypeSource::kHeuristicsOrAutocomplete:
+      case FieldTypeSource::kHeuristicsOrAutocomplete: {
+#if !BUILDFLAG(IS_ANDROID)
+        bool use_model_predictions_for_actor =
+            IsActorTaskActive() && base::FeatureList::IsEnabled(
+                                       password_manager::features::
+                                           kActorLoginLocalClassificationModel);
+#else
+        bool use_model_predictions_for_actor = false;
+#endif
         if (apply_client_side_prediction_override_ ||
             base::FeatureList::IsEnabled(
                 password_manager::features::
-                    kApplyClientsideModelPredictionsForPasswordTypes)) {
+                    kApplyClientsideModelPredictionsForPasswordTypes) ||
+            use_model_predictions_for_actor) {
           auto model_predictions = manager.GetHeursticPredictionForForm(
               autofill::HeuristicSource::kPasswordManagerMachineLearning,
               form_id, field_ids_for_renderer_form);
@@ -1926,6 +1935,7 @@ void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
               driver, renderer_form, model_predictions);
         }
         break;
+      }
     }
   }
 }
