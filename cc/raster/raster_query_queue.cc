@@ -54,19 +54,6 @@ bool RasterQueryQueue::CheckRasterFinishedQueries() {
     if (!complete)
       break;
 
-#if DCHECK_IS_ON()
-    if (it->raster_start_query_id) {
-      // We issued the GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM query prior to the
-      // GL_COMMANDS_ISSUED_CHROMIUM query. Therefore, if the result of the
-      // latter is available, the result of the former should be too.
-      complete = 0;
-      ri->GetQueryObjectuivEXT(it->raster_start_query_id,
-                               GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT,
-                               &complete);
-      DCHECK(complete);
-    }
-#endif
-
     GLuint gpu_raster_duration = 0u;
     ri->GetQueryObjectuivEXT(it->raster_duration_query_id, GL_QUERY_RESULT_EXT,
                              &gpu_raster_duration);
@@ -79,15 +66,6 @@ bool RasterQueryQueue::CheckRasterFinishedQueries() {
     // because the client name should be initialized once in the process, before
     // recording any metrics here.
     const char* client_name = GetClientNameForMetrics();
-
-    if (it->raster_start_query_id) {
-      // TODO(crbug.com/450466845): Remove `raster_start_query_id`, as it now
-      // serves no purpose.
-      GLuint64 gpu_raster_start_time = 0u;
-      ri->GetQueryObjectui64vEXT(it->raster_start_query_id, GL_QUERY_RESULT_EXT,
-                                 &gpu_raster_start_time);
-      ri->DeleteQueriesEXT(1, &it->raster_start_query_id);
-    }
 
     UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
         base::StringPrintf("Renderer4.%s.RasterTaskTotalDuration.Oop",

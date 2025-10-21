@@ -29,10 +29,6 @@ struct CC_EXPORT RasterQuery {
   // The duration for executing the work on the raster worker thread.
   base::TimeDelta worker_raster_duration;
 
-  // The id for querying the time at which we're about to start issuing raster
-  // work to the driver.
-  GLuint raster_start_query_id = 0u;
-
   // The time at which the raster buffer was created.
   base::TimeTicks raster_buffer_creation_time;
 };

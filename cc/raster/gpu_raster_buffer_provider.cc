@@ -221,9 +221,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThread(
                                  playback_settings, url, &query);
 
   if (query.raster_duration_query_id) {
-    if (query.raster_start_query_id)
-      query.raster_buffer_creation_time = creation_time_;
-
     // Note that it is important to scope the raster context lock to
     // PlaybackOnWorkerThreadInternal and release it before calling this
     // function to avoid a deadlock in
@@ -259,25 +256,9 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Use a query to detect when the GPU side is ready to start issuing raster
-    // work to the driver. We will use the resulting timestamp to measure raster
-    // scheduling delay. We only care about this in ChromeOS because we will
-    // use this timestamp to measure raster scheduling delay and we only need to
-    // collect that data to assess the impact of hardware acceleration of image
-    // decodes which work only in ChromeOS. Furthermore, we don't count raster
-    // work that depends on at-raster image decodes. This is because we want the
-    // delay to always include image decoding and uploading time, and at-raster
-    // decodes should be relatively rare.
-    if (!depends_on_at_raster_decodes_) {
-      ri->GenQueriesEXT(1, &query->raster_start_query_id);
-      DCHECK_GT(query->raster_start_query_id, 0u);
-      ri->QueryCounterEXT(query->raster_start_query_id,
-                          GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM);
-    }
-#else
+    // TODO(crbug.com/450466845): Remove `depends_on_at_raster_decodes_`, as it
+    // now serves no purpose.
     std::ignore = depends_on_at_raster_decodes_;
-#endif
 
     // Use a query to time the GPU side work for rasterizing this tile.
     ri->GenQueriesEXT(1, &query->raster_duration_query_id);
