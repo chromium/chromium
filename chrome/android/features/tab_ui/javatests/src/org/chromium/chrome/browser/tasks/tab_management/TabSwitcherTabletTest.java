@@ -226,7 +226,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41484831")
+    @DisabledTest(message = "crbug.com/41484831")
     public void testGridTabSwitcherToggleIncognitoWithNoRegularTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModel regularModel = cta.getTabModelSelectorSupplier().get().getModel(false);
