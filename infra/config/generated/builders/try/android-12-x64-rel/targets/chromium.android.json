@@ -111,7 +111,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*",
-          "--timeout-scale=2.0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
