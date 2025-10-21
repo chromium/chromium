@@ -1395,7 +1395,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                 this.saveToDriveProgress_.accountIsManaged ?? false),
             WindowOpenDisposition.NEW_FOREGROUND_TAB);
         this.saveToDriveState_ = SaveToDriveState.UNINITIALIZED;
-        // TODO(crbug.com/427449996): Add url testing for this case.
         break;
       case SaveToDriveBubbleRequestType.OPEN_IN_DRIVE:
         assert(this.saveToDriveProgress_.accountEmail);
@@ -1406,7 +1405,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                 this.saveToDriveProgress_.driveItemId),
             WindowOpenDisposition.NEW_FOREGROUND_TAB);
         this.saveToDriveState_ = SaveToDriveState.UNINITIALIZED;
-        // TODO(crbug.com/427449996): Add url testing for this case.
         break;
       case SaveToDriveBubbleRequestType.RETRY:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
@@ -1466,8 +1464,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         newState === SaveToDriveState.UNINITIALIZED,
         `Unexpected state: ${newState}`);
     if (oldState !== SaveToDriveState.UPLOADING) {
-      // TODO(crbug.com/427449996): Update the tests to make sure they all end
-      // with an UNINITIALIZED state.
       this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
     }
   }
