@@ -23,7 +23,8 @@
 #actions-focus-border:focus-within,
 /* Keep outline when chip receives active state after being focused. */
 #actions-focus-border:focus-within:has(#action:active),
-#actions-focus-border:has(#action.selected) {
+#actions-focus-border:has(#action.selected),
+#actions-focus-border:has(#keyword.selected) {
   outline: 2px solid var(--color-searchbox-results-action-chip-focus-outline);
   border-radius: 10px;
   margin-inline-start: -2px;
@@ -58,7 +59,7 @@
   padding-bottom: 3px;
 }
 
-:host([has-action][is-top-chrome-searchbox_]) .container {
+:host([is-top-chrome-searchbox_]:is([has-action],[has-keyword])) .container {
   height: 40px;
   padding-top: 0;
   padding-bottom: 0;
@@ -257,7 +258,7 @@
   display: inline-flex;
 }
 
-.selected:not(#action) {
+.selected:not(#action):not(#keyword) {
   box-shadow: inset 0 0 0 2px
       var(--color-searchbox-results-icon-focused-outline);
 }
