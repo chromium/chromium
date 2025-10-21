@@ -3882,8 +3882,7 @@ int StoragePartitionImpl::GetActiveDocumentCount(
   return it->second;
 }
 
-const base::UnguessableToken&
-StoragePartitionImpl::GetPartitionUUIDPerStorageKey(
+base::UnguessableToken StoragePartitionImpl::GetPartitionUUIDPerStorageKey(
     const blink::StorageKey& storage_key) {
   auto uuid = partition_uuid_per_storage_key_.find(storage_key);
   return uuid == partition_uuid_per_storage_key_.end()

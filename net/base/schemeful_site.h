@@ -162,6 +162,10 @@ class NET_EXPORT SchemefulSite {
                          const SchemefulSite& right) = default;
   friend auto operator<=>(const SchemefulSite& left,
                           const SchemefulSite& right) = default;
+  template <typename H>
+  friend H AbslHashValue(H h, const SchemefulSite& site) {
+    return H::combine(std::move(h), site.site_as_origin_);
+  }
 
  private:
   // IPC serialization code needs to access internal origin.

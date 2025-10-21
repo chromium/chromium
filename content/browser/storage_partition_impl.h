@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -52,6 +51,8 @@
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_settings.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
@@ -552,7 +553,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::TimeDelta& delay,
       base::RepeatingClosure callback);
 
-  const base::UnguessableToken& GetPartitionUUIDPerStorageKey(
+  base::UnguessableToken GetPartitionUUIDPerStorageKey(
       const blink::StorageKey& storage_key);
 
   // Increments/decrements/gets the active document count tracked in
@@ -844,7 +845,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       dom_storage_receivers_;
 
   // A client interface for each receiver above.
-  std::map<mojo::ReceiverId, mojo::Remote<blink::mojom::DomStorageClient>>
+  absl::flat_hash_map<mojo::ReceiverId,
+                      mojo::Remote<blink::mojom::DomStorageClient>>
       dom_storage_clients_;
 
   // Owns the NetworkContext used to make requests for the StoragePartition.
@@ -924,9 +926,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // `navigation_state_keep_alive_map_`, so this map must still be alive when
   // that happens.
   using TokenNavigationStateKeepAliveMap =
-      std::unordered_map<blink::LocalFrameToken,
-                         NavigationStateKeepAlive*,
-                         blink::LocalFrameToken::Hasher>;
+      absl::flat_hash_map<blink::LocalFrameToken, NavigationStateKeepAlive*>;
   TokenNavigationStateKeepAliveMap navigation_state_keep_alive_map_;
 
   // Active keepalive handles for in-flight navigations. They are retained
@@ -949,7 +949,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // A copy of the network revocation nonces in `NetworkContext`. It is used for
   // restoring the network revocation states of fenced frames when there is a
   // `NetworkService` crash.
-  std::set<base::UnguessableToken> network_revocation_nonces_;
+  absl::flat_hash_set<base::UnguessableToken> network_revocation_nonces_;
 
   // We need to delay deleting stale session cookies until after the cookie db
   // has initialized, otherwise we will bypass lazy loading and block.
@@ -968,12 +968,13 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // Tracks the number of active documents within the same StoragePartition,
   // keyed by NetworkIsolationKeys.
-  std::map<net::NetworkIsolationKey, int> active_document_per_nik_count_;
+  absl::flat_hash_map<net::NetworkIsolationKey, int>
+      active_document_per_nik_count_;
 
   // This is a unique identifier of a pair (partition, storage key) across the
   // lifetime of the browser. Used mostly for computing clipboard version token
   // for the particular partition.
-  std::map<blink::StorageKey, base::UnguessableToken>
+  absl::flat_hash_map<blink::StorageKey, base::UnguessableToken>
       partition_uuid_per_storage_key_;
 
   // Used to observe idle scenario.

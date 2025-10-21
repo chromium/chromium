@@ -157,6 +157,12 @@ class NET_EXPORT NetworkIsolationKey {
   bool IsEmpty() const;
 
  private:
+  template <typename H>
+  friend H AbslHashValue(H h, const NetworkIsolationKey& key) {
+    return H::combine(std::move(h), key.top_frame_site_, key.frame_site_,
+                      key.nonce_, key.network_isolation_partition_);
+  }
+
   // Whether this key has opaque origins or a nonce.
   bool IsOpaque() const;
 

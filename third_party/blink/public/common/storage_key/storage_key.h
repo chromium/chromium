@@ -326,6 +326,16 @@ class BLINK_COMMON_EXPORT StorageKey {
   // serializable as keys with opaque origins will still return true.
   bool IsValid() const;
 
+  // Not currently implemented in BlinkStorageKey since Blink generally uses
+  // WTF::HashMap and its variants.
+  template <typename H>
+  friend H AbslHashValue(H h, const StorageKey& key) {
+    return H::combine(std::move(h), key.origin_, key.top_level_site_,
+                      key.top_level_site_if_third_party_enabled_, key.nonce_,
+                      key.ancestor_chain_bit_,
+                      key.ancestor_chain_bit_if_third_party_enabled_);
+  }
+
   // [Block 8 - Private Members] - Keep in sync with BlinkStorageKey.
 
   // The current site in the given context. StorageKey is generally
