@@ -2179,6 +2179,22 @@ TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorSolidBorder) {
 }
 
 TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       BorderBoxClipColorSolidBorderWithBorderShape) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white border-box; border: 10px solid black;
+                border-shape: circle();'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // Border-shape clips are computed in border box space, so the background
+  // must stay in that space as well.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
        BorderBoxClipColorTranslucentBorder) {
   SetBodyInnerHTML(kCommonStyle + R"HTML(
     <div id='scroller'

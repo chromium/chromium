@@ -4272,6 +4272,12 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocation(
     return kBackgroundPaintInBorderBoxSpace;
   }
 
+  if (StyleRef().HasBorderShape()) {
+    // Border-shape clips are applied in the border box space. Painting the
+    // background in the scrolling contents layer would bypass that clip.
+    return kBackgroundPaintInBorderBoxSpace;
+  }
+
   return paint_location;
 }
 
