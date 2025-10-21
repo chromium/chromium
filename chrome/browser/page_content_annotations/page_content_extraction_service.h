@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/visibility.h"

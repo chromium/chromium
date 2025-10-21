@@ -93,7 +93,8 @@ void PageContentExtractionService::OnPageContentExtracted(
   }
 
   page_content_cache_handler_->ProcessPageContentExtraction(
-      tab_id, ToWebStateWrapper(web_contents), ToPageContext(page_content));
+      tab_id, ToWebStateWrapper(web_contents), ToPageContext(page_content),
+      base::Time::Now());
 }
 
 std::optional<ExtractedPageContentResult>
@@ -119,7 +120,8 @@ void PageContentExtractionService::OnVisibilityChanged(
     if (extracted_result) {
       page_content_cache_handler_->OnVisibilityChanged(
           tab_id, ToWebStateWrapper(web_contents),
-          ToPageContext(std::move(extracted_result->page_content)));
+          ToPageContext(std::move(extracted_result->page_content)),
+          extracted_result->extraction_timestamp);
     }
   }
 }

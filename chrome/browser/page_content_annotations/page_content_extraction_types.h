@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_TYPES_H_
 #define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_TYPES_H_
 
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace page_content_annotations {
@@ -12,6 +13,9 @@ namespace page_content_annotations {
 struct ExtractedPageContentResult {
   // The AnnotatedPageContent proto that represents the page content.
   optimization_guide::proto::AnnotatedPageContent page_content;
+
+  // The timestamp when the extraction is triggered.
+  base::Time extraction_timestamp;
 
   // Whether the content is eligible for server upload.
   bool is_eligible_for_server_upload = false;

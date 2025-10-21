@@ -309,6 +309,7 @@ void AnnotatedPageContentRequest::OnPageContentReceived(
     return;
   }
 
+  base::Time extraction_time = base::Time::Now();
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   auto* page_content_extraction_service =
@@ -326,6 +327,7 @@ void AnnotatedPageContentRequest::OnPageContentReceived(
           page_context_eligibility_);
   cached_content_ = ExtractedPageContentResult{
       .page_content = std::move(page_content->proto),
+      .extraction_timestamp = extraction_time,
       .is_eligible_for_server_upload = is_eligible_for_server_upload};
 }
 
