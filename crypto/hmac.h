@@ -96,13 +96,6 @@ class CRYPTO_EXPORT HMAC {
   [[nodiscard]] bool Verify(base::span<const uint8_t> data,
                             base::span<const uint8_t> digest) const;
 
-  // Verifies a truncated HMAC, behaving identical to Verify(), except
-  // that |digest| is allowed to be smaller than |DigestLength()|.
-  [[nodiscard]] bool VerifyTruncated(std::string_view data,
-                                     std::string_view digest) const;
-  [[nodiscard]] bool VerifyTruncated(base::span<const uint8_t> data,
-                                     base::span<const uint8_t> digest) const;
-
  private:
   HashAlgorithm hash_alg_;
   bool initialized_;

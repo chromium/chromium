@@ -237,10 +237,6 @@ TEST(HMACTest, NSSFIPSPowerUpSelfTest) {
       message_data,
       std::string_view(reinterpret_cast<const char*>(kKnownHMACSHA1),
                        kSHA1DigestSize)));
-  EXPECT_TRUE(hmac.VerifyTruncated(
-      message_data,
-      std::string_view(reinterpret_cast<const char*>(kKnownHMACSHA1),
-                       kSHA1DigestSize / 2)));
 
   crypto::HMAC hmac2(crypto::HMAC::SHA256);
   ASSERT_TRUE(hmac2.Init(kKnownSecretKey, kKnownSecretKeySize));
@@ -331,7 +327,7 @@ TEST(HMACTest, TooLong) {
   // Attempting to verify too large of an HMAC is an error.
   UNSAFE_TODO(memcpy(calculated_hmac, kKnownHMACSHA256, kSHA256DigestSize));
   calculated_hmac[kSHA256DigestSize] = 0;
-  UNSAFE_TODO(EXPECT_FALSE(hmac.VerifyTruncated(
+  UNSAFE_TODO(EXPECT_FALSE(hmac.Verify(
       data, std::string(calculated_hmac,
                         calculated_hmac + sizeof(calculated_hmac)))));
 }
@@ -356,13 +352,9 @@ TEST(HMACTest, Bytes) {
       0, memcmp(kKnownHMACSHA256, calculated_hmac, kSHA256DigestSize)));
 
   EXPECT_TRUE(hmac.Verify(data, calculated_hmac));
-  UNSAFE_TODO(EXPECT_TRUE(hmac.VerifyTruncated(
-      data, base::span(calculated_hmac, kSHA256DigestSize / 2))));
 
   data[0]++;
   EXPECT_FALSE(hmac.Verify(data, calculated_hmac));
-  UNSAFE_TODO(EXPECT_FALSE(hmac.VerifyTruncated(
-      data, base::span(calculated_hmac, kSHA256DigestSize / 2))));
 }
 
 TEST(HMACTest, OneShotSha1) {

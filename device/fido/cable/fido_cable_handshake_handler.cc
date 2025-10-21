@@ -25,6 +25,7 @@
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
+#include "crypto/secure_util.h"
 #include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_handshake.h"
@@ -117,19 +118,20 @@ void FidoCableV1HandshakeHandler::InitiateCableHandshake(
 
 bool FidoCableV1HandshakeHandler::ValidateAuthenticatorHandshakeMessage(
     base::span<const uint8_t> response) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  if (!hmac.Init(handshake_key_))
-    return false;
-
   if (response.size() != kCableAuthenticatorHandshakeMessageSize) {
     return false;
   }
 
-  const auto authenticator_hello = response.first(
-      kCableAuthenticatorHandshakeMessageSize - kCableHandshakeMacMessageSize);
-  if (!hmac.VerifyTruncated(
-          base::as_string_view(authenticator_hello),
-          base::as_string_view(response.subspan(authenticator_hello.size())))) {
+  constexpr size_t kMacOffset =
+      kCableAuthenticatorHandshakeMessageSize - kCableHandshakeMacMessageSize;
+  const auto [authenticator_hello, expected_truncated_mac] =
+      response.split_at(kMacOffset);
+  const auto actual_mac = crypto::hmac::SignSha256(
+      base::as_byte_span(handshake_key_), authenticator_hello);
+
+  const auto actual_truncated_mac =
+      base::span(actual_mac).first(std::size(expected_truncated_mac));
+  if (!crypto::SecureMemEqual(expected_truncated_mac, actual_truncated_mac)) {
     return false;
   }
 

@@ -77,27 +77,8 @@ bool HMAC::Verify(std::string_view data, std::string_view digest) const {
 
 bool HMAC::Verify(base::span<const uint8_t> data,
                   base::span<const uint8_t> digest) const {
-  if (digest.size() != DigestLength())
-    return false;
-  return VerifyTruncated(data, digest);
-}
-
-bool HMAC::VerifyTruncated(std::string_view data,
-                           std::string_view digest) const {
-  return VerifyTruncated(base::as_byte_span(data), base::as_byte_span(digest));
-}
-
-bool HMAC::VerifyTruncated(base::span<const uint8_t> data,
-                           base::span<const uint8_t> digest) const {
-  if (digest.empty())
-    return false;
-
-  size_t digest_length = DigestLength();
-  if (digest.size() > digest_length)
-    return false;
-
   std::array<uint8_t, EVP_MAX_MD_SIZE> computed_buffer;
-  auto computed_digest = base::span(computed_buffer).first(digest.size());
+  auto computed_digest = base::span(computed_buffer).first(DigestLength());
   if (!Sign(data, computed_digest)) {
     return false;
   }

@@ -29,6 +29,7 @@
 #include "crypto/hash.h"
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
+#include "crypto/secure_util.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/fido_ble_frames.h"
@@ -205,10 +206,12 @@ class FakeCableAuthenticator {
     if (handshake_message.size() != 58)
       return false;
 
-    const auto client_hello = handshake_message.first(42u);
-    if (!hmac.VerifyTruncated(
-            base::as_string_view(client_hello),
-            base::as_string_view(handshake_message.subspan<42>()))) {
+    const auto [client_hello, expected_mac] = handshake_message.split_at(42u);
+    const auto actual_mac = crypto::hmac::SignSha256(
+        base::as_byte_span(handshake_key_), client_hello);
+    const auto actual_mac_truncated =
+        base::span(actual_mac).first(std::size(expected_mac));
+    if (!crypto::SecureMemEqual(expected_mac, actual_mac_truncated)) {
       return false;
     }
 
