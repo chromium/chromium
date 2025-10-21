@@ -173,13 +173,20 @@ class CreateSessionDescriptionRequest
         action_(action) {}
 
   void OnSuccess(webrtc::SessionDescriptionInterface* desc) override {
+    // Explicitly take ownership of desc - as documented in the webrtc lib
+    // comment.
+    OnSuccessUniquePtr(base::WrapUnique(desc));
+  }
+
+  void OnSuccessUniquePtr(
+      std::unique_ptr<webrtc::SessionDescriptionInterface> desc) {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
           *main_thread_.get(), FROM_HERE,
           CrossThreadBindOnce(
-              &CreateSessionDescriptionRequest::OnSuccess,
+              &CreateSessionDescriptionRequest::OnSuccessUniquePtr,
               webrtc::scoped_refptr<CreateSessionDescriptionRequest>(this),
-              CrossThreadUnretained(desc)));
+              std::move(desc)));
       return;
     }
 
@@ -201,9 +208,9 @@ class CreateSessionDescriptionRequest
       tracker->TrackSessionId(handler_.get(),
                               String::FromUTF8(desc->session_id()));
     }
-    webkit_request_->RequestSucceeded(CreateWebKitSessionDescription(desc));
+    webkit_request_->RequestSucceeded(
+        CreateWebKitSessionDescription(desc.get()));
     webkit_request_ = nullptr;
-    delete desc;
   }
   void OnFailure(webrtc::RTCError error) override {
     if (!main_thread_->BelongsToCurrentThread()) {
