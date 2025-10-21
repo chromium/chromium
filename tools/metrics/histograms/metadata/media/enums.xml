@@ -580,6 +580,15 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="NativeMacOSPickerCaptureDeviceTypeWebContents"/>
 </enum>
 
+<!-- LINT.IfChange(DeviceChangeKind) -->
+
+<enum name="DeviceChangeKind">
+  <int value="0" label="Added"/>
+  <int value="1" label="Removed"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/audio/android/audio_manager_android.cc:DeviceChangeKind) -->
+
 <enum name="DeviceEnumerationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>

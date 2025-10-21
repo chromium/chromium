@@ -83,6 +83,17 @@ constexpr char kRequestedOutputFramesPerBufferMetricsName[] =
 constexpr char kRequestedInputFramesPerBufferMetricsName[] =
     "Media.Audio.Android.RequestedInputFramesPerBuffer";
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DeviceChangeKind)
+enum class DeviceChangeKind {
+  kAdded = 0,
+  kRemoved = 1,
+  kMaxValue = kRemoved,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:DeviceChangeKind)
+
 class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
  public:
   explicit JniDelegateImpl(AudioManagerAndroid* audio_manager)
@@ -335,12 +346,18 @@ bool UseAAudioPerStreamDeviceSelection() {
 }  // namespace
 
 // Called by the Java AudioManagerAndroid on the main thread when the system
-// reports a change to the list of available audio devices.
-void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env) {
+// reports a change to the list of available audio devices. `added` is `true` if
+// the invocation is caused by devices being added, and `false` if it is caused
+// by devices being removed.
+void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env, jboolean added) {
   auto* system_monitor = base::SystemMonitor::Get();
   if (system_monitor) {
     // Asynchronous call
     system_monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+
+    base::UmaHistogramEnumeration(
+        "Media.Audio.Android.DevicesChanged",
+        added ? DeviceChangeKind::kAdded : DeviceChangeKind::kRemoved);
   }
 }
 

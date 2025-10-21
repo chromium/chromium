@@ -193,7 +193,8 @@ class AudioManagerAndroid {
     @CalledByNative
     private void initDeviceListener() {
         mDeviceListener =
-                new AudioDeviceListener(() -> AudioManagerAndroidJni.get().onDevicesChanged());
+                new AudioDeviceListener(
+                        added -> AudioManagerAndroidJni.get().onDevicesChanged(added));
     }
 
     /**
@@ -777,7 +778,7 @@ class AudioManagerAndroid {
 
     @NativeMethods
     interface Natives {
-        void onDevicesChanged();
+        void onDevicesChanged(boolean added);
 
         void setMute(long nativeAudioManagerAndroid, boolean muted);
 

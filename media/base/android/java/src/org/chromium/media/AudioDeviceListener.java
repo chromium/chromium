@@ -13,18 +13,22 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.function.Consumer;
+
 /**
  * Listens for changes to the list of audio devices exposed by the OS, invoking the provided
- * callback on the main thread whenever a device is added or removed.
+ * callback on the main thread whenever a device is added or removed. The boolean parameter of the
+ * callback is @{code true} if the invocation is caused by devices being added, and @{code false} if
+ * it is caused by devices being removed.
  */
 @NullMarked
 class AudioDeviceListener implements Destroyable {
     private final AudioManager mAudioManager;
 
-    private final Runnable mCallback;
+    private final Consumer<Boolean> mCallback;
     private final AudioDeviceCallback mInternalCallback;
 
-    AudioDeviceListener(Runnable callback) {
+    AudioDeviceListener(Consumer<Boolean> callback) {
         mAudioManager =
                 (AudioManager)
                         ContextUtils.getApplicationContext()
@@ -35,12 +39,12 @@ class AudioDeviceListener implements Destroyable {
                 new AudioDeviceCallback() {
                     @Override
                     public void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
-                        mCallback.run();
+                        mCallback.accept(true);
                     }
 
                     @Override
                     public void onAudioDevicesRemoved(AudioDeviceInfo[] removedDevices) {
-                        mCallback.run();
+                        mCallback.accept(false);
                     }
                 };
         mAudioManager.registerAudioDeviceCallback(

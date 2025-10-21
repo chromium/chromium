@@ -639,6 +639,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.Android.DevicesChanged" enum="DeviceChangeKind"
+    expires_after="2026-10-20">
+  <owner>mjel@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    For every call to SystemMonitor::ProcessDevicesChanged indicating a change
+    in available audio devices, records whether it was caused by devices being
+    added or removed.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Android.MissingChannelMask" units="sparse"
     expires_after="2026-06-01">
   <owner>dvalenzuela@google.com</owner>
