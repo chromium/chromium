@@ -931,12 +931,8 @@ void VideoResourceUpdater::TransferRGBPixelsToPaintCanvas(
   // https://crbug.com/1090435
   PaintCanvasVideoRenderer::PaintParams paint_params;
   paint_params.dest_rect = gfx::RectF(video_frame->visible_rect());
-
-  // Call PaintOOPR() as part of the transition away from calling PCVR::Paint()
-  // directly. The condition of PaintOOPR() that the raster context provider
-  // either be null or support `gpu_rasterization` is here trivially satisfied.
-  video_renderer_->PaintOOPR(video_frame, &canvas, flags, paint_params,
-                             /*raster_context_provider=*/nullptr);
+  video_renderer_->Paint(video_frame, &canvas, flags, paint_params,
+                         /*raster_context_provider=*/nullptr);
 }
 
 bool VideoResourceUpdater::WriteRGBPixelsToTexture(

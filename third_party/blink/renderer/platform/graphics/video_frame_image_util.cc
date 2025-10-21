@@ -211,8 +211,8 @@ bool DrawVideoFrameIntoResourceProvider(
   params.reinterpret_as_srgb = reinterpret_video_as_srgb;
   resource_provider->ExternalCanvasDrawHelper(
       [&](MemoryManagedPaintCanvas& canvas) {
-        video_renderer->PaintOOPR(frame.get(), &canvas, media_flags, params,
-                                  raster_context_provider);
+        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
+                              raster_context_provider);
       });
   return true;
 }
@@ -235,8 +235,7 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
-  video_renderer.PaintOOPR(frame, canvas, flags, params,
-                           raster_context_provider);
+  video_renderer.Paint(frame, canvas, flags, params, raster_context_provider);
 }
 
 scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {

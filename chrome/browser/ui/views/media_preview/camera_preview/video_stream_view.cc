@@ -113,9 +113,8 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
   flags.setAntiAlias(true);
 
-  video_renderer_.PaintOOPR(std::move(latest_frame_), canvas->sk_canvas(),
-                            flags, paint_params,
-                            raster_context_provider_.get());
+  video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(), flags,
+                        paint_params, raster_context_provider_.get());
 }
 
 gfx::Size VideoStreamView::CalculatePreferredSize(

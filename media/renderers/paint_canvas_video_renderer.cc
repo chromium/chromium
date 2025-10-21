@@ -874,7 +874,7 @@ PaintCanvasVideoRenderer::PaintCanvasVideoRenderer()
 
 PaintCanvasVideoRenderer::~PaintCanvasVideoRenderer() = default;
 
-void PaintCanvasVideoRenderer::PaintOOPR(
+void PaintCanvasVideoRenderer::Paint(
     scoped_refptr<VideoFrame> video_frame,
     cc::PaintCanvas* canvas,
     cc::PaintFlags& flags,
@@ -1047,8 +1047,8 @@ void PaintCanvasVideoRenderer::Copy(
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
-  PaintOOPR(std::move(video_frame), canvas, flags, PaintParams(),
-            raster_context_provider);
+  Paint(std::move(video_frame), canvas, flags, PaintParams(),
+        raster_context_provider);
 }
 
 namespace {
