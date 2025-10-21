@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-forward.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,9 +24,9 @@ class RootTabCollectionNode
     : public TabCollectionNode,
       public tabs_api::observation::TabStripApiObserver {
  public:
-  explicit RootTabCollectionNode(tabs_api::TabStripService* service_register,
-                                 views::View* parent_view,
-                                 CustomAddChildView add_node_to_parent_);
+  explicit RootTabCollectionNode(
+      tabs_api::TabStripService* service_register,
+      CustomAddChildViewCallback add_node_view_to_parent);
   ~RootTabCollectionNode() override;
 
   // tabs_api::observation::TabStripApiObserver
@@ -41,6 +42,14 @@ class RootTabCollectionNode
                                collection_created_event) override;
 
  private:
+  // TabCollectionNode needs to be initialized with data, however we need the
+  // container's children later in the constructor of RootTabCollectionNode.
+  // Use this helper so that we only have to call GetTabs once.
+  explicit RootTabCollectionNode(
+      tabs_api::TabStripService* tab_strip_service,
+      tabs_api::mojom::ContainerPtr container,
+      CustomAddChildViewCallback add_node_view_to_parent);
+
   base::ScopedObservation<tabs_api::TabStripService,
                           tabs_api::observation::TabStripApiObserver>
       service_observer_{this};

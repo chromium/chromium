@@ -21,32 +21,34 @@ class View;
 
 class TabCollectionNode {
  public:
+  // Helper type for creating CustomAddChildViewCallbacks with
+  // base::BindRepeating.
+  typedef views::View* (views::View::*CustomAddChildView)(
+      std::unique_ptr<views::View>);
   typedef base::RepeatingCallback<views::View*(std::unique_ptr<views::View>)>
-      CustomAddChildView;
+      CustomAddChildViewCallback;
   typedef tabs_api::mojom::Data::Tag Type;
   typedef std::vector<std::unique_ptr<TabCollectionNode>> Children;
 
   using ViewFactory =
       base::RepeatingCallback<std::unique_ptr<views::View>(TabCollectionNode*)>;
 
-  TabCollectionNode();
   explicit TabCollectionNode(tabs_api::mojom::DataPtr data);
-  explicit TabCollectionNode(CustomAddChildView add_node_to_parent_callback);
   virtual ~TabCollectionNode();
 
-  // A TabCollectionNode will be created for each of the children
-  // 'Container' The container which holds children information and Data.
+  // Creates the view for this node. Then, for each child container in children,
+  // creates a TabCollectionNode, calls Initialize on it, and then adds the node
+  // as a child of this.
   // TODO May need a BrowserWindow Interface
-  void Initialize(tabs_api::mojom::ContainerPtr container,
-                  views::View* parent_view,
-                  CustomAddChildView add_node_to_parent_callback);
+  std::unique_ptr<views::View> Initialize(
+      std::vector<tabs_api::mojom::ContainerPtr> child_containers);
 
   // Gets the collection under this subtree that has the associated node_id.
   // Returns nullptr if no such node exists.
   TabCollectionNode* GetNodeForId(const tabs_api::NodeId& node_id);
 
-  // Creates a new child with data and adds it at index.
-  void AddNewChild(tabs_api::mojom::DataPtr data, size_t index);
+  // Creates a new child with data and adds it at model_index.
+  void AddNewChild(tabs_api::mojom::DataPtr data, size_t model_index);
 
   const tabs_api::mojom::DataPtr& data() const { return data_; }
   const Children& children() const { return children_; }
@@ -54,7 +56,7 @@ class TabCollectionNode {
 
   Type GetType() const { return data_->which(); }
 
-  void set_add_child_to_node(CustomAddChildView add_child_to_node) {
+  void set_add_child_to_node(CustomAddChildViewCallback add_child_to_node) {
     add_child_to_node_ = std::move(add_child_to_node);
   }
 
@@ -74,7 +76,7 @@ class TabCollectionNode {
   // Adds child_node_view to node_view_ and child_node to children_.
   void AddChild(std::unique_ptr<views::View> child_node_view,
                 std::unique_ptr<TabCollectionNode> child_node,
-                size_t index);
+                size_t model_index);
 
   base::OnceClosureList on_will_destroy_callback_list_;
 
@@ -85,17 +87,19 @@ class TabCollectionNode {
   // 1:1 mapping of the collections children.
   Children children_;
 
-  // parent view (for tab, unpinned_container, for unpinned, the
-  // tab_strip_container_view) parent view function for adding child
-  CustomAddChildView add_node_to_parent_;
-  raw_ptr<views::View> parent_view_ = nullptr;
-
-  // The view created for this node. (for tab:tabview, for unpinned: the
-  // unpinned_container_view).
   // add_child_to_node_ must be assigned when constructing the node_view in
   // Initialize so that the children that are created know how to be added to
   // the View Hierarchy.
-  CustomAddChildView add_child_to_node_;
+  // The type of add_child_to_node_ is
+  // views::View*(std::unique_ptr<views::View>, size_t)
+  // where the first argument is the child view to be added, the second argument
+  // is the model index (this is so that we don't have to recalculate it during
+  // add_child_to_node_, and if add_child_to_node_ doesn't care about the model
+  // index, it can ignore this argument), and the return value is a raw pointer
+  // to the child view that was added.
+  CustomAddChildViewCallback add_child_to_node_;
+  // The view created for this node. (for tab:tabview, for unpinned: the
+  // unpinned_container_view).
   raw_ptr<views::View> node_view_ = nullptr;
 };
 

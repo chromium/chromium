@@ -9,14 +9,17 @@
 
 RootTabCollectionNode::RootTabCollectionNode(
     tabs_api::TabStripService* tab_strip_service,
-    views::View* parent_view,
-    CustomAddChildView add_node_to_parent_callback)
-    : TabCollectionNode(std::move(add_node_to_parent_callback)) {
-  CHECK(tab_strip_service);
+    CustomAddChildViewCallback add_node_view_to_parent)
+    : RootTabCollectionNode(tab_strip_service,
+                            tab_strip_service->GetTabs().value(),
+                            add_node_view_to_parent) {}
 
-  auto result = tab_strip_service->GetTabs();
-  CHECK(result.has_value());
-  Initialize(std::move(result.value()), parent_view, add_node_to_parent_);
+RootTabCollectionNode::RootTabCollectionNode(
+    tabs_api::TabStripService* tab_strip_service,
+    tabs_api::mojom::ContainerPtr container,
+    CustomAddChildViewCallback add_node_view_to_parent)
+    : TabCollectionNode(std::move(container->data)) {
+  add_node_view_to_parent.Run(Initialize(std::move(container->children)));
   service_observer_.Observe(tab_strip_service);
 }
 

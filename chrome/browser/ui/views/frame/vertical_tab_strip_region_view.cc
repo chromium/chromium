@@ -78,7 +78,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   SetProperty(views::kElementIdentifierKey, kVerticalTabStripRegionElementId);
 
   root_node_ = std::make_unique<RootTabCollectionNode>(
-      service_register, this,
+      service_register,
       base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
                           base::Unretained(this)));
 }
