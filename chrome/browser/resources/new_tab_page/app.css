@@ -101,6 +101,12 @@ cr-most-visited {
   border: 0px;
   top: 0;
   width: 100%;
+  /* OGB is above any other element by default to keep the original behavior. */
+  z-index: 1000;
+}
+
+/* When a dropdown menu is opened, scrim is applied and OGB is behind it. */
+:host([dropdown-is-visible_]) #oneGoogleBarStackingContext {
   z-index: -1;
 }
 
