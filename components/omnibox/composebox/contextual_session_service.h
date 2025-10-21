@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -42,9 +43,8 @@ class ContextualSessionService : public KeyedService {
 
   // Creates a new session and returns a handle to it.
   std::unique_ptr<SessionHandle> CreateSession(
-      bool send_lens_surface,
-      bool enable_multi_context_input_flow,
-      bool enable_view_port_images);
+      std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
+          query_controller_config_params);
   // Returns a new handle for an existing session. Returns nullptr if the
   // session does not exist (e.g. has been released).
   std::unique_ptr<SessionHandle> GetSession(const SessionId& session_id);

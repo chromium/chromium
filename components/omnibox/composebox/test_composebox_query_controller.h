@@ -56,9 +56,7 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
-      bool send_lns_surface,
-      bool enable_multi_context_input_flow,
-      bool enable_viewport_images);
+      std::unique_ptr<QueryControllerConfigParams> config_params);
   ~TestComposeboxQueryController() override;
 
   // Mutators.

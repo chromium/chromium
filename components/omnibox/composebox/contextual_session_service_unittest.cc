@@ -64,16 +64,24 @@ TEST_F(ContextualSessionServiceTest, Session) {
   ASSERT_THAT(bad_handle, IsNull());
 
   // Create a new session.
-  auto session1_handle1 = service_->CreateSession(
-      /*send_lens_surface=*/false, /*enable_multi_context_input_flow=*/false,
-      /*enable_view_port_images=*/false);
+  auto config_params1 = std::make_unique<
+      ComposeboxQueryController::QueryControllerConfigParams>();
+  config_params1->send_lns_surface = false;
+  config_params1->suppress_lns_surface_param_if_no_image = true;
+  config_params1->enable_multi_context_input_flow = false;
+  config_params1->enable_viewport_images = false;
+  auto session1_handle1 = service_->CreateSession(std::move(config_params1));
   ASSERT_THAT(session1_handle1, NotNull());
   ASSERT_THAT(session1_handle1->GetController(), NotNull());
 
   // Create another new session.
-  auto session2_handle1 = service_->CreateSession(
-      /*send_lens_surface=*/false, /*enable_multi_context_input_flow=*/false,
-      /*enable_view_port_images=*/false);
+  auto config_params2 = std::make_unique<
+      ComposeboxQueryController::QueryControllerConfigParams>();
+  config_params2->send_lns_surface = false;
+  config_params2->suppress_lns_surface_param_if_no_image = true;
+  config_params2->enable_multi_context_input_flow = false;
+  config_params2->enable_viewport_images = false;
+  auto session2_handle1 = service_->CreateSession(std::move(config_params2));
   ASSERT_THAT(session2_handle1, NotNull());
   ASSERT_THAT(session2_handle1->GetController(), NotNull());
 

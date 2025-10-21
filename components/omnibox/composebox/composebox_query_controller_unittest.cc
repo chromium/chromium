@@ -99,15 +99,27 @@ class ComposeboxQueryControllerTest
   ~ComposeboxQueryControllerTest() override = default;
 
   void CreateController(bool send_lns_surface,
+                        bool suppress_lns_surface_param_if_no_image = true,
                         bool enable_multi_context_input_flow = false,
                         bool enable_viewport_images = true) {
+    // Create the config params.
+    auto config_params = std::make_unique<
+        ComposeboxQueryController::QueryControllerConfigParams>();
+    config_params->send_lns_surface = send_lns_surface;
+    config_params->suppress_lns_surface_param_if_no_image =
+        suppress_lns_surface_param_if_no_image;
+    config_params->enable_multi_context_input_flow =
+        enable_multi_context_input_flow;
+    config_params->enable_viewport_images = enable_viewport_images;
+
+    // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
         version_info::Channel::UNKNOWN, kLocale, template_url_service(),
-        fake_variations_client_.get(), send_lns_surface,
-        enable_multi_context_input_flow, enable_viewport_images);
+        fake_variations_client_.get(), std::move(config_params));
     controller_->AddObserver(this);
 
+    // Initialize the cluster info response.
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
     cluster_info_response.set_search_session_id(kTestSearchSessionId);
     cluster_info_response.set_server_session_id(kTestServerSessionId);
@@ -1133,6 +1145,7 @@ TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextPdfFileWithViewportButViewportsDisabledRequestSuccess) {
   // Create the controller with viewports disabled.
   CreateController(/*send_lns_surface=*/false,
+                   /*suppress_lns_surface_param_if_no_image=*/true,
                    /*enable_multi_context_input_flow=*/true,
                    /*enable_viewport_images=*/false);
 
@@ -1943,8 +1956,44 @@ TEST_F(ComposeboxQueryControllerTest, ClearFiles) {
   EXPECT_FALSE(controller().GetFileInfo(file_token));
 }
 
-TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurface) {
-  CreateController(/*send_lns_surface=*/true);
+TEST_F(ComposeboxQueryControllerTest,
+       QuerySubmittedWithLnsSurfaceAndNoImageSuppressed) {
+  CreateController(/*send_lns_surface=*/true,
+                   /*suppress_lns_surface_param_if_no_image=*/true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query. The destination URL can
+  // only be created after the cluster info is received.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  GURL aim_url =
+      controller().CreateSearchUrl(std::move(search_url_request_info));
+
+  // Assert: Lns surface is empty since it was suppressed due to no image.
+  std::string lns_surface_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsSurfaceParameterKey,
+                                         &lns_surface_value));
+  EXPECT_EQ(lns_surface_value, "");
+}
+
+TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurfaceAndNoImage) {
+  CreateController(/*send_lns_surface=*/true,
+                   /*suppress_lns_surface_param_if_no_image=*/false);
 
   // Act: Start the session.
   controller().NotifySessionStarted();
@@ -1979,6 +2028,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurface) {
 TEST_F(ComposeboxQueryControllerTest,
        MultipleUploadedPdf_HasCorrectRequestIds) {
   CreateController(/*send_lns_surface=*/false,
+                   /*suppress_lns_surface_param_if_no_image=*/true,
                    /*enable_multi_context_input_flow=*/true);
 
   // Act: Start the session.

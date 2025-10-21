@@ -32,14 +32,18 @@ static jlong JNI_ComposeBoxQueryControllerBridge_Init(JNIEnv* env,
 
 ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     Profile* profile) {
+  auto query_controller_config_params = std::make_unique<
+      ComposeboxQueryController::QueryControllerConfigParams>();
+  query_controller_config_params->send_lns_surface = false;
+  query_controller_config_params->enable_multi_context_input_flow = false;
+  query_controller_config_params->enable_viewport_images = true;
   query_controller_ = std::make_unique<ComposeboxQueryController>(
       IdentityManagerFactory::GetForProfile(profile),
       g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
       g_browser_process->GetApplicationLocale(),
       TemplateURLServiceFactory::GetForProfile(profile),
-      profile->GetVariationsClient(), /*send_lns_surface=*/false,
-      /*enable_multi_context_input_flow=*/false,
-      /*enable_viewport_images=*/true);
+      profile->GetVariationsClient(),
+      std::move(query_controller_config_params));
   query_controller_->AddObserver(this);
 }
 
