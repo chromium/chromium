@@ -10,12 +10,16 @@
 # The contributions are heavily skewed toward user_a and user_b to ensure
 # they are statistical outliers.
 #
-# Expected stats for 'ios/chrome/browser/ui':
-# - Total Commits: 12
-# - Total Reviews: 12
+# Note: Commit `ccccccc1` contains the phrase "Fix typo", which is an ignored
+# keyword in `filters.py`. This commit and its review are intentionally
+# filtered out by the script.
+#
+# Expected stats for 'ios/chrome/browser/ui' (after filtering):
+# - Total Commits: 11
+# - Total Reviews: 11
 # - user_a: 8 commits, 2 reviews
-# - user_b: 2 commits, 8 reviews
-# - user_c: 1 commit, 1 review
+# - user_b: 2 commits, 7 reviews
+# - user_c: 0 commits, 1 review
 # - user_d: 1 commit, 1 review
 #
 # With these stats, the Z-score calculation should identify 'user_a' and
@@ -148,6 +152,8 @@ Date:   Sun Jan 7 16:00:00 2025 -0700
     Fix typo in user-facing string.
 
     Corrects a spelling mistake in the main title.
+    This is a trivial change that will not be counted for
+    OWNER stats.
 
     Change-Id: ccccccc1
     Reviewed-by: User B <user_b@chromium.org>

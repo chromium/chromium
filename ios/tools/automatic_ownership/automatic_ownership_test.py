@@ -128,5 +128,120 @@ class AutomaticOwnershipTest(unittest.TestCase):
         user_c_stats = feature_stats['individual_stats'].get('user_c')
         self.assertEqual(user_c_stats['review_count'], 1)
 
+    def test_determine_owners_from_zscore_clear_outliers(self):
+        """Tests Z-score with clear statistical outliers."""
+        stats = {
+            'total_commit': 30,
+            'total_review': 30,
+            'individual_stats': {
+                'user_a': {'commit_count': 12, 'review_count': 12},
+                'user_b': {'commit_count': 12, 'review_count': 12},
+                'user_c': {'commit_count': 1, 'review_count': 1},
+                'user_d': {'commit_count': 1, 'review_count': 1},
+                'user_e': {'commit_count': 1, 'review_count': 1},
+                'user_f': {'commit_count': 1, 'review_count': 1},
+                'user_g': {'commit_count': 1, 'review_count': 1},
+                'user_h': {'commit_count': 1, 'review_count': 1},
+            }
+        }
+        owners = determine_owners_from_zscore(stats)
+        self.assertIn('user_a', owners)
+        self.assertIn('user_b', owners)
+        self.assertNotIn('user_c', owners)
+        self.assertNotIn('user_d', owners)
+        self.assertEqual(len(owners), 2)
+
+    def test_determine_owners_from_zscore_with_owner_exclusion(self):
+        """Tests Z-score with owner exclusion from test_data.py."""
+        owners_map = get_existing_owners(self.temp_dir)
+        commits = split_log_into_commits(FAKE_GIT_LOG)
+        stats_per_folder = extract_commits_informations(
+            commits, owners_map, owner_exclusion=True, quiet=True)
+
+        feature_stats = stats_per_folder.get('ios/chrome/browser/feature')
+        self.assertIsNotNone(feature_stats)
+
+        # With owner exclusion, user_b's reviews are ignored, making user_a
+        # the only statistical outlier.
+        owners = determine_owners_from_zscore(feature_stats)
+        self.assertIn('user_a', owners)
+        self.assertNotIn('user_b', owners)
+        self.assertEqual(len(owners), 1)
+
+    def test_stats_aggregate_upward(self):
+        """Tests that commit stats are aggregated into parent directories."""
+        owners_map = get_existing_owners(self.temp_dir)
+        commits = split_log_into_commits(FAKE_GIT_LOG)
+        stats = extract_commits_informations(commits,
+                                             owners_map,
+                                             owner_exclusion=False,
+                                             quiet=True)
+
+        # Stats for the deepest directory.
+        feature_stats = stats.get('ios/chrome/browser/feature')
+        self.assertIsNotNone(feature_stats)
+        self.assertEqual(feature_stats['total_commit'], 11)
+        self.assertEqual(feature_stats['total_review'], 11)
+        self.assertEqual(
+            feature_stats['individual_stats']['user_a']['commit_count'], 8)
+        self.assertEqual(
+            feature_stats['individual_stats']['user_b']['review_count'], 7)
+
+        # Stats for the parent directory should be identical.
+        browser_stats = stats.get('ios/chrome/browser')
+        self.assertIsNotNone(browser_stats)
+        self.assertEqual(browser_stats['total_commit'], 11)
+        self.assertEqual(browser_stats['total_review'], 11)
+        self.assertEqual(
+            browser_stats['individual_stats']['user_a']['commit_count'], 8)
+        self.assertEqual(
+            browser_stats['individual_stats']['user_b']['review_count'], 7)
+
+        # Stats for the grandparent directory should also be identical.
+        chrome_stats = stats.get('ios/chrome')
+        self.assertIsNotNone(chrome_stats)
+        self.assertEqual(chrome_stats['total_commit'], 11)
+        self.assertEqual(chrome_stats['total_review'], 11)
+
+        # Stats for the root directory.
+        ios_stats = stats.get('ios')
+        self.assertIsNotNone(ios_stats)
+        self.assertEqual(ios_stats['total_commit'], 11)
+        self.assertEqual(ios_stats['total_review'], 11)
+
+    def test_aggregation_with_owner_exclusion(self):
+        """Tests owner exclusion works correctly with stat aggregation."""
+        owners_map = get_existing_owners(self.temp_dir)
+        commits = split_log_into_commits(FAKE_GIT_LOG)
+        stats = extract_commits_informations(commits,
+                                             owners_map,
+                                             owner_exclusion=True,
+                                             quiet=True)
+
+        # In the parent directory 'ios/chrome/browser', user_b is an owner.
+        # Their reviews should be excluded from this directory and its parents.
+        browser_stats = stats.get('ios/chrome/browser')
+        self.assertIsNotNone(browser_stats)
+
+        # Total reviews should not include user_b's 7 reviews.
+        # 11 total reviews - 7 from user_b = 4
+        self.assertEqual(browser_stats['total_review'], 4)
+
+        # user_b's review count should be 0 in this directory.
+        user_b_stats = browser_stats['individual_stats'].get('user_b')
+        if user_b_stats:
+            self.assertEqual(user_b_stats['review_count'], 0)
+
+        # user_c is not an owner, so their review should be counted.
+        user_c_stats = browser_stats['individual_stats'].get('user_c')
+        self.assertIsNotNone(user_c_stats)
+        self.assertEqual(user_c_stats['review_count'], 1)
+
+        # The exclusion should also apply to the grandparent directory.
+        chrome_stats = stats.get('ios/chrome')
+        self.assertIsNotNone(chrome_stats)
+        self.assertEqual(chrome_stats['total_review'], 4)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -166,6 +166,9 @@ def extract_commits_informations(commits: list[str],
                                  quiet: bool = False) -> dict:
     """Parses raw commit logs and aggregates statistics by folder.
 
+    For each commit, its statistics are aggregated into the commit's directory
+    and all of its parent directories.
+
     Args:
         commits: A list of raw commit description strings.
         owners_map: A dictionary mapping directories to their owners.
@@ -176,7 +179,7 @@ def extract_commits_informations(commits: list[str],
         A dictionary where keys are folder paths and values are dictionaries
         containing aggregated commit/review stats for that folder.
     """
-    allStatsPerFolder = {}
+    all_stats_per_dir = {}
     commit_to_analyse_count = len(commits)
     if not quiet:
         print('Getting logs done. Total number of commits to analyse: ',
@@ -195,36 +198,50 @@ def extract_commits_informations(commits: list[str],
                    path),
                   end='',
                   flush=True)
-        if not path in allStatsPerFolder:
-            allStatsPerFolder[path] = dict(total_commit=0,
-                                           total_review=0,
-                                           individual_stats={},
-                                           final_score={},
-                                           last_update=datetime.datetime.min)
-        if not author in allStatsPerFolder[path]['individual_stats']:
-            allStatsPerFolder[path]['individual_stats'][author] = dict(
-                commit_count=0, review_count=0)
 
-        allStatsPerFolder[path]['last_update'] = max(
-            allStatsPerFolder[path]['last_update'], date)
-        allStatsPerFolder[path]['total_commit'] += 1
-        allStatsPerFolder[path]['individual_stats'][author][
-            'commit_count'] += 1
-        for reviewer in reviewers:
-            if owner_exclusion and is_high_level_owner(reviewer, path,
-                                                       owners_map):
-                continue
-            allStatsPerFolder[path]['total_review'] += 1
-            if not reviewer in allStatsPerFolder[path]['individual_stats']:
-                allStatsPerFolder[path]['individual_stats'][reviewer] = dict(
-                    commit_count=0, review_count=0)
-            allStatsPerFolder[path]['individual_stats'][reviewer][
-                'review_count'] += 1
+        current_path = path
+        while current_path:
+            if not current_path in all_stats_per_dir:
+                all_stats_per_dir[current_path] = dict(
+                    total_commit=0,
+                    total_review=0,
+                    individual_stats={},
+                    final_score={},
+                    last_update=datetime.datetime.min)
+            if not author in all_stats_per_dir[current_path][
+                    'individual_stats']:
+                all_stats_per_dir[current_path]['individual_stats'][
+                    author] = dict(commit_count=0, review_count=0)
+
+            all_stats_per_dir[current_path]['last_update'] = max(
+                all_stats_per_dir[current_path]['last_update'], date)
+            all_stats_per_dir[current_path]['total_commit'] += 1
+            all_stats_per_dir[current_path]['individual_stats'][author][
+                'commit_count'] += 1
+            for reviewer in reviewers:
+                if owner_exclusion and is_high_level_owner(
+                        reviewer, path, owners_map):
+                    continue
+                all_stats_per_dir[current_path]['total_review'] += 1
+                if not reviewer in all_stats_per_dir[current_path][
+                        'individual_stats']:
+                    all_stats_per_dir[current_path][
+                        'individual_stats'][reviewer] = dict(commit_count=0,
+                                                             review_count=0)
+                all_stats_per_dir[current_path]['individual_stats'][
+                    reviewer]['review_count'] += 1
+
+            parent_path = os.path.dirname(current_path)
+            if parent_path == current_path:
+                break
+            current_path = parent_path
+
         if not quiet:
             print('\t\t\tDONE, commits left: ',
                   commit_to_analyse_count,
                   flush=True)
-    return allStatsPerFolder
+    return all_stats_per_dir
+
 
 
 def get_all_git_blame_informations_for_folder(
