@@ -6307,7 +6307,7 @@ void RenderFrameImpl::BeginNavigationInternal(
         "Navigation.RendererInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
     if (start_diff_under_threshold &&
-        base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+        GetContentClient()->ShouldIgnoreDuplicateNavs()) {
       if (!base::FeatureList::IsEnabled(
               features::kIgnoreDuplicateNavsOnlyWithUserGesture) ||
           common_params->has_user_gesture) {

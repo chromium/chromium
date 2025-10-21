@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -14,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "ui/gfx/image/image.h"
 
@@ -158,6 +160,10 @@ void ContentClient::ExposeInterfacesToBrowser(
 
 bool ContentClient::ShouldAllowDefaultSiteInstanceGroup() {
   return true;
+}
+
+bool ContentClient::ShouldIgnoreDuplicateNavs() {
+  return base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs);
 }
 
 bool ContentClient::IsFilePickerAllowedForCrossOriginSubframe(

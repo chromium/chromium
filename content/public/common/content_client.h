@@ -227,6 +227,9 @@ class CONTENT_EXPORT ContentClient {
   // default. Remove this carveout once remaining WebView issues are resolved.
   virtual bool ShouldAllowDefaultSiteInstanceGroup();
 
+  // Returns whether duplicate navigations should be ignored.
+  virtual bool ShouldIgnoreDuplicateNavs();
+
  private:
   // For SetBrowserClientAlwaysAllowForTesting().
   friend class BrowserTestBase;

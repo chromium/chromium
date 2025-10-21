@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_media_drm_bridge_client.h"
 #include "android_webview/common/aw_resource.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
@@ -13,6 +14,7 @@
 #include "base/android/jni_android.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,6 +23,7 @@
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/cdm_info.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
@@ -135,6 +138,11 @@ bool AwContentClient::ShouldAllowDefaultSiteInstanceGroup() {
   // TODO(crbug.com/419595581): Remove this function once default
   // SiteInstanceGroups are supported on Android WebView.
   return false;
+}
+
+bool AwContentClient::ShouldIgnoreDuplicateNavs() {
+  return base::FeatureList::IsEnabled(features::kWebViewIgnoreDuplicateNavs) &&
+         base::FeatureList::IsEnabled(::features::kIgnoreDuplicateNavs);
 }
 
 bool IsDisableOriginTrialsSafeModeActionOn() {

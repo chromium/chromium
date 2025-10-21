@@ -896,7 +896,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
         "Navigation.BrowserInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
     if (start_diff_under_threshold &&
-        base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+        GetContentClient()->ShouldIgnoreDuplicateNavs()) {
       request->set_navigation_discard_reason(
           NavigationDiscardReason::kNeverStarted);
       DVLOG(0) << "Ignoring duplicate navigation to "

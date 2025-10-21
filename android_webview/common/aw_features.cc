@@ -48,6 +48,11 @@ BASE_FEATURE(kWebViewDrainPrefetchQueueDuringInit,
 // longer supported.
 BASE_FEATURE(kWebViewFileSystemAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable ignoring duplicate navigations in WebView. Note that this will only
+// take effect if both this feature flag and the content/public
+// kIgnoreDuplicateNavs flag is enabled.
+BASE_FEATURE(kWebViewIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature parameter for `network::features::kMaskedDomainList` that sets the
 // exclusion criteria for defining which domains are excluded from the
 // Masked Domain List for WebView.
