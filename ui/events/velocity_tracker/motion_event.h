@@ -76,6 +76,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual float GetRawY(size_t pointer_index) const = 0;
   virtual float GetTouchMajor(size_t pointer_index) const = 0;
   virtual float GetTouchMinor(size_t pointer_index) const = 0;
+  virtual bool HasNativeTouchMajor(size_t pointer_index) const = 0;
   virtual float GetOrientation(size_t pointer_index) const = 0;
   virtual float GetPressure(size_t pointer_index) const = 0;
   virtual float GetTiltX(size_t pointer_index) const = 0;
@@ -98,6 +99,8 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual base::TimeTicks GetHistoricalEventTime(size_t historical_index) const;
   virtual float GetHistoricalTouchMajor(size_t pointer_index,
                                         size_t historical_index) const;
+  virtual bool GetHistoricalHasNativeTouchMajor(size_t pointer_index,
+                                                size_t historical_index) const;
   virtual float GetHistoricalX(size_t pointer_index,
                                size_t historical_index) const;
   virtual float GetHistoricalY(size_t pointer_index,

@@ -1154,8 +1154,9 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   base::TimeTicks time = getTime();
   const int kTimeDelta = 100;
 
-  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(10, 10), time,
-                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  ui::TouchEvent press(
+      ui::EventType::kTouchPressed, gfx::Point(10, 10), time,
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0, 1.0f, 1.0f, 1.0f));
   DispatchEventUsingWindowDispatcher(&press);
 
   // We will get both GESTURE_BEGIN and GESTURE_TAP_DOWN.
@@ -1171,8 +1172,9 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   // On move We will get TOUCH_MOVED, GESTURE_TAP_CANCEL,
   // GESTURE_SCROLL_START and GESTURE_SCROLL_UPDATE.
   time += base::Milliseconds(kTimeDelta);
-  ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(10, 20), time,
-                      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  ui::TouchEvent move(
+      ui::EventType::kTouchMoved, gfx::Point(10, 20), time,
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0, 1.0f, 1.0f, 1.0f));
   DispatchEventUsingWindowDispatcher(&move);
   EXPECT_EQ(1, delegate.touch_event_count());
   EXPECT_EQ(3, delegate.gesture_event_count());

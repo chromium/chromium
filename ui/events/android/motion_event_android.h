@@ -108,6 +108,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   float GetRawY(size_t pointer_index) const override;
   float GetTouchMajor(size_t pointer_index) const override;
   float GetTouchMinor(size_t pointer_index) const override;
+  bool HasNativeTouchMajor(size_t pointer_index) const override;
   float GetOrientation(size_t pointer_index) const override;
   float GetTwist(size_t pointer_index) const override;
   float GetTiltX(size_t pointer_index) const override;

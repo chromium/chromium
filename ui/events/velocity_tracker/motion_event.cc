@@ -38,6 +38,13 @@ float MotionEvent::GetHistoricalTouchMajor(size_t pointer_index,
   return 0.f;
 }
 
+bool MotionEvent::GetHistoricalHasNativeTouchMajor(
+    size_t pointer_index,
+    size_t historical_index) const {
+  NOTIMPLEMENTED();
+  return true;
+}
+
 float MotionEvent::GetHistoricalX(size_t pointer_index,
                                   size_t historical_index) const {
   NOTIMPLEMENTED();

@@ -56,6 +56,7 @@ PointerProperties GetPointerPropertiesFromTouchEvent(const TouchEvent& touch) {
         default_size = 1;
         break;
       default:
+        pointer_properties.has_native_touch_major = false;
         default_size =
             2.f * GestureConfiguration::GetInstance()->default_radius();
         break;

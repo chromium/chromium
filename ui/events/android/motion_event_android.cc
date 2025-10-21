@@ -363,6 +363,11 @@ float MotionEventAndroid::GetTouchMinor(size_t pointer_index) const {
   return ToDips(source()->GetTouchMinorPix(pointer_index));
 }
 
+bool MotionEventAndroid::HasNativeTouchMajor(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, GetPointerCount());
+  return true;
+}
+
 float MotionEventAndroid::GetOrientation(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
   if (IsPointerCacheable(pointer_index)) {

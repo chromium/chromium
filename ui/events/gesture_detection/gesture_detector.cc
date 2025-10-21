@@ -27,7 +27,11 @@ namespace {
 
 // Minimum distance a scroll must have traveled from the last scroll/focal point
 // to trigger an |OnScroll| callback.
-const float kScrollEpsilon = .1f;
+constexpr float kScrollEpsilon = .1f;
+
+// The square of multiplier (2) to expand the slop value when the panel reports
+// zero touch major (radius).
+constexpr float kExpandSlopFactorForZeroTouchMajor = 4.f;
 
 // Constants used by TimeoutGestureHandler.
 enum TimeoutEvent {
@@ -602,7 +606,7 @@ bool GestureDetector::HandleSwipeIfNeeded(const MotionEvent& up,
   return listener_->OnSwipe(*current_down_event_, up, vx, vy);
 }
 
-bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) {
+bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) const {
   // If there have been more than two down pointers in the touch sequence,
   // tapping is not possible. Slop region check is not needed.
   if (maximum_pointer_count_ > 2)
@@ -625,11 +629,18 @@ bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) {
 
     float dx = source_pointer_down_event->GetX(source_index) - ev.GetX(i);
     float dy = source_pointer_down_event->GetY(source_index) - ev.GetY(i);
+
+    float expand_slop_factor =
+        source_pointer_down_event->HasNativeTouchMajor(source_index)
+            ? 1.f
+            : kExpandSlopFactorForZeroTouchMajor;
+
     bool is_stylus_slop_effective =
         ev.GetToolType(i) == MotionEvent::ToolType::STYLUS;
     float slop_square =
         is_stylus_slop_effective ? stylus_slop_square_ : touch_slop_square_;
-    if (dx * dx + dy * dy > slop_square) {
+
+    if (dx * dx + dy * dy > (slop_square * expand_slop_factor)) {
       return false;
     }
   }
@@ -640,7 +651,7 @@ bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) {
 const MotionEvent* GestureDetector::GetSourcePointerDownEvent(
     const MotionEvent& current_down_event,
     const MotionEvent* secondary_pointer_down_event,
-    const int pointer_id) {
+    const int pointer_id) const {
   if (current_down_event.GetPointerId(0) == pointer_id)
     return &current_down_event;
 
