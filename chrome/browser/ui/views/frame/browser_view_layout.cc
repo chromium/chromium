@@ -361,8 +361,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
     LayoutVerticalTabStrip(available_bounds);
   }
 
-  main_region_->SetBoundsRect(available_bounds);
-  main_container_->SetBoundsRect(main_region_->GetLocalBounds());
+  main_container_->SetBoundsRect(available_bounds);
   gfx::Rect main_container_bounds = main_container_->GetLocalBounds();
   main_container_bounds.set_y(available_bounds.y() +
                               delegate_->GetTopInsetInBrowserView());
@@ -430,12 +429,6 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   if (latest_dialog_bounds_in_screen_ != dialog_bounds_in_screen) {
     latest_dialog_bounds_in_screen_ = dialog_bounds_in_screen;
     dialog_host_->NotifyPositionRequiresUpdate();
-  }
-
-  // When WindowControlsOverlay is enabled, we need to make sure the
-  // `top_container_` is painted on top of the `contents_container_`.
-  if (delegate_->IsWindowControlsOverlayEnabled()) {
-    main_container_->ReorderChildView(top_container_, -1);
   }
 }
 

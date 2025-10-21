@@ -671,9 +671,9 @@ BrowserView::BrowserView(Browser* browser)
   browser_->tab_strip_model()->AddObserver(this);
 
   main_region_ = AddChildView(std::make_unique<MainRegionView>());
+  main_region_->SetVisible(false);
 
-  main_container_ =
-      main_region_->AddChildView(std::make_unique<MainContainerView>());
+  main_container_ = AddChildView(std::make_unique<MainContainerView>(*this));
 
   top_container_ =
       main_container_->AddChildView(std::make_unique<TopContainerView>(this));
@@ -5913,6 +5913,16 @@ void BrowserView::DestroyAnyExclusiveAccessBubble() {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ImmersiveModeController::Observer implementation:
 void BrowserView::OnImmersiveRevealStarted() {
+  CHECK(overlay_view_tracker_);
+  overlay_view_tracker_.view()->SetVisible(true);
+}
+
+void BrowserView::OnImmersiveRevealEnded() {
+  CHECK(overlay_view_tracker_);
+  overlay_view_tracker_.view()->SetVisible(false);
+}
+
+void BrowserView::OnImmersiveFullscreenEntered() {
   AppMenuButton* app_menu_button =
       toolbar_button_provider()->GetAppMenuButton();
   if (app_menu_button) {
@@ -5921,25 +5931,15 @@ void BrowserView::OnImmersiveRevealStarted() {
 
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
-  CHECK(overlay_view_tracker_);
-  overlay_view_tracker_.view()->AddChildViewRaw(top_container());
-  overlay_view_tracker_.view()->SetVisible(true);
-  InvalidateLayout();
-  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
-
 #if BUILDFLAG(IS_CHROMEOS)
   top_container()->SetBackground(
       views::CreateSolidBackground(ui::kColorFrameActive));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  CHECK(overlay_view_tracker_);
+  overlay_view_tracker_.view()->AddChildView(top_container());
 }
 
-void BrowserView::OnImmersiveRevealEnded() {
-#if BUILDFLAG(IS_CHROMEOS)
-  ReparentTopContainerForEndOfImmersive();
-#endif
-  InvalidateLayout();
-  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
-
+void BrowserView::OnImmersiveFullscreenExited() {
 #if BUILDFLAG(IS_CHROMEOS)
   // Ensure that entering/exiting tablet mode on ChromeOS also updates Window
   // Controls Overlay (WCO). This forces a re-check of the immersive mode flag.
@@ -5950,9 +5950,7 @@ void BrowserView::OnImmersiveRevealEnded() {
   }
   top_container()->SetBackground(nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
 
-void BrowserView::OnImmersiveFullscreenExited() {
   ReparentTopContainerForEndOfImmersive();
   OnImmersiveRevealEnded();
 }

@@ -229,14 +229,17 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   controller->SetEnabled(true);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0);
+  RunScheduledLayouts();
   controller->OnAutohidingMenuBarHeightChanged(0);
   EXPECT_EQ(controller->GetExtraInfobarOffset(), 0);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0.5);
+  RunScheduledLayouts();
   int half_revealed = controller->GetExtraInfobarOffset();
   EXPECT_GT(half_revealed, 0);
 
   controller->OnImmersiveModeMenuBarRevealChanged(1);
+  RunScheduledLayouts();
   int revealed = controller->GetExtraInfobarOffset();
   EXPECT_EQ(revealed, half_revealed * 2);
 
@@ -245,9 +248,11 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(controller->GetExtraInfobarOffset(), revealed + 30);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0.5);
+  RunScheduledLayouts();
   EXPECT_EQ(controller->GetExtraInfobarOffset(), half_revealed + 15);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0);
+  RunScheduledLayouts();
   EXPECT_EQ(controller->GetExtraInfobarOffset(), 0);
 }
 

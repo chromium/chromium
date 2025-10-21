@@ -157,9 +157,6 @@ void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
 void ImmersiveModeControllerChromeos::OnImmersiveRevealStarted() {
   visible_fraction_ = 0;
 
-  browser_view_->top_container()->AddChildViewAt(
-      static_cast<TabStripRegionView*>(browser_view_->tab_strip_view()), 0);
-
   for (Observer& observer : observers_) {
     observer.OnImmersiveRevealStarted();
   }
@@ -178,6 +175,9 @@ void ImmersiveModeControllerChromeos::OnImmersiveRevealEnded() {
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
+  browser_view_->top_container()->AddChildViewAt(
+      static_cast<TabStripRegionView*>(browser_view_->tab_strip_view()), 0);
+
   for (Observer& observer : observers_) {
     observer.OnImmersiveFullscreenEntered();
   }

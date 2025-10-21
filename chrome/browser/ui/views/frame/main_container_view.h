@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_CONTAINER_VIEW_H_
 
+#include "base/memory/raw_ref.h"
 #include "ui/views/view.h"
+
+class BrowserView;
 
 // This view is responsible for holding the primary elements of the Browser UI
 // other than the tab strip:
@@ -21,10 +24,15 @@ class MainContainerView : public views::View {
   METADATA_HEADER(MainContainerView, views::View)
 
  public:
-  MainContainerView();
+  explicit MainContainerView(BrowserView& browser_view);
   MainContainerView(const MainContainerView&) = delete;
   MainContainerView& operator=(const MainContainerView&) = delete;
   ~MainContainerView() override;
+
+  views::View::Views GetChildrenInZOrder() override;
+
+ private:
+  const raw_ref<BrowserView> browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_CONTAINER_VIEW_H_

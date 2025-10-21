@@ -768,6 +768,7 @@ class BrowserView : public BrowserWindow,
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
+  void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
   void OnImmersiveModeControllerDestroyed() override;
 
