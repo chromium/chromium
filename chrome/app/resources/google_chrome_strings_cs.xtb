@@ -21,6 +21,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="110877069173485804">Toto je váš Chrome</translation>
 <translation id="1125124144982679672">Kdo Chrome používá?</translation>
 <translation id="1142745911746664600">Chrome nelze aktualizovat</translation>
+<translation id="1148360048981192980">Až příště na zařízení <ph name="DEVICE_TYPE" /> otevřete Chrome, zobrazí se výzva k použití Správce hesel Google.</translation>
 <translation id="1152920704813762236">O systému ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Otevřít v Chromu</translation>
 <translation id="1157985233335035034">Poslední jazyky</translation>
@@ -150,6 +151,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2681444469812712297">Otevřít adresu <ph name="URL" /> na nové kartě prohlížeče Google Chrome.</translation>
 <translation id="2699790011615497488">Otevřít Gemini v Chromu Beta</translation>
 <translation id="2712141162840347885">Vyberte cokoli, co chcete vyhledat pomocí Google Lens, nebo Google Lens stisknutím klávesy Escape ukončete</translation>
+<translation id="2723860029395667894">Vždy zobrazovat zkratku režimu AI od Googlu</translation>
 <translation id="2738871930057338499">Nelze se připojit k internetu. HTTP 403 (Zakázáno). Zkontrolujte konfiguraci proxy.</translation>
 <translation id="2742320827292110288">Upozornění: Google Chrome nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Chcete-li toto rozšíření v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="2753623023919742414">Kliknutím spustíte hledání</translation>
@@ -482,6 +484,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Vaše organizace Chrome po 1 minutě nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}few{Vaše organizace Chrome po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}many{Vaše organizace Chrome po # minuty nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}other{Vaše organizace Chrome po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
+<translation id="6426623519983252346">Až příště otevřete Chrome pro iOS, zobrazí se výzva k vyzkoušení funkce <ph name="FEATURE_NAME" />.</translation>
 <translation id="6473905796280459355">Přejít na stránku O aplikaci Chrome</translation>
 <translation id="6481963882741794338">Propojte Chrome a další služby Google pro personalizaci a další účely</translation>
 <translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
@@ -680,6 +683,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8641606876632989680">Pokud se přihlásíte pomocí prolomeného hesla, Chrome vám to oznámí</translation>
 <translation id="8656634243791296665">Otevřít Gemini v Chromu Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Vždy zobrazovat zkratku režimu AI od Googlu</translation>
 <translation id="8679801911857917785">Také řídí, která stránka se zobrazí při spuštění Chromu.</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8712767363896337380">Aktualizace je téměř hotová. Aktualizaci dokončíte restartováním prohlížeče Chrome.</translation>

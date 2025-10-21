@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Die Adresse wurde in dein Konto <ph name="USER_EMAIL" /> verschoben</translation>
 <translation id="4287172530684295552">Als gelesen markieren</translation>
 <translation id="428768789042547925">Neuheiten</translation>
-<translation id="428858055663163046">Wenn du Dateien heruntergeladen hast, kannst du hier darauf zugreifen</translation>
 <translation id="429074084062258019">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
@@ -1793,6 +1792,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7851858861565204677">Andere Geräte</translation>
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854006015462979438">„Allgemein“ öffnen</translation>
+<translation id="7855678267851972597">Audiodateien</translation>
 <translation id="7859988229622350291">Nie übersetzen</translation>
 <translation id="7863211248337747225">App herunterladen</translation>
 <translation id="7865127013871431856">Übersetzungsoptionen</translation>
@@ -1973,6 +1973,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-Tabs <ph name="FIRST_VISIBLE_TAB" /> bis <ph name="LAST_VISIBLE_TAB" /> von <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Links aus anderen Apps inkognito öffnen</translation>
 <translation id="8529767659511976195">Neu</translation>
+<translation id="8531572740963685410">PDFs</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing ist aktiviert</translation>
 <translation id="8534481786647257214">Google+ Beitrag gepostet</translation>

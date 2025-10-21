@@ -882,6 +882,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2436976580469434549">Fiber- og tekstilkunst</translation>
 <translation id="243815215670139125">Kunne ikke lagre dette kortet i Google-kontoen din. Det ble lagret i Chrome på denne enheten i stedet.</translation>
 <translation id="2438874542388153331">Fire hull høyre</translation>
+<translation id="2440855519769445271">Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> for å skjule alternativene for å betale senere.</translation>
 <translation id="2441854154602066476">Betalingsmåter som kan fylles ut ved å trykkes på. Tastaturet er skjult.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4648262692072505866">Hash-verdien må være i formatet SHA-256.</translation>
 <translation id="4652266463001779298">Ikke tillatt</translation>
 <translation id="4652440160515225514">Organisasjonen din har blokkert dette nettstedet fordi det bryter en regel.</translation>
+<translation id="4654457557264366314">Betalingsavtaler er avhengig av kvalifikasjon.</translation>
 <translation id="4658638640878098064">Stift oppe til venstre</translation>
 <translation id="4660592918803576381">Åpne i Disk</translation>
 <translation id="4661556981531699496">Dyr og kjæledyr</translation>

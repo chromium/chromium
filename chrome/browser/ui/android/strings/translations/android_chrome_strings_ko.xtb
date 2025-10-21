@@ -49,6 +49,7 @@
 <translation id="11947597112837849">이메일 주소</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
 <translation id="1197761954713363183">패스키 확인 시트 닫힘</translation>
+<translation id="1197933394627598677">읽기 모드 표시</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1202892408424955784">추적 중인 제품</translation>
 <translation id="1204037785786432551">링크 다운로드</translation>
@@ -517,6 +518,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3435575784518354875">비밀번호에 대한 액세스를 유지하려면 지금 비밀번호를 내보내고 Google Play 서비스를 업데이트한 후 Google 비밀번호 관리자로 다시 가져오세요. <ph name="BEGIN_LINK" />전체 안내 보기<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3435914367318771664">새 그룹에 탭 추가</translation>
+<translation id="3438681572027105609">모든 기기에서 비밀번호 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="3439276997620616816">여기에서 최근 탭을 확인할 수 있습니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
@@ -1261,6 +1263,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6738867403308150051">다운로드 중...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">계정 데이터 검토</translation>
+<translation id="6746834324024491643">모든 기기에서 비밀번호 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="6752130751133944215">새 창을 복원하려면 활성 및 비활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요. 비활성 창은 6개월 후에 삭제됩니다.</translation>
 <translation id="6754359471209693699">새 검색 시작</translation>
@@ -1397,6 +1400,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="7230064152164845085">시크릿 모드로 전환</translation>
 <translation id="7237724030342645845">Google 비밀번호 관리자 작동이 중지됨</translation>
+<translation id="7239496616545081903">읽기 모드 숨기기</translation>
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
 <translation id="7248671827512403053">애플리케이션</translation>
 <translation id="7253951228444156601">비밀번호 확인 중…</translation>
@@ -1533,6 +1537,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
+<translation id="7826342993930002256">어디에서나 나만의 Chrome을 사용하세요</translation>
 <translation id="7844171778363018843">동기화할 데이터 선택 안됨</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="7846296061357476882">Google 서비스</translation>
@@ -1738,6 +1743,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8723453889042591629">이 페이지를 빠르게 번역합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="8725066075913043281">다시 시도하기</translation>
 <translation id="8731268612289859741">보안 코드</translation>
+<translation id="8738163682604285902">읽기 모드로 보시겠습니까?</translation>
 <translation id="8746155870861185046">강조표시한 텍스트 공유</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8754448020583829686">링크 없이 복사</translation>

@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="10619348099955377">表示名をコピー</translation>
 <translation id="1062407476771304334">置換</translation>
+<translation id="1064236804542808595">組織のショートカットを復元</translation>
 <translation id="1065369186007547872">このサイトからの通知をご希望でないと判断されました。ブラウジングの妨げにならないようリクエストは非表示になっています。</translation>
 <translation id="1066964438793906105">マルウェアをスキャン</translation>
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
@@ -1050,6 +1051,7 @@
 <translation id="1700517974991662022">アクセス済み</translation>
 <translation id="1703331064825191675">パスワードを気にする必要はありません</translation>
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
+<translation id="1703849276368677471">ツール</translation>
 <translation id="1704097193565924901">大文字にする</translation>
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
 <translation id="1706586824377653884">管理者により追加</translation>
@@ -1177,6 +1179,7 @@
 <translation id="1796460466266263589">Gemini を引き続き使用するには、本人確認を行ってください</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
+<translation id="1798726622311813209">クレジット カードとデビットカード</translation>
 <translation id="1799852120691957794">前回のセッションからウィンドウを復元できません</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
@@ -1460,6 +1463,7 @@
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
 <translation id="1984683754853869253">学校用のプロフィールを新しく作成しますか？</translation>
 <translation id="198507684520034826">ヘルプ</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
 <translation id="1987317783729300807">アカウント</translation>
 <translation id="1987574314042117472">人気のアプリを選択してインストール</translation>
@@ -3110,6 +3114,7 @@
 <translation id="3122883569442693641">詳細</translation>
 <translation id="3124111068741548686">USER ハンドル</translation>
 <translation id="3124332159330678621">Chrome をカスタマイズして、ブラウザのデザインを一新</translation>
+<translation id="3124950826511066429">さまざまな種類の情報に対する自動入力の動作に影響する設定</translation>
 <translation id="3125361247594231799">固定して簡単にアクセス</translation>
 <translation id="3125816458150005808">固定を解除してメニューから開くこともできます</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5355,6 +5360,7 @@
 <translation id="467809019005607715">Google スライド</translation>
 <translation id="4678848110205818817">クレジット カード / デビットカード</translation>
 <translation id="4679018849559620189">どのデバイスからでも保存済みのパスキーにアクセスできるようになります</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">このページでは音声がミュートされています</translation>
 <translation id="4680112532510845139">ここに画像をドロップしてください</translation>
 <translation id="4681453295291708042">ニアバイシェアを無効にする</translation>
@@ -5899,6 +5905,7 @@
 <translation id="5068553687099139861">パスワードを表示</translation>
 <translation id="506886127401228110">独立したウェブアプリをオンにする</translation>
 <translation id="5068919226082848014">ピザ</translation>
+<translation id="5070630163913211970">新しいチャットを開始すると、現在のタブが Gemini と共有されます。<ph name="LINK_BEGIN" />AI とプライバシーの詳細<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">最近のダウンロードに戻る</translation>
 <translation id="5071892329440114717">標準保護機能の詳細を表示</translation>
 <translation id="5072500507106264618">システム サービスのみが位置情報を使用できます</translation>
@@ -6359,6 +6366,7 @@
 <translation id="5398497406011404839">非表示のブックマーク</translation>
 <translation id="5398572795982417028">範囲外のページを参照しています。上限は <ph name="MAXIMUM_PAGE" /> です。</translation>
 <translation id="539882584649709174">ウェブでのクチコミなどの短文の作成をサポートします</translation>
+<translation id="5400068721524309244">タブを共有すると、そのページのコンテンツと URL が Google に送信されます</translation>
 <translation id="5400196580536813396">デバイスにアクセスできるプリンタの検索と使用を許可しないサイト</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5402367795255837559">点字</translation>
@@ -7692,6 +7700,7 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="6336194758029258346">アプリの言語</translation>
 <translation id="6337543438445391085">一部の個人情報が引き続きデータに含まれることがあります。エクスポートしたファイルをご確認ください。</translation>
+<translation id="6338554362382763574">ブラウジング中に共有しているタブについて Gemini に簡単に質問できます</translation>
 <translation id="6338968693068997776">USB デバイスの追加</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成します</translation>
 <translation id="6340071272923955280">インターネット印刷プロトコル（IPPS）</translation>
@@ -8035,6 +8044,7 @@
 <translation id="6586451623538375658">マウスのメイン ボタンを右にする</translation>
 <translation id="6588043302623806746">セキュア DNS を使用する</translation>
 <translation id="6589760925779188068">パンナコッタ</translation>
+<translation id="6589769062042696460">新しいチャットを開始すると、現在のタブが Gemini と共有されます。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。<ph name="LINK_BEGIN" />AI とプライバシーの詳細<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">フォルダ名の変更</translation>
 <translation id="6592267180249644460">WebRTC ログの記録日時: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">指紋を登録しました</translation>
@@ -8309,6 +8319,7 @@
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、お子様のドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux のバックアップがキャンセルされました</translation>
 <translation id="6782067259631821405">無効な PIN</translation>
+<translation id="6782219876520622071">共有タブに関するチャットの内容は、Gemini の改善のため、人間のレビュアーによって確認されることがあります</translation>
 <translation id="6783036716881942511">このデバイスを削除しますか？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive の設定</translation>
 <translation id="6784523122863989144">プロファイルはサポートされています</translation>
@@ -8439,6 +8450,7 @@
 <translation id="6852290167968069627">ネットワークの問題により、ChromeOS で前のセッションを再開できません。安定したネットワークに接続して、もう一度お試しください。</translation>
 <translation id="6852529053326738838">組織に問い合わせるか、仕事用メールアドレスを使用して登録を行い、アカウントが対象かどうかを確認します。</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> から <ph name="APP_TYPE" /> をインストールしました</translation>
+<translation id="6853118789186721762"><ph name="DEVICE_TYPE" /> にリマインダーを送信しました</translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> 年</translation>
 <translation id="68541483639528434">他のタブをすべて閉じる</translation>
 <translation id="6855892664589459354">Crostini のバックアップと復元</translation>
@@ -8740,6 +8752,7 @@
 <translation id="7066572364168923329"><ph name="DEVICE_TYPE" /> の設定の選択</translation>
 <translation id="7067396782363924830">環境色</translation>
 <translation id="7067725467529581407">今後このメッセージを表示しない。</translation>
+<translation id="7067779359472606732"><ph name="DEVICE_TYPE" /> にリマインダーを送信しました</translation>
 <translation id="7068279399556423026">ログインして他のデバイスのタブを表示</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> とその他数個のアプリが <ph name="DEVICE_TYPE" /> でブロックされています</translation>
 <translation id="706949303827219454">セキュリティ設定ページを新しいタブで開きます</translation>
@@ -11224,6 +11237,7 @@
 <translation id="876161309768861172">ログインできませんでした。もう一度お試しください</translation>
 <translation id="8761945298804995673">このユーザーはすでに存在しています</translation>
 <translation id="8762886931014513155">ご利用の <ph name="DEVICE_TYPE" /> は更新が必要です</translation>
+<translation id="8763170551806710928">チップを表示する</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8766796754185931010">ことえり</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> のすべての検索を表示</translation>
@@ -11554,6 +11568,7 @@
 <translation id="8988539543012086784">このページは <ph name="BOOKMARK_FOLDER" /> に保存されています</translation>
 <translation id="8989034257029389285">「OK Google、この曲はなに？」と話しかけます。</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
+<translation id="8989779557457435460">デフォルトで現在のタブを共有する</translation>
 <translation id="8990243615717080992">パスワードまたはその他の復元方法でログインできます</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="8991694323904646277">カメラがありません</translation>

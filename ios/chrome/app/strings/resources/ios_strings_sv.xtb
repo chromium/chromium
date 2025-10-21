@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adressen har flyttats till ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markera som läst</translation>
 <translation id="428768789042547925">Nyheter</translation>
-<translation id="428858055663163046">Du kommer åt dina nedladdade filer här när de blir tillgängliga</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
@@ -1793,6 +1792,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7851858861565204677">Andra enheter</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854006015462979438">Öppna Allmänt</translation>
+<translation id="7855678267851972597">Ljud</translation>
 <translation id="7859988229622350291">Översätt aldrig</translation>
 <translation id="7863211248337747225">Skaffa appen</translation>
 <translation id="7865127013871431856">Översättningsalternativ</translation>
@@ -1973,6 +1973,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-flikarna <ph name="FIRST_VISIBLE_TAB" /> till <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Öppna länkar från andra appar i inkognitoläget</translation>
 <translation id="8529767659511976195">Nytt</translation>
+<translation id="8531572740963685410">PDF-filer</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>
 <translation id="8534481786647257214">Inlägg på Google+ klart.</translation>

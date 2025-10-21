@@ -63,6 +63,7 @@
 <translation id="1779356040007214683">Pentru mai multă siguranță în Chromium, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
 <translation id="1820835682567584003">Chromium încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Data viitoare când deschizi Chromium pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a folosi Managerul de parole Google.</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
 <translation id="18552579716432081">Pentru a șterge datele de navigare doar de pe acest dispozitiv, dar nu și din Contul Google, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chromium, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -89,6 +90,7 @@
 <translation id="2049376729098081731">Alege dacă se include istoricul Chromium pentru experiențe mai personalizate în serviciile Google</translation>
 <translation id="2054039611381840095">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 12 sau o versiune ulterioară. Acest computer folosește macOS 11.</translation>
 <translation id="2086476982681781442">Chromium a blocat descărcarea, deoarece fișierul este înșelător și poate face modificări neașteptate pe dispozitiv</translation>
+<translation id="208726765006323911">Vei vedea o solicitare de a încerca <ph name="FEATURE_NAME" /> data viitoare când deschizi Chromium iOS.</translation>
 <translation id="2099452623287920103">Parolele și alte date Chromium pe care le-ai salvat în Contul Google se vor elimina de pe acest dispozitiv. Pentru a le folosi din nou în Chromium, conectează-te din nou.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizația ta șterge automat datele de navigare când Chromium nu este folosit timp de un minut. Aici pot fi incluse istoricul, completările automate și descărcările. Filele vor rămâne deschise.}few{Organizația ta șterge automat datele de navigare când Chromium nu este folosit timp de # minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele vor rămâne deschise.}other{Organizația ta șterge automat datele de navigare când Chromium nu este folosit timp de # de minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele vor rămâne deschise.}}</translation>
 <translation id="2126108037660393668">Fișierul descărcat nu a putut fi verificat.</translation>
@@ -149,6 +151,7 @@
 <translation id="2718390899429598676">Pentru un plus de securitate, Chromium îți va cripta datele.</translation>
 <translation id="2721354645805494590">Pentru a elimina Contul Google din Chromium, deconectează-te</translation>
 <translation id="2722636413143664436">Pentru a accesa parolele, marcajele și alte date pe toate dispozitivele, conectează-te la Chromium</translation>
+<translation id="2723860029395667894">Afișează întotdeauna comanda rapidă pentru Modul Google AI</translation>
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2753623023919742414">Dă clic pentru a căuta</translation>
 <translation id="2768103863314748511">Setează Chromium ca vizualizator PDF prestabilit</translation>
@@ -636,6 +639,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8601359445272098721">Nou! Poți traduce atât textul, cât și imaginile de pe ecran selectând butonul Tradu ecranul</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nu poate fi setat ca browser prestabilit.</translation>
+<translation id="8677922833187616101">Afișează întotdeauna comanda rapidă pentru Modul Google AI</translation>
 <translation id="8697124171261953979">Stabilește și ce pagină se afișează când porniți Chromium sau când căutați din caseta polivalentă.</translation>
 <translation id="8704119203788522458">Acesta este browserul dvs. Chromium</translation>
 <translation id="8712637175834984815">Am înțeles</translation>

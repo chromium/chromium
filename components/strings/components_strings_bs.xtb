@@ -882,6 +882,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2436976580469434549">Umjetnost vlakana i tekstila</translation>
 <translation id="243815215670139125">Pohranjivanje kartice na Google računu nije uspjelo. Umjesto toga je sačuvana u Chromeu na ovom uređaju.</translation>
 <translation id="2438874542388153331">Četverostruko bušenje na desnoj strani</translation>
+<translation id="2440855519769445271">Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke plaćanja<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Načini plaćanja koji su dostupni za popunjavanje dodirom. Tastatura je skrivena.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />neće pohranjivati<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4648262692072505866">Hash mora biti u formatu SHA-256.</translation>
 <translation id="4652266463001779298">Nije dozvoljeno</translation>
 <translation id="4652440160515225514">Vaša organizacija je blokirala ovu web lokaciju zbog kršenja pravila.</translation>
+<translation id="4654457557264366314">Planovi plaćanja su podložni ispunjavanju uslova.</translation>
 <translation id="4658638640878098064">Spajanje u gornjem lijevom uglu</translation>
 <translation id="4660592918803576381">Otvori na Disku</translation>
 <translation id="4661556981531699496">Kućni ljubimci i druge životinje</translation>

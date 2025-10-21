@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Este es tu navegador Chrome</translation>
 <translation id="1125124144982679672">¿Quién usa Chrome?</translation>
 <translation id="1142745911746664600">No se puede actualizar Chrome</translation>
+<translation id="1148360048981192980">La próxima vez que abras Chrome en tu <ph name="DEVICE_TYPE" />, verás un mensaje para usar el Administrador de contraseñas de Google.</translation>
 <translation id="1152920704813762236">Acerca de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
 <translation id="1157985233335035034">Idiomas recientes</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">Abre <ph name="URL" /> en una pestaña nueva en Google Chrome.</translation>
 <translation id="2699790011615497488">Abrir Gemini en Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona cualquier elemento para buscar con Google Lens o presiona Escape para salir de Google Lens</translation>
+<translation id="2723860029395667894">Mostrar siempre el acceso directo al Modo IA de Google</translation>
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede impedir que las extensiones guarden tu historial de navegación. Para inhabilitar esta extensión en modo Incógnito, anula la selección de esta opción.</translation>
 <translation id="2753623023919742414">Hacer clic para buscar</translation>
@@ -475,6 +477,7 @@
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{La organización cierra Chrome automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{La organización cierra Chrome automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="6418662306461808273">¿Deseas cambiar a un perfil existente de Chrome?</translation>
+<translation id="6426623519983252346">Verás un mensaje para probar <ph name="FEATURE_NAME" /> la próxima vez que abras Chrome para iOS.</translation>
 <translation id="6473905796280459355">Ir a la página Acerca de Chrome</translation>
 <translation id="6481963882741794338">Vincula Chrome y otros servicios de Google para la personalización y otros fines</translation>
 <translation id="648319183876919572">La Navegación segura mejorada realiza más acciones para protegerte de descargas y sitios web peligrosos</translation>
@@ -673,6 +676,7 @@
 <translation id="8641606876632989680">Chrome te notificará cuando accedas con una contraseña hackeada</translation>
 <translation id="8656634243791296665">Abrir Gemini en Chrome Dev</translation>
 <translation id="8669527147644353129">Ayuda de Google Chrome</translation>
+<translation id="8677922833187616101">Mostrar siempre el acceso directo al Modo IA de Google</translation>
 <translation id="8679801911857917785">También controla qué página se muestra al iniciar Chrome.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8712767363896337380">Ya casi completas la actualización. Reinicia Chrome para completar la actualización.</translation>

@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adressen er flyttet til din konto: <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markér som læst</translation>
 <translation id="428768789042547925">Nyheder</translation>
-<translation id="428858055663163046">Du kan tilgå dine downloadede filer her, når de er tilgængelige</translation>
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
@@ -1793,6 +1792,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7851858861565204677">Andre enheder</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854006015462979438">Åben Generelt</translation>
+<translation id="7855678267851972597">Lyd</translation>
 <translation id="7859988229622350291">Oversæt aldrig</translation>
 <translation id="7863211248337747225">Hent appen</translation>
 <translation id="7865127013871431856">Valgmuligheder for oversættelse</translation>
@@ -1973,6 +1973,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-fane <ph name="FIRST_VISIBLE_TAB" /> til <ph name="LAST_VISIBLE_TAB" /> af <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Åbn links fra andre apps i inkognito</translation>
 <translation id="8529767659511976195">Ny</translation>
+<translation id="8531572740963685410">PDF'er</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="8534481786647257214">Opslag delt på Google+.</translation>

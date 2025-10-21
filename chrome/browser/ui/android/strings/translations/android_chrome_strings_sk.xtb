@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e‑mailovú adresu</translation>
 <translation id="1197267115302279827">Presunúť záložky</translation>
 <translation id="1197761954713363183">Zavretý hárok s potvrdením prístupového kľúča</translation>
+<translation id="1197933394627598677">Zobraziť režim čítania</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1204037785786432551">Stiahnuť odkaz</translation>
@@ -517,6 +518,7 @@
 <translation id="3435575784518354875">Ak si chcete zachovať prístup k svojim heslám, exportujte ich, aktualizujte Služby Google Play a potom ich importujte späť do Správcu hesiel Google. <ph name="BEGIN_LINK" />Zobraziť úplné pokyny<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Zabezpečenie</translation>
 <translation id="3435914367318771664">Pridať kartu do novej skupiny</translation>
+<translation id="3438681572027105609">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu</translation>
 <translation id="3439276997620616816">Tu nájdete svoje nedávne karty</translation>
 <translation id="3443221991560634068">Opätovné načítanie aktuálnej stránky</translation>
 <translation id="3444179773590444986">Chcete zdieľať spätnú väzbu k tmavému motívu pre weby?</translation>
@@ -1261,6 +1263,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6738867403308150051">Sťahuje sa...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Prezrite si údaje účtu</translation>
+<translation id="6746834324024491643">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Skratka na rýchle otvorenie novej karty. Ak ju chcete upraviť, pridržte ju.</translation>
 <translation id="6752130751133944215">Ak chcete obnoviť nové okno, znížte celkový počet okien (aktívnych aj neaktívnych) na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> alebo menej. Neaktívne okná sa po šiestich mesiacoch odstraňujú.</translation>
 <translation id="6754359471209693699">Spustenie nového vyhľadávania</translation>
@@ -1397,6 +1400,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Na stiahnutie čaká 1 položka}few{Na stiahnutie čakajú # položky}many{# downloads pending}other{Na stiahnutie čaká # položiek}}</translation>
 <translation id="7230064152164845085">Prepnúť na inkognito</translation>
 <translation id="7237724030342645845">Správca hesiel Google prestal fungovať</translation>
+<translation id="7239496616545081903">Skryť režim čítania</translation>
 <translation id="72415438529550637">Návrh hesla je zavretý</translation>
 <translation id="7248671827512403053">Aplikácia</translation>
 <translation id="7253951228444156601">Kontrolujú sa heslá…</translation>
@@ -1533,6 +1537,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7821130663268546430">Všetky otvorené karty nájdete v prepínači kariet</translation>
 <translation id="7822705602465980873">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
 <translation id="7824665136384946951">Vaša organizácia vypla Bezpečné prehliadanie</translation>
+<translation id="7826342993930002256">Váš Chrome, všade</translation>
 <translation id="7844171778363018843">Na synchronizáciu neboli vybrané žiadne údaje</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>
 <translation id="7846296061357476882">Služby Googlu</translation>
@@ -1738,6 +1743,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8723453889042591629">Rýchlo preložte túto stránku. Ak chcete túto skratku upraviť, pridržte ju.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8731268612289859741">Bezpečnostný kód</translation>
+<translation id="8738163682604285902">Chcete zobraziť režim čítania?</translation>
 <translation id="8746155870861185046">Zdieľať zvýraznenie</translation>
 <translation id="8748850008226585750">Obsah je skrytý</translation>
 <translation id="8754448020583829686">Kopírovať bez odkazu</translation>

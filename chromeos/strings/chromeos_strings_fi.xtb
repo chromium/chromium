@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
 <translation id="4300272766492248925">Avaa sovellus</translation>
 <translation id="430786093962686457">sifonki</translation>
+<translation id="4309762678330556039">Luo transkriptioita automaattisesti ja hae audiota. Voit luoda tallenteita myös ilman internetyhteyttä.</translation>
 <translation id="4310735698903592804">Viimeaikaisia Googlen tekoälyn luomia taustakuvia</translation>
 <translation id="4320904097188876154">neonpinkki</translation>
 <translation id="432961742358282111">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai painamalla sitä pitkään. Säädä ominaisuutta vasemmalla ja oikealla nuolella.</translation>
@@ -1472,6 +1473,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />: transkriptiomallista <ph name="PROGRESS_PERCENTAGE" /> % ladattu</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että käyttöön otetut APN:t, jotka on <ph name="ATTACH" />, on poistettu käytöstä tai kokonaan.</translation>
+<translation id="7458359366992324037">Etänäyttö</translation>
 <translation id="7458970041932198923">Muodosta verkkoyhteys ja päivitä sivu nähdäksesi ja käyttääksesi avatareja.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7481312909269577407">Seuraava</translation>

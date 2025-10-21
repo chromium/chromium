@@ -518,6 +518,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3435575784518354875">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qilib, Googel Play xizmatlarini yangilang va Google Parollar meneriga qayta import qiling. <ph name="BEGIN_LINK" />Toʻliq koʻrsatmalar<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3435914367318771664">Varaqni yangi guruhga kiritish</translation>
+<translation id="3438681572027105609">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun Chromega kiring</translation>
 <translation id="3439276997620616816">Oxirgi ochilgan varaqlar shu yerda chiqadi</translation>
 <translation id="3443221991560634068">Joriy sahifani qayta yuklash</translation>
 <translation id="3444179773590444986">Saytlar uchun tungi mavzuda oid fikr-mulohaza yuborilsinmi?</translation>
@@ -1147,6 +1148,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6255809143828972562">Chrome vositalari yordamida xavfsiz kezishingiz va nazoratni ushlab turishingiz mumkin</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6264485186158353794">Xavfsizlik sahifasiga qaytish</translation>
+<translation id="6267106249090587268">Bildirishnomalar <ph name="SEPARATOR" /> Chrome bu ruxsatlarni spam yoki aldovchi kontent sababli olib tashladi</translation>
 <translation id="6276708887952587684">Sahifa kodini ko‘rish</translation>
 <translation id="6277522088822131679">Sahifani chop etishda muammo yuzaga keldi. Qayta urinib ko‘ring.</translation>
 <translation id="6278428485366576908">Mavzu</translation>
@@ -1262,6 +1264,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6738867403308150051">Yuklab olinmoqda...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
+<translation id="6746834324024491643">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun <ph name="EMAIL" /> sifatida kiring</translation>
 <translation id="6751521182688001123">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="6752130751133944215">Yangi oynani tiklash uchun jami faol va nofaol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> yoki undan kam miqdorga kamaytiring. Nofaol oynalar 6 oydan keyin avtomatik oʻchiriladi.</translation>
 <translation id="6754359471209693699">Yangi qidiruvni boshlash</translation>
@@ -1535,6 +1538,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7821130663268546430">Varaq almashtirgich orqali ochilgan barcha varaqlarni topish mumkin</translation>
 <translation id="7822705602465980873">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
 <translation id="7824665136384946951">Saytlarni xavfsiz kezish tashkilotingiz tomonidan faolsizlantirilgan.</translation>
+<translation id="7826342993930002256">Chrome – barcha qurilmalaringizda</translation>
 <translation id="7844171778363018843">Sinxronlash uchun hech narsa tanlanmagan</translation>
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="7846296061357476882">Google xizmatlari</translation>

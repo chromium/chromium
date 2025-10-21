@@ -882,6 +882,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2436976580469434549">Arte tessile</translation>
 <translation id="243815215670139125">Impossibile salvare questa carta nel tuo Account Google. È invece salvata su Chrome su questo dispositivo.</translation>
 <translation id="2438874542388153331">Perforatura quadrupla a destra</translation>
+<translation id="2440855519769445271">Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LINK" />impostazioni di pagamento<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Metodi di pagamento che è possibile compilare tramite tocco. Tastiera nascosta.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />non salverà quanto segue<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2219,6 +2220,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4648262692072505866">L'hash deve essere nel formato SHA-256.</translation>
 <translation id="4652266463001779298">Autorizzazione non concessa</translation>
 <translation id="4652440160515225514">La tua organizzazione ha bloccato questo sito perché viola una policy.</translation>
+<translation id="4654457557264366314">I piani di pagamento sono soggetti a idoneità.</translation>
 <translation id="4658638640878098064">Pinzatura in alto a sinistra</translation>
 <translation id="4660592918803576381">Apri in Drive</translation>
 <translation id="4661556981531699496">Animali e animali domestici</translation>

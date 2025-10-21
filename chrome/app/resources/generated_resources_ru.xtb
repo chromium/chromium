@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Скоро перерыв</translation>
 <translation id="10619348099955377">Скопировать отображаемое название</translation>
 <translation id="1062407476771304334">Заменить</translation>
+<translation id="1064236804542808595">Восстановить ярлыки организации</translation>
 <translation id="1065369186007547872">Похоже, вы не хотите получать уведомления от этого сайта, поэтому Chrome скрывает запросы, чтобы не беспокоить вас.</translation>
 <translation id="1066964438793906105">Сканирование на наличие вредоносного ПО</translation>
 <translation id="1067661089446014701">Чтобы повысить безопасность, вы можете включить шифрование паролей на устройстве до их сохранения в вашем аккаунте Google</translation>
@@ -1053,6 +1054,7 @@
 <translation id="1700517974991662022">Посещено</translation>
 <translation id="1703331064825191675">Можно больше не беспокоиться о паролях</translation>
 <translation id="1703666494654169921">Запретить сайтам использовать устройства и данные виртуальной реальности</translation>
+<translation id="1703849276368677471">Инструменты</translation>
 <translation id="1704097193565924901">Заменить первую букву на прописную</translation>
 <translation id="1704230497453185209">Запретить сайтам воспроизводить звук</translation>
 <translation id="1706586824377653884">Добавлено администратором</translation>
@@ -1180,6 +1182,7 @@
 <translation id="1796460466266263589">Чтобы продолжить использовать Gemini, подтвердите личность.</translation>
 <translation id="1796588414813960292">Функции, которые используют звук, не будут работать</translation>
 <translation id="1797117170091578105">Играйте с помощью клавиатуры Chromebook. Клавиши можно настроить таким образом, чтобы они отвечали за выполнение определенных действий.</translation>
+<translation id="1798726622311813209">Кредитные и дебетовые карты</translation>
 <translation id="1799852120691957794">Не удалось восстановить окна из предыдущего сеанса</translation>
 <translation id="180203835522132923">Поиск + O, затем W</translation>
 <translation id="1802624026913571222">Переходить в спящий режим при закрытии крышки</translation>
@@ -1465,6 +1468,7 @@
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1984683754853869253">Создать учебный профиль?</translation>
 <translation id="198507684520034826">Справка</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Дополнительные настройки геолокации</translation>
 <translation id="1987317783729300807">Аккаунты</translation>
 <translation id="1987574314042117472">Выбрать и установить популярные приложения</translation>
@@ -3118,6 +3122,7 @@
 <translation id="3122883569442693641">Подробнее</translation>
 <translation id="3124111068741548686">USER-дескрипторы</translation>
 <translation id="3124332159330678621">Придайте Chrome новый вид</translation>
+<translation id="3124950826511066429">Настройки, влияющие на работу автозаполнения для разных типов информации</translation>
 <translation id="3125361247594231799">Закрепите на будущее</translation>
 <translation id="3125816458150005808">Его можно открепить и открывать через меню.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5368,6 +5373,7 @@
 <translation id="467809019005607715">Google Презентации</translation>
 <translation id="4678848110205818817">Кредитная/дебетовая карта</translation>
 <translation id="4679018849559620189">Он позволит вам использовать сохраненные ключи доступа на любом устройстве.</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">Звук на этой странице был отключен</translation>
 <translation id="4680112532510845139">Перетащите изображение сюда</translation>
 <translation id="4681453295291708042">Отключить Обмен с окружением</translation>
@@ -5912,6 +5918,7 @@
 <translation id="5068553687099139861">показать пароли</translation>
 <translation id="506886127401228110">Включить изолированные веб-приложения</translation>
 <translation id="5068919226082848014">Пицца</translation>
+<translation id="5070630163913211970">Когда вы начинаете новый чат, у Gemini появляется доступ к открытой вкладке. Подробнее <ph name="LINK_BEGIN" />об ИИ и конфиденциальности<ph name="LINK_END" />…</translation>
 <translation id="5071295820492622726">Вернуться к последним скачанным файлам</translation>
 <translation id="5071892329440114717">Открыть описание стандартной защиты</translation>
 <translation id="5072500507106264618">Только системные службы могут получить доступ к данным о местоположении вашего устройства</translation>
@@ -6375,6 +6382,7 @@
 <translation id="5398497406011404839">Скрытые закладки</translation>
 <translation id="5398572795982417028">Размер страницы больше максимально допустимого (лимит ‒ <ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">Эта функция помогает создавать короткие тексты в интернете, например писать отзывы</translation>
+<translation id="5400068721524309244">Когда вы делитесь вкладками, их содержимое и URL отправляются в Google.</translation>
 <translation id="5400196580536813396">Запрещено искать и использовать принтеры, доступные для вашего устройства</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
@@ -7709,6 +7717,7 @@
 <translation id="6336038146639916978">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). Настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="6336194758029258346">Язык приложения</translation>
 <translation id="6337543438445391085">В этих данных могут остаться некоторые личные сведения. Обязательно проверьте экспортированные файлы.</translation>
+<translation id="6338554362382763574">Вы можете легко задавать Gemini вопросы о просматриваемых вкладках, которыми вы поделились.</translation>
 <translation id="6338968693068997776">Добавление USB-устройства</translation>
 <translation id="6339668969738228384">Создать профиль для <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8053,6 +8062,7 @@
 <translation id="6586451623538375658">Поменять местами кнопки мыши</translation>
 <translation id="6588043302623806746">Использовать безопасный DNS-сервер</translation>
 <translation id="6589760925779188068">Панна-котта</translation>
+<translation id="6589769062042696460">Когда вы начинаете новый чат, у Gemini появляется доступ к открытой вкладке. Эти данные не используются для улучшения моделей генеративного ИИ. Подробнее <ph name="LINK_BEGIN" />об ИИ и конфиденциальности<ph name="LINK_END" />…</translation>
 <translation id="6590458744723262880">Переименование папки</translation>
 <translation id="6592267180249644460">Время сохранения журнала WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Отпечаток пальца сохранен</translation>
@@ -8334,6 +8344,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Вы можете отключить эту функцию в настройках.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
+<translation id="6782219876520622071">Наши специалисты могут просматривать информацию о вкладках, которыми вы поделились, чтобы улучшать Gemini.</translation>
 <translation id="6783036716881942511">Удалить устройство?</translation>
 <translation id="6783667414610055871">Настройки Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
@@ -8464,6 +8475,7 @@
 <translation id="6852290167968069627">ChromeOS не может возобновить предыдущий сеанс из-за проблемы с сетью. Подключитесь к стабильной сети и повторите попытку.</translation>
 <translation id="6852529053326738838">Чтобы узнать, соответствует ли ваш аккаунт требованиям, направьте запрос в организацию или зарегистрируйтесь с помощью рабочего адреса электронной почты.</translation>
 <translation id="6853029310037965825">Источник установки для категории "<ph name="APP_TYPE" />": <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
+<translation id="6853118789186721762">Напоминание отправлено на устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" />: год</translation>
 <translation id="68541483639528434">Закрыть другие вкладки</translation>
 <translation id="6855892664589459354">Резервное копирование и восстановление Crostini</translation>
@@ -8765,6 +8777,7 @@
 <translation id="7066572364168923329">Выбор конфигурации для устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Адаптивные цвета</translation>
 <translation id="7067725467529581407">Больше не показывать</translation>
+<translation id="7067779359472606732">Напоминание отправлено на устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Войдите в аккаунт, чтобы получить доступ к вкладкам, открытым на других устройствах</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> и ещё несколько приложений недоступны на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Открыть в новой вкладке страницу с настройками безопасности</translation>
@@ -11249,6 +11262,7 @@
 <translation id="876161309768861172">Не удалось войти в систему. Повторите попытку.</translation>
 <translation id="8761945298804995673">Такой пользователь уже существует.</translation>
 <translation id="8762886931014513155">Требуется обновить устройство <ph name="DEVICE_TYPE" /></translation>
+<translation id="8763170551806710928">Показывать чипы</translation>
 <translation id="8763927697961133303">USB-устройство</translation>
 <translation id="8766796754185931010">Котоери</translation>
 <translation id="8767069439158587614">Показать все результаты поиска по запросу "<ph name="QUERY_CLUSTER_NAME" />"</translation>
@@ -11582,6 +11596,7 @@
 <translation id="8988539543012086784">Страница сохранена в папку "<ph name="BOOKMARK_FOLDER" />".</translation>
 <translation id="8989034257029389285">Вы можете спросить "Окей, Google, что это за песня?".</translation>
 <translation id="8989359959810288806">Обновить статус режима модема</translation>
+<translation id="8989779557457435460">Всегда делиться текущей вкладкой</translation>
 <translation id="8990243615717080992">Для входа используйте пароль или другой резервный способ.</translation>
 <translation id="8991520179165052608">Сайт может использовать микрофон</translation>
 <translation id="8991694323904646277">Камера недоступна</translation>

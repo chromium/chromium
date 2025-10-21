@@ -49,6 +49,7 @@
 <translation id="11947597112837849">adres e-mail</translation>
 <translation id="1197267115302279827">Przenieś zakładki</translation>
 <translation id="1197761954713363183">Arkusz potwierdzenia klucza dostępu został zamknięty</translation>
+<translation id="1197933394627598677">Pokaż Tryb czytania</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1204037785786432551">Pobierz link</translation>
@@ -517,6 +518,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3435575784518354875">Aby zachować dostęp do haseł, wyeksportuj je teraz, zaktualizuj Usługi Google Play, a potem zaimportuj je z powrotem do Menedżera haseł Google. <ph name="BEGIN_LINK" />Zobacz pełne instrukcje<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3435914367318771664">Dodaj kartę do nowej grupy</translation>
+<translation id="3438681572027105609">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="3439276997620616816">Tu znajdziesz swoje ostatnie karty</translation>
 <translation id="3443221991560634068">Ponownie załaduj bieżącą stronę</translation>
 <translation id="3444179773590444986">Co sądzisz o ciemnym motywie witryn?</translation>
@@ -1261,6 +1263,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6738867403308150051">Pobieram…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
+<translation id="6746834324024491643">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Szybko otwórz nową kartę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="6752130751133944215">Aby przywrócić nowe okno, zmniejsz łączną liczbę okien aktywnych i nieaktywnych do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Nieaktywne okna są usuwane po 6 miesiącach.</translation>
 <translation id="6754359471209693699">Rozpocznij nowe wyszukiwanie</translation>
@@ -1397,6 +1400,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 plik oczekuje na pobranie}few{# pliki oczekują na pobranie}many{# plików oczekuje na pobranie}other{# pliku oczekuje na pobranie}}</translation>
 <translation id="7230064152164845085">Przełącz na tryb incognito</translation>
 <translation id="7237724030342645845">Menedżer haseł Google przestał działać</translation>
+<translation id="7239496616545081903">Ukryj Tryb czytania</translation>
 <translation id="72415438529550637">Sugestia dotycząca hasła jest zamknięta.</translation>
 <translation id="7248671827512403053">Aplikacja</translation>
 <translation id="7253951228444156601">Sprawdzam hasła…</translation>
@@ -1533,6 +1537,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7821130663268546430">Wszystkie otwarte karty znajdziesz w przełączniku kart</translation>
 <translation id="7822705602465980873">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="7824665136384946951">Twoja organizacja wyłączyła Bezpieczne przeglądanie</translation>
+<translation id="7826342993930002256">Twoja przeglądarka Chrome na dowolnym urządzeniu</translation>
 <translation id="7844171778363018843">Nie wybrano danych do synchronizacji</translation>
 <translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="7846296061357476882">Usługi Google</translation>
@@ -1738,6 +1743,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8723453889042591629">Szybko przetłumacz tę stronę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8731268612289859741">Kod bezpieczeństwa</translation>
+<translation id="8738163682604285902">Wyświetlić Tryb czytania?</translation>
 <translation id="8746155870861185046">Udostępnij zaznaczenie</translation>
 <translation id="8748850008226585750">Treści ukryte</translation>
 <translation id="8754448020583829686">Skopiuj bez linku</translation>

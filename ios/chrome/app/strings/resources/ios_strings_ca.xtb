@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">L'adreça s'ha mogut al compte <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marca com a llegit</translation>
 <translation id="428768789042547925">Novetats</translation>
-<translation id="428858055663163046">Quan estiguin disponibles, des d'aquí podràs accedir als fitxers baixats</translation>
 <translation id="429074084062258019">{count,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="4302061870579014542">Defineix la posició</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
@@ -1793,6 +1792,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7851858861565204677">Altres dispositius</translation>
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7854006015462979438">Obre General</translation>
+<translation id="7855678267851972597">Àudios</translation>
 <translation id="7859988229622350291">No tradueixis mai</translation>
 <translation id="7863211248337747225">Baixa l'aplicació</translation>
 <translation id="7865127013871431856">Opcions del Traductor</translation>
@@ -1973,6 +1973,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8524799873541103884">Pestanyes <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> d'un total de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Obre els enllaços d'altres aplicacions en mode d'incògnit</translation>
 <translation id="8529767659511976195">Novetat</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">La funció Navegació segura està activada</translation>
 <translation id="8534481786647257214">S'ha completat la publicació a Google+.</translation>
@@ -2179,6 +2180,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="94870150074703282">Vols suprimir el grup?</translation>
 <translation id="952704832371081537">Cancel·la</translation>
+<translation id="95332591904104970">Aplicacions connectades</translation>
 <translation id="954667170699278022">Llista de lectura</translation>
 <translation id="956218893102219091">Utilitza la teva ubicació precisa per obtenir resultats de Gemini més acurats, en lloc de fer servir una ubicació estimada basada en l'adreça IP. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Suprimeix dades de navegació</translation>

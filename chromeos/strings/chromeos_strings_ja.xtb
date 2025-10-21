@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
 <translation id="4300272766492248925">アプリを開く</translation>
 <translation id="430786093962686457">シフォン</translation>
+<translation id="4309762678330556039">文字起こしを自動で作成したり、音声を検索したりできます。インターネットに接続していなくても録音できます。</translation>
 <translation id="4310735698903592804">Google AI を活用した最近の壁紙</translation>
 <translation id="4320904097188876154">ネオンピンク</translation>
 <translation id="432961742358282111">右クリックまたは長押しすると、定義、翻訳、単位変換を取得できます。左右矢印キーでこの機能を管理できます。</translation>
@@ -1472,6 +1473,7 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> の音声文字変換モデルを <ph name="PROGRESS_PERCENTAGE" />% ダウンロード済み</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">この APN を無効化または削除できません。有効になっている <ph name="ATTACH" /> APN を無効化または削除しようとしていることを確認してください。</translation>
+<translation id="7458359366992324037">リモート ディスプレイ</translation>
 <translation id="7458970041932198923">アバターを表示、設定するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7481312909269577407">進む</translation>

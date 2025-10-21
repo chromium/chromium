@@ -20,6 +20,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="110877069173485804">Voici votre Chrome</translation>
 <translation id="1125124144982679672">Qui utilise Chrome ?</translation>
 <translation id="1142745911746664600">Impossible de mettre Chrome à jour</translation>
+<translation id="1148360048981192980">La prochaine fois que vous ouvrirez Chrome sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'utiliser le Gestionnaire de mots de passe de Google.</translation>
 <translation id="1152920704813762236">À propos de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Ouvrir dans Chrome</translation>
 <translation id="1157985233335035034">Langues récentes</translation>
@@ -149,6 +150,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2681444469812712297">Ouvrir <ph name="URL" /> dans un nouvel onglet dans Google Chrome.</translation>
 <translation id="2699790011615497488">Ouvrir Gemini dans Chrome Beta</translation>
 <translation id="2712141162840347885">Sélectionnez quelque chose à rechercher avec Google Lens ou appuyez sur Échap pour quitter Google Lens</translation>
+<translation id="2723860029395667894">Toujours afficher le raccourci vers le Mode IA de Google</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
@@ -482,6 +484,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}one{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minute. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}other{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}}</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant ?</translation>
+<translation id="6426623519983252346">La prochaine fois que vous ouvrirez Chrome iOS, une invite vous proposera d'essayer <ph name="FEATURE_NAME" />.</translation>
 <translation id="6473905796280459355">Accéder à la page "À propos de Chrome"</translation>
 <translation id="6481963882741794338">Associez Chrome et d'autres services Google à des fins de personnalisation et autres</translation>
 <translation id="648319183876919572">La navigation sécurisée avec protection renforcée vous protège davantage contre les sites Web et les téléchargements malveillants</translation>
@@ -680,6 +683,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8641606876632989680">Chrome vous avertira si vous vous connectez avec un mot de passe compromis</translation>
 <translation id="8656634243791296665">Ouvrir Gemini dans Chrome Dev</translation>
 <translation id="8669527147644353129">Application d'aide de Google Chrome</translation>
+<translation id="8677922833187616101">Toujours afficher le raccourci vers le Mode IA de Google</translation>
 <translation id="8679801911857917785">Elle contrôle également la page qui s'affiche au démarrage de Chrome.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Presque à jour ! Relancez Chrome pour terminer la mise à jour.</translation>

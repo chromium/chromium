@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-poštni naslov</translation>
 <translation id="1197267115302279827">Premakni zavihke</translation>
 <translation id="1197761954713363183">List za potrditev ključa za dostop je zaprt</translation>
+<translation id="1197933394627598677">Prikažite način za branje</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1202892408424955784">Spremljani izdelki</translation>
 <translation id="1204037785786432551">Prenesi povezavo</translation>
@@ -517,6 +518,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3435575784518354875">Če želite ohraniti dostop do gesel, jih izvozite, posodobite Storitve Google Play in nato gesla znova uvozite v Googlovega upravitelja gesel. <ph name="BEGIN_LINK" />Oglejte si celotna navodila<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="3435914367318771664">Dodaj zavihek novi skupini</translation>
+<translation id="3438681572027105609">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite v Chrome</translation>
 <translation id="3439276997620616816">Tukaj bodo prikazani nedavni zavihki</translation>
 <translation id="3443221991560634068">Vnovično nalaganje trenutne strani</translation>
 <translation id="3444179773590444986">Želite poslati povratne informacije o temni temi za spletna mesta?</translation>
@@ -1261,6 +1263,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6738867403308150051">Prenašanje ...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Preglejte podatke o računu</translation>
+<translation id="6746834324024491643">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite kot <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Hitro odprite nov zavihek. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="6752130751133944215">Če želite odpreti novo okno, zmanjšajte skupno število dejavnih in nedejavnih oken na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ali manj. Nedejavna okna se izbrišejo po 6 mesecih.</translation>
 <translation id="6754359471209693699">Začni novo iskanje</translation>
@@ -1397,6 +1400,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 prenos na čakanju}one{# prenos na čakanju}two{# prenosa na čakanju}few{# prenosi na čakanju}other{# prenosov na čakanju}}</translation>
 <translation id="7230064152164845085">Preklopi na anonimni način</translation>
 <translation id="7237724030342645845">Googlov upravitelj gesel je nehal delovati</translation>
+<translation id="7239496616545081903">Skrijte način za branje</translation>
 <translation id="72415438529550637">Predlog gesla je zaprt.</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
 <translation id="7253951228444156601">Preverjanje gesel …</translation>
@@ -1533,6 +1537,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7821130663268546430">Vse odprte zavihke najdete v preklopu med zavihki</translation>
 <translation id="7822705602465980873">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
 <translation id="7824665136384946951">Vaša organizacija je izklopila Varno brskanje</translation>
+<translation id="7826342993930002256">Vaš Chrome povsod</translation>
 <translation id="7844171778363018843">Ni izbranih podatkov za sinhronizacijo</translation>
 <translation id="7846161022626028328">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="7846296061357476882">Googlove storitve</translation>
@@ -1738,6 +1743,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8723453889042591629">Hitro prevedite to stran. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8731268612289859741">Varnostna koda</translation>
+<translation id="8738163682604285902">Si želite ogledati način za branje?</translation>
 <translation id="8746155870861185046">Deli oznako</translation>
 <translation id="8748850008226585750">Vsebina je skrita</translation>
 <translation id="8754448020583829686">Kopiranje brez povezave</translation>

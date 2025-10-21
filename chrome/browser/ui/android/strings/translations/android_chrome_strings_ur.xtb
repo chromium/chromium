@@ -49,6 +49,7 @@
 <translation id="11947597112837849">ای میل پتہ</translation>
 <translation id="1197267115302279827">بُک مارکس منتقل کریں</translation>
 <translation id="1197761954713363183">پاسکی کی تصدیقی شیٹ بند کر دی گئی</translation>
+<translation id="1197933394627598677">ریڈنگ موڈ دکھائیں</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
 <translation id="1204037785786432551">ڈاؤن لوڈ کا لنک</translation>
@@ -517,6 +518,7 @@
 <translation id="3435575784518354875">‏اپنے پاس ورڈز تک رسائی کو برقرار رکھنے کے لیے، انہیں ابھی برآمد کریں، Google Play سروسز کو اپ ڈیٹ کریں اور پھر انہیں واپس Google پاس ورڈ مینیجر میں درآمد کریں۔ <ph name="BEGIN_LINK" />مکمل ہدایات دیکھیں<ph name="END_LINK" />۔</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3435914367318771664">نئے گروپ میں ٹیب شامل کریں</translation>
+<translation id="3438681572027105609">‏اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="3439276997620616816">آپ کو اپنے حالیہ ٹیبز یہاں دکھائی دیں گے</translation>
 <translation id="3443221991560634068">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="3444179773590444986">سائٹس کیلئے گہری تھیم پر تاثرات کا اشتراک کریں؟</translation>
@@ -1261,6 +1263,7 @@
 <translation id="6738867403308150051">ڈاؤن لوڈ جاری ہے…</translation>
 <translation id="6745063744988317486">مونو</translation>
 <translation id="6746338529702829275">اپنے اکاؤنٹ کے ڈیٹا کا جائزہ لیں</translation>
+<translation id="6746834324024491643">اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="6751521182688001123">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="6752130751133944215">نئی ونڈو کو بحال کرنے کے لیے، فعال اور غیر فعال ونڈوز کی کل تعداد کو <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا اس سے کم کریں۔ غیر فعال ونڈوز کو 6 ماہ کے بعد حذف کر دیا جاتا ہے۔</translation>
 <translation id="6754359471209693699">نئی تلاش شروع کریں</translation>
@@ -1397,6 +1400,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ زير التوا ہے}other{# ڈاؤن لوڈز زير التوا ہیں}}</translation>
 <translation id="7230064152164845085">پوشیدگی میں سوئچ کریں</translation>
 <translation id="7237724030342645845">‏‫Google پاس ورڈ مینیجر نے کام کرنا بند کر دیا ہے</translation>
+<translation id="7239496616545081903">ریڈنگ موڈ کو چھپائیں</translation>
 <translation id="72415438529550637">پاس ورڈ کی تجویز بند ہے۔</translation>
 <translation id="7248671827512403053">اطلاق</translation>
 <translation id="7253951228444156601">پاسورڈز چیک ہو رہے ہیں…</translation>
@@ -1533,6 +1537,7 @@
 <translation id="7821130663268546430">آپ ٹیب سوئچر میں تمام کھلے ٹیبز تلاش کر سکتے ہیں</translation>
 <translation id="7822705602465980873">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک کر دیا جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="7824665136384946951">آپ کی تنظیم نے محفوظ براؤزنگ کو آف کر دیا ہے</translation>
+<translation id="7826342993930002256">‏آپ کا Chrome، ہر جگہ</translation>
 <translation id="7844171778363018843">مطابقت پذیری کے ليے کوئی ڈیٹا منتخب نہیں کیا گیا</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7846296061357476882">‏Google سروسز</translation>
@@ -1738,6 +1743,7 @@
 <translation id="8723453889042591629">فوری طور پر اس صفحہ کا ترجمہ کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
+<translation id="8738163682604285902">ریڈنگ موڈ دیکھیں؟</translation>
 <translation id="8746155870861185046">ہائی لائٹ کا اشتراک کریں</translation>
 <translation id="8748850008226585750">مواد مخفی ہیں</translation>
 <translation id="8754448020583829686">لنک کے بغیر کاپی کریں</translation>

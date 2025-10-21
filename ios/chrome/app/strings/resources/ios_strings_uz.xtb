@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Manzil <ph name="USER_EMAIL" /> hisobingizga olindi</translation>
 <translation id="4287172530684295552">Ochilgan deb belgilash</translation>
 <translation id="428768789042547925">Yangi xususiyatlar</translation>
-<translation id="428858055663163046">Yuklab olingan fayllar shu yerda chiqadi</translation>
 <translation id="429074084062258019">{count,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
 <translation id="4302061870579014542">Joylashuvni tanlash</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
@@ -1236,6 +1235,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5758759241456233788">Xarita lavhalari yoqilmagan. Yoqish uchun Sozlamalarga qayting.</translation>
 <translation id="5759484603608560822">Yuklanmalarni berkitish</translation>
 <translation id="5767099457279594162">Parol ulashilmagan</translation>
+<translation id="5768870767339201169">Ishni kelgan joyidan davom ettiring</translation>
 <translation id="5779117921996157216">{count,plural, =1{Xavfsizlikka tahdid qilishi mumkin {count} ta oshkor etilgan parol bor. Axborotlarni himoyalash uchun buni tuzating.}other{Xavfsizlikka tahdid qilishi mumkin {count} ta oshkor etilgan parol bor. Axborotlarni himoyalash uchun buni tuzating.}}</translation>
 <translation id="5791632441210678828">Kuzatish tasmasi uchun saralash tugmasi.</translation>
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>

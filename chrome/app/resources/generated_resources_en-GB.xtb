@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Almost time for a break</translation>
 <translation id="10619348099955377">Copy display name</translation>
 <translation id="1062407476771304334">Replace</translation>
+<translation id="1064236804542808595">Restore organisation shortcuts</translation>
 <translation id="1065369186007547872">Chrome thinks that you don't want notifications from this site. So, requests are hidden to reduce interruptions.</translation>
 <translation id="1066964438793906105">Scan for malware</translation>
 <translation id="1067661089446014701">For added safety, you can encrypt passwords on your device before they're saved to your Google Account</translation>
@@ -1052,6 +1053,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1700517974991662022">Visited</translation>
 <translation id="1703331064825191675">Never worry about your passwords</translation>
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
+<translation id="1703849276368677471">Tools</translation>
 <translation id="1704097193565924901">Capitalise</translation>
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
 <translation id="1706586824377653884">Added by your administrator</translation>
@@ -1187,6 +1189,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1796460466266263589">To continue using Gemini, verify that it's you</translation>
 <translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1797117170091578105">Play using your Chromebook keyboard. You can customise keys to specific actions.</translation>
+<translation id="1798726622311813209">Credit and debit cards</translation>
 <translation id="1799852120691957794">Can't restore windows from your previous session</translation>
 <translation id="180203835522132923">Search + O, then W</translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
@@ -1473,6 +1476,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1984683754853869253">Do you want to create a new profile for school?</translation>
 <translation id="198507684520034826">Help</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Advanced location settings</translation>
 <translation id="1987317783729300807">Accounts</translation>
 <translation id="1987574314042117472">Select and install popular apps</translation>
@@ -3129,6 +3133,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3122883569442693641">More details</translation>
 <translation id="3124111068741548686">USER handles</translation>
 <translation id="3124332159330678621">Customise Chrome to give your browser a new look</translation>
+<translation id="3124950826511066429">Settings that affect how autofill works across different types of info</translation>
 <translation id="3125361247594231799">Pin it for next time</translation>
 <translation id="3125816458150005808">You can unpin it and open it from the menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5379,6 +5384,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Credit/debit card</translation>
 <translation id="4679018849559620189">This helps you access your saved passkeys on any device</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">Sound was muted on this page</translation>
 <translation id="4680112532510845139">Drop an image here</translation>
 <translation id="4681453295291708042">Disable Nearby Share</translation>
@@ -5924,6 +5930,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5068553687099139861">show passwords</translation>
 <translation id="506886127401228110">Turn on isolated web apps</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070630163913211970">The current tab is shared with Gemini when you start a new chat. <ph name="LINK_BEGIN" />Learn more about AI and privacy<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">Back to recent downloads</translation>
 <translation id="5071892329440114717">Show standard protection details</translation>
 <translation id="5072500507106264618">Only system services can use your location</translation>
@@ -6387,6 +6394,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5398497406011404839">Hidden bookmarks</translation>
 <translation id="5398572795982417028">Out of bounds page reference, limit is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Helps you write short-form text for things on the web, like reviews</translation>
+<translation id="5400068721524309244">When tabs are shared, their page contents and URLs are sent to Google</translation>
 <translation id="5400196580536813396">Not allowed to look for or use printers that are accessible to your device</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7721,6 +7729,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="6336194758029258346">App language</translation>
 <translation id="6337543438445391085">Some personal information may still be included in the data. Make sure to review the exported files.</translation>
+<translation id="6338554362382763574">You can easily ask Gemini questions about the tabs that you're sharing as you browse</translation>
 <translation id="6338968693068997776">Add USB device</translation>
 <translation id="6339668969738228384">Create a new profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8065,6 +8074,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6586451623538375658">Swap the primary mouse button</translation>
 <translation id="6588043302623806746">Use secure DNS</translation>
 <translation id="6589760925779188068">Panna cotta</translation>
+<translation id="6589769062042696460">The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN" />Learn more about AI and privacy<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">Rename folder</translation>
 <translation id="6592267180249644460">WebRTC log captured <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Your fingerprint was captured</translation>
@@ -8340,6 +8350,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
     <ph name="BEGIN_PARAGRAPH2" />You can turn this service off in Settings.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux backup cancelled</translation>
 <translation id="6782067259631821405">Invalid PIN</translation>
+<translation id="6782219876520622071">Conversations about shared tabs may be seen by human reviewers to improve Gemini</translation>
 <translation id="6783036716881942511">Forget this device?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive settings</translation>
 <translation id="6784523122863989144">Profile is supported</translation>
@@ -8470,6 +8481,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6852290167968069627">ChromeOS can't resume your previous session due to a network problem. Connect to a stable network and retry.</translation>
 <translation id="6852529053326738838">Ask your organisation, or enrol with your work email to check if your account is eligible.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> installed from <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
+<translation id="6853118789186721762">Reminder sent to your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> year</translation>
 <translation id="68541483639528434">Close other tabs</translation>
 <translation id="6855892664589459354">Crostini backup and restore</translation>
@@ -8771,6 +8783,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7066572364168923329">Choose your <ph name="DEVICE_TYPE" />’s setup</translation>
 <translation id="7067396782363924830">Ambient colours</translation>
 <translation id="7067725467529581407">Never show this again.</translation>
+<translation id="7067779359472606732">Reminder sent to your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Sign in to see tabs from other devices</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> and a few more apps are blocked on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Opens security settings page in a new tab</translation>
@@ -11256,6 +11269,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="876161309768861172">Couldn't sign you in, please try again</translation>
 <translation id="8761945298804995673">This user already exists</translation>
 <translation id="8762886931014513155">Your <ph name="DEVICE_TYPE" /> needs an update</translation>
+<translation id="8763170551806710928">Show chips</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Show all searches for <ph name="QUERY_CLUSTER_NAME" /></translation>
@@ -11586,6 +11600,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8988539543012086784">This page is saved to <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989034257029389285">You could ask “Hey Google, what song is this?”</translation>
 <translation id="8989359959810288806">Refresh tethering status</translation>
+<translation id="8989779557457435460">Share current tab by default</translation>
 <translation id="8990243615717080992">Sign in using a password or other recovery method</translation>
 <translation id="8991520179165052608">Site can use your microphone</translation>
 <translation id="8991694323904646277">No camera</translation>

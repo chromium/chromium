@@ -49,6 +49,7 @@
 <translation id="11947597112837849">mailadresse</translation>
 <translation id="1197267115302279827">Flyt bogmærker</translation>
 <translation id="1197761954713363183">Feltet til bekræftelse af adgangsnøgle er lukket</translation>
+<translation id="1197933394627598677">Vis læsetilstand</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1202892408424955784">Produkter, du følger</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -517,6 +518,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3435575784518354875">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu, opdatere Google Play-tjenester og derefter importere dem til Google Adgangskodeadministrator igen. <ph name="BEGIN_LINK" />Se hele vejledningen<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3435914367318771664">Føj fane til ny gruppe</translation>
+<translation id="3438681572027105609">For at kunne se dine adgangskoder m.m. på alle dine enheder skal du logge ind på Chrome</translation>
 <translation id="3439276997620616816">Her finder du dine seneste faner</translation>
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
 <translation id="3444179773590444986">Vil du dele feedback om Mørkt tema på websites?</translation>
@@ -1261,6 +1263,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6738867403308150051">Downloader…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Gennemgå dine kontodata</translation>
+<translation id="6746834324024491643">Log ind som <ph name="EMAIL" /> for at få adgang til dine adgangskoder m.m. på alle dine enheder</translation>
 <translation id="6751521182688001123">Åbn hurtigt en ny fane. Hold fingeren på genvejen for at redigere.</translation>
 <translation id="6752130751133944215">Hvis du vil gendanne et nyt vindue, skal du reducere det samlede antal vinduer (aktive og inaktive) til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre. Inaktive vinduer slettes efter 6 måneder.</translation>
 <translation id="6754359471209693699">Start en ny søgning</translation>
@@ -1397,6 +1400,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="7230064152164845085">Skift til inkognito</translation>
 <translation id="7237724030342645845">Google Adgangskodeadministrator stoppede med at fungere</translation>
+<translation id="7239496616545081903">Skjul læsetilstand</translation>
 <translation id="72415438529550637">Adgangskodeforslaget er lukket.</translation>
 <translation id="7248671827512403053">Applikation</translation>
 <translation id="7253951228444156601">Tjekker adgangskoder…</translation>
@@ -1533,6 +1537,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7821130663268546430">Du kan finde alle åbne faner i Faneskift</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="7824665136384946951">Din organisation har deaktiveret Beskyttet browsing</translation>
+<translation id="7826342993930002256">Dit Chrome – overalt</translation>
 <translation id="7844171778363018843">Der er ikke valgt nogen data til synkronisering</translation>
 <translation id="7846161022626028328">Der opstod en fejl. Prøv igen.</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>
@@ -1738,6 +1743,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8723453889042591629">Oversæt hurtigt denne side. Hold fingeren nede for at redigere denne genvej.</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8731268612289859741">Sikkerhedskode</translation>
+<translation id="8738163682604285902">Vil du se i læsetilstand?</translation>
 <translation id="8746155870861185046">Del fremhævet</translation>
 <translation id="8748850008226585750">Indholdet er skjult</translation>
 <translation id="8754448020583829686">Kopiér uden link</translation>

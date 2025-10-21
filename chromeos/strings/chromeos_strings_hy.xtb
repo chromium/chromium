@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
 <translation id="4300272766492248925">Բացել հավելվածը</translation>
 <translation id="430786093962686457">շիֆոն</translation>
+<translation id="4309762678330556039">Ավտոմատ ստեղծեք գրադարձումներ և որոնեք աուդիո։ Դուք կարող եք ձայնագրություններ ստեղծել, նույնիսկ երբ միացած չեք ինտերնետին։</translation>
 <translation id="4310735698903592804">Վերջին պաստառները ստեղծվել են Google AI-ի կողմից</translation>
 <translation id="4320904097188876154">նեոնային վարդագույն</translation>
 <translation id="432961742358282111">Սեղմեք մկնիկի աջ կոճակը կամ սեղմեք և պահեք՝ սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ տեսնելու համար։ Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
@@ -1472,6 +1473,7 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> լեզվով գրադարձման մոդելի <ph name="PROGRESS_PERCENTAGE" />%-ը ներբեռնվել է</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Հնարավոր չէ անջատել կամ հեռացնել այս APN-ը։ Համոզվեք, որ միացված <ph name="ATTACH" /> APN-ներն անջատված են կամ հեռացված։</translation>
+<translation id="7458359366992324037">Հեռակա էկրան</translation>
 <translation id="7458970041932198923">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ ավատարները դիտելու և կարգավորելու համար։</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
 <translation id="7481312909269577407">Forward</translation>

@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adres verplaatst naar je account <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markeren als gelezen</translation>
 <translation id="428768789042547925">Nieuws</translation>
-<translation id="428858055663163046">Je kunt hier je gedownloade bestanden openen als ze beschikbaar zijn</translation>
 <translation id="429074084062258019">{count,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
 <translation id="4302061870579014542">Positie instellen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
@@ -1793,6 +1792,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7851858861565204677">Andere apparaten</translation>
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7854006015462979438">Open Algemeen</translation>
+<translation id="7855678267851972597">Audio</translation>
 <translation id="7859988229622350291">Nooit vertalen</translation>
 <translation id="7863211248337747225">App downloaden</translation>
 <translation id="7865127013871431856">Opties voor vertalen</translation>
@@ -1973,6 +1973,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-tabbladen <ph name="FIRST_VISIBLE_TAB" /> tot <ph name="LAST_VISIBLE_TAB" /> van <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Links vanuit andere apps openen in de incognitomodus</translation>
 <translation id="8529767659511976195">Nieuw</translation>
+<translation id="8531572740963685410">Pdf's</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing staat aan</translation>
 <translation id="8534481786647257214">Google+ bericht voltooid.</translation>
@@ -2179,6 +2180,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="94870150074703282">Groep verwijderen?</translation>
 <translation id="952704832371081537">Annuleren</translation>
+<translation id="95332591904104970">Gekoppelde apps</translation>
 <translation id="954667170699278022">Leeslijst</translation>
 <translation id="956218893102219091">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>

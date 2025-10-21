@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">ศิลปะเส้นใยและสิ่งทอ</translation>
 <translation id="243815215670139125">บันทึกบัตรนี้ในบัญชี Google ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน</translation>
 <translation id="2438874542388153331">เจาะรูด้านขวา 4 รู</translation>
+<translation id="2440855519769445271">หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่าการชำระเงิน<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">วิธีการชำระเงินที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะ แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
           <ph name="BEGIN_LIST" />
@@ -2221,6 +2222,7 @@
 <translation id="4648262692072505866">แฮชต้องอยู่ในรูปแบบ SHA-256</translation>
 <translation id="4652266463001779298">ไม่อนุญาต</translation>
 <translation id="4652440160515225514">องค์กรของคุณบล็อกเว็บไซต์นี้เนื่องจากละเมิดนโยบาย</translation>
+<translation id="4654457557264366314">แพ็กเกจการชำระเงินขึ้นอยู่กับสิทธิ์</translation>
 <translation id="4658638640878098064">เย็บด้วยลวดเย็บกระดาษด้านซ้ายบน</translation>
 <translation id="4660592918803576381">เปิดในไดรฟ์</translation>
 <translation id="4661556981531699496">สัตว์เลี้ยงและสัตว์อื่นๆ</translation>

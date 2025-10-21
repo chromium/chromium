@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="10619348099955377">複製顯示名稱</translation>
 <translation id="1062407476771304334">取代</translation>
+<translation id="1064236804542808595">還原機構捷徑</translation>
 <translation id="1065369186007547872">Chrome 認為你不想收到這個網站的通知，因此會隱藏要求，減少干擾。</translation>
 <translation id="1066964438793906105">掃描是否有惡意軟體</translation>
 <translation id="1067661089446014701">為進一步加強安全性，建議先在裝置上將密碼加密，再儲存至你的 Google 帳戶</translation>
@@ -1051,6 +1052,7 @@
 <translation id="1700517974991662022">曾經造訪過</translation>
 <translation id="1703331064825191675">再也不必費心記住你的密碼</translation>
 <translation id="1703666494654169921">禁止網站使用虛擬實境裝置或資料</translation>
+<translation id="1703849276368677471">工具</translation>
 <translation id="1704097193565924901">大小寫設定</translation>
 <translation id="1704230497453185209">禁止網站播放音效</translation>
 <translation id="1706586824377653884">由管理員新增</translation>
@@ -1178,6 +1180,7 @@
 <translation id="1796460466266263589">如要繼續使用 Gemini，請驗證身分</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
+<translation id="1798726622311813209">信用卡和簽帳金融卡</translation>
 <translation id="1799852120691957794">無法還原上一個工作階段中的視窗</translation>
 <translation id="180203835522132923">搜尋鍵 + O 鍵，然後按下 W 鍵</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
@@ -1463,6 +1466,7 @@
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1984683754853869253">要建立學校用的新設定檔嗎？</translation>
 <translation id="198507684520034826">輔助說明</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">進階位置資訊設定</translation>
 <translation id="1987317783729300807">帳戶</translation>
 <translation id="1987574314042117472">選取並安裝熱門應用程式</translation>
@@ -3116,6 +3120,7 @@
 <translation id="3122883569442693641">詳細資料</translation>
 <translation id="3124111068741548686">USER 控制代碼</translation>
 <translation id="3124332159330678621">根據自己的需求更新 Chrome 瀏覽器外觀</translation>
+<translation id="3124950826511066429">影響不同類型資訊的自動填入設定</translation>
 <translation id="3125361247594231799">固定這項功能，方便下次使用</translation>
 <translation id="3125816458150005808">你可以取消固定，從選單開啟這項功能</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5359,6 +5364,7 @@
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4678848110205818817">信用卡/簽帳金融卡</translation>
 <translation id="4679018849559620189">這樣就能在所有裝置上使用復原 PIN 碼存取已儲存的密碼金鑰</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">已將這個網頁設為靜音</translation>
 <translation id="4680112532510845139">將圖片拖放到這裡</translation>
 <translation id="4681453295291708042">停用鄰近分享功能</translation>
@@ -5903,6 +5909,7 @@
 <translation id="5068553687099139861">顯示密碼</translation>
 <translation id="506886127401228110">開啟隔離網頁應用程式</translation>
 <translation id="5068919226082848014">披薩</translation>
+<translation id="5070630163913211970">發起新對話時，系統會與 Gemini 分享目前分頁。<ph name="LINK_BEGIN" />進一步瞭解 AI 和隱私權<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">返回近期下載內容</translation>
 <translation id="5071892329440114717">顯示標準保護措施詳細資料</translation>
 <translation id="5072500507106264618">只有系統服務可以使用你的位置資訊</translation>
@@ -6365,6 +6372,7 @@
 <translation id="5398497406011404839">隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">協助在網路上撰寫評論等簡短內容</translation>
+<translation id="5400068721524309244">分享分頁時，系統會將網頁內容和網址傳送給 Google</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5402367795255837559">點字</translation>
@@ -7695,6 +7703,7 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6336194758029258346">應用程式語言</translation>
 <translation id="6337543438445391085">資料仍可能會包含部分個人資訊，請務必檢查匯出的檔案。</translation>
+<translation id="6338554362382763574">瀏覽網頁時，可以輕鬆向 Gemini 詢問分享的分頁相關問題</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人資料</translation>
 <translation id="6340071272923955280">網際網路列印通訊協定 (IPPS)</translation>
@@ -8039,6 +8048,7 @@
 <translation id="6586451623538375658">調換滑鼠主按鈕</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
 <translation id="6589760925779188068">義式奶酪</translation>
+<translation id="6589769062042696460">發起新對話時，系統會與 Gemini 分享目前分頁。你的資料不會用於改良生成式 AI 模型。<ph name="LINK_BEGIN" />進一步瞭解 AI 和隱私權<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">重新命名資料夾</translation>
 <translation id="6592267180249644460">WebRTC 記錄擷取時間：<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">已擷取你的指紋</translation>
@@ -8314,6 +8324,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您可以在「設定」中關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 備份作業</translation>
 <translation id="6782067259631821405">PIN 碼無效</translation>
+<translation id="6782219876520622071">為提升 Gemini 服務品質，人工審查員可能會查看分享的分頁相關對話</translation>
 <translation id="6783036716881942511">要刪除此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
@@ -8444,6 +8455,7 @@
 <translation id="6852290167968069627">網路發生問題，ChromeOS 無法繼續執行前一個工作階段。請連線至穩定的網路後再試一次。</translation>
 <translation id="6852529053326738838">請詢問貴機構，或是使用公司電子郵件帳戶註冊，確認你的帳戶是否符合資格。</translation>
 <translation id="6853029310037965825">從 <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />安裝的<ph name="APP_TYPE" /></translation>
+<translation id="6853118789186721762">提醒已傳送至你的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> 年</translation>
 <translation id="68541483639528434">關閉其他分頁</translation>
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
@@ -8745,6 +8757,7 @@
 <translation id="7066572364168923329">選擇 <ph name="DEVICE_TYPE" /> 的設定</translation>
 <translation id="7067396782363924830">環境光顏色</translation>
 <translation id="7067725467529581407">不再顯示這個訊息。</translation>
+<translation id="7067779359472606732">提醒已傳送至你的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
 <translation id="7068591156533195518">「<ph name="APP_NAME" />」和另外幾個應用程式已禁止在 <ph name="DEVICE_TYPE" /> 上使用</translation>
 <translation id="706949303827219454">在新分頁中開啟安全性設定頁面</translation>
@@ -11229,6 +11242,7 @@
 <translation id="876161309768861172">無法登入，請再試一次</translation>
 <translation id="8761945298804995673">這名使用者已經存在。</translation>
 <translation id="8762886931014513155">你的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
+<translation id="8763170551806710928">顯示方塊</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">顯示「<ph name="QUERY_CLUSTER_NAME" />」的所有搜尋結果</translation>
@@ -11559,6 +11573,7 @@
 <translation id="8988539543012086784">這個網頁已儲存到「<ph name="BOOKMARK_FOLDER" />」</translation>
 <translation id="8989034257029389285">你可以詢問「Ok Google，這是什麼歌？」</translation>
 <translation id="8989359959810288806">重新整理網路共用狀態</translation>
+<translation id="8989779557457435460">預設分享目前分頁</translation>
 <translation id="8990243615717080992">請使用密碼或其他備援方式登入</translation>
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
 <translation id="8991694323904646277">找不到相機</translation>

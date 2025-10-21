@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">纤维与纺织品艺术</translation>
 <translation id="243815215670139125">此卡无法保存到您的 Google 账号中，已改为保存到此设备上的 Chrome 中。</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
+<translation id="2440855519769445271">如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">付款方式列表已打开，轻触即可填充。键盘已隐藏。</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
@@ -2218,6 +2219,7 @@
 <translation id="4648262692072505866">哈希值格式必须为 SHA-256。</translation>
 <translation id="4652266463001779298">不允许</translation>
 <translation id="4652440160515225514">贵组织已屏蔽此网站，因为它违反了相关政策。</translation>
+<translation id="4654457557264366314">支付方案需符合资格条件。</translation>
 <translation id="4658638640878098064">钉装（左上角）</translation>
 <translation id="4660592918803576381">在云端硬盘中打开</translation>
 <translation id="4661556981531699496">宠物与动物</translation>

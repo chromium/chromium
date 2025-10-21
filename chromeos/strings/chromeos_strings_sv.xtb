@@ -1472,6 +1472,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7425832472614771259">Transkriptionsmodellen för <ph name="LANGUAGE_NAME" /> har laddats ned till <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade <ph name="ATTACH" />-APN inaktiveras eller tas bort.</translation>
+<translation id="7458359366992324037">Fjärrvisning</translation>
 <translation id="7458970041932198923">Anslut till ett nätverk och läs in sidan igen för att visa och ställa in avatarer.</translation>
 <translation id="7469648432129124067">En portal hittades</translation>
 <translation id="7481312909269577407">Framåt</translation>

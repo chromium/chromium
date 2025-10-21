@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-adresu</translation>
 <translation id="1197267115302279827">Premjesti oznake</translation>
 <translation id="1197761954713363183">Zatvoren je list za potvrdu pristupnog ključa</translation>
+<translation id="1197933394627598677">Prikaži čitački način</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1204037785786432551">Preuzmi vezu</translation>
@@ -517,6 +518,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3435575784518354875">Da biste zadržali pristup zaporkama, odmah ih izvezite, ažurirajte usluge za Google Play, a zatim ih ponovo uvezite u Google upravitelj zaporki. <ph name="BEGIN_LINK" />Pogledajte potpune upute<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3435914367318771664">Dodaj karticu novoj grupi</translation>
+<translation id="3438681572027105609">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se na Chrome</translation>
 <translation id="3439276997620616816">Ovdje ćete pronaći svoje nedavne kartice</translation>
 <translation id="3443221991560634068">Ponovno učitavanje trenutačne stranice</translation>
 <translation id="3444179773590444986">Želite li podijeliti povratne informacije o tamnoj temi za web-lokacije?</translation>
@@ -1261,6 +1263,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6738867403308150051">Preuzimanje...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Pregledajte podatke o računu</translation>
+<translation id="6746834324024491643">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="6752130751133944215">Da biste vratili novi prozor, smanjite ukupni broj aktivnih i neaktivnih prozora na najviše <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Neaktivni prozori brišu se nakon šest mjeseci.</translation>
 <translation id="6754359471209693699">Pokretanje novog pretraživanja</translation>
@@ -1397,6 +1400,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7230064152164845085">Prijeđi na anonimni način</translation>
 <translation id="7237724030342645845">Google upravitelj zaporki više ne funkcionira</translation>
+<translation id="7239496616545081903">Sakrij čitački način</translation>
 <translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
 <translation id="7253951228444156601">Provjera zaporki…</translation>
@@ -1533,6 +1537,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7821130663268546430">Sve otvorene kartice možete pronaći u izmjenjivanju kartica</translation>
 <translation id="7822705602465980873">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
 <translation id="7824665136384946951">Vaša organizacija isključila je sigurno pregledavanje</translation>
+<translation id="7826342993930002256">Vaš Chrome, bilo gdje</translation>
 <translation id="7844171778363018843">Za sinkronizaciju nije odabrana nijedna vrsta podataka</translation>
 <translation id="7846161022626028328">Došlo je do pogreške. Pokušajte ponovo.</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
@@ -1738,6 +1743,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8723453889042591629">Brzo prevedite ovu stranicu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="8725066075913043281">Pokušajte ponovno</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
+<translation id="8738163682604285902">Želite li pregledati u čitačkom načinu?</translation>
 <translation id="8746155870861185046">Podijeli isticanje</translation>
 <translation id="8748850008226585750">Sadržaj je skriven</translation>
 <translation id="8754448020583829686">Kopiranje bez veze</translation>

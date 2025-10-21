@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Bald ist es Zeit für eine Pause</translation>
 <translation id="10619348099955377">Anzeigename kopieren</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
+<translation id="1064236804542808595">Verknüpfungen zur Organisation wiederherstellen</translation>
 <translation id="1065369186007547872">Chrome geht davon aus, dass du von dieser Website keine Benachrichtigungen erhalten möchtest. Entsprechende Anfragen werden daher nicht angezeigt, um Unterbrechungen zu reduzieren.</translation>
 <translation id="1066964438793906105">Auf Malware prüfen</translation>
 <translation id="1067661089446014701">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie in deinem Google-Konto gespeichert werden.</translation>
@@ -1048,6 +1049,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1700517974991662022">Besucht</translation>
 <translation id="1703331064825191675">Du musst dir keine Sorgen mehr um deine Passwörter machen</translation>
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
+<translation id="1703849276368677471">Tools</translation>
 <translation id="1704097193565924901">Großschreibung</translation>
 <translation id="1704230497453185209">Websites dürfen keinen Ton wiedergeben</translation>
 <translation id="1706586824377653884">Von deinem Administrator hinzugefügt</translation>
@@ -1175,6 +1177,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1796460466266263589">Bestätige deine Identität, um Gemini weiter zu verwenden</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
+<translation id="1798726622311813209">Kredit- und Debitkarten</translation>
 <translation id="1799852120691957794">Fenster aus der vorherigen Sitzung können nicht wiederhergestellt werden</translation>
 <translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
@@ -1460,6 +1463,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
 <translation id="1984683754853869253">Möchtest du ein neues Profil einer Bildungseinrichtung erstellen?</translation>
 <translation id="198507684520034826">Hilfe</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Erweiterte Standorteinstellungen</translation>
 <translation id="1987317783729300807">Konten</translation>
 <translation id="1987574314042117472">Beliebte Apps auswählen und herunterladen</translation>
@@ -3113,6 +3117,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3122883569442693641">Weitere Details</translation>
 <translation id="3124111068741548686">NUTZER-Handles</translation>
 <translation id="3124332159330678621">Personalisiere Chrome nach deinen Vorlieben</translation>
+<translation id="3124950826511066429">Einstellungen, die sich auf die Funktionsweise von Autofill für verschiedene Arten von Informationen auswirken</translation>
 <translation id="3125361247594231799">Für das nächste Mal anpinnen</translation>
 <translation id="3125816458150005808">Du kannst sie loslösen und über das Menü öffnen</translation>
 <translation id="3126026824346185272">Strg</translation>
@@ -5361,6 +5366,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="467809019005607715">Google Präsentationen</translation>
 <translation id="4678848110205818817">Kredit-/Debitkarte</translation>
 <translation id="4679018849559620189">So kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">Der Ton wurde für diese Seite stummgeschaltet</translation>
 <translation id="4680112532510845139">Bild hierher ziehen</translation>
 <translation id="4681453295291708042">Nearby Share deaktivieren</translation>
@@ -5905,6 +5911,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5068553687099139861">Passwörter anzeigen</translation>
 <translation id="506886127401228110">Isolierte Web-Apps aktivieren</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070630163913211970">Der aktuelle Tab-Inhalt wird mit Gemini geteilt, wenn du einen neuen Chat startest. <ph name="LINK_BEGIN" />Weitere Informationen zu KI und zum Datenschutz<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">Zurück zu letzten Downloads</translation>
 <translation id="5071892329440114717">Details zum Standardschutz anzeigen</translation>
 <translation id="5072500507106264618">Nur Systemdienste können deinen Standort verwenden</translation>
@@ -6367,6 +6374,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
 <translation id="5398572795982417028">Der Seitenbereich ist zu groß. Die maximale Seitenanzahl liegt bei <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Hilft dir, Kurztexte im Web zu verfassen, also beispielsweise Rezensionen.</translation>
+<translation id="5400068721524309244">Wenn Tabs geteilt werden, werden ihre Seiteninhalte und URLs an Google gesendet</translation>
 <translation id="5400196580536813396">Suchen oder Verwenden der für dein Gerät zugänglichen Drucker nicht erlaubt</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7698,6 +7706,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> hat die ADB-Fehlerbehebung deaktiviert. Dadurch wird <ph name="DEVICE_TYPE" /> in 24 Stunden zurückgesetzt. Sichere alle Dateien, die du behalten möchtest.</translation>
 <translation id="6336194758029258346">App-Sprache</translation>
 <translation id="6337543438445391085">Es können immer noch einige personenbezogene Daten enthalten sein. Überprüfe die exportierten Dateien.</translation>
+<translation id="6338554362382763574">Während du surfst, kannst du Gemini ganz einfach Fragen zu den Inhalten der Tabs stellen, die du gerade teilst</translation>
 <translation id="6338968693068997776">USB-Gerät hinzufügen</translation>
 <translation id="6339668969738228384">Neues Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellen</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8042,6 +8051,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6586451623538375658">Primäre Maustaste tauschen</translation>
 <translation id="6588043302623806746">Sicheres DNS verwenden</translation>
 <translation id="6589760925779188068">Panna Cotta</translation>
+<translation id="6589769062042696460">Der aktuelle Tab-Inhalt wird mit Gemini geteilt, wenn du einen neuen Chat startest. Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet. <ph name="LINK_BEGIN" />Weitere Informationen zu KI und zum Datenschutz<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">Ordner umbenennen</translation>
 <translation id="6592267180249644460">WebRTC-Protokoll erfasst am <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Dein Fingerabdruck wurde erfasst</translation>
@@ -8317,6 +8327,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
     <ph name="BEGIN_PARAGRAPH2" />Du kannst diesen Dienst in den Einstellungen deaktivieren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-Sicherung abgebrochen</translation>
 <translation id="6782067259631821405">Ungültige PIN</translation>
+<translation id="6782219876520622071">Unterhaltungen zu geteilten Tabs können von Prüfern angesehen werden, um Gemini zu verbessern</translation>
 <translation id="6783036716881942511">Dieses Gerät entfernen?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-Einstellungen</translation>
 <translation id="6784523122863989144">Profil wird unterstützt</translation>
@@ -8447,6 +8458,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6852290167968069627">ChromeOS kann deine vorherige Sitzung aufgrund eines Netzwerkproblems nicht fortsetzen. Stelle eine Verbindung mit einem stabilen Netzwerk her und versuch es noch einmal.</translation>
 <translation id="6852529053326738838">Frage bei deiner Organisation nach oder registriere dich mit deiner geschäftlichen E-Mail-Adresse, um zu erfahren, ob dein Konto genutzt werden kann.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> über <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> installiert</translation>
+<translation id="6853118789186721762">Erinnerung an dein Gerät (<ph name="DEVICE_TYPE" />) gesendet</translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> – Jahr</translation>
 <translation id="68541483639528434">Andere Tabs schließen</translation>
 <translation id="6855892664589459354">Crostini-Sicherung und ‑Wiederherstellung</translation>
@@ -8748,6 +8760,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7066572364168923329">Einrichtung von <ph name="DEVICE_TYPE" /> auswählen</translation>
 <translation id="7067396782363924830">Umgebungsfarben</translation>
 <translation id="7067725467529581407">Nicht mehr anzeigen.</translation>
+<translation id="7067779359472606732">Erinnerung an dein Gerät (<ph name="DEVICE_TYPE" />) gesendet</translation>
 <translation id="7068279399556423026">Anmelden, um Tabs von anderen Geräten zu sehen</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> und einige weitere Apps sind auf deinem Gerät (<ph name="DEVICE_TYPE" />) blockiert</translation>
 <translation id="706949303827219454">Öffnet die Seite mit den Sicherheitseinstellungen in einem neuen Tab</translation>
@@ -11233,6 +11246,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="876161309768861172">Anmeldung nicht möglich, bitte versuch es noch einmal</translation>
 <translation id="8761945298804995673">Dieser Nutzer ist bereits vorhanden</translation>
 <translation id="8762886931014513155">Dein <ph name="DEVICE_TYPE" /> muss aktualisiert werden</translation>
+<translation id="8763170551806710928">Chips anzeigen</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Alle Suchanfragen für <ph name="QUERY_CLUSTER_NAME" /> anzeigen</translation>
@@ -11563,6 +11577,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8988539543012086784">Diese Seite wurde in „<ph name="BOOKMARK_FOLDER" />“ gespeichert.</translation>
 <translation id="8989034257029389285">Du kannst fragen „Hey Google, welcher Song ist das?“</translation>
 <translation id="8989359959810288806">Tethering-Status aktualisieren</translation>
+<translation id="8989779557457435460">Aktuellen Tab standardmäßig teilen</translation>
 <translation id="8990243615717080992">Du kannst dich mit einem Passwort oder einer anderen Wiederherstellungsmethode anmelden</translation>
 <translation id="8991520179165052608">Die Website kann dein Mikrofon verwenden</translation>
 <translation id="8991694323904646277">Keine Kamera</translation>

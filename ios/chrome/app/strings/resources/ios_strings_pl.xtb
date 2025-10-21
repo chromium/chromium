@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Oznacz jako przeczytane</translation>
 <translation id="428768789042547925">Nowe funkcje</translation>
-<translation id="428858055663163046">W tym miejscu pojawią się pobrane pliki, gdy będą dostępne</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
 <translation id="4302061870579014542">Ustaw pozycję</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
@@ -1793,6 +1792,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7851858861565204677">Inne urządzenia</translation>
 <translation id="7853202427316060426">Aktywność</translation>
 <translation id="7854006015462979438">Otwórz Ogólne</translation>
+<translation id="7855678267851972597">Dźwięki</translation>
 <translation id="7859988229622350291">Nigdy nie tłumacz</translation>
 <translation id="7863211248337747225">Pobierz aplikację</translation>
 <translation id="7865127013871431856">Opcje tłumaczenia</translation>
@@ -1973,6 +1973,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8524799873541103884">Karty <ph name="INCOGNITO" /> od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Otwieraj linki z innych aplikacji w trybie incognito</translation>
 <translation id="8529767659511976195">Nowość</translation>
+<translation id="8531572740963685410">Pliki PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Bezpieczne przeglądanie jest włączone</translation>
 <translation id="8534481786647257214">Post w Google+ opublikowany.</translation>
@@ -2179,6 +2180,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="94870150074703282">Usunąć grupę?</translation>
 <translation id="952704832371081537">Anuluj</translation>
+<translation id="95332591904104970">Połączone aplikacje</translation>
 <translation id="954667170699278022">Do przeczytania</translation>
 <translation id="956218893102219091">Aby wyniki uzyskiwane w Gemini były jak najbardziej trafne, używaj dokładnej lokalizacji (a nie orientacyjnej, szacowanej na podstawie adresu IP). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>

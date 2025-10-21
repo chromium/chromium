@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
 <translation id="10619348099955377">표시 이름 복사</translation>
 <translation id="1062407476771304334">바꾸기</translation>
+<translation id="1064236804542808595">조직 바로가기 복원</translation>
 <translation id="1065369186007547872">Chrome은 사용자가 이 사이트의 알림을 원하지 않는다고 판단합니다. 따라서 방해 요소를 줄이기 위해 알림 요청을 표시하지 않습니다.</translation>
 <translation id="1066964438793906105">멀웨어 검사</translation>
 <translation id="1067661089446014701">보안 강화를 위해 비밀번호를 Google 계정에 저장하기 전에 기기에서 암호화할 수 있습니다.</translation>
@@ -1052,6 +1053,7 @@
 <translation id="1700517974991662022">방문함</translation>
 <translation id="1703331064825191675">비밀번호 안심 관리</translation>
 <translation id="1703666494654169921">사이트에서 가상 현실 기기 또는 데이터를 사용하도록 허용하지 않음</translation>
+<translation id="1703849276368677471">도구</translation>
 <translation id="1704097193565924901">Capitalize(첫 글자 대문자로 표시)</translation>
 <translation id="1704230497453185209">사이트에서 소리를 재생하도록 허용하지 않음</translation>
 <translation id="1706586824377653884">관리자가 추가함</translation>
@@ -1187,6 +1189,7 @@
 <translation id="1796460466266263589">계속 Gemini를 사용하려면 본인 인증을 진행하세요</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
+<translation id="1798726622311813209">신용카드 및 체크카드</translation>
 <translation id="1799852120691957794">이전 세션의 창을 복원할 수 없음</translation>
 <translation id="180203835522132923">검색 + O를 누른 후 W</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
@@ -1474,6 +1477,7 @@
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1984683754853869253">학교 프로필을 새로 만드시겠습니까?</translation>
 <translation id="198507684520034826">도움말</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">고급 위치 설정</translation>
 <translation id="1987317783729300807">계정</translation>
 <translation id="1987574314042117472">인기 앱 선택 및 설치</translation>
@@ -3131,6 +3135,7 @@
 <translation id="3122883569442693641">세부정보 더보기</translation>
 <translation id="3124111068741548686">사용자 핸들</translation>
 <translation id="3124332159330678621">Chrome 브라우저를 새로운 디자인으로 맞춤설정합니다.</translation>
+<translation id="3124950826511066429">다양한 유형의 정보 전반에서 자동 완성 기능의 작동 방식에 영향을 미치는 설정입니다.</translation>
 <translation id="3125361247594231799">다음에 사용할 수 있도록 고정</translation>
 <translation id="3125816458150005808">고정을 해제하고 메뉴에서 열 수 있습니다.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5380,6 +5385,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">신용카드/체크카드</translation>
 <translation id="4679018849559620189">이렇게 하면 모든 기기에서 저장된 패스키에 액세스할 수 있습니다.</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">이 페이지가 음소거됨</translation>
 <translation id="4680112532510845139">이미지를 여기에 드롭하세요.</translation>
 <translation id="4681453295291708042">Nearby Share 사용 중지</translation>
@@ -5925,6 +5931,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5068553687099139861">비밀번호 표시</translation>
 <translation id="506886127401228110">분리형 웹 앱 사용 설정</translation>
 <translation id="5068919226082848014">피자</translation>
+<translation id="5070630163913211970">새 채팅을 시작하면 현재 탭이 Gemini와 공유됩니다. <ph name="LINK_BEGIN" />AI 및 개인 정보 보호에 대해 자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">최근 다운로드로 돌아가기</translation>
 <translation id="5071892329440114717">표준 보호 세부정보 표시</translation>
 <translation id="5072500507106264618">시스템 서비스에서만 내 위치 정보를 사용할 수 있음</translation>
@@ -6388,6 +6395,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5398497406011404839">숨겨진 북마크</translation>
 <translation id="5398572795982417028">페이지가 범위를 벗어난 경우 참고하세요. 한도는 <ph name="MAXIMUM_PAGE" />페이지입니다.</translation>
 <translation id="539882584649709174">리뷰와 같이 웹상의 짧은 형식 텍스트를 작성하는 데 도움이 됩니다.</translation>
+<translation id="5400068721524309244">탭이 공유되면 탭의 페이지 콘텐츠 및 URL이 Google로 전송됩니다.</translation>
 <translation id="5400196580536813396">기기에 액세스할 수 있는 프린터를 찾거나 사용할 수 없음</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5402367795255837559">점자</translation>
@@ -7722,6 +7730,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />(으)로 인해 ADB 디버깅이 사용 중지되었습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
 <translation id="6336194758029258346">앱 언어</translation>
 <translation id="6337543438445391085">일부 개인 정보는 데이터에 계속 포함될 수 있습니다. 내보낸 파일을 검토하세요.</translation>
+<translation id="6338554362382763574">탭을 탐색하는 동시에 Gemini에게 지금 공유하는 탭에 관해 손쉽게 질문할 수 있습니다.</translation>
 <translation id="6338968693068997776">USB 기기 추가</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />의 새 프로필을 만드세요.</translation>
 <translation id="6340071272923955280">인터넷 인쇄 프로토콜(IPPS)</translation>
@@ -8066,6 +8075,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6586451623538375658">기본 마우스 버튼 전환</translation>
 <translation id="6588043302623806746">보안 DNS 사용</translation>
 <translation id="6589760925779188068">판나코타</translation>
+<translation id="6589769062042696460">새 채팅을 시작하면 현재 탭이 Gemini와 공유됩니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다. <ph name="LINK_BEGIN" />AI 및 개인 정보 보호에 대해 자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">폴더 이름 바꾸기</translation>
 <translation id="6592267180249644460">WebRTC 로그 캡처 시간: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">지문이 등록되었습니다.</translation>
@@ -8341,6 +8351,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
     <ph name="BEGIN_PARAGRAPH2" />이 서비스는 설정에서 사용 중지할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux 백업이 취소됨</translation>
 <translation id="6782067259631821405">잘못된 PIN</translation>
+<translation id="6782219876520622071">Gemini 개선을 위해 인적 검토자가 공유된 탭에 관한 대화를 볼 수 있습니다.</translation>
 <translation id="6783036716881942511">이 기기를 삭제하시겠습니까?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 설정</translation>
 <translation id="6784523122863989144">지원되는 프로필입니다.</translation>
@@ -8471,6 +8482,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6852290167968069627">네트워크 문제로 인해 ChromeOS에서 이전 세션을 재개할 수 없습니다. 안정적인 네트워크에 연결하고 다시 시도해 보세요.</translation>
 <translation id="6852529053326738838">조직에 문의하거나 직장 이메일로 등록하여 계정이 자격 요건을 충족하는지 확인하세요.</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />에서 설치된 <ph name="APP_TYPE" />입니다.</translation>
+<translation id="6853118789186721762"><ph name="DEVICE_TYPE" />에 알림 전송됨</translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" />년</translation>
 <translation id="68541483639528434">다른 탭 닫기</translation>
 <translation id="6855892664589459354">Crostini 백업 및 복원</translation>
@@ -8772,6 +8784,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7066572364168923329"><ph name="DEVICE_TYPE" /> 설정 선택</translation>
 <translation id="7067396782363924830">주변 색상</translation>
 <translation id="7067725467529581407">다시 표시하지 않음</translation>
+<translation id="7067779359472606732"><ph name="DEVICE_TYPE" />에 알림 전송됨</translation>
 <translation id="7068279399556423026">다른 기기의 탭을 보려면 로그인하세요.</translation>
 <translation id="7068591156533195518"><ph name="DEVICE_TYPE" />에서 <ph name="APP_NAME" /> 외 몇 가지 앱이 차단되었습니다</translation>
 <translation id="706949303827219454">새 탭에서 보안 설정 페이지 열기</translation>
@@ -11257,6 +11270,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="876161309768861172">로그인할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>
+<translation id="8763170551806710928">칩 표시</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />에 관한 모든 검색어 표시</translation>
@@ -11587,6 +11601,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8988539543012086784">페이지가 <ph name="BOOKMARK_FOLDER" />에 저장되었습니다.</translation>
 <translation id="8989034257029389285">“Hey Google, 이거 무슨 노래야?”라고 물어볼 수 있습니다.</translation>
 <translation id="8989359959810288806">테더링 상태 새로고침</translation>
+<translation id="8989779557457435460">기본적으로 현재 탭 공유</translation>
 <translation id="8990243615717080992">비밀번호 또는 기타 복구 방법을 사용하여 로그인</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
 <translation id="8991694323904646277">카메라 없음</translation>

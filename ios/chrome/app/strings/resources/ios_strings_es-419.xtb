@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">La dirección se transfirió a tu cuenta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como leídas</translation>
 <translation id="428768789042547925">Novedades</translation>
-<translation id="428858055663163046">Podrás acceder a tus archivos descargados aquí cuando estén disponibles</translation>
 <translation id="429074084062258019">{count,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
@@ -1793,6 +1792,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7851858861565204677">Otros dispositivos</translation>
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7854006015462979438">Abre General</translation>
+<translation id="7855678267851972597">Audios</translation>
 <translation id="7859988229622350291">Nunca traducir</translation>
 <translation id="7863211248337747225">Obtener la app</translation>
 <translation id="7865127013871431856">Opciones de traducción</translation>
@@ -1973,6 +1973,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8524799873541103884">Pestaña de <ph name="INCOGNITO" />: <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Abre vínculos de otras apps en el modo Incógnito</translation>
 <translation id="8529767659511976195">Nuevo</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8534481786647257214">Entrada de Google+ publicada</translation>
@@ -2179,6 +2180,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">¿Quieres borrar el grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="95332591904104970">Apps conectadas</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados más exactos de Gemini, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>

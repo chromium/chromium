@@ -782,13 +782,6 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, Pemilih emoji tidak a
 Jika kebijakan ini tidak disetel, Pemilih emoji akan diaktifkan untuk pengguna normal, tetapi dinonaktifkan untuk pengguna terkelola.</translation>
 <translation id="1494138678487405397">Nonaktifkan kontras tinggi di layar login</translation>
 <translation id="1497797462580613666">Pengelola download akan memiliki opsi untuk menyimpan file ke <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="1498640472634891941">Jika kebijakan ini disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs mana yang otomatis ditolak aksesnya ke printer lokal melalui WebPrinting API.
-
-Jika kebijakan ini tidak disetel, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-Pola URL tidak boleh bertentangan dengan <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Tidak ada kebijakan yang diprioritaskan jika URL cocok dengan keduanya.
-
-Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="1499129134689253257">Mengontrol perilaku baru <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Hanya terapkan login online di layar login</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
@@ -3591,7 +3584,6 @@ Jika kebijakan ini disetel ke <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION
 Jika kebijakan ini disetel ke <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (nilai 2), data yang dicakup akan disimpan di Uni Eropa.
 
 Setelan ini hanya dapat disetel di <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> melalui Data &gt; Kepatuhan &gt; Region data &gt; Wilayah &gt; Data dalam penyimpanan.</translation>
-<translation id="3379326579027180941">Izinkan situs meminta pengguna memberikan akses ke printer lokal melalui WebPrinting API</translation>
 <translation id="3379368498958498146">Mengaktifkan atau menonaktifkan fitur penulisan prediktif di keyboard fisik.
 
 Jika kebijakan ini disetel ke Aktif atau tidak disetel, fitur penulisan prediktif akan diizinkan di keyboard fisik.
@@ -7789,7 +7781,6 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
 <translation id="6092073071805297119">Izinkan penggunaan Filter Performa Aksesibilitas.</translation>
-<translation id="60925735895026302">Jangan izinkan situs apa pun meminta akses ke printer lokal melalui WebPrinting API</translation>
 <translation id="6093156968240188330">Memungkinkan pengguna jarak jauh untuk berinteraksi dengan jendela yang berada jauh di sesi bantuan jarak jauh</translation>
 <translation id="6093551397728373988">Menerapkan semua metode input yang diizinkan untuk diaktifkan dalam sesi pengguna</translation>
 <translation id="6094314311474620462">Nonaktifkan pencetakan</translation>
@@ -9129,11 +9120,6 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
 <translation id="6878757724611298427">Izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
-<translation id="6881397131210596522">Jika kebijakan ini disetel ke 2, situs akan otomatis diblokir agar tidak menggunakan WebPrinting API.
-
-Jika kebijakan ini disetel ke 3, pengguna akan diminta untuk menentukan saat situs ingin menggunakan WebPrinting API.
-
-Jika kebijakan ini tidak disetel, situs akan meminta akses printer lokal, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="6881447940489194100">Hash SHA-256 dengan enkode heksadesimal pada data.</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
@@ -11905,13 +11891,6 @@ secara default mulai M119.
 <translation id="8789338675663014675">Mengonfigurasi kebijakan terkait ekstensi. Pengguna tidak diizinkan untuk menginstal ekstensi yang diblokir kecuali tercantum dalam daftar yang diizinkan. Selain itu, Anda juga dapat memaksa <ph name="PRODUCT_NAME" /> agar otomatis menginstal ekstensi dengan menentukannya dalam <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Ekstensi yang diinstal otomatis akan diinstal meskipun ada dalam daftar yang tidak diizinkan.</translation>
 <translation id="879697755145469671">Jangan deteksi jendela yang tertutup</translation>
 <translation id="8798099450830957504">Default</translation>
-<translation id="879863472982972634">Jika kebijakan ini disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs mana yang otomatis diberi akses ke printer lokal melalui WebPrinting API.
-
-Jika kebijakan ini tidak disetel, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-Pola URL tidak boleh bertentangan dengan <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Tidak ada kebijakan yang diprioritaskan jika URL cocok dengan keduanya.
-
-Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="8799492680917278474">Jika kebijakan ini disetel, koneksi akses jarak jauh akan otomatis terputus setelah jumlah menit yang ditentukan di kebijakan telah dilalui. Ini tidak akan mencegah klien menghubungkan kembali setelah durasi sesi maksimum tercapai. Menyetel kebijakan ke nilai yang tidak ada dalam rentang minimum/maksimum dapat mencegah host dimulai. Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.
 
           Kebijakan ini tidak berpengaruh jika tidak disetel. Dalam hal ini, koneksi akses jarak jauh tidak akan memiliki durasi maksimum di perangkat ini.</translation>

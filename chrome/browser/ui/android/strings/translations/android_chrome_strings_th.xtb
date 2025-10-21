@@ -49,6 +49,7 @@
 <translation id="11947597112837849">อีเมล</translation>
 <translation id="1197267115302279827">ย้ายบุ๊กมาร์ก</translation>
 <translation id="1197761954713363183">ชีตการยืนยันพาสคีย์ปิดอยู่</translation>
+<translation id="1197933394627598677">แสดงโหมดการอ่าน</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1202892408424955784">ผลิตภัณฑ์ที่ติดตาม</translation>
 <translation id="1204037785786432551">ดาวน์โหลดลิงก์</translation>
@@ -517,6 +518,7 @@
 <translation id="3435575784518354875">หากต้องการเข้าถึงรหัสผ่านต่อไป ให้ส่งออกรหัสผ่านตอนนี้ อัปเดตบริการ Google Play แล้วนำเข้ากลับไปยังเครื่องมือจัดการรหัสผ่านบน Google <ph name="BEGIN_LINK" />ดูวิธีการโดยละเอียด<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3435914367318771664">เพิ่มแท็บไปยังกลุ่มใหม่</translation>
+<translation id="3438681572027105609">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="3439276997620616816">คุณจะเห็นแท็บล่าสุดที่นี่</translation>
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
 <translation id="3444179773590444986">ต้องการแชร์ความคิดเห็นเกี่ยวกับธีมมืดสำหรับเว็บไซต์ไหม</translation>
@@ -1261,6 +1263,7 @@
 <translation id="6738867403308150051">กำลังดาวน์โหลด…</translation>
 <translation id="6745063744988317486">โมโน</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
+<translation id="6746834324024491643">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="6751521182688001123">เปิดแท็บใหม่อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="6752130751133944215">หากต้องการกู้คืนหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างทั้งหมดทั้งหน้าต่างที่ใช้งานอยู่และหน้าต่างที่ไม่ได้ใช้งานเหลือ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการหรือน้อยกว่านั้น ระบบจะลบหน้าต่างที่ไม่ได้ใช้งานออกหลังจาก 6 เดือน</translation>
 <translation id="6754359471209693699">เริ่มค้นหาใหม่</translation>
@@ -1397,6 +1400,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ดาวน์โหลดรอดำเนินการ 1 รายการ}other{ดาวน์โหลดรอดำเนินการ # รายการ}}</translation>
 <translation id="7230064152164845085">เปลี่ยนไปใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="7237724030342645845">เครื่องมือจัดการรหัสผ่านบน Google หยุดทำงาน</translation>
+<translation id="7239496616545081903">ซ่อนโหมดการอ่าน</translation>
 <translation id="72415438529550637">คําแนะนํารหัสผ่านปิดอยู่</translation>
 <translation id="7248671827512403053">แอปพลิเคชัน</translation>
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
@@ -1533,6 +1537,7 @@
 <translation id="7821130663268546430">คุณค้นหาแท็บที่เปิดอยู่ทั้งหมดในตัวสลับแท็บได้</translation>
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="7824665136384946951">องค์กรปิด Google Safe Browsing ไว้</translation>
+<translation id="7826342993930002256">Chrome ของคุณในทุกๆ ที่</translation>
 <translation id="7844171778363018843">ไม่ได้เลือกข้อมูลที่จะซิงค์</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="7846296061357476882">บริการของ Google</translation>
@@ -1738,6 +1743,7 @@
 <translation id="8723453889042591629">แปลหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
+<translation id="8738163682604285902">ดูโหมดการอ่านไหม</translation>
 <translation id="8746155870861185046">แชร์ไฮไลต์</translation>
 <translation id="8748850008226585750">เนื้อหาถูกซ่อนไว้</translation>
 <translation id="8754448020583829686">คัดลอกโดยไม่มีลิงก์</translation>

@@ -747,13 +747,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, unterstützt die Em
 Ist die Richtlinie nicht konfiguriert, ist die Emoji-Auswahl für normale Nutzer aktiviert, für verwaltete Nutzer jedoch deaktiviert.</translation>
 <translation id="1494138678487405397">Hohen Kontrast auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="1497797462580613666">Der Download-Manager hat eine Option zum Speichern von Dateien in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="1498640472634891941">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch der Zugriff auf lokale Drucker über die WebPrinting API verweigert wird.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="1499129134689253257">Das neue Verhalten von „<ph name="OFFSET_PARENT" />“ steuern</translation>
 <translation id="1501644502684303995">Online-Anmeldungen nur auf dem Anmeldebildschirm erzwingen</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
@@ -2885,7 +2878,7 @@ Ist der Wert auf „<ph name="ENABLED_ENUM_VALUE" />“ gesetzt, werden Entität
 Wenn der Wert auf „<ph name="DISABLED_ENUM_VALUE" />“ gesetzt ist, werden Entitäten nicht erkannt und es können keine Aktionen dafür ausgeführt werden.
 Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden Entitäten erkannt und es können nur durch langes Drücken Aktionen dafür ausgeführt werden.</translation>
 <translation id="3010907817113180883">Häufigkeit der Erhebung des Geräteaktivität-Heartbeats in Millisekunden.</translation>
-<translation id="3015732569734756809">Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfbewegungen steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
+<translation id="3015732569734756809">Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfgesten steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
 
 Wenn diese Richtlinie auf „true“ gesetzt ist, ist die Mimik-Steuerung auf dem Anmeldebildschirm immer aktiviert.
 
@@ -3415,7 +3408,6 @@ Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAM
 Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" />“ (Wert 2) gesetzt, werden abgedeckte Daten in der Europäischen Union gespeichert.
 
 Dies kann nur in der <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> über „Daten“ &gt; „Compliance“ &gt; „Speicherorte für Daten“ &gt; „Region“ &gt; „Ruhende Daten“ festgelegt werden.</translation>
-<translation id="3379326579027180941">Websites dürfen den Nutzer um Zugriff auf lokale Drucker über die WebPrinting API bitten</translation>
 <translation id="3379368498958498146">Dadurch werden Wortvorschläge bei Nutzung der physischen Tastatur aktiviert oder deaktiviert.
 
 Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, sind Wortvorschläge bei Nutzung der physischen Tastatur möglich.
@@ -7467,7 +7459,6 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
 <translation id="6092073071805297119">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung zulassen.</translation>
-<translation id="60925735895026302">Keine Website darf um Zugriff auf lokale Drucker über die WebPrinting API bitten</translation>
 <translation id="6093156968240188330">Zulassen, dass Remote-Nutzer in Remote-Sitzungen mit geöffneten Fenstern arbeiten können</translation>
 <translation id="6093551397728373988">In Nutzersitzungen die Aktivierung aller zulässigen Eingabemethoden erzwingen</translation>
 <translation id="6094314311474620462">Drucken deaktivieren</translation>
@@ -8714,11 +8705,6 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
 <translation id="6878757724611298427">Nutzern erlauben, Android-Apps auf nicht verbundenen Geräten zu verwenden</translation>
-<translation id="6881397131210596522">Wenn die Richtlinie auf „2“ gesetzt ist, wird die Verwendung der WebPrinting API automatisch blockiert.
-
-Wenn die Richtlinie auf „3“ gesetzt ist, wird dem Nutzer eine Benachrichtigung angezeigt, wenn eine Website die WebPrinting API verwenden möchte.
-
-Wenn sie nicht konfiguriert ist, können Websites den Zugriff auf lokale Drucker anfordern − diese Einstellung kann aber vom Nutzer geändert werden.</translation>
 <translation id="6881447940489194100">Hexadezimalcodierter SHA‑256-Hash der Daten.</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
 
@@ -10705,7 +10691,7 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
 <translation id="8319678975002906774">Mit dieser Richtlinie legst du für bestimmte Ursprünge die Werte für die verwaltete Konfiguration fest</translation>
 <translation id="8320149248919453401">Akkulademodus</translation>
 <translation id="8320576119308783142">Bildschirmtastatur in passenden Situationen anzeigen.</translation>
-<translation id="8321089199245028304">Mit dieser Richtlinie wird die Bedienungshilfe „Mimik-Steuerung“ aktiviert. Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfbewegungen steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
+<translation id="8321089199245028304">Mit dieser Richtlinie wird die Bedienungshilfe „Mimik-Steuerung“ aktiviert. Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfgesten steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
 
 Wenn diese Richtlinie aktiviert ist, ist die Mimik-Steuerung immer aktiviert.
 
@@ -11364,13 +11350,6 @@ Wenn die Richtlinie „<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />“ deaktiv
 <translation id="8789338675663014675">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Blockierte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der Zulassungsliste enthalten sind. Wenn du die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchtest, kannst du die Erweiterungen in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie blockiert sind.</translation>
 <translation id="879697755145469671">Überdeckte Fenster nicht erkennen</translation>
 <translation id="8798099450830957504">Standardeinstellung</translation>
-<translation id="879863472982972634">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch Zugriff auf lokale Drucker über die WebPrinting API gewährt wird.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8799492680917278474">Wenn diese Richtlinie konfiguriert wird, werden Verbindungen per Remote-Zugriff automatisch nach Ablauf der in der Richtlinie festgelegten Dauer (in Minuten) getrennt. Der Client wird nicht daran gehindert, eine neue Verbindung herzustellen, nachdem die maximale Sitzungsdauer überschritten wurde. Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten. Diese Richtlinie wirkt sich nicht auf die Remote-Unterstützung aus.
 
           Sie hat keine Auswirkungen, wenn sie nicht konfiguriert ist. In diesem Fall gilt für Verbindungen per Remote-Zugriff keine maximale Dauer auf diesem Computer.</translation>

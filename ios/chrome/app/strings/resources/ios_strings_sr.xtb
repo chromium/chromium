@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Адреса је премештена на налог <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Означи као прочитано</translation>
 <translation id="428768789042547925">Шта је ново</translation>
-<translation id="428858055663163046">Овде можете да приступите преузетим фајловима када буду доступни</translation>
 <translation id="429074084062258019">{count,plural, =1{Додај картицу у групу}one{Додај картице у групу}few{Додај картице у групу}other{Додај картице у групу}}</translation>
 <translation id="4302061870579014542">Подеси позицију</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
@@ -1793,6 +1792,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7851858861565204677">Други уређаји</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворите Општа</translation>
+<translation id="7855678267851972597">Аудио снимци</translation>
 <translation id="7859988229622350291">Никад не преводи</translation>
 <translation id="7863211248337747225">Преузми апликацију</translation>
 <translation id="7865127013871431856">Опције превода</translation>
@@ -1973,6 +1973,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8524799873541103884">Картице <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> од <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Отварајте линкове из других апликација у режиму без архивирања</translation>
 <translation id="8529767659511976195">Ново</translation>
+<translation id="8531572740963685410">PDF фајлови</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Безбедно прегледање је укључено</translation>
 <translation id="8534481786647257214">Google+ пост је довршен.</translation>
@@ -2179,6 +2180,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="94870150074703282">Желите да избришете групу?</translation>
 <translation id="952704832371081537">Откажи</translation>
+<translation id="95332591904104970">Повезане апликације</translation>
 <translation id="954667170699278022">Листа за читање</translation>
 <translation id="956218893102219091">Користите прецизну локацију да бисте добијали најтачније Gemini резултате, уместо приближне локације засноване на IP адреси. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>

@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">വിലാസം നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിലേക്ക് നീക്കി</translation>
 <translation id="4287172530684295552">വായിച്ചതായി അടയാളപ്പെടുത്തൂ</translation>
 <translation id="428768789042547925">പുതുതായി എന്താണുള്ളത്</translation>
-<translation id="428858055663163046">ഡൗൺലോഡ് ചെയ്ത ഫയലുകൾ ലഭ്യമാകുമ്പോൾ അവ ഇവിടെ ആക്‌സസ് ചെയ്യാം</translation>
 <translation id="429074084062258019">{count,plural, =1{ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="4302061870579014542">സ്ഥാനം സജ്ജീകരിക്കുക</translation>
 <translation id="4304713468139749426">പാസ്‌വേഡ് മാനേജർ</translation>
@@ -1793,6 +1792,7 @@
 <translation id="7851858861565204677">മറ്റ് ഉപകരണങ്ങൾ</translation>
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7854006015462979438">പൊതുവായത് തുറക്കുക</translation>
+<translation id="7855678267851972597">ഓഡിയോകൾ</translation>
 <translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="7863211248337747225">ആപ്പ് നേടൂ</translation>
 <translation id="7865127013871431856">വിവർത്തന ഓപ്ഷനുകൾ</translation>
@@ -1973,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />-ൽ <ph name="FIRST_VISIBLE_TAB" /> മുതൽ <ph name="LAST_VISIBLE_TAB" /> വരെയുള്ള <ph name="INCOGNITO" /> ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="8528009254289981965">മറ്റൊരു ആപ്പിൽ നിന്നുള്ള ലിങ്കുകൾ അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
 <translation id="8529767659511976195">പുതിയത്</translation>
+<translation id="8531572740963685410">PDF-കൾ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="8534481786647257214">Google+ പങ്കിടൽ പൂർത്തിയായി.</translation>
@@ -2179,6 +2180,7 @@
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="94870150074703282">ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
+<translation id="95332591904104970">കണക്റ്റ് ചെയ്‌ത ആപ്പുകൾ</translation>
 <translation id="954667170699278022">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ്</translation>
 <translation id="956218893102219091">നിങ്ങളുടെ IP വിലാസം അടിസ്ഥാനമാക്കിയുള്ള ഏകദേശ ലൊക്കേഷന് പകരം, ഏറ്റവും കൃത്യമായ Gemini ഫലങ്ങൾക്കായി കൃത്യമായ ലൊക്കേഷൻ ഉപയോഗിക്കുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>

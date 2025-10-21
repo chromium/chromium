@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">అడ్రస్ మీ ఖాతా <ph name="USER_EMAIL" />‌కు తరలించబడింది</translation>
 <translation id="4287172530684295552">చదవబడినట్లుగా మార్క్ చేయండి</translation>
 <translation id="428768789042547925">కొత్తగా ఏం ఉన్నాయి</translation>
-<translation id="428858055663163046">మీరు డౌన్‌లోడ్ చేసుకున్న ఫైళ్లను అందుబాటులో ఉన్నప్పుడు ఇక్కడ యాక్సెస్ చేయవచ్చు</translation>
 <translation id="429074084062258019">{count,plural, =1{ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="4302061870579014542">పొజిషన్‌ను సెట్ చేయండి</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
@@ -1793,6 +1792,7 @@
 <translation id="7851858861565204677">ఇతర పరికరాలు</translation>
 <translation id="7853202427316060426">కార్యాచరణ</translation>
 <translation id="7854006015462979438">సాధారణ సెట్టింగ్‌లను తెరవండి</translation>
+<translation id="7855678267851972597">ఆడియోలు</translation>
 <translation id="7859988229622350291">వీటిని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7863211248337747225">యాప్‌ను పొందండి</translation>
 <translation id="7865127013871431856">Translate ఆప్షన్‌లు</translation>
@@ -1973,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />లో <ph name="FIRST_VISIBLE_TAB" /> నుండి <ph name="LAST_VISIBLE_TAB" /> వరకు <ph name="INCOGNITO" /> ట్యాబ్‌లు</translation>
 <translation id="8528009254289981965">అజ్ఞాతంలో ఇతర యాప్‌ల నుండి లింక్‌లను తెరవండి</translation>
 <translation id="8529767659511976195">కొత్తది</translation>
+<translation id="8531572740963685410">PDFలు</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="8534481786647257214">Google+ పోస్ట్ పూర్తయింది.</translation>
@@ -2179,6 +2180,7 @@
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="94870150074703282">గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="952704832371081537">రద్దు చేయండి</translation>
+<translation id="95332591904104970">కనెక్టెడ్ యాప్స్</translation>
 <translation id="954667170699278022">చదవాల్సిన లిస్ట్</translation>
 <translation id="956218893102219091">మీ IP అడ్రస్ ఆధారంగా అందే ఎస్టిమేటెడ్ లొకేషన్‌కు బదులుగా, మీ ఖచ్చితమైన లొకేషన్‌ను ఉపయోగించి, అత్యంత ఖచ్చితమైన Gemini ఫలితాలను పొందండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>

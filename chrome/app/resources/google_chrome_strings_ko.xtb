@@ -21,6 +21,7 @@
 <translation id="110877069173485804">나만의 Chrome</translation>
 <translation id="1125124144982679672">Chrome 사용자 선택</translation>
 <translation id="1142745911746664600">Chrome을 업데이트할 수 없음</translation>
+<translation id="1148360048981192980">다음번에 <ph name="DEVICE_TYPE" />에서 Chrome을 열면 Google 비밀번호 관리자를 사용하라는 메시지가 표시됩니다.</translation>
 <translation id="1152920704813762236">ChromeOS 정보</translation>
 <translation id="1154147086299354128">Chrome에서 열기(&amp;O)</translation>
 <translation id="1157985233335035034">최근에 사용한 언어</translation>
@@ -150,6 +151,7 @@
 <translation id="2681444469812712297">Chrome의 새 탭에서 <ph name="URL" /> 주소를 엽니다.</translation>
 <translation id="2699790011615497488">Chrome 베타의 Gemini 열기</translation>
 <translation id="2712141162840347885">Google 렌즈로 검색할 항목을 선택하거나 Esc 키를 눌러 Google 렌즈를 종료하세요</translation>
+<translation id="2723860029395667894">Google AI 모드 바로가기 항상 표시</translation>
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
 <translation id="2742320827292110288">경고: Chrome에서는 확장 프로그램에 방문 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="2753623023919742414">클릭하여 검색</translation>
@@ -482,6 +484,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
+<translation id="6426623519983252346">다음번에 Chrome iOS를 열면 <ph name="FEATURE_NAME" /> 기능을 사용해 보라는 메시지가 표시됩니다.</translation>
 <translation id="6473905796280459355">Chrome 정보 페이지로 이동</translation>
 <translation id="6481963882741794338">맞춤설정 등의 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>
@@ -680,6 +683,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8641606876632989680">유출된 비밀번호로 로그인하면 Chrome에서 알림을 표시함</translation>
 <translation id="8656634243791296665">Chrome 개발자의 Gemini 열기</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>
+<translation id="8677922833187616101">Google AI 모드 바로가기 항상 표시</translation>
 <translation id="8679801911857917785">또한 Chrome을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8712767363896337380">업데이트가 거의 완료되었습니다. 업데이트를 마치려면 Chrome을 다시 실행하세요.</translation>

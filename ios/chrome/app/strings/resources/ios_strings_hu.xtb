@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Cím áthelyezve a(z) <ph name="USER_EMAIL" /> fiókba</translation>
 <translation id="4287172530684295552">Megjelölés olvasottként</translation>
 <translation id="428768789042547925">Újdonságok</translation>
-<translation id="428858055663163046">Itt férhet hozzá a letöltött fájlokhoz, amikor rendelkezésre állnak</translation>
 <translation id="429074084062258019">{count,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
 <translation id="4302061870579014542">Pozíció beállítása</translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
@@ -1793,6 +1792,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7851858861565204677">Egyéb eszközök</translation>
 <translation id="7853202427316060426">Aktivitás</translation>
 <translation id="7854006015462979438">Nyissa meg az Általános beállításokat</translation>
+<translation id="7855678267851972597">Audiofájlok</translation>
 <translation id="7859988229622350291">Sosem fordított nyelvek</translation>
 <translation id="7863211248337747225">Alkalmazás letöltése</translation>
 <translation id="7865127013871431856">Fordítási beállítások</translation>
@@ -1973,6 +1973,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8524799873541103884">Lapok <ph name="INCOGNITO" /> módban: <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Más alkalmazásokból származó linkek megnyitása inkognitóban</translation>
 <translation id="8529767659511976195">Új</translation>
+<translation id="8531572740963685410">PDF-fájlok</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A Biztonságos Böngészés be van kapcsolva</translation>
 <translation id="8534481786647257214">A Google+-bejegyzés kész.</translation>
@@ -2179,6 +2180,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="94870150074703282">Törli a csoportot?</translation>
 <translation id="952704832371081537">Mégse</translation>
+<translation id="95332591904104970">Összekapcsolt alkalmazások</translation>
 <translation id="954667170699278022">Olvasólista</translation>
 <translation id="956218893102219091">A pontos hely használatával a legpontosabb Gemini-találatokat kaphatja, az IP-címe alapján becsült hely helyett. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>

@@ -49,6 +49,7 @@
 <translation id="11947597112837849">alamat email</translation>
 <translation id="1197267115302279827">Pindahkan bookmark</translation>
 <translation id="1197761954713363183">Sheet konfirmasi kunci sandi ditutup</translation>
+<translation id="1197933394627598677">Tampilkan Mode Baca</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1202892408424955784">Produk yang dipantau</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -517,6 +518,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3435575784518354875">Untuk mempertahankan akses ke sandi Anda, ekspor sandi sekarang, update Layanan Google Play, lalu impor sandi tersebut kembali ke Pengelola Sandi Google. <ph name="BEGIN_LINK" />Lihat petunjuk lengkap<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3435914367318771664">Tambahkan tab ke grup baru</translation>
+<translation id="3438681572027105609">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>
 <translation id="3439276997620616816">Tab yang baru-baru ini ditutup akan ditampilkan di sini</translation>
 <translation id="3443221991560634068">Memuat ulang halaman saat ini</translation>
 <translation id="3444179773590444986">Bagikan masukan terkait tema gelap untuk situs?</translation>
@@ -1261,6 +1263,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6738867403308150051">Mendownload…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Tinjau data akun Anda</translation>
+<translation id="6746834324024491643">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login sebagai <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Buka tab baru dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="6752130751133944215">Untuk memulihkan jendela baru, kurangi jumlah total jendela aktif dan tidak aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang. Jendela yang tidak aktif akan dihapus setelah 6 bulan.</translation>
 <translation id="6754359471209693699">Mulai penelusuran baru</translation>
@@ -1397,6 +1400,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download tertunda}other{# download tertunda}}</translation>
 <translation id="7230064152164845085">Beralih ke mode Samaran</translation>
 <translation id="7237724030342645845">Pengelola Sandi Google berhenti berfungsi</translation>
+<translation id="7239496616545081903">Sembunyikan Mode baca</translation>
 <translation id="72415438529550637">Saran sandi ditutup.</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
 <translation id="7253951228444156601">Memeriksa sandi…</translation>
@@ -1533,6 +1537,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7821130663268546430">Anda dapat menemukan semua tab yang terbuka di pengalih tab</translation>
 <translation id="7822705602465980873">Jika Anda login, data ini akan ditautkan ke Akun Google Anda untuk melindungi Anda di berbagai layanan Google, misalnya, meningkatkan perlindungan di Gmail setelah insiden keamanan.</translation>
 <translation id="7824665136384946951">Organisasi Anda menonaktifkan Safe Browsing</translation>
+<translation id="7826342993930002256">Chrome Anda, di mana saja</translation>
 <translation id="7844171778363018843">Tidak ada data yang dipilih untuk disinkronkan</translation>
 <translation id="7846161022626028328">Terjadi error. Coba lagi.</translation>
 <translation id="7846296061357476882">Layanan Google</translation>
@@ -1738,6 +1743,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8723453889042591629">Terjemahkan halaman ini dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8731268612289859741">Kode keamanan</translation>
+<translation id="8738163682604285902">Lihat Mode Baca?</translation>
 <translation id="8746155870861185046">Bagikan sorotan</translation>
 <translation id="8748850008226585750">Konten tersembunyi</translation>
 <translation id="8754448020583829686">Salin tanpa link</translation>

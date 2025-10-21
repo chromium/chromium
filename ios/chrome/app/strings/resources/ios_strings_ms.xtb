@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Alamat dialihkan ke akaun <ph name="USER_EMAIL" /> anda</translation>
 <translation id="4287172530684295552">Tandai sebagai dibaca</translation>
 <translation id="428768789042547925">Perkara Baharu</translation>
-<translation id="428858055663163046">Anda boleh mengakses fail yang dimuat turun di sini apabila tersedia</translation>
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab pada Kumpulan}other{Tambahkan Tab pada Kumpulan}}</translation>
 <translation id="4302061870579014542">Tetapkan kedudukan</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
@@ -1236,6 +1235,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5758759241456233788">Pratonton Peta dimatikan. Hidupkan semula dalam Tetapan.</translation>
 <translation id="5759484603608560822">Sembunyikan Muat Turun</translation>
 <translation id="5767099457279594162">Kata laluan tidak dikongsi</translation>
+<translation id="5768870767339201169">Sambung Semula Dari Tempat Anda Berhenti</translation>
 <translation id="5779117921996157216">{count,plural, =1{Anda mempunyai {count} kata laluan yang terjejas yang boleh mendedahkan keselamatan anda kepada risiko. Betulkan masalah ini sekarang untuk kekal selamat.}other{Anda mempunyai {count} kata laluan yang terjejas yang boleh mendedahkan keselamatan anda kepada risiko. Betulkan masalah ini sekarang untuk kekal selamat.}}</translation>
 <translation id="5791632441210678828">Butang isih untuk Mengikuti suapan.</translation>
 <translation id="5803566855766646066">Adakah anda pasti anda mahu membuang kad baharu ini?</translation>
@@ -1793,6 +1793,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7851858861565204677">Peranti lain</translation>
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7854006015462979438">Buka Umum</translation>
+<translation id="7855678267851972597">Audio</translation>
 <translation id="7859988229622350291">Jangan terjemah</translation>
 <translation id="7863211248337747225">Dapatkan apl</translation>
 <translation id="7865127013871431856">Pilihan Translate</translation>
@@ -1973,6 +1974,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tab <ph name="FIRST_VISIBLE_TAB" /> melalui <ph name="LAST_VISIBLE_TAB" /> daripada <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Buka pautan daripada apl lain dalam Inkognito</translation>
 <translation id="8529767659511976195">Baharu</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Penyemakan Imbas Selamat dihidupkan</translation>
 <translation id="8534481786647257214">Catatan Google+ selesai.</translation>
@@ -2179,6 +2181,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="94870150074703282">Padamkan kumpulan?</translation>
 <translation id="952704832371081537">Batal</translation>
+<translation id="95332591904104970">Apl disambungkan</translation>
 <translation id="954667170699278022">Senarai Bacaan</translation>
 <translation id="956218893102219091">Gunakan lokasi tepat anda untuk hasil carian Gemini yang paling tepat, bukannya lokasi anggaran berdasarkan alamat IP anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Padamkan data semakan imbas</translation>

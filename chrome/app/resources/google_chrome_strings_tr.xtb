@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Bu sizin Chrome'unuz</translation>
 <translation id="1125124144982679672">Chrome'u kim kullanıyor?</translation>
 <translation id="1142745911746664600">Chrome güncellenemiyor</translation>
+<translation id="1148360048981192980"><ph name="DEVICE_TYPE" /> cihazınızda, Chrome'u bir sonraki açışınızda Google Şifre Yöneticisi'ni kullanmanız için bir istem görürsünüz.</translation>
 <translation id="1152920704813762236">ChromeOS hakkında</translation>
 <translation id="1154147086299354128">&amp;Chrome'da aç</translation>
 <translation id="1157985233335035034">Son kullanılan diller</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">Google Chrome'da yeni bir sekmede <ph name="URL" /> adresini açın.</translation>
 <translation id="2699790011615497488">Chrome Beta'da Gemini'ı aç</translation>
 <translation id="2712141162840347885">Google Lens ile aramak istediğiniz öğeyi seçin veya Google Lens'ten çıkmak için Escape tuşuna basın</translation>
+<translation id="2723860029395667894">Google AI Modu kısayolunu her zaman göster</translation>
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2742320827292110288">Uyarı: Google Chrome, uzantıların tarama geçmişinizi kaydetmesini önleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
@@ -476,6 +478,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Kuruluşunuz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
+<translation id="6426623519983252346">Chrome iOS'i bir sonraki açışınızda <ph name="FEATURE_NAME" /> özelliğini denemeniz için bir istem görürsünüz.</translation>
 <translation id="6473905796280459355">Chrome hakkında sayfasına gidin</translation>
 <translation id="6481963882741794338">Kişiselleştirme ve diğer amaçlar için Chrome ile diğer Google hizmetlerini bağlayın</translation>
 <translation id="648319183876919572">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden ve indirmelerden korumak için daha fazlasını yapar</translation>
@@ -674,6 +677,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8641606876632989680">Chrome, güvenliği ihlal edilmiş bir şifreyle oturum açtığınızda size haber verir</translation>
 <translation id="8656634243791296665">Chrome Dev'de Gemini'ı aç</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Google AI Modu Kısayolunu Her Zaman Göster</translation>
 <translation id="8679801911857917785">Ayrıca Chrome'u başlattığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8712767363896337380">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın.</translation>

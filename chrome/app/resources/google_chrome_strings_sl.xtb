@@ -21,6 +21,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="110877069173485804">To je vaš Chrome</translation>
 <translation id="1125124144982679672">Kdo uporablja Chrome?</translation>
 <translation id="1142745911746664600">Chroma ni mogoče posodobiti</translation>
+<translation id="1148360048981192980">Ko boste naslednjič odprli Chrome v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za uporabo Googlovega upravitelja gesel.</translation>
 <translation id="1152920704813762236">O sistemu ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Odpri v Chromu</translation>
 <translation id="1157985233335035034">Nedavni jeziki</translation>
@@ -150,6 +151,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2681444469812712297">Odprite <ph name="URL" /> na novem zavihku v Google Chromu.</translation>
 <translation id="2699790011615497488">Odpiranje Geminija v Chromu beta</translation>
 <translation id="2712141162840347885">Izberite kar koli za iskanje z Googlom Lens ali pritisnite tipko Esc, če želite zapreti Google Lens</translation>
+<translation id="2723860029395667894">Vedno pokaži bližnjico do Googlovega načina umetne inteligence</translation>
 <translation id="2738871930057338499">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »403 Forbidden«. Preverite konfiguracijo strežnika proxy configuration.</translation>
 <translation id="2742320827292110288">Opozorilo: Google Chrome razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
 <translation id="2753623023919742414">Kliknite, če želite iskati</translation>
@@ -483,6 +485,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizacija samodejno zapre Chrome, če ga ne uporabljate 1 minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}one{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}two{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuti. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}few{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minute. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}other{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minut. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}}</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
+<translation id="6426623519983252346">Ko boste naslednjič odprli Chrome za iOS, bo prikazan poziv, da preizkusite funkcijo <ph name="FEATURE_NAME" />.</translation>
 <translation id="6473905796280459355">Odprite stran »O Chromu«</translation>
 <translation id="6481963882741794338">Povežite Chrome in druge Googlove storitve za osebno prilagajanje in druge namene</translation>
 <translation id="648319183876919572">Izboljšano varno brskanje vas še bolje varuje pred nevarnimi spletnimi mesti in prenosi</translation>
@@ -681,6 +684,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8641606876632989680">Chrome vas bo obvestil, če se prijavite z ogroženim geslom</translation>
 <translation id="8656634243791296665">Odpiranje Geminija v Chromu Dev</translation>
 <translation id="8669527147644353129">Pomočnik za Google Chrome</translation>
+<translation id="8677922833187616101">Vedno pokaži bližnjico do Googlovega načina umetne inteligence</translation>
 <translation id="8679801911857917785">Določa tudi, katera stran je prikazana, ko zaženete Chrome.</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8712767363896337380">Skoraj je posodobljen. Znova zaženite Chrome, da dokončate posodobitev.</translation>

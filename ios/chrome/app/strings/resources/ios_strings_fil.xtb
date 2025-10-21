@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Nailipat na ang address sa iyong account na <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markahan bilang nabasa na</translation>
 <translation id="428768789042547925">Ano'ng Bago</translation>
-<translation id="428858055663163046">Maa-access mo ang iyong mga na-download na file dito kapag available</translation>
 <translation id="429074084062258019">{count,plural, =1{Magdagdag ng Tab sa Grupo}one{Magdagdag ng Mga Tab sa Grupo}other{Magdagdag ng Mga Tab sa Grupo}}</translation>
 <translation id="4302061870579014542">Itakda ang posisyon</translation>
 <translation id="4304713468139749426">Password Manager</translation>
@@ -1793,6 +1792,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7851858861565204677">Iba pang device</translation>
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7854006015462979438">Buksan ang General</translation>
+<translation id="7855678267851972597">Mga Audio</translation>
 <translation id="7859988229622350291">Huwag isalin kailanman</translation>
 <translation id="7863211248337747225">Kunin ang app</translation>
 <translation id="7865127013871431856">Mga opsyon sa pagsasalin</translation>
@@ -1973,6 +1973,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8524799873541103884">Mga Tab na <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> hanggang <ph name="LAST_VISIBLE_TAB" /> ng <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Magbukas ng mga link mula sa iba pang app sa Incognito</translation>
 <translation id="8529767659511976195">Bago</translation>
+<translation id="8531572740963685410">Mga PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Naka-on ang Ligtas na Pag-browse</translation>
 <translation id="8534481786647257214">Kumpleto na ang pag-post sa Google+.</translation>

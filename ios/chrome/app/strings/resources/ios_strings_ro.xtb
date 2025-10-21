@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adresa a fost mutată în contul <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marchează drept citit</translation>
 <translation id="428768789042547925">Noutăți</translation>
-<translation id="428858055663163046">Poți să accesezi aici fișierele descărcate, atunci când sunt disponibile</translation>
 <translation id="429074084062258019">{count,plural, =1{Adaugă fila într-un grup}few{Adaugă filele într-un grup}other{Adaugă filele într-un grup}}</translation>
 <translation id="4302061870579014542">Setează poziția</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
@@ -1793,6 +1792,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7851858861565204677">Alte dispozitive</translation>
 <translation id="7853202427316060426">Activitate</translation>
 <translation id="7854006015462979438">Deschide General</translation>
+<translation id="7855678267851972597">Conținut audio</translation>
 <translation id="7859988229622350291">Nu traduce niciodată</translation>
 <translation id="7863211248337747225">Descarcă aplicația</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>
@@ -1973,6 +1973,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8524799873541103884">Filele <ph name="INCOGNITO" /> de la <ph name="FIRST_VISIBLE_TAB" /> la <ph name="LAST_VISIBLE_TAB" /> din <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Deschide linkuri din alte aplicații în modul incognito</translation>
 <translation id="8529767659511976195">Nou</translation>
+<translation id="8531572740963685410">Fișiere PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Navigarea sigură este activată</translation>
 <translation id="8534481786647257214">S-a postat pe Google+.</translation>

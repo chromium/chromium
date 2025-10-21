@@ -49,6 +49,7 @@
 <translation id="11947597112837849">indirizzo email</translation>
 <translation id="1197267115302279827">Sposta i Preferiti</translation>
 <translation id="1197761954713363183">Foglio di conferma della passkey chiuso</translation>
+<translation id="1197933394627598677">Mostra modalità Lettura</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1202892408424955784">Prodotti monitorati</translation>
 <translation id="1204037785786432551">Scarica link</translation>
@@ -517,6 +518,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3435575784518354875">Per continuare ad accedere alle tue password, esportale ora, aggiorna Google Play Services e poi importale in Gestore delle password di Google. <ph name="BEGIN_LINK" />Visualizza le istruzioni complete<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3435914367318771664">Aggiungi scheda a nuovo gruppo</translation>
+<translation id="3438681572027105609">Accedi a Chrome per trovare le password e altri dati su tutti i dispositivi</translation>
 <translation id="3439276997620616816">Qui troverai le schede recenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
 <translation id="3444179773590444986">Vuoi condividere un feedback sul tema scuro per i siti?</translation>
@@ -1261,6 +1263,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Rivedi i dati dell'account</translation>
+<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per trovare le password e altri dati su tutti i dispositivi</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6752130751133944215">Per ripristinare una nuova finestra, riduci il numero totale di finestre attive e inattive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno. Le finestre inattive vengono eliminate dopo 6 mesi.</translation>
 <translation id="6754359471209693699">Inizia una nuova ricerca</translation>
@@ -1397,6 +1400,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
 <translation id="7230064152164845085">Passa alla navigazione in incognito</translation>
 <translation id="7237724030342645845">Gestore delle password di Google ha smesso di funzionare</translation>
+<translation id="7239496616545081903">Nascondi modalità Lettura</translation>
 <translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
 <translation id="7248671827512403053">Applicazione</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
@@ -1533,6 +1537,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7821130663268546430">Puoi trovare tutte le schede aperte nel Selettore di schede</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
+<translation id="7826342993930002256">Il tuo Chrome, ovunque</translation>
 <translation id="7844171778363018843">Nessun dato selezionato da sincronizzare</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
 <translation id="7846296061357476882">Servizi Google</translation>
@@ -1738,6 +1743,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8723453889042591629">Traduci rapidamente questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
+<translation id="8738163682604285902">Visualizzare modalità Lettura?</translation>
 <translation id="8746155870861185046">Condividi evidenziazione</translation>
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8754448020583829686">Copia senza link</translation>

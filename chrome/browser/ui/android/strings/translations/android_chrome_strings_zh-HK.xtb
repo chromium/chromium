@@ -518,6 +518,7 @@
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回「Google 密碼管理工具」。<ph name="BEGIN_LINK" />查閱完整指示<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3435914367318771664">將分頁加入新群組</translation>
+<translation id="3438681572027105609">如要在你的所有裝置上存取密碼和其他資料，請登入 Chrome</translation>
 <translation id="3439276997620616816">最近開啟的分頁會在這裡顯示</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
@@ -1262,6 +1263,7 @@
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="6745063744988317486">等寬</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
+<translation id="6746834324024491643">如要在所有裝置上使用你的密碼和其他資料，請以 <ph name="EMAIL" /> 的身分登入</translation>
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="6752130751133944215">如要還原新視窗，請將使用中和閒置視窗的總數減至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個或以下。閒置視窗會在 6 個月後刪除。</translation>
 <translation id="6754359471209693699">開始新搜尋</translation>
@@ -1535,6 +1537,7 @@
 <translation id="7821130663268546430">你可在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="7824665136384946951">你的機構已關閉「安全瀏覽」功能</translation>
+<translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>

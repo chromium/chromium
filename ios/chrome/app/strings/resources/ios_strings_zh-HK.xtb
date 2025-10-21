@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">標示為已讀</translation>
 <translation id="428768789042547925">最新資訊</translation>
-<translation id="428858055663163046">你可在此存取已下載的檔案 (如適用)</translation>
 <translation id="429074084062258019">{count,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
@@ -2181,6 +2180,7 @@
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="94870150074703282">要刪除群組嗎？</translation>
 <translation id="952704832371081537">取消</translation>
+<translation id="95332591904104970">已連結的應用程式</translation>
 <translation id="954667170699278022">閱讀清單</translation>
 <translation id="956218893102219091">使用精確位置 (而非根據 IP 位址估計的位置) 可讓 Gemini 提供最準確的結果。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>

@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">هنر نساجی و بافت</translation>
 <translation id="243815215670139125">‏این کارت را نمی‌توان در «حساب Google» شما ذخیره کرد. درعوض، در Chrome در این دستگاه ذخیره شد.</translation>
 <translation id="2438874542388153331">چهار سوراخ در راست</translation>
+<translation id="2440855519769445271">برای پنهان کردن گزینه‌های «بعداً پرداخت کنید»، به <ph name="BEGIN_LINK" />تنظیمات پرداخت<ph name="END_LINK" /> بروید</translation>
 <translation id="2441854154602066476">روش‌های پرداخت دردسترس که باید با لمس کردن تکمیل شود. صفحه‌کلید پنهان است.</translation>
 <translation id="2442865686365739754">‏Chrome <ph name="BEGIN_EMPHASIS" />این‌ها را ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1305,7 +1306,7 @@
 <translation id="315504272643575312">حساب شما توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="3155163173539279776">‏اجرای مجدد Chromium</translation>
 <translation id="3156511682997763015">‫۱۰ ثانیه به جلو</translation>
-<translation id="3157931365184549694">بازیابی</translation>
+<translation id="3157931365184549694">بازگرداندن</translation>
 <translation id="3158539265159265653">دیسک</translation>
 <translation id="3162070126914310576">درحال‌حاضر نمی‌توان این دستگاه را ثبت‌نام کرد زیرا واحد سازمانی‌تان به حداکثر تعداد ثبت‌نام اولیه خود رسیده است. برای دریافت کمک با سرپرستتان تماس بگیرید.</translation>
 <translation id="3162559335345991374">‏شبکه Wi-Fi مورد استفاده‌تان احتمالاً نیاز دارد که به یک صفحه ورود به سیستم بروید.</translation>
@@ -1376,7 +1377,7 @@
 <translation id="3262698603497362968">گزینه‌های خرید</translation>
 <translation id="3266367459139339908">درحال راه‌اندازی روش‌های جدیدی هستیم برای محدود کردن اطلاعاتی که سایت‌ها می‌توانند هنگام نمایش آگهی‌های شخصی‌سازی‌شده درباره شما کسب کنند، برای مثال:</translation>
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
-<translation id="3268451620468152448">برگه‌های باز</translation>
+<translation id="3268451620468152448">زبانه‌های باز</translation>
 <translation id="3270041629388773465">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تسویه‌حساب کنید</translation>
 <translation id="3270847123878663523">&amp;واگرد تغییر ترتیب</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">‏درهم‌سازی باید در قالب SHA-256 باشد.</translation>
 <translation id="4652266463001779298">اجازه نداشتن</translation>
 <translation id="4652440160515225514">سازمانتان این سایت را مسدود کرده است زیرا خط‌مشی‌ای را نقض می‌کند.</translation>
+<translation id="4654457557264366314">طرح‌های پرداخت مشروط به واجدشرایط بودن است.</translation>
 <translation id="4658638640878098064">منگنه در بالا سمت چپ</translation>
 <translation id="4660592918803576381">‏باز کردن در Drive</translation>
 <translation id="4661556981531699496">حیوانات خانگی و سایر حیوانات</translation>

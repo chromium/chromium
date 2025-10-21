@@ -756,6 +756,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="430786093962686457">mousseline</translation>
+<translation id="4309762678330556039">Créez automatiquement des transcriptions et recherchez des contenus audio. Vous pouvez créer des enregistrements même lorsque vous n'êtes pas connecté à Internet.</translation>
 <translation id="4310735698903592804">Fonds d'écran récents propulsés par l'IA de Google</translation>
 <translation id="4320904097188876154">rose néon</translation>
 <translation id="432961742358282111">Faites un clic droit ou maintenez le doigt sur du texte pour obtenir des définitions, des traductions ou des conversions d'unités. Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
@@ -1472,6 +1473,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7425832472614771259">Modèle de transcription de la langue suivante : <ph name="LANGUAGE_NAME" />; téléchargé à <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
+<translation id="7458359366992324037">Affichage à distance</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Suivant</translation>

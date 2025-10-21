@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">手芸</translation>
 <translation id="243815215670139125">このカードは Google アカウントに保存できず、代わりにこのデバイスの Chrome に保存されました。</translation>
 <translation id="2438874542388153331">4 穴パンチ（右）</translation>
+<translation id="2440855519769445271">後払いオプションを非表示にするには、<ph name="BEGIN_LINK" />お支払い設定<ph name="END_LINK" />に移動してください</translation>
 <translation id="2441854154602066476">タップ操作で入力できるお支払い方法が表示されています。キーボードは非表示です。</translation>
 <translation id="2442865686365739754">Chrome に以下の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">ハッシュ形式には SHA-256 を使用する必要があります。</translation>
 <translation id="4652266463001779298">ブロック</translation>
 <translation id="4652440160515225514">このサイトはポリシーに違反しているため、組織によってブロックされました。</translation>
+<translation id="4654457557264366314">お支払いプランは、ご利用条件を満たしていることが条件となります。</translation>
 <translation id="4658638640878098064">ステープル（左上）</translation>
 <translation id="4660592918803576381">ドライブで開く</translation>
 <translation id="4661556981531699496">ペット、動物</translation>

@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">הכתובת הועברה לחשבון שלך, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">סימון כ'נקרא'</translation>
 <translation id="428768789042547925">מה חדש</translation>
-<translation id="428858055663163046">מכאן אפשר לגשת לקבצים שהורדת, כשהם יהיו זמינים</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
@@ -2179,6 +2178,7 @@
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="94870150074703282">למחוק את הקבוצה?</translation>
 <translation id="952704832371081537">ביטול</translation>
+<translation id="95332591904104970">אפליקציות מקושרות</translation>
 <translation id="954667170699278022">רשימת קריאה</translation>
 <translation id="956218893102219091">‏שימוש במיקום המדויק במקום במיקום משוער על סמך כתובת ה-IP, כדי לקבל את התוצאות הכי מדויקות מ-Gemini. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>

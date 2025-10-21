@@ -882,6 +882,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2436976580469434549">Artes textiles y de fibra</translation>
 <translation id="243815215670139125">No se pudo guardar esta tarjeta en tu Cuenta de Google. Se guardó en Chrome en este dispositivo.</translation>
 <translation id="2438874542388153331">Perforación cuádruple a la derecha</translation>
+<translation id="2440855519769445271">Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />configuración de pagos<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Lista de formas de pago disponibles que se debe tocar para completar. Teclado oculto.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
           <ph name="BEGIN_LIST" />
@@ -2223,6 +2224,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4648262692072505866">El hash debe tener el formato SHA-256.</translation>
 <translation id="4652266463001779298">No se permite</translation>
 <translation id="4652440160515225514">Tu organización bloqueó este sitio porque infringe una política.</translation>
+<translation id="4654457557264366314">Los planes de pagos están sujetos a elegibilidad.</translation>
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
 <translation id="4660592918803576381">Abrir en Drive</translation>
 <translation id="4661556981531699496">Mascotas y animales</translation>

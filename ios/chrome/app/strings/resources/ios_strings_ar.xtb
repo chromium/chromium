@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
 <translation id="4287172530684295552">وضع علامة "مقروءة"</translation>
 <translation id="428768789042547925">الميزات الجديدة</translation>
-<translation id="428858055663163046">يمكنك من هنا الوصول إلى الملفات عند اكتمال تنزيلها</translation>
 <translation id="429074084062258019">{count,plural, =1{إضافة علامة التبويب إلى المجموعة}zero{إضافة علامات التبويب إلى المجموعة}two{إضافة علامتَي التبويب إلى المجموعة}few{إضافة علامات التبويب إلى المجموعة}many{إضافة علامات التبويب إلى المجموعة}other{إضافة علامات التبويب إلى المجموعة}}</translation>
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
@@ -1791,6 +1790,7 @@
 <translation id="7851858861565204677">أجهزة أخرى</translation>
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7854006015462979438">‏يُرجى فتح "الإعدادات العامة" (General)</translation>
+<translation id="7855678267851972597">ملفات صوتية</translation>
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
 <translation id="7863211248337747225">تنزيل التطبيق</translation>
 <translation id="7865127013871431856">خيارات الترجمة</translation>
@@ -1972,6 +1972,7 @@
 <translation id="8524799873541103884">علامات تبويب <ph name="INCOGNITO" /><ph name="FIRST_VISIBLE_TAB" /> عبر <ph name="LAST_VISIBLE_TAB" /> من <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">فتح الروابط من التطبيقات الأخرى في "وضع التصفّح المتخفي"</translation>
 <translation id="8529767659511976195">جديد</translation>
+<translation id="8531572740963685410">‏ملفات PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
 <translation id="8534481786647257214">‏اكتمل النشر على Google+‎.</translation>
@@ -2178,6 +2179,7 @@
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="94870150074703282">هل المطلوب حذف المجموعة؟</translation>
 <translation id="952704832371081537">إلغاء</translation>
+<translation id="95332591904104970">التطبيقات المرتبطة</translation>
 <translation id="954667170699278022">قائمة القراءة</translation>
 <translation id="956218893102219091">‏يمكنك استخدام موقعك الجغرافي الدقيق للحصول على نتائج أكثر دقة من Gemini، بدلاً من استخدام موقع جغرافي مقدَّر استنادًا إلى عنوان IP لجهازك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>

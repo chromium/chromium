@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">快到休息时间了</translation>
 <translation id="10619348099955377">复制显示名称</translation>
 <translation id="1062407476771304334">替换</translation>
+<translation id="1064236804542808595">恢复组织快捷方式</translation>
 <translation id="1065369186007547872">Chrome 认为您不想接收来自该网站的通知，因此会隐藏请求，减少干扰。</translation>
 <translation id="1066964438793906105">不妨扫描以检测是否有恶意软件</translation>
 <translation id="1067661089446014701">为了提高安全性，您可以先在设备上对密码进行加密，然后再将其保存到您的 Google 账号</translation>
@@ -1046,6 +1047,7 @@
 <translation id="1700517974991662022">访问过</translation>
 <translation id="1703331064825191675">再也不必费心记住您的密码</translation>
 <translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
+<translation id="1703849276368677471">工具</translation>
 <translation id="1704097193565924901">大写</translation>
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1706586824377653884">此图标是由管理员添加的</translation>
@@ -1173,6 +1175,7 @@
 <translation id="1796460466266263589">若要继续使用 Gemini，请验证身份</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
+<translation id="1798726622311813209">信用卡和借记卡</translation>
 <translation id="1799852120691957794">无法恢复上一次会话中的窗口</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
@@ -1456,6 +1459,7 @@
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1984683754853869253">您想创建一份新的学校资料吗？</translation>
 <translation id="198507684520034826">帮助</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">高级位置信息设置</translation>
 <translation id="1987317783729300807">账号</translation>
 <translation id="1987574314042117472">选择并安装热门应用</translation>
@@ -3108,6 +3112,7 @@
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3124111068741548686">USER 处理函数</translation>
 <translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
+<translation id="3124950826511066429">影响自动填充功能如何处理不同类型信息的设置</translation>
 <translation id="3125361247594231799">固定以便下次使用</translation>
 <translation id="3125816458150005808">您可以取消固定并从菜单中打开该功能</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5355,6 +5360,7 @@
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4678848110205818817">信用卡/借记卡</translation>
 <translation id="4679018849559620189">这样有助于您在任意设备上访问已保存的通行密钥</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
 <translation id="4680112532510845139">将图片放到此处</translation>
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
@@ -5899,6 +5905,7 @@
 <translation id="5068553687099139861">显示密码</translation>
 <translation id="506886127401228110">开启独立式 Web 应用</translation>
 <translation id="5068919226082848014">披萨</translation>
+<translation id="5070630163913211970">开始新对话时，系统会与 Gemini 分享当前标签页。<ph name="LINK_BEGIN" />详细了解 AI 和隐私权<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">返回至近期的下载内容</translation>
 <translation id="5071892329440114717">显示标准保护详情</translation>
 <translation id="5072500507106264618">只有系统服务才能使用您的位置信息</translation>
@@ -6361,6 +6368,7 @@
 <translation id="5398497406011404839">隐藏的书签</translation>
 <translation id="5398572795982417028">页面引用超出范围，上限为 <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">帮助您在网络上撰写评价等简短文字</translation>
+<translation id="5400068721524309244">分享标签页时，系统会将标签页的网页内容和网址发送给 Google</translation>
 <translation id="5400196580536813396">不得查找或使用您的设备可访问的打印机</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5402367795255837559">盲文</translation>
@@ -7692,6 +7700,7 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6336194758029258346">应用语言</translation>
 <translation id="6337543438445391085">某些个人信息可能仍会包含在数据中。请务必查看导出的文件。</translation>
+<translation id="6338554362382763574">您可以在浏览时轻松询问 Gemini 有关您正在分享的标签页的问题</translation>
 <translation id="6338968693068997776">添加 USB 设备</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
 <translation id="6340071272923955280">互联网打印协议 (IPPS)</translation>
@@ -8036,6 +8045,7 @@
 <translation id="6586451623538375658">切换鼠标主按钮</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
 <translation id="6589760925779188068">意式奶冻</translation>
+<translation id="6589769062042696460">开始新对话时，系统会与 Gemini 分享当前标签页。您的数据不会用于改进生成式 AI 模型。<ph name="LINK_BEGIN" />详细了解 AI 和隐私权<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">重命名文件夹</translation>
 <translation id="6592267180249644460">WebRTC日志记录时间：<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">已捕获您的指纹</translation>
@@ -8311,6 +8321,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 备份</translation>
 <translation id="6782067259631821405">PIN 码无效</translation>
+<translation id="6782219876520622071">为改进 Gemini，人工审核员可能会查看有关所分享标签页的对话</translation>
 <translation id="6783036716881942511">取消保存此设备？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 设置</translation>
 <translation id="6784523122863989144">个人资料必须受支持</translation>
@@ -8441,6 +8452,7 @@
 <translation id="6852290167968069627">ChromeOS 无法恢复您的上一个会话，因为网络出问题了。请连接到稳定的网络，然后重试。</translation>
 <translation id="6852529053326738838">请询问您的组织，或使用您的工作邮箱进行注册，以检查您的账号是否符合条件。</translation>
 <translation id="6853029310037965825">从<ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />安装的<ph name="APP_TYPE" /></translation>
+<translation id="6853118789186721762">已向<ph name="DEVICE_TYPE" />发送提醒</translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> 年</translation>
 <translation id="68541483639528434">关闭其他标签页</translation>
 <translation id="6855892664589459354">Crostini 备份和恢复</translation>
@@ -8742,6 +8754,7 @@
 <translation id="7066572364168923329">选择 <ph name="DEVICE_TYPE" /> 的设置</translation>
 <translation id="7067396782363924830">环境颜色</translation>
 <translation id="7067725467529581407">不再显示此气泡。</translation>
+<translation id="7067779359472606732">已向<ph name="DEVICE_TYPE" />发送提醒</translation>
 <translation id="7068279399556423026">登录即可查看从其他设备打开的标签页</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" />和另外几款应用在您的 <ph name="DEVICE_TYPE" /> 上已被屏蔽</translation>
 <translation id="706949303827219454">在新标签页中打开安全设置页面</translation>
@@ -9932,7 +9945,7 @@
 <translation id="7899720074434636454">忽略“<ph name="EXTENSION_NAME" />”的请求</translation>
 <translation id="7900950034255258543">为确保您可以安全使用此设备，您的组织可以查看设备操作系统、浏览器和设置方面的信息，以及设备上安装了哪些软件</translation>
 <translation id="7901405293566323524">手机中心</translation>
-<translation id="7901728443188947649">制作图片</translation>
+<translation id="7901728443188947649">生成图片</translation>
 <translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
 <translation id="7903481341948453971">填充密码时使用屏幕锁定</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
@@ -11227,6 +11240,7 @@
 <translation id="876161309768861172">无法登录，请重试</translation>
 <translation id="8761945298804995673">该用户已存在</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
+<translation id="8763170551806710928">显示条状标签</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">显示“<ph name="QUERY_CLUSTER_NAME" />”的所有搜索结果</translation>
@@ -11557,6 +11571,7 @@
 <translation id="8988539543012086784">此网页已保存到“<ph name="BOOKMARK_FOLDER" />”文件夹</translation>
 <translation id="8989034257029389285">您可以这样问：“Hey Google，这是什么歌？”</translation>
 <translation id="8989359959810288806">刷新网络共享状态</translation>
+<translation id="8989779557457435460">默认分享当前标签页</translation>
 <translation id="8990243615717080992">使用密码或其他恢复方法登录</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
 <translation id="8991694323904646277">没有摄像头</translation>

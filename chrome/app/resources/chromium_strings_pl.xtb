@@ -62,6 +62,7 @@
 <translation id="1779356040007214683">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy niektóre rozszerzenia niedostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, które mogły zostać dodane bez Twojej wiedzy.</translation>
 <translation id="1808667845054772817">Ponownie zainstaluj Chromium</translation>
 <translation id="1820835682567584003">Chromium próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Gdy następnym razem otworzysz Chromium na urządzeniu <ph name="DEVICE_TYPE" />, zobaczysz prośbę o użycie Menedżera haseł Google.</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
 <translation id="18552579716432081">Aby usunąć dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Możesz zarządzać kontami Google, na które się logujesz. Kont Google możesz używać w przeglądarce Chromium, Sklepie Play, Gmailu i innych usługach. Jeśli chcesz dodać konto innej osoby, np. kogoś z rodziny, zamiast tego dodaj nową osobę do urządzenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -88,6 +89,7 @@
 <translation id="2049376729098081731">Określ, czy chcesz uwzględniać historię Chromium w celu lepszego dostosowania usług Google</translation>
 <translation id="2054039611381840095">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 12 lub nowszy. Na tym komputerze jest zainstalowany system macOS 11.</translation>
 <translation id="2086476982681781442">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik ma na celu oszukanie użytkownika i może wprowadzić nieoczekiwane zmiany na urządzeniu</translation>
+<translation id="208726765006323911">Gdy następnym razem otworzysz Chromium na iOS, zobaczysz prośbę o wypróbowanie funkcji <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Hasła i inne dane z Chromium zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chromium, zaloguj się ponownie.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez minutę. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}few{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}many{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minut. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}other{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}}</translation>
 <translation id="2126108037660393668">Weryfikacja pobranego pliku zakończyła się niepowodzeniem.</translation>
@@ -148,6 +150,7 @@
 <translation id="2718390899429598676">Dla większego bezpieczeństwa Chromium szyfruje dane.</translation>
 <translation id="2721354645805494590">Aby usunąć konto Google z Chromium, wyloguj się</translation>
 <translation id="2722636413143664436">Aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
+<translation id="2723860029395667894">Zawsze pokazuj skrót do trybu AI od Google</translation>
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2753623023919742414">Kliknij, aby wyszukać</translation>
 <translation id="2768103863314748511">Ustaw Chromium jako domyślną przeglądarkę plików PDF</translation>
@@ -633,6 +636,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8601359445272098721">Nowość! Możesz przetłumaczyć tekst i obrazy na ekranie, klikając przycisk „Przetłumacz ekran”</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nie można ustawić jako przeglądarki domyślnej.</translation>
+<translation id="8677922833187616101">Zawsze pokazuj skrót do trybu AI od Google</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
 <translation id="8712637175834984815">OK</translation>

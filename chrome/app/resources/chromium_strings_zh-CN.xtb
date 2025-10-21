@@ -62,6 +62,7 @@
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">下次在<ph name="DEVICE_TYPE" />上打开 Chromium 时，您会看到使用 Google 密码管理工具的提示。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -88,6 +89,7 @@
 <translation id="2049376729098081731">选择是否要包含 Chromium 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
 <translation id="2054039611381840095">若要接收后续 Chromium 更新，您需要使用 macOS 12 或更高版本。该电脑目前使用的是 macOS 11。</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
+<translation id="208726765006323911">下次打开 Chromium iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
@@ -148,6 +150,7 @@
 <translation id="2718390899429598676">为了提高安全性，Chromium 将对您的数据进行加密。</translation>
 <translation id="2721354645805494590">若要从 Chromium 中移除您的 Google 账号，请退出账号</translation>
 <translation id="2722636413143664436">如需在您的所有设备上获取密码、书签等信息，请登录 Chromium</translation>
+<translation id="2723860029395667894">始终显示 Google AI 模式快捷方式</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2768103863314748511">将 Chromium 设为默认 PDF 查看器</translation>
@@ -635,6 +638,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8619360774459241877">正在启动 Chromium…</translation>
 <translation id="8648201657708811153">您无法将 Google Chrome for Testing 设为默认浏览器。</translation>
+<translation id="8677922833187616101">始终显示 Google AI 模式快捷方式</translation>
 <translation id="8697124171261953979">它还能够控制您启动Chromium后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="8704119203788522458">这是您的专属Chromium</translation>
 <translation id="8712637175834984815">知道了</translation>

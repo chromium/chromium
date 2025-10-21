@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Osoite siirretty tilille <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Merkitse luetuksi</translation>
 <translation id="428768789042547925">Uutta</translation>
-<translation id="428858055663163046">Pääset ladattuihin tiedostoihin täältä, kun ne ovat saatavilla</translation>
 <translation id="429074084062258019">{count,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
 <translation id="4302061870579014542">Aseta sijainti</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
@@ -1793,6 +1792,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7851858861565204677">Muut laitteet</translation>
 <translation id="7853202427316060426">Tapahtumat</translation>
 <translation id="7854006015462979438">Avaa Yleiset</translation>
+<translation id="7855678267851972597">Audio</translation>
 <translation id="7859988229622350291">Älä koskaan käännä näitä</translation>
 <translation id="7863211248337747225">Lataa sovellus</translation>
 <translation id="7865127013871431856">Käännösasetukset</translation>
@@ -1973,6 +1973,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-välilehdet: <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Avaa muiden sovellusten linkkejä incognito-tilassa</translation>
 <translation id="8529767659511976195">Uusi</translation>
+<translation id="8531572740963685410">PDF-tiedostot</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Selaussuoja on päällä</translation>
 <translation id="8534481786647257214">Google+ -viesti julkaistu.</translation>
@@ -2179,6 +2180,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="94870150074703282">Poistetaanko ryhmä?</translation>
 <translation id="952704832371081537">Peru</translation>
+<translation id="95332591904104970">Yhdistetyt sovellukset</translation>
 <translation id="954667170699278022">Lukulista</translation>
 <translation id="956218893102219091">Käytä tarkkaa sijaintia, niin saat tarkimmat Gemini-tulokset IP-osoitteen perusteella arvioidun sijainnin sijaan. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Poista selausdata</translation>

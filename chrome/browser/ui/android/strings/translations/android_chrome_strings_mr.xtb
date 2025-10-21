@@ -49,6 +49,7 @@
 <translation id="11947597112837849">ईमेल अ‍ॅड्रेस</translation>
 <translation id="1197267115302279827">बुकर्माक हलवा</translation>
 <translation id="1197761954713363183">पासकी कन्फर्मेशन शीट बंद केली</translation>
+<translation id="1197933394627598677">वाचन मोड दाखवा</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1202892408424955784">माग ठेवलेली उत्पादने</translation>
 <translation id="1204037785786432551">लिंक डाउनलोड करा</translation>
@@ -517,6 +518,7 @@
 <translation id="3435575784518354875">तुमच्या पासवर्डचा ॲक्सेस कायम ठेवण्यासाठी, ते आता एक्सपोर्ट करा, Google Play सेवा अपडेट करा आणि नंतर ते Google Password Manager मध्ये पुन्हा इंपोर्ट करा. <ph name="BEGIN_LINK" />सर्व सूचना पहा<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3435914367318771664">नवीन गटामध्ये टॅब जोडा</translation>
+<translation id="3438681572027105609">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="3439276997620616816">तुमचे अलीकडील टॅब तुम्हाला येथे मिळतील</translation>
 <translation id="3443221991560634068">सध्याचे पेज रीलोड करा</translation>
 <translation id="3444179773590444986">साइटसाठीच्या गडद थीमबाबत फीडबॅक शेअर करायचा आहे का?</translation>
@@ -1261,6 +1263,7 @@
 <translation id="6738867403308150051">डाउनलोड करीत आहे…</translation>
 <translation id="6745063744988317486">मोनो</translation>
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
+<translation id="6746834324024491643">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="6751521182688001123">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
 <translation id="6752130751133944215">नवीन विंडो रिस्टोअर करण्यासाठी, सर्व अ‍ॅक्टिव्ह आणि इनॅक्टिव्ह एकूण विंडोची संख्या <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> किंवा त्याहून कमी करा. इनॅक्टिव्ह विंडो ६ महिन्यांनंतर हटवल्या जातात.</translation>
 <translation id="6754359471209693699">नवीन शोध सुरू करा</translation>
@@ -1397,6 +1400,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
 <translation id="7230064152164845085">गुप्त मोड वर स्विच करा</translation>
 <translation id="7237724030342645845">Google Password Manager काम करणे थांबवले आहे</translation>
+<translation id="7239496616545081903">वाचन मोड लपवा</translation>
 <translation id="72415438529550637">पासवर्डसंबंधित सूचना बंद आहे.</translation>
 <translation id="7248671827512403053">ॲप्लिकेशन</translation>
 <translation id="7253951228444156601">पासवर्ड तपासत आहे…</translation>
@@ -1533,6 +1537,7 @@
 <translation id="7821130663268546430">तुम्ही टॅब स्विचरमध्ये सर्व उघडे टॅब शोधू शकता</translation>
 <translation id="7822705602465980873">तुम्ही साइन इन केले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करण्यासाठी हा डेटा तुमच्या Google खाते शी लिंक केला जातो, उदाहरणार्थ सुरक्षेशी संबंधित घटनेनंतर Gmail मध्ये संरक्षण वाढवणे.</translation>
 <translation id="7824665136384946951">तुमच्या संस्थेने सुरक्षित ब्राउझिंग बंद केले आहे</translation>
+<translation id="7826342993930002256">तुमचे Chrome, सर्व ठिकाणी</translation>
 <translation id="7844171778363018843">सिंक करण्यासाठी कोणताही डेटा निवडला नाही</translation>
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
 <translation id="7846296061357476882">Google सेवा</translation>
@@ -1738,6 +1743,7 @@
 <translation id="8723453889042591629">या पेजचे झटपट भाषांतर करा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>
+<translation id="8738163682604285902">वाचन मोड पाहायचा आहे का?</translation>
 <translation id="8746155870861185046">हायलाइट करा</translation>
 <translation id="8748850008226585750">आशय लपवला</translation>
 <translation id="8754448020583829686">लिंकशिवाय कॉपी करा</translation>

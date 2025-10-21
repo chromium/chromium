@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Dies ist dein persönlicher Chrome-Browser</translation>
 <translation id="1125124144982679672">Wer verwendet gerade Chrome?</translation>
 <translation id="1142745911746664600">Chrome kann nicht aktualisiert werden</translation>
+<translation id="1148360048981192980">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
 <translation id="1157985233335035034">Zuletzt verwendete Sprachen</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">Öffne <ph name="URL" /> in einem neuen Tab in Google Chrome.</translation>
 <translation id="2699790011615497488">Gemini in Chrome Beta öffnen</translation>
 <translation id="2712141162840347885">Wähle einen beliebigen Gegenstand für die Suche mit Google Lens aus oder drücke die Esc-Taste, um Google Lens zu beenden</translation>
+<translation id="2723860029395667894">Verknüpfung zum KI-Modus von Google immer anzeigen</translation>
 <translation id="2738871930057338499">Internetverbindung kann nicht hergestellt werden. HTTP 403 Forbidden. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="2742320827292110288">Achtung: Google Chrome kann nicht verhindern, dass dein Browser-Verlauf von Erweiterungen aufgezeichnet wird. Schalte diese Option aus, um die Erweiterung im Inkognitomodus zu deaktivieren.</translation>
 <translation id="2753623023919742414">Zum Suchen klicken</translation>
@@ -474,6 +476,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
+<translation id="6426623519983252346">Wenn du Chrome unter iOS das nächste Mal öffnest, wirst du aufgefordert, die Funktion „<ph name="FEATURE_NAME" />“ auszuprobieren.</translation>
 <translation id="6473905796280459355">Zur Seite „Über Chrome“</translation>
 <translation id="6481963882741794338">Chrome und andere Google-Dienste zur Personalisierung und für andere Zwecke verknüpfen</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
@@ -672,6 +675,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="8641606876632989680">Wenn du dich mit einem Passwort anmeldest, das gehackt wurde, benachrichtigt dich Chrome entsprechend.</translation>
 <translation id="8656634243791296665">Gemini in Chrome Dev öffnen</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Verknüpfung zum KI-Modus von Google immer anzeigen</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8712767363896337380">Fast geschafft! Starte Chrome zum Abschluss der Aktualisierung neu.</translation>

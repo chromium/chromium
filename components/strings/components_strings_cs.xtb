@@ -882,6 +882,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2436976580469434549">Umění využívající vlákna a textilie</translation>
 <translation id="243815215670139125">Tuto kartu se nepodařilo uložit do vašeho účtu Google. Místo toho je uložena v Chromu na tomto zařízení.</translation>
 <translation id="2438874542388153331">Čtyři otvory vpravo</translation>
+<translation id="2440855519769445271">Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEGIN_LINK" />nastavení plateb<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Platební metody dostupné k vyplnění dotykem. Klávesnice je skrytá.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2218,6 +2219,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4648262692072505866">Hodnota hash musí být ve formátu SHA-256.</translation>
 <translation id="4652266463001779298">Není povoleno</translation>
 <translation id="4652440160515225514">Vaše organizace tento web zablokovala, protože porušuje zásady.</translation>
+<translation id="4654457557264366314">Platební tarify jsou závislé na způsobilosti.</translation>
 <translation id="4658638640878098064">Sponka vlevo nahoře</translation>
 <translation id="4660592918803576381">Otevřít na Disku</translation>
 <translation id="4661556981531699496">Zvířata a domácí mazlíčci</translation>
@@ -2502,7 +2504,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5109892411553231226">Spravovat platební metody</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Přihrádka 18</translation>
-<translation id="511431458895937675">Fotkorgrafie DSC</translation>
+<translation id="511431458895937675">Fotografie DSC</translation>
 <translation id="5114987907971894280">virtuální realita</translation>
 <translation id="5115232566827194440">Přepsání omezené spravované relace hosta</translation>
 <translation id="5115563688576182185">(64bitový)</translation>

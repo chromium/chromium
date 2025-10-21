@@ -49,6 +49,7 @@
 <translation id="11947597112837849">sähköpostiosoitteesi</translation>
 <translation id="1197267115302279827">Siirrä kirjanmerkkejä</translation>
 <translation id="1197761954713363183">Avainkoodin vahvistussivu suljettu</translation>
+<translation id="1197933394627598677">Näytä lukutila</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1202892408424955784">Seuratut tuotteet</translation>
 <translation id="1204037785786432551">Lataa linkin kohde</translation>
@@ -517,6 +518,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3435575784518354875">Jos haluat säilyttää pääsyn salasanoihin, vie ne nyt, päivitä Google Play Palvelut, ja siirrä ne sitten takaisin Google Salasanoihin. <ph name="BEGIN_LINK" />Tutustu tarkkoihin ohjeisiin<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Suojaus</translation>
 <translation id="3435914367318771664">Lisää välilehti uuteen ryhmään</translation>
+<translation id="3438681572027105609">Kirjaudu sisään Chromeen, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
 <translation id="3439276997620616816">Näet viimeaikaiset välilehtesi täällä</translation>
 <translation id="3443221991560634068">Päivitä nykyinen sivu</translation>
 <translation id="3444179773590444986">Haluatko antaa palautetta sivustojen tummasta teemasta?</translation>
@@ -1261,6 +1263,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6738867403308150051">Ladataan…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Tarkista tilin data</translation>
+<translation id="6746834324024491643">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
 <translation id="6751521182688001123">Avaa uusi välilehti nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
 <translation id="6752130751133944215">Jos haluat palauttaa uuden ikkunan, vähennä aktiivisten ja ei-aktiivisten ikkunoiden kokonaismäärää niin, että niitä on enintään <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Ei-aktiiviset ikkunat poistetaan kuuden kuukauden kuluttua.</translation>
 <translation id="6754359471209693699">Aloita uusi haku</translation>
@@ -1397,6 +1400,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 lataus odottaa}other{# latausta odottaa}}</translation>
 <translation id="7230064152164845085">Siirry incognito-tilaan</translation>
 <translation id="7237724030342645845">Google Salasanat lakkasi toimimasta</translation>
+<translation id="7239496616545081903">Piilota lukutila</translation>
 <translation id="72415438529550637">Salasanaehdotus on suljettu.</translation>
 <translation id="7248671827512403053">Sovellus</translation>
 <translation id="7253951228444156601">Tarkistetaan salasanoja…</translation>
@@ -1533,6 +1537,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7821130663268546430">Näet kaikki avoimet välilehdet välilehtien vaihtajassa</translation>
 <translation id="7822705602465980873">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="7824665136384946951">Organisaatiosi on laittanut Selaussuojan pois päältä</translation>
+<translation id="7826342993930002256">Oma Chrome kaikkialla</translation>
 <translation id="7844171778363018843">Synkronoitavaa dataa ei ole valittu</translation>
 <translation id="7846161022626028328">Tapahtui virhe. Yritä uudelleen.</translation>
 <translation id="7846296061357476882">Googlen palvelut</translation>
@@ -1738,6 +1743,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8723453889042591629">Käännä tämä sivu nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8731268612289859741">Turvakoodi</translation>
+<translation id="8738163682604285902">Näytetäänkö lukutila?</translation>
 <translation id="8746155870861185046">Jaa kohta</translation>
 <translation id="8748850008226585750">Sisältö piilotettu</translation>
 <translation id="8754448020583829686">Kopioi ilman linkkiä</translation>

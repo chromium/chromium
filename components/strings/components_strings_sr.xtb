@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">Текстилна уметност</translation>
 <translation id="243815215670139125">Чување ове картице на Google налогу није успело. Уместо тога, сачувана је у Chrome-у на овом уређају.</translation>
 <translation id="2438874542388153331">Четвороструко бушење на десној страни</translation>
+<translation id="2440855519769445271">Да бисте сакрили опције за плаћање касније, идите у <ph name="BEGIN_LINK" />подешавања плаћања<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Начини плаћања доступни за унос додиром. Тастатура је сакривена.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не чува<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">Хеш мора да буде у формату SHA-256.</translation>
 <translation id="4652266463001779298">Није дозвољено</translation>
 <translation id="4652440160515225514">Ваша организација је блокирала овај сајт јер крши смернице.</translation>
+<translation id="4654457557264366314">Планови плаћања подлежу условима.</translation>
 <translation id="4658638640878098064">Спајање у горњем левом углу</translation>
 <translation id="4660592918803576381">Отвори на Диску</translation>
 <translation id="4661556981531699496">Кућни љубимци и животиње</translation>

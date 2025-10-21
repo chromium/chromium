@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">پتہ آپ کے اکاؤنٹ <ph name="USER_EMAIL" /> میں منتقل کر دیا گیا</translation>
 <translation id="4287172530684295552">پڑھی ہوئی کا نشان لگائیں</translation>
 <translation id="428768789042547925">نیا کیا ہے</translation>
-<translation id="428858055663163046">دستیاب ہونے پر آپ اپنی ڈاؤن لوڈ کردہ فائلز تک یہاں رسائی حاصل کر سکتے ہیں</translation>
 <translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
@@ -1793,6 +1792,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7851858861565204677">دیگر آلات</translation>
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7854006015462979438">'عام' کھولیں</translation>
+<translation id="7855678267851972597">آڈیوز</translation>
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7863211248337747225">ایپ حاصل کریں</translation>
 <translation id="7865127013871431856">ترجمہ کے اختیارات</translation>
@@ -1973,6 +1973,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ٹیبز <ph name="FIRST_VISIBLE_TAB" /> سے <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">پوشیدگی میں دیگر ایپس کے لنکس کھولیں</translation>
 <translation id="8529767659511976195">نئی</translation>
+<translation id="8531572740963685410">PDFs</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">محفوظ براؤزنگ آن ہے</translation>
 <translation id="8534481786647257214">‏Google+‎ اشاعت مکمل ہوگئی۔</translation>

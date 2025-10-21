@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-posta adresi</translation>
 <translation id="1197267115302279827">Yer işaretlerini taşı</translation>
 <translation id="1197761954713363183">Geçiş anahtarı onay sayfası kapatıldı</translation>
+<translation id="1197933394627598677">Okuma Modu'nu göster</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1202892408424955784">Takip edilen ürünler</translation>
 <translation id="1204037785786432551">Bağlantıyı indir</translation>
@@ -517,6 +518,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3435575784518354875">Şifrelerinize erişmeye devam etmek için hemen dışa aktarın, Google Play Hizmetleri'ni güncelleyin ve ardından Google Şifre Yöneticisi'ne geri aktarın. <ph name="BEGIN_LINK" />Talimatların tamamına göz atın<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3435914367318771664">Sekmeyi yeni gruba ekle</translation>
+<translation id="3438681572027105609">Şifrelerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da oturum açın</translation>
 <translation id="3439276997620616816">Son sekmeleriniz burada gösterilir</translation>
 <translation id="3443221991560634068">Geçerli sayfayı yeniden yükler</translation>
 <translation id="3444179773590444986">Sitelerdeki koyu temayla ilgili geri bildirim paylaşmak ister misiniz?</translation>
@@ -1261,6 +1263,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6738867403308150051">İndiriliyor…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Hesap verilerinizi inceleyin</translation>
+<translation id="6746834324024491643">Şifrelerinizi ve diğer öğelerinizi tüm cihazlarınızda almak için <ph name="EMAIL" /> olarak oturum açın</translation>
 <translation id="6751521182688001123">Hızlıca yeni bir sekme açın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="6752130751133944215">Yeni bir pencereyi geri yüklemek için etkin ve etkin olmayan toplam pencere sayısını en fazla <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> olacak şekilde azaltın. Etkin olmayan pencereler 6 ay sonra silinir.</translation>
 <translation id="6754359471209693699">Yeni arama başlat</translation>
@@ -1397,6 +1400,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 indirme işlemi beklemede}other{# indirme işlemi beklemede}}</translation>
 <translation id="7230064152164845085">Gizli moda geçin</translation>
 <translation id="7237724030342645845">Google Şifre Yöneticisi çalışmayı durdurdu</translation>
+<translation id="7239496616545081903">Okuma Modu'nu gizle</translation>
 <translation id="72415438529550637">Şifre önerisi kapatıldı.</translation>
 <translation id="7248671827512403053">Uygulama</translation>
 <translation id="7253951228444156601">Şifreler kontrol ediliyor…</translation>
@@ -1533,6 +1537,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7821130663268546430">Açık sekmelerin tümünü, sekme değiştiricide bulabilirsiniz</translation>
 <translation id="7822705602465980873">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>
 <translation id="7824665136384946951">Kuruluşunuz, Güvenli Tarama'yı devre dışı bıraktı</translation>
+<translation id="7826342993930002256">Kendi Chrome'unuz, her yerde</translation>
 <translation id="7844171778363018843">Senkronize edilecek veri seçilmedi</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
 <translation id="7846296061357476882">Google hizmetleri</translation>
@@ -1738,6 +1743,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8723453889042591629">Bu sayfayı hızlıca çevirin. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8731268612289859741">Güvenlik kodu</translation>
+<translation id="8738163682604285902">Okuma Modu görüntülensin mi?</translation>
 <translation id="8746155870861185046">Vurgulanan metni paylaş</translation>
 <translation id="8748850008226585750">İçerik gizlendi</translation>
 <translation id="8754448020583829686">Bağlantı olmadan kopyala</translation>

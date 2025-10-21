@@ -49,6 +49,7 @@
 <translation id="11947597112837849">adresse e-mail</translation>
 <translation id="1197267115302279827">Déplacer les favoris</translation>
 <translation id="1197761954713363183">Feuille de confirmation de la clé d'accès fermée</translation>
+<translation id="1197933394627598677">Afficher le mode Lecture</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1202892408424955784">Produits suivis</translation>
 <translation id="1204037785786432551">Télécharger le lien</translation>
@@ -517,6 +518,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis importez les mots de passe à nouveau dans le Gestionnaire de mots de passe de Google. <ph name="BEGIN_LINK" />Voir les instructions détaillées<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3435914367318771664">Ajouter l'onglet à nouveau groupe</translation>
+<translation id="3438681572027105609">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="3439276997620616816">Vos onglets récents s'afficheront ici</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
 <translation id="3444179773590444986">Envoyer des commentaires sur le thème sombre pour les sites ?</translation>
@@ -1261,6 +1263,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Examinez les données de votre compte</translation>
+<translation id="6746834324024491643">Pour accéder à vos mots de passe et plus sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Ouvre rapidement un nouvel onglet. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="6752130751133944215">Pour restaurer une nouvelle fenêtre, réduisez le nombre total de fenêtres actives et inactives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins. Les fenêtres inactives sont supprimées au bout de six mois.</translation>
 <translation id="6754359471209693699">Lancer une nouvelle recherche</translation>
@@ -1397,6 +1400,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="7230064152164845085">Passer à la navigation privée</translation>
 <translation id="7237724030342645845">Le Gestionnaire de mots de passe de Google a cessé de fonctionner</translation>
+<translation id="7239496616545081903">Masquer le mode Lecture</translation>
 <translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
 <translation id="7248671827512403053">Application</translation>
 <translation id="7253951228444156601">Vérification des mots de passe…</translation>
@@ -1533,6 +1537,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7821130663268546430">Vous trouverez tous les onglets ouverts dans le sélecteur d'onglets</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
 <translation id="7824665136384946951">Votre organisation a désactivé la navigation sécurisée</translation>
+<translation id="7826342993930002256">Votre Chrome, où que vous soyez</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="7846296061357476882">Services Google</translation>
@@ -1738,6 +1743,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8723453889042591629">Traduire rapidement cette page. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
+<translation id="8738163682604285902">Consulter le mode Lecture ?</translation>
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>
 <translation id="8748850008226585750">Contenu masqué</translation>
 <translation id="8754448020583829686">Copier sans le lien</translation>

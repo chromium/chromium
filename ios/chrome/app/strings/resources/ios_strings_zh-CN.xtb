@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">已将地址迁移到您的账号 <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">标为已读</translation>
 <translation id="428768789042547925">新变化</translation>
-<translation id="428858055663163046">您可以在此处访问下载好的文件</translation>
 <translation id="429074084062258019">{count,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="4302061870579014542">设置位置</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
@@ -1625,7 +1624,7 @@
 <translation id="7218491361283758048">邮编</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
 <translation id="7223102419539744003">关闭这个标签页</translation>
-<translation id="7223134495231529579">保存为下载内容</translation>
+<translation id="7223134495231529579">存储到“下载”</translation>
 <translation id="722339453342442311">立即检查</translation>
 <translation id="7227235818314667565">管理分享设置</translation>
 <translation id="7233006041370588369">选择要填充的密码。</translation>
@@ -1793,6 +1792,7 @@
 <translation id="7851858861565204677">来自其他设备的同步</translation>
 <translation id="7853202427316060426">活动</translation>
 <translation id="7854006015462979438">打开“通用”</translation>
+<translation id="7855678267851972597">音频</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7863211248337747225">下载应用</translation>
 <translation id="7865127013871431856">翻译选项</translation>
@@ -1973,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="INCOGNITO" />标签页<ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />（共<ph name="NUMBER_OF_OPEN_TABS" />个）</translation>
 <translation id="8528009254289981965">在无痕模式下打开来自其他应用的链接</translation>
 <translation id="8529767659511976195">新功能</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>

@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
 <translation id="10619348099955377">Skopiuj wyświetlaną nazwę</translation>
 <translation id="1062407476771304334">Zastąp</translation>
+<translation id="1064236804542808595">Przywróć skróty organizacji</translation>
 <translation id="1065369186007547872">Chrome uważa, że nie chcesz otrzymywać powiadomień z tej strony internetowej. Żądania są ukrywane, aby nie przeszkadzać Ci w przeglądaniu.</translation>
 <translation id="1066964438793906105">Skanuj w poszukiwaniu złośliwego oprogramowania</translation>
 <translation id="1067661089446014701">Zanim zapiszesz hasła na koncie Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo</translation>
@@ -1053,6 +1054,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1700517974991662022">Kliknięty</translation>
 <translation id="1703331064825191675">Nie musisz się już martwić o bezpieczeństwo swoich haseł</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
+<translation id="1703849276368677471">Narzędzia</translation>
 <translation id="1704097193565924901">Od wielkiej litery</translation>
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
 <translation id="1706586824377653884">Dodane przez administratora</translation>
@@ -1180,6 +1182,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1796460466266263589">Aby nadal korzystać z Gemini, potwierdź swoją tożsamość</translation>
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1797117170091578105">Graj przy użyciu klawiatury Chromebooka. Możesz dostosować klawisze do konkretnych działań.</translation>
+<translation id="1798726622311813209">Karty kredytowe i debetowe</translation>
 <translation id="1799852120691957794">Nie można przywrócić okien z poprzedniej sesji</translation>
 <translation id="180203835522132923">Wyszukaj + O, a następnie W</translation>
 <translation id="1802624026913571222">Uśpij po zamknięciu pokrywy</translation>
@@ -1465,6 +1468,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="1984683754853869253">Czy chcesz utworzyć nowy profil szkolny?</translation>
 <translation id="198507684520034826">Pomoc</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Zaawansowane ustawienia lokalizacji</translation>
 <translation id="1987317783729300807">Konta</translation>
 <translation id="1987574314042117472">Wybierz i zainstaluj popularne aplikacje</translation>
@@ -3102,6 +3106,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3122883569442693641">Więcej szczegółów</translation>
 <translation id="3124111068741548686">Uchwyty USER</translation>
 <translation id="3124332159330678621">Spersonalizuj Chrome, aby zmienić wygląd przeglądarki</translation>
+<translation id="3124950826511066429">Ustawienia, które wpływają na działanie autouzupełniania w przypadku różnych typów informacji</translation>
 <translation id="3125361247594231799">Przypnij na następny raz</translation>
 <translation id="3125816458150005808">Możesz je odpiąć i otworzyć z poziomu menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5346,6 +5351,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="467809019005607715">Prezentacje Google</translation>
 <translation id="4678848110205818817">Karta kredytowa lub debetowa</translation>
 <translation id="4679018849559620189">To ułatwia dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">Dźwięk na tej stronie został wyciszony</translation>
 <translation id="4680112532510845139">Upuść obraz tutaj</translation>
 <translation id="4681453295291708042">Wyłącz Udostępnianie w pobliżu</translation>
@@ -5890,6 +5896,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5068553687099139861">pokazać hasła</translation>
 <translation id="506886127401228110">Włącz izolowane aplikacje internetowe</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070630163913211970">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. <ph name="LINK_BEGIN" />Więcej informacji o AI i prywatności<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">Wróć do ostatnio pobranych</translation>
 <translation id="5071892329440114717">Pokaż szczegóły standardowej ochrony</translation>
 <translation id="5072500507106264618">Z Twojej lokalizacji mogą korzystać tylko usługi systemowe</translation>
@@ -6352,6 +6359,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5398497406011404839">Ukryte zakładki</translation>
 <translation id="5398572795982417028">Odwołanie do strony spoza zakresu, limit to <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomaga w pisaniu krótkich treści używanych w internecie, np. opinii</translation>
+<translation id="5400068721524309244">Gdy karty są udostępniane, ich zawartość i adresy URL są wysyłane do Google</translation>
 <translation id="5400196580536813396">Nie zezwolono na wyszukiwanie ani używanie drukarek dostępnych dla urządzenia</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
@@ -7685,6 +7693,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB. W związku z tym za 24 godziny Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie zresetowane. Utwórz kopie zapasowe plików, które chcesz zachować.</translation>
 <translation id="6336194758029258346">Język aplikacji</translation>
 <translation id="6337543438445391085">Te dane nadal mogą zawierać niektóre dane osobowe. Pamiętaj, żeby przejrzeć wyeksportowane pliki.</translation>
+<translation id="6338554362382763574">Podczas przeglądania możesz łatwo zadawać Gemini pytania dotyczące udostępnianych kart</translation>
 <translation id="6338968693068997776">Dodaj urządzenie USB</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8029,6 +8038,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6586451623538375658">Zamień główny przycisk myszy</translation>
 <translation id="6588043302623806746">Użyj bezpiecznego serwera DNS</translation>
 <translation id="6589760925779188068">Panna cotta</translation>
+<translation id="6589769062042696460">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. Nie używamy Twoich danych do ulepszania modeli generatywnej AI. <ph name="LINK_BEGIN" />Więcej informacji o AI i prywatności<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">Zmień nazwę folderu</translation>
 <translation id="6592267180249644460">Zapisany log WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Twój odcisk został zarejestrowany</translation>
@@ -8308,6 +8318,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
     <ph name="BEGIN_PARAGRAPH2" />Możesz wyłączyć tę usługę w Ustawieniach.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Tworzenie kopii zapasowej Linuksa zostało anulowane</translation>
 <translation id="6782067259631821405">Nieprawidłowy PIN</translation>
+<translation id="6782219876520622071">Rozmowy o udostępnionych kartach mogą być widoczne dla weryfikatorów pracujących nad ulepszaniem Gemini</translation>
 <translation id="6783036716881942511">Zapomnieć to urządzenie?</translation>
 <translation id="6783667414610055871">Ustawienia Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil jest obsługiwany</translation>
@@ -8436,6 +8447,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6852290167968069627">ChromeOS nie może wznowić poprzedniej sesji z powodu problemu z siecią. Połącz się ze stabilną siecią i spróbuj ponownie.</translation>
 <translation id="6852529053326738838">Zapytaj swoją organizację, czy Twoje konto spełnia warunki, lub zarejestruj się za pomocą służbowego e-maila, aby to sprawdzić.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" />, zainstalowano ze strony <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
+<translation id="6853118789186721762">Przypomnienie zostało wysłane na urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> rok</translation>
 <translation id="68541483639528434">Zamknij inne karty</translation>
 <translation id="6855892664589459354">Tworzenie i przywracanie kopii zapasowej Crostini</translation>
@@ -8737,6 +8749,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7066572364168923329">Wybierz konfigurację urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Kolory otoczenia</translation>
 <translation id="7067725467529581407">Nie pokazuj tego ponownie.</translation>
+<translation id="7067779359472606732">Przypomnienie zostało wysłane na urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Zaloguj się, aby zobaczyć karty z innych urządzeń</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> i kilka innych aplikacji jest zablokowanych na Twoim urządzeniu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="706949303827219454">Otwiera stronę ustawień zabezpieczeń w nowej karcie</translation>
@@ -11217,6 +11230,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="876161309768861172">Nie udało się zalogować. Spróbuj ponownie.</translation>
 <translation id="8761945298804995673">Ten użytkownik już istnieje</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> wymaga aktualizacji</translation>
+<translation id="8763170551806710928">Pokaż elementy</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Pokaż wszystkie wyszukiwania związane z: <ph name="QUERY_CLUSTER_NAME" /></translation>
@@ -11549,6 +11563,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8988539543012086784">Ta strona jest zapisana w folderze <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989034257029389285">Możesz zapytać: „OK Google, co to za utwór?”</translation>
 <translation id="8989359959810288806">Aktualizuj stan tetheringu</translation>
+<translation id="8989779557457435460">Domyślnie udostępniaj bieżącą kartę</translation>
 <translation id="8990243615717080992">Zaloguj się przy użyciu hasła lub innej metody przywracania</translation>
 <translation id="8991520179165052608">Strona może używać mikrofonu</translation>
 <translation id="8991694323904646277">Brak aparatu</translation>

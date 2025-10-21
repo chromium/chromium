@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Ez az Ön Chrome-ja</translation>
 <translation id="1125124144982679672">Ki használja a Chrome-ot?</translation>
 <translation id="1142745911746664600">Nem sikerült a Chrome frissítése</translation>
+<translation id="1148360048981192980">Amikor legközelebb megnyitja a Chrome-ot <ph name="DEVICE_TYPE" /> eszközén, megjelenik egy üzenet a Google Jelszókezelő használatával kapcsolatban.</translation>
 <translation id="1152920704813762236">A ChromeOS névjegye</translation>
 <translation id="1154147086299354128">&amp;Megnyitás Chrome-ban</translation>
 <translation id="1157985233335035034">A legutóbbi nyelvek</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">A(z) <ph name="URL" /> megnyitása új Google Chrome-lapon.</translation>
 <translation id="2699790011615497488">A Gemini megnyitása a Chrome Bétában</translation>
 <translation id="2712141162840347885">Válasszon ki bármit a Google Lens segítségével való kereséshez, vagy nyomja meg az Esc billentyűt a Google Lensből való kilépéshez</translation>
+<translation id="2723860029395667894">A Google AI-mód gyorsparancsa mindig jelenjen meg</translation>
 <translation id="2738871930057338499">Nem lehet csatlakozni az internethez. HTTP 403 tiltás. Ellenőrizze a proxybeállításokat.</translation>
 <translation id="2742320827292110288">Figyelmeztetés: A Google Chrome nem tudja megakadályozni, hogy a bővítmények rögzítsék a böngészési előzményeket. A bővítmény inkognitó módban való használatának letiltásához törölje e lehetőség bejelölését.</translation>
 <translation id="2753623023919742414">Kattintson a kereséshez</translation>
@@ -475,6 +477,7 @@
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Szervezete automatikusan bezárja a Chrome-ot, ha 1 percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések.}other{Szervezete automatikusan bezárja a Chrome-ot, ha # percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések.}}</translation>
 <translation id="6418662306461808273">Szeretne meglévő Chrome-profilra váltani?</translation>
+<translation id="6426623519983252346">A Chrome iOS következő megnyitásakor megjelenik egy üzenet, amely a(z) <ph name="FEATURE_NAME" /> funkció kipróbálását javasolja.</translation>
 <translation id="6473905796280459355">Ugrás A Chrome névjegye oldalra</translation>
 <translation id="6481963882741794338">A Chrome és más Google-szolgáltatások összekapcsolása személyre szabási és egyéb célokból</translation>
 <translation id="648319183876919572">A Biztonságos Böngészés fokozott védelemmel funkció többet tesz a veszélyes webhelyekkel és letöltésekkel szembeni védekezésért</translation>
@@ -673,6 +676,7 @@
 <translation id="8641606876632989680">A Chrome figyelmezteti Önt, amikor olyan jelszóval jelentkezik be, amelyhez illetéktelenül hozzáfértek</translation>
 <translation id="8656634243791296665">A Gemini megnyitása a Chrome Devben</translation>
 <translation id="8669527147644353129">Google Chrome segéd</translation>
+<translation id="8677922833187616101">A Google AI-mód gyorsparancsa mindig jelenjen meg</translation>
 <translation id="8679801911857917785">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chrome indításakor.</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8712767363896337380">Már majdnem naprakész! Indítsa újra a Chrome-ot a frissítés befejezéséhez.</translation>

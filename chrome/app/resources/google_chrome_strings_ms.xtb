@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Ini Chrome anda</translation>
 <translation id="1125124144982679672">Siapakah yang sedang menggunakan Chrome?</translation>
 <translation id="1142745911746664600">Tidak dapat mengemas kini Chrome</translation>
+<translation id="1148360048981192980">Apabila anda membuka Chrome pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk menggunakan Google Password Manager.</translation>
 <translation id="1152920704813762236">Perihal ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka dalam Chrome</translation>
 <translation id="1157985233335035034">Bahasa baru-baru ini</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">Buka <ph name="URL" /> dalam tab baharu dalam Google Chrome.</translation>
 <translation id="2699790011615497488">Buka Gemini dalam Chrome Beta</translation>
 <translation id="2712141162840347885">Pilih apa-apa sahaja untuk mencari dengan Google Lens atau tekan kekunci Esc untuk keluar daripada Google Lens</translation>
+<translation id="2723860029395667894">Sentiasa paparkan pintasan AI Mode Google</translation>
 <translation id="2738871930057338499">Tidak dapat disambungkan kepada Internet. HTTP 403 Dilarang. Sila semak konfigurasi proksi anda.</translation>
 <translation id="2742320827292110288">Amaran: Google Chrome tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="2753623023919742414">Klik untuk mencari</translation>
@@ -475,6 +477,7 @@
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
+<translation id="6426623519983252346">Anda akan melihat gesaan untuk mencuba <ph name="FEATURE_NAME" /> apabila anda membuka Chrome iOS selepas ini.</translation>
 <translation id="6473905796280459355">Akses halaman Perihal Chrome</translation>
 <translation id="6481963882741794338">Pautkan Chrome dan perkhidmatan Google lain untuk pemeribadian dan tujuan lain</translation>
 <translation id="648319183876919572">Penyemakan Imbas Selamat Dipertingkatkan melakukan lebih banyak lagi untuk melindungi anda daripada laman web dan muat turun berbahaya</translation>
@@ -673,6 +676,7 @@
 <translation id="8641606876632989680">Chrome akan memaklumkan kepada anda apabila anda log masuk menggunakan kata laluan yang terjejas</translation>
 <translation id="8656634243791296665">Buka Gemini dalam Chrome Dev</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
+<translation id="8677922833187616101">Sentiasa Paparkan Pintasan AI Mode Google</translation>
 <translation id="8679801911857917785">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8712767363896337380">Kemas kini hampir selesai! Lancarkan semula Chrome untuk menyelesaikan kemas kini.</translation>

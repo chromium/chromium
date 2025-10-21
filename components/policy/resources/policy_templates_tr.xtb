@@ -759,13 +759,6 @@ Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılır
 Bu politika ayarlanmazsa Emoji Seçici normal kullanıcı hesapları için etkinleştirilir, ancak yönetilen kullanıcı hesapları için devre dışı bırakılır.</translation>
 <translation id="1494138678487405397">Giriş ekranında yüksek kontrastı devre dışı bırak</translation>
 <translation id="1497797462580613666">İndirme yöneticisinde dosyaları <ph name="GOOGLE_DRIVE_NAME" /> hedefine kaydetme seçeneği bulunur.</translation>
-<translation id="1498640472634891941">Politikanın ayarlanması, WebPrinting API aracılığıyla yerel yazıcılara erişmesi otomatik olarak reddedilecek siteleri belirten URL kalıplarının listesini oluşturmanıza olanak tanır.
-
-Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Ayarlanmadıysa kullanıcının ayarları geçerlidir.
-
-URL kalıpları, <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="1499129134689253257">Yeni <ph name="OFFSET_PARENT" /> davranışını kontrol et</translation>
 <translation id="1501644502684303995">Online girişleri yalnızca giriş ekranında zorunlu kıl</translation>
 <translation id="1502843533062797703">Üçüncü taraf yazılımı yerleştirme engellemesini etkinleştirin</translation>
@@ -3488,7 +3481,6 @@ Bu politika <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (1 değe
 Bu politika <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (2 değeri) olarak ayarlanırsa kapsanan veriler Avrupa Birliği'nde saklanır.
 
 Bu ayar yalnızca <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> içinde Veri &gt; Uyumluluk &gt; Veri bölgeleri &gt; Bölge &gt; Aktif olmayan veriler bölümünden yapılabilir.</translation>
-<translation id="3379326579027180941">Sitelerin kullanıcıdan WebPrinting API aracılığıyla yerel yazıcılara erişim istemesine izin ver</translation>
 <translation id="3379368498958498146">Fiziksel klavyede tahmine dayalı yazma özelliğini etkinleştirin veya devre dışı bırakın.
 
 Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa fiziksel klavyede tahmine dayalı yazma özelliğine izin verilir.
@@ -7597,7 +7589,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6089679180657323464">Wilco teşhis ve telemetri denetleyicisi ayarlarını kontrol eder.</translation>
 <translation id="6091233616732024397">Tarayıcıyı kullanabilmeleri için kullanıcıları oturum açmaya zorla</translation>
 <translation id="6092073071805297119">Erişilebilirlik performansı filtrelerinin kullanılmasına izin ver.</translation>
-<translation id="60925735895026302">Hiçbir sitenin WebPrinting API aracılığıyla yerel yazıcılara erişim istemesine izin verme</translation>
 <translation id="6093156968240188330">Uzaktan yardım oturumlarında uzak kullanıcıların yükseltilmiş pencerelerle etkileşimde bulunmasına izin ver</translation>
 <translation id="6093551397728373988">İzin verilen tüm giriş yöntemlerinin kullanıcı oturumunda etkinleştirilmesini zorunlu kıl</translation>
 <translation id="6094314311474620462">Yazdırmayı devre dışı bırak</translation>
@@ -8874,11 +8865,6 @@ Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa bu düz
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
 <translation id="6866755486434471318">Video kodu çözmek için paylaşılan resimlerin <ph name="PEPPER_NAME" /> tarafından kullanılmasına izin ver.</translation>
 <translation id="6878757724611298427">Kullanıcıların, ilişkili olmayan cihazlarda Android uygulamalarını kullanmasına izin ver</translation>
-<translation id="6881397131210596522">Politika 2 değerine ayarlanırsa sitelerin WebPrinting API'yi kullanması otomatik olarak engellenir.
-
-Politika 3 değerine ayarlanırsa bir site WebPrinting API'yi kullanmak istediğinde kullanıcıya istem gösterilir.
-
-Politika ayarlamadan bırakılırsa web siteleri yerel yazıcılara erişme izni isteyebilir. Kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="6881447940489194100">Verilerin on altılı kodlanmış SHA-256 karması.</translation>
 <translation id="68818134518270542">Politikanın ayarlanması, kullanıcıların <ph name="PRODUCT_OS_NAME" /> kilit ekranında not alma uygulaması olarak açabilecekleri uygulamaları belirtir.
 
@@ -11610,13 +11596,6 @@ yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şeması
 <translation id="8789338675663014675">Uzantılarla ilgili politikaları yapılandırır. Kullanıcının engellenen uzantıları, beyaz listeye alınmadığı sürece yüklemesine izin verilmez. Uzantıları <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> içinde belirterek bu uzantıların <ph name="PRODUCT_NAME" /> tarafından zorla otomatik olarak yüklenmesini de sağlayabilirsiniz. Zorunlu yüklenmiş uzantılar, engellenenler listesinde olup olmadıklarına bakılmaksızın yüklenir.</translation>
 <translation id="879697755145469671">Kapalı pencereyi algılama</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
-<translation id="879863472982972634">Politikanın ayarlanması, WebPrinting API aracılığıyla yerel yazıcılara erişmesine otomatik olarak izin verilecek siteleri belirten URL kalıplarının listesini oluşturmanıza olanak tanır.
-
-Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Ayarlanmadıysa kullanıcının ayarları geçerlidir.
-
-URL kalıpları, <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="8799492680917278474">Bu politika ayarlanırsa, dakika cinsinden tanımlanmış olan süre geçtikten sonra uzaktan erişim bağlantıları otomatik olarak kesilir. Bu durum maksimum oturum süresi aşıldıktan sonra istemcinin tekrar bağlanmasına engel olmaz. Politikanın min/maks aralığında olmayan bir değere ayarlanması, ana makinenin başlamasına engel olabilir. Bu politika, uzaktan destek senaryolarını etkilemez.
 
           Ayarlanmazsa bu politikanın hiçbir etkisi olmaz. Bu durumda uzaktan erişim bağlantılarının bu makinede süre kısıtlaması olmaz.</translation>

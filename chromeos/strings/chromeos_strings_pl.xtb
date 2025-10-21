@@ -754,6 +754,7 @@
 <translation id="4300073214558989">Obrazy: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">Otwórz aplikację</translation>
 <translation id="430786093962686457">szyfonu</translation>
+<translation id="4309762678330556039">Automatycznie twórz transkrypcje i przeszukuj dźwięk. Możesz tworzyć nagrania nawet wtedy, gdy nie masz połączenia z internetem.</translation>
 <translation id="4310735698903592804">Najnowsze tapety utworzone z wykorzystaniem AI od Google</translation>
 <translation id="4320904097188876154">neonowy róż</translation>
 <translation id="432961742358282111">Kliknij prawym przyciskiem lub naciśnij i przytrzymaj, aby zobaczyć definicje, tłumaczenia lub konwersje jednostek. Aby zarządzać tą funkcją, naciskaj klawisze strzałek w lewo lub w prawo.</translation>
@@ -1468,6 +1469,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7425832472614771259">Pobrano <ph name="PROGRESS_PERCENTAGE" />% modelu transkrypcji w języku: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tego punktu APN nie można wyłączyć ani usunąć. Upewnij się, że włączone punkty APN typu <ph name="ATTACH" /> zostały wyłączone lub usunięte.</translation>
+<translation id="7458359366992324037">Ekran zdalny</translation>
 <translation id="7458970041932198923">Aby wyświetlić i ustawić awatary, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7481312909269577407">Dalej</translation>

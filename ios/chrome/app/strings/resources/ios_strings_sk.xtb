@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adresa bola presunutá do vášho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označiť ako prečítané</translation>
 <translation id="428768789042547925">Novinky</translation>
-<translation id="428858055663163046">Keď budú stiahnuté súbory k dispozícii, budete k nim mať prístup tu</translation>
 <translation id="429074084062258019">{count,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Pridať karty do skupiny}other{Pridať karty do skupiny}}</translation>
 <translation id="4302061870579014542">Nastaviť umiestnenie</translation>
 <translation id="4304713468139749426">Správca hesiel</translation>
@@ -1793,6 +1792,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7851858861565204677">Ďalšie zariadenia</translation>
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7854006015462979438">Otvorte všeobecné</translation>
+<translation id="7855678267851972597">Zvukové záznamy</translation>
 <translation id="7859988229622350291">Nikdy neprekladať tieto jazyky</translation>
 <translation id="7863211248337747225">Získať aplikáciu</translation>
 <translation id="7865127013871431856">Možnosti prekladu</translation>
@@ -1973,6 +1973,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> – karty <ph name="FIRST_VISIBLE_TAB" /> až <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Otváranie odkazov z iných aplikácií v režime inkognito</translation>
 <translation id="8529767659511976195">Nové</translation>
+<translation id="8531572740963685410">Súbory PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Bezpečné prehliadanie je zapnuté</translation>
 <translation id="8534481786647257214">Príspevok bol uverejnený v Google+.</translation>

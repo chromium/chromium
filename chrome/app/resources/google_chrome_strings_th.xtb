@@ -19,6 +19,7 @@
 <translation id="110877069173485804">นี่คือ Chrome ของคุณ</translation>
 <translation id="1125124144982679672">ใครกำลังใช้ Chrome อยู่</translation>
 <translation id="1142745911746664600">อัปเดต Chrome ไม่ได้</translation>
+<translation id="1148360048981192980">ครั้งถัดไปที่เปิด Chrome ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1152920704813762236">เกี่ยวกับ ChromeOS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
 <translation id="1157985233335035034">ภาษาล่าสุด</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">เปิด <ph name="URL" /> ในแท็บใหม่ใน Google Chrome</translation>
 <translation id="2699790011615497488">เปิด Gemini ใน Chrome Beta</translation>
 <translation id="2712141162840347885">เลือกอะไรก็ได้เพื่อค้นหาด้วย Google Lens หรือกด Escape เพื่อออกจาก Google Lens</translation>
+<translation id="2723860029395667894">แสดงทางลัดโหมด AI ของ Google เสมอ</translation>
 <translation id="2738871930057338499">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ HTTP 403 Forbidden โปรดตรวจสอบการกำหนดค่าพร็อกซีของคุณ</translation>
 <translation id="2742320827292110288">คำเตือน: Google Chrome ไม่สามารถป้องกันไม่ให้ส่วนขยายบันทึกประวัติการท่องเว็บ หากต้องการปิดใช้ส่วนขยายนี้ในโหมดไม่ระบุตัวตน ให้ยกเลิกการเลือกตัวเลือกนี้</translation>
 <translation id="2753623023919742414">คลิกเพื่อค้นหา</translation>
@@ -474,6 +476,7 @@
 <translation id="6412673304250309937">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{องค์กรจะปิด Chrome โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}other{องค์กรจะปิด Chrome โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}}</translation>
 <translation id="6418662306461808273">เปลี่ยนไปใช้โปรไฟล์ Chrome ที่มีอยู่ไหม</translation>
+<translation id="6426623519983252346">คุณจะเห็นข้อความแจ้งให้ลองใช้ <ph name="FEATURE_NAME" /> ในครั้งถัดไปที่เปิด Chrome บน iOS</translation>
 <translation id="6473905796280459355">ไปที่หน้าเกี่ยวกับ Chrome</translation>
 <translation id="6481963882741794338">ลิงก์ Chrome กับบริการอื่นๆ ของ Google เพื่อการปรับเปลี่ยนในแบบของคุณและวัตถุประสงค์อื่นๆ</translation>
 <translation id="648319183876919572">Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นทำสิ่งต่างๆ ได้มากขึ้นเพื่อปกป้องคุณจากเว็บไซต์และการดาวน์โหลดที่เป็นอันตราย</translation>
@@ -672,6 +675,7 @@
 <translation id="8641606876632989680">Chrome จะแจ้งให้คุณทราบเมื่อคุณลงชื่อเข้าใช้ด้วยรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="8656634243791296665">เปิด Gemini ใน Chrome Dev</translation>
 <translation id="8669527147644353129">ตัวช่วยเหลือของ Google Chrome</translation>
+<translation id="8677922833187616101">แสดงทางลัดโหมด AI ของ Google เสมอ</translation>
 <translation id="8679801911857917785">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chrome ด้วย</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8712767363896337380">ใกล้จะอัปเดตเสร็จแล้ว เปิด Chrome อีกครั้งเพื่อให้การอัปเดตเสร็จสมบูรณ์</translation>

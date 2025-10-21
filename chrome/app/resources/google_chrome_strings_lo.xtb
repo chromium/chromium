@@ -21,6 +21,7 @@
 <translation id="110877069173485804">ນີ້​ແມ່ນ Chrome ຂອງ​ທ່ານ</translation>
 <translation id="1125124144982679672">ໃຜກຳລັງໃຊ້ Chrome?</translation>
 <translation id="1142745911746664600">ບໍ່ສາມາດອັບເດດ Chrome ໄດ້</translation>
+<translation id="1148360048981192980">ເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chrome ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ, ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
 <translation id="1152920704813762236">ກ່ຽວກັບ ChromeOS</translation>
 <translation id="1154147086299354128">&amp;ເປີດໃນ Chrome</translation>
 <translation id="1157985233335035034">ພາສາຫຼ້າສຸດ</translation>
@@ -150,6 +151,7 @@
 <translation id="2681444469812712297">ເປີດ <ph name="URL" /> ໃນແຖບໃໝ່ໃນ Google Chrome.</translation>
 <translation id="2699790011615497488">ເປີດ Gemini ໃນ Chrome Beta</translation>
 <translation id="2712141162840347885">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Google Lens ຫຼື ກົດ Escape ເພື່ອອອກຈາກ Google Lens</translation>
+<translation id="2723860029395667894">ສະແດງທາງລັດຂອງໂໝດ Google AI ສະເໝີ</translation>
 <translation id="2738871930057338499">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. HTTP 403 ຖືກຫ້າມ. ກະລຸນາກວດສອບການຕັ້ງຄ່າພຣັອກຊີຂອງທ່ານ.</translation>
 <translation id="2742320827292110288">ຄຳເຕືອນ: Google Chrome ບໍ່ສາມາດປ້ອງກັນບໍ່ໃຫ້ສ່ວນຂະຫຍາຍບັນທຶກປະຫວັດການທ່ອງເວັບຂອງທ່ານໄດ້. ເພື່ອປິດການນຳໃຊ້ສ່ວນຂະຫຍາຍນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ກະລຸນາບໍ່ເລືອກຕົວເລືອກນີ້.</translation>
 <translation id="2753623023919742414">ຄລິກເພື່ອຊອກຫາ</translation>
@@ -483,6 +485,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6412673304250309937">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ເກັບໄວ້ໃນ Chrome. ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{ອົງກອນຂອງທ່ານຈະປິດ Chrome ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ 1 ນາທີ. ລຶບຂໍ້ມູນການທ່ອງເວັບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.}other{ອົງກອນຂອງທ່ານຈະປິດ Chrome ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ # ນາທີ. ລຶບຂໍ້ມູນການທ່ອງເວັບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.}}</translation>
 <translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
+<translation id="6426623519983252346">ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ລອງໃຊ້ <ph name="FEATURE_NAME" /> ໃນເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chrome ຢູ່ iOS.</translation>
 <translation id="6473905796280459355">ເຂົ້າໄປໜ້າກ່ຽວກັບ Chrome</translation>
 <translation id="6481963882741794338">ລິ້ງ Chrome ແລະ ບໍລິການອື່ນໆຂອງ Google ເພື່ອການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຈຸດປະສົງອື່ນໆ</translation>
 <translation id="648319183876919572">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຊ່ວຍປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
@@ -681,6 +684,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8641606876632989680">Chrome ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="8656634243791296665">ເປີດ Gemini ໃນ Chrome Dev</translation>
 <translation id="8669527147644353129">ຕົວຊ່ວຍ Google Chrome</translation>
+<translation id="8677922833187616101">ສະແດງທາງລັດຂອງໂໝດ Google AI ສະເໝີ</translation>
 <translation id="8679801911857917785">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome.</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8712767363896337380">ອັບເດດໃກ້ແລ້ວໆ! ເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ເພື່ອອັບເດດໃຫ້ແລ້ວ.</translation>

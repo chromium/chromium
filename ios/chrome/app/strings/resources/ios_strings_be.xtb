@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Адрас перамешчаны ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Пазначыць як прачытанае</translation>
 <translation id="428768789042547925">Што новага</translation>
-<translation id="428858055663163046">Тут можна атрымаць доступ да спампаваных файлаў</translation>
 <translation id="429074084062258019">{count,plural, =1{Дадаць укладку ў групу}one{Дадаць укладкі ў групу}few{Дадаць укладкі ў групу}many{Дадаць укладкі ў групу}other{Дадаць укладкі ў групу}}</translation>
 <translation id="4302061870579014542">Наладзіць размяшчэнне</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
@@ -1793,6 +1792,7 @@
 <translation id="7851858861565204677">Іншыя прылады</translation>
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854006015462979438">Адкрыйце агульныя налады</translation>
+<translation id="7855678267851972597">Аўдыяфайлы</translation>
 <translation id="7859988229622350291">Ніколі не перакладаць з наступных моў:</translation>
 <translation id="7863211248337747225">Усталяваць праграму</translation>
 <translation id="7865127013871431856">Параметры Перакладчыка</translation>
@@ -1973,6 +1973,7 @@
 <translation id="8524799873541103884">Укладкі <ph name="INCOGNITO" /> ад <ph name="FIRST_VISIBLE_TAB" /> да <ph name="LAST_VISIBLE_TAB" /> з <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Адкрыццё спасылак, размешчаных у іншых праграмах, у рэжыме інкогніта</translation>
 <translation id="8529767659511976195">Новае</translation>
+<translation id="8531572740963685410">Файлы PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">"Бяспечны прагляд" уключаны</translation>
 <translation id="8534481786647257214">Публікацыя ў Google+ выканана.</translation>

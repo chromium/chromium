@@ -882,6 +882,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2436976580469434549">Umetniško ustvarjanje z vlakni in tkaninami</translation>
 <translation id="243815215670139125">Te kartice ni bilo mogoče shraniti v računu Google. Namesto tega je shranjena v Chromu v tej napravi.</translation>
 <translation id="2438874542388153331">Četverno luknjanje na desni</translation>
+<translation id="2440855519769445271">Če želite skriti možnosti poznejšega plačila, odprite <ph name="BEGIN_LINK" />nastavitve plačil<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Razpoložljiva plačilna sredstva, ki jih je mogoče izpolniti z dotikom. Tipkovnica je skrita.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ne bo shranjeval<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4648262692072505866">Zgoščena vrednost mora biti v obliki zapisa SHA-256.</translation>
 <translation id="4652266463001779298">Ni dovoljeno</translation>
 <translation id="4652440160515225514">Vaša organizacija je blokirala to spletno mesto, ker krši pravilnik.</translation>
+<translation id="4654457557264366314">Plačilni paketi so odvisni od primernosti.</translation>
 <translation id="4658638640878098064">Spenjanje zgoraj levo</translation>
 <translation id="4660592918803576381">Odpri v Googlu Drive</translation>
 <translation id="4661556981531699496">Domače in druge živali</translation>

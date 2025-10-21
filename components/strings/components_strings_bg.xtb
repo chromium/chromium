@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">Влакна и текстилни изкуства</translation>
 <translation id="243815215670139125">Тази карта не бе запазена в профила ви в Google. Вместо това е запазена в Chrome на това устройство.</translation>
 <translation id="2438874542388153331">Четворно перфориране отдясно</translation>
+<translation id="2440855519769445271">За да скриете опциите за плащане по-късно, отворете <ph name="BEGIN_LINK" />настройките за плащане<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Списък с начини на плащане, които да бъдат попълнени при докосване. Клавиатурата е скрита.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />няма да запазва<ph name="END_EMPHASIS" />:
 <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">Хеш стойността трябва да е във формат SHA-256.</translation>
 <translation id="4652266463001779298">Не е разрешено</translation>
 <translation id="4652440160515225514">Организацията ви е блокирала този сайт, защото нарушава правило.</translation>
+<translation id="4654457557264366314">Плановете за плащане зависят от това дали отговаряте на условията.</translation>
 <translation id="4658638640878098064">Телбодиране горе вляво</translation>
 <translation id="4660592918803576381">Отваряне в Диск</translation>
 <translation id="4661556981531699496">Домашни любимци и животни</translation>

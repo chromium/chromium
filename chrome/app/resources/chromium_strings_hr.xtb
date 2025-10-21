@@ -63,6 +63,7 @@
 <translation id="1779356040007214683">Kako bismo Chromium učinili sigurnijim, onemogućili smo neka proširenja koja nisu navedena u trgovini <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda su dodana bez vašeg znanja.</translation>
 <translation id="1808667845054772817">Ponovo instaliraj Chromium</translation>
 <translation id="1820835682567584003">Chromium pokušava sljedeće: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Sljedeći put kad otvorite Chromium na uređaju <ph name="DEVICE_TYPE" />, prikazat će vam se upit za upotrebu Googleovog upravitelja zaporki.</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
 <translation id="18552579716432081">Da biste podatke o pregledavanju izbrisali samo s ovog uređaja, a zadržali ih na svojem Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Možete upravljati Google računima na koje ste prijavljeni. Vaši Google računi koriste se za preglednik Chromium, Trgovinu Play, Gmail i brojne druge usluge. Ako želite dodati račun za nekog drugog, na primjer člana obitelji, dodajte novu osobu na uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -89,6 +90,7 @@
 <translation id="2049376729098081731">Odaberite želite li uključiti povijest na Chromiumu za prilagođenije doživljaje na Googleovim uslugama</translation>
 <translation id="2054039611381840095">Da biste primali buduća Chromiumova ažuriranja, trebat će vam macOS 12 ili novija verzija. Na ovom se računalu upotrebljava macOS 11.</translation>
 <translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je ova datoteka obmanjujuća i može napraviti neočekivane promjene na vašem uređaju</translation>
+<translation id="208726765006323911">Sljedeći put kad otvorite Chromium iOS, prikazat će vam se upit da isprobate značajku <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Vaše zaporke i drugi podaci iz Chromiuma koje ste spremili na Google račun uklonit će se s ovog uređaja. Da biste ih ponovo upotrebljavali u Chromiumu, ponovo se prijavite.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi jednu minutu. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minutu. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minute. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minuta. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
 <translation id="2126108037660393668">Preuzeta datoteka nije zadovoljila provjeru.</translation>
@@ -149,6 +151,7 @@
 <translation id="2718390899429598676">Radi dodatne sigurnosti Chromium će šifrirati vaše podatke.</translation>
 <translation id="2721354645805494590">Odjavite se da biste uklonili Google račun iz Chromiuma</translation>
 <translation id="2722636413143664436">Da biste mogli pristupati svojim zaporkama, oznakama i drugim podacima na svim svojim uređajima, prijavite se na Chromium</translation>
+<translation id="2723860029395667894">Uvijek prikaži prečac za Googleov AI način</translation>
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2768103863314748511">Postavite Chromium kao zadani preglednik za PDF</translation>
@@ -636,6 +639,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8601359445272098721">Novo! Možete prevesti tekst i slike na zaslonu tako da odaberete gumb Prevedi zaslon</translation>
 <translation id="8619360774459241877">Pokretanje Chromiuma...</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ne može biti vaš zadani preglednik.</translation>
+<translation id="8677922833187616101">Uvijek prikaži prečac za Googleov AI način</translation>
 <translation id="8697124171261953979">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromiuma ili pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="8704119203788522458">To je vaš Chromium</translation>
 <translation id="8712637175834984815">Shvaćam</translation>

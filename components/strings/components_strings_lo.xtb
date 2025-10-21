@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">ສິນລະປະຜ້າແພ ແລະ ເສັ້ນໃຍ</translation>
 <translation id="243815215670139125">ບໍ່ສາມາດບັນທຶກບັດນີ້ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້. ແຕ່ບັນທຶກໃສ່ໃນ Chrome ຢູ່ອຸປະກອນນີ້ແທນ.</translation>
 <translation id="2438874542388153331">ເຈາະຮູຢູ່ເບື້ອງຂວາສີ່ຮູ</translation>
+<translation id="2440855519769445271">ເພື່ອເຊື່ອງຕົວເລືອກຈ່າຍພາຍຫຼັງ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າການຈ່າຍເງິນ<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">ວິທີການຈ່າຍເງິນທີ່ພ້ອມນຳໃຊ້ສຳລັບການຕື່ມຂໍ້ມູນເມື່ອສຳຜັດ. ເຊື່ອງແປ້ນພິມໄວ້ແລ້ວ.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ຈະບໍ່ບັນທຶກ<ph name="END_EMPHASIS" /> ຂໍ້ມູນຕໍ່ໄປນີ້:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">ແຮຊຕ້ອງຢູ່ໃນຮູບແບບ SHA-256.</translation>
 <translation id="4652266463001779298">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4652440160515225514">ອົງກອນຂອງທ່ານໄດ້ບລັອກເວັບໄຊນີ້ເນື່ອງຈາກມັນລະເມີດນະໂຍບາຍ.</translation>
+<translation id="4654457557264366314">ແພັກເກດການຈ່າຍເງິນຂຶ້ນຢູ່ກັບການມີສິດ.</translation>
 <translation id="4658638640878098064">ໜີບກະຫຼັບເຟີຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4660592918803576381">ເປີດໃນ Drive</translation>
 <translation id="4661556981531699496">ສັດລ້ຽງ ແລະ ສັດ</translation>

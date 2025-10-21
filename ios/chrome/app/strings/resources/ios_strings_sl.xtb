@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Naslov je bil premaknjen v račun <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označi kot prebrano</translation>
 <translation id="428768789042547925">Novosti</translation>
-<translation id="428858055663163046">Tukaj lahko dostopate do prenesenih datotek, ko so na voljo</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj zavihek skupini}one{Dodaj zavihke skupini}two{Dodaj zavihke skupini}few{Dodaj zavihke skupini}other{Dodaj zavihke skupini}}</translation>
 <translation id="4302061870579014542">Nastavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
@@ -1793,6 +1792,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7851858861565204677">Druge naprave</translation>
 <translation id="7853202427316060426">Dejavnost</translation>
 <translation id="7854006015462979438">Odprite Splošno</translation>
+<translation id="7855678267851972597">Zvok</translation>
 <translation id="7859988229622350291">Nikoli ne prevedi</translation>
 <translation id="7863211248337747225">Prenos aplikacije</translation>
 <translation id="7865127013871431856">Možnosti za Google Prevajalnik</translation>
@@ -1973,6 +1973,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tabs <ph name="FIRST_VISIBLE_TAB" /> through <ph name="LAST_VISIBLE_TAB" /> of <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>
 <translation id="8529767659511976195">Novo</translation>
+<translation id="8531572740963685410">Datoteke PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Varno brskanje je vklopljeno</translation>
 <translation id="8534481786647257214">Objava v Googlu+ je dokončana.</translation>

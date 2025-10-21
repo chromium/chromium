@@ -19,6 +19,7 @@
 <translation id="110877069173485804">See on teie Chrome</translation>
 <translation id="1125124144982679672">Kes kasutab Chrome'i?</translation>
 <translation id="1142745911746664600">Chrome'i ei saa värskendada</translation>
+<translation id="1148360048981192980">Järgmisel korral, kui avate Chrome'i oma seadmes <ph name="DEVICE_TYPE" />, kuvatakse teile viip Google'i paroolihalduri kasutamiseks.</translation>
 <translation id="1152920704813762236">Teave ChromeOS-i kohta</translation>
 <translation id="1154147086299354128">&amp;Ava Chrome'is</translation>
 <translation id="1157985233335035034">Hiljutised keeled</translation>
@@ -148,6 +149,7 @@
 <translation id="2681444469812712297">Avage <ph name="URL" /> Google Chrome’is uuel vahelehel.</translation>
 <translation id="2699790011615497488">Avage teenuse Gemini Chrome'is beetaversioon</translation>
 <translation id="2712141162840347885">Valige midagi, mida Google Lensiga otsida, või vajutage Google Lensist väljumiseks paoklahvi</translation>
+<translation id="2723860029395667894">Kuva alati Google'i AI-režiimi otsetee</translation>
 <translation id="2738871930057338499">Internetiga ei õnnestu ühendust luua. HTTP 403 on keelatud. Kontrollige puhverserveri seadistust.</translation>
 <translation id="2742320827292110288">Hoiatus: Google Chrome ei saa laiendustel teie sirvimisajaloo salvestamist takistada. Selle laienduse keelamiseks inkognito režiimis tühistage see valik.</translation>
 <translation id="2753623023919742414">Klõpsake otsimiseks</translation>
@@ -479,6 +481,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
+<translation id="6426623519983252346">Näete järgmisel korral Chrome'i iOS-i avamisel viipa, et proovida funktsiooni <ph name="FEATURE_NAME" />.</translation>
 <translation id="6473905796280459355">Minemine lehele Teave Chrome’i kohta</translation>
 <translation id="6481963882741794338">Linkige Chrome ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
 <translation id="648319183876919572">Täiustatud ohutu sirvimine kaitseb teid paremini ohtlike veebisaitide ja allalaadimiste eest</translation>
@@ -677,6 +680,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8641606876632989680">Chrome teavitab teid, kui logite sisse ohustatud parooliga</translation>
 <translation id="8656634243791296665">Avage teenuse Gemini Chrome'is arendusversioon</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Kuva alati Google'i AI-režiimi otsetee</translation>
 <translation id="8679801911857917785">Lisaks juhib see Chrome'i käivitamisel kuvatavat lehte.</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8712767363896337380">Peaaegu ajakohane! Värskendamise lõpuleviimiseks käivitage Chrome uuesti.</translation>

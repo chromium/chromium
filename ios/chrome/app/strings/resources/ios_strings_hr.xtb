@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adresa je premještena na vaš račun <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označi kao pročitano</translation>
 <translation id="428768789042547925">Što je novo</translation>
-<translation id="428858055663163046">Ovdje možete pristupiti preuzetim datotekama kad budu dostupne</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj karticu grupi}one{Dodaj kartice grupi}few{Dodaj kartice grupi}other{Dodaj kartice grupi}}</translation>
 <translation id="4302061870579014542">Postavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
@@ -1793,6 +1792,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7851858861565204677">Ostali uređaji</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7854006015462979438">Otvorite Općenito</translation>
+<translation id="7855678267851972597">Audiozapisi</translation>
 <translation id="7859988229622350291">Nikad ne prevodi</translation>
 <translation id="7863211248337747225">Nabavite aplikaciju</translation>
 <translation id="7865127013871431856">Opcije Prevoditelja</translation>
@@ -1973,6 +1973,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8524799873541103884">Kartice <ph name="INCOGNITO" /> od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> od ukupno <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Otvaranje veza iz drugih aplikacija u anonimnom načinu</translation>
 <translation id="8529767659511976195">Novo</translation>
+<translation id="8531572740963685410">PDF-ovi</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Uključeno je Sigurno pregledavanje</translation>
 <translation id="8534481786647257214">Dovršen je post za Google+.</translation>

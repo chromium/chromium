@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Đây là Chrome của bạn</translation>
 <translation id="1125124144982679672">Ai sẽ sử dụng Chrome?</translation>
 <translation id="1142745911746664600">Không thể cập nhật Chrome</translation>
+<translation id="1148360048981192980">Lần tới, khi mở Chrome trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc sử dụng Trình quản lý mật khẩu của Google.</translation>
 <translation id="1152920704813762236">Giới thiệu về ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Mở trong Chrome</translation>
 <translation id="1157985233335035034">Ngôn ngữ gần đây</translation>
@@ -148,6 +149,7 @@
 <translation id="2681444469812712297">Mở <ph name="URL" /> trong thẻ mới trên Google Chrome.</translation>
 <translation id="2699790011615497488">Mở Gemini trong Chrome Beta</translation>
 <translation id="2712141162840347885">Chọn nội dung bạn muốn tìm bằng Google Ống kính hoặc nhấn phím Escape để thoát khỏi Google Ống kính</translation>
+<translation id="2723860029395667894">Luôn hiện lối tắt đến Chế độ AI của Google</translation>
 <translation id="2738871930057338499">Không thể kết nối với Internet. HTTP 403 bị cấm. Vui lòng kiểm tra cấu hình proxy.</translation>
 <translation id="2742320827292110288">Cảnh báo: Google Chrome không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ ẩn danh, hãy bỏ chọn tuỳ chọn này.</translation>
 <translation id="2753623023919742414">Nhấp để tìm</translation>
@@ -479,6 +481,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chrome sau 1 phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}other{Tổ chức sẽ tự động đóng Chrome sau # phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}}</translation>
 <translation id="6418662306461808273">Chuyển sang hồ sơ hiện có trên Chrome?</translation>
+<translation id="6426623519983252346">Lần tới, khi mở Chrome iOS, bạn sẽ thấy lời nhắc dùng thử <ph name="FEATURE_NAME" />.</translation>
 <translation id="6473905796280459355">Chuyển đến trang Giới thiệu về Chrome</translation>
 <translation id="6481963882741794338">Liên kết Chrome và các dịch vụ khác của Google cho mục đích cá nhân hoá và các mục đích khác</translation>
 <translation id="648319183876919572">Tính năng Duyệt web an toàn có tăng cường bảo vệ hoạt động hiệu quả hơn để bảo vệ bạn khỏi các tệp đã tải xuống và trang web nguy hiểm</translation>
@@ -677,6 +680,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8641606876632989680">Chrome sẽ thông báo khi mật khẩu bạn dùng để đăng nhập đã bị lộ</translation>
 <translation id="8656634243791296665">Mở Gemini trong Chrome Dev</translation>
 <translation id="8669527147644353129">Trình trợ giúp của Google Chrome</translation>
+<translation id="8677922833187616101">Luôn hiện lối tắt đến Chế độ AI của Google</translation>
 <translation id="8679801911857917785">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome.</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8712767363896337380">Sắp xong rồi! Hãy chạy lại Chrome để hoàn tất quá trình cập nhật.</translation>

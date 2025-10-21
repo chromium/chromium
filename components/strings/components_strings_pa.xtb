@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">ਫਾਈਬਰ ਅਤੇ ਟੈਕਸਟਾਈਲ ਸੰਬੰਧੀ ਕਲਾਵਾਂ</translation>
 <translation id="243815215670139125">ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਇਸਦੀ ਬਜਾਏ ਇਸਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Chrome ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2438874542388153331">ਸੱਜੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
+<translation id="2440855519769445271">ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਸੰਬੰਧੀ ਵਿਕਲਪ ਲੁਕਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="2441854154602066476">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੀਆਂ ਉਪਲਬਧ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦੀ ਸੂਚੀ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2219,6 +2220,7 @@
 <translation id="4648262692072505866">ਹੈਸ਼ ਦਾ ਫਾਰਮੈਟ SHA-256 ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="4652266463001779298">ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4652440160515225514">ਨੀਤੀ ਦੀ ਉਲੰਘਣਾ ਕਰਨ ਕਰਕੇ ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਇਸ ਸਾਈਟ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
+<translation id="4654457557264366314">ਭੁਗਤਾਨ ਪਲਾਨ ਯੋਗਤਾ ਦੇ ਅਧੀਨ ਹੁੰਦੇ ਹਨ।</translation>
 <translation id="4658638640878098064">ਉੱਪਰ ਖੱਬੇ ਪਾਸੇ ਪਿੰਨ</translation>
 <translation id="4660592918803576381">Drive ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4661556981531699496">ਪਾਲਤੂ ਅਤੇ ਜਾਨਵਰ</translation>

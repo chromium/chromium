@@ -49,6 +49,7 @@
 <translation id="11947597112837849">電子郵件地址</translation>
 <translation id="1197267115302279827">移動書籤</translation>
 <translation id="1197761954713363183">已關閉密碼金鑰確認工作表</translation>
+<translation id="1197933394627598677">顯示閱讀模式</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
 <translation id="1204037785786432551">下載連結</translation>
@@ -517,6 +518,7 @@
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回 Google 密碼管理工具。<ph name="BEGIN_LINK" />查看完整操作說明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3435914367318771664">將分頁加入新群組</translation>
+<translation id="3438681572027105609">如要在所有裝置上使用你的密碼和其他資料，請登入 Chrome</translation>
 <translation id="3439276997620616816">這裡會顯示最近關閉的分頁</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要針對網站的深色主題提供意見嗎？</translation>
@@ -1261,6 +1263,7 @@
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
+<translation id="6746834324024491643">如要在所有裝置上使用你的密碼和其他資料，請登入 <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">快速開啟新分頁。按住這裡即可編輯這個捷徑。</translation>
 <translation id="6752130751133944215">如要還原新視窗，使用中與閒置視窗的總數量不得超過 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個。視窗閒置 6 個月後就會刪除。</translation>
 <translation id="6754359471209693699">開始新的搜尋</translation>
@@ -1397,6 +1400,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載作業仍待處理}other{# 項下載作業仍待處理}}</translation>
 <translation id="7230064152164845085">開啟無痕模式</translation>
 <translation id="7237724030342645845">Google 密碼管理工具已停止運作</translation>
+<translation id="7239496616545081903">隱藏閱讀模式</translation>
 <translation id="72415438529550637">已關閉密碼建議功能。</translation>
 <translation id="7248671827512403053">應用程式</translation>
 <translation id="7253951228444156601">正在檢查密碼…</translation>
@@ -1533,6 +1537,7 @@
 <translation id="7821130663268546430">你可以在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
 <translation id="7824665136384946951">貴機構已關閉安全瀏覽功能</translation>
+<translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
@@ -1738,6 +1743,7 @@
 <translation id="8723453889042591629">快速翻譯這個網頁，按住這裡即可編輯這個捷徑。</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8731268612289859741">安全碼</translation>
+<translation id="8738163682604285902">要在閱讀模式下查看嗎？</translation>
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8754448020583829686">複製 (不含連結)</translation>

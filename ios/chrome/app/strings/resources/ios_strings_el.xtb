@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Η διεύθυνση μετακινήθηκε στον λογαριασμό σας <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Επισήμανση ως αναγνωσμένου</translation>
 <translation id="428768789042547925">Τι νέο υπάρχει</translation>
-<translation id="428858055663163046">Εδώ μπορείτε να αποκτήσετε πρόσβαση στα αρχεία που έχετε κατεβάσει, όταν είναι διαθέσιμα</translation>
 <translation id="429074084062258019">{count,plural, =1{Προσθήκη καρτέλας στην ομάδα}other{Προσθήκη καρτελών στην ομάδα}}</translation>
 <translation id="4302061870579014542">Ορισμός θέσης</translation>
 <translation id="4304713468139749426">Διαχείριση κωδικών πρόσβασης</translation>
@@ -1794,6 +1793,7 @@
 <translation id="7851858861565204677">Άλλες συσκευές</translation>
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7854006015462979438">Ανοίξτε την ενότητα Γενικά</translation>
+<translation id="7855678267851972597">Ήχοι</translation>
 <translation id="7859988229622350291">Να μην γίνεται ποτέ μετάφραση από</translation>
 <translation id="7863211248337747225">Λήψη της εφαρμογής</translation>
 <translation id="7865127013871431856">Επιλογές Μετάφρασης</translation>
@@ -1974,6 +1974,7 @@
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Καρτέλες <ph name="FIRST_VISIBLE_TAB" /> έως <ph name="LAST_VISIBLE_TAB" /> από <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Άνοιγμα συνδέσμων από άλλες εφαρμογές σε κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="8529767659511976195">Νέο</translation>
+<translation id="8531572740963685410">Αρχεία PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Η Ασφαλής περιήγηση είναι ενεργή.</translation>
 <translation id="8534481786647257214">Η ανάρτηση Google+ ολοκληρώθηκε.</translation>
@@ -2180,6 +2181,7 @@
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="94870150074703282">Διαγραφή ομάδας;</translation>
 <translation id="952704832371081537">Ακύρωση</translation>
+<translation id="95332591904104970">Συνδεδεμένες εφαρμογές</translation>
 <translation id="954667170699278022">Λίστα ανάγνωσης</translation>
 <translation id="956218893102219091">Χρησιμοποιήστε την ακριβή τοποθεσία σας για τα πιο ακριβή αποτελέσματα του Gemini, αντί για μια εκτιμώμενη τοποθεσία με βάση τη διεύθυνση IP σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>

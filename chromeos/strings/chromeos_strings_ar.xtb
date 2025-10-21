@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
 <translation id="4300272766492248925">فتح التطبيق</translation>
 <translation id="430786093962686457">الشيفون</translation>
+<translation id="4309762678330556039">يمكنك تلقائيًا إنشاء النصوص، والبحث في الملفات الصوتية، وإنشاء التسجيلات حتى في حال عدم الاتصال بالإنترنت.</translation>
 <translation id="4310735698903592804">‏أحدث الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="4320904097188876154">وردي نيون</translation>
 <translation id="432961742358282111">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار للحصول على تعريفات أو ترجمات أو تحويلات الوحدات. ولإدارة هذه الميزة، عليك استخدام مفتاحَي السهمَين المتّجهَين لليمين أو لليسار.</translation>
@@ -1472,6 +1473,7 @@
 <translation id="7425832472614771259">تم تنزيل %<ph name="PROGRESS_PERCENTAGE" /> من نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏لا يمكن إيقاف اسم نقطة الوصول (APN) هذا أو إزالته. يُرجى إيقاف أو إزالة أسماء نقاط الوصول المفعَّلة من نوع <ph name="ATTACH" />.</translation>
+<translation id="7458359366992324037">العرض عن بُعد</translation>
 <translation id="7458970041932198923">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض صور الأفاتار وتحديدها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>

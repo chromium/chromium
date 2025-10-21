@@ -517,6 +517,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3435575784518354875">Para poder acceder aos contrasinais, expórtaos agora, actualiza os servizos de Google Play e despois volve importalos no xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Ver as instrucións completas.<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3435914367318771664">Engadir pestana ao grupo novo</translation>
+<translation id="3438681572027105609">Para poder acceder aos teus contrasinais e moito máis en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="3439276997620616816">Aquí atoparás as pestanas recentes</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
 <translation id="3444179773590444986">Queres compartir comentarios sobre o tema escuro para os sitios?</translation>
@@ -1261,6 +1262,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6738867403308150051">Descargando...</translation>
 <translation id="6745063744988317486">Monoespazado</translation>
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
+<translation id="6746834324024491643">Para poder acceder aos teus contrasinais e a outros datos en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Abrir rapidamente unha pestana nova. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="6752130751133944215">Para restaurar unha nova ventá, reduce o número total das que estean activas e inactivas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos. As ventás inactivas elimínanse despois de seis meses.</translation>
 <translation id="6754359471209693699">Comezar unha busca nova</translation>
@@ -1533,6 +1535,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7821130663268546430">Podes atopar todas as pestanas abertas no selector de pestanas</translation>
 <translation id="7822705602465980873">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
 <translation id="7824665136384946951">A túa organización desactivou Navegación segura</translation>
+<translation id="7826342993930002256">Goza de Chrome en todas partes</translation>
 <translation id="7844171778363018843">Non se seleccionaron datos para sincronizalos</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="7846296061357476882">Servizos de Google</translation>

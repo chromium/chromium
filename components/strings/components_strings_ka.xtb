@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">ბოჭკოვანი მასალებით და ტექსტილით შექმნილი ხელოვნება</translation>
 <translation id="243815215670139125">შეუძლებელია ამ ბარათის თქვენს Google ანგარიშში შენახვა. სანაცვლოდ ის შენახულია Chrome-ში, ამ მოწყობილობაზე.</translation>
 <translation id="2438874542388153331">ოთხმაგად გახვრეტა მარჯვნივ</translation>
+<translation id="2440855519769445271">მოგვიანებით გადახდის ვარიანტების დასამალად გახსენით <ph name="BEGIN_LINK" />გადახდის პარამეტრები<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">იმ გადახდის მეთოდების სია, რომელთა შევსებაც შესაძლებელია შეხებით. კლავიატურა დამალულია.</translation>
 <translation id="2442865686365739754">Chrome-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">ჰეში უნდა იყოს SHA-256 ფორმატის.</translation>
 <translation id="4652266463001779298">დაუშვებელია</translation>
 <translation id="4652440160515225514">თქვენმა ორგანიზაციამ დაბლოკა ეს საიტი, რადგან ის არღვევებს წესებს</translation>
+<translation id="4654457557264366314">გადახდის გეგმები ექვემდებარება დასაშვებობას.</translation>
 <translation id="4658638640878098064">ზედა მარცხენა ნაწილის დასტეპლერება</translation>
 <translation id="4660592918803576381">Drive-ში გახსნა</translation>
 <translation id="4661556981531699496">შინაური და გარეული ცხოველები</translation>

@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-posadres</translation>
 <translation id="1197267115302279827">Skuif boekmerke</translation>
 <translation id="1197761954713363183">Toegangsleutelbevestigingsblad is toegemaak</translation>
+<translation id="1197933394627598677">Wys Leesmodus</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1202892408424955784">Nagespoorde produkte</translation>
 <translation id="1204037785786432551">Laai skakel af</translation>
@@ -517,6 +518,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3435575784518354875">Om toegang tot jou wagwoorde te behou, moet jy hulle nou uitvoer, Google Play Dienste opdateer, en hulle dan weer na Google Wagwoordbestuurder invoer. <ph name="BEGIN_LINK" />Sien volledige instruksies<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3435914367318771664">Voeg oortjie by nuwe groep</translation>
+<translation id="3438681572027105609">Meld aan by Chrome om jou wagwoorde en meer op al jou toestelle te kry.</translation>
 <translation id="3439276997620616816">Jy sal jou onlangse oortjies hier kry</translation>
 <translation id="3443221991560634068">Herlaai die huidige bladsy</translation>
 <translation id="3444179773590444986">Deel terugvoer oor donkertema vir werwe?</translation>
@@ -1261,6 +1263,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6738867403308150051">Laai tans af …</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
+<translation id="6746834324024491643">Meld aan as <ph name="EMAIL" /> om jou wagwoorde en meer op al jou toestelle te kry</translation>
 <translation id="6751521182688001123">Maak vinnig 'n nuwe oortjie oop. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="6752130751133944215">Verminder die totale aantal vensters in die aktiewe en onaktiewe afdeling na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder om ’n nuwe venster terug te stel. Onaktiewe vensters word ná 6 maande uitgevee.</translation>
 <translation id="6754359471209693699">Begin nuwe soektog</translation>
@@ -1397,6 +1400,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 aflaai hangende}other{# aflaaie hangende}}</translation>
 <translation id="7230064152164845085">Skakel oor na Incognito</translation>
 <translation id="7237724030342645845">Google Wagwoordbestuurder het opgehou werk</translation>
+<translation id="7239496616545081903">Versteek Leesmodus</translation>
 <translation id="72415438529550637">Wagwoordvoorstel is toe.</translation>
 <translation id="7248671827512403053">App</translation>
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
@@ -1533,6 +1537,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7821130663268546430">Jy kan alle oop oortjies in die oortjiewisselaar vind</translation>
 <translation id="7822705602465980873">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
 <translation id="7824665136384946951">Jou organisasie het Veiligblaai afgeskakel</translation>
+<translation id="7826342993930002256">Jou Chrome, oral</translation>
 <translation id="7844171778363018843">Geen data gekies om te sinkroniseer nie</translation>
 <translation id="7846161022626028328">Iets is fout. Probeer weer.</translation>
 <translation id="7846296061357476882">Google-dienste</translation>
@@ -1738,6 +1743,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8723453889042591629">Vertaal hierdie bladsy vinnig. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>
+<translation id="8738163682604285902">Bekyk Leesmodus?</translation>
 <translation id="8746155870861185046">Deel hoogtepunt</translation>
 <translation id="8748850008226585750">Inhoud word versteek</translation>
 <translation id="8754448020583829686">Kopieer sonder skakel</translation>

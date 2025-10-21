@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Aquest és el vostre Chrome</translation>
 <translation id="1125124144982679672">Qui està utilitzant Chrome?</translation>
 <translation id="1142745911746664600">Chrome no es pot actualitzar</translation>
+<translation id="1148360048981192980">La propera vegada que obris Chrome al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per utilitzar el gestor de contrasenyes de Google.</translation>
 <translation id="1152920704813762236">Sobre ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Obre a Chrome</translation>
 <translation id="1157985233335035034">Idiomes recents</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">Obre <ph name="URL" /> en una pestanya nova a Google Chrome.</translation>
 <translation id="2699790011615497488">Obre Gemini a Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona el que vulguis per cercar-ho amb Google Lens o prem Esc per sortir de Google Lens</translation>
+<translation id="2723860029395667894">Mostra sempre la drecera del mode IA de Google</translation>
 <translation id="2738871930057338499">No es pot connectar a Internet. Error d'HTTP "403 Forbidden". Comprova la configuració del servidor intermediari.</translation>
 <translation id="2742320827292110288">Advertiment: Google Chrome no pot evitar que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode d'incògnit, desselecciona aquesta opció.</translation>
 <translation id="2753623023919742414">Fes clic per cercar</translation>
@@ -475,6 +477,7 @@
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{La teva organització tanca Chrome automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{La teva organització tanca Chrome automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
+<translation id="6426623519983252346">Veuràs una indicació per provar <ph name="FEATURE_NAME" /> la propera vegada que obris Chrome a iOS.</translation>
 <translation id="6473905796280459355">Ves a la pàgina Sobre Chrome</translation>
 <translation id="6481963882741794338">Enllaça Chrome i altres serveis de Google per a la personalització i altres finalitats</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
@@ -673,6 +676,7 @@
 <translation id="8641606876632989680">Chrome t'enviarà una notificació quan iniciïs la sessió amb una contrasenya en perill</translation>
 <translation id="8656634243791296665">Obre Gemini a Chrome Dev</translation>
 <translation id="8669527147644353129">Aplicació d'ajuda de Google Chrome</translation>
+<translation id="8677922833187616101">Mostra sempre la drecera del mode IA de Google</translation>
 <translation id="8679801911857917785">També controla la pàgina que es mostra quan inicieu Chrome.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8712767363896337380">Gairebé has acabat amb l'actualització. Reinicia Chrome per acabar l'actualització.</translation>

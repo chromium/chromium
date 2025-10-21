@@ -49,6 +49,7 @@
 <translation id="11947597112837849">địa chỉ email</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
 <translation id="1197761954713363183">Đã đóng trang xác nhận khoá truy cập</translation>
+<translation id="1197933394627598677">Hiện Chế độ đọc</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1202892408424955784">Các sản phẩm bạn theo dõi</translation>
 <translation id="1204037785786432551">Tải đường liên kết xuống</translation>
@@ -517,6 +518,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3435575784518354875">Để tiếp tục sử dụng mật khẩu của bạn, hãy xuất mật khẩu ngay bây giờ, cập nhật Dịch vụ Google Play rồi nhập lại mật khẩu vào Trình quản lý mật khẩu của Google. <ph name="BEGIN_LINK" />Xem toàn bộ hướng dẫn<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3435914367318771664">Thêm thẻ vào nhóm mới</translation>
+<translation id="3438681572027105609">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="3439276997620616816">Các thẻ bạn đóng gần đây sẽ xuất hiện ở đây</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
 <translation id="3444179773590444986">Bạn có muốn chia sẻ ý kiến phản hồi về giao diện tối cho các trang web?</translation>
@@ -1261,6 +1263,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6738867403308150051">Đang tải xuống...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Kiểm tra dữ liệu tài khoản của bạn</translation>
+<translation id="6746834324024491643">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="6752130751133944215">Để khôi phục một cửa sổ mới, hãy giảm tổng số cửa sổ đang hoạt động và không hoạt động xuống còn <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> trở xuống. Các cửa sổ không hoạt động sẽ bị xoá sau 6 tháng.</translation>
 <translation id="6754359471209693699">Bắt đầu lượt tìm kiếm mới</translation>
@@ -1397,6 +1400,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="7230064152164845085">Chuyển sang chế độ Ẩn danh</translation>
 <translation id="7237724030342645845">Trình quản lý mật khẩu của Google đã ngừng hoạt động</translation>
+<translation id="7239496616545081903">Ẩn Chế độ đọc</translation>
 <translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
 <translation id="7248671827512403053">Ứng dụng</translation>
 <translation id="7253951228444156601">Đang kiểm tra mật khẩu…</translation>
@@ -1533,6 +1537,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7821130663268546430">Bạn có thể tìm thấy tất cả các thẻ đang mở trong trình chuyển đổi thẻ</translation>
 <translation id="7822705602465980873">Khi bạn đăng nhập, dữ liệu này được liên kết với Tài khoản Google của bạn nhằm bảo vệ bạn trên các dịch vụ của Google, chẳng hạn như tăng cường khả năng bảo vệ trong Gmail sau sự cố bảo mật.</translation>
 <translation id="7824665136384946951">Tổ chức của bạn đã tắt tính năng Duyệt web an toàn</translation>
+<translation id="7826342993930002256">Chrome luôn bên bạn</translation>
 <translation id="7844171778363018843">Bạn chưa chọn dữ liệu nào để đồng bộ hóa</translation>
 <translation id="7846161022626028328">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="7846296061357476882">Các dịch vụ của Google</translation>
@@ -1738,6 +1743,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8723453889042591629">Dịch nhanh trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8731268612289859741">Mã bảo mật</translation>
+<translation id="8738163682604285902">Xem Chế độ đọc?</translation>
 <translation id="8746155870861185046">Chia sẻ nội dung được làm nổi bật</translation>
 <translation id="8748850008226585750">Nội dung bị ẩn</translation>
 <translation id="8754448020583829686">Sao chép không kèm liên kết</translation>

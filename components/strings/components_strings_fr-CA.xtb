@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">Arts textiles</translation>
 <translation id="243815215670139125">Cette carte n'a pas pu être enregistrée dans votre compte Google. Elle est plutôt enregistrée dans Chrome sur cet appareil.</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
+<translation id="2440855519769445271">Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres des paiements<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Les modes de paiement accessibles à remplir au toucher. Clavier masqué.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />n'enregistre pas<ph name="END_EMPHASIS" /> les informations suivantes :
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
 <translation id="4652266463001779298">Non autorisée</translation>
 <translation id="4652440160515225514">Votre organisation a bloqué ce site, car il enfreint une politique.</translation>
+<translation id="4654457557264366314">Les forfaits de paiement sont assujettis à des critères d'admissibilité.</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
 <translation id="4660592918803576381">Ouvrir dans Disque</translation>
 <translation id="4661556981531699496">Faune et animaux de compagnie</translation>

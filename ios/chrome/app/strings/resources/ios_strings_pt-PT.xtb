@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Morada movida para a sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como lida</translation>
 <translation id="428768789042547925">Novidades</translation>
-<translation id="428858055663163046">Pode aceder aos seus ficheiros transferidos aqui quando estiverem disponíveis</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
@@ -2181,6 +2180,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="94870150074703282">Eliminar o grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="95332591904104970">Apps Associadas</translation>
 <translation id="954667170699278022">Lista de leitura</translation>
 <translation id="956218893102219091">Use a sua localização exata para ver os resultados do Gemini mais precisos, em vez de uma localização estimada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Eliminar dados de navegação</translation>

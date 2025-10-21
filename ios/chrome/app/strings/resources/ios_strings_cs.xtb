@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adresa byla přesunuta do vašeho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označit jako přečtené</translation>
 <translation id="428768789042547925">Novinky</translation>
-<translation id="428858055663163046">Až budou vaše stažené soubory k dispozici, najdete je tady</translation>
 <translation id="429074084062258019">{count,plural, =1{Přidat kartu do skupiny}few{Přidat karty do skupiny}many{Přidat karty do skupiny}other{Přidat karty do skupiny}}</translation>
 <translation id="4302061870579014542">Nastavit pozici</translation>
 <translation id="4304713468139749426">Správce hesel</translation>
@@ -1793,6 +1792,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7851858861565204677">Jiná zařízení</translation>
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7854006015462979438">Otevřete sekci Obecné</translation>
+<translation id="7855678267851972597">Zvuky</translation>
 <translation id="7859988229622350291">Nikdy nepřekládat</translation>
 <translation id="7863211248337747225">Stáhnout aplikaci</translation>
 <translation id="7865127013871431856">Možnosti Překladače</translation>
@@ -1973,6 +1973,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> – karty <ph name="FIRST_VISIBLE_TAB" /> až <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Otevírejte odkazy z jiných aplikací v anonymním režimu</translation>
 <translation id="8529767659511976195">Nové</translation>
+<translation id="8531572740963685410">Soubory PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Bezpečné prohlížení je zapnuté</translation>
 <translation id="8534481786647257214">Příspěvek na Google+ byl odeslán.</translation>

@@ -778,13 +778,6 @@ Se a política for desativada ou deixada sem definição, o seletor de emojis n�
 Se esta política não for definida, o seletor de emojis será ativado para usuários normais, mas desativado para usuários gerenciados.</translation>
 <translation id="1494138678487405397">Desativar o alto contraste na tela de login</translation>
 <translation id="1497797462580613666">O gerenciador de downloads terá a opção de salvar arquivos no <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="1498640472634891941">Se a política for definida, você poderá listar os padrões de URL que especificam quais sites têm acesso negado automaticamente a impressoras locais pela API WebPrinting.
-
-Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="1499129134689253257">Controlar o novo comportamento de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Usar logins on-line apenas na tela de login</translation>
 <translation id="1502843533062797703">Ativar bloqueio de injeção de software de terceiros</translation>
@@ -3580,7 +3573,6 @@ Se a política for definida como <ph name="DATA_REGION_SETTING_UNITED_STATES_OPT
 Se a política for definida como <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valor 2), os dados cobertos serão armazenados na União Europeia.
 
 Essa configuração só pode ser definida no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> em Dados &gt; Compliance &gt; Regiões de dados &gt; Região &gt; Dados em repouso.</translation>
-<translation id="3379326579027180941">Permitir que os sites peçam que o usuário conceda acesso a impressoras locais pela API WebPrinting</translation>
 <translation id="3379368498958498146">Ativar ou desativar o recurso de escrita preditiva no teclado físico.
 
 Se esta política for ativada ou deixada sem definição, o recurso de escrita preditiva será ativado no teclado físico.
@@ -7773,7 +7765,6 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Forçar o usuário a fazer login para usar o navegador</translation>
 <translation id="6092073071805297119">Permitir o uso da filtragem de desempenho de acessibilidade.</translation>
-<translation id="60925735895026302">Não permitir que os sites peçam acesso a impressoras locais pela API WebPrinting</translation>
 <translation id="6093156968240188330">Permitir que usuários remotos interajam com janelas elevadas em sessões de assistência remota</translation>
 <translation id="6093551397728373988">Aplicar todos os métodos de entrada permitidos para que sejam ativados em uma sessão de usuário</translation>
 <translation id="6094314311474620462">Desativar a impressão</translation>
@@ -9108,11 +9099,6 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
 <translation id="6878757724611298427">Permite que os usuários usem apps Android em dispositivos não afiliados</translation>
-<translation id="6881397131210596522">Se a política for definida como 2, os sites não poderão usar a API WebPrinting automaticamente.
-
-Se a política for definida como 3, o usuário vai receber um pedido quando um site quiser usar a API WebPrinting.
-
-Se a política não for definida, os sites vão poder pedir acesso à impressora local, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="6881447940489194100">Hash SHA-256 dos dados codificado em hexadecimal.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
@@ -11881,13 +11867,6 @@ por padrão a partir da versão M119.
 <translation id="8789338675663014675">Configura políticas relacionadas a extensões. O usuário não tem permissão para instalar extensões bloqueadas, a menos que tenham sido colocadas na lista de permissões. Você também pode forçar o <ph name="PRODUCT_NAME" /> a instalar extensões automaticamente especificando-as na <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Extensões de instalação forçada são instaladas independentemente de estarem ou não na lista de bloqueio.</translation>
 <translation id="879697755145469671">Não detectar janelas cobertas</translation>
 <translation id="8798099450830957504">Padrão</translation>
-<translation id="879863472982972634">Se a política for definida, você poderá listar os padrões de URL que especificam quais sites recebem acesso automático às impressoras locais pela API WebPrinting.
-
-Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="8799492680917278474">Se esta política for definida, as conexões de acesso remoto serão encerradas automaticamente quando o número de minutos definido na política for excedido. Isso não impede que o cliente se reconecte após a duração máxima da sessão ter sido alcançada. Se a política for definida com um valor que não está no intervalo mínimo/máximo, o host poderá não ser iniciado. Esta política não afeta situações de suporte remoto.
 
           Esta política não terá efeito se não for definida. Nesse caso, as conexões de acesso remoto não terão uma duração máxima nesta máquina.</translation>

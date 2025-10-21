@@ -21,6 +21,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="110877069173485804">Hii ndiyo Chrome yako</translation>
 <translation id="1125124144982679672">Ungependa kutumia wasifu gani wa Chrome?</translation>
 <translation id="1142745911746664600">Imeshindwa kusasisha Chrome</translation>
+<translation id="1148360048981192980">Utakapofungua Chrome tena kwenye <ph name="DEVICE_TYPE" /> yako, utaona kidokezo cha kutumia Kidhibiti cha Manenosiri cha Google.</translation>
 <translation id="1152920704813762236">Kuhusu ChromeOS</translation>
 <translation id="1154147086299354128">na Fungua katika Chrome</translation>
 <translation id="1157985233335035034">Lugha ulizotumia hivi majuzi</translation>
@@ -150,6 +151,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2681444469812712297">Fungua <ph name="URL" /> kwenye kichupo kipya katika Google Chrome.</translation>
 <translation id="2699790011615497488">Fungua Gemini kwenye Chrome - toleo la Beta</translation>
 <translation id="2712141162840347885">Chagua chochote unachotaka kutafuta ukitumia Lenzi ya Google au ubonyeze "escape" ili ufunge Lenzi ya Google</translation>
+<translation id="2723860029395667894">Onyesha njia ya mkato ya Matumizi ya Google AI kila wakati</translation>
 <translation id="2738871930057338499">Imeshindwa kuunganisha kwenye Intaneti. HTTP 403 Hairuhusiwi. Tafadhali angalia mipangilio yako ya seva mbadala.</translation>
 <translation id="2742320827292110288">Onyo: Google Chrome haiwezi kuzuia viendelezi kurekodi historia yako ya kuvinjari. Ili uzime kiendelezi hiki katika Hali fiche, usiteue chaguo hili.</translation>
 <translation id="2753623023919742414">Bofya ili utafute</translation>
@@ -483,6 +485,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6412673304250309937">Hukagua URL zilizo na orodha ya tovuti zisizo salama zinazohifadhiwa kwenye Chrome. Iwapo tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Shirika lako hufunga Chrome kiotomatiki isipotumika kwa dakika 1. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}other{Shirika lako hufunga Chrome kiotomatiki isipotumika kwa dakika #. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}}</translation>
 <translation id="6418662306461808273">Ungependa kutumia wasifu uliopo wa Chrome?</translation>
+<translation id="6426623519983252346">Utaona kidokezo cha kujaribu <ph name="FEATURE_NAME" /> utakapofungua Chrome kwenye kifaa cha iOS tena.</translation>
 <translation id="6473905796280459355">Nenda kwenye ukurasa wa Kuhusu Chrome</translation>
 <translation id="6481963882741794338">Unganisha Chrome na huduma nyingine za Google ili upate mapendeleo na madhumuni mengine</translation>
 <translation id="648319183876919572">Kipengele cha Kuvinjari Salama Kilichoboreshwa hufanya mengi zaidi ili kukulinda dhidi ya tovuti na vipakuliwa hatarishi.</translation>
@@ -681,6 +684,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8641606876632989680">Chrome itakuarifu ukiingia katika akaunti ukitumia nenosiri lililoathiriwa</translation>
 <translation id="8656634243791296665">Fungua Gemini kwenye Chrome - toleo la Dev</translation>
 <translation id="8669527147644353129">Msaidizi wa Google Chrome</translation>
+<translation id="8677922833187616101">Onyesha Njia ya Mkato ya Matumizi ya Google AI Kila Wakati</translation>
 <translation id="8679801911857917785">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8712767363896337380">Inakaribia kukamilisha usasishaji! Fungua Chrome tena ili ukamilishe mchakato wa kusasisha.</translation>

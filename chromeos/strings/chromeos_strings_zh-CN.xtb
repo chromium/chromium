@@ -1472,6 +1472,7 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />转写模型已下载 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">无法停用或移除此 APN。请务必先停用或移除已启用的<ph name="ATTACH" /> APN。</translation>
+<translation id="7458359366992324037">远程显示</translation>
 <translation id="7458970041932198923">若要查看和设置头像，请连接到网络并重新加载此页面。</translation>
 <translation id="7469648432129124067">检测到门户</translation>
 <translation id="7481312909269577407">前进</translation>

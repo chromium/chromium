@@ -49,6 +49,7 @@
 <translation id="11947597112837849">邮箱</translation>
 <translation id="1197267115302279827">移动书签</translation>
 <translation id="1197761954713363183">已关闭通行密钥确认工作表</translation>
+<translation id="1197933394627598677">显示阅读模式</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1202892408424955784">跟踪的商品</translation>
 <translation id="1204037785786432551">下载链接</translation>
@@ -517,6 +518,7 @@
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3435914367318771664">向新分组添加标签页</translation>
+<translation id="3438681572027105609">如需将密码等信息同步到您的所有设备上，请登录 Chrome</translation>
 <translation id="3439276997620616816">此处会显示您近期关闭的标签页</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
@@ -1261,6 +1263,7 @@
 <translation id="6738867403308150051">正在下载…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
+<translation id="6746834324024491643">如需将您的密码等信息同步到您的所有设备上，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6752130751133944215">如需恢复新窗口，请将活跃窗口和非活跃窗口的总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。非活跃窗口在 6 个月后会被删除。</translation>
 <translation id="6754359471209693699">开始新的搜索</translation>
@@ -1395,6 +1398,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="7230064152164845085">切换到无痕模式</translation>
 <translation id="7237724030342645845">Google 密码管理工具已停止运行</translation>
+<translation id="7239496616545081903">隐藏阅读模式</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>
 <translation id="7248671827512403053">应用</translation>
 <translation id="7253951228444156601">正在检查密码…</translation>
@@ -1531,6 +1535,7 @@
 <translation id="7821130663268546430">您可在标签页切换器中找到所有打开的标签页</translation>
 <translation id="7822705602465980873">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：在安全事件发生后加强 Gmail 的保护力度。</translation>
 <translation id="7824665136384946951">您的组织已关闭“安全浏览”功能</translation>
+<translation id="7826342993930002256">您的专属 Chrome 浏览器，走到哪带到哪</translation>
 <translation id="7844171778363018843">未选择任何要同步的数据</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
@@ -1736,6 +1741,7 @@
 <translation id="8723453889042591629">快速翻译该页面。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8731268612289859741">安全码</translation>
+<translation id="8738163682604285902">要在阅读模式下查看吗？</translation>
 <translation id="8746155870861185046">分享突出显示的内容</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8754448020583829686">复制但不含链接</translation>

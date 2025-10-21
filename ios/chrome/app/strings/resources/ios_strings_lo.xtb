@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">ຍ້າຍທີ່ຢູ່ໄປໃສ່ບັນຊີ <ph name="USER_EMAIL" /> ຂອງທ່ານແລ້ວ</translation>
 <translation id="4287172530684295552">ໝາຍວ່າອ່ານແລ້ວ</translation>
 <translation id="428768789042547925">ມີຫຍັງໃໝ່</translation>
-<translation id="428858055663163046">ທ່ານສາມາດເຂົ້າເຖິງໄຟລ໌ທີ່ດາວໂຫຼດໄວ້ຂອງທ່ານໄດ້ບ່ອນນີ້ເມື່ອພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="429074084062258019">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="4302061870579014542">ກຳນົດຕຳແໜ່ງ</translation>
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
@@ -1793,6 +1792,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7851858861565204677">ອຸ​ປະ​ກອນ​ອື່ນໆ</translation>
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7854006015462979438">ເປີດທົ່ວໄປ</translation>
+<translation id="7855678267851972597">ສຽງ</translation>
 <translation id="7859988229622350291">ຢ່າແປ</translation>
 <translation id="7863211248337747225">ດາວໂຫຼດແອັບ</translation>
 <translation id="7865127013871431856">ຕົວເລືອກແປພາສາ</translation>
@@ -1973,6 +1973,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ແຖບ <ph name="FIRST_VISIBLE_TAB" /> ຜ່ານ <ph name="LAST_VISIBLE_TAB" /> ໃນ <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">ເປີດລິ້ງຈາກແອັບອື່ນໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="8529767659511976195">ໃໝ່</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing ເປີດຢູ່</translation>
 <translation id="8534481786647257214">ການ​ໂພ​ສ​ທ໌ Google+ ສຳ​ເລັດ.</translation>

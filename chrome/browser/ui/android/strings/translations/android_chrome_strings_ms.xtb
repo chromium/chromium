@@ -49,6 +49,7 @@
 <translation id="11947597112837849">alamat e-mel</translation>
 <translation id="1197267115302279827">Alihkan penanda halaman</translation>
 <translation id="1197761954713363183">Helaian pengesahan kunci laluan ditutup</translation>
+<translation id="1197933394627598677">Tunjukkan Mod membaca</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1202892408424955784">Produk yang dijejaki</translation>
 <translation id="1204037785786432551">Muat turun pautan</translation>
@@ -517,6 +518,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3435575784518354875">Untuk mengekalkan akses kepada kata laluan anda, eksport kata laluan tersebut sekarang, kemas kinikan Perkhidmatan Google Play, kemudian import semula kata laluan tersebut pada Google Password Manager. <ph name="BEGIN_LINK" />Lihat arahan penuh<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="3435914367318771664">Tambahkan tab pada kumpulan baharu</translation>
+<translation id="3438681572027105609">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="3439276997620616816">Anda boleh menemukan tab terbaharu anda di sini</translation>
 <translation id="3443221991560634068">Muat semula halaman semasa</translation>
 <translation id="3444179773590444986">Kongsikan maklum balas tentang tema gelap untuk laman?</translation>
@@ -1146,6 +1148,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6255809143828972562">Dengan alatan daripada Chrome, anda boleh menyemak imbas dengan selamat dan mengekalkan kawalan anda</translation>
 <translation id="6264376385120300461">Muat turun juga</translation>
 <translation id="6264485186158353794">Kembali ke keselamatan</translation>
+<translation id="6267106249090587268">Pemberitahuan <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini disebabkan oleh kandungan spam atau penipuan</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
 <translation id="6277522088822131679">Terdapat masalah semasa mencetak halaman. Sila cuba sekali lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1261,6 +1264,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6738867403308150051">Memuat turun…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Semak data akaun anda</translation>
+<translation id="6746834324024491643">Untuk mendapatkan kata laluan dan pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Buka tab baharu dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
 <translation id="6752130751133944215">Untuk memulihkan tetingkap baharu, kurangkan jumlah bilangan tetingkap merentas aktif dan tidak aktif kepada <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang. Tetingkap tidak aktif dipadamkan selepas 6 bulan.</translation>
 <translation id="6754359471209693699">Mulakan carian baharu</translation>
@@ -1397,6 +1401,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 muat turun belum selesai}other{# muat turun belum selesai}}</translation>
 <translation id="7230064152164845085">Beralih kepada Inkognito</translation>
 <translation id="7237724030342645845">Google Password Manager berhenti berfungsi</translation>
+<translation id="7239496616545081903">Sembunyikan Mod membaca</translation>
 <translation id="72415438529550637">Cadangan kata laluan telah ditutup.</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
 <translation id="7253951228444156601">Menyemak kata laluan…</translation>
@@ -1533,6 +1538,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7821130663268546430">Anda boleh menemukan semua tab yang dibuka dalam penukar tab</translation>
 <translation id="7822705602465980873">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="7824665136384946951">Organisasi anda mematikan Penyemakan Imbas Selamat</translation>
+<translation id="7826342993930002256">Chrome anda, di mana-mana</translation>
 <translation id="7844171778363018843">Tiada data yang dipilih untuk disegerakkan</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="7846296061357476882">Perkhidmatan Google</translation>
@@ -1738,6 +1744,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8723453889042591629">Terjemahkan halaman ini dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8731268612289859741">Kod keselamatan</translation>
+<translation id="8738163682604285902">Lihat Mod membaca?</translation>
 <translation id="8746155870861185046">Kongsi serlahan</translation>
 <translation id="8748850008226585750">Kandungan tersembunyi</translation>
 <translation id="8754448020583829686">Salin tanpa pautan</translation>

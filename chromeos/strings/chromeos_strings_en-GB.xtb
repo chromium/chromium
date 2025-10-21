@@ -1472,6 +1472,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> transcription model <ph name="PROGRESS_PERCENTAGE" />% downloaded</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Can't disable or remove this APN. Make sure that enabled <ph name="ATTACH" /> APNs are disabled or removed.</translation>
+<translation id="7458359366992324037">Remote display</translation>
 <translation id="7458970041932198923">Please connect to a network and reload the page to view and set avatars.</translation>
 <translation id="7469648432129124067">Portal detected</translation>
 <translation id="7481312909269577407">Forward</translation>

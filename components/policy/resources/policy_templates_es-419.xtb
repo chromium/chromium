@@ -782,13 +782,6 @@ Si la inhabilitas o no la estableces, el selector de emojis no admitirá GIF de 
 Si no estableces esta política, se habilitará el selector de emojis para los usuarios normales, pero se inhabilitará para los usuarios administrados.</translation>
 <translation id="1494138678487405397">Inhabilitar el contraste alto en la pantalla de acceso</translation>
 <translation id="1497797462580613666">El administrador de descargas tendrá una opción para guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="1498640472634891941">Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios a los que se les impide automáticamente el acceso a las impresoras locales a través de la API de WebPrinting.
-
-Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
-
-Los patrones de URL no deben entrar en conflicto con <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalecerá ninguna de las dos.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1499129134689253257">Controlar el comportamiento nuevo de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Solo aplicar de manera forzosa accesos en línea a la pantalla de acceso</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
@@ -3582,7 +3575,6 @@ Si estableces la política como <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTI
 Si estableces esta política como <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valor 2), los datos cubiertos se almacenarán en la Unión Europea.
 
 Esto solo se puede configurar en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> a través de Datos &gt; Cumplimiento &gt; Regiones de datos &gt; Región &gt; Datos en reposo.</translation>
-<translation id="3379326579027180941">Permitir que los sitios soliciten al usuario acceso a las impresoras locales a través de la API de WebPrinting</translation>
 <translation id="3379368498958498146">Habilita o inhabilita la función de escritura predictiva en el teclado físico.
 
 Si habilitas esta política o no la estableces, se permitirá la escritura predictiva en el teclado físico.
@@ -7777,7 +7769,6 @@ política mientras se esté ejecutando el navegador.</translation>
 <translation id="6089679180657323464">Supervisa la configuración del controlador de telemetría y diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Obligar a los usuarios a acceder para usar el navegador</translation>
 <translation id="6092073071805297119">Permitir el uso del filtro de rendimiento de accesibilidad</translation>
-<translation id="60925735895026302">No permitir que los sitios soliciten acceso a impresoras locales a través de la API de WebPrinting</translation>
 <translation id="6093156968240188330">Permitir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="6093551397728373988">Aplicar de manera forzosa la habilitación de todos los métodos de entrada permitidos en una sesión de usuario</translation>
 <translation id="6094314311474620462">Inhabilitar la impresión</translation>
@@ -9118,11 +9109,6 @@ Si la estableces como falsa o no la estableces, el diseño no estará disponible
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use las imágenes compartidas para la decodificación de videos</translation>
 <translation id="6878757724611298427">Permitir que los usuarios utilicen apps para Android en dispositivos no afiliados</translation>
-<translation id="6881397131210596522">Si estableces la política en 2, se impedirá automáticamente que los sitios usen la API de WebPrinting.
-
-Si estableces la política en 3, se notificará al usuario cuando un sitio quiera usar la API de WebPrinting.
-
-Si no la estableces, los sitios web podrán solicitar acceso a la impresora local, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="6881447940489194100">Hash SHA-256 con codificación hexadecimal de los datos.</translation>
 <translation id="68818134518270542">Si estableces la política, se especificarán las apps que los usuarios pueden activar para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
 
@@ -11919,13 +11905,6 @@ de forma predeterminada a partir de M119.
 <translation id="8789338675663014675">Configura las políticas relacionadas con las extensiones. El usuario no está autorizado a instalar las extensiones bloqueadas a menos que se encuentren en la lista de elementos permitidos. También puedes forzar <ph name="PRODUCT_NAME" /> a instalar automáticamente las extensiones. Para hacerlo, especifícalas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones incluidas en la lista de elementos permitidos se instalan aunque también aparezcan en la lista de elementos bloqueados.</translation>
 <translation id="879697755145469671">No detecta ventanas cubiertas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
-<translation id="879863472982972634">Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios a los que se les otorga automáticamente acceso a las impresoras locales a través de la API de WebPrinting.
-
-Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
-
-Los patrones de URL no deben entrar en conflicto con <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalecerá ninguna de las dos.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8799492680917278474">Si estableces esta política, las conexiones de acceso remoto se desconectarán de forma automática después de que transcurra el tiempo (en minutos) definido en la política. Esta acción no impide que el cliente se reconecte después de que se alcance la duración máxima de la sesión. Si estableces la política en un valor que está fuera del rango establecido, es posible que el host no se inicie. Esta política no influye en los diferentes escenarios de asistencia remota.
 
           Si no la estableces, esta política no tendrá efecto. En este caso, las conexiones de acceso remoto no tendrán duración máxima en esta máquina.</translation>

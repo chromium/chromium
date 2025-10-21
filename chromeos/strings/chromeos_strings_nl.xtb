@@ -756,6 +756,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
 <translation id="4300272766492248925">App openen</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Maak automatisch transcripties en doorzoek audio. Je kunt opnamen maken, ook als je geen verbinding met internet hebt.</translation>
 <translation id="4310735698903592804">Recente achtergronden mogelijk gemaakt door AI van Google</translation>
 <translation id="4320904097188876154">neonroze</translation>
 <translation id="432961742358282111">Klik met de rechtermuisknop of houd je vinger op het scherm om definities, vertalingen of eenheidsconversies op te vragen. Gebruik de pijl-rechts of pijl-links om deze functie te beheren.</translation>
@@ -1472,6 +1473,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7425832472614771259">Transcriptiemodel voor <ph name="LANGUAGE_NAME" /> <ph name="PROGRESS_PERCENTAGE" />% gedownload</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette APN's van het type <ph name="ATTACH" /> uitstaan of zijn verwijderd.</translation>
+<translation id="7458359366992324037">Extern scherm</translation>
 <translation id="7458970041932198923">Maak verbinding met een netwerk en laad de pagina opnieuw om avatars te bekijken en in te stellen.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7481312909269577407">Vooruit</translation>

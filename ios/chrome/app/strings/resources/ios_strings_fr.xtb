@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Adresse transférée vers votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marquer comme lu</translation>
 <translation id="428768789042547925">Nouveautés</translation>
-<translation id="428858055663163046">Vous pourrez accéder à vos fichiers téléchargés ici lorsqu'ils seront disponibles</translation>
 <translation id="429074084062258019">{count,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
@@ -1793,6 +1792,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7851858861565204677">Autres appareils</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7854006015462979438">Ouvrez "Général"</translation>
+<translation id="7855678267851972597">Fichiers audio</translation>
 <translation id="7859988229622350291">Ne jamais traduire</translation>
 <translation id="7863211248337747225">Obtenir l'appli</translation>
 <translation id="7865127013871431856">Options de traduction</translation>
@@ -1973,6 +1973,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Ouvrir les liens d'autres applis en navigation privée</translation>
 <translation id="8529767659511976195">Nouveau</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">La navigation sécurisée est activée</translation>
 <translation id="8534481786647257214">Post Google+ publié.</translation>

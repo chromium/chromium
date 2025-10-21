@@ -200,7 +200,7 @@
 <translation id="1749733017156547309">گذرواژه الزامی است</translation>
 <translation id="174998178145075354">{count,plural, =1{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
-<translation id="17513872634828108">بازکردن برگه‌ها</translation>
+<translation id="17513872634828108">زبانه‌های باز</translation>
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
 <translation id="1764070164487214210">مسیرها</translation>
 <translation id="1767766085187034454">‏ترجمه Google</translation>
@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">نشانی به حساب <ph name="USER_EMAIL" /> شما منتقل شد</translation>
 <translation id="4287172530684295552">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="428768789042547925">ویژگی‌های جدید</translation>
-<translation id="428858055663163046">هرزمان فایل‌های بارگیری‌شده‌تان دردسترس بود، می‌توانید اینجا به آن‌ها دسترسی پیدا کنید</translation>
 <translation id="429074084062258019">{count,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
 <translation id="4302061870579014542">تنظیم کردن موقعیت</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
@@ -1242,7 +1241,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="58081802114142635">‏فعالیت شما هوش مصنوعی Google را بهبود می‌بخشد</translation>
 <translation id="5813223718099710537">‏وقتی از این ویژگی استفاده می‌کنید، محتوای صفحه و نشانی‌های وب به Google ارسال می‌شوند. هرزمان خواستید می‌توانید آن را در تنظیمات خاموش کنید.</translation>
-<translation id="5817176759448082654">بازبینی گذرواژه</translation>
+<translation id="5817176759448082654">بازرسی گذرواژه</translation>
 <translation id="5818161931099046557">‏ویرایش در «حساب Google»</translation>
 <translation id="5819208479324046259">توسط <ph name="MANAGER" /> مدیریت می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
@@ -1793,6 +1792,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7851858861565204677">دستگاه‌های دیگر</translation>
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7854006015462979438">‏باز کردن General (موارد کلی)</translation>
+<translation id="7855678267851972597">صداها</translation>
 <translation id="7859988229622350291">هرگز ترجمه نشود</translation>
 <translation id="7863211248337747225">دریافت کردن برنامه</translation>
 <translation id="7865127013871431856">گزینه‌های ترجمه</translation>
@@ -1973,6 +1973,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8524799873541103884">برگه‌های <ph name="INCOGNITO" />،‏ <ph name="FIRST_VISIBLE_TAB" /> تا <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /> برگه</translation>
 <translation id="8528009254289981965">باز کردن پیوندهای دیگر برنامه‌ها در حالت ناشناس</translation>
 <translation id="8529767659511976195">جدید</translation>
+<translation id="8531572740963685410">پی‌دی‌اف‌ها</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">«مرور ایمن» روشن است</translation>
 <translation id="8534481786647257214">‏پست +Google ارسال شد.</translation>
@@ -2059,7 +2060,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8803526663383843427">وقتی روشن است</translation>
 <translation id="8803639129939845298">ایمن</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
-<translation id="8814719628147284151">ادامه دادن</translation>
+<translation id="8814719628147284151">ادامه</translation>
 <translation id="8819155700324279105">اضافه شدن لایه محافظتی بیشتر دربرابر تهدیدهای آنلاین</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8822421075653507124">برای اطمینان از اینکه می‌توان به‌طور ایمن از این دستگاه استفاده کرد، شاید لازم باشد سازمانتان اطلاعاتی درباره سیستم‌عامل، مرورگر، تنظیمات خود، و نرم‌افزارهایی که در دستگاه نصب شده است ببیند.</translation>
@@ -2179,6 +2180,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="94870150074703282">گروه حذف شود؟</translation>
 <translation id="952704832371081537">لغو</translation>
+<translation id="95332591904104970">برنامه‌های متصل‌شده</translation>
 <translation id="954667170699278022">فهرست خواندن</translation>
 <translation id="956218893102219091">‏برای دریافت دقیق‌ترین نتایج از Gemini، به‌جای استفاده از مکان تخمینی مبتنی بر نشانی IP، از مکان دقیق خود استفاده کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>

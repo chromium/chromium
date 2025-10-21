@@ -882,6 +882,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2436976580469434549">Kuitu‑ ja tekstiilitaide</translation>
 <translation id="243815215670139125">Tätä korttia ei voitu tallentaa Google-tilillesi. Se on sen sijaan tallennettu Chromeen tällä laitteella.</translation>
 <translation id="2438874542388153331">Neljä reikää oikealla</translation>
+<translation id="2440855519769445271">Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LINK" />maksuasetuksiin<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Kosketuksella täytettävät maksutavat. Näppäimistö piilotettu.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ei tallenna<ph name="END_EMPHASIS" /> näitä tietoja:
           <ph name="BEGIN_LIST" />
@@ -2223,6 +2224,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4648262692072505866">Tiivisteen on oltava muodossa SHA-256.</translation>
 <translation id="4652266463001779298">Ei sallittu</translation>
 <translation id="4652440160515225514">Organisaatiosi on estänyt tämän sivuston, koska se rikkoo käytäntöä.</translation>
+<translation id="4654457557264366314">Maksusopimukset edellyttävät kelpoisuutta.</translation>
 <translation id="4658638640878098064">Niitti vasemmassa yläkulmassa</translation>
 <translation id="4660592918803576381">Avaa Drivessa</translation>
 <translation id="4661556981531699496">Lemmikit ja eläimet</translation>

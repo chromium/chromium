@@ -882,6 +882,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2436976580469434549">Tekstilna umetnost</translation>
 <translation id="243815215670139125">Čuvanje ove kartice na Google nalogu nije uspelo. Umesto toga, sačuvana je u Chrome-u na ovom uređaju.</translation>
 <translation id="2438874542388153331">Četvorostruko bušenje na desnoj strani</translation>
+<translation id="2440855519769445271">Da biste sakrili opcije za plaćanje kasnije, idite u <ph name="BEGIN_LINK" />podešavanja plaćanja<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Načini plaćanja dostupni za unos dodirom. Tastatura je sakrivena.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4648262692072505866">Heš mora da bude u formatu SHA-256.</translation>
 <translation id="4652266463001779298">Nije dozvoljeno</translation>
 <translation id="4652440160515225514">Vaša organizacija je blokirala ovaj sajt jer krši smernice.</translation>
+<translation id="4654457557264366314">Planovi plaćanja podležu uslovima.</translation>
 <translation id="4658638640878098064">Spajanje u gornjem levom uglu</translation>
 <translation id="4660592918803576381">Otvori na Disku</translation>
 <translation id="4661556981531699496">Kućni ljubimci i životinje</translation>

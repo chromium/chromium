@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Адресът бе преместен в профила ви <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Означаване като прочетено</translation>
 <translation id="428768789042547925">Новите неща</translation>
-<translation id="428858055663163046">Тук можете да осъществявате достъп до изтеглените от вас файлове, когато са налице</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="4302061870579014542">Задаване на позиция</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
@@ -1236,6 +1235,7 @@
 <translation id="5758759241456233788">Предварителният преглед на Карти е изключен. Можете да го включите отново в настройките.</translation>
 <translation id="5759484603608560822">Скриване на „Изтегляния“</translation>
 <translation id="5767099457279594162">Паролата не бе споделена</translation>
+<translation id="5768870767339201169">Продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="5779117921996157216">{count,plural, =1{Имате {count} компрометирана парола, която може да представлява риск за сигурността ви. Коригирайте я сега, за да сте в безопасност.}other{Имате {count} компрометирани пароли, които могат да представляват риск за сигурността ви. Коригирайте ги сега, за да сте в безопасност.}}</translation>
 <translation id="5791632441210678828">Бутон за сортиране на емисията „Следено“.</translation>
 <translation id="5803566855766646066">Наистина ли искате да отхвърлите тази нова карта?</translation>
@@ -1793,6 +1793,7 @@
 <translation id="7851858861565204677">Други устройства</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворете General</translation>
+<translation id="7855678267851972597">Аудиофайлове</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7863211248337747225">Инсталиране на приложението</translation>
 <translation id="7865127013871431856">Опции за превод</translation>
@@ -1973,6 +1974,7 @@
 <translation id="8524799873541103884">Раздели в режим „<ph name="INCOGNITO" />“: <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> от общо <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Отваряне на връзки от други приложения в режим „инкогнито“</translation>
 <translation id="8529767659511976195">Ново</translation>
+<translation id="8531572740963685410">PDF файлове</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>
 <translation id="8534481786647257214">Публикацията в Google+ е завършена.</translation>

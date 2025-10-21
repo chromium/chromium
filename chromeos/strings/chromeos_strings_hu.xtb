@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
 <translation id="4300272766492248925">Alkalmazás megnyitása</translation>
 <translation id="430786093962686457">sifon</translation>
+<translation id="4309762678330556039">Automatikusan létrehozhat átiratokat, és kereshet a hangfelvételek között. Akkor is készíthet felvételeket, amikor nincs internetkapcsolata.</translation>
 <translation id="4310735698903592804">A legújabb háttérképeket a Google AI biztosítja</translation>
 <translation id="4320904097188876154">neonlila</translation>
 <translation id="432961742358282111">Definíciók, fordítások vagy mértékegységek átváltásának megjelenítéséhez kattintson a jobb egérgombbal, vagy tartsa nyomva az ujját a képernyőn. A funkció kezeléséhez használja a balra és jobbra nyilakat.</translation>
@@ -1472,6 +1473,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> nyelvű átírási modell <ph name="PROGRESS_PERCENTAGE" />%-a letöltve</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett <ph name="ATTACH" /> APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
+<translation id="7458359366992324037">Távoli képernyő</translation>
 <translation id="7458970041932198923">Az avatarok megtekintéséhez és beállításához csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7481312909269577407">Előre</translation>

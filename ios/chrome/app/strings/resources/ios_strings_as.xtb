@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">আপোনাৰ একাউণ্ট <ph name="USER_EMAIL" />লৈ ঠিকনা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="4287172530684295552">পঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="428768789042547925">নতুন কি আছে</translation>
-<translation id="428858055663163046">আপুনি ইয়াত আপোনাৰ ডাউনল’ড কৰা ফাইলসমূহ উপলব্ধ হ’লে এক্সেছ কৰিব পাৰে</translation>
 <translation id="429074084062258019">{count,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="4302061870579014542">স্থান ছেট কৰক</translation>
 <translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
@@ -2185,6 +2184,7 @@
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="94870150074703282">গোট মচিবনে?</translation>
 <translation id="952704832371081537">বাতিল কৰক</translation>
+<translation id="95332591904104970">সংযোজিত এপ্‌সমূহ</translation>
 <translation id="954667170699278022">পঢ়াৰ সূচী</translation>
 <translation id="956218893102219091">Geminiৰ পৰা আটাইতকৈ সঠিক ফলাফল পাবলৈ আপোনাৰ আইপি ঠিকনাৰ ভিত্তিত কোনো আনুমানিক অৱস্থান ব্যৱহাৰ কৰাতকৈ নিজৰ সঠিক অৱস্থানটো ব্যৱহাৰ কৰক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ব্ৰাউজিঙৰ ডেটা মচক</translation>

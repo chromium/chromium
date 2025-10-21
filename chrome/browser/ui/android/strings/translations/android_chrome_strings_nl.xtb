@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-mailadres</translation>
 <translation id="1197267115302279827">Bookmarks verplaatsen</translation>
 <translation id="1197761954713363183">Bevestigingsblad voor toegangssleutel gesloten</translation>
+<translation id="1197933394627598677">Leesmodus tonen</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1202892408424955784">Gevolgde producten</translation>
 <translation id="1204037785786432551">Link downloaden</translation>
@@ -517,6 +518,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3435575784518354875">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu, update je Google Play-services en importeer je ze terug naar Google Wachtwoordmanager. <ph name="BEGIN_LINK" />Bekijk de volledige instructies<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3435914367318771664">Tabblad toevoegen aan nieuwe groep</translation>
+<translation id="3438681572027105609">Log in bij Chrome om onder andere je wachtwoorden te gebruiken op al je apparaten</translation>
 <translation id="3439276997620616816">Hier vind je je recente tabbladen</translation>
 <translation id="3443221991560634068">De huidige pagina opnieuw laden</translation>
 <translation id="3444179773590444986">Feedback delen over donker thema voor sites?</translation>
@@ -1261,6 +1263,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6738867403308150051">Downloaden...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Check je accountgegevens</translation>
+<translation id="6746834324024491643">Log in als <ph name="EMAIL" /> om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="6751521182688001123">Open snel een nieuw tabblad. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
 <translation id="6752130751133944215">Als je een nieuw venster wilt herstellen, verlaag je het totale aantal vensters (actief en inactief) tot <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder. Inactieve vensters worden na 6 maanden verwijderd.</translation>
 <translation id="6754359471209693699">Nieuwe zoekopdracht starten</translation>
@@ -1397,6 +1400,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in behandeling}other{# downloads in behandeling}}</translation>
 <translation id="7230064152164845085">Overschakelen naar incognitomodus</translation>
 <translation id="7237724030342645845">Google Wachtwoordmanager werkt niet meer</translation>
+<translation id="7239496616545081903">Leesmodus verbergen</translation>
 <translation id="72415438529550637">Wachtwoordsuggestie is gesloten.</translation>
 <translation id="7248671827512403053">Applicatie</translation>
 <translation id="7253951228444156601">Wachtwoorden checken…</translation>
@@ -1533,6 +1537,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7821130663268546430">Je vindt alle geopende tabbladen in de tabbladschakelaar</translation>
 <translation id="7822705602465980873">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
+<translation id="7826342993930002256">Jouw Chrome, waar je ook bent</translation>
 <translation id="7844171778363018843">Geen gegevens geselecteerd om te synchroniseren</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="7846296061357476882">Google-services</translation>
@@ -1738,6 +1743,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8723453889042591629">Vertaal deze pagina snel. Houd je vinger op het scherm om deze snelkoppeling te bewerken.</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8731268612289859741">Beveiligingscode</translation>
+<translation id="8738163682604285902">Leesmodus bekijken?</translation>
 <translation id="8746155870861185046">Gemarkeerde tekst delen</translation>
 <translation id="8748850008226585750">Content verborgen</translation>
 <translation id="8754448020583829686">Kopiëren zonder link</translation>

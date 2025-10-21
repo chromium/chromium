@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">ವಿಳಾಸವನ್ನು ನಿಮ್ಮ ಖಾತೆಗೆ ಸರಿಸಲಾಗಿದೆ <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">ಓದಿರುವುದು ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="428768789042547925">ಹೊಸತೇನಿದೆ</translation>
-<translation id="428858055663163046">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳು ಲಭ್ಯವಿದ್ದಾಗ ನೀವು ಇಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು</translation>
 <translation id="429074084062258019">{count,plural, =1{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="4302061870579014542">ಸ್ಥಾನವನ್ನು ಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
@@ -1793,6 +1792,7 @@
 <translation id="7851858861565204677">ಇತರ ಸಾಧನಗಳು</translation>
 <translation id="7853202427316060426">ಚಟುವಟಿಕೆ</translation>
 <translation id="7854006015462979438">ಸಾಮಾನ್ಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="7855678267851972597">ಆಡಿಯೋಗಳು</translation>
 <translation id="7859988229622350291">ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
 <translation id="7863211248337747225">ಆ್ಯಪ್‌ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7865127013871431856">ಅನುವಾದ ಆಯ್ಕೆಗಳು</translation>
@@ -1973,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ರಲ್ಲಿ <ph name="LAST_VISIBLE_TAB" /> ಮೂಲಕ <ph name="INCOGNITO" /> ಟ್ಯಾಬ್‌ಗಳು <ph name="FIRST_VISIBLE_TAB" /></translation>
 <translation id="8528009254289981965">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8529767659511976195">ಹೊಸತು</translation>
+<translation id="8531572740963685410">PDF ಗಳು</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8534481786647257214">Google+ ಪೋಸ್ಟ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
@@ -2179,6 +2180,7 @@
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="94870150074703282">ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="952704832371081537">ರದ್ದುಮಾಡಿ</translation>
+<translation id="95332591904104970">ಕನೆಕ್ಟ್ ಆಗಿರುವ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="954667170699278022">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="956218893102219091">ಅತ್ಯಂತ ನಿಖರವಾದ Gemini ಫಲಿತಾಂಶಗಳಿಗಾಗಿ ನಿಮ್ಮ IP ವಿಳಾಸವನ್ನು ಆಧರಿಸಿದ ಅಂದಾಜು ಮಾಡಿದ ಸ್ಥಳದ ಬದಲಾಗಿ ನಿಮ್ಮ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಬಳಸಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>

@@ -19,6 +19,7 @@
 <translation id="110877069173485804">这是您的专属Chrome</translation>
 <translation id="1125124144982679672">谁在使用 Chrome？</translation>
 <translation id="1142745911746664600">无法更新 Chrome</translation>
+<translation id="1148360048981192980">下次在<ph name="DEVICE_TYPE" />上打开 Chrome 时，您会看到使用 Google 密码管理工具的提示。</translation>
 <translation id="1152920704813762236">关于 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
 <translation id="1157985233335035034">最近选择过的语言</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">在 Google Chrome 的新标签页中打开 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">打开 Chrome Beta 版中的 Gemini</translation>
 <translation id="2712141162840347885">选择任意内容即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
+<translation id="2723860029395667894">始终显示 Google AI 模式快捷方式</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
@@ -474,6 +476,7 @@
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">要切换到现有的 Chrome 个人资料吗？</translation>
+<translation id="6426623519983252346">下次打开 Chrome iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
@@ -672,6 +675,7 @@
 <translation id="8641606876632989680">当您使用已泄露的密码登录时，Chrome 会通知您</translation>
 <translation id="8656634243791296665">打开 Chrome 开发者版中的 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>
+<translation id="8677922833187616101">始终显示 Google AI 模式快捷方式</translation>
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8712767363896337380">离最新版本只有一步之遥了！重新启动 Chrome 即可完成更新。</translation>

@@ -21,6 +21,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="110877069173485804">Det här är Chrome</translation>
 <translation id="1125124144982679672">Vem ska använda Chrome?</translation>
 <translation id="1142745911746664600">Det gick inte att uppdatera Chrome</translation>
+<translation id="1148360048981192980">Nästa gång du öppnar Chrome på din <ph name="DEVICE_TYPE" /> visas en uppmaning om att använda Google Lösenordshantering.</translation>
 <translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Öppna i Chrome</translation>
 <translation id="1157985233335035034">Nyligen använda språk</translation>
@@ -150,6 +151,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2681444469812712297">Öppna <ph name="URL" /> på en ny flik i Google Chrome.</translation>
 <translation id="2699790011615497488">Öppna Gemini i Chrome Beta</translation>
 <translation id="2712141162840347885">Välj vad du vill söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
+<translation id="2723860029395667894">Visa alltid genvägen till Google AI-läget</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2742320827292110288">Varning! Google Chrome kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du detta alternativ.</translation>
 <translation id="2753623023919742414">Klicka för att söka</translation>
@@ -483,6 +485,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisationen avslutar Chrome automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chrome automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
+<translation id="6426623519983252346">Du får en uppmaning om att testa <ph name="FEATURE_NAME" /> nästa gång du öppnar Chrome för iOS.</translation>
 <translation id="6473905796280459355">Öppna sidan Om Chrome</translation>
 <translation id="6481963882741794338">Länka Chrome och andra tjänster från Google för anpassning och andra syften</translation>
 <translation id="648319183876919572">Förbättrad säker webbsökning gör mer för att skydda dig mot farliga webbplatser och nedladdningar</translation>
@@ -681,6 +684,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8641606876632989680">Chrome aviserar dig om du loggar in med ett utsatt lösenord</translation>
 <translation id="8656634243791296665">Öppna Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Visa alltid genvägen till Google AI-läget</translation>
 <translation id="8679801911857917785">Det styr också vilken sida som visas när du startar Chrome.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8712767363896337380">Uppdateringen är snart klar! Starta om Chrome för att slutföra uppdateringen.</translation>

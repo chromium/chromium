@@ -886,6 +886,7 @@
 <translation id="2436976580469434549">Թելերի և կտորեղենի արվեստ</translation>
 <translation id="243815215670139125">Չհաջողվեց պահել քարտը ձեր Google հաշվում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։</translation>
 <translation id="2438874542388153331">Չորս անցք աջ կողմում</translation>
+<translation id="2440855519769445271">Տարաժամկետ վճարման տարբերակները թաքցնելու համար անցեք <ph name="BEGIN_LINK" />վճարման կարգավորումներ<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Վճարման հասանելի եղանակները, որոնք կարելի է լրացնել հպումով։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="2442865686365739754">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
           <ph name="BEGIN_LIST" />
@@ -2228,6 +2229,7 @@
 <translation id="4648262692072505866">Հեշը պետք է լինի SHA-256 ձևաչափով։</translation>
 <translation id="4652266463001779298">Արգելված է</translation>
 <translation id="4652440160515225514">Ձեր կազմակերպությունն արգելափակել է այս կայքը, քանի որ այն կանոն է խախտում։</translation>
+<translation id="4654457557264366314">Վճարային պլանները հասանելի են միայն պահանջները բավարարելու դեպքում։</translation>
 <translation id="4658638640878098064">Ամրակ վերևի ձախ կողմում</translation>
 <translation id="4660592918803576381">Բացել Drive-ում</translation>
 <translation id="4661556981531699496">Ընտանի և վայրի կենդանիներ</translation>

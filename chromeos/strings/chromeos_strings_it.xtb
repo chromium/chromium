@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
 <translation id="4300272766492248925">Apri app</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Crea automaticamente trascrizioni e cerca l'audio. Puoi creare registrazioni anche quando non disponi di una connessione a internet.</translation>
 <translation id="4310735698903592804">Sfondi recenti IA di Google integrata</translation>
 <translation id="4320904097188876154">rosa neon</translation>
 <translation id="432961742358282111">Fai clic con il tasto destro del mouse o tieni premuto per ottenere definizioni, traduzioni o conversioni di unità. Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
@@ -1472,6 +1473,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7425832472614771259">Avanzamento download modello di trascrizione <ph name="LANGUAGE_NAME" />: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN <ph name="ATTACH" /> abilitati siano disattivati o rimossi.</translation>
+<translation id="7458359366992324037">Display remoto</translation>
 <translation id="7458970041932198923">Connettiti a una rete e ricarica la pagina per visualizzare e impostare gli avatar.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7481312909269577407">Avanti</translation>

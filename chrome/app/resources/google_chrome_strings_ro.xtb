@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Acesta este browserul dvs. Chrome</translation>
 <translation id="1125124144982679672">Cine folosește Chrome?</translation>
 <translation id="1142745911746664600">Chrome nu se poate actualiza</translation>
+<translation id="1148360048981192980">Data viitoare când deschizi Chrome pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a folosi Managerul de parole Google.</translation>
 <translation id="1152920704813762236">Despre ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Deschide în Chrome</translation>
 <translation id="1157985233335035034">Limbi recente</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">Deschide <ph name="URL" /> într-o filă nouă în Google Chrome.</translation>
 <translation id="2699790011615497488">Deschide Gemini în Chrome Beta</translation>
 <translation id="2712141162840347885">Selectează orice vrei să cauți cu Google Lens sau apasă Escape pentru a ieși din Google Lens</translation>
+<translation id="2723860029395667894">Afișează întotdeauna comanda rapidă pentru Modul Google AI</translation>
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2742320827292110288">Avertisment: Google Chrome nu poate împiedica extensiile să înregistreze istoricul navigării. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="2753623023919742414">Dă clic pentru a căuta</translation>
@@ -475,6 +477,7 @@
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizația ta închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
+<translation id="6426623519983252346">Vei vedea o solicitare de a încerca <ph name="FEATURE_NAME" /> data viitoare când deschizi Chrome în iOS.</translation>
 <translation id="6473905796280459355">Accesează pagina Despre Chrome</translation>
 <translation id="6481963882741794338">Conectează Chrome și alte servicii Google pentru personalizare și alte scopuri</translation>
 <translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>
@@ -673,6 +676,7 @@
 <translation id="8641606876632989680">Chrome te va anunța dacă te conectezi folosind o parolă compromisă</translation>
 <translation id="8656634243791296665">Deschide Gemini în Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Afișează întotdeauna comanda rapidă pentru Modul Google AI</translation>
 <translation id="8679801911857917785">Stabilește și ce pagină se afișează când porniți Chrome.</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8712767363896337380">Actualizarea este aproape gata! Relansează Chrome pentru a finaliza actualizarea.</translation>

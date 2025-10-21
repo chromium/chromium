@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Il est presque temps de faire une pause</translation>
 <translation id="10619348099955377">Copier le nom à afficher</translation>
 <translation id="1062407476771304334">Remplacer</translation>
+<translation id="1064236804542808595">Restaurer les raccourcis de l'organisation</translation>
 <translation id="1065369186007547872">Chrome considère que vous ne souhaitez pas recevoir de notifications de ce site. Les demandes sont donc masquées pour réduire les interruptions.</translation>
 <translation id="1066964438793906105">Rechercher des logiciels malveillants</translation>
 <translation id="1067661089446014701">Pour renforcer la sécurité, vous pouvez chiffrer les mots de passe sur votre appareil avant qu'ils soient enregistrés dans votre compte Google.</translation>
@@ -1052,6 +1053,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1700517974991662022">Consulté</translation>
 <translation id="1703331064825191675">Ne vous souciez plus jamais de vos mots de passe</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
+<translation id="1703849276368677471">Outils</translation>
 <translation id="1704097193565924901">Mettre une majuscule</translation>
 <translation id="1704230497453185209">Ne pas autoriser les sites à lire des sons</translation>
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
@@ -1179,6 +1181,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1796460466266263589">Pour continuer à utiliser Gemini, confirmez votre identité</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne seront pas disponibles</translation>
 <translation id="1797117170091578105">Jouez avec le clavier du Chromebook. Vous pouvez associer des touches à des actions spécifiques.</translation>
+<translation id="1798726622311813209">Cartes de crédit ou de débit</translation>
 <translation id="1799852120691957794">Impossible de restaurer les fenêtres de votre session précédente</translation>
 <translation id="180203835522132923">Recherche+O, puis W</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque l'appareil est refermé</translation>
@@ -1464,6 +1467,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1984683754853869253">Voulez-vous créer un profil scolaire ?</translation>
 <translation id="198507684520034826">Aide</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Paramètres de localisation avancés</translation>
 <translation id="1987317783729300807">Comptes</translation>
 <translation id="1987574314042117472">Sélectionner et installer les applis populaires</translation>
@@ -3117,6 +3121,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3122883569442693641">Plus d'informations</translation>
 <translation id="3124111068741548686">Handles UTILISATEUR</translation>
 <translation id="3124332159330678621">Personnalisez Chrome pour donner un nouveau look à votre navigateur</translation>
+<translation id="3124950826511066429">Paramètres qui affectent le fonctionnement de la saisie automatique pour différents types d'informations</translation>
 <translation id="3125361247594231799">Épingler pour la prochaine fois</translation>
 <translation id="3125816458150005808">Vous pouvez la retirer et l'ouvrir à partir du menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5365,6 +5370,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Carte de crédit/débit</translation>
 <translation id="4679018849559620189">Cette option vous permet d'accéder à vos clés d'accès enregistrées sur n'importe quel appareil</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">Le son a été désactivé sur cette page</translation>
 <translation id="4680112532510845139">Déposez une image ici</translation>
 <translation id="4681453295291708042">Désactiver le Partage à proximité</translation>
@@ -5909,6 +5915,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5068553687099139861">d'afficher les mots de passe</translation>
 <translation id="506886127401228110">Activer les applications Web isolées</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070630163913211970">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. <ph name="LINK_BEGIN" />En savoir plus sur l'IA et la confidentialité<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">Retour aux téléchargements récents</translation>
 <translation id="5071892329440114717">Afficher les détails de la protection standard</translation>
 <translation id="5072500507106264618">Seuls les services système peuvent utiliser votre position</translation>
@@ -6371,6 +6378,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5398497406011404839">Favoris masqués</translation>
 <translation id="5398572795982417028">Plage de pages hors limites. Le nombre maximal de pages est <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="539882584649709174">Vous aide à rédiger de courts textes pour le Web, comme des avis</translation>
+<translation id="5400068721524309244">Lorsque des onglets sont partagés, le contenu de leurs pages et leurs URL sont envoyés à Google</translation>
 <translation id="5400196580536813396">Non autorisés à rechercher ou à utiliser des imprimantes accessibles à votre appareil</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7706,6 +7714,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage ADB. Votre <ph name="DEVICE_TYPE" /> sera donc réinitialisé dans 24 heures. Sauvegardez les fichiers que vous souhaitez conserver.</translation>
 <translation id="6336194758029258346">Langue de l'appli</translation>
 <translation id="6337543438445391085">Certaines informations personnelles peuvent encore figurer parmi les données. Vérifiez bien les fichiers exportés.</translation>
+<translation id="6338554362382763574">Vous pouvez facilement poser des questions à Gemini sur les onglets que vous partagez pendant que vous naviguez</translation>
 <translation id="6338968693068997776">Ajouter un appareil USB</translation>
 <translation id="6339668969738228384">Créer un profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocole d'impression Internet (IPPS)</translation>
@@ -8050,6 +8059,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6586451623538375658">Inverser le bouton principal de la souris</translation>
 <translation id="6588043302623806746">Utiliser un DNS sécurisé</translation>
 <translation id="6589760925779188068">Panna cotta</translation>
+<translation id="6589769062042696460">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative. <ph name="LINK_BEGIN" />En savoir plus sur l'IA et la confidentialité<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">Renommer le dossier</translation>
 <translation id="6592267180249644460">Date et heure de création du journal WebRTC : <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Votre empreinte a bien été enregistrée</translation>
@@ -8327,6 +8337,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">Code incorrect</translation>
+<translation id="6782219876520622071">Les conversations concernant les onglets partagés peuvent être consultées par des réviseurs humains afin d'améliorer Gemini</translation>
 <translation id="6783036716881942511">Supprimer cet appareil ?</translation>
 <translation id="6783667414610055871">Paramètres Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil accepté</translation>
@@ -8457,6 +8468,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6852290167968069627">ChromeOS ne peut pas reprendre votre session précédente en raison d'un problème réseau. Connectez-vous à un réseau stable et réessayez.</translation>
 <translation id="6852529053326738838">Demandez à votre organisation ou procédez à l'enregistrement avec votre e-mail professionnel pour vérifier si votre compte est éligible.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> installée à partir de <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
+<translation id="6853118789186721762">Rappel envoyé à votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">Année de la <ph name="DROPDOWN_NAME" /></translation>
 <translation id="68541483639528434">Fermer les autres onglets</translation>
 <translation id="6855892664589459354">Sauvegarde et restauration de Crostini</translation>
@@ -8758,6 +8770,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7066572364168923329">Choisir la configuration de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Couleurs ambiantes</translation>
 <translation id="7067725467529581407">Ne plus afficher</translation>
+<translation id="7067779359472606732">Rappel envoyé à votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Connectez-vous pour voir les onglets d'autres appareils</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> et quelques autres applis sont bloquées sur ton <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Ouvre la page des paramètres de sécurité dans un nouvel onglet</translation>
@@ -11243,6 +11256,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="876161309768861172">Impossible de vous connecter. Veuillez réessayer.</translation>
 <translation id="8761945298804995673">Cet utilisateur existe déjà</translation>
 <translation id="8762886931014513155">Votre <ph name="DEVICE_TYPE" /> doit être mis à jour</translation>
+<translation id="8763170551806710928">Afficher les chips</translation>
 <translation id="8763927697961133303">Périphérique USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Afficher toutes les recherches pour <ph name="QUERY_CLUSTER_NAME" /></translation>
@@ -11574,6 +11588,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8988539543012086784">Cette page est enregistrée dans <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989034257029389285">Vous pourriez demander "Hey Google, quelle est cette chanson ?"</translation>
 <translation id="8989359959810288806">Actualiser l'état du partage de connexion</translation>
+<translation id="8989779557457435460">Partager l'onglet actuel par défaut</translation>
 <translation id="8990243615717080992">Connectez-vous avec un mot de passe ou une autre méthode de récupération</translation>
 <translation id="8991520179165052608">Le site peut utiliser votre micro</translation>
 <translation id="8991694323904646277">Aucun appareil photo</translation>

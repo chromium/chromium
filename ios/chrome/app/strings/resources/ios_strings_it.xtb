@@ -837,7 +837,6 @@
 <translation id="4286718549648564014">Indirizzo spostato nel tuo account <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Segna come già letti</translation>
 <translation id="428768789042547925">Novità</translation>
-<translation id="428858055663163046">Puoi accedere ai file scaricati qui quando sono disponibili</translation>
 <translation id="429074084062258019">{count,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
 <translation id="4302061870579014542">Imposta posizione</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
@@ -1793,6 +1792,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7851858861565204677">Altri dispositivi</translation>
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7854006015462979438">Apri Generali</translation>
+<translation id="7855678267851972597">Audio</translation>
 <translation id="7859988229622350291">Non tradurre mai</translation>
 <translation id="7863211248337747225">Scarica l'app</translation>
 <translation id="7865127013871431856">Opzioni di Traduttore</translation>
@@ -1973,6 +1973,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8524799873541103884">Schede <ph name="INCOGNITO" /> dalla <ph name="FIRST_VISIBLE_TAB" /> alla <ph name="LAST_VISIBLE_TAB" /> di <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Apri link da altre app in incognito</translation>
 <translation id="8529767659511976195">Novità</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="8534481786647257214">Pubblicazione su Google+ completata.</translation>
@@ -2179,6 +2180,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="94870150074703282">Eliminare il gruppo?</translation>
 <translation id="952704832371081537">Annulla</translation>
+<translation id="95332591904104970">App connesse</translation>
 <translation id="954667170699278022">Elenco di lettura</translation>
 <translation id="956218893102219091">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>

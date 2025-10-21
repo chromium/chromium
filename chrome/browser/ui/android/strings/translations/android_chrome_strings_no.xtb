@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-postadressen din</translation>
 <translation id="1197267115302279827">Flytt bokmerker</translation>
 <translation id="1197761954713363183">Arket for passnøkkelbekreftelse er lukket</translation>
+<translation id="1197933394627598677">Vis lesemodus</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1202892408424955784">Sporede produkter</translation>
 <translation id="1204037785786432551">Last ned linken</translation>
@@ -517,6 +518,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3435914367318771664">Legg fanen til i en ny gruppe</translation>
+<translation id="3438681572027105609">For å få passordene dine med mer på alle enhetene dine, logg på Chrome</translation>
 <translation id="3439276997620616816">Her finner du de nylige fanene dine</translation>
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
 <translation id="3444179773590444986">Vil du dele tilbakemeldinger om mørkt tema for nettsteder?</translation>
@@ -1261,6 +1263,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6738867403308150051">Laster ned …</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
+<translation id="6746834324024491643">For å få passordene dine med mer på alle enhetene dine, logg på som <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Åpner raskt en ny fane. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="6752130751133944215">For å gjenopprette et nytt vindu må du redusere det totale antallet vinduer, både aktive og inaktive, til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre. Inaktive vinduer slettes etter 6 måneder.</translation>
 <translation id="6754359471209693699">Start et nytt søk</translation>
@@ -1397,6 +1400,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedlasting venter}other{# nedlastinger venter}}</translation>
 <translation id="7230064152164845085">Bytt til Inkognito</translation>
 <translation id="7237724030342645845">Google Passordlagring har sluttet å fungere</translation>
+<translation id="7239496616545081903">Skjul lesemodus</translation>
 <translation id="72415438529550637">Passordforslaget er lukket.</translation>
 <translation id="7248671827512403053">App</translation>
 <translation id="7253951228444156601">Sjekker passord …</translation>
@@ -1533,6 +1537,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7821130663268546430">Du finner alle åpne faner i fanevelgeren</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="7824665136384946951">Organisasjonen din har slått av Safe Browsing</translation>
+<translation id="7826342993930002256">Din egen Chrome, overalt</translation>
 <translation id="7844171778363018843">Ingen data er valgt for synkronisering</translation>
 <translation id="7846161022626028328">Det oppsto en feil. Prøv på nytt.</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>
@@ -1738,6 +1743,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8723453889042591629">Oversett denne siden raskt. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8731268612289859741">Sikkerhetskode</translation>
+<translation id="8738163682604285902">Vil du se lesemodusen?</translation>
 <translation id="8746155870861185046">Del merket tekst</translation>
 <translation id="8748850008226585750">Innholdet er skjult</translation>
 <translation id="8754448020583829686">Kopier uten link</translation>

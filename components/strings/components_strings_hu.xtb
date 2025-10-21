@@ -882,6 +882,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2436976580469434549">Szövet- és textilművészet</translation>
 <translation id="243815215670139125">Nem sikerült elmenteni a kártyát a Google-fiókjába. Csak az eszköz Chrome alkalmazásába mentette a rendszer.</translation>
 <translation id="2438874542388153331">Négy lyuk a jobb oldalon</translation>
+<translation id="2440855519769445271">A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LINK" />fizetési beállításokhoz<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Érintéssel kitölthető fizetési módok. A billentyűzet el van rejtve.</translation>
 <translation id="2442865686365739754">A Chrome <ph name="BEGIN_EMPHASIS" />nem menti<ph name="END_EMPHASIS" /> a következőket:
           <ph name="BEGIN_LIST" />
@@ -2219,6 +2220,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4648262692072505866">A hashnek SHA-256 formátumúnak kell lennie.</translation>
 <translation id="4652266463001779298">Nem engedélyezett</translation>
 <translation id="4652440160515225514">Szervezete letiltotta ezt a webhelyet, mert az irányelvet sért.</translation>
+<translation id="4654457557264366314">A fizetési konstrukciók a jogosultságtól függnek.</translation>
 <translation id="4658638640878098064">Kapocs balra fent</translation>
 <translation id="4660592918803576381">Megnyitás a Drive-on</translation>
 <translation id="4661556981531699496">Házi kedvencek és egyéb állatok</translation>

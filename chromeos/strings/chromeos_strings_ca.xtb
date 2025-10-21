@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
 <translation id="4300272766492248925">Obre l'aplicació</translation>
 <translation id="430786093962686457">xifó</translation>
+<translation id="4309762678330556039">Crea transcripcions automàticament i cerca àudio. Pots crear gravacions fins i tot quan no tens connexió a Internet.</translation>
 <translation id="4310735698903592804">Fons de pantalla recents amb la tecnologia de la IA de Google</translation>
 <translation id="4320904097188876154">rosa neó</translation>
 <translation id="432961742358282111">Fes-hi clic amb el botó dret o mantén-lo premut per obtenir definicions, traduccions o conversions d'unitats. Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
@@ -1472,6 +1473,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7425832472614771259">S'ha baixat un <ph name="PROGRESS_PERCENTAGE" /> % del model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
+<translation id="7458359366992324037">Pantalla remota</translation>
 <translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7481312909269577407">Endavant</translation>
