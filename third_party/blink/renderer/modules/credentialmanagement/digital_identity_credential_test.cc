@@ -214,12 +214,12 @@ TEST_F(DigitalIdentityCredentialTest,
   test::RunPendingTasks();
 
   EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
-      blink::mojom::WebFeature::kIdentityDigitalCredentials));
+      blink::mojom::WebFeature::kIdentityDigitalCredentialsCreation));
   EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
-      blink::mojom::WebFeature::kIdentityDigitalCredentialsSuccess));
+      blink::mojom::WebFeature::kIdentityDigitalCredentialsCreationSuccess));
 
   // Remove the binding for other tests to be able to set their own binding.
-  // Otherwise, it wll be bound already.
+  // Otherwise, it will be bound already.
   context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::DigitalIdentityRequest::Name_, {});
 }

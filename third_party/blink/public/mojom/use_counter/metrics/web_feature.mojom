@@ -5020,6 +5020,8 @@ enum WebFeature {
   kWebRTCLocalNetworkAccessPublicToLocal = 5705,
   kWebRTCLocalNetworkAccessPublicToLoopback = 5706,
   kWebRTCLocalNetworkAccessLocalToLoopback = 5707,
+  kIdentityDigitalCredentialsCreation = 5708,
+  kIdentityDigitalCredentialsCreationSuccess = 5709,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

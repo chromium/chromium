@@ -6337,6 +6337,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5705" label="WebRTCLocalNetworkAccessPublicToLocal"/>
   <int value="5706" label="WebRTCLocalNetworkAccessPublicToLoopback"/>
   <int value="5707" label="WebRTCLocalNetworkAccessLocalToLoopback"/>
+  <int value="5708" label="IdentityDigitalCredentialsCreation"/>
+  <int value="5709" label="IdentityDigitalCredentialsCreationSuccess"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

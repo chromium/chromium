@@ -126,8 +126,17 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       return;
     }
     case RequestDigitalIdentityStatus::kSuccess: {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kIdentityDigitalCredentialsSuccess);
+      switch (request_type) {
+        case DigitalIdentityRequestType::kGet:
+          UseCounter::Count(resolver->GetExecutionContext(),
+                            WebFeature::kIdentityDigitalCredentialsSuccess);
+          break;
+        case DigitalIdentityRequestType::kCreate:
+          UseCounter::Count(
+              resolver->GetExecutionContext(),
+              WebFeature::kIdentityDigitalCredentialsCreationSuccess);
+          break;
+      }
 
       DigitalCredential* credential = DigitalCredential::Create(
           protocol,
@@ -282,7 +291,7 @@ void CreateDigitalIdentityCredentialInExternalSource(
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
-                    WebFeature::kIdentityDigitalCredentials);
+                    WebFeature::kIdentityDigitalCredentialsCreation);
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (auto* signal = options.getSignalOr(nullptr)) {
