@@ -3025,6 +3025,10 @@ crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browser/set_down
 crbug.com/453673799 external/wpt/html/semantics/forms/the-textarea-element/selection-after-whitespace-change.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-text/text-transform/text-transform-fullwidth-001.xht [ Failure ]
+external/wpt/css/css-text/text-transform/text-transform-fullwidth-002.xht [ Failure ]
+external/wpt/css/css-writing-modes/full-width-003.html [ Failure ]
+external/wpt/webdriver/tests/bidi/script/add_preload_script/execution_order_tentative.py [ Failure ]
 external/wpt/html/browsers/history/the-location-interface/location_replace_session_history.html [ Timeout ]
 crbug.com/452414676 external/wpt/navigation-api/navigate-event/replaceState-inside-back-handler-infinite.optional.html [ Timeout ]
 crbug.com/452414677 [ Linux ] external/wpt/wasm/core/gc/array.wast.js.html [ Crash ]

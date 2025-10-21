@@ -149052,6 +149052,242 @@
          ]
         ]
        },
+       "items": {
+        "column-flex-and-intrinsic-sizes.html": [
+         "2d2255cd720972580c28c815cce81dc2c8010f51",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-flex-spanning-items.html": [
+         "293063faae432ef37f8eecd4e757bfb578e83696",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/column-flex-spanning-items-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-intrinsic-maximums.html": [
+         "f5cee51a3c86ce854572cf1e357e9b91f66fbd0a",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/column-intrinsic-maximums-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-intrinsic-track-sizes-min-size.html": [
+         "5f4c7ed36c620c3b6c0d0f65789bc4753f1014fe",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-item-minmax-img-001.html": [
+         "1884daf3e554b5d77f7c931ffa8eb13afa318383",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-item-minmax-img-002.html": [
+         "153f4d3b0799657aa923d630d7170d6f09ff1e4c",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/column-item-minmax-img-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-item-percentage-sizes-001.html": [
+         "caca48736a444c30e80032066c83c0b06e5eeb43",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/column-item-percentage-sizes-001-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-item-percentage-sizes-002.html": [
+         "0621995653ced144a9d5a5efeae8d6b2452affa7",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/column-item-percentage-sizes-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-item-percentage-sizes-003.html": [
+         "4c8cf718ff6c101317eabfce939d3ec240ab5c6c",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/column-item-percentage-sizes-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-minimum-size-grid-items-001.html": [
+         "978a4ef631fa7020a6b75f02c7b0d9abedf88af5",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-flex-and-intrinsic-sizes.html": [
+         "b749fac09e3f9253421851e8824747576d477daf",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-flex-spanning-items.html": [
+         "0bc197b683fdb3190f0fe2fe7fba47644129fc7b",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/row-flex-spanning-items-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-item-minmax-img-001.html": [
+         "a2989371007fade5d38c25a305b58cb26751a143",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-item-minmax-img-002.html": [
+         "23753633e3f364cae1e8333d8d58a9f12b18afc2",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/row-item-minmax-img-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-item-percentage-sizes-001.html": [
+         "b06c511fc2f8123aa936d954ac65ab41f5537c57",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/row-item-percentage-sizes-001-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-item-percentage-sizes-002.html": [
+         "da7555ef04d2d0304280b5e73c7ffff9cc5f2be9",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/row-item-percentage-sizes-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-item-percentage-sizes-003.html": [
+         "51e54055651df61ec38b218ff9e2c937a5d94dc7",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/items/row-item-percentage-sizes-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-minimum-size-grid-items-001.html": [
+         "bed4167284a24705a31e1a3408c62c20f1235030",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ]
+       },
        "masonry-columns-item-containing-block-is-grid-content-width.html": [
         "2b1c53c97d839bc19bb39c5c3a869eda9bf460d1",
         [
@@ -222629,6 +222865,90 @@
         {}
        ]
       ],
+      "text-transform-fullwidth-001.xht": [
+       "355aace0a8e91c5394fe5a46825ad7f1851bdbce",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-transform/reference/text-transform-fullwidth-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-fullwidth-002.xht": [
+       "f0d419e463eb72da2e1efc8eb6d0e945871af489",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-transform/text-transform-fullwidth-002-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-fullwidth-004.xht": [
+       "17919e6f8d743dc3ddc60c5b004bdcb55dcb6f55",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-transform/text-transform-fullwidth-004-ref.xht",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             147
+            ],
+            [
+             0,
+             5
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "text-transform-fullwidth-005.xht": [
+       "d029b348c6368d2ff72a0b3e6abfedc13dea1402",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-transform/text-transform-fullwidth-005-ref.xht",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             115
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "text-transform-fullwidth-006.html": [
        "0bd0aa88400cd9e6883183c504010df611b4b928",
        [
@@ -222675,6 +222995,19 @@
         [
          [
           "/css/css-text/text-transform/reference/text-transform-fullwidth-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-fullwidth-010.html": [
+       "0665867a79da11d9616590ecc42601dfcb60055c",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-transform/reference/text-transform-fullwidth-010-ref.html",
           "=="
          ]
         ],
@@ -247844,6 +248177,19 @@
        {}
       ]
      ],
+     "caret-shape-block-fallback-001.html": [
+      "fa3dcc5152b4c4d8908c5808a7e755d4e956e9ab",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-shape-block-fallback-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "caret-shape-block-zoom.html": [
       "ff01d69dd67a8e96f8522f3fde06a70507becdf6",
       [
@@ -247852,6 +248198,27 @@
         [
          "/css/css-ui/caret-shape-block-zoom-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-shape-underscore-001.html": [
+      "42491701aa8ad7f87f9e1bcf5d89861dfea7920a",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-shape-underscore-001-notref-1.html",
+         "!="
+        ],
+        [
+         "/css/css-ui/caret-shape-underscore-001-notref-2.html",
+         "!="
+        ],
+        [
+         "/css/css-ui/caret-shape-underscore-001-notref-3.html",
+         "!="
         ]
        ],
        {}
@@ -268438,7 +268805,7 @@
       ]
      ],
      "new-content-transform-position-fixed.html": [
-      "4b27796c9b4fa224b82514fd0c05bea56a125ea1",
+      "5f23cb9cb94a2103c5998631d2e3a2278a24c1af",
       [
        null,
        [
@@ -280462,6 +280829,57 @@
        ]
       ]
      },
+     "full-width-001.html": [
+      "cba3a08475827549c11701f947b96feb3cf554ef",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/full-width-001-horizontal-notref.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/reference/full-width-001-nofullwidth-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "full-width-002.html": [
+      "e15c51440af5ab9c9f3603766fb88ecebb0afce6",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/full-width-002-notcu-notref.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/reference/full-width-002-horizontal-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "full-width-003.html": [
+      "da0d4707798c50e39f825c134e04cf1cf995f6c3",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/full-width-002-notcu-notref.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/reference/full-width-002-horizontal-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "height-width-inline-non-replaced-vlr-003.xht": [
       "6671d48ab847cf7c799622fefdfc6b138b4c966b",
       [
@@ -366021,7 +366439,7 @@
       ],
       "support": {
        "testing-utils.js": [
-        "30b944265b463fb595f1cb50ae8527ff00291019",
+        "1cc7ec58bbd343054e60cefdc0389aff8268889d",
         []
        ]
       }
@@ -366837,6 +367255,58 @@
          "3e6319c5c3430e1369071e0a80c6ed8df3a3d885",
          []
         ]
+       },
+       "items": {
+        "column-flex-spanning-items-ref.html": [
+         "b1581941cbc8de22423efffc087247e746cb685e",
+         []
+        ],
+        "column-intrinsic-maximums-ref.html": [
+         "8b0417f2200f99b5201a57d2adc997fe55a66332",
+         []
+        ],
+        "column-item-minmax-img-002-ref.html": [
+         "b9aa892df77b2dbe6d88696f0daec4e6b7588773",
+         []
+        ],
+        "column-item-percentage-sizes-001-ref.html": [
+         "c60fba3a2b55b227ca4d114c3066e526ea41382b",
+         []
+        ],
+        "column-item-percentage-sizes-002-ref.html": [
+         "425472c9c823415c61ce6f92a6512f5935876bc2",
+         []
+        ],
+        "column-item-percentage-sizes-003-ref.html": [
+         "2018fbbbc43b83bef85c0deb27cabc66966b8f50",
+         []
+        ],
+        "row-flex-spanning-items-ref.html": [
+         "b7037c8b369594ef40dbc204e3f6df878433f66f",
+         []
+        ],
+        "row-item-minmax-img-002-ref.html": [
+         "6ac7480b7ef291bdba72ef2000c854e0c0e7a44b",
+         []
+        ],
+        "row-item-percentage-sizes-001-ref.html": [
+         "02f51980d7cd0ac0b828ba2eeebb3b23297bbc9f",
+         []
+        ],
+        "row-item-percentage-sizes-002-ref.html": [
+         "aa4fbd129178bb165591c9e74797c14fc3822f00",
+         []
+        ],
+        "row-item-percentage-sizes-003-ref.html": [
+         "8a52c20988f4ce8dcc21b50dd98519eb8d792e44",
+         []
+        ],
+        "support": {
+         "100x100-green.png": [
+          "25b76c3c6f216793a36b1f29287dafd993898c67",
+          []
+         ]
+        }
        },
        "masonry-not-inhibited-001-ref.html": [
         "3e86b8a89b6d050e7bc4c4b5f38509c7aa7aabff",
@@ -381974,11 +382444,11 @@
        []
       ],
       "text-transform-computed-expected.txt": [
-       "7fa70c150a8bade232b1f469c1255b81d2247fd2",
+       "abdb5a52257fcea343ac8c3194f1edcd01cde121",
        []
       ],
       "text-transform-valid-expected.txt": [
-       "a4f65125f406f16ad0da8b4bce305f61a00da8f2",
+       "0b7adeced9bf804e25c2fe7ffa4d9ba898a631f3",
        []
       ],
       "word-break-valid-expected.txt": [
@@ -383034,6 +383504,10 @@
        ],
        "text-transform-fullwidth-009-ref.html": [
         "915e8444f1335e920073e2c8091281241370f830",
+        []
+       ],
+       "text-transform-fullwidth-010-ref.html": [
+        "6d925f1c33363a7288d3331f98a0f0deb17247c5",
         []
        ],
        "text-transform-lowercase-101-ref.xht": [
@@ -387614,8 +388088,24 @@
       "fcb62e3064707aca59b52b777c54a416effb6770",
       []
      ],
+     "caret-shape-block-fallback-001-ref.html": [
+      "96e5d5cd7e7363d36a474f0e5b70720a1698bbf0",
+      []
+     ],
      "caret-shape-block-zoom-ref.html": [
       "190cdbb3f9b6ceedc6732c03e4def7d3973162ac",
+      []
+     ],
+     "caret-shape-underscore-001-notref-1.html": [
+      "075bcdab9b93c24c4682f9f3a8a319a7599210dd",
+      []
+     ],
+     "caret-shape-underscore-001-notref-2.html": [
+      "f569ff87f7f0dd3cdc4953543460352d363d556a",
+      []
+     ],
+     "caret-shape-underscore-001-notref-3.html": [
+      "2c97e43b8b8f42241f001af1fd7ff5194a85d8de",
       []
      ],
      "compute-kind-widget-fallback-all-elements-ref.html": [
@@ -397332,7 +397822,7 @@
      []
     ],
     "create.tentative.https-expected.txt": [
-     "343ba6a28620bf8ecff3d4c064c26eff6e81bd72",
+     "f4e5d8b822a608856dd0c21784571a3dcd95783b",
      []
     ],
     "dc-types.ts": [
@@ -447881,32 +448371,12 @@
       ]
      },
      "gc": {
-      "array.wast.js-expected.txt": [
-       "eb88eba62b6f3a0576f659c6904fe35a5c811055",
-       []
-      ],
-      "array_new_data.wast.js-expected.txt": [
-       "98f6a6c7074d66673d5567e193ed006588e1b0c0",
-       []
-      ],
-      "array_new_elem.wast.js-expected.txt": [
-       "6ff2ad9d53d572aff67f4f743c33850e2a97ef36",
-       []
-      ],
       "br_on_cast.wast.js-expected.txt": [
        "b2c5da8fe732e87f37f5fd6b1d35292ab06861e7",
        []
       ],
       "br_on_cast_fail.wast.js-expected.txt": [
        "dcae123a3eabc9b7c24715ecd1d7a47208ad98ed",
-       []
-      ],
-      "extern.wast.js-expected.txt": [
-       "599c5e6e0528bb7be56eb26d2d755c8211192fd6",
-       []
-      ],
-      "struct.wast.js-expected.txt": [
-       "1bd6ca3b1553dd7dc7715e169a1d9b001de40380",
        []
       ]
      },
@@ -448183,11 +448653,11 @@
       ],
       "harness": {
        "async_index.js": [
-        "94de545dd587ab4b755c8edc1bfe42d38bc024fd",
+        "5418624a5660ddacd745e9dbb6b60c9254520ca2",
         []
        ],
        "sync_index.js": [
-        "a984be496447519b296815104605acf53b72a564",
+        "0785ae020bf7d5752eb3c1384bf5237821c1681f",
         []
        ],
        "testharness.css": [
@@ -460222,7 +460692,7 @@
    },
    "IndexedDB": {
     "abort-in-initial-upgradeneeded.any.js": [
-     "ebdafca8e9d776f5fc368a3e33506eabf4c7de8c",
+     "52b33807d06d20a4ade2bf51b236925dad9ca4bd",
      [
       "IndexedDB/abort-in-initial-upgradeneeded.any.html",
       {
@@ -528600,6 +529070,120 @@
      },
      "masonry": {
       "tentative": {
+       "items": {
+        "column-automatic-minimum-for-auto.html": [
+         "47b1202294b6f331f04a6853b95fea961014070a",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-fit-content-percentage.html": [
+         "37228653793c1f6addf3b8a14f5c7de998afd2e8",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-flex-track-intrinsic-sizes.html": [
+         "0d898f53a19ace1aa57bfc171906b60e7a56bf12",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-intrinsic-track-sizes.html": [
+         "1de674f6c8137fc78a395192f3da406a8a0e19eb",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-minimum-contribution-baseline-shim-vertical-lr.html": [
+         "8497a4324c45a94edfa145c3bd95cb6dc3041409",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-minimum-contribution-baseline-shim-vertical-rl.html": [
+         "0ede5378cadff9088664d2ab395242e83d628b82",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-minimum-contribution-with-percentages.html": [
+         "ca025fe903d15ce360cb46bee22edfd44fb237c8",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-minimum-size-grid-items-002.html": [
+         "e8f2460a2994d75891e7a1b5ff7a5570bc638306",
+         [
+          null,
+          {}
+         ]
+        ],
+        "column-minimum-size-grid-items-003.html": [
+         "a0d8e2d104a23aff4013d52c1d2e9142fce67e65",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-automatic-minimum-for-auto.html": [
+         "432e1a571dd8e39ca18a66d0a09fe1a3a03e6950",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-flex-track-intrinsic-sizes.html": [
+         "e4a4f2a766a7834f0eb49b979170bbe55ae2f494",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-intrinsic-track-sizes.html": [
+         "dbe9acc9aaa29c36e513c8a12b7619cce00fd500",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-minimum-contribution-baseline-shim.html": [
+         "4ad8fca1aeafc03f3e221dfcad18444411ec52af",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-minimum-contribution-with-percentages.html": [
+         "13cde435defb2de9d4b0382b20c059f9f00c9215",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-minimum-size-grid-items-002.html": [
+         "2fce521085da95697169d15bd99ec86878716c85",
+         [
+          null,
+          {}
+         ]
+        ],
+        "row-minimum-size-grid-items-003.html": [
+         "1ff88941b4bbfd5d66e43c28aaf5bf12be0b0032",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "masonry-grid-template-columns-computed-withcontent.html": [
         "eaafd5f71890720d4e05ff995aea4ef92eeba108",
         [
@@ -533486,8 +534070,15 @@
        }
       ]
      ],
+     "scroll-marker-group-size-container-query-root.html": [
+      "60c626e3d1a6b1f1396d8e0aadc80883b9fdd88e",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-marker-group-size-container-query.html": [
-      "953a9543e6e065a5f4c36c94df9b5e9bba895bb8",
+      "dde73be9d1b4b403d59dcf330fbbf032c3a86e3a",
       [
        null,
        {}
@@ -550451,6 +551042,13 @@
        {}
       ]
      ],
+     "inherit-function-invalidation.html": [
+      "8ec4ad3897c072f42fd8eccf7d9981b9d27d0490",
+      [
+       null,
+       {}
+      ]
+     ],
      "inherit-function-parsing.html": [
       "621f0125c7842a4eb304b0d381da16e81d350234",
       [
@@ -560280,7 +560878,7 @@
      ]
     ],
     "create.tentative.https.html": [
-     "a6e0114e33d3fac09f12472ca8310d09dbbebd32",
+     "97dc04e6077548e218690aca834dce0025682ca9",
      [
       null,
       {
@@ -674207,7 +674805,7 @@
        ]
       ],
       "invalid-css-properties.tentative.html": [
-       "5ba14e1e86b11f8b6c3cf5a705d2f48f1da84df7",
+       "78831a580ef06e3b1f9399adef30d11b48f3b1fa",
        [
         null,
         {}
@@ -728173,6 +728771,13 @@
       {
        "testdriver": true
       }
+     ]
+    ],
+    "find-range-from-text-directive-no-reveal.html": [
+     "21f694454c116c39179fe34c68bedb10cab77bff",
+     [
+      null,
+      {}
      ]
     ],
     "find-range-from-text-directive.html": [
@@ -826072,7 +826677,7 @@
      ]
     ],
     "RTCRtpTransceiver-headerExtensionControl.html": [
-     "796d35dcb6bfffab5d62439da8dd93fc28aec9c9",
+     "5635db278a093cdfd72174c0f82b47845a71b9bf",
      [
       null,
       {}
@@ -866187,6 +866792,13 @@
         ],
         "contexts.py": [
          "f2c1c56b6c15533aea3f0aa0ee2137c234e1da11",
+         [
+          null,
+          {}
+         ]
+        ],
+        "execution_order_tentative.py": [
+         "29299ca7e9f7d87107db31a45ab56b14bb088c08",
          [
           null,
           {}
