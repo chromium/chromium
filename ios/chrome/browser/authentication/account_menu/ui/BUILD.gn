@@ -16,6 +16,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//components/strings",
+    "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
@@ -42,6 +43,8 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//components/test/ios",
+    "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/policy/model",

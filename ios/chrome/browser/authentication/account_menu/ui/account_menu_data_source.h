@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
 @class AccountErrorUIInfo;
+class GaiaId;
 
 // Identity data source for AccountMenuViewController instance, to
 // manage the model.
@@ -17,7 +20,8 @@
 @property(nonatomic, readonly) AccountErrorUIInfo* accountErrorUIInfo;
 
 // The gaia ids of the secondary accounts.
-@property(nonatomic, readonly) NSArray<NSString*>* secondaryAccountsGaiaIDs;
+@property(nonatomic, readonly) const std::vector<GaiaId>
+    secondaryAccountsGaiaIDs;
 
 // The email of the primary account. Not nil.
 @property(nonatomic, readonly) NSString* primaryAccountEmail;
@@ -32,16 +36,16 @@
 @property(nonatomic, readonly) NSString* managementDescription;
 
 // The full name for the user with `gaiaID`.
-- (NSString*)nameForGaiaID:(NSString*)gaiaID;
+- (NSString*)nameForGaiaID:(const GaiaId&)gaiaID;
 
 // The email for the user with `gaiaID`.
-- (NSString*)emailForGaiaID:(NSString*)gaiaID;
+- (NSString*)emailForGaiaID:(const GaiaId&)gaiaID;
 
 // The image for the user with `gaiaID`.
-- (UIImage*)imageForGaiaID:(NSString*)gaiaID;
+- (UIImage*)imageForGaiaID:(const GaiaId&)gaiaID;
 
 // Returns true if `gaiaID` is managed by checking for a hosted domain.
-- (BOOL)isGaiaIDManaged:(NSString*)gaiaID;
+- (BOOL)isGaiaIDManaged:(const GaiaId&)gaiaID;
 
 @end
 

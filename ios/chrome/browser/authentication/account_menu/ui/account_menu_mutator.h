@@ -21,7 +21,8 @@
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // The user tapped on the `index`-th account.
-- (void)accountTappedWithGaiaID:(NSString*)index targetRect:(CGRect)targetRect;
+- (void)accountTappedWithGaiaID:(const GaiaId*)gaiaID
+                     targetRect:(CGRect)targetRect;
 
 // The user tapped on the error button.
 - (void)didTapErrorButton;

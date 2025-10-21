@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_mutator.h"
@@ -348,7 +349,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                       itemIdentifier:(id)itemIdentifier {
   NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
   if (gaiaID) {
-    return [self cellForTableView:tableView gaiaID:gaiaID indexPath:indexPath];
+    return [self cellForTableView:tableView
+                           gaiaID:GaiaId(gaiaID)
+                        indexPath:indexPath];
   }
 
   // Otherwise `itemIdentifier` is a `RowIdentifier`.
@@ -407,7 +410,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Returns a cell for signing-in with the account with `gaiaID`.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
-                              gaiaID:(NSString*)gaiaID
+                              gaiaID:(const GaiaId&)gaiaID
                            indexPath:(NSIndexPath*)indexPath {
   // `itemIdentifier` is a gaia id.
   TableViewAccountCell* cell =
@@ -538,9 +541,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   [snapshot appendSectionsWithIdentifiers:@[ @(AccountsSectionIdentifier) ]];
   NSMutableArray* accountsIdentifiers = [[NSMutableArray alloc] init];
-  NSArray<NSString*>* gaiaIDs = self.dataSource.secondaryAccountsGaiaIDs;
-  for (NSString* gaiaID in gaiaIDs) {
-    [accountsIdentifiers addObject:gaiaID];
+  const std::vector<GaiaId> gaiaIDs = self.dataSource.secondaryAccountsGaiaIDs;
+  for (const GaiaId& gaiaID : gaiaIDs) {
+    [accountsIdentifiers addObject:gaiaID.ToNSString()];
   }
   [accountsIdentifiers addObject:@(RowIdentifierAddAccount)];
   [snapshot appendItemsWithIdentifiers:accountsIdentifiers
@@ -594,7 +597,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
     CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
     _selectedIndexPath = indexPath;
-    [self.mutator accountTappedWithGaiaID:gaiaID targetRect:cellRect];
+    GaiaId gaiaId(gaiaID);
+    [self.mutator accountTappedWithGaiaID:&gaiaId targetRect:cellRect];
   } else {
     // Otherwise `itemIdentifier` is a `RowIdentifier`.
     RowIdentifier rowIdentifier = static_cast<RowIdentifier>(

@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_consumer.h"
@@ -144,28 +145,28 @@
 
 #pragma mark - AccountMenuDataSource
 
-- (NSArray<NSString*>*)secondaryAccountsGaiaIDs {
-  NSMutableArray<NSString*>* gaiaIDs = [NSMutableArray array];
+- (const std::vector<GaiaId>)secondaryAccountsGaiaIDs {
+  std::vector<GaiaId> gaiaIDs;
   for (id<SystemIdentity> identity : _identities) {
-    [gaiaIDs addObject:identity.gaiaID];
+    gaiaIDs.push_back(identity.gaiaId);
   }
   return gaiaIDs;
 }
 
-- (NSString*)nameForGaiaID:(NSString*)gaiaID {
+- (NSString*)nameForGaiaID:(const GaiaId&)gaiaID {
   return [self identityForGaiaID:gaiaID].userFullName;
 }
 
-- (NSString*)emailForGaiaID:(NSString*)gaiaID {
+- (NSString*)emailForGaiaID:(const GaiaId&)gaiaID {
   return [self identityForGaiaID:gaiaID].userEmail;
 }
 
-- (UIImage*)imageForGaiaID:(NSString*)gaiaID {
+- (UIImage*)imageForGaiaID:(const GaiaId&)gaiaID {
   return _accountManagerService->GetIdentityAvatarWithIdentity(
       [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
 }
 
-- (BOOL)isGaiaIDManaged:(NSString*)gaiaID {
+- (BOOL)isGaiaIDManaged:(const GaiaId&)gaiaID {
   id<SystemIdentity> identity = [self identityForGaiaID:gaiaID];
   CHECK(identity, base::NotFatalUntil::M147);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
@@ -280,7 +281,7 @@
                  }];
 }
 
-- (void)accountTappedWithGaiaID:(NSString*)gaiaID
+- (void)accountTappedWithGaiaID:(const GaiaId*)gaiaID
                      targetRect:(CGRect)targetRect {
   if (self.userInteractionsBlocked) {
     return;
@@ -288,7 +289,7 @@
 
   id<SystemIdentity> identityToSignin = nil;
   for (id<SystemIdentity> identity : _identities) {
-    if (identity.gaiaID == gaiaID) {
+    if (identity.gaiaId == *gaiaID) {
       identityToSignin = identity;
       break;
     }
@@ -506,21 +507,21 @@
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
   for (id<SystemIdentity> secondaryIdentity : identitiesOnDevice) {
-    NSString* gaiaID = secondaryIdentity.gaiaID;
+    GaiaId gaiaID = secondaryIdentity.gaiaId;
     if (secondaryIdentity == _primaryIdentityBeforeSignin) {
       continue;
     }
     BOOL mustAdd = YES;
     for (id<SystemIdentity> displayedIdentity : _identities) {
-      if (gaiaID == displayedIdentity.gaiaID) {
-        [gaiaIDsToKeep addObject:gaiaID];
+      if (gaiaID == displayedIdentity.gaiaId) {
+        [gaiaIDsToKeep addObject:gaiaID.ToNSString()];
         mustAdd = NO;
         break;
       }
     }
     if (mustAdd) {
       [_identities addObject:secondaryIdentity];
-      [gaiaIDsToAdd addObject:gaiaID];
+      [gaiaIDsToAdd addObject:gaiaID.ToNSString()];
     }
   }
 
@@ -528,7 +529,7 @@
     id<SystemIdentity> identity = _identities[i];
     if (![identitiesOnDevice containsObject:identity] ||
         identity == _primaryIdentityBeforeSignin) {
-      [gaiaIDsToRemove addObject:identity.gaiaID];
+      [gaiaIDsToRemove addObject:identity.gaiaId.ToNSString()];
       [_identities removeObjectAtIndex:i--];
       // There will be a new object at place `i`. So we must decrease `i`.
     }
@@ -562,9 +563,9 @@
   [self.consumer setUserInteractionsEnabled:!blocked];
 }
 
-- (id<SystemIdentity>)identityForGaiaID:(NSString*)gaiaID {
+- (id<SystemIdentity>)identityForGaiaID:(const GaiaId&)gaiaID {
   for (id<SystemIdentity> identity : _identities) {
-    if (gaiaID == identity.gaiaID) {
+    if (gaiaID == identity.gaiaId) {
       return identity;
     }
   }

@@ -250,9 +250,11 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
       break;
   }
   OCMExpect([consumer_mock_
-      updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaID ]
+      updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaId.ToNSString() ]
                         gaiaIDsToRemove:@[]
-                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+                          gaiaIDsToKeep:@[
+                            kSecondaryIdentity.gaiaId.ToNSString()
+                          ]]);
   fake_system_identity_manager_->AddIdentity(thirdIdentity);
 
   // Simulate that the identity gets updated (e.g. the username became known).
@@ -260,8 +262,9 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   // identities is unchanged.
   thirdIdentity.userFullName = @"First Last";
   thirdIdentity.userGivenName = @"First";
-  NSArray<NSString*>* gaiaIDsToKeep =
-      @[ kSecondaryIdentity.gaiaID, thirdIdentity.gaiaID ];
+  NSArray<NSString*>* gaiaIDsToKeep = @[
+    kSecondaryIdentity.gaiaId.ToNSString(), thirdIdentity.gaiaId.ToNSString()
+  ];
   OCMExpect([consumer_mock_ updateAccountListWithGaiaIDsToAdd:@[]
                                               gaiaIDsToRemove:@[]
                                                 gaiaIDsToKeep:gaiaIDsToKeep]);
@@ -277,7 +280,9 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 
   OCMExpect([consumer_mock_
       updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]
+                        gaiaIDsToRemove:@[
+                          kSecondaryIdentity.gaiaId.ToNSString()
+                        ]
                           gaiaIDsToKeep:@[]]);
   {
     base::RunLoop run_loop;
@@ -310,27 +315,27 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
 
 // Tests the result of secondaryAccountsGaiaIDs.
 TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
-  EXPECT_NSEQ([mediator_ secondaryAccountsGaiaIDs],
-              @[ kSecondaryIdentity.gaiaID ]);
+  EXPECT_EQ([mediator_ secondaryAccountsGaiaIDs],
+            std::vector<GaiaId> { kSecondaryIdentity.gaiaId });
 }
 
 #pragma mark - AccountMenuDataSource and SyncObserverModelBridge
 
 // Tests the result of nameForGaiaID.
 TEST_P(AccountMenuMediatorTest, nameForGaiaID) {
-  EXPECT_NSEQ([mediator_ nameForGaiaID:kSecondaryIdentity.gaiaID],
+  EXPECT_NSEQ([mediator_ nameForGaiaID:kSecondaryIdentity.gaiaId],
               kSecondaryIdentity.userFullName);
 }
 
 // Tests the result of emailForGaiaID.
 TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
-  EXPECT_NSEQ([mediator_ emailForGaiaID:kSecondaryIdentity.gaiaID],
+  EXPECT_NSEQ([mediator_ emailForGaiaID:kSecondaryIdentity.gaiaId],
               kSecondaryIdentity.userEmail);
 }
 
 // Tests the result of imageForGaiaID.
 TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
-  EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaID],
+  EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaId],
               account_manager_service_ -> GetIdentityAvatarWithIdentity(
                                            kSecondaryIdentity,
                                            IdentityAvatarSize::TableViewIcon));
@@ -405,11 +410,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
         return mediator_ == value;
       }]]);
   OCMExpect([authentication_flow_mock_ startSignIn]);
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
+  auto gaiaId2 = kSecondaryIdentity.gaiaId;
+  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
   // Simulate a double tap. The second tap should be ignored.
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
+  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
   VerifyMock();
 
   OCMExpect([consumer_mock_ switchingStopped]);
@@ -449,11 +453,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
       }]]);
   // Simulate account switching.
   OCMExpect([authentication_flow_mock_ startSignIn]);
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
+  auto gaiaId2 = kSecondaryIdentity.gaiaId;
+  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
   // Simulate a double tap. The second tap should be ignored.
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
+  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
 
   // Expect that the consumer unlocks the UI.
   OCMExpect([consumer_mock_ switchingStopped]);
@@ -492,11 +495,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
         return mediator_ == value;
       }]]);
   OCMExpect([authentication_flow_mock_ startSignIn]);
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
+  auto gaiaId2 = kSecondaryIdentity.gaiaId;
+  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
   // Simulate a double tap. The second tap should be ignored.
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
+  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
   VerifyMock();
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
