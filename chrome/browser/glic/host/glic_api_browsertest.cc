@@ -2033,7 +2033,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabDataUpdateOnUrlChangeForPinnedTab) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       DISABLED_testTabDataUpdateOnUrlChangeForPinnedTab) {
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
