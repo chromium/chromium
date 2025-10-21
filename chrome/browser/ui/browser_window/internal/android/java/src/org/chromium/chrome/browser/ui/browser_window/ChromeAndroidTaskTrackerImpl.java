@@ -251,6 +251,12 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
+    Map<Integer, ChromeAndroidTask> getPendingTasksForTesting() {
+        synchronized (mTasksLock) {
+            return mPendingTasks;
+        }
+    }
+
     @GuardedBy("mTasksLock")
     private void removeInternalLocked(int taskId) {
         var taskRemoved = mTasks.remove(taskId);
