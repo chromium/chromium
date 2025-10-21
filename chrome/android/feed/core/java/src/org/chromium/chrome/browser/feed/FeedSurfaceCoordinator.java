@@ -520,7 +520,7 @@ public class FeedSurfaceCoordinator
             mHomepageStateListener =
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
-                        public void onBackgroundChanged(
+                        public void onBackgroundImageChanged(
                                 Bitmap originalBitmap,
                                 @Nullable BackgroundImageInfo backgroundImageInfo,
                                 boolean fromInitialization,

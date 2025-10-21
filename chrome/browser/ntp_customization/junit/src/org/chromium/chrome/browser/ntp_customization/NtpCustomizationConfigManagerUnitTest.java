@@ -120,7 +120,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Verifies the listener was notified with the correct parameters.
         verify(mListener)
-                .onBackgroundChanged(
+                .onBackgroundImageChanged(
                         mBitmapCaptor.capture(),
                         mBackgroundImageInfoCaptor.capture(),
                         /* fromInitialization= */ eq(false),
@@ -151,7 +151,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.
         verify(mListener)
-                .onBackgroundChanged(
+                .onBackgroundImageChanged(
                         eq(mBitmap),
                         eq(backgroundImageInfo),
                         /* fromInitialization= */ eq(true),
@@ -179,7 +179,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
                         /* newType= */ eq(NtpBackgroundImageType.DEFAULT));
         verify(mListener, never())
-                .onBackgroundChanged(any(), any(), anyBoolean(), anyInt(), anyInt());
+                .onBackgroundImageChanged(any(), any(), anyBoolean(), anyInt(), anyInt());
     }
 
     @Test
@@ -218,7 +218,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Verifies the listener is removed.
         verify(mListener, never())
-                .onBackgroundChanged(any(), any(), anyBoolean(), anyInt(), anyInt());
+                .onBackgroundImageChanged(any(), any(), anyBoolean(), anyInt(), anyInt());
     }
 
     @Test

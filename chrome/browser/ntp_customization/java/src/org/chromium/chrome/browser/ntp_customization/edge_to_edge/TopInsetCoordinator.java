@@ -141,7 +141,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
         mHomepageStateListener =
                 new NtpCustomizationConfigManager.HomepageStateListener() {
                     @Override
-                    public void onBackgroundChanged(
+                    public void onBackgroundImageChanged(
                             Bitmap originalBitmap,
                             @Nullable BackgroundImageInfo backgroundImageInfo,
                             boolean fromInitialization,

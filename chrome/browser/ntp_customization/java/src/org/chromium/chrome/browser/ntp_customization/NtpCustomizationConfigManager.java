@@ -57,7 +57,7 @@ public class NtpCustomizationConfigManager {
          * @param oldType The previously set background type for NTPs.
          * @param newType The new background type of NTPs.
          */
-        default void onBackgroundChanged(
+        default void onBackgroundImageChanged(
                 Bitmap originalBitmap,
                 @Nullable BackgroundImageInfo backgroundImageInfo,
                 boolean fromInitialization,
@@ -178,7 +178,7 @@ public class NtpCustomizationConfigManager {
         switch (mBackgroundImageType) {
             case NtpBackgroundImageType.IMAGE_FROM_DISK -> {
                 if (mOriginalBitmap != null && mBackgroundImageInfo != null) {
-                    listener.onBackgroundChanged(
+                    listener.onBackgroundImageChanged(
                             mOriginalBitmap,
                             mBackgroundImageInfo,
                             /* fromInitialization= */ true,
@@ -294,7 +294,7 @@ public class NtpCustomizationConfigManager {
         mBackgroundImageInfo = backgroundImageInfo;
 
         for (HomepageStateListener listener : mHomepageStateListeners) {
-            listener.onBackgroundChanged(
+            listener.onBackgroundImageChanged(
                     originalBitmap,
                     backgroundImageInfo,
                     fromInitialization,
