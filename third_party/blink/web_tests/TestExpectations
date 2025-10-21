@@ -9870,3 +9870,6 @@ crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggrega
 # Gardener 2025-10-21
 crbug.com/453886244 [ Linux ] external/wpt/pointerevents/pointerevent_boundary_events_on_image_map.html [ Crash Failure Pass ]
 crbug.com/453886244 [ Linux ] external/wpt/uievents/mouse/mouse_boundary_events_on_image_map.html [ Crash Failure Pass ]
+
+# Gardener 2025-10-22
+crbug.com/453916409 [ Mac12 ] wpt_internal/shared-worker/back-forward-cache/shared-worker-mixed-clients-eviction.tentative.window.html [ Crash Failure Pass ]
