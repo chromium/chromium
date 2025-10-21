@@ -28,6 +28,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
         </div>
       </div>
       <p class="title">${this.file.name}</p>
+      <div class="chip-overlay"></div>
     </div>
   ` : this.file.objectUrl ? html`
     <div id="imgChip">
@@ -71,6 +72,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
         </div>
       </div>
       <p class="title" id="pdfTitle">${this.file.name}</p>
+      <div class="chip-overlay"></div>
     </div>
   `}
 </div>
