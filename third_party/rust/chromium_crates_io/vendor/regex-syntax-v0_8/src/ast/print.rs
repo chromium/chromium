@@ -199,9 +199,9 @@ impl<W: fmt::Write> Writer<W> {
     ) -> fmt::Result {
         use crate::ast::RepetitionRange::*;
         match *ast {
-            Exactly(x) => write!(self.wtr, "{{{}}}", x),
-            AtLeast(x) => write!(self.wtr, "{{{},}}", x),
-            Bounded(x, y) => write!(self.wtr, "{{{},{}}}", x, y),
+            Exactly(x) => write!(self.wtr, "{{{x}}}"),
+            AtLeast(x) => write!(self.wtr, "{{{x},}}"),
+            Bounded(x, y) => write!(self.wtr, "{{{x},{y}}}"),
         }
     }
 

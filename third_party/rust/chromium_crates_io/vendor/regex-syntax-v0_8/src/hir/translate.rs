@@ -254,7 +254,7 @@ impl HirFrame {
         match self {
             HirFrame::Expr(expr) => expr,
             HirFrame::Literal(lit) => Hir::literal(lit),
-            _ => panic!("tried to unwrap expr from HirFrame, got: {:?}", self),
+            _ => panic!("tried to unwrap expr from HirFrame, got: {self:?}"),
         }
     }
 
@@ -291,8 +291,7 @@ impl HirFrame {
             HirFrame::Repetition => {}
             _ => {
                 panic!(
-                    "tried to unwrap repetition from HirFrame, got: {:?}",
-                    self
+                    "tried to unwrap repetition from HirFrame, got: {self:?}"
                 )
             }
         }
@@ -305,7 +304,7 @@ impl HirFrame {
         match self {
             HirFrame::Group { old_flags } => old_flags,
             _ => {
-                panic!("tried to unwrap group from HirFrame, got: {:?}", self)
+                panic!("tried to unwrap group from HirFrame, got: {self:?}")
             }
         }
     }
@@ -316,10 +315,7 @@ impl HirFrame {
         match self {
             HirFrame::AlternationBranch => {}
             _ => {
-                panic!(
-                    "tried to unwrap alt pipe from HirFrame, got: {:?}",
-                    self
-                )
+                panic!("tried to unwrap alt pipe from HirFrame, got: {self:?}")
             }
         }
     }

@@ -93,10 +93,10 @@ impl<'e, E: core::fmt::Display> core::fmt::Display for Formatter<'e, E> {
             let divider = repeat_char('~', 79);
 
             writeln!(f, "regex parse error:")?;
-            writeln!(f, "{}", divider)?;
+            writeln!(f, "{divider}")?;
             let notated = spans.notate();
-            write!(f, "{}", notated)?;
-            writeln!(f, "{}", divider)?;
+            write!(f, "{notated}")?;
+            writeln!(f, "{divider}")?;
             // If we have error spans that cover multiple lines, then we just
             // note the line numbers.
             if !spans.multi_line.is_empty() {
@@ -116,7 +116,7 @@ impl<'e, E: core::fmt::Display> core::fmt::Display for Formatter<'e, E> {
         } else {
             writeln!(f, "regex parse error:")?;
             let notated = Spans::from_formatter(self).notate();
-            write!(f, "{}", notated)?;
+            write!(f, "{notated}")?;
             write!(f, "error: {}", self.err)?;
         }
         Ok(())

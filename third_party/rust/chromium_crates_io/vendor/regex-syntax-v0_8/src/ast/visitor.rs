@@ -488,7 +488,7 @@ impl<'a> core::fmt::Debug for ClassFrame<'a> {
             ClassFrame::BinaryLHS { .. } => "BinaryLHS",
             ClassFrame::BinaryRHS { .. } => "BinaryRHS",
         };
-        write!(f, "{}", x)
+        write!(f, "{x}")
     }
 }
 
@@ -517,6 +517,6 @@ impl<'a> core::fmt::Debug for ClassInduct<'a> {
                 }
             },
         };
-        write!(f, "{}", x)
+        write!(f, "{x}")
     }
 }

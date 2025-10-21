@@ -168,7 +168,9 @@ The following features are available:
 #![forbid(unsafe_code)]
 #![deny(missing_docs, rustdoc::broken_intra_doc_links)]
 #![warn(missing_debug_implementations)]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+// This adds Cargo feature annotations to items in the rustdoc output. Which is
+// sadly hugely beneficial for this crate due to the number of features.
+#![cfg_attr(docsrs_regex, feature(doc_cfg))]
 
 #[cfg(any(test, feature = "std"))]
 extern crate std;

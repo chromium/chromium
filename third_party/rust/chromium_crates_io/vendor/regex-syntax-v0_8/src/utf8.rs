@@ -128,7 +128,7 @@ impl Utf8Sequence {
                 Utf8Range::new(start[2], end[2]),
                 Utf8Range::new(start[3], end[3]),
             ]),
-            n => unreachable!("invalid encoded length: {}", n),
+            n => unreachable!("invalid encoded length: {n}"),
         }
     }
 
@@ -203,7 +203,7 @@ impl fmt::Debug for Utf8Sequence {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use self::Utf8Sequence::*;
         match *self {
-            One(ref r) => write!(f, "{:?}", r),
+            One(ref r) => write!(f, "{r:?}"),
             Two(ref r) => write!(f, "{:?}{:?}", r[0], r[1]),
             Three(ref r) => write!(f, "{:?}{:?}{:?}", r[0], r[1], r[2]),
             Four(ref r) => {
