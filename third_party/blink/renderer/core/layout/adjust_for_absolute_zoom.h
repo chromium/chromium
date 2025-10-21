@@ -70,6 +70,10 @@ class AdjustForAbsoluteZoom {
   inline static float AdjustFloat(float value, const ComputedStyle& style) {
     return value / style.EffectiveZoom();
   }
+  inline static float AdjustFloat(float value,
+                                  const LayoutObject& layout_object) {
+    return AdjustFloat(value, layout_object.StyleRef());
+  }
 
   inline static double AdjustDouble(double value, const ComputedStyle& style) {
     return value / style.EffectiveZoom();

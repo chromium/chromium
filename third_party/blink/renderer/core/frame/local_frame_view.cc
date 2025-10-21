@@ -1069,10 +1069,15 @@ LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
 }
 
 bool LocalFrameView::RecordNaturalDimensions() {
-  if (natural_height_ == layout_overflow_size_.height()) {
+  const LayoutView* layout_view = GetLayoutView();
+  DCHECK(layout_view);
+  const float scaled_height = layout_overflow_size_.height();
+  const float unscaled_height =
+      AdjustForAbsoluteZoom::AdjustFloat(scaled_height, *layout_view);
+  if (unscaled_natural_height_ == unscaled_height) {
     return false;
   }
-  natural_height_ = layout_overflow_size_.height();
+  unscaled_natural_height_ = unscaled_height;
   return true;
 }
 
@@ -1093,11 +1098,11 @@ std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
   if (LayoutSVGRoot* content_layout_object = EmbeddedReplacedContent()) {
     return content_layout_object->UnscaledNaturalSizingInfo();
   }
-  if (!natural_height_) {
+  if (!unscaled_natural_height_) {
     return std::nullopt;
   }
   NaturalSizingInfo info;
-  info.size = gfx::SizeF(0, *natural_height_);
+  info.size = gfx::SizeF(0, *unscaled_natural_height_);
   info.has_width = false;
   info.has_height = true;
   return info;
