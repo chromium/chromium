@@ -6,6 +6,7 @@
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -59,6 +60,18 @@ class FetchManifestAndUpdateTest : public WebAppTest {
     return app_id == installed_app_id ? std::optional<webapps::AppId>(app_id)
                                       : std::nullopt;
   }
+
+  std::optional<FetchManifestAndUpdateResult> RunUpdate() {
+    base::test::TestFuture<FetchManifestAndUpdateResult> future;
+    provider().scheduler().FetchManifestAndUpdate(
+        GURL(kInstallUrl), GenerateManifestIdFromStartUrlOnly(GURL(kStartUrl)),
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    if (!future.IsReady()) {
+      return std::nullopt;
+    }
+    return future.Get();
+  }
 };
 
 TEST_F(FetchManifestAndUpdateTest, NameUpdate) {
@@ -66,12 +79,19 @@ TEST_F(FetchManifestAndUpdateTest, NameUpdate) {
 
   GetPageManifest()->name = u"New Name";
 
-  base::test::TestFuture<FetchManifestAndUpdateResult> future;
-  provider().scheduler().FetchManifestAndUpdate(
-      GURL(kInstallUrl), GenerateManifestIdFromStartUrlOnly(GURL(kStartUrl)),
-      future.GetCallback());
-  ASSERT_EQ(future.Get(), FetchManifestAndUpdateResult::kSuccess);
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccess);
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id), "New Name");
+
+  ASSERT_OK_AND_ASSIGN(result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
+}
+
+TEST_F(FetchManifestAndUpdateTest, NoUpdateAfterInstall) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  ASSERT_EQ(result, FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
 }
 
 // TODO(http://crbug.com/452416687): Add tests for other updatable items, and

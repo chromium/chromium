@@ -13,6 +13,8 @@ std::ostream& operator<<(std::ostream& os,
   switch (result) {
     case FetchManifestAndUpdateResult::kSuccess:
       return os << "kSuccess";
+    case FetchManifestAndUpdateResult::kSuccessNoUpdateDetected:
+      return os << "kSuccessNoUpdateDetected";
     case FetchManifestAndUpdateResult::kShutdown:
       return os << "kShutdown";
     case FetchManifestAndUpdateResult::kAppNotInstalled:
@@ -29,6 +31,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kInstallationError";
     case FetchManifestAndUpdateResult::kPrimaryPageChanged:
       return os << "kPrimaryPageChanged";
+    case FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed:
+      return os << "kManifestToWebAppInstallInfoFailed";
   }
 }
 

@@ -13,15 +13,17 @@ namespace web_app {
 
 enum class FetchManifestAndUpdateResult {
   kSuccess = 0,
-  kShutdown = 1,
-  kAppNotInstalled = 2,
-  kUrlLoadingError = 3,
-  kManifestRetrievalError = 4,
-  kInvalidManifest = 5,
-  kIconDownloadError = 6,
-  kInstallationError = 7,
-  kPrimaryPageChanged = 8,
-  kMaxValue = kPrimaryPageChanged
+  kSuccessNoUpdateDetected = 1,
+  kShutdown = 2,
+  kAppNotInstalled = 3,
+  kUrlLoadingError = 4,
+  kManifestRetrievalError = 5,
+  kInvalidManifest = 6,
+  kIconDownloadError = 7,
+  kInstallationError = 8,
+  kPrimaryPageChanged = 9,
+  kManifestToWebAppInstallInfoFailed = 10,
+  kMaxValue = kManifestToWebAppInstallInfoFailed
 };
 using FetchManifestAndUpdateCallback =
     base::OnceCallback<void(FetchManifestAndUpdateResult)>;

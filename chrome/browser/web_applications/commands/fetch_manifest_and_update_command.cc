@@ -10,6 +10,8 @@
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/model/web_app_comparison.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -34,6 +36,8 @@ FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
           "FetchManifestAndUpdateCommand",
           SharedWebContentsWithAppLockDescription(
               {GenerateAppIdFromManifestId(expected_manifest_id)}),
+          // TODO(http://crbug.com/452416687): Add metrics callback here on
+          // result.
           std::move(callback),
           FetchManifestAndUpdateResult::kShutdown),
       install_url_(install_url),
@@ -130,8 +134,6 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     return;
   }
 
-  // TODO(http://crbug.com/452416687): Delay icon fetching so we can compare the
-  // manifest with the existing install first (and exit early if they match).
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
           manifest, *data_retriever_,
@@ -139,29 +141,52 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
           lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
           *GetMutableDebugValue().EnsureDict("job"),
-          base::BindOnce(&FetchManifestAndUpdateCommand::
-                             OnManifestTransformedToInstallInfo,
-                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest,
+              weak_factory_.GetWeakPtr()),
           {
               .bypass_icon_generation_if_no_url = true,
               .fail_all_if_any_fail = true,
+              .defer_icon_fetching = true,
           });
 }
 
-void FetchManifestAndUpdateCommand::OnManifestTransformedToInstallInfo(
+void FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest(
     std::unique_ptr<WebAppInstallInfo> install_info) {
+  if (!install_info) {
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed);
+    return;
+  }
+  install_info_ = std::move(install_info);
+
+  const WebApp* app = lock_->registrar().GetAppById(
+      GenerateAppIdFromManifestId(expected_manifest_id_));
+  CHECK(app);
+
+  if (WebAppComparison::CompareWebApps(*app, *install_info_)
+          .ExistingAppWithoutPendingEqualsNewUpdate()) {
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
+    return;
+  }
+
+  manifest_to_install_info_job_->FetchIcons(
+      *install_info_, lock_->shared_web_contents(),
+      base::BindOnce(&FetchManifestAndUpdateCommand::OnIconsFetched,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void FetchManifestAndUpdateCommand::OnIconsFetched() {
   if (manifest_to_install_info_job_->icon_download_result() ==
       IconsDownloadedResult::kAbortedDueToFailure) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kIconDownloadError);
     return;
   }
-  if (!install_info) {
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kInvalidManifest);
-    return;
-  }
-  install_info_ = std::move(install_info);
+
   install_info_->trusted_icons = install_info_->manifest_icons;
   install_info_->trusted_icon_bitmaps = install_info_->icon_bitmaps;
 

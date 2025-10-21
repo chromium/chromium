@@ -64,11 +64,9 @@ class FetchManifestAndUpdateCommand
   void OnManifestRetrieved(
       const base::expected<blink::mojom::ManifestPtr,
                            blink::mojom::RequestManifestErrorPtr>& result);
-  void OnManifestTransformedToInstallInfo(
+  void OnWebAppInfoCreatedFromManifest(
       std::unique_ptr<WebAppInstallInfo> install_info);
-  void OnIconsRetrieved(IconsDownloadedResult result,
-                        IconsMap icons_map,
-                        DownloadedIconsHttpResults icons_http_results);
+  void OnIconsFetched();
   void OnUpdateFinalized(const webapps::AppId& app_id,
                          webapps::InstallResultCode code);
 
