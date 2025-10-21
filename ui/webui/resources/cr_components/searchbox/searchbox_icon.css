@@ -103,7 +103,8 @@
   background-color: var(--color-searchbox-answer-icon-foreground);
 }
 
-:host([has-icon-container-background][is-starter-pack]:not([in-searchbox])) #icon {
+:host([has-icon-container-background][is-starter-pack]:not([in-searchbox])) #icon,
+:host([has-icon-container-background][is-featured-enterprise-search]:not([in-searchbox])) #icon {
   background-color: var(--color-searchbox-results-starter-pack-icon,
       var(--color-searchbox-answer-icon-foreground));
 }
