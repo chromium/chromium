@@ -44,6 +44,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -64,7 +65,13 @@ namespace {
 // announcements.
 class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
  public:
-  QuickInsertAccessibilityBrowserTest() = default;
+  QuickInsertAccessibilityBrowserTest() {
+    // TODO(crbug.com/433771715): This test is forced to use ChromeVox in
+    // manifest v2 due to flakiness on MSAN. Parameterize this test on the
+    // manifest version and ensure the mv3 variants pass.
+    scoped_feature_list_.InitWithFeatureStates(
+        {{::features::kAccessibilityManifestV3ChromeVox, false}});
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -84,6 +91,7 @@ class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
   ash::test::SpeechMonitor* sm() { return chromevox_test_utils_->sm(); }
 
   std::unique_ptr<ash::ChromeVoxTestUtils> chromevox_test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
