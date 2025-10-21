@@ -405,6 +405,11 @@ cr-searchbox-icon {
   z-index: 100;
 }
 
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(tool-chips-container) {
+  position: relative;
+  z-index: 100;
+}
+
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-file-carousel) {
   margin-top: 16px;
 }
@@ -493,7 +498,7 @@ cr-searchbox-icon {
   --cr-button-height: 36px;
 }
 
-:host([realbox-layout-mode='TallBottomContext'][dropdown-is-visible]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+:host([realbox-layout-mode='TallBottomContext'][dropdown-is-visible]) contextual-entrypoint-and-carousel::part(context-menu-and-tools) {
   margin-top: 10px;
 }
 
