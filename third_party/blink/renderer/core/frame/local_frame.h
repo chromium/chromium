@@ -853,7 +853,8 @@ class CORE_EXPORT LocalFrame final
   void OnFirstPaint(bool text_painted, bool image_painted);
 
   // Invoked on first contentful paint on this frame.
-  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time);
+  void OnFirstContentfulPaint(const base::TimeTicks& paint_time,
+                              const base::TimeTicks& navigation_time);
 
   void WriteIntoTrace(perfetto::TracedValue ctx) const;
 

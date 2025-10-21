@@ -625,11 +625,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
       GetSupplementable(), "firstContentfulPaint",
       relevant_paint_details.first_contentful_paint_presentation_.since_origin()
           .InSecondsF());
-  WindowPerformance* performance = GetPerformanceInstance(GetFrame());
-  if (GetFrame()) {
-    GetFrame()->OnFirstContentfulPaint(paint_timing_info.presentation_time);
-    GetFrame()->Loader().Progress().DidFirstContentfulPaint();
-  }
+
   NotifyPaintTimingChanged();
   fmp_detector_->NotifyFirstContentfulPaint(
       paint_details_.first_contentful_paint_presentation_);
@@ -639,14 +635,22 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
     interactive_detector->OnFirstContentfulPaint(
         paint_details_.first_contentful_paint_presentation_);
   }
-  auto* coordinator = GetSupplementable()->GetResourceCoordinator();
-  if (coordinator && GetFrame() && GetFrame()->IsOutermostMainFrame()) {
+
+  WindowPerformance* performance = GetPerformanceInstance(GetFrame());
+  if (GetFrame()) {
     PerformanceTimingForReporting* timing_for_reporting =
         performance->timingForReporting();
-    base::TimeDelta fcp =
-        paint_timing_info.presentation_time -
-        timing_for_reporting->NavigationStartAsMonotonicTime();
-    coordinator->OnFirstContentfulPaint(fcp);
+    GetFrame()->OnFirstContentfulPaint(
+        paint_timing_info.presentation_time,
+        timing_for_reporting->NavigationStartAsMonotonicTime());
+    GetFrame()->Loader().Progress().DidFirstContentfulPaint();
+
+    auto* coordinator = GetSupplementable()->GetResourceCoordinator();
+    if (coordinator && GetFrame()->IsOutermostMainFrame()) {
+      coordinator->OnFirstContentfulPaint(
+          paint_timing_info.presentation_time -
+          timing_for_reporting->NavigationStartAsMonotonicTime());
+    }
   }
 }
 

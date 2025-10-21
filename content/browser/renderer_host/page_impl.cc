@@ -329,7 +329,7 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
     main_document_->DocumentOnLoadCompleted();
   }
 
-  if (first_contentful_paint_in_main_document_load_time_) {
+  if (first_contentful_paint_in_main_document_duration_) {
     main_document_->NotifyFirstContentfulPaint();
   }
 

@@ -105,14 +105,13 @@ class CONTENT_EXPORT PageImpl : public Page {
     is_on_load_completed_in_main_document_ = completed;
   }
 
-  std::optional<base::TimeDelta> GetFirstContentfulPaintInMainDocumentLoadTime()
+  std::optional<base::TimeDelta> GetFirstContentfulPaintInMainDocumentDuration()
       const {
-    return first_contentful_paint_in_main_document_load_time_;
+    return first_contentful_paint_in_main_document_duration_;
   }
 
-  void SetFirstContentfulPaintInMainDocumentLoadTime(
-      base::TimeDelta load_time) {
-    first_contentful_paint_in_main_document_load_time_ = load_time;
+  void SetFirstContentfulPaintInMainDocumentDuration(base::TimeDelta duration) {
+    first_contentful_paint_in_main_document_duration_ = duration;
   }
 
   bool is_main_document_element_available() const {
@@ -328,7 +327,7 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Time taken for first contentful paint to occur.
   std::optional<base::TimeDelta>
-      first_contentful_paint_in_main_document_load_time_;
+      first_contentful_paint_in_main_document_duration_;
 
   // True if we've received a notification that the window.document element
   // became available for the main document.

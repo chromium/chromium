@@ -1252,13 +1252,8 @@ void WebViewImpl::DidFirstVisuallyNonEmptyPaint() {
   local_main_frame_host_remote_->DidFirstVisuallyNonEmptyPaint();
 }
 
-void WebViewImpl::OnFirstContentfulPaint() {
-  DCHECK(MainFrameImpl());
-  WebPerformanceMetricsForReporting metrics =
-      MainFrameImpl()->PerformanceMetricsForReporting();
-  local_main_frame_host_remote_->OnFirstContentfulPaint(
-      metrics.FirstContentfulPaintAsMonotonicTime() -
-      metrics.NavigationStartAsMonotonicTime());
+void WebViewImpl::OnFirstContentfulPaint(const base::TimeDelta& duration) {
+  local_main_frame_host_remote_->OnFirstContentfulPaint(duration);
 }
 
 void WebViewImpl::UpdateICBAndResizeViewport(

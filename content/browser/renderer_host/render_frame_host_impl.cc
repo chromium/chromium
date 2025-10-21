@@ -8136,8 +8136,8 @@ void RenderFrameHostImpl::DidInferColorScheme(
   }
 }
 
-void RenderFrameHostImpl::OnFirstContentfulPaint(base::TimeDelta load_time) {
-  GetPage().SetFirstContentfulPaintInMainDocumentLoadTime(load_time);
+void RenderFrameHostImpl::OnFirstContentfulPaint(base::TimeDelta duration) {
+  GetPage().SetFirstContentfulPaintInMainDocumentDuration(duration);
   NotifyFirstContentfulPaint();
 }
 

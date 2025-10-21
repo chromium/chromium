@@ -343,11 +343,11 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @CalledByNative
     @Override
-    public void firstContentfulPaintInPrimaryMainFrame(Page page, long loadTimeUs) {
+    public void firstContentfulPaintInPrimaryMainFrame(Page page, long durationUs) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext(); ) {
-            observersIterator.next().firstContentfulPaintInPrimaryMainFrame(page, loadTimeUs);
+            observersIterator.next().firstContentfulPaintInPrimaryMainFrame(page, durationUs);
         }
         finishObserverCall();
     }

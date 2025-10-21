@@ -1451,5 +1451,5 @@ interface LocalMainFrameHost {
   DraggableRegionsChanged(array<DraggableRegion> regions);
 
   // Called when the main frame did a first contentful paint.
-  OnFirstContentfulPaint(mojo_base.mojom.TimeDelta load_time);
+  OnFirstContentfulPaint(mojo_base.mojom.TimeDelta duration);
 };

@@ -162,11 +162,11 @@ public class AwWebContentsObserver extends WebContentsObserver
     }
 
     @Override
-    public void firstContentfulPaintInPrimaryMainFrame(Page page, long loadTimeUs) {
+    public void firstContentfulPaintInPrimaryMainFrame(Page page, long durationUs) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
             for (AwNavigationListener client : awContents.getNavigationClients()) {
-                client.onFirstContentfulPaint(getAwPageFor(page), loadTimeUs);
+                client.onFirstContentfulPaint(getAwPageFor(page), durationUs);
             }
         }
     }

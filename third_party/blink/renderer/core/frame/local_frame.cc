@@ -1007,13 +1007,15 @@ void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
 }
 
 void LocalFrame::OnFirstContentfulPaint(
-    const base::TimeTicks& first_paint_time) {
+    const base::TimeTicks& paint_time,
+    const base::TimeTicks& navigation_time) {
   if (IsOutermostMainFrame()) {
-    GetPage()->GetChromeClient().OnFirstContentfulPaint();
+    GetPage()->GetChromeClient().OnFirstContentfulPaint(paint_time -
+                                                        navigation_time);
   }
   auto* widget = GetWidgetForLocalRoot();
   if (widget) {
-    widget->OnFirstContentfulPaint(first_paint_time);
+    widget->OnFirstContentfulPaint(paint_time);
   }
 }
 

@@ -636,8 +636,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // words, after the frame has painted something.
   void DidFirstVisuallyNonEmptyPaint();
 
-  // Caleld once the first contentful paint happens on the main frame.
-  void OnFirstContentfulPaint();
+  // Called once the first contentful paint happens on the main frame.
+  void OnFirstContentfulPaint(const base::TimeDelta& duration);
 
   scheduler::WebAgentGroupScheduler& GetWebAgentGroupScheduler();
 
