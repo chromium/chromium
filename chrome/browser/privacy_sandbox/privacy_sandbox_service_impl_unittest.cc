@@ -2618,7 +2618,8 @@ class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceTest {
             "true"},
            {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
             "false"}}}},
-        {privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies});
+        {privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies,
+         privacy_sandbox::kDisablePrivacySandboxPrompts});
   }
 };
 
@@ -2818,8 +2819,9 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
 
 TEST_F(PrivacySandboxServiceTest,
        UserMigratesToEEAAfterRowAckWithNoticeServiceEnabled) {
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService);
+  feature_list()->InitWithFeatureStates(
+      {{privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService, true},
+       {privacy_sandbox::kDisablePrivacySandboxPrompts, false}});
   // User starts in ROW.
   MoveToROW();
 
@@ -2851,8 +2853,9 @@ TEST_F(PrivacySandboxServiceTest,
 
 TEST_F(PrivacySandboxServiceTest,
        UserMigratesToEEAAfterRowAckWithNoticeServiceDisabled) {
-  feature_list()->InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService);
+  feature_list()->InitWithFeatureStates(
+      {{privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService, false},
+       {privacy_sandbox::kDisablePrivacySandboxPrompts, false}});
   // User starts in ROW.
   MoveToROW();
 
@@ -2994,12 +2997,13 @@ class PrivacySandboxServiceM1NoticePromptTest
     : public PrivacySandboxServiceM1PromptTest {
  public:
   void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
-          "false"},
-         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
-          "true"}});
+    feature_list()->InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+            "false"},
+           {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+            "true"}}}},
+        {privacy_sandbox::kDisablePrivacySandboxPrompts});
   }
 };
 
@@ -3219,13 +3223,15 @@ class PrivacySandboxServiceM1RestrictedNoticePromptTest
     return mock_delegate;
   }
   void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
-          "false"},
-         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-          "true"}});
+    feature_list()->InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+            "false"},
+           {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+            "true"},
+           {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+            "true"}}}},
+        {privacy_sandbox::kDisablePrivacySandboxPrompts});
   }
 };
 
@@ -3615,13 +3621,15 @@ class PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest
     return mock_delegate;
   }
   void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
-          "false"},
-         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-          "true"}});
+    feature_list()->InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+            "false"},
+           {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+            "true"},
+           {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+            "true"}}}},
+        {privacy_sandbox::kDisablePrivacySandboxPrompts});
   }
 };
 
@@ -3679,13 +3687,15 @@ class PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest
     return mock_delegate;
   }
   void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
-          "false"},
-         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-          "true"}});
+    feature_list()->InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+            "false"},
+           {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+            "true"},
+           {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+            "true"}}}},
+        {privacy_sandbox::kDisablePrivacySandboxPrompts});
   }
 };
 
