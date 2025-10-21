@@ -519,6 +519,8 @@ DXGI_FORMAT ToDXGIFormat(viz::SharedImageFormat format) {
     return DXGI_FORMAT_R8G8B8A8_UNORM;
   } else if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return DXGI_FORMAT_R10G10B10A2_UNORM;
   } else if (format == viz::SinglePlaneFormat::kR_8) {
     // TOOD(crbug.com/416285370): Remove these single channel format checks.
     return DXGI_FORMAT_R8_UNORM;
