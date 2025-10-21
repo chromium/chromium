@@ -152,6 +152,8 @@ extern const char kOOBESkipNetworkSetupForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableOOBENetworkScreenSkippingForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisablePerUserTimezone[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDisablePowerButtonInTabletMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableRollbackOption[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableVolumeAdjustSound[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

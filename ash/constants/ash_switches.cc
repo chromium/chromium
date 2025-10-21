@@ -465,6 +465,10 @@ const char kDisableOOBENetworkScreenSkippingForTesting[] =
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
 
+// If set, the power button in tablet mode is disabled.
+const char kDisablePowerButtonInTabletMode[] =
+    "disable-power-button-in-tablet-mode";
+
 // Disables rollback option on reset screen.
 const char kDisableRollbackOption[] = "disable-rollback-option";
 

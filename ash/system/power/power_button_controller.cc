@@ -186,6 +186,10 @@ void PowerButtonController::OnPowerButtonEvent(
     const base::TimeTicks& timestamp) {
   if (down) {
     force_off_on_button_up_ = false;
+    if (IsPowerButtonDisabled()) {
+      /* Ignore, assume it is a spurious event. */
+      return;
+    }
     if (UseTabletBehavior()) {
       force_off_on_button_up_ = true;
 
@@ -487,6 +491,10 @@ bool PowerButtonController::UseTabletBehavior() const {
   return in_tablet_mode_ || force_tablet_power_button_;
 }
 
+bool PowerButtonController::IsPowerButtonDisabled() const {
+  return in_tablet_mode_ && disable_power_button_in_tablet_mode_;
+}
+
 void PowerButtonController::StopTimersAndDismissMenu() {
   pre_shutdown_timer_.Stop();
   power_button_menu_timer_.Stop();
@@ -534,6 +542,8 @@ void PowerButtonController::ProcessCommandLine() {
                      ? ButtonType::LEGACY
                      : ButtonType::NORMAL;
   force_tablet_power_button_ = cl->HasSwitch(switches::kForceTabletPowerButton);
+  disable_power_button_in_tablet_mode_ =
+      cl->HasSwitch(switches::kDisablePowerButtonInTabletMode);
 
   ParsePowerButtonPositionSwitch();
 }

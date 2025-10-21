@@ -334,6 +334,23 @@ TEST_F(PowerButtonControllerTest, ForceTabletPowerButton) {
   EXPECT_FALSE(power_manager_client()->backlights_forced_off());
 }
 
+// Tests that when the kDisablePowerButtonInTabletMode flag is passed,
+// tapping the power button does nothing.
+TEST_F(PowerButtonControllerTest, DisablePowerButtonInTabletMode) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisablePowerButtonInTabletMode);
+  ResetPowerButtonController();
+  EnableTabletMode(true);
+
+  PressPowerButton();
+  EXPECT_FALSE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
+  EXPECT_FALSE(power_manager_client()->backlights_forced_off());
+  EXPECT_FALSE(power_manager_client()->backlights_forced_off());
+  ReleasePowerButton();
+  EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
+  EXPECT_FALSE(power_manager_client()->backlights_forced_off());
+}
+
 // Tests that release power button after menu is opened but before trigger
 // shutdown will not turn screen off.
 TEST_F(PowerButtonControllerTest, ReleasePowerButtonBeforeTriggerShutdown) {
