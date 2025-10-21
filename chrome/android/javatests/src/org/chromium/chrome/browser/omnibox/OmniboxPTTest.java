@@ -73,6 +73,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
+    @DisabledTest(message = "crbug.com/424223725")
     public void testOpenTypeDelete_fromNtp() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         WebPageStation blankPage = mCtaTestRule.start();
