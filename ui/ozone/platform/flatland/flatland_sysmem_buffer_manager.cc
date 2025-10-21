@@ -9,6 +9,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/functional/bind.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 #include "ui/ozone/public/native_pixmap_usage_utils.h"
 
@@ -62,7 +63,7 @@ void FlatlandSysmemBufferManager::Shutdown() {
 scoped_refptr<gfx::NativePixmap>
 FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
                                                 gfx::Size size,
-                                                gfx::BufferFormat format,
+                                                gfx::BufferFormat buffer_format,
                                                 NativePixmapUsageSet usage) {
   gfx::NativePixmapHandle pixmap_handle;
   zx::eventpair service_handle;
@@ -72,6 +73,7 @@ FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
 
   auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
   // Scanout images must be registered with flatland.
+  auto format = viz::GetSharedImageFormat(buffer_format);
   if (!collection->Initialize(
           sysmem_allocator_.get(), flatland_allocator_.get(),
           flatland_surface_factory_, std::move(service_handle),
@@ -95,7 +97,7 @@ FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     size_t min_buffer_count,
     bool register_with_flatland_allocator) {

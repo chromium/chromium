@@ -61,7 +61,7 @@ class FlatlandSysmemBufferManager {
       zx::eventpair service_handle,
       zx::channel sysmem_token,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       size_t min_buffer_count,
       bool register_with_flatland_allocator);

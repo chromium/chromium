@@ -15,6 +15,7 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -40,7 +41,7 @@ class FlatlandSysmemBufferCollection
  public:
   static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                             gfx::BufferUsage usage);
-  static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+  static bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                             NativePixmapUsageSet usage);
 
   FlatlandSysmemBufferCollection();
@@ -62,7 +63,7 @@ class FlatlandSysmemBufferCollection
                   zx::eventpair handle,
                   zx::channel sysmem_token,
                   gfx::Size size,
-                  gfx::BufferFormat format,
+                  viz::SharedImageFormat format,
                   NativePixmapUsageSet usage,
                   VkDevice vk_device,
                   size_t min_buffer_count,
@@ -88,7 +89,7 @@ class FlatlandSysmemBufferCollection
 
   zx_koid_t id() const { return id_; }
   size_t num_buffers() const { return buffers_info_.buffers().size(); }
-  gfx::BufferFormat format() const { return format_; }
+  viz::SharedImageFormat format() const { return format_; }
   size_t buffer_size() const {
     return buffers_info_.settings().buffer_settings().size_bytes();
   }
@@ -132,7 +133,7 @@ class FlatlandSysmemBufferCollection
   // sysmem clients. Size of the image is passed to CreateVkImage().
   gfx::Size min_size_;
 
-  gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
+  viz::SharedImageFormat format_ = viz::SinglePlaneFormat::kRGBA_8888;
   NativePixmapUsageSet usage_ = NativePixmapBufferUsage::kGpuReadCpuReadWrite;
 
   fuchsia::sysmem2::BufferCollectionSyncPtr collection_;
