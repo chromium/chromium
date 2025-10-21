@@ -116,8 +116,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
                             R.string.signin_promo_description_ntp_group1, accountEmail);
                 } else if (seamlessSigninPromoType
                         == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                    return mContext.getString(
-                            R.string.signin_promo_description_ntp_group2, accountEmail);
+                    return mContext.getString(R.string.signin_promo_description_ntp_group2);
                 }
             } else if (seamlessSigninStringType
                     == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
@@ -127,8 +126,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
                             R.string.signin_promo_description_ntp_group3, accountEmail);
                 } else if (seamlessSigninPromoType
                         == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                    return mContext.getString(
-                            R.string.signin_promo_description_ntp_group4, accountEmail);
+                    return mContext.getString(R.string.signin_promo_description_ntp_group4);
                 }
             }
         }
