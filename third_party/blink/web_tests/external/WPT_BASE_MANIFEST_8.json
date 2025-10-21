@@ -77497,7 +77497,7 @@
       ]
      ],
      "position-visibility-no-overflow-scroll-002.html": [
-      "e861a29c84c621670ffd8d627b7264530794f56f",
+      "3d628c13047f2f86ed3b2016d48b39801ae61502",
       [
        null,
        [
@@ -77510,7 +77510,7 @@
       ]
      ],
      "position-visibility-no-overflow-scroll.html": [
-      "f646f819cddfbf955b36eb7b7d17802a040f9bef",
+      "ef5ba8827dab386d239ce5248ab105146cfd2d1a",
       [
        null,
        [
@@ -184843,7 +184843,7 @@
       ]
      ],
      "overflow-clip-margin-border-radius.html": [
-      "b5c1d81154e704587ccd6f6b9398c3dace71b570",
+      "51c69e9b2c6b496bb885c8efd4066249b06bfc80",
       [
        null,
        [
@@ -184858,11 +184858,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            7,
+            0,
             7
            ]
           ]
@@ -314089,6 +314089,21 @@
       },
       "the-select-element": {
        "customizable-select": {
+        "appearance-base-and-base-select.tentative.html": [
+         "711591391355e276cfeb2a2e57968f9af77591d2",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/appearance-base-and-base-select-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "appearance-base-select-other-elements.html": [
          "b0b98b74f941ac9956e73c3e7c58a0bb5de7b21f",
          [
@@ -347763,7 +347778,7 @@
       []
      ],
      "position-visibility-no-overflow-scroll-ref.html": [
-      "b62a6d1078b28c3083e4292b0777e24c13b716e1",
+      "cd8f583bed904ba97ab7bbdfadfdcca12e4f3e79",
       []
      ],
      "position-visibility-remove-anchors-visible-ref.html": [
@@ -366439,7 +366454,7 @@
       ],
       "support": {
        "testing-utils.js": [
-        "1cc7ec58bbd343054e60cefdc0389aff8268889d",
+        "ef3282898e645ee32ffb83ece8997e46fa4daccd",
         []
        ]
       }
@@ -379742,6 +379757,14 @@
      ],
      "responsive-iframe": {
       "resources": {
+       "1x1-navy.png": [
+        "9b9a03955baea7abde9e056e8604e18694e49b66",
+        []
+       ],
+       "iframe-contents-dom-content-loaded.html": [
+        "922a5a8ea8931153f3728dba81d1d676fe1eded7",
+        []
+       ],
        "iframe-contents-request-resize-error.html": [
         "2b28233aa9de19525e8b09da51094f2ded6d7cc6",
         []
@@ -379756,6 +379779,10 @@
        ],
        "iframe-contents.html": [
         "3b7406e1e4064bc0f9f829907bfe462c8b6d3891",
+        []
+       ],
+       "slow-image.py": [
+        "148f0049905e5d47c41243c989619098ff4e8564",
         []
        ]
       },
@@ -422319,6 +422346,10 @@
         []
        ],
        "customizable-select": {
+        "appearance-base-and-base-select-ref.html": [
+         "6c94748c6e2242057cb01e538b9a420a3696d6d9",
+         []
+        ],
         "appearance-base-select-other-elements-ref.html": [
          "72abb8843f6dab611347c60a5c3ab06860f3a33b",
          []
@@ -438759,7 +438790,7 @@
       []
      ],
      "webxr-test.js": [
-      "38733e17029acca219ace6f79b1fe9ddd1c6aab9",
+      "bc22ee27bddba9b577f4eda2f89eced95dde171a",
       []
      ],
      "webxr-test.js.headers": [
@@ -438919,7 +438950,7 @@
       []
      ],
      "util.js": [
-      "7b60bb04ce7047e3e3b97c68ce7c7a47cf22cd01",
+      "98e8dd2c29862cd0a1342af5ff0f632c6083486d",
       []
      ]
     }
@@ -514664,21 +514695,21 @@
       ]
      ],
      "position-area-scrolling-005.html": [
-      "13f690a35455f3ed27816bf0b3fe704a79fa0e87",
+      "acd74e76097a67358fa43f22e566264522d2be17",
       [
        null,
        {}
       ]
      ],
      "position-area-scrolling-006.html": [
-      "fb478385ef349796d306ff931039c4b45b3a1fa3",
+      "e4d5a0f0b518ec4e1d4b29eb8b104b61d98dc72f",
       [
        null,
        {}
       ]
      ],
      "position-area-scrolling-007.html": [
-      "8e865f1c491699f93f176b888c158a581d33f18b",
+      "bb09d64b91a83144d68ea78fd28327e8a1b59821",
       [
        null,
        {}
@@ -514776,7 +514807,7 @@
       ]
      ],
      "position-try-fallbacks-003.html": [
-      "1064bf0b362a5874edfe89d41d9aa71a1f683957",
+      "ad6f19cde46a6b71ce0108f3b09e6500a926f3f7",
       [
        null,
        {}
@@ -529072,7 +529103,7 @@
       "tentative": {
        "items": {
         "column-automatic-minimum-for-auto.html": [
-         "47b1202294b6f331f04a6853b95fea961014070a",
+         "534786e164eba4669be712eea5c9580c72d0b576",
          [
           null,
           {}
@@ -529093,7 +529124,7 @@
          ]
         ],
         "column-intrinsic-track-sizes.html": [
-         "1de674f6c8137fc78a395192f3da406a8a0e19eb",
+         "b5b877a421d276194df7d0d4f9fd922a68666e6a",
          [
           null,
           {}
@@ -529135,7 +529166,7 @@
          ]
         ],
         "row-automatic-minimum-for-auto.html": [
-         "432e1a571dd8e39ca18a66d0a09fe1a3a03e6950",
+         "eedf7f7d2ef3be5cc670014241b0b23068af07dc",
          [
           null,
           {}
@@ -529149,7 +529180,7 @@
          ]
         ],
         "row-intrinsic-track-sizes.html": [
-         "dbe9acc9aaa29c36e513c8a12b7619cce00fd500",
+         "710941b686424ba21109d6f914783e422ae47138",
          [
           null,
           {}
@@ -541114,6 +541145,13 @@
       ]
      ],
      "responsive-iframe": {
+      "responsive-iframe-dom-content-loaded.tentative.html": [
+       "590e98064fa06cf122c7142187619a5a7cb9ca07",
+       [
+        null,
+        {}
+       ]
+      ],
       "responsive-iframe-request-resize-error.tentative.html": [
        "e2a019b5868115cfcd74bd72abe181c84482663c",
        [
@@ -665263,6 +665301,13 @@
          {}
         ]
        ],
+       "non-parser-created-doc.html": [
+        "6e6142a06062f5198c849a1b8132194ad19b7f57",
+        [
+         null,
+         {}
+        ]
+       ],
        "style-load-after-mutate.html": [
         "901c5c1ac2c11cd6ee2069bf851652462b7ab76b",
         [
@@ -672599,7 +672644,7 @@
          ]
         ],
         "select-click-drag-option.html": [
-         "748c4a92304df58be415a9992c1ac3cd6ca11176",
+         "916a4499e9b4c24e518efb48cb4ef065e3b677c2",
          [
           null,
           {
@@ -672946,6 +672991,16 @@
           null,
           {
            "testdriver": true
+          }
+         ]
+        ],
+        "select-in-page-home-end-pagedown-pageup.optional.html": [
+         "40b5921a91aecf6e281deab561efe56730ede0ac",
+         [
+          null,
+          {
+           "testdriver": true,
+           "timeout": "long"
           }
          ]
         ],
@@ -725216,7 +725271,7 @@
      ]
     ],
     "sanitizer-config.tentative.html": [
-     "d617f5066ac580bee6c36c3b9c99b8d63d5110cb",
+     "d3250b9551e9a9264994a386dfa8bc5436641fcf",
      [
       null,
       {}
@@ -725230,7 +725285,7 @@
      ]
     ],
     "sanitizer-modifiers.tentative.html": [
-     "f9d6e0a44ad9a852009008961bc91d8f85f82de0",
+     "5d5ea275d5ccc59cac44bbc07bd67e198d14d2f1",
      [
       null,
       {}
@@ -805051,7 +805106,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "4e6c091d8684774abdf3285a2adf8de97b39e7df",
+      "ed499cba197079b65248dc8378aeaf559c86ceb0",
       [
        "webnn/conformance_tests/softmax.https.any.html?cpu",
        {
@@ -823012,7 +823067,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "13ac996828a1f005327fb3e38518089a95b1754a",
+      "99d92fd7f16a90b2b9a9c8f4a655a8badd5c525f",
       [
        "webnn/validation_tests/softmax.https.any.html?cpu",
        {

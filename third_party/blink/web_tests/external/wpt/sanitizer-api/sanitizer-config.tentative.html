@@ -348,6 +348,17 @@ test(() => {
 }, "Global attribute allow-list with a data attribute must not co-exist with config[dataAttributes] set to true.");
 
 // If config[removeAttributes] exists:
+
+// Not both element[attributes] and element[removeAttributes] exist.
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new Sanitizer({
+      removeAttributes: [],
+      elements: [{ name: "div", attributes: [], removeAttributes: [] }],
+    });
+  });
+}, "element[attributes] and element[removeAttributes] should not both exist with config[removeAttributes].");
+
 // The intersection of config[removeAttributes] and element[attributes] with default « » is empty.
 test(() => {
   assert_throws_js(TypeError, () => {

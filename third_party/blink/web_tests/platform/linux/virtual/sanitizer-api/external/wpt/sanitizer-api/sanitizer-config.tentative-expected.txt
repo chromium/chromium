@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SanitizerConfig dataAttributes field.
   assert_false: expected false got true
 [FAIL] SanitizerConfig, normalization: elements: ["div"]
@@ -28,6 +28,8 @@ Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: [],\n      dataAttributes: true,\n      elements: [{ name: "div", attributes: ["data-foo"] }],\n    });\n  }" did not throw
 [FAIL] Global attribute allow-list with a data attribute must not co-exist with config[dataAttributes] set to true.
   assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: [],\n      dataAttributes: true,\n      attributes: ["data-bar"],\n    });\n  }" did not throw
+[FAIL] element[attributes] and element[removeAttributes] should not both exist with config[removeAttributes].
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: [],\n      elements: [{ name: "div", attributes: [], removeAttributes: [] }],\n    });\n  }" did not throw
 [FAIL] config[removeAttributes] and element[attributes] should not intersect.
   assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: ["class"],\n      elements: [{ name: "div", attributes: ["class"] }],\n    });\n  }" did not throw
 [FAIL] config[removeAttributes] and element[removeAttributes] should not intersect.
