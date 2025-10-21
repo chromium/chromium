@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -345,10 +346,6 @@ class WebNNGraphImplTest : public testing::Test {
     return remote;
   }
 
-  mojo::Remote<mojom::WebNNContextProvider>& provider_remote() {
-    return provider_remote_;
-  }
-
  protected:
   WebNNGraphImplTest()
       : scoped_feature_list_(
@@ -357,6 +354,7 @@ class WebNNGraphImplTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
 
   FakeWebNNBackend backend_for_testing_;
 
@@ -7598,10 +7596,16 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
                                  output_2_operand_id);
   EXPECT_TRUE(builder.IsValidGraphForTesting(context_properties));
 
+  test::WebNNTestEnvironment webnn_test_enviroment;
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+  webnn_test_enviroment.BindWebNNContextProvider(
+      provider_remote.BindNewPipeAndPassReceiver());
+
   {
     // Validate the inputs match the expected.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
+
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7614,7 +7618,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid inputs for invalid input size.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateTensorSuccess> outputs;
@@ -7626,7 +7630,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid outputs for invalid output size.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7641,7 +7645,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid inputs for invalid input name.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["a_different_input_name"] =
         CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7655,7 +7659,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid outputs for invalid input name.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7669,7 +7673,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid inputs for invalid first input shape.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, {2, 5});
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7682,7 +7686,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid inputs for invalid first input data type.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] =
         CreateWebNNTensor(webnn_context, OperandDataType::kInt8, kShape);
@@ -7696,7 +7700,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid outputs for invalid first output shape.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7709,7 +7713,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid inputs for invalid second input data type.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] =
@@ -7723,7 +7727,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid outputs for invalid second output shape.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7736,7 +7740,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the inputs using the same tensor more than once.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = {/*webnn_tensor=*/std::nullopt, inputs["lhs"].webnn_handle};
@@ -7749,7 +7753,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the invalid outputs when using the same tensor more than once.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7763,7 +7767,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the inputs and outputs are invalid when using the same tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7777,7 +7781,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the inputs are invalid when using a invalid tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = {/*webnn_tensor=*/std::nullopt};
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7790,7 +7794,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the outputs are invalid when using a invalid tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
-        CreateWebNNContext(provider_remote());
+        CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);

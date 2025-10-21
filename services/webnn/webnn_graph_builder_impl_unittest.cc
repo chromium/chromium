@@ -217,9 +217,7 @@ class WebNNGraphBuilderImplTest : public testing::Test {
     WebNNContextProviderImpl::SetBackendForTesting(nullptr);
   }
 
-  test::WebNNTestEnvironment& test_environment() {
-    return webnn_test_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote() {
     return graph_builder_remote_;
@@ -233,6 +231,7 @@ class WebNNGraphBuilderImplTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
 
   FakeWebNNBackend backend_for_testing_;
 
@@ -258,7 +257,7 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {
   // The remote should disconnect shortly after the future resolves since the
   // `WebNNGraphBuilder` is destroyed shortly after firing its `CreateGraph()`
   // callback.
-  test_environment().RunUntilIdle();
+  task_environment().RunUntilIdle();
   EXPECT_FALSE(graph_builder_remote().is_connected());
 }
 
