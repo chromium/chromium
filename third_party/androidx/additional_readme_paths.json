@@ -179,6 +179,7 @@
     "committed/libs/androidx_window_window",
     "committed/libs/androidx_window_window_core_android",
     "committed/libs/androidx_window_window_extensions",
+    "committed/libs/androidx_work_work_runtime",
     "committed/libs/androidx_xr_arcore_arcore",
     "committed/libs/androidx_xr_runtime_runtime",
     "committed/libs/androidx_xr_runtime_runtime_manifest",
