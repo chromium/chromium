@@ -643,8 +643,8 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
       video_renderer_ = std::make_unique<media::PaintCanvasVideoRenderer>();
     }
 
-    video_renderer_->CopyOOPR(video_frame.get(), canvas_.get(),
-                              encoder_thread_context_->RasterContextProvider());
+    video_renderer_->Copy(video_frame.get(), canvas_.get(),
+                          encoder_thread_context_->RasterContextProvider());
 
     SkPixmap pixmap;
     if (!bitmap_.peekPixels(&pixmap)) {

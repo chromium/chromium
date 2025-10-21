@@ -102,9 +102,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   //
   // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
   // and |context_support| must be provided.
-  void CopyOOPR(scoped_refptr<VideoFrame> video_frame,
-                cc::PaintCanvas* canvas,
-                viz::RasterContextProvider* raster_context_provider);
+  void Copy(scoped_refptr<VideoFrame> video_frame,
+            cc::PaintCanvas* canvas,
+            viz::RasterContextProvider* raster_context_provider);
 
   // Convert the contents of |video_frame| to raw RGB pixels. |rgb_pixels|
   // should point into a buffer large enough to hold as many 32 bit RGBA pixels

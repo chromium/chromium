@@ -1050,7 +1050,7 @@ void PaintCanvasVideoRenderer::Paint(
   canvas->flush();
 }
 
-void PaintCanvasVideoRenderer::CopyOOPR(
+void PaintCanvasVideoRenderer::Copy(
     scoped_refptr<VideoFrame> video_frame,
     cc::PaintCanvas* canvas,
     viz::RasterContextProvider* raster_context_provider) {

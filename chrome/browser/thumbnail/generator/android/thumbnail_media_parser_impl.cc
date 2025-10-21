@@ -251,7 +251,7 @@ void ThumbnailMediaParserImpl::RenderVideoFrame(
 
   // Draw the video frame to |bitmap|.
   cc::SkiaPaintCanvas canvas(bitmap);
-  renderer.CopyOOPR(video_frame, &canvas, context_provider);
+  renderer.Copy(video_frame, &canvas, context_provider);
 
   RecordVideoThumbnailEvent(VideoThumbnailEvent::kVideoThumbnailComplete);
   NotifyComplete(std::move(bitmap));

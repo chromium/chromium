@@ -359,7 +359,7 @@ void PaintCanvasVideoRendererTest::PaintRotated(
 
 void PaintCanvasVideoRendererTest::Copy(scoped_refptr<VideoFrame> video_frame,
                                         cc::PaintCanvas* canvas) {
-  renderer_.CopyOOPR(std::move(video_frame), canvas, nullptr);
+  renderer_.Copy(std::move(video_frame), canvas, nullptr);
 }
 
 TEST_F(PaintCanvasVideoRendererTest, NoFrame) {
@@ -1205,7 +1205,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
         AllocBitmap(expected_size.width(), expected_size.height());
     cc::SkiaPaintCanvas canvas(bitmap);
     canvas.clear(SkColors::kGray);
-    renderer_.CopyOOPR(frame, &canvas, media_context_.get());
+    renderer_.Copy(frame, &canvas, media_context_.get());
 
     auto get_color = base::BindRepeating(
         [](SkBitmap* bitmap, int x, int y) { return bitmap->getColor(x, y); },
