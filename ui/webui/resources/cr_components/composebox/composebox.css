@@ -385,6 +385,7 @@
 }
 
 :host(:not([show-submit_])) #submitContainer,
+:host([ntp-realbox-next-enabled]) #submitContainer,
 :host([show-submit_]:not([submit-enabled_])) #submitContainer{
   display: none;
 }
@@ -405,7 +406,7 @@
   outline-offset: 2px;
 }
 
-:host([show-submit_][submit-enabled_]) #submitIcon {
+:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitIcon {
   cursor: pointer;
   display: block;
   opacity: 100%; /* For Lens side panel. */
@@ -637,11 +638,6 @@
 
 :host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #context {
   margin-top: -48px;
-}
-
-:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"])
-    #context::part(tool-chips-container) {
-  padding-top: 6px;
 }
 
 :host([expanded_][show-dropdown_][ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) ntp-composebox-dropdown {

@@ -11,6 +11,8 @@ import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoi
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   const showDescription = this.realboxLayoutMode !== 'Compact' &&
       this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_;
+  const toolChipsVisible = this.shouldShowRecentTabChip_ ||
+      this.inDeepSearchMode_ || this.inCreateImageMode_;
   const toolChips = html`
         ${
       this.shouldShowRecentTabChip_ ? html`
@@ -73,7 +75,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   <div class="carousel-divider" part="carousel-divider"></div>` : ''}
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>
-  ${this.realboxLayoutMode === 'Compact' ? html`
+  ${this.realboxLayoutMode === 'Compact' && toolChipsVisible ? html`
     <div class="context-menu-container" id='toolChipsContainer'
         part="tool-chips-container">${toolChips}</div>
   ` : ''}
