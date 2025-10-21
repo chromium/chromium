@@ -112,16 +112,9 @@ bool ThreadedPreloadScannerEnabled(
   // benchmarks.
   static bool kEnabled =
       base::FeatureList::IsEnabled(features::kThreadedPreloadScanner);
-  if (reset_mode == FeatureResetMode::kResetForTesting)
+  if (reset_mode == FeatureResetMode::kResetForTesting) {
     kEnabled = base::FeatureList::IsEnabled(features::kThreadedPreloadScanner);
-  return kEnabled;
-}
-
-bool TimedParserBudgetEnabled() {
-  // Cache the feature value since checking for each parser regresses some micro
-  // benchmarks.
-  static const bool kEnabled =
-      base::FeatureList::IsEnabled(features::kTimedHTMLParserBudget);
+  }
   return kEnabled;
 }
 
@@ -139,8 +132,9 @@ bool PrecompileInlineScriptsEnabled(
   // benchmarks.
   static bool kEnabled =
       base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
-  if (reset_mode == FeatureResetMode::kResetForTesting)
+  if (reset_mode == FeatureResetMode::kResetForTesting) {
     kEnabled = base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
+  }
   return kEnabled;
 }
 
@@ -159,8 +153,9 @@ NonMainThread* GetPreloadScannerThread() {
 }
 
 PreloadProcessingMode GetPreloadProcessingMode() {
-  if (!ThreadedPreloadScannerEnabled())
+  if (!ThreadedPreloadScannerEnabled()) {
     return PreloadProcessingMode::kNone;
+  }
 
   static const base::FeatureParam<PreloadProcessingMode>::Option
       kPreloadProcessingModeOptions[] = {
@@ -186,16 +181,12 @@ bool BackgroundScanMainFrameOnly() {
 }
 
 bool IsPreloadScanningEnabled(Document* document) {
-  if (BackgroundScanMainFrameOnly() && !document->IsInOutermostMainFrame())
+  if (BackgroundScanMainFrameOnly() && !document->IsInOutermostMainFrame()) {
     return false;
+  }
   return document->GetSettings() &&
          document->GetSettings()->GetDoHtmlPreloadScanning();
 }
-
-MIRACLE_PARAMETER_FOR_TIME_DELTA(GetDefaultParserBudget,
-                                 features::kTimedHTMLParserBudget,
-                                 "default-parser-budget",
-                                 base::Milliseconds(10))
 
 // These constants were chosen using experiment data from the field to
 // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
@@ -209,11 +200,6 @@ constexpr int kNumYieldsWithDefaultBudgetDefaultValue =
 #endif
     ;
 
-MIRACLE_PARAMETER_FOR_INT(GetNumYieldsWithDefaultBudget,
-                          features::kTimedHTMLParserBudget,
-                          "num-yields-with-default-budget",
-                          kNumYieldsWithDefaultBudgetDefaultValue)
-
 // These constants were chosen using experiment data from the field to
 // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
 // Experiments were run on both Android and desktop to determine the values
@@ -226,25 +212,21 @@ constexpr base::TimeDelta kLongParserBudgetDefaultValue =
 #endif
     ;
 
-MIRACLE_PARAMETER_FOR_TIME_DELTA(GetLongParserBudget,
-                                 features::kTimedHTMLParserBudget,
-                                 "long-parser-budget",
-                                 kLongParserBudgetDefaultValue)
-
 base::TimeDelta GetDefaultTimedBudget() {
   // Cache the value to avoid parsing the param string more than once.
   static const base::TimeDelta kDefaultParserBudgetValue =
-      GetDefaultParserBudget();
+      base::Milliseconds(10);
   return kDefaultParserBudgetValue;
 }
 
 base::TimeDelta GetTimedBudget(int times_yielded) {
   // Cache the value to avoid parsing the param string more than once.
   static const int kNumYieldsWithDefaultBudgetValue =
-      GetNumYieldsWithDefaultBudget();
+      kNumYieldsWithDefaultBudgetDefaultValue;
 
   // Cache the value to avoid parsing the param string more than once.
-  static const base::TimeDelta kLongParserBudgetValue = GetLongParserBudget();
+  static const base::TimeDelta kLongParserBudgetValue =
+      kLongParserBudgetDefaultValue;
 
   if (times_yielded <= kNumYieldsWithDefaultBudgetValue) {
     return GetDefaultTimedBudget();
@@ -298,28 +280,33 @@ static HTMLTokenizer::State TokenizerStateForContextElement(
     Element* context_element,
     bool report_errors,
     const HTMLParserOptions& options) {
-  if (!context_element)
+  if (!context_element) {
     return HTMLTokenizer::kDataState;
+  }
 
   const QualifiedName& context_tag = context_element->TagQName();
 
   if (context_tag.Matches(html_names::kTitleTag) ||
-      context_tag.Matches(html_names::kTextareaTag))
+      context_tag.Matches(html_names::kTextareaTag)) {
     return HTMLTokenizer::kRCDATAState;
+  }
   if (context_tag.Matches(html_names::kStyleTag) ||
       context_tag.Matches(html_names::kXmpTag) ||
       context_tag.Matches(html_names::kIFrameTag) ||
       context_tag.Matches(html_names::kNoembedTag) ||
       (context_tag.Matches(html_names::kNoscriptTag) &&
        options.scripting_flag) ||
-      context_tag.Matches(html_names::kNoframesTag))
+      context_tag.Matches(html_names::kNoframesTag)) {
     return report_errors ? HTMLTokenizer::kRAWTEXTState
                          : HTMLTokenizer::kPLAINTEXTState;
-  if (context_tag.Matches(html_names::kScriptTag))
+  }
+  if (context_tag.Matches(html_names::kScriptTag)) {
     return report_errors ? HTMLTokenizer::kScriptDataState
                          : HTMLTokenizer::kPLAINTEXTState;
-  if (context_tag.Matches(html_names::kPlaintextTag))
+  }
+  if (context_tag.Matches(html_names::kPlaintextTag)) {
     return HTMLTokenizer::kPLAINTEXTState;
+  }
   return HTMLTokenizer::kDataState;
 }
 
@@ -433,8 +420,9 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
   TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::HTMLDocumentParser",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   // Make sure the preload scanner thread will be ready when needed.
-  if (ThreadedPreloadScannerEnabled() && !task_runner_state_->IsSynchronous())
+  if (ThreadedPreloadScannerEnabled() && !task_runner_state_->IsSynchronous()) {
     GetPreloadScannerThread();
+  }
 
   // Report metrics for async document parsing or forced synchronous parsing.
   // The document must be outermost main frame to meet UKM requirements, and
@@ -449,15 +437,17 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
   }
 
   // Don't create preloader for parsing clipboard content.
-  if (content_policy == kDisallowScriptingAndPluginContent)
+  if (content_policy == kDisallowScriptingAndPluginContent) {
     return;
+  }
 
   // Create preloader only when the document is:
   // - attached to a frame (likely the prefetched resources will be loaded
   // soon),
   // - is for no-state prefetch (made specifically for running preloader).
-  if (!document.GetFrame() && !document.IsPrefetchOnly())
+  if (!document.GetFrame() && !document.IsPrefetchOnly()) {
     return;
+  }
 
   if (prefetch_policy == kAllowPrefetching && !ShouldSkipPreloadScan()) {
     preloader_ = MakeGarbageCollected<HTMLResourcePreloader>(document);
@@ -494,10 +484,12 @@ void HTMLDocumentParser::Detach() {
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kNotScheduled);
   DocumentParser::Detach();
-  if (script_runner_)
+  if (script_runner_) {
     script_runner_->Detach();
-  if (tree_builder_)
+  }
+  if (tree_builder_) {
     tree_builder_->Detach();
+  }
   // FIXME: It seems wrong that we would have a preload scanner here. Yet during
   // fast/dom/HTMLScriptElement/script-load-events.html we do.
   preload_scanner_.reset();
@@ -525,8 +517,9 @@ void HTMLDocumentParser::PrepareToStopParsing() {
 
   // If we've already been detached, e.g. in
   // WebFrameTest.SwapMainFrameWhileLoading, bail out.
-  if (IsDetached())
+  if (IsDetached()) {
     return;
+  }
 
   // NOTE: This pump should only ever emit buffered character tokens.
   if (!GetDocument()->IsPrefetchOnly()) {
@@ -545,19 +538,22 @@ void HTMLDocumentParser::PrepareToStopParsing() {
     }
   }
 
-  if (IsStopped())
+  if (IsStopped()) {
     return;
+  }
 
   DocumentParser::PrepareToStopParsing();
 
   // We will not have a scriptRunner when parsing a DocumentFragment.
-  if (script_runner_)
+  if (script_runner_) {
     GetDocument()->SetReadyState(Document::kInteractive);
+  }
 
   // Setting the ready state above can fire synchronous events and detach us
   // from underneath. In that case, just bail out.
-  if (IsDetached())
+  if (IsDetached()) {
     return;
+  }
 
   GetDocument()->OnPrepareToStopParsing();
 
@@ -647,15 +643,17 @@ void HTMLDocumentParser::PumpTokenizerIfPossible() {
   } else if (task_runner_state_->ShouldAttemptToEndOnEOF()) {
     // Fall into this branch if ::Finish has been previously called and we've
     // just finished asynchronously parsing everything.
-    if (metrics_reporter_)
+    if (metrics_reporter_) {
       metrics_reporter_->ReportMetricsAtParseEnd();
+    }
     AttemptToEnd();
   } else if (task_runner_state_->ShouldEndIfDelayed()) {
     // If we did not exceed the budget or parsed everything there was to
     // parse, check if we should complete the document.
     if (task_runner_state_->ShouldComplete() || IsStopped() || IsStopping()) {
-      if (metrics_reporter_)
+      if (metrics_reporter_) {
         metrics_reporter_->ReportMetricsAtParseEnd();
+      }
       EndIfDelayed();
     } else {
       ScheduleEndIfDelayed();
@@ -675,8 +673,9 @@ void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
   Element* script_element =
       tree_builder_->TakeScriptToProcess(script_start_position);
   // We will not have a scriptRunner when parsing a DocumentFragment.
-  if (script_runner_)
+  if (script_runner_) {
     script_runner_->ProcessScriptElement(script_element, script_start_position);
+  }
   CheckIfBlockingStylesheetAdded();
 }
 
@@ -734,9 +733,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
     budget = 2;
   }
 
-  base::TimeDelta timed_budget;
-  if (TimedParserBudgetEnabled())
-    timed_budget = GetTimedBudget(task_runner_state_->TimesYielded());
+  base::TimeDelta timed_budget =
+      GetTimedBudget(task_runner_state_->TimesYielded());
 
   const bool should_process_preloading =
       task_runner_state_->ShouldProcessPreloads();
@@ -747,8 +745,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
   base::TimeDelta time_executing_script;
   v8::Isolate* isolate = GetDocument()->GetAgent().isolate();
   while (true) {
-    if (should_process_preloading)
+    if (should_process_preloading) {
       FlushPendingPreloads();
+    }
 
     const auto next_token_status = CanTakeNextToken(time_executing_script);
     if (next_token_status == kNoTokens) {
@@ -761,10 +760,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // to yield at some point soon, especially if we're in "extended budget"
       // mode. So reduce the budget back to at most the default.
       budget = std::min(budget, task_runner_state_->GetDefaultBudget());
-      if (TimedParserBudgetEnabled()) {
-        timed_budget = std::min(timed_budget, chunk_parsing_timer.Elapsed() +
-                                                  GetDefaultTimedBudget());
-      }
+      timed_budget = std::min(timed_budget, chunk_parsing_timer.Elapsed() +
+                                                GetDefaultTimedBudget());
     }
     HTMLToken* token;
     {
@@ -773,8 +770,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
       base::ElapsedTimer timer;
       token = tokenizer_.NextToken(input_.Current());
       total_tokenization_time_ += timer.Elapsed();
-      if (!token)
+      if (!token) {
         break;
+      }
       budget--;
       tokens_parsed++;
     }
@@ -790,8 +788,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
 
     if (!should_run_until_completion && !IsPaused()) {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
-      if (TimedParserBudgetEnabled() &&
-          !RuntimeEnabledFeatures::
+      if (!RuntimeEnabledFeatures::
               HTMLParserYieldAndDelayOftenForTestingEnabled()) {
         if (CheckParserBudgetLessOften()) {
           int newly_consumed_characters =
@@ -822,8 +819,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
         should_yield |= HasPendingPreloads();
       }
 
-      if (should_yield)
+      if (should_yield) {
         break;
+      }
     }
   }
 
@@ -864,8 +862,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
         chunk_parsing_timer.Elapsed() - time_executing_script, tokens_parsed);
   }
 
-  if (is_stopped_or_parsing_fragment)
+  if (is_stopped_or_parsing_fragment) {
     return false;
+  }
 
   if (IsPaused() && preloader_ && !background_scanner_) {
     if (!preload_scanner_) {
@@ -878,8 +877,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
 
   // should_run_until_completion implies that we should not yield
   CHECK(!should_run_until_completion || !should_yield);
-  if (should_yield)
+  if (should_yield) {
     task_runner_state_->MarkYield();
+  }
 
   return should_yield;
 }
@@ -959,8 +959,9 @@ bool HTMLDocumentParser::HasInsertionPoint() {
 
 void HTMLDocumentParser::insert(const String& source) {
   // No need to do any processing if the supplied text is empty.
-  if (IsStopped() || source.empty())
+  if (IsStopped() || source.empty()) {
     return;
+  }
 
   TRACE_EVENT_WITH_FLOW2(
       "blink", "HTMLDocumentParser::insert", TRACE_ID_LOCAL(this),
@@ -999,8 +1000,9 @@ void HTMLDocumentParser::Append(const String& input_source) {
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "size", input_source.length(), "parser", (void*)this);
 
-  if (IsStopped())
+  if (IsStopped()) {
     return;
+  }
 
   const SegmentedString source(input_source);
 
@@ -1047,8 +1049,9 @@ void HTMLDocumentParser::Append(const String& input_source) {
   task_runner_state_->MarkSeenFirstByte();
 
   // Add input_source.length() to "file size" metric.
-  if (metrics_reporter_)
+  if (metrics_reporter_) {
     metrics_reporter_->AddInput(input_source.length());
+  }
 
   if (task_runner_state_->InPumpSession()) {
     // We've gotten data off the network in a nested write. We don't want to
@@ -1059,8 +1062,9 @@ void HTMLDocumentParser::Append(const String& input_source) {
 
   // If we are preloading, FinishAppend() will be called later in
   // CommitPreloadedData().
-  if (IsPreloading())
+  if (IsPreloading()) {
     return;
+  }
 
   FinishAppend();
 }
@@ -1069,22 +1073,25 @@ void HTMLDocumentParser::FinishAppend() {
   TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::FinishAppend",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  if (ShouldPumpTokenizerNowForFinishAppend())
+  if (ShouldPumpTokenizerNowForFinishAppend()) {
     PumpTokenizerIfPossible();
-  else
+  } else {
     SchedulePumpTokenizer(/*from_finish_append=*/true);
+  }
 }
 
 void HTMLDocumentParser::CommitPreloadedData() {
   TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::CommitPreloadedData",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  if (!IsPreloading())
+  if (!IsPreloading()) {
     return;
+  }
 
   SetIsPreloading(false);
-  if (task_runner_state_->SeenFirstByte() && !IsStopped())
+  if (task_runner_state_->SeenFirstByte() && !IsStopped()) {
     FinishAppend();
+  }
 }
 
 void HTMLDocumentParser::end() {
@@ -1116,8 +1123,9 @@ void HTMLDocumentParser::end() {
 void HTMLDocumentParser::AttemptToRunDeferredScriptsAndEnd() {
   DCHECK(IsStopping());
   DCHECK(!HasInsertionPoint());
-  if (script_runner_ && !script_runner_->ExecuteScriptsWaitingForParsing())
+  if (script_runner_ && !script_runner_->ExecuteScriptsWaitingForParsing()) {
     return;
+  }
   end();
 }
 
@@ -1153,11 +1161,13 @@ void HTMLDocumentParser::EndIfDelayed() {
   ShouldCompleteScope should_complete(task_runner_state_);
   EndIfDelayedForbiddenScope should_not_end_if_delayed(task_runner_state_);
   // If we've already been detached, don't bother ending.
-  if (IsDetached())
+  if (IsDetached()) {
     return;
+  }
 
-  if (!task_runner_state_->EndWasDelayed() || ShouldDelayEnd())
+  if (!task_runner_state_->EndWasDelayed() || ShouldDelayEnd()) {
     return;
+  }
 
   task_runner_state_->SetEndWasDelayed(false);
   PrepareToStopParsing();
@@ -1167,8 +1177,9 @@ void HTMLDocumentParser::Finish() {
   ShouldCompleteScope should_complete(task_runner_state_);
   EndIfDelayedForbiddenScope should_not_end_if_delayed(task_runner_state_);
   Flush();
-  if (IsDetached())
+  if (IsDetached()) {
     return;
+  }
 
   // We're not going to get any more data off the network, so we tell the input
   // stream we've reached the end of file. finish() can be called more than
@@ -1188,8 +1199,9 @@ void HTMLDocumentParser::Finish() {
 }
 
 bool HTMLDocumentParser::IsExecutingScript() const {
-  if (!script_runner_)
+  if (!script_runner_) {
     return false;
+  }
   return script_runner_->IsExecutingScript();
 }
 
@@ -1246,8 +1258,9 @@ void HTMLDocumentParser::ResumeParsingAfterPause() {
   DCHECK(!IsPaused());
 
   CheckIfBlockingStylesheetAdded();
-  if (IsStopped() || IsPaused() || IsDetached())
+  if (IsStopped() || IsPaused() || IsDetached()) {
     return;
+  }
 
   insertion_preload_scanner_.reset();
   if (task_runner_state_->GetMode() == kAllowDeferredParsing &&
@@ -1292,8 +1305,9 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
   }
 
   script_runner_->ExecuteScriptsWaitingForLoad();
-  if (!IsPaused())
+  if (!IsPaused()) {
     ResumeParsingAfterPause();
+  }
 }
 
 void HTMLDocumentParser::NotifyParserPauseByUserTiming() {
@@ -1356,13 +1370,15 @@ void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
       "blink", "HTMLDocumentParser::ExecuteScriptsWaitingForResources",
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  if (IsStopped())
+  if (IsStopped()) {
     return;
+  }
 
   DCHECK(GetDocument()->IsScriptExecutionReady());
 
-  if (task_runner_state_->WaitingForStylesheets())
+  if (task_runner_state_->WaitingForStylesheets()) {
     task_runner_state_->SetWaitingForStylesheets(false);
+  }
 
   if (IsStopping()) {
     AttemptToRunDeferredScriptsAndEnd();
@@ -1373,8 +1389,9 @@ void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
   // will not be called in the DocumentFragment case.
   DCHECK(script_runner_);
   script_runner_->ExecuteScriptsWaitingForResources();
-  if (!IsPaused())
+  if (!IsPaused()) {
     ResumeParsingAfterPause();
+  }
 }
 
 void HTMLDocumentParser::ExecuteScriptsWaitingForPrerenderActivation() {
@@ -1473,8 +1490,9 @@ void HTMLDocumentParser::Flush() {
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "parser", (void*)this);
   // If we've got no decoder, we never received any data.
-  if (IsDetached() || NeedsDecoder())
+  if (IsDetached() || NeedsDecoder()) {
     return;
+  }
   DecodedDataDocumentParser::Flush();
 }
 
@@ -1685,14 +1703,16 @@ std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
 
 DocumentParser::BackgroundScanCallback
 HTMLDocumentParser::TakeBackgroundScanCallback() {
-  if (!background_scan_fn_)
+  if (!background_scan_fn_) {
     return BackgroundScanCallback();
+  }
   return CrossThreadBindRepeating(std::move(background_scan_fn_), KURL());
 }
 
 void HTMLDocumentParser::ScanInBackground(const String& source) {
-  if (task_runner_state_->IsSynchronous() || !GetDocument()->Url().IsValid())
+  if (task_runner_state_->IsSynchronous() || !GetDocument()->Url().IsValid()) {
     return;
+  }
 
   if (ThreadedPreloadScannerEnabled() && preloader_ &&
       // TODO(crbug.com/1329535): Support scanning prefetch documents in the
@@ -1726,8 +1746,9 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
           GetPreloadScannerThread()->GetTaskRunner());
     }
 
-    if (background_scan_fn_)
+    if (background_scan_fn_) {
       background_scan_fn_.Run(GetDocument()->ValidBaseElementURL(), source);
+    }
     return;
   }
 
@@ -1736,8 +1757,9 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
   }
 
   DCHECK(!background_scanner_);
-  if (!background_script_scanner_)
+  if (!background_script_scanner_) {
     background_script_scanner_ = BackgroundHTMLScanner::Create(options_, this);
+  }
 
   if (background_script_scanner_) {
     background_script_scanner_.AsyncCall(&BackgroundHTMLScanner::Scan)
@@ -1772,11 +1794,13 @@ bool HTMLDocumentParser::HasPendingPreloads() {
 
 void HTMLDocumentParser::FlushPendingPreloads() {
   DCHECK(IsMainThread());
-  if (!ThreadedPreloadScannerEnabled())
+  if (!ThreadedPreloadScannerEnabled()) {
     return;
+  }
 
-  if (IsDetached() || !preloader_)
+  if (IsDetached() || !preloader_) {
     return;
+  }
 
   // Do this in a loop in case more preloads are added in the background.
   Vector<std::unique_ptr<PendingPreloadData>> preload_data;
@@ -1793,20 +1817,23 @@ bool HTMLDocumentParser::ShouldPumpTokenizerNowForFinishAppend() const {
       task_runner_state_->ShouldComplete()) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(features::kProcessHtmlDataImmediately))
+  if (!base::FeatureList::IsEnabled(features::kProcessHtmlDataImmediately)) {
     return false;
+  }
 
   // When a debugger is attached a nested message loop may be created during
   // commit. Processing the data now can lead to unexpected states.
   // TODO(https://crbug.com/1364695): see if this limitation can be removed.
   if (auto* sink = probe::ToCoreProbeSink(GetDocument())) {
-    if (sink->HasAgentsGlobal(CoreProbeSink::kDevToolsSession))
+    if (sink->HasAgentsGlobal(CoreProbeSink::kDevToolsSession)) {
       return false;
+    }
   }
 
   if (GetDocument()->IsInOutermostMainFrame()) {
-    if (!features::kProcessHtmlDataImmediatelyMainFrame.Get())
+    if (!features::kProcessHtmlDataImmediatelyMainFrame.Get()) {
       return false;
+    }
   } else if (!features::kProcessHtmlDataImmediatelyChildFrame.Get()) {
     return false;
   }
@@ -1871,7 +1898,7 @@ bool HTMLDocumentParser::AllowPreloading() {
   }
 
   if (RuntimeEnabledFeatures::AllowPreloadingWithCSPMetaTagEnabled()) {
-    CHECK(seen_csp_meta_tags_ >= 0);
+    CHECK_GE(seen_csp_meta_tags_, 0);
     if (!seen_csp_meta_tags_) {
       // No CSP meta tags seen - Early return allowing preloads.
       return true;

@@ -9290,7 +9290,6 @@ from previous Chrome versions.
   <int value="-1774392993"
       label="CompressionDictionaryTransportOverHttp2:disabled"/>
   <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
-  <int value="-1773925297" label="TimedHtmlParserBudget:disabled"/>
   <int value="-1773078316" label="DragDropTabTearing:enabled"/>
   <int value="-1772942854" label="LongPressBackForHistory:enabled"/>
   <int value="-1772905637"
@@ -20341,7 +20340,6 @@ from previous Chrome versions.
   <int value="2133647636" label="ClipboardFilenames:disabled"/>
   <int value="2134480727" label="MediaSessionAccelerators:disabled"/>
   <int value="2135059376" label="WiFiDirect:enabled"/>
-  <int value="2135378598" label="TimedHtmlParserBudget:enabled"/>
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>
   <int value="2135421867" label="AndroidMetaClickHistoryNavigation:enabled"/>
   <int value="2135540885" label="PrintPreviewCrosApp:disabled"/>
