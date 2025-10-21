@@ -1311,10 +1311,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
                  an Autofill AI suggestion or not."/>
   </token>
   <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
-    <variant name=""
-        summary="Emitted for any kind of entities. Note that for a given
-                 histogram, this variant will just be the accumulation of all
-                 histogram records of the other variants."/>
+    <variant name="" summary="Emitted for any kind of entities."/>
   </token>
 </histogram>
 
@@ -1389,11 +1386,43 @@ Called by update_autofill_enums.py. This is a manual comment.-->
                  AI data to fill the form or not."/>
   </token>
   <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
-    <variant name=""
-        summary="Emitted for any kind of entities. Note that for a given
-                 histogram, this variant will just be the accumulation of all
-                 histogram records of the other variants."/>
+    <variant name="" summary="Emitted for any kind of entities."/>
   </token>
+</histogram>
+
+<histogram
+    name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}{EntityRecordType}"
+    enum="Boolean" expires_after="2026-03-15">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Similar to Autofill.KeyMetrics.*. Emitted only for users who have AutofillAi
+    enabled in settings.
+
+    {KeyMetric}
+
+    {EntityGranularity}
+
+    {EntityRecordType}
+  </summary>
+  <token key="KeyMetric">
+    <variant name=".FillingAcceptance"
+        summary="Records, at form submission, and given that the user saw an
+                 Autofill AI prompt, whether the user used AutofillAI to fill
+                 the form or not."/>
+    <variant name=".FillingAssistance"
+        summary="Records, at form submission, whether the user used Autofill
+                 AI to fill the form or not."/>
+    <variant name=".FillingCorrectness"
+        summary="Records, at form submission, and given that the user filled
+                 an Autofill AI suggestion, whether the user manually edited
+                 an autofilled field filled by Autofill AI or not."/>
+    <variant name=".FillingReadiness"
+        summary="Records, at form submission, whether the user had Autofill
+                 AI data to fill the form or not."/>
+  </token>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType"/>
+  <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType"/>
 </histogram>
 
 <histogram name="Autofill.Ai.ModelExecutionStatus"

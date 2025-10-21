@@ -97,8 +97,15 @@ class AutofillAiLogger {
       std::optional<EntityType> entity_type,
       std::optional<EntityInstance::RecordType> record_type,
       bool submission_state) const;
-  void RecordKeyMetrics(DenseSet<EntityType> relevant_entities,
-                        const FormFunnelStateMap& funnel_states) const;
+  void RecordKeyMetrics(const FormFunnelStateMap& funnel_states) const;
+  // Records the key metrics for a single `funnel_state`. `entity_type` and
+  // `record_type` can be `std::nullopt`, denoting that the metrics to be
+  // emitted should not be split by this information. Is is assumed that
+  // `record_type` can only be non-null when `entity_type` is non-null.
+  void RecordKeyMetricsForState(
+      FunnelState funnel_state,
+      std::optional<EntityType> entity_type,
+      std::optional<EntityInstance::RecordType> record_type) const;
   void RecordNumberOfFieldsFilled(const FormStructure& form,
                                   const FormFunnelStateMap& funnel_states,
                                   bool opt_in_status) const;

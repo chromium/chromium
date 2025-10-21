@@ -463,44 +463,60 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
 
 class AutofillAiKeyMetricsTest
     : public BaseAutofillAiTest,
-      public testing::WithParamInterface<EntityType> {
-  static constexpr char kKeyMetricsUmaMask[] = "Autofill.Ai.KeyMetrics.%s%s";
+      public testing::WithParamInterface<
+          std::tuple<EntityType, EntityInstance::RecordType>> {
+  static constexpr char kKeyMetricsUmaMask[] = "Autofill.Ai.KeyMetrics.%s%s%s";
 
  public:
   AutofillAiKeyMetricsTest() = default;
 
-  EntityType entity_type() { return GetParam(); }
+  EntityType entity_type() { return std::get<0>(GetParam()); }
+  EntityInstance::RecordType record_type() { return std::get<1>(GetParam()); }
 
   std::unique_ptr<FormStructure> CreateForm() {
     return BaseAutofillAiTest::CreateForm(entity_type());
   }
 
   EntityInstance CreateEntity() {
-    return BaseAutofillAiTest::CreateEntity(entity_type(),
-                                            EntityInstance::RecordType::kLocal);
+    return BaseAutofillAiTest::CreateEntity(entity_type(), record_type());
   }
 
   void ExpectKeyMetricsRecording(const base::HistogramTester& histogram_tester,
                                  std::string_view key_metric_name,
                                  int sample,
                                  int expected_bucket_count) {
-    // Aggregate histogram.
-    histogram_tester.ExpectUniqueSample(
-        base::StringPrintf(kKeyMetricsUmaMask, key_metric_name, ""), sample,
-        expected_bucket_count);
+    auto expect_correct_histogram = [&](std::optional<EntityType> entity_type,
+                                        std::optional<
+                                            EntityInstance::RecordType>
+                                            record_type) {
+      EXPECT_FALSE(!entity_type && record_type)
+          << "Only entity-type-specific histograms are split by record type.";
+      histogram_tester.ExpectUniqueSample(
+          base::StringPrintf(
+              kKeyMetricsUmaMask, key_metric_name,
+              entity_type
+                  ? base::StrCat({".", EntityTypeToMetricsString(*entity_type)})
+                  : "",
+              record_type ? base::StrCat({".", EntityRecordTypeToMetricsString(
+                                                   *record_type)})
+                          : ""),
+          sample, expected_bucket_count);
+      return;
+    };
 
-    // Entity-specific histogram.
-    histogram_tester.ExpectUniqueSample(
-        base::StringPrintf(
-            kKeyMetricsUmaMask, key_metric_name,
-            base::StrCat({".", EntityTypeToMetricsString(entity_type())})),
-        sample, expected_bucket_count);
+    expect_correct_histogram(/*entity_type=*/std::nullopt,
+                             /*record_type=*/std::nullopt);
+    expect_correct_histogram(entity_type(), /*record_type=*/std::nullopt);
+    expect_correct_histogram(entity_type(), record_type());
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
-                         AutofillAiKeyMetricsTest,
-                         testing::ValuesIn(DenseSet<EntityType>::all()));
+INSTANTIATE_TEST_SUITE_P(
+    AutofillAiTest,
+    AutofillAiKeyMetricsTest,
+    testing::Combine(
+        testing::ValuesIn(DenseSet<EntityType>::all()),
+        testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
 
 TEST_P(AutofillAiKeyMetricsTest, FillingReadiness) {
   std::unique_ptr<FormStructure> form = CreateForm();
@@ -634,29 +650,28 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_MixedForm) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingReadiness.DriversLicense", 1, 1);
   histogram_tester.ExpectUniqueSample("Autofill.Ai.KeyMetrics.FillingReadiness",
-                                      1, 2);
+                                      1, 1);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingAssistance.Vehicle", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingAssistance.DriversLicense", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.KeyMetrics.FillingAssistance", 1, 2);
+      "Autofill.Ai.KeyMetrics.FillingAssistance", 1, 1);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingAcceptance.Vehicle", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.KeyMetrics.FillingAcceptance", 1, 2);
+      "Autofill.Ai.KeyMetrics.FillingAcceptance", 1, 1);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingCorrectness.Vehicle", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingCorrectness.DriversLicense", 0, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.Ai.KeyMetrics.FillingCorrectness"),
-              BucketsAre(Bucket(0, 1), Bucket(1, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingCorrectness", 0, 1);
 }
 
 class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
