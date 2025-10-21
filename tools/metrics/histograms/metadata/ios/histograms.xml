@@ -5485,7 +5485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
-    expires_after="2025-11-23">
+    expires_after="2026-11-23">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -6457,9 +6457,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.AddToBookmarks" units="Tabs"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items bookmarked with a single add to bookmarks
     operation from the tab grid selection mode.
@@ -6467,9 +6467,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.AddToReadingList" units="Tabs"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items added to reading list with a single add to
     reading list operation from the tab grid selection mode.
@@ -6477,9 +6477,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
-    expires_after="2026-01-04">
+    expires_after="2026-11-01">
   <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items closed with a single Close Tab(s) operation
     from the tab grid selection mode.
@@ -6487,9 +6487,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.ShareTabs" units="Tabs"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items shared with a single share operation from the
     tab grid selection mode.
