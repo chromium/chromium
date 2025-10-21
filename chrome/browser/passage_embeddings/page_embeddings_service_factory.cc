@@ -46,17 +46,16 @@ PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* profile) const {
+    content::BrowserContext* browser_context) const {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   // Don't run the experiment for clients with history embeddings enabled.
-  if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
-          Profile::FromBrowserContext(profile))) {
+  if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile)) {
     return nullptr;
   }
 
   // Don't bother running if we don't have a model observer since we won't have
   // a model to run.
-  if (!PassageEmbedderModelObserverFactory::GetForProfile(
-          Profile::FromBrowserContext(profile))) {
+  if (!PassageEmbedderModelObserverFactory::GetForProfile(profile)) {
     return nullptr;
   }
 
@@ -65,13 +64,17 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   // Required to ensure the model observer starts.
-  PassageEmbedderModelObserverFactory::GetForProfile(
-      Profile::FromBrowserContext(profile));
+  PassageEmbedderModelObserverFactory::GetForProfile(profile);
+
+  auto* page_content_extraction_service = page_content_annotations::
+      PageContentExtractionServiceFactory::GetForProfile(profile);
+  if (!page_content_extraction_service) {
+    return nullptr;
+  }
 
   return std::make_unique<PageEmbeddingsService>(
       PageEmbeddingsService::EmbeddingCandidatesGenerator(),
-      page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(Profile::FromBrowserContext(profile)),
+      page_content_extraction_service,
       ChromePassageEmbeddingsServiceController::Get()->GetEmbedder());
 }
 

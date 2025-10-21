@@ -133,7 +133,15 @@ PageEmbeddingsService::PageEmbeddingsService(
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service,
     passage_embeddings::Embedder* embedder)
-    : candidates_generator_(candidates_generator), embedder_(embedder) {}
+    : candidates_generator_(candidates_generator), embedder_(embedder) {
+  // Note: `page_content_extraction_service` is only potentially null for
+  // testing.
+  if (page_content_extraction_service) {
+    page_content_extraction_observation_.Observe(
+        page_content_extraction_service);
+  }
+}
+
 PageEmbeddingsService::PageEmbeddingsService(
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service)
