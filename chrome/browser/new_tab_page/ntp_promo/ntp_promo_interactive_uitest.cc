@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/user_education/ntp_promo_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -142,11 +143,12 @@ class NtpPromoUiTest
   ~NtpPromoUiTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(GetFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
     InteractiveBrowserTest::SetUp();
   }
 
-  virtual std::vector<base::test::FeatureRefAndParams> GetFeatures() {
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
     base::FieldTrialParams params;
     params[user_education::features::kNtpBrowserPromoType.name] = [=]() {
       switch (GetParam().promo_type) {
@@ -164,6 +166,10 @@ class NtpPromoUiTest
           base::NumberToString(GetParam().individual_promos.value());
     }
     return {{user_education::features::kEnableNtpBrowserPromos, params}};
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {};
   }
 
   void SetUpOnMainThread() override {
@@ -432,8 +438,8 @@ const InteractiveBrowserTestApi::DeepQuery kPathToModules = {"ntp-app",
 
 class NtpPromoWithModuleUiTest : public NtpPromoUiTest {
  protected:
-  std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
-    auto result = NtpPromoUiTest::GetFeatures();
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    auto result = NtpPromoUiTest::GetEnabledFeatures();
     result.push_back(
         {ntp_features::kNtpTabGroupsModule,
          {{ntp_features::kNtpTabGroupsModuleDataParam, "Fake Data"}}});
@@ -568,6 +574,14 @@ class NtpPromoVisualUiTest : public NtpPromoUiTest {
  protected:
   ui::MockOsSettingsProvider& os_settings_provider() {
     return os_settings_provider_;
+  }
+
+  // TODO(453086432): Remove this override and fix the test to work with
+  // Compose enabled.
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto result = NtpPromoUiTest::GetDisabledFeatures();
+    result.push_back(ntp_composebox::kNtpComposebox);
+    return result;
   }
 
  private:

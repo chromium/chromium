@@ -3708,14 +3708,6 @@ TEST_F(AutocompleteResultTest, AttachAimAction) {
   EXPECT_TRUE(result.match_at(1)->actions.empty());
 
   FakeAutocompleteProviderClient client;
-  MockAimEligibilityService* mock_aim_eligibility_service =
-      static_cast<MockAimEligibilityService*>(client.GetAimEligibilityService());
-  EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
   result.AttachAimAction(&template_url_service(), &client);
 
   ui::DeviceFormFactor factor = ui::GetDeviceFormFactor();
@@ -3736,7 +3728,7 @@ TEST_F(AutocompleteResultTest, AttachAimAction) {
 
 TEST_F(AutocompleteResultTest, AttachAimAction_AimNotEligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxAimShortcutTypedState);
+  // Not overriding the feature allows testing the eligibility service logic.
 
   TestData data[] = {
       {0, 1, 1300, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
@@ -3773,7 +3765,7 @@ TEST_F(AutocompleteResultTest, AttachAimAction_AimNotEligible) {
 
 TEST_F(AutocompleteResultTest, AttachAimAction_AimNotLocallyEligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxAimShortcutTypedState);
+  // Not overriding the feature allows testing the eligibility service logic.
 
   TestData data[] = {
       {0, 1, 1300, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
