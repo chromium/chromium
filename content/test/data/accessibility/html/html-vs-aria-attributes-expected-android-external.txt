@@ -31,5 +31,5 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++TextView text:"Button type changes" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
 ++++Button text:"Regular Button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
-++++ToggleButton text:"Pressed Button" stateDescription:"On" checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="toggleButton", clickableScore="300", roleDescription="toggle button"]
+++++ToggleButton text:"Pressed Button" stateDescription:"On" checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="toggleButton", clickableScore="300"]
 ++++View text:"Option Button" clickable focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

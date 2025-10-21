@@ -1552,6 +1552,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kSuperscript:
     case ax::mojom::Role::kTable:
     case ax::mojom::Role::kTextField:
+    case ax::mojom::Role::kToggleButton:
     case ax::mojom::Role::kTreeGrid:
     case ax::mojom::Role::kTime:
       // No role description on Android.
