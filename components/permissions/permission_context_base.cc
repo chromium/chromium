@@ -628,6 +628,17 @@ void PermissionContextBase::PermissionDecided(
     const PermissionRequestData& request_data) {
   UserMadePermissionDecision(request_data.id, request_data.requesting_origin,
                              request_data.embedding_origin, decision);
+  //  If a permission request originates from an embedded element, its
+  //  cancellation would be a result of a "system permission changed event."
+  //  In this case, we will dispatch `OnPermissionChanged` early here.
+  if (request_data.IsEmbeddedPermissionElementInitiated() &&
+      decision == PermissionDecision::kNone) {
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+        request_data.id.global_render_frame_host_id());
+    DCHECK(rfh);
+    MaybeUpdateCachedHasDevicePermission(
+        content::WebContents::FromRenderFrameHost(rfh));
+  }
 
   bool persist = decision != PermissionDecision::kNone;
 
@@ -765,7 +776,6 @@ void PermissionContextBase::CleanUpRequest(
     content::WebContents* web_contents,
     const PermissionRequestID& id,
     bool embedded_permission_element_initiated) {
-  size_t success = pending_requests_.erase(id.ToString());
   // A request from an embedded permission element requires a notification
   // `OnPermissionChanged` when changing the device status, which is currently
   // unavailable. We compare the device status with the cached status and notify
@@ -774,6 +784,8 @@ void PermissionContextBase::CleanUpRequest(
   if (embedded_permission_element_initiated) {
     MaybeUpdateCachedHasDevicePermission(web_contents);
   }
+
+  size_t success = pending_requests_.erase(id.ToString());
   DCHECK(success == 1) << "Missing request " << id.ToString();
 }
 
