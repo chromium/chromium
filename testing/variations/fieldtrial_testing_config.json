@@ -6753,97 +6753,6 @@
             ]
         }
     ],
-    "CommitBasedMemoryPressureWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "All",
-                    "params": {
-                        "CommitAvailableCriticalThresholdMB": "1000",
-                        "CommitAvailableModerateThresholdMB": "2000"
-                    },
-                    "enable_features": [
-                        "BoostClosingTabs",
-                        "CommitAvailableMemoryPressureThresholds",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
-                    ],
-                    "disable_features": [
-                        "CompressParkableStrings"
-                    ]
-                },
-                {
-                    "name": "All_ExceptParkableStrings",
-                    "params": {
-                        "CommitAvailableCriticalThresholdMB": "1000",
-                        "CommitAvailableModerateThresholdMB": "2000"
-                    },
-                    "enable_features": [
-                        "BoostClosingTabs",
-                        "CommitAvailableMemoryPressureThresholds",
-                        "CompressParkableStrings",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
-                    ]
-                },
-                {
-                    "name": "CommitBasedMemoryPressure",
-                    "params": {
-                        "CommitAvailableCriticalThresholdMB": "1000",
-                        "CommitAvailableModerateThresholdMB": "2000"
-                    },
-                    "enable_features": [
-                        "CommitAvailableMemoryPressureThresholds",
-                        "CompressParkableStrings"
-                    ],
-                    "disable_features": [
-                        "BoostClosingTabs",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
-                    ]
-                },
-                {
-                    "name": "BoostClosingTab",
-                    "enable_features": [
-                        "BoostClosingTabs",
-                        "CompressParkableStrings"
-                    ],
-                    "disable_features": [
-                        "CommitAvailableMemoryPressureThresholds",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
-                    ]
-                },
-                {
-                    "name": "TerminateRendererOnCommitExhaustion",
-                    "enable_features": [
-                        "CompressParkableStrings",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
-                    ],
-                    "disable_features": [
-                        "BoostClosingTabs",
-                        "CommitAvailableMemoryPressureThresholds"
-                    ]
-                },
-                {
-                    "name": "DisableParkableStrings",
-                    "enable_features": [
-                        "BoostClosingTabs",
-                        "CommitAvailableMemoryPressureThresholds",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
-                    ],
-                    "disable_features": [
-                        "CompressParkableStrings"
-                    ]
-                }
-            ]
-        }
-    ],
     "Compare": [
         {
             "platforms": [
@@ -11354,26 +11263,6 @@
             ]
         }
     ],
-    "GCOnArrayBufferAllocationFailure": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GCOnArrayBufferAllocationFailure"
-                    ]
-                }
-            ]
-        }
-    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
@@ -15458,24 +15347,6 @@
             ]
         }
     ],
-    "MacCriticalDiskSpacePressure": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "MacCriticalDiskSpacePressureThresholdMB": "250"
-                    },
-                    "enable_features": [
-                        "MacCriticalDiskSpacePressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacICloudKeychainRecoveryFactor": [
         {
             "platforms": [
@@ -16471,21 +16342,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NoPasswordSuggestionFiltering"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NoPreReadMainDllIfSsd": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NoPreReadMainDllIfSsd"
                     ]
                 }
             ]
@@ -18305,6 +18161,41 @@
                     },
                     "enable_features": [
                         "TrimOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PerfCombined2025": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MacCriticalDiskSpacePressureThresholdMB": "250"
+                    },
+                    "enable_features": [
+                        "AvoidCloneArgsOnExtensionFunctionDispatch",
+                        "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
+                        "GCOnArrayBufferAllocationFailure",
+                        "MacAllowBackgroundingRenderProcesses",
+                        "MacCriticalDiskSpacePressure",
+                        "NoPreReadMainDllIfSsd",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "ReducePPMs",
+                        "RemoveCancelledScriptedIdleTasks",
+                        "ScreenWinDisplayLookupByHMONITOR",
+                        "TerminationTargetPolicy",
+                        "UpdateDirectManipulationHelperOnParentChange"
                     ]
                 }
             ]
@@ -20765,31 +20656,6 @@
                     "enable_features": [
                         "ReduceSubresourceResponseStartedIPC",
                         "UkmReduceAddEntryIPC"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReducePPMs": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AvoidCloneArgsOnExtensionFunctionDispatch",
-                        "AvoidUnnecessaryGetMinimizeButtonOffset",
-                        "AvoidUnnecessaryShouldRenderRichAnimation",
-                        "ReducePPMs",
-                        "ScreenWinDisplayLookupByHMONITOR",
-                        "UpdateDirectManipulationHelperOnParentChange"
                     ]
                 }
             ]
