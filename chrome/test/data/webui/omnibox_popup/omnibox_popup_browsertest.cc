@@ -51,3 +51,24 @@ class OmniboxPopupFullTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, MAYBE_App) {
   RunTest("omnibox_popup/full_app_test.js", "mocha.run();");
 }
+
+class OmniboxPopupAimTest : public WebUIMochaBrowserTest {
+ protected:
+  OmniboxPopupAimTest() {
+    set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      omnibox::kWebUIOmniboxAimPopup};
+};
+
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(crbug.com/40284073): Test fails with JS coverage turned on.
+#define MAYBE_App DISABLED_App
+#else
+#define MAYBE_App App
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, MAYBE_App) {
+  RunTest("omnibox_popup/aim_app_test.js", "mocha.run();");
+}

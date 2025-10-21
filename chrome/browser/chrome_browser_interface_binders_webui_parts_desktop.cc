@@ -91,6 +91,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -517,6 +518,30 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   const bool is_ntp_composebox_enabled =
       ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()));
+  const bool is_omnibox_aim_popup_enabled =
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup);
+  const bool is_contextual_tasks_enabled =
+      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+
+  if (is_contextual_tasks_enabled) {
+    RegisterWebUIControllerInterfaceBinder<
+        contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
+  }
+
+  // Registering bindings for all WebUIControllers, even if only one of the
+  // features is enabled, as it is too cumbersome and not scalable to account
+  // for all combinations of feature flags here.
+  // TODO(crbug.com/452983498): This should be fixed by following the
+  // registry.ForWebUI() pattern used in
+  // PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop below which
+  // eliminates the need to account for feature flag combinations.
+  if (is_ntp_composebox_enabled || is_omnibox_aim_popup_enabled ||
+      is_contextual_tasks_enabled) {
+    RegisterWebUIControllerInterfaceBinder<
+        composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI,
+        OmniboxPopupUI>(map);
+  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
@@ -532,30 +557,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   }
   RegisterWebUIControllerInterfaceBinder<::app_home::mojom::PageHandlerFactory,
                                          webapps::AppHomeUI>(map);
-
-  const bool is_contextual_tasks_enabled =
-      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
-  if (is_ntp_composebox_enabled && is_contextual_tasks_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI>(
-        map);
-  } else if (is_contextual_tasks_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::PageHandlerFactory, ContextualTasksUI>(map);
-  } else if (is_ntp_composebox_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
-  }
-
-  if (is_contextual_tasks_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
-  }
-#else
-  if (is_ntp_composebox_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
-  }
 #endif
 }
 
