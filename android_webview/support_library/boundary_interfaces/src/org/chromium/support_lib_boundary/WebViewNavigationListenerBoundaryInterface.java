@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationHandler;
 /** Boundary interface for WebViewNavigationListener. */
 @NullMarked
 public interface WebViewNavigationListenerBoundaryInterface
-        extends FeatureFlagHolderBoundaryInterface, IsomorphicObjectBoundaryInterface {
+        extends FeatureFlagHolderBoundaryInterface {
     void onNavigationStarted(/* WebViewNavigation */ InvocationHandler navigation);
 
     void onNavigationRedirected(/* WebViewNavigation */ InvocationHandler navigation);
