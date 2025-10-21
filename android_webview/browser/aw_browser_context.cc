@@ -693,8 +693,10 @@ std::vector<std::string> AwBrowserContext::SetOriginMatchedHeader(
   }
 
   // We only maintain a single mapping for each header name by design.
-  auto it = std::ranges::find(origin_matched_headers_, header_name,
-                              &AwOriginMatchedHeader::name);
+  auto it = std::ranges::find_if(
+      origin_matched_headers_,
+      AwOriginMatchedHeader::LookupPredicate(header_name,
+                                             /*value=*/std::nullopt));
   if (it == origin_matched_headers_.end()) {
     origin_matched_headers_.emplace_back(
         base::MakeRefCounted<AwOriginMatchedHeader>(std::move(header_name),
@@ -726,9 +728,9 @@ std::vector<std::string> AwBrowserContext::AddOriginMatchedHeader(
     return rejected;
   }
 
-  auto it = std::ranges::find(origin_matched_headers_,
-                              std::tie(header_name, header_value),
-                              &AwOriginMatchedHeader::as_pair);
+  auto it = std::ranges::find_if(
+      origin_matched_headers_,
+      AwOriginMatchedHeader::LookupPredicate(header_name, header_value));
   if (it == origin_matched_headers_.end()) {
     origin_matched_headers_.emplace_back(
         base::MakeRefCounted<AwOriginMatchedHeader>(std::move(header_name),
@@ -743,8 +745,9 @@ std::vector<std::string> AwBrowserContext::AddOriginMatchedHeader(
 bool AwBrowserContext::HasOriginMatchedHeader(JNIEnv* env,
                                               const std::string& header_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return std::ranges::find(origin_matched_headers_, header_name,
-                           &AwOriginMatchedHeader::name) !=
+  return std::ranges::find_if(origin_matched_headers_,
+                              AwOriginMatchedHeader::LookupPredicate(
+                                  header_name, /*value=*/std::nullopt)) !=
          origin_matched_headers_.end();
 }
 
@@ -758,11 +761,9 @@ AwBrowserContext::FindOriginMatchedHeaders(
     return origin_matched_headers_;
   }
   std::vector<scoped_refptr<AwOriginMatchedHeader>> matches;
-  std::ranges::copy_if(origin_matched_headers_, std::back_inserter(matches),
-                       [&header_name, &header_value](const auto& header) {
-                         return header->MatchesNameValue(*header_name,
-                                                         header_value);
-                       });
+  std::ranges::copy_if(
+      origin_matched_headers_, std::back_inserter(matches),
+      AwOriginMatchedHeader::LookupPredicate(*header_name, header_value));
   return matches;
 }
 
@@ -771,10 +772,8 @@ void AwBrowserContext::ClearOriginMatchedHeader(
     const std::string& header_name,
     const std::optional<std::string>& header_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::erase_if(origin_matched_headers_,
-                [&header_name, &header_value](const auto& header) {
-                  return header->MatchesNameValue(header_name, header_value);
-                });
+  std::erase_if(origin_matched_headers_, AwOriginMatchedHeader::LookupPredicate(
+                                             header_name, header_value));
 }
 
 void AwBrowserContext::ClearAllOriginMatchedHeaders(JNIEnv* env) {

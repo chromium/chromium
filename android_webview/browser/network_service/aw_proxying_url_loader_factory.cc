@@ -588,21 +588,20 @@ void InterceptedRequest::ApplyOriginMatchedHeaders(
 
   attached_origin_matched_headers_.clear();
 
-  for (const auto& matched_header :
+  for (const auto& [header_name, header_value] :
        AwOriginMatchedHeader::GetCombinedMatchingHeaders(
            origin_matched_headers_, request_origin)) {
     // TODO(crbug.com/423581920): Follow up to determine what the best merging
     // strategy is. The current strategy is to only attach if there is no
     // collision, which is least likely to break existing web pages.
-    bool should_attach = !request_.headers.HasHeader(matched_header.first);
+    bool should_attach = !request_.headers.HasHeader(header_name);
     base::UmaHistogramBoolean(
         "Android.WebView.AndroidX.Profile.ExtraHeaderAttached", should_attach);
     if (should_attach) {
-      request_.headers.SetHeader(matched_header.first, matched_header.second);
-      attached_origin_matched_headers_.emplace_back(matched_header.first);
+      request_.headers.SetHeader(header_name, header_value);
+      attached_origin_matched_headers_.emplace_back(header_name);
       if (redirect_headers_to_modify) {
-        redirect_headers_to_modify->SetHeader(matched_header.first,
-                                              matched_header.second);
+        redirect_headers_to_modify->SetHeader(header_name, header_value);
       }
     }
   }

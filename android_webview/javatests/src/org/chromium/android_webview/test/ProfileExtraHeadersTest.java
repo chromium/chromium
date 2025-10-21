@@ -70,50 +70,50 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
 
     private static final String SW_INDEX_HTML =
             """
-          <!DOCTYPE html>
-          <script>
-              function setState(newState) {
-                  testListener.postMessage(newState);
-              }
-              function swReady(sw) {
-                  setState('sw_ready');
-                  sw.postMessage({fetches: 1});
-              }
-              navigator.serviceWorker.register('sw.js')
-                  .then(sw_reg => {
-                      setState('sw_registered');
-                      let sw = sw_reg.installing || sw_reg.waiting || sw_reg.active;
-                      if (sw.state == 'activated') {
-                          swReady(sw);
-                      } else {
-                          sw.addEventListener('statechange', e => {
-                              if (e.target.state == 'activated') swReady(e.target);
-                          });
-                      }
-                  }).catch(err => {
-                      setState('sw_registration_error');
-                  });
-              navigator.serviceWorker.addEventListener('message',
-                  event => setState(event.data.msg));
-              setState('page_loaded');
-          </script>
-          """;
+            <!DOCTYPE html>
+            <script>
+                function setState(newState) {
+                    testListener.postMessage(newState);
+                }
+                function swReady(sw) {
+                    setState('sw_ready');
+                    sw.postMessage({fetches: 1});
+                }
+                navigator.serviceWorker.register('sw.js')
+                    .then(sw_reg => {
+                        setState('sw_registered');
+                        let sw = sw_reg.installing || sw_reg.waiting || sw_reg.active;
+                        if (sw.state == 'activated') {
+                            swReady(sw);
+                        } else {
+                            sw.addEventListener('statechange', e => {
+                                if (e.target.state == 'activated') swReady(e.target);
+                            });
+                        }
+                    }).catch(err => {
+                        setState('sw_registration_error');
+                    });
+                navigator.serviceWorker.addEventListener('message',
+                    event => setState(event.data.msg));
+                setState('page_loaded');
+            </script>
+            """;
 
     private static final String NETWORK_ACCESS_SW_JS =
             """
-          self.addEventListener('message', async event => {
-              try {
-                  const resp = await fetch('content.txt');
-                  if (resp && resp.ok) {
-                      event.source.postMessage({ msg: await resp.text() });
-                  } else {
-                      event.source.postMessage({ msg: 'fetch_not_ok' });
-                  }
-              } catch {
-                  event.source.postMessage({ msg: 'fetch_catch' });
-              }
-          });
-          """;
+            self.addEventListener('message', async event => {
+                try {
+                    const resp = await fetch('content.txt');
+                    if (resp && resp.ok) {
+                        event.source.postMessage({ msg: await resp.text() });
+                    } else {
+                        event.source.postMessage({ msg: 'fetch_not_ok' });
+                    }
+                } catch {
+                    event.source.postMessage({ msg: 'fetch_catch' });
+                }
+            });
+            """;
 
     private static final String FETCH_CONTENT = "fetch_success";
 
@@ -163,12 +163,17 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
                 () -> mAwBrowserContext.findOriginMatchedHeaders(headerName, headerValue));
     }
 
+    private boolean hasOriginMatchedHeadersOnUiThread(@Nullable String headerName) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mAwBrowserContext.hasOriginMatchedHeader(headerName));
+    }
+
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testCanSetAndReadAllReadHeaders() {
         Set<String> originRules = Set.of("https://example.com", "http://*.example.com:8000");
-        setOriginMatchedHeaderOnUiThread("X-ExtraHeader", "HeaderValue", originRules);
+        addOriginMatchedHeaderOnUiThread("X-ExtraHeader", "HeaderValue", originRules);
 
         List<AwOriginMatchedHeader> allConfiguredHeaders =
                 findOriginMatchedHeadersOnUiThread(null, null);
@@ -184,7 +189,7 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
     @SmallTest
     public void testDefaultPortNumbersAreDropped() {
         Set<String> originRules = Set.of("https://example.com:443", "http://*.example.com:80");
-        setOriginMatchedHeaderOnUiThread("X-ExtraHeader", "HeaderValue", originRules);
+        addOriginMatchedHeaderOnUiThread("X-ExtraHeader", "HeaderValue", originRules);
 
         List<AwOriginMatchedHeader> allConfiguredHeaders =
                 findOriginMatchedHeadersOnUiThread(null, null);
@@ -196,6 +201,28 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
                 "Default port numbers should be dropped during round trip",
                 Set.of("https://example.com", "http://*.example.com"),
                 header.getRules());
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testHeaderLookupFunctionsAreCaseInsensitiveForNameOnly() {
+        Set<String> originRules = Set.of("https://example.com");
+        addOriginMatchedHeaderOnUiThread("X-ExtraHeader", "Value1", originRules);
+
+        // This header is deliberately wonky-cased.
+        List<AwOriginMatchedHeader> foundHeaders =
+                findOriginMatchedHeadersOnUiThread("x-exTrahEader", null);
+        Assert.assertEquals(1, foundHeaders.size());
+        AwOriginMatchedHeader header = foundHeaders.get(0);
+        Assert.assertEquals("X-ExtraHeader", header.getName());
+
+        // Value is case sensitive in lookups, so don't expect to find any
+        Assert.assertEquals(
+                Collections.emptyList(),
+                findOriginMatchedHeadersOnUiThread("x-exTrahEader", "value1"));
+
+        Assert.assertTrue(hasOriginMatchedHeadersOnUiThread("x-exTrahEader"));
     }
 
     @Test
@@ -505,8 +532,9 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
         try (TestWebServer server = TestWebServer.start(); ) {
             String requestUrl = setMockResponse(server);
 
+            // headers with different capitalization will be merged.
             addOriginMatchedHeaderOnUiThread(
-                    "X-ExtraHeader", "active", getPatternSetForUrl(requestUrl));
+                    "x-eXTRAhEADER", "active", getPatternSetForUrl(requestUrl));
             addOriginMatchedHeaderOnUiThread(
                     "X-ExtraHeader", "superactive", getPatternSetForUrl(requestUrl));
 
@@ -520,10 +548,12 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
             }
             Assert.assertEquals(1, server.getRequestCount(REQUEST_PATH));
             HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
-            String actualHeader = lastRequest.headerValue("X-ExtraHeader");
-            Assert.assertTrue(
-                    "active,superactive".equals(actualHeader)
-                            || "superactive,active".equals(actualHeader));
+            // The header capitalization of the first added header will be used.
+            String actualHeader = lastRequest.headerValue("x-eXTRAhEADER");
+            Assert.assertEquals(
+                    "Headers value order will be the order they were added in",
+                    "active,superactive",
+                    actualHeader);
         }
     }
 
@@ -802,13 +832,13 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
 
         String mainContent =
                 """
-            <!DOCTYPE html>
-            <html><body><script>
-            fetch("/fetch.res", {headers: {"X-ExtraHeader": "SetByJs"}}).then(resp => {
-              testListener.postMessage("done");
-            });
-            </script></body></html>
-            """;
+                <!DOCTYPE html>
+                <html><body><script>
+                fetch("/fetch.res", {headers: {"X-ExtraHeader": "SetByJs"}}).then(resp => {
+                  testListener.postMessage("done");
+                });
+                </script></body></html>
+                """;
         try (TestWebServer server = TestWebServer.start(); ) {
             final String fullIndexUrl = server.setResponse("/index.html", mainContent, null);
             server.setResponse("/fetch.res", "hello, world", null);
@@ -854,9 +884,9 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getSettings().setImagesEnabled(true));
         String mainContentTemplate =
                 """
-            <!DOCTYPE html>
-            <html><body><img src="%s"></body></html>
-            """;
+                <!DOCTYPE html>
+                <html><body><img src="%s"></body></html>
+                """;
         try (TestWebServer server = TestWebServer.start();
                 TestWebServer corsServer = TestWebServer.startAdditional()) {
 
@@ -890,21 +920,21 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
 
         String mainContentTemplate =
                 """
-        <!DOCTYPE html>
-        <html><body><script>
-        fetch("%s", {headers: {"X-ExtraHeader": "SetByJs"}}).then(resp => {
-          testListener.postMessage("done");
-        });
-        </script></body></html>
-        """;
+                <!DOCTYPE html>
+                <html><body><script>
+                fetch("%s", {headers: {"X-ExtraHeader": "SetByJs"}}).then(resp => {
+                  testListener.postMessage("done");
+                });
+                </script></body></html>
+                """;
         String preflightResponse =
                 """
-        HTTP/1.1 204 No Content
-        Access-Control-Allow-Origin: *
-        Access-Control-Allow-Methods: GET
-        Access-Control-Allow-Headers: x-extraheader
+                HTTP/1.1 204 No Content
+                Access-Control-Allow-Origin: *
+                Access-Control-Allow-Methods: GET
+                Access-Control-Allow-Headers: X-ExtraHeader
 
-        """;
+                """;
         try (TestWebServer server = TestWebServer.start();
                 TestWebServer corsServer = TestWebServer.startAdditional()) {
 
@@ -956,6 +986,7 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
             HTTPRequest preflightRequest = requests.take();
             HTTPRequest getRequest = requests.take();
 
+            // The Access-Control-Request-Headers header will lowercase the header names.
             Assert.assertEquals(
                     "x-extraheader",
                     preflightRequest.headerValue("Access-Control-Request-Headers"));

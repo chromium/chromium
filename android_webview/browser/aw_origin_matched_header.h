@@ -7,6 +7,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/origin_matcher/origin_matcher.h"
@@ -24,6 +26,23 @@ namespace android_webview {
 class AwOriginMatchedHeader
     : public base::RefCountedThreadSafe<AwOriginMatchedHeader> {
  public:
+  // Predicate for matching AwOriginMatchedHeaders using the standard library
+  // algorithms. It calls the `AwOriginMatchedHeader::MatchesNameValue function`
+  class LookupPredicate {
+   public:
+    LookupPredicate(const std::string& name,
+                    const std::optional<std::string>& value)
+        : name_(name), value_(value) {}
+
+    bool operator()(const scoped_refptr<AwOriginMatchedHeader>& header) const {
+      return header->MatchesNameValue(*name_, *value_);
+    }
+
+   private:
+    const raw_ref<const std::string> name_;
+    const raw_ref<const std::optional<std::string>> value_;
+  };
+
   AwOriginMatchedHeader(const AwOriginMatchedHeader&) = delete;
   AwOriginMatchedHeader& operator=(const AwOriginMatchedHeader&) = delete;
 
@@ -34,16 +53,13 @@ class AwOriginMatchedHeader
   std::string_view name() const { return name_; }
   std::string_view value() const { return value_; }
 
-  std::tuple<const std::string&, const std::string&> as_pair() const {
-    return std::tie(name_, value_);
-  }
+  bool MatchesOrigin(const url::Origin& origin) const;
 
   // Utility function to help filter headers with standard library algorithms.
   // If `value` is std::nullopt, this function only matches on name.
+  // Name matching is case-insensitive, while value-matching is case-sensitive.
   bool MatchesNameValue(const std::string& name,
                         const std::optional<std::string>& value) const;
-
-  bool MatchesOrigin(const url::Origin& origin) const;
 
   // Returns a new AwOriginMatchedHeader which has the combined ruleset of
   // `this` and the `other` OriginMatcher.
@@ -52,11 +68,11 @@ class AwOriginMatchedHeader
 
   jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env);
 
-  // Provide a map of header name-value pairs that match the given `origin`.
-  // This function returns the header values as std::string because it may
-  // combine multiple values into a single header.
+  // Provide a list of header name-value pairs that match the given `origin`.
   // Header values will be separated with a comma character.
-  static base::flat_map<std::string_view, std::string>
+  // Headers that only differ in capitalization will be merged into a single
+  // header.
+  static std::vector<std::pair<std::string_view, std::string>>
   GetCombinedMatchingHeaders(
       base::span<scoped_refptr<AwOriginMatchedHeader>> headers,
       const url::Origin& origin);
@@ -64,9 +80,9 @@ class AwOriginMatchedHeader
  private:
   friend class base::RefCountedThreadSafe<AwOriginMatchedHeader>;
 
-  std::string name_;
-  std::string value_;
-  origin_matcher::OriginMatcher matcher_;
+  const std::string name_;
+  const std::string value_;
+  const origin_matcher::OriginMatcher matcher_;
 
   ~AwOriginMatchedHeader();
 };

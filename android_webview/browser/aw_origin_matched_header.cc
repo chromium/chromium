@@ -4,6 +4,8 @@
 
 #include "android_webview/browser/aw_origin_matched_header.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -52,11 +54,21 @@ scoped_refptr<AwOriginMatchedHeader> AwOriginMatchedHeader::MergedWithMatcher(
 }
 
 // static
-base::flat_map<std::string_view, std::string>
+std::vector<std::pair<std::string_view, std::string>>
 AwOriginMatchedHeader::GetCombinedMatchingHeaders(
     base::span<scoped_refptr<AwOriginMatchedHeader>> headers,
     const url::Origin& origin) {
-  base::flat_map<std::string_view, std::string> combined_headers;
+  // Comparator for case-insensitive header name comparison.
+  // This is used to coalesce headers with different casing into a single
+  // unified header.
+  struct HeaderNameComparator {
+   public:
+    int operator()(const std::string_view a, const std::string_view b) const {
+      return base::CompareCaseInsensitiveASCII(a, b);
+    }
+  };
+  base::flat_map<std::string_view, std::string, HeaderNameComparator>
+      combined_headers;
 
   for (const auto& header : headers) {
     if (!header->MatchesOrigin(origin)) {
@@ -71,14 +83,14 @@ AwOriginMatchedHeader::GetCombinedMatchingHeaders(
       combined_itr->second.append(header->value());
     }
   }
-
-  return combined_headers;
+  // Returning the list of pairs allows structured binding at the call site.
+  return std::move(combined_headers).extract();
 }
 
 bool AwOriginMatchedHeader::MatchesNameValue(
     const std::string& target_name,
     const std::optional<std::string>& target_value) const {
-  if (name_ != target_name) {
+  if (!base::EqualsCaseInsensitiveASCII(name_, target_name)) {
     return false;
   }
   if (!target_value) {
