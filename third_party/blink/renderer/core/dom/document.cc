@@ -8038,6 +8038,10 @@ void Document::FinishedParsing() {
       }
     }
 
+    if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+      RequestResizeResponsiveIframe();
+    }
+
     BeginLifecycleUpdatesIfRenderingReady();
 
     frame->GetIdlenessDetector()->DomContentLoadedEventFired();
