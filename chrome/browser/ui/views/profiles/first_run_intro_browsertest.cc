@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +28,7 @@ struct FirstRunTestParam {
   PixelTestParam pixel_test_param;
   bool use_fixed_size = false;
   bool use_longer_strings = false;
+  bool decline_signin_cta_experiment_enabled = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -41,6 +44,9 @@ const FirstRunTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "DarkThemeFixedSize",
                           .use_dark_theme = true},
      .use_fixed_size = true},
+    {.pixel_test_param = {.test_suffix = "DarkThemeDeclineSigninCTAExperiment",
+                          .use_dark_theme = true},
+     .decline_signin_cta_experiment_enabled = true},
 #if !BUILDFLAG(IS_WIN)
     // TODO(https://crbug.com/40261456): The following test has been frequently
     // flaking on "Win10 Tests x64" since 2024-05-09:
@@ -71,7 +77,12 @@ class FirstRunIntroPixelTest
       public testing::WithParamInterface<FirstRunTestParam> {
  public:
   FirstRunIntroPixelTest()
-      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {}
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
+    if (GetParam().decline_signin_cta_experiment_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kProfileCreationDeclineSigninCTAExperiment);
+    }
+  }
 
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -123,6 +134,7 @@ class FirstRunIntroPixelTest
 
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunIntroPixelTest, InvokeUi_default) {

@@ -136,8 +136,6 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
       {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
       {"profileTypeChoiceTitle",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
-      {"notNowButtonLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
       {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
       {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
       {"switchButtonLabel",
@@ -159,6 +157,12 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddLocalizedString(
+      "declineSignInButtonLabel",
+       base::FeatureList::IsEnabled(
+           switches::kProfileCreationDeclineSigninCTAExperiment)
+           ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_STAY_SIGNED_OUT_BUTTON_LABEL
+           : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL);
   html_source->AddLocalizedString("mainViewTitle",
                                   GetMainViewTitleId(is_glic_version));
 #if BUILDFLAG(ENABLE_GLIC)

@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -24,21 +26,29 @@
 // and not in the webui directory because they manipulate views.
 namespace {
 
+struct ProfileTypeChoiceTestParam {
+  PixelTestParam pixel_test_param;
+  bool decline_signin_cta_experiment_enabled = false;
+};
+
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
 // to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
 // of using the index of the param in `TestParam` as suffix.
 std::string ParamToTestSuffix(
-    const ::testing::TestParamInfo<PixelTestParam>& info) {
-  return info.param.test_suffix;
+    const ::testing::TestParamInfo<ProfileTypeChoiceTestParam>& info) {
+  return info.param.pixel_test_param.test_suffix;
 }
 
 // Permutations of supported parameters.
-const PixelTestParam kTestParams[] = {
-    {.test_suffix = "Regular"},
-    {.test_suffix = "DarkRtlSmall",
-     .use_dark_theme = true,
-     .use_right_to_left_language = true,
-     .window_size = PixelTestParam::kSmallWindowSize},
+const ProfileTypeChoiceTestParam kTestParams[] = {
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "DarkRtlSmall",
+                          .use_dark_theme = true,
+                          .use_right_to_left_language = true,
+                          .window_size = PixelTestParam::kSmallWindowSize}},
+    {.pixel_test_param = {.test_suffix = "DarkDeclineSigninCTAExperiment",
+                          .use_dark_theme = true},
+     .decline_signin_cta_experiment_enabled = true},
 };
 
 const char kRemoveAvatarIconJS[] =
@@ -54,10 +64,15 @@ const char kRemoveAvatarIconJS[] =
 
 class ProfileTypeChoiceUIPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
-      public testing::WithParamInterface<PixelTestParam> {
+      public testing::WithParamInterface<ProfileTypeChoiceTestParam> {
  public:
   ProfileTypeChoiceUIPixelTest()
-      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {}
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
+    if (GetParam().decline_signin_cta_experiment_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kProfileCreationDeclineSigninCTAExperiment);
+    }
+  }
 
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -84,7 +99,8 @@ class ProfileTypeChoiceUIPixelTest
               return ProfileManagementStepController::CreateForProfilePickerApp(
                   host, profile_type_choice_url);
             }));
-    profile_picker_view_->ShowAndWait(GetParam().window_size);
+    profile_picker_view_->ShowAndWait(
+        GetParam().pixel_test_param.window_size);
     observer.Wait();
 
     // We need to remove the avatar icon because it will be generated
@@ -117,6 +133,7 @@ class ProfileTypeChoiceUIPixelTest
 
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileTypeChoiceUIPixelTest, InvokeUi_default) {

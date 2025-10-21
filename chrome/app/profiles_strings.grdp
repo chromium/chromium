@@ -884,6 +884,10 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
       Continue without an account
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_STAY_SIGNED_OUT_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
+      Stay signed out
+    </message>
+
     <!-- TODO(crbug.com/40267173): Update the string ids for local profile
          creatiom since they are now used outside the Profile Picker, in
          Profile Customization UI instead. -->
@@ -984,6 +988,9 @@
       <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
         Don't sign in
       </message>
+      <message name="IDS_FRE_STAY_SIGNED_OUT_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Stay signed out
+      </message>
       <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
         Sign in
       </message>
@@ -991,6 +998,9 @@
     <if expr="use_titlecase">
       <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice not to sign in to Chrome">
         Don't Sign In
+      </message>
+      <message name="IDS_FRE_STAY_SIGNED_OUT_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Stay Signed Out
       </message>
       <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice to sign in to Chrome">
         Sign In
