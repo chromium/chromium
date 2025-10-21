@@ -120,23 +120,29 @@ class NtpFieldTrialBrowserTest
     bool expected_enabled = false;
 
     // Mirrored implementation logic for Is...Enabled methods:
-    // 1. If feature is overridden, it takes precedence.
-    if (override_feature) {
-      return feature;
-    }
-
     // Get the service to check server eligibility (this is now handled by the
     // mock).
     auto* service =
         AimEligibilityServiceFactory::GetForProfile(browser()->profile());
 
-    // 2. If server response is enabled, return overall eligibility alone.
-    if (service && service->IsServerEligibilityEnabled()) {
+    // If service or local eligibility check fails, return false.
+    if (!service || !service->IsAimLocallyEligible()) {
+      return false;
+    }
+
+    // If the generic feature is overridden, it takes precedence.
+    if (override_feature) {
+      return feature;
+    }
+
+    // If the server eligibility is enabled, return overall eligibility alone.
+    // The service will control locale rollout so there's no need to check
+    // locale or the state of kMyFeature below.
+    if (service->IsServerEligibilityEnabled()) {
       expected_enabled = service->IsAimEligible();
     } else {
-      // 3. If not locally eligible, return false.
-      expected_enabled =
-          is_locally_eligible ? IsFeatureEnabledByDefault() : false;
+      // Otherwise, check the generic entrypoint feature default value.
+      expected_enabled = IsFeatureEnabledByDefault();
     }
 
     return expected_enabled;
