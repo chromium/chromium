@@ -7,6 +7,7 @@
 
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
+#include "media/base/sample_format.h"
 
 namespace media {
 
@@ -29,7 +30,9 @@ class MEDIA_EXPORT AudioBlockFifo {
   // Pushes interleaved audio data from |source| to the FIFO.
   // The method will deinterleave the data into an audio bus.
   // Push() will crash if the allocated space is insufficient.
-  void Push(base::span<const uint8_t> source, int frames, int bytes_per_sample);
+  void Push(base::span<const uint8_t> source,
+            int frames,
+            SampleFormat sample_format);
 
   // Pushes zeroed out frames to the FIFO.
   void PushSilence(int frames);
@@ -60,7 +63,7 @@ class MEDIA_EXPORT AudioBlockFifo {
   // nullptr and 0 respectively.
   void PushInternal(base::span<const uint8_t> source,
                     int frames,
-                    int bytes_per_sample);
+                    SampleFormat sample_format);
 
   // The actual FIFO is a vector of audio buses.
   std::vector<std::unique_ptr<AudioBus>> audio_blocks_;
@@ -73,16 +76,16 @@ class MEDIA_EXPORT AudioBlockFifo {
   const int block_frames_;
 
   // Used to keep track which block of memory to be written.
-  int write_block_;
+  int write_block_ = 0;
 
   // Used to keep track which block of memory to be consumed.
-  int read_block_;
+  int read_block_ = 0;
 
   // Number of available blocks of memory to be consumed.
-  int available_blocks_;
+  int available_blocks_ = 0;
 
   // Current write position in the current written block.
-  int write_pos_;
+  int write_pos_ = 0;
 };
 
 }  // namespace media

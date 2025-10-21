@@ -376,7 +376,7 @@ void PulseAudioInputStream::ReadData() {
         SampleFormatToBytesPerChannel(pulse::kInputSampleFormat);
     peak_detector_.FindPeak(pa_stream, bytes_per_sample);
 
-    fifo_.Push(pa_stream, number_of_frames, bytes_per_sample);
+    fifo_.Push(pa_stream, number_of_frames, pulse::kInputSampleFormat);
 
     // Checks if we still have data.
     pa_stream_drop(handle_);

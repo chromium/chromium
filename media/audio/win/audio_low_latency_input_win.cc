@@ -55,6 +55,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/base/sample_format.h"
 #include "media/base/timestamp_constants.h"
 
 using base::win::ScopedCoMem;
@@ -66,6 +67,8 @@ namespace media {
 namespace {
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
+
+constexpr SampleFormat kSampleFormat = kSampleFormatS16;
 
 // Max allowed absolute difference between a QPC-based timestamp and a default
 // base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
@@ -668,8 +671,6 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   bool avrt_init = avrt::Initialize();
   if (!avrt_init)
     SendLogMessage("%s => (WARNING: failed to load Avrt.dll)", __func__);
-
-  const SampleFormat kSampleFormat = kSampleFormatS16;
 
   // The clients asks for an input stream specified by |params|. Start by
   // setting up an input device format according to the same specification.
@@ -1416,7 +1417,10 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
                                  input_format_.Format.nBlockAlign)
               .ValueOrDie()));
       peak_detector_.FindPeak(audio_frames, bytes_per_sample);
-      fifo_->Push(audio_frames, num_frames_to_read, bytes_per_sample);
+      // TODO(crbug.com/354625679): For now, our pipeline is set for only
+      // kSampleFormatS16 only. We plan to implement changes to take higher bit
+      // depths such as 24bit or 32bit float.
+      fifo_->Push(audio_frames, num_frames_to_read, kSampleFormat);
     }
 
     hr = audio_capture_client_->ReleaseBuffer(num_frames_to_read);
