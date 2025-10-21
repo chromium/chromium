@@ -57,12 +57,12 @@ dictionary SetHTMLUnsafeOptions {
     [Affects=Nothing, ImplementedAs=getAttributeNamesForBindings] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions] void setAttribute(DOMString name, DOMString value);
-    [RaisesException, CEReactions] void setAttribute(DOMString name, TrustedType value);
-    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, DOMString value);
-    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedType value);
-    [CEReactions] void removeAttribute(DOMString name);
-    [CEReactions] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [RaisesException, CEReactions] undefined setAttribute(DOMString name, DOMString value);
+    [RaisesException, CEReactions] undefined setAttribute(DOMString name, TrustedType value);
+    [RaisesException, CEReactions] undefined setAttributeNS(DOMString? namespaceURI, DOMString name, DOMString value);
+    [RaisesException, CEReactions] undefined setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedType value);
+    [CEReactions] undefined removeAttribute(DOMString name);
+    [CEReactions] undefined removeAttributeNS(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
     [Affects=Nothing] boolean hasAttribute(DOMString name);
     [Affects=Nothing] boolean hasAttributeNS(DOMString? namespaceURI, DOMString localName);
@@ -87,7 +87,7 @@ dictionary SetHTMLUnsafeOptions {
     [Affects=Nothing] HTMLCollection getElementsByClassName(DOMString classNames);
 
     [RaisesException, CEReactions] Element? insertAdjacentElement(DOMString where, Element element);
-    [RaisesException] void insertAdjacentText(DOMString where, DOMString data);
+    [RaisesException] undefined insertAdjacentText(DOMString where, DOMString data);
 
     // CSS Shadow Parts
     // https://drafts.csswg.org/css-shadow-parts/#idl

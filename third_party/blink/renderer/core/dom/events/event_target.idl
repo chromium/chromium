@@ -29,8 +29,8 @@ dictionary ObservableEventListenerOptions {
     Exposed=(Window,Worker,AudioWorklet,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface EventTarget {
     [CallWith=ScriptState] constructor();
-    void addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
-    void removeEventListener(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
+    undefined addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
+    undefined removeEventListener(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
     [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent] boolean dispatchEvent(Event event);
     [MeasureAs=EventTargetOnObservable] Observable when(DOMString type, optional ObservableEventListenerOptions options = {});
 };
