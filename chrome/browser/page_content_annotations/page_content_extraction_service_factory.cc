@@ -86,8 +86,4 @@ bool PageContentExtractionServiceFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-bool PageContentExtractionServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}
-
 }  // namespace page_content_annotations
