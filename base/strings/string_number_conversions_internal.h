@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <array>
 #include <limits>
 #include <optional>
 #include <string_view>
@@ -31,27 +32,27 @@ static STR IntToStringT(INT value) {
   // Create the string in a temporary buffer, write it back to front, and
   // then return the substr of what we ended up using.
   using CHR = typename STR::value_type;
-  CHR outbuf[kOutputBufSize];
+  std::array<CHR, kOutputBufSize> outbuf = {};
 
   // The ValueOrDie call below can never fail, because UnsignedAbs is valid
   // for all valid inputs.
   std::make_unsigned_t<INT> res =
       CheckedNumeric<INT>(value).UnsignedAbs().ValueOrDie();
 
-  CHR* end = UNSAFE_TODO(outbuf + kOutputBufSize);
-  CHR* i = end;
+  // Fill digits right-to-left.
+  size_t write = outbuf.size();
   do {
-    UNSAFE_TODO(--i);
-    DCHECK(i != outbuf);
-    *i = static_cast<CHR>((res % 10) + '0');
+    const CHR digit = static_cast<CHR>((res % 10) + '0');
+    outbuf[--write] = digit;
     res /= 10;
   } while (res != 0);
+
   if (IsValueNegative(value)) {
-    UNSAFE_TODO(--i);
-    DCHECK(i != outbuf);
-    *i = static_cast<CHR>('-');
+    outbuf[--write] = static_cast<CHR>('-');
   }
-  return STR(i, end);
+
+  auto result_span = base::span(outbuf).subspan(write);
+  return STR(result_span.begin(), result_span.end());
 }
 
 // Utility to convert a character to a digit in a given base
@@ -210,35 +211,24 @@ GetDoubleToStringConverter() {
   return &converter;
 }
 
-// Converts a given (data, size) pair to a desired string type. For
-// performance reasons, this dispatches to a different constructor if the
-// passed-in data matches the string's value_type.
-template <typename StringT>
-StringT ToString(const typename StringT::value_type* data, size_t size) {
-  return StringT(data, size);
-}
-
-// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
-template <typename StringT, typename CharT>
-StringT ToString(const CharT* data, size_t size) {
-  // SAFETY: required from caller.
-  return StringT(data, UNSAFE_BUFFERS(data + size));
-}
-
 template <typename StringT>
 StringT DoubleToStringT(double value) {
-  char buffer[32];
-  double_conversion::StringBuilder builder(buffer, sizeof(buffer));
+  std::array<char, 32> buffer;
+  double_conversion::StringBuilder builder(buffer.data(), buffer.size());
   GetDoubleToStringConverter()->ToShortest(value, &builder);
-  return ToString<StringT>(buffer, static_cast<size_t>(builder.position()));
+  auto result_span =
+      base::span(buffer).first(static_cast<size_t>(builder.position()));
+  return StringT(result_span.begin(), result_span.end());
 }
 
 template <typename StringT>
 StringT DoubleToStringFixedT(double value, int digits) {
-  char buffer[32];
-  double_conversion::StringBuilder builder(buffer, sizeof(buffer));
+  std::array<char, 32> buffer;
+  double_conversion::StringBuilder builder(buffer.data(), buffer.size());
   GetDoubleToStringConverter()->ToFixed(value, digits, &builder);
-  return ToString<StringT>(buffer, static_cast<size_t>(builder.position()));
+  auto result_span =
+      base::span(buffer).first(static_cast<size_t>(builder.position()));
+  return StringT(result_span.begin(), result_span.end());
 }
 
 template <typename STRING, typename CHAR>
