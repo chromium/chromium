@@ -257,17 +257,13 @@ class RasterBufferProviderTest
 
   void AppendTask(unsigned id,
                   const gfx::Size& size,
-                  bool depends_on_at_raster_decodes,
-                  bool depends_on_hardware_accelerated_jpeg_candidates,
-                  bool depends_on_hardware_accelerated_webp_candidates) {
+                  bool depends_on_at_raster_decodes) {
     ResourcePool::InUsePoolResource resource = AllocateResource(size);
     // The raster buffer has no tile ids associated with it for partial update,
     // so doesn't need to provide a valid dirty rect.
     std::unique_ptr<RasterBuffer> raster_buffer =
         raster_buffer_provider_->AcquireBufferForRaster(
-            resource, 0, 0, depends_on_at_raster_decodes,
-            depends_on_hardware_accelerated_jpeg_candidates,
-            depends_on_hardware_accelerated_webp_candidates);
+            resource, 0, 0, depends_on_at_raster_decodes);
     TileTask::Vector empty;
     tasks_.push_back(
         new TestRasterTaskImpl(this, id, std::move(raster_buffer), &empty));
@@ -275,9 +271,7 @@ class RasterBufferProviderTest
   }
 
   void AppendTask(unsigned id) {
-    AppendTask(id, gfx::Size(1, 1), false /* depends_on_at_raster_decodes */,
-               false /* depends_on_hardware_accelerated_jpeg_candidates */,
-               false /* depends_on_hardware_accelerated_webp_candidates */);
+    AppendTask(id, gfx::Size(1, 1), false /* depends_on_at_raster_decodes */);
   }
 
   void AppendBlockingTask(unsigned id, base::Lock* lock) {
@@ -285,9 +279,7 @@ class RasterBufferProviderTest
         AllocateResource(gfx::Size(1, 1));
     std::unique_ptr<RasterBuffer> raster_buffer =
         raster_buffer_provider_->AcquireBufferForRaster(
-            resource, 0, 0, false /* depends_on_at_raster_decodes */,
-            false /* depends_on_hardware_accelerated_jpeg_candidates */,
-            false /* depends_on_hardware_accelerated_webp_candidates */);
+            resource, 0, 0, false /* depends_on_at_raster_decodes */);
     TileTask::Vector empty;
     tasks_.push_back(new BlockingTestRasterTaskImpl(
         this, id, std::move(raster_buffer), lock, &empty));
@@ -298,9 +290,7 @@ class RasterBufferProviderTest
                               const ResourcePool::InUsePoolResource* resource) {
     std::unique_ptr<RasterBuffer> raster_buffer =
         raster_buffer_provider_->AcquireBufferForRaster(
-            *resource, 0, 0, false /* depends_on_at_raster_decodes */,
-            false /* depends_on_hardware_accelerated_jpeg_candidates */,
-            false /* depends_on_hardware_accelerated_webp_candidates */);
+            *resource, 0, 0, false /* depends_on_at_raster_decodes */);
     TileTask::Vector empty;
     tasks_.push_back(
         new TestRasterTaskImpl(this, id, std::move(raster_buffer), &empty));
@@ -529,33 +519,15 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
 
   // Schedule a few tasks.
   constexpr gfx::Size size(1, 1);
-  AppendTask(0u, size, false /* depends_on_at_raster_decodes */,
-             false /* depends_on_hardware_accelerated_jpeg_candidates */,
-             false /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(1u, size, false /* depends_on_at_raster_decodes */,
-             false /* depends_on_hardware_accelerated_jpeg_candidates */,
-             true /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(2u, size, false /* depends_on_at_raster_decodes */,
-             true /* depends_on_hardware_accelerated_jpeg_candidates */,
-             false /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(3u, size, false /* depends_on_at_raster_decodes */,
-             true /* depends_on_hardware_accelerated_jpeg_candidates */,
-             false /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(4u, size, false /* depends_on_at_raster_decodes */,
-             true /* depends_on_hardware_accelerated_jpeg_candidates */,
-             true /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(5u, size, true /* depends_on_at_raster_decodes */,
-             false /* depends_on_hardware_accelerated_jpeg_candidates */,
-             false /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(6u, size, true /* depends_on_at_raster_decodes */,
-             false /* depends_on_hardware_accelerated_jpeg_candidates */,
-             true /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(7u, size, true /* depends_on_at_raster_decodes */,
-             true /* depends_on_hardware_accelerated_jpeg_candidates */,
-             false /* depends_on_hardware_accelerated_webp_candidates */);
-  AppendTask(8u, size, true /* depends_on_at_raster_decodes */,
-             true /* depends_on_hardware_accelerated_jpeg_candidates */,
-             true /* depends_on_hardware_accelerated_webp_candidates */);
+  AppendTask(0u, size, false /* depends_on_at_raster_decodes */);
+  AppendTask(1u, size, false /* depends_on_at_raster_decodes */);
+  AppendTask(2u, size, false /* depends_on_at_raster_decodes */);
+  AppendTask(3u, size, false /* depends_on_at_raster_decodes */);
+  AppendTask(4u, size, false /* depends_on_at_raster_decodes */);
+  AppendTask(5u, size, true /* depends_on_at_raster_decodes */);
+  AppendTask(6u, size, true /* depends_on_at_raster_decodes */);
+  AppendTask(7u, size, true /* depends_on_at_raster_decodes */);
+  AppendTask(8u, size, true /* depends_on_at_raster_decodes */);
   ScheduleTasks();
   RunMessageLoopUntilAllTasksHaveCompleted();
 
@@ -593,21 +565,13 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
   // Only in ChromeOS, we should be measuring raster scheduling delay (and only
   // for tasks that don't depend on at-raster image decodes).
   base::HistogramBase::Count32 expected_delay_histogram_all_tiles_count = 0;
-  base::HistogramBase::Count32 expected_delay_histogram_jpeg_tiles_count = 0;
-  base::HistogramBase::Count32 expected_delay_histogram_webp_tiles_count = 0;
 #if BUILDFLAG(IS_CHROMEOS)
   if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU) {
     expected_delay_histogram_all_tiles_count = 5;
-    expected_delay_histogram_jpeg_tiles_count = 3;
-    expected_delay_histogram_webp_tiles_count = 2;
   }
 #endif
   histogram_tester.ExpectTotalCount(delay_histogram_all_tiles,
                                     expected_delay_histogram_all_tiles_count);
-  histogram_tester.ExpectTotalCount(delay_histogram_jpeg_tiles,
-                                    expected_delay_histogram_jpeg_tiles_count);
-  histogram_tester.ExpectTotalCount(delay_histogram_webp_tiles,
-                                    expected_delay_histogram_webp_tiles_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -1672,9 +1672,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
       uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override {
+      bool depends_on_at_raster_decodes) override {
     if (!resource.backing()) {
       resource.InstallSoftwareBacking(sii_, "TextureLayerTest");
 
@@ -2227,9 +2225,7 @@ class VerifyResourceContentIdRasterBufferProvider
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
       uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override {
+      bool depends_on_at_raster_decodes) override {
     EXPECT_EQ(expected_content_id_, resource_content_id);
     return nullptr;
   }
@@ -2444,9 +2440,7 @@ class InvalidResourceRasterBufferProvider
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
       uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override {
+      bool depends_on_at_raster_decodes) override {
     if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>(
           resource.size(), resource.format(), resource.color_space());
@@ -2523,9 +2517,7 @@ class MockReadyToDrawRasterBufferProviderImpl
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
       uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override {
+      bool depends_on_at_raster_decodes) override {
     if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>(
           resource.size(), resource.format(), resource.color_space());
@@ -3677,9 +3669,7 @@ class VerifyImageProviderRasterBufferProvider
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
       uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override {
+      bool depends_on_at_raster_decodes) override {
     buffer_count_++;
     return std::make_unique<VerifyImageProviderRasterBuffer>();
   }

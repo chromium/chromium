@@ -767,9 +767,7 @@ void TileManager::InitializeTilesWithResourcesForTesting(
             .color_space);
     raster_buffer_provider_->AcquireBufferForRaster(
         resource, 0, 0,
-        /*depends_on_at_raster_decodes=*/false,
-        /*depends_on_hardware_accelerated_jpeg_candidates=*/false,
-        /*depends_on_hardware_accelerated_webp_candidates=*/false);
+        /*depends_on_at_raster_decodes=*/false);
     // The raster here never really happened, cuz tests. So just add an
     // arbitrary sync token.
     if (resource.backing()) {
@@ -1553,9 +1551,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   std::unique_ptr<RasterBuffer> raster_buffer =
       raster_buffer_provider_->AcquireBufferForRaster(
           resource, resource_content_id, tile->invalidated_id(),
-          has_at_raster_images,
-          /*has_hardware_accelerated_jpeg_candidates=*/false,
-          /*has_hardware_accelerated_webp_candidates=*/false);
+          has_at_raster_images);
 
   std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
