@@ -947,14 +947,8 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/438908216): Flaky on at least Linux dbg.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-#define MAYBE_DeleteBrowsingDataDialog DISABLED_DeleteBrowsingDataDialog
-#else
-#define MAYBE_DeleteBrowsingDataDialog DeleteBrowsingDataDialog
-#endif
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
-                       MAYBE_DeleteBrowsingDataDialog) {
+                       DeleteBrowsingDataDialog) {
   RunTest("settings/clear_browsing_data_dialog_v2_test.js",
           "runMochaSuite('DeleteBrowsingDataDialog')");
 }
