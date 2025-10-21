@@ -42,13 +42,20 @@ def _ConstructHistogram(doc, name, histogram_dict):
 def main(argv=sys.argv[1:]):
   """Prints expanded histograms."""
   parser = argparse.ArgumentParser(description='Print expanded histograms.')
-  parser.add_argument('--pattern',
-                      type=str,
-                      default='.*',
-                      help='The histogram regex you want to print.')
+  parser.add_argument(
+      '--pattern',
+      type=str,
+      default='.*',
+      help='The histogram name regex for histograms to be printed.')
   parser.add_argument('--print-names-only',
                       action='store_true',
                       help='If set, only prints the histogram names.')
+  parser.add_argument(
+      '--histograms-xml-file',
+      type=str,
+      default=None,
+      help=('Path to histograms.xml file. If omitted, all Chromium '
+            'histograms.xml files are processed.'))
   args = parser.parse_args(argv)
 
   try:
@@ -57,10 +64,20 @@ def main(argv=sys.argv[1:]):
     print("Non valid regex pattern.")
     return 1
 
+  if args.histograms_xml_file:
+    files = [args.histograms_xml_file]
+    # If a file is provided, don't do expansion as the file may not
+    # be in Chromium.
+    expand_owners_and_extract_components = False
+  else:
+    files = histogram_paths.ALL_XMLS
+    expand_owners_and_extract_components = True
+
   # Extract all histograms into a dict. This is the expensive part that
   # handles expansion of suffixes and variants.
-  doc = merge_xml.MergeFiles(filenames=histogram_paths.ALL_XMLS,
-                             expand_owners_and_extract_components=True)
+  doc = merge_xml.MergeFiles(
+      filenames=files,
+      expand_owners_and_extract_components=expand_owners_and_extract_components)
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
     raise ValueError("Error parsing inputs.")
