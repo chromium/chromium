@@ -57,8 +57,7 @@ ObservationDelayController::ObservationDelayController(
   CHECK(web_contents());
   const bool waits_for_page_stability = page_stability_config.has_value();
 
-  journal.Log(GURL::EmptyGURL(), task_id, mojom::JournalTrack::kActor,
-              "ObservationDelay: Created",
+  journal.Log(GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
               JournalDetailsBuilder()
                   .Add("May Use PageStability", waits_for_page_stability)
                   .Build());
@@ -91,8 +90,7 @@ ObservationDelayController::ObservationDelayController(
     AggregatedJournal& journal)
     : journal_(journal), task_id_(task_id) {
   journal.Log(
-      GURL::EmptyGURL(), task_id, mojom::JournalTrack::kActor,
-      "ObservationDelay: Created",
+      GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
       JournalDetailsBuilder().Add("May Use PageStability", false).Build());
 }
 
@@ -105,7 +103,7 @@ void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
   WebContentsObserver::Observe(target_tab.GetContents());
 
   wait_journal_entry_ = journal_->CreatePendingAsyncEntry(
-      GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+      GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
       "ObservationDelay: Wait", {});
 
   PostMoveToStateClosure(State::kDidTimeout, GetCompletionTimeout()).Run();
@@ -123,7 +121,7 @@ void ObservationDelayController::OnMonitorDisconnected() {
   if (state_ == State::kInitial) {
     // If Wait hasn't been called, don't enter the state machine yet. Resetting
     // the remote will skip the page stability state.
-    journal_->Log(GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+    journal_->Log(GURL::EmptyGURL(), task_id_,
                   "ObservationDelay: Monitor Disconnect Before Wait", {});
     return;
   }
@@ -139,8 +137,7 @@ void ObservationDelayController::MoveToState(State new_state) {
   DCheckStateTransition(state_, new_state);
 
   inner_journal_entry_.reset();
-  journal_->Log(GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
-                "ObservationDelay: State Change",
+  journal_->Log(GURL::EmptyGURL(), task_id_, "ObservationDelay: State Change",
                 JournalDetailsBuilder()
                     .Add("old_state", StateToString(state_))
                     .Add("new_state", StateToString(new_state))
@@ -165,7 +162,7 @@ void ObservationDelayController::MoveToState(State new_state) {
     }
     case State::kWaitForLoadCompletion: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
-          GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+          GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "WaitForLoadCompletion", {});
       page_stability_monitor_remote_.reset();
 
@@ -180,7 +177,7 @@ void ObservationDelayController::MoveToState(State new_state) {
     }
     case State::kWaitForVisualStateUpdate: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
-          GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+          GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "WaitForVisualStateUpdate", {});
       // Adapt since InsertVisualStateCallback takes a bool-taking callback.
       auto callback =

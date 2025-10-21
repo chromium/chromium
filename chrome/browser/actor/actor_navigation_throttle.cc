@@ -103,8 +103,7 @@ ActorNavigationThrottle::WillProcessResponse() {
     std::string mime_type;
     if (headers->GetMimeType(&mime_type) &&
         kBlockedMimeTypes.contains(mime_type)) {
-      GetJournal().Log(navigation_handle()->GetURL(), task_id_,
-                       mojom::JournalTrack::kActor, "NavThrottle",
+      GetJournal().Log(navigation_handle()->GetURL(), task_id_, "NavThrottle",
                        JournalDetailsBuilder()
                            .AddError("Navigate to disallowed content-type")
                            .Add("mime_type", mime_type)
@@ -148,8 +147,7 @@ void ActorNavigationThrottle::OnUserConfirmationDialogDecision(
   }
   AggregatedJournal& journal = GetJournal();
   journal.Log(
-      navigation_handle()->GetURL(), task_id_, mojom::JournalTrack::kActor,
-      "NavThrottle",
+      navigation_handle()->GetURL(), task_id_, "NavThrottle",
       JournalDetailsBuilder().AddError("Navigate cross origin").Build());
   // If the navigation we're about to cancel is attributable to the actor's
   // tool usage, consider the action a failure.
@@ -169,8 +167,7 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   AggregatedJournal& journal = GetJournal();
 
   if (!is_redirection && !initiator_origin) {
-    journal.Log(navigation_url, task_id_, mojom::JournalTrack::kActor,
-                "NavThrottle",
+    journal.Log(navigation_url, task_id_, "NavThrottle",
                 JournalDetailsBuilder()
                     .Add("navigate", "Not triggered by page")
                     .Build());
@@ -178,8 +175,7 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   }
 
   if (initiator_origin && initiator_origin->IsSameOriginWith(navigation_url)) {
-    journal.Log(navigation_url, task_id_, mojom::JournalTrack::kActor,
-                "NavThrottle",
+    journal.Log(navigation_url, task_id_, "NavThrottle",
                 JournalDetailsBuilder()
                     .Add("navigate", is_redirection ? "Same origin redirect"
                                                     : "Same origin navigation")
@@ -191,7 +187,7 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   }
 
   auto journal_entry = journal.CreatePendingAsyncEntry(
-      navigation_url, task_id_, mojom::JournalTrack::kActor, "NavThrottle",
+      navigation_url, task_id_, MakeBrowserTrackUUID(task_id_), "NavThrottle",
       JournalDetailsBuilder()
           .Add("defer", is_redirection ? "Check redirect safety"
                                        : "Check navigation safety")

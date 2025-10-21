@@ -241,7 +241,6 @@ ExperimentalActorPerformActionsFunction::Run() {
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor_service->GetJournal().Log(GURL(), actor::TaskId(actions.task_id()),
-                                  actor::mojom::JournalTrack::kActor,
                                   "ExperimentalActorExecuteAction",
                                   actor::JournalDetailsBuilder()
                                       .Add("proto", actor::ToBase64(actions))

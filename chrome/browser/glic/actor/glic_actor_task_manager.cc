@@ -95,8 +95,7 @@ void GlicActorTaskManager::PerformActions(
   }
 
   actor_keyed_service_->GetJournal().Log(
-      GURL(), actor::TaskId(actions.task_id()),
-      actor::mojom::JournalTrack::kActor, "GlicPerformActions",
+      GURL(), actor::TaskId(actions.task_id()), "GlicPerformActions",
       actor::JournalDetailsBuilder()
           .Add("proto", actor::ToBase64(actions))
           .Build());
@@ -110,7 +109,6 @@ void GlicActorTaskManager::PerformActions(
   actor::TaskId task_id(actions.task_id());
   if (!actor_keyed_service_->GetTask(task_id)) {
     actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
-                                           actor::mojom::JournalTrack::kActor,
                                            "Act Failed",
                                            actor::JournalDetailsBuilder()
                                                .AddError("No such task")
@@ -127,8 +125,7 @@ void GlicActorTaskManager::PerformActions(
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
   if (!requests.has_value()) {
     actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
-        "Act Failed",
+        GURL::EmptyGURL(), task_id, "Act Failed",
         actor::JournalDetailsBuilder()
             .AddError("Failed to convert proto::Actions to ToolRequest")
             .Add("failed_action_index", requests.error())
@@ -156,8 +153,7 @@ void GlicActorTaskManager::StopActorTask(
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsStopped()) {
     actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
-        "Failed to stop task",
+        GURL::EmptyGURL(), task_id, "Failed to stop task",
         actor::JournalDetailsBuilder()
             .AddError(task ? "Task already stopped" : "No such task")
             .Add("id", task_id.value())
@@ -177,8 +173,7 @@ void GlicActorTaskManager::PauseActorTask(
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsStopped() || task->IsPaused()) {
     actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
-        "Failed to pause task",
+        GURL::EmptyGURL(), task_id, "Failed to pause task",
         actor::JournalDetailsBuilder()
             .AddError(task ? "Task is not running" : "No such task")
             .Add("id", task_id.value())
@@ -205,7 +200,6 @@ void GlicActorTaskManager::ResumeActorTask(
   if (!task || !task->IsPaused()) {
     std::string error_message = task ? "Task is not paused" : "No such task";
     actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
-                                           actor::mojom::JournalTrack::kActor,
                                            "Failed to resume task",
                                            actor::JournalDetailsBuilder()
                                                .AddError(error_message)
@@ -233,7 +227,6 @@ void GlicActorTaskManager::ResumeActorTask(
   if (!tab_of_resumed_task) {
     std::string error_message = "No tab for observation";
     actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
-                                           actor::mojom::JournalTrack::kActor,
                                            "Failed to resume task",
                                            actor::JournalDetailsBuilder()
                                                .AddError(error_message)

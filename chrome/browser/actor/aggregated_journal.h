@@ -49,8 +49,8 @@ class AggregatedJournal {
     PendingAsyncEntry(base::PassKey<AggregatedJournal>,
                       base::SafeRef<AggregatedJournal> journal,
                       TaskId task_id,
-                      mojom::JournalTrack track,
-                      std::string_view event_name);
+                      std::string_view event_name,
+                      uint64_t track_uuid);
     ~PendingAsyncEntry();
 
     // End an pending entry with additional details. This can only be called
@@ -69,9 +69,9 @@ class AggregatedJournal {
     bool terminated_ = false;
     base::SafeRef<AggregatedJournal> journal_;
     TaskId task_id_;
-    mojom::JournalTrack track_;
     std::string event_name_;
     base::TimeTicks begin_time_;
+    uint64_t track_uuid_;
   };
 
   // Observing class for new entries.
@@ -85,19 +85,28 @@ class AggregatedJournal {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Allocate a new dynamic track UUID.
+  uint64_t AllocateDynamicTrackUUID();
+
   // Create an async entry. This will log a Begin Entry event and when the
   // PendingAsyncEntry object is destroyed the End Entry will be logged.
   std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
       const GURL& url,
       TaskId task_id,
-      mojom::JournalTrack track,
+      uint64_t track_uuid,
       std::string_view event_name,
       std::vector<mojom::JournalDetailsPtr> details);
+
+  // Log an instant event on the browser track.
+  void Log(const GURL& url,
+           TaskId task_id,
+           std::string_view event_name,
+           std::vector<mojom::JournalDetailsPtr> details);
 
   // Log an instant event.
   void Log(const GURL& url,
            TaskId task_id,
-           mojom::JournalTrack track,
+           uint64_t track_uuid,
            std::string_view event_name,
            std::vector<mojom::JournalDetailsPtr> details);
 
@@ -120,8 +129,8 @@ class AggregatedJournal {
   base::SafeRef<AggregatedJournal> GetSafeRef();
   void AddEndEvent(base::PassKey<AggregatedJournal>,
                    TaskId task_id,
-                   mojom::JournalTrack track,
                    const std::string& event_name,
+                   uint64_t track_uuid,
                    std::vector<mojom::JournalDetailsPtr> details);
 
  private:

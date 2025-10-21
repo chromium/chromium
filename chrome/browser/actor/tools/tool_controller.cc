@@ -50,8 +50,7 @@ ToolController::~ToolController() = default;
 
 void ToolController::SetState(State state) {
   journal().Log(active_state_ ? active_state_->tool->JournalURL() : GURL(),
-                task_->id(), mojom::JournalTrack::kActor,
-                "ToolControllerStateChange",
+                task_->id(), "ToolControllerStateChange",
                 JournalDetailsBuilder()
                     .Add("current_state", StateToString(state_))
                     .Add("new_state", StateToString(state))
@@ -113,7 +112,6 @@ void ToolController::CreateToolAndValidate(
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);
     journal().Log(request.GetURLForJournal(), task_->id(),
-                  mojom::JournalTrack::kActor,
                   "ToolController CreateToolAndValidate Failed",
                   JournalDetailsBuilder()
                       .AddError(create_result.result->message)
@@ -130,7 +128,7 @@ void ToolController::CreateToolAndValidate(
   CHECK(tool);
 
   auto journal_event = journal().CreatePendingAsyncEntry(
-      tool->JournalURL(), task_->id(), mojom::JournalTrack::kActor,
+      tool->JournalURL(), task_->id(), MakeBrowserTrackUUID(task_->id()),
       tool->JournalEvent(),
       JournalDetailsBuilder().Add("tool", tool->DebugString()).Build());
   active_state_.emplace(std::move(tool), std::move(result_callback),
@@ -183,8 +181,7 @@ void ToolController::Invoke(ResultCallback result_callback) {
   mojom::ActionResultPtr toctou_result =
       tool.TimeOfUseValidation(last_observed_page_content);
   if (!IsOk(*toctou_result)) {
-    journal().Log(tool.JournalURL(), task_->id(), mojom::JournalTrack::kActor,
-                  "TOCTOU Check Failed",
+    journal().Log(tool.JournalURL(), task_->id(), "TOCTOU Check Failed",
                   JournalDetailsBuilder()
                       .AddError(ToDebugString(*toctou_result))
                       .Build());
@@ -233,7 +230,6 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {
     journal().Log(active_state_->tool->JournalURL(), task_->id(),
-                  mojom::JournalTrack::kActor,
                   "ToolController DidFinishToolInvoke",
                   JournalDetailsBuilder()
                       .AddError("Tab is gone when tool finishes successfully")

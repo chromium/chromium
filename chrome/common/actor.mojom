@@ -452,12 +452,6 @@ enum JournalEntryType {
   kInstant,
 };
 
-// The track to log the journal entry on.
-enum JournalTrack {
-  kFrontEnd,
-  kActor,
-};
-
 // Details of a journal entry.
 struct JournalDetails {
   string key;
@@ -475,14 +469,14 @@ struct JournalEntry {
   // The task ID associated with this entry.
   TaskId task_id;
 
-  // The track the event should occur on.
-  JournalTrack track;
-
   // The time the event occurred at.
   mojo_base.mojom.Time timestamp;
 
   // The event name.
   string event;
+
+  // Track UUID.
+  uint64 track_uuid;
 
   // Specific details of the event logged.
   array<JournalDetails> details;

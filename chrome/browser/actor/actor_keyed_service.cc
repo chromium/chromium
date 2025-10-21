@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
@@ -245,7 +246,7 @@ void ActorKeyedService::RequestTabObservation(
   TRACE_EVENT0("actor", "ActorKeyedService::RequestTabObservation");
   const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
   auto journal_entry = journal_.CreatePendingAsyncEntry(
-      last_committed_url, task_id, mojom::JournalTrack::kActor,
+      last_committed_url, task_id, MakeBrowserTrackUUID(task_id),
       "RequestTabObservation", {});
   page_content_annotations::FetchPageContextOptions options;
 

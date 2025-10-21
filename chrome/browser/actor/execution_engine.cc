@@ -125,8 +125,7 @@ void ExecutionEngine::SetOwner(ActorTask* task) {
 
 void ExecutionEngine::SetState(State state) {
   TRACE_EVENT0("actor", "ExecutionEngine::SetState");
-  journal_->Log(GURL(), task_->id(), mojom::JournalTrack::kActor,
-                "ExecutionEngine::StateChange",
+  journal_->Log(GURL(), task_->id(), "ExecutionEngine::StateChange",
                 JournalDetailsBuilder()
                     .Add("current_state", StateToString(state_))
                     .Add("new_state", StateToString(state))
@@ -293,8 +292,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
   if (!action_sequence_.empty()) {
     journal_->Log(
-        actions[0]->GetURLForJournal(), task_->id(),
-        mojom::JournalTrack::kActor, "Act Failed",
+        actions[0]->GetURLForJournal(), task_->id(), "Act Failed",
         JournalDetailsBuilder()
             .AddError(
                 "Unable to perform action: task already has action in progress")
@@ -361,8 +359,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
 
   if (!tab) {
-    journal_->Log(GURL::EmptyGURL(), task_->id(), mojom::JournalTrack::kActor,
-                  "Act Failed",
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("The tab is no longer present")
                       .Build());
@@ -390,8 +387,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 
   tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
   if (!tab) {
-    journal_->Log(GURL::EmptyGURL(), task_->id(), mojom::JournalTrack::kActor,
-                  "Act Failed",
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("The tab is no longer present")
                       .Build());
@@ -410,8 +406,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
-    journal_->Log(GetNextAction().GetURLForJournal(), task_id,
-                  mojom::JournalTrack::kActor, "Act Failed",
+    journal_->Log(GetNextAction().GetURLForJournal(), task_id, "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("Acting after cross-origin navigation occurred")
                       .Build());
@@ -425,8 +420,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 
   if (!may_act) {
     journal_->Log(
-        GetNextAction().GetURLForJournal(), task_id,
-        mojom::JournalTrack::kActor, "Act Failed",
+        GetNextAction().GetURLForJournal(), task_id, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
     FailedOnTabBeforeToolCreation();
     CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
@@ -441,8 +435,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 
 void ExecutionEngine::FailedOnTabBeforeToolCreation() {
   tabs::TabHandle tab = GetNextAction().GetTabHandle();
-  journal_->Log(GetNextAction().GetURLForJournal(), task_->id(),
-                mojom::JournalTrack::kActor, "Act Failed",
+  journal_->Log(GetNextAction().GetURLForJournal(), task_->id(), "Act Failed",
                 JournalDetailsBuilder()
                     .Add("tabId", tab.raw_value())
                     .AddError("Associating tab for failed action")
@@ -549,7 +542,7 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
       url = action_sequence_[*action_index]->GetURLForJournal();
     }
     journal_->Log(
-        url, task_->id(), mojom::JournalTrack::kActor, "Act Failed",
+        url, task_->id(), "Act Failed",
         JournalDetailsBuilder().AddError(ToDebugString(*result)).Build());
   }
 

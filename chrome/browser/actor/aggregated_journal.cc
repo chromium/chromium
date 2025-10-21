@@ -81,14 +81,14 @@ AggregatedJournal::PendingAsyncEntry::PendingAsyncEntry(
     base::PassKey<AggregatedJournal> pass_key,
     base::SafeRef<AggregatedJournal> journal,
     TaskId task_id,
-    mojom::JournalTrack track,
-    std::string_view event_name)
+    std::string_view event_name,
+    uint64_t track_uuid)
     : pass_key_(pass_key),
       journal_(journal),
       task_id_(task_id),
-      track_(track),
       event_name_(event_name),
-      begin_time_(base::TimeTicks::Now()) {}
+      begin_time_(base::TimeTicks::Now()),
+      track_uuid_(track_uuid) {}
 
 AggregatedJournal::PendingAsyncEntry::~PendingAsyncEntry() {
   if (!terminated_) {
@@ -101,7 +101,7 @@ void AggregatedJournal::PendingAsyncEntry::EndEntry(
   CHECK(!terminated_);
   terminated_ = true;
   ACTOR_LOG() << "End " << event_name_ << ": " << details;
-  journal_->AddEndEvent(pass_key_, task_id_, track_, event_name_,
+  journal_->AddEndEvent(pass_key_, task_id_, event_name_, track_uuid_,
                         std::move(details));
 }
 
@@ -117,36 +117,49 @@ base::SafeRef<AggregatedJournal> AggregatedJournal::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
 }
 
+uint64_t AggregatedJournal::AllocateDynamicTrackUUID() {
+  static uint64_t next_track_id = 1000;
+  return ++next_track_id;
+}
+
 std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
 AggregatedJournal::CreatePendingAsyncEntry(
     const GURL& url,
     TaskId task_id,
-    mojom::JournalTrack track,
+    uint64_t track_uuid,
     std::string_view event_name,
     std::vector<mojom::JournalDetailsPtr> details) {
   ACTOR_LOG() << "Begin " << event_name << ": " << details;
 
   AddEntry(std::make_unique<Entry>(
       url.possibly_invalid_spec(),
-      mojom::JournalEntry::New(mojom::JournalEntryType::kBegin, task_id, track,
+      mojom::JournalEntry::New(mojom::JournalEntryType::kBegin, task_id,
                                base::Time::Now(), std::string(event_name),
-                               std::move(details))));
+                               track_uuid, std::move(details))));
   return base::WrapUnique(new PendingAsyncEntry(
       base::PassKey<AggregatedJournal>(), weak_ptr_factory_.GetSafeRef(),
-      task_id, track, event_name));
+      task_id, event_name, track_uuid));
 }
 
 void AggregatedJournal::Log(const GURL& url,
                             TaskId task_id,
-                            mojom::JournalTrack track,
+                            std::string_view event_name,
+                            std::vector<mojom::JournalDetailsPtr> details) {
+  Log(url, task_id, MakeBrowserTrackUUID(task_id), event_name,
+      std::move(details));
+}
+
+void AggregatedJournal::Log(const GURL& url,
+                            TaskId task_id,
+                            uint64_t track_uuid,
                             std::string_view event_name,
                             std::vector<mojom::JournalDetailsPtr> details) {
   ACTOR_LOG() << event_name << ": " << details;
   AddEntry(std::make_unique<Entry>(
       url.possibly_invalid_spec(),
       mojom::JournalEntry::New(mojom::JournalEntryType::kInstant, task_id,
-                               track, base::Time::Now(),
-                               std::string(event_name), std::move(details))));
+                               base::Time::Now(), std::string(event_name),
+                               track_uuid, std::move(details))));
 }
 
 void AggregatedJournal::EnsureJournalBound(content::RenderFrameHost& rfh) {
@@ -182,13 +195,14 @@ void AggregatedJournal::AppendJournalEntries(
 void AggregatedJournal::AddEndEvent(
     base::PassKey<AggregatedJournal> pass_key,
     TaskId task_id,
-    mojom::JournalTrack track,
     const std::string& event_name,
+    uint64_t track_uuid,
     std::vector<mojom::JournalDetailsPtr> details) {
   AddEntry(std::make_unique<Entry>(
-      std::string(), mojom::JournalEntry::New(mojom::JournalEntryType::kEnd,
-                                              task_id, track, base::Time::Now(),
-                                              event_name, std::move(details))));
+      std::string(),
+      mojom::JournalEntry::New(mojom::JournalEntryType::kEnd, task_id,
+                               base::Time::Now(), event_name, track_uuid,
+                               std::move(details))));
 }
 
 void AggregatedJournal::LogScreenshot(const GURL& url,
@@ -198,8 +212,8 @@ void AggregatedJournal::LogScreenshot(const GURL& url,
   auto entry = std::make_unique<Entry>(
       url.possibly_invalid_spec(),
       mojom::JournalEntry::New(
-          mojom::JournalEntryType::kInstant, task_id,
-          mojom::JournalTrack::kActor, base::Time::Now(), "Screenshot",
+          mojom::JournalEntryType::kInstant, task_id, base::Time::Now(),
+          "Screenshot", MakeBrowserTrackUUID(task_id),
           /*details=*/std::vector<mojom::JournalDetailsPtr>()));
   entry->screenshot.emplace(data.begin(), data.end());
   AddEntry(std::move(entry));
@@ -212,8 +226,8 @@ void AggregatedJournal::LogAnnotatedPageContent(
   auto entry = std::make_unique<Entry>(
       url.possibly_invalid_spec(),
       mojom::JournalEntry::New(
-          mojom::JournalEntryType::kInstant, task_id,
-          mojom::JournalTrack::kActor, base::Time::Now(), "PageContext",
+          mojom::JournalEntryType::kInstant, task_id, base::Time::Now(),
+          "PageContext", MakeBrowserTrackUUID(task_id),
           /*details=*/std::vector<mojom::JournalDetailsPtr>()));
   entry->annotated_page_content.emplace(data.begin(), data.end());
   AddEntry(std::move(entry));

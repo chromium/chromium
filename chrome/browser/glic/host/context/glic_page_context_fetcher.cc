@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -163,8 +164,8 @@ void FetchPageContext(
           actor::ActorKeyedService::Get(web_contents->GetBrowserContext())) {
     const GURL& url = web_contents->GetLastCommittedURL();
     journal_entry = actor_keyed_service->GetJournal().CreatePendingAsyncEntry(
-        url, actor::TaskId(), actor::mojom::JournalTrack::kActor,
-        "GlicFetchPageContext", {});
+        url, actor::TaskId(), actor::kGlobalTrackUUID, "GlicFetchPageContext",
+        {});
     progress_listener = actor::CreateActorJournalFetchPageProgressListener(
         actor_keyed_service->GetJournal().GetSafeRef(), url, actor::TaskId());
   }

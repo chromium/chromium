@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -33,14 +34,16 @@ std::string ToString(actor::mojom::JournalEntryType type) {
   }
   NOTREACHED();
 }
-std::string ToString(actor::mojom::JournalTrack type) {
-  switch (type) {
-    case actor::mojom::JournalTrack::kFrontEnd:
-      return "FrontEnd";
-    case actor::mojom::JournalTrack::kActor:
-      return "Actor";
+std::string ToString(uint64_t track_uuid, actor::TaskId task_id) {
+  if (actor::MakeFrontEndTrackUUID(task_id) == track_uuid) {
+    return "FrontEnd";
+  } else if (actor::MakeBrowserTrackUUID(task_id) == track_uuid) {
+    return "Browser";
+  } else if (actor::MakeRendererTrackUUID(task_id) == track_uuid) {
+    return "Renderer";
+  } else {
+    return base::NumberToString(track_uuid);
   }
-  NOTREACHED();
 }
 
 }  // namespace
@@ -79,7 +82,7 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
       entry.url, entry.data->event, ToString(entry.data->type),
       std::move(details), entry.data->timestamp, entry.data->task_id.value(),
-      ToString(entry.data->track), entry.screenshot));
+      ToString(entry.data->track_uuid, entry.data->task_id), entry.screenshot));
 }
 
 void ActorInternalsUIHandler::StartLogging() {

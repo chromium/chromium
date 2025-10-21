@@ -60,7 +60,7 @@ void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
                                      DecisionCallback callback) {
   if (!has_actuation_capability_) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
-                mojom::JournalTrack::kActor, "MayActOnTab",
+                "MayActOnTab",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")
                     .Build());
@@ -78,7 +78,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      TaskId task_id,
                                      DecisionCallback callback) {
   if (!has_actuation_capability_) {
-    journal.Log(url, task_id, mojom::JournalTrack::kActor, "MayActOnUrl",
+    journal.Log(url, task_id, "MayActOnUrl",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")
                     .Build());

@@ -189,8 +189,7 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   }
 
   journal().Log(
-      JournalURL(), task_id(), mojom::JournalTrack::kActor,
-      "TimeOfUseValidation",
+      JournalURL(), task_id(), "TimeOfUseValidation",
       JournalDetailsBuilder().Add("tab_handle", tab->GetHandle()).Build());
 
   RenderFrameHost* frame =
@@ -215,8 +214,7 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
                                           request_->GetTarget());
 
   if (!observed_target_node_info) {
-    journal().Log(JournalURL(), task_id(), mojom::JournalTrack::kActor,
-                  "TimeOfUseValidation",
+    journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",
                   JournalDetailsBuilder()
                       .Add("details", "No observed target found in APC.")
                       .Build());

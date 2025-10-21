@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/aggregated_journal_serializer.h"
 
 #include "base/containers/span.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/tracing/common/system_profile_metadata_recorder.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
@@ -31,8 +32,6 @@ uint64_t NowInNanoseconds() {
   return (base::Time::Now() - base::Time::UnixEpoch()).InNanoseconds();
 }
 
-const uint64_t kFrontEndId = 0x100000000;
-
 }  // namespace
 
 AggregatedJournalSerializer::AggregatedJournalSerializer(
@@ -46,6 +45,7 @@ void AggregatedJournalSerializer::InitImpl() {
 
 void AggregatedJournalSerializer::WriteTracePreamble() {
   observed_task_ids_.clear();
+  observed_track_ids_.clear();
   // Write initial message in protobuf.
   {
     protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> init_msg;
@@ -106,6 +106,8 @@ AggregatedJournalSerializer::~AggregatedJournalSerializer() {
 void AggregatedJournalSerializer::WillAddJournalEntry(
     const AggregatedJournal::Entry& entry) {
   ObservedTaskId(entry.data->task_id);
+  ObservedTrackId(entry.data->track_uuid, entry.data->task_id,
+                  entry.data->event);
 
   protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
   msg->set_trusted_packet_sequence_id(sequence_id_++);
@@ -128,13 +130,7 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   }
   track_event->set_type(pb_type);
   track_event->set_name(entry.data->event);
-  if (int32_t task_id = entry.data->task_id.value(); task_id != 0) {
-    uint64_t track_uuid = task_id;
-    if (entry.data->track == mojom::JournalTrack::kFrontEnd) {
-      track_uuid += kFrontEndId;
-    }
-    track_event->set_track_uuid(track_uuid);
-  }
+  track_event->set_track_uuid(entry.data->track_uuid);
 
   // For Perfetto to read screenshots we need to have the category as
   // "android_screenshot". See
@@ -186,8 +182,8 @@ void AggregatedJournalSerializer::ObservedTaskId(TaskId task_id) {
     msg->set_timestamp_clock_id(
         perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
     auto* track_descriptor = msg->set_track_descriptor();
-    track_descriptor->set_uuid(kFrontEndId + task_id.value());
-    track_descriptor->set_name("Front End");
+    track_descriptor->set_uuid(task_id.value());
+    track_descriptor->set_name("Actor Task Default");
     auto* process_descriptor = track_descriptor->set_process();
     process_descriptor->set_pid(task_id.value());
     WriteTracePacket(msg.SerializeAsArray());
@@ -199,11 +195,69 @@ void AggregatedJournalSerializer::ObservedTaskId(TaskId task_id) {
     msg->set_timestamp_clock_id(
         perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
     auto* track_descriptor = msg->set_track_descriptor();
-    track_descriptor->set_uuid(task_id.value());
-    track_descriptor->set_parent_uuid(kFrontEndId + task_id.value());
-    track_descriptor->set_name("Chrome (actor)");
+    track_descriptor->set_uuid(MakeFrontEndTrackUUID(task_id));
+    track_descriptor->set_parent_uuid(task_id.value());
+    track_descriptor->set_name("Front End");
     WriteTracePacket(msg.SerializeAsArray());
   }
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+    track_descriptor->set_uuid(MakeBrowserTrackUUID(task_id));
+    track_descriptor->set_parent_uuid(task_id.value());
+    track_descriptor->set_name("Browser");
+    WriteTracePacket(msg.SerializeAsArray());
+  }
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+    track_descriptor->set_uuid(MakeRendererTrackUUID(task_id));
+    track_descriptor->set_parent_uuid(task_id.value());
+    track_descriptor->set_name("Renderer");
+    WriteTracePacket(msg.SerializeAsArray());
+  }
+  observed_task_ids_.insert(task_id);
+  observed_track_ids_.insert(task_id.value());
+  observed_track_ids_.insert(MakeFrontEndTrackUUID(task_id));
+  observed_track_ids_.insert(MakeBrowserTrackUUID(task_id));
+  observed_track_ids_.insert(MakeRendererTrackUUID(task_id));
+}
+
+void AggregatedJournalSerializer::ObservedTrackId(
+    uint64_t track_uuid,
+    TaskId task_id,
+    const std::string& event_name) {
+  if (track_uuid == 0 || task_id.value() == 0 ||
+      observed_track_ids_.contains(track_uuid)) {
+    return;
+  }
+
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+
+    // For any dynamic track, associate them with the browser track and
+    // the name of the first event causing that track.
+    // We may need to adjust this if the Renderer or front end start
+    // producing dynamic tracks.
+    track_descriptor->set_uuid(track_uuid);
+    track_descriptor->set_parent_uuid(MakeBrowserTrackUUID(task_id));
+    track_descriptor->set_name(event_name);
+    WriteTracePacket(msg.SerializeAsArray());
+  }
+  observed_track_ids_.insert(track_uuid);
 }
 
 }  // namespace actor

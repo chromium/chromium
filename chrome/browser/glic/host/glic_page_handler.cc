@@ -374,10 +374,11 @@ class JournalHandler {
       active_journal_events_.erase(it);
     }
 
+    auto actor_task_id = actor::TaskId(task_id);
     active_journal_events_[event_async_id] =
         actor_keyed_service_->GetJournal().CreatePendingAsyncEntry(
-            /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id),
-            actor::mojom::JournalTrack::kFrontEnd, event,
+            /*url=*/GURL::EmptyGURL(), actor_task_id,
+            actor::MakeFrontEndTrackUUID(actor_task_id), event,
             actor::JournalDetailsBuilder()
                 .Add("begin_details", details)
                 .Build());
@@ -410,9 +411,10 @@ class JournalHandler {
   void LogInstantEvent(int32_t task_id,
                        const std::string& event,
                        const std::string& details) {
+    auto actor_task_id = actor::TaskId(task_id);
     actor_keyed_service_->GetJournal().Log(
-        /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id),
-        actor::mojom::JournalTrack::kFrontEnd, event,
+        /*url=*/GURL::EmptyGURL(), actor_task_id,
+        actor::MakeFrontEndTrackUUID(actor_task_id), event,
         actor::JournalDetailsBuilder().Add("details", details).Build());
   }
 

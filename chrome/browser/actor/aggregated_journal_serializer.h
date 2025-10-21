@@ -27,12 +27,16 @@ class AggregatedJournalSerializer : public AggregatedJournal::Observer {
   void InitImpl();
   void WriteTracePreamble();
   void ObservedTaskId(TaskId task_id);
+  void ObservedTrackId(uint64_t track_uuid,
+                       TaskId task_id,
+                       const std::string& event_name);
 
   // Subclasses should implement this to receive generated data.
   virtual void WriteTracePacket(std::vector<uint8_t> message) = 0;
 
  private:
   std::set<TaskId> observed_task_ids_;
+  std::set<uint64_t> observed_track_ids_;
   base::SafeRef<AggregatedJournal> journal_;
   size_t sequence_id_ = 1;
 };

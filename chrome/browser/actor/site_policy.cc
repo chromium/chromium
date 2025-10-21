@@ -63,7 +63,7 @@ class DecisionWrapper {
         journal_entry_(
             journal.CreatePendingAsyncEntry(url,
                                             task_id,
-                                            mojom::JournalTrack::kActor,
+                                            MakeBrowserTrackUUID(task_id),
                                             event_name,
                                             {})) {}
 

@@ -72,8 +72,8 @@ void Journal::Log(TaskId task_id,
   }
 
   auto journal_entry = mojom::JournalEntry::New(
-      mojom::JournalEntryType::kInstant, task_id, mojom::JournalTrack::kActor,
-      base::Time::Now(), std::string(event), std::move(details));
+      mojom::JournalEntryType::kInstant, task_id, base::Time::Now(),
+      std::string(event), MakeRendererTrackUUID(task_id), std::move(details));
 
   AddJournalEntry(std::move(journal_entry));
 }
@@ -85,8 +85,9 @@ std::unique_ptr<Journal::PendingAsyncEntry> Journal::CreatePendingAsyncEntry(
   ACTOR_LOG() << "Begin " << event_name << ": " << details;
 
   AddJournalEntry(mojom::JournalEntry::New(
-      mojom::JournalEntryType::kBegin, task_id, mojom::JournalTrack::kActor,
-      base::Time::Now(), std::string(event_name), std::move(details)));
+      mojom::JournalEntryType::kBegin, task_id, base::Time::Now(),
+      std::string(event_name), MakeRendererTrackUUID(task_id),
+      std::move(details)));
   return base::WrapUnique(new PendingAsyncEntry(base::PassKey<Journal>(),
                                                 weak_factory_.GetSafeRef(),
                                                 task_id, event_name));
@@ -115,8 +116,8 @@ void Journal::AddEndEvent(base::PassKey<Journal> pass_key,
                           const std::string& event_name,
                           std::vector<mojom::JournalDetailsPtr> details) {
   AddJournalEntry(mojom::JournalEntry::New(
-      mojom::JournalEntryType::kEnd, task_id, mojom::JournalTrack::kActor,
-      base::Time::Now(), event_name, std::move(details)));
+      mojom::JournalEntryType::kEnd, task_id, base::Time::Now(), event_name,
+      MakeRendererTrackUUID(task_id), std::move(details)));
 }
 
 void Journal::SendLogBuffer() {
