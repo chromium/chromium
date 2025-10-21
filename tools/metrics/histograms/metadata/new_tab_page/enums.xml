@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AimToolState">
+  <int value="0" label="AIM Tool Disabled"/>
+  <int value="1" label="AIM Tool Enabled"/>
+</enum>
+
 <enum name="BooleanFromHTTPCache">
   <int value="0" label="Downloaded from network"/>
   <int value="1" label="HTTP cache hit"/>
@@ -36,6 +41,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Too many files uploaded"/>
   <int value="2" label="File is empty"/>
   <int value="3" label="File size is too large"/>
+</enum>
+
+<enum name="ComposeboxSubmissionType">
+  <int value="0" label="Submission with no tools"/>
+  <int value="1" label="DeepSearch"/>
+  <int value="2" label="CreateImages"/>
 </enum>
 
 <enum name="FailToShowHomeSurfaceReason">
