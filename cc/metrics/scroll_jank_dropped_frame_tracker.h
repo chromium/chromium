@@ -11,6 +11,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_ukm_reporter.h"
+#include "cc/metrics/scroll_jank_v4_decider.h"
 
 namespace cc {
 class ScrollJankUkmReporter;
@@ -89,79 +90,14 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
       bool has_inertial_input,
       float abs_total_raw_delta_pixels,
       float max_abs_inertial_raw_delta_pixels);
-  JankReasonArray<int> CalculateMissedVsyncsPerReasonV4(
-      int curr_frame_total_vsyncs,
-      base::TimeTicks first_input_generation_v4_ts,
-      base::TimeTicks presentation_ts,
-      base::TimeDelta vsync_interval,
-      float abs_total_raw_delta_pixels,
-      float max_abs_inertial_raw_delta_pixels,
-      ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;
   void UpdateDelayedFrameAndMissedVsyncCountersV4(
-      const JankReasonArray<int> missed_vsyncs_per_reason);
+      const JankReasonArray<int>& missed_vsyncs_per_reason);
 
   // We could have two different frames with same presentation time and due to
   // this just having previous frame's data is not enough for calculating the
   // metric.
   base::TimeTicks prev_presentation_ts_;
   base::TimeTicks prev_last_input_generation_ts_;
-
-  // Information about the previous frame relevant for the scroll jank v4
-  // metric.
-  struct PreviousFrameDataV4 {
-    // Whether the previous frame contained an inertial input (i.e. was it a
-    // fling).
-    bool has_inertial_input;
-
-    // The absolute total raw (unpredicted) delta of all inputs included in the
-    // previous frame (in pixels).
-    float abs_total_raw_delta_pixels;
-
-    // The running delivery cut-off. At a high-level, this value represents how
-    // quickly Chrome was previously able to present inputs (weighted towards
-    // recent frames). If Chrome misses a VSync, the scroll jank v4 metric will
-    // judge the subsequent frame (i.e. determine whether the frame should be
-    // marked as janky) against this value. This value equals:
-    //
-    // ```
-    // min_{i from 1 to N} (
-    //   presentation_ts[i]
-    //     - last_input_generation_ts[i]
-    //     + (
-    //         VsyncsBetween(i, N)
-    //           * features::kScrollJankV4MetricDiscountFactor.Get()
-    //           * vsync_interval
-    //       )
-    // )
-    // ```
-    //
-    // where:
-    //
-    //   * `i = 1` corresponds to the frame that the scroll jank v4 metric
-    //     (`ReportLatestPresentationDataV4()`) has most recently marked as
-    //     janky (or the first frame in the current scroll if the metric hasn't
-    //     marked any frame in this scroll as janky).
-    //   * `i = N` corresponds to the frame that the scroll jank v4 metric
-    //     (`ReportLatestPresentationDataV4()`) has most recently processed.
-    //   * `presentation_ts[i]` and `last_input_generation_ts[i]` refer to the
-    //     values supplied to previous `ReportLatestPresentationDataV4()` calls.
-    //   * `VsyncsBetween(i, N)` is approximately:
-    //
-    //     ```
-    //     (presentation_ts[N] - presentation_s[i] + (vsync_interval / 2))
-    //       / vsync_interval
-    //     ```
-    //
-    // See
-    // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
-    // for more details.
-    base::TimeDelta running_delivery_cutoff;
-  };
-
-  // Empty if no frames have been presented in the current scroll yet
-  // (i.e. `ReportLatestPresentationDataV4()` hasn't been called since the
-  // last `OnScrollStarted()` call).
-  std::optional<PreviousFrameDataV4> prev_frame_data_;
 
   struct JankData {
     // Number of frames which were deemed janky.
@@ -214,6 +150,7 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   std::optional<JankDataPerScrollV4> per_scroll_v4_;
 
   raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
+  ScrollJankV4Decider v4_decider_;
 };
 
 }  // namespace cc
