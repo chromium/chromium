@@ -41,6 +41,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -805,7 +806,7 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlagsBaseInternal {
              UsePaintCache use_paint_cache = UsePaintCache::kEnabled)
       : PaintOpWithFlagsBaseInternal(kType, flags),
         path(path),
-        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())),
+        sk_path_fill_type(path.getFillType()),
         use_cache(use_paint_cache) {}
   static void RasterWithFlags(const DrawPathOp* op,
                               const PaintFlags* flags,
@@ -822,7 +823,7 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlagsBaseInternal {
   // generation id. This can lead to caching issues so we explicitly
   // serialize/deserialize this value and set it on the SkPath before handing it
   // to Skia.
-  uint8_t sk_path_fill_type;
+  SkPathFillType sk_path_fill_type;
   UsePaintCache use_cache = UsePaintCache::kDisabled;
 
  private:

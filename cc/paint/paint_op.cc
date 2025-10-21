@@ -968,7 +968,7 @@ PaintOp* DrawPathOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
   reader.Read(&op->path);
   reader.Read(&op->sk_path_fill_type);
-  op->path.setFillType(static_cast<SkPathFillType>(op->sk_path_fill_type));
+  op->path.setFillType(op->sk_path_fill_type);
   return op;
 }
 
