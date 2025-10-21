@@ -69,6 +69,7 @@ source_set("suggestions") {
     "//ios/chrome/common:string_conversions",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:image_util",
+    "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//net",
     "//ui/base",

@@ -23,14 +23,10 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-/// Hard-coded here to avoid dependency on //content. This needs to be kept in
-/// sync with kChromeUIScheme in `content/public/common/url_constants.h`.
-const char kChromeUIScheme[] = "chrome";
-
 const CGFloat kSymbolSize = 18;
 }  // namespace
 
