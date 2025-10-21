@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <string>
 #include <tuple>
 
 #include "base/check.h"
@@ -126,6 +127,8 @@ struct TimestampedPrefValueInternal {
   base::Time device_last_updated_timestamp;
   // Timestamp indicating when the tracked pref was observed to change locally.
   base::Time last_observed_change_time;
+  // Sync specific unique identifier for the device.
+  std::string device_sync_cache_guid;
 
   // Sort by most recent time.
   // Primary key: `update_timestamp`.
@@ -138,7 +141,8 @@ struct TimestampedPrefValueInternal {
 
   // Converts the internal representation to the public API structure.
   TimestampedPrefValue ToPublicApi() && {
-    return TimestampedPrefValue{std::move(value), last_observed_change_time};
+    return TimestampedPrefValue{std::move(value), last_observed_change_time,
+                                std::move(device_sync_cache_guid)};
   }
 };
 
@@ -256,7 +260,8 @@ std::optional<TimestampedPrefValueInternal> ParseCrossDevicePrefEntry(
   // Populate all fields, including the tie-breaker.
   return TimestampedPrefValueInternal{value->Clone(), update_timestamp.value(),
                                       device_info.last_updated_timestamp(),
-                                      last_observed_change_time};
+                                      last_observed_change_time,
+                                      device_info.guid()};
 }
 
 // Enforces the integrity of a pref mapping at startup to prevent runtime

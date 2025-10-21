@@ -70,9 +70,13 @@ MATCHER_P(HasIntValue, expected_value, "") {
   return true;
 }
 
-// A gMock matcher to verify both the integer value and the last observed change
-// time inside a TimestampedPrefValue.
-MATCHER_P2(IsTimestampedPrefValue, expected_value, expected_time, "") {
+// A gMock matcher to verify the integer value, the last observed change
+// time, and the guid inside a TimestampedPrefValue.
+MATCHER_P3(IsTimestampedPrefValue,
+           expected_value,
+           expected_time,
+           expected_guid,
+           "") {
   if (!arg.value.is_int()) {
     *result_listener << "whose 'value' is not an integer (" << arg.value << ")";
     return false;
@@ -85,6 +89,10 @@ MATCHER_P2(IsTimestampedPrefValue, expected_value, expected_time, "") {
   if (arg.last_observed_change_time != expected_time) {
     *result_listener << "whose 'last_observed_change_time' is "
                      << arg.last_observed_change_time;
+    return false;
+  }
+  if (arg.device_sync_cache_guid != expected_guid) {
+    *result_listener << "whose 'guid' is " << arg.device_sync_cache_guid;
     return false;
   }
   return true;
@@ -595,9 +603,10 @@ TEST_F(CrossDevicePrefTrackerTest,
   InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, "guid3", base::Value(300),
                              kTime2, kTime1);
 
-  auto expected_results = testing::ElementsAre(
-      IsTimestampedPrefValue(200, base::Time()),
-      IsTimestampedPrefValue(300, kTime1), IsTimestampedPrefValue(100, kTime1));
+  auto expected_results =
+      testing::ElementsAre(IsTimestampedPrefValue(200, base::Time(), "guid2"),
+                           IsTimestampedPrefValue(300, kTime1, "guid3"),
+                           IsTimestampedPrefValue(100, kTime1, "guid1"));
 
   // Query using the tracked pref name.
   std::vector<TimestampedPrefValue> results =
@@ -640,6 +649,7 @@ TEST_F(CrossDevicePrefTrackerTest, GetMostRecentValue) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value.GetInt(), 200);
   EXPECT_EQ(result->last_observed_change_time, kTime2);
+  EXPECT_EQ(result->device_sync_cache_guid, "guid2");
 
   // Query the most recent value using the cross-device pref name.
   std::optional<TimestampedPrefValue> result_cross_device =
@@ -648,6 +658,7 @@ TEST_F(CrossDevicePrefTrackerTest, GetMostRecentValue) {
   ASSERT_TRUE(result_cross_device.has_value());
   EXPECT_EQ(result_cross_device->value.GetInt(), 200);
   EXPECT_EQ(result_cross_device->last_observed_change_time, kTime2);
+  EXPECT_EQ(result_cross_device->device_sync_cache_guid, "guid2");
 }
 
 // Verifies that GetValues can filter results based on OS Type.
@@ -816,6 +827,7 @@ TEST_F(CrossDevicePrefTrackerTest, GetMostRecentValueWithFilter) {
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value.GetInt(), 100);
+  EXPECT_EQ(result->device_sync_cache_guid, "guid_win");
 }
 
 // Verifies that GetValues gracefully handles Cache GUIDs present in the pref
@@ -965,7 +977,7 @@ TEST_F(CrossDevicePrefTrackerTest,
       OnRemotePrefChanged(
           testing::StrEq(kTrackedProfilePref),
           // Value 100, No observed time (base::Time()).
-          IsTimestampedPrefValue(kNewValue, base::Time()),
+          IsTimestampedPrefValue(kNewValue, base::Time(), kRemoteGuid),
           // Use testing::Ref to ensure the correct DeviceInfo is passed.
           testing::Ref(*remote_device)));
 
@@ -1068,9 +1080,10 @@ TEST_F(CrossDevicePrefTrackerTest,
   // Expect a notification now that the DeviceInfo is available, triggered by
   // HandleRemoteDeviceInfoChanges().
   EXPECT_CALL(mock_observer,
-              OnRemotePrefChanged(testing::StrEq(kTrackedProfilePref),
-                                  IsTimestampedPrefValue(kValue, base::Time()),
-                                  testing::Ref(*remote_device)));
+              OnRemotePrefChanged(
+                  testing::StrEq(kTrackedProfilePref),
+                  IsTimestampedPrefValue(kValue, base::Time(), kRemoteGuid),
+                  testing::Ref(*remote_device)));
 
   // Adding the device triggers OnDeviceInfoChange().
   GetTracker()->Add(remote_device.get());
@@ -1099,13 +1112,15 @@ TEST_F(CrossDevicePrefTrackerTest, HandlesMultipleObserversAndPrefs) {
 
   // Expect both observers to be notified for the first pref change.
   EXPECT_CALL(mock_observer1,
-              OnRemotePrefChanged(testing::StrEq(kTrackedProfilePref),
-                                  IsTimestampedPrefValue(100, base::Time()),
-                                  testing::Ref(*remote_device)));
+              OnRemotePrefChanged(
+                  testing::StrEq(kTrackedProfilePref),
+                  IsTimestampedPrefValue(100, base::Time(), kRemoteGuid),
+                  testing::Ref(*remote_device)));
   EXPECT_CALL(mock_observer2,
-              OnRemotePrefChanged(testing::StrEq(kTrackedProfilePref),
-                                  IsTimestampedPrefValue(100, base::Time()),
-                                  testing::Ref(*remote_device)));
+              OnRemotePrefChanged(
+                  testing::StrEq(kTrackedProfilePref),
+                  IsTimestampedPrefValue(100, base::Time(), kRemoteGuid),
+                  testing::Ref(*remote_device)));
 
   InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
                              base::Value(100), kTime1, std::nullopt);
@@ -1119,7 +1134,7 @@ TEST_F(CrossDevicePrefTrackerTest, HandlesMultipleObserversAndPrefs) {
       mock_observer1,
       OnRemotePrefChanged(testing::StrEq(kTrackedLocalStatePref),
                           // Observed time included in this notification.
-                          IsTimestampedPrefValue(200, kTime2),
+                          IsTimestampedPrefValue(200, kTime2, kRemoteGuid),
                           testing::Ref(*remote_device)));
   EXPECT_CALL(mock_observer2, OnRemotePrefChanged).Times(0);
 

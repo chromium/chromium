@@ -25,16 +25,20 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
   switch (input.value.type()) {
     case base::Value::Type::BOOLEAN:
       return Java_TimestampedPrefValue_createBooleanPrefValue(
-          env, input.value.GetBool(), last_observed_change_time_ms);
+          env, input.value.GetBool(), last_observed_change_time_ms,
+          input.device_sync_cache_guid);
     case base::Value::Type::DOUBLE:
       return Java_TimestampedPrefValue_createDoublePrefValue(
-          env, input.value.GetDouble(), last_observed_change_time_ms);
+          env, input.value.GetDouble(), last_observed_change_time_ms,
+          input.device_sync_cache_guid);
     case base::Value::Type::INTEGER:
       return Java_TimestampedPrefValue_createIntegerPrefValue(
-          env, input.value.GetInt(), last_observed_change_time_ms);
+          env, input.value.GetInt(), last_observed_change_time_ms,
+          input.device_sync_cache_guid);
     case base::Value::Type::STRING:
       return Java_TimestampedPrefValue_createStringPrefValue(
-          env, input.value.GetString(), last_observed_change_time_ms);
+          env, input.value.GetString(), last_observed_change_time_ms,
+          input.device_sync_cache_guid);
     case base::Value::Type::BINARY:
       // TODO(crbug.com/433719441): Implement this if needed.
       NOTREACHED() << "Converting TimestampedPrefValue with Binary value is "
