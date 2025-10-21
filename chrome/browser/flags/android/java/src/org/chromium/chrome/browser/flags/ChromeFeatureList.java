@@ -1081,7 +1081,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarTabletResizeRefactor =
-            newCachedFlag(TOOLBAR_TABLET_RESIZE_REFACTOR, /* defaultValue= */ false);
+            newCachedFlag(
+                    TOOLBAR_TABLET_RESIZE_REFACTOR,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTopControlsRefactor =
             newCachedFlag(
                     TOP_CONTROLS_REFACTOR,
