@@ -4865,6 +4865,12 @@ inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
     "Enables large display specific layout/renderer settings for "
     "Android large form factor devices";
 
+inline constexpr char kAndroidDesktopZoomScalingName[] =
+    "Android Desktop Zoom Scaling";
+inline constexpr char kAndroidDesktopZoomScalingDescription[] =
+    "When enabled, this feature will scale the Desktop Android web content up "
+    "by some percentage, transparent to the user.";
+
 inline constexpr char kAndroidDocumentPictureInPictureName[] =
     "Enable Document Picture-In-Picture in desktop windowing on Android.";
 inline constexpr char kAndroidDocumentPictureInPictureDescription[] =

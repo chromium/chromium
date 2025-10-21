@@ -182,6 +182,7 @@ public abstract class ChromeFeatureList {
             "AndroidContextMenuDuplicateTabs";
     public static final String ANDROID_DATA_IMPORTER_SERVICE = "AndroidDataImporterService";
     public static final String ANDROID_DESKTOP_DENSITY = "AndroidDesktopDensity";
+    public static final String ANDROID_DESKTOP_ZOOM_SCALING = "AndroidDesktopZoomScaling";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_FIRST_RUN_LAUNCH_BOUNDS = "AndroidFirstRunLaunchBounds";
     public static final String ANDROID_LOGO_VIEW_REFACTOR = "AndroidLogoViewRefactor";

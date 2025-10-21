@@ -37,6 +37,7 @@ BASE_DECLARE_FEATURE(kAndroidComposeplateAllLocales);
 BASE_DECLARE_FEATURE(kAndroidContextMenuDuplicateTabs);
 BASE_DECLARE_FEATURE(kAndroidDataImporterService);
 BASE_DECLARE_FEATURE(kAndroidDesktopDensity);
+BASE_DECLARE_FEATURE(kAndroidDesktopZoomScaling);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidFirstRunLaunchBounds);
 BASE_DECLARE_FEATURE(kAndroidLogoViewRefactor);

@@ -9778,6 +9778,7 @@ from previous Chrome versions.
   <int value="-1599780676" label="FastDrmMasterDrop:disabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
   <int value="-1598785167" label="RequestDesktopSiteAdditions:disabled"/>
+  <int value="-1598163341" label="AndroidDesktopZoomScaling:disabled"/>
   <int value="-1597399851" label="ProductSpecificationsSync:disabled"/>
   <int value="-1597088741" label="RequestDesktopSiteAdditions:enabled"/>
   <int value="-1597053083" label="RelatedSearchesInBar:enabled"/>
@@ -18162,6 +18163,7 @@ from previous Chrome versions.
   <int value="1376062044" label="StopAppIndexingReport:enabled"/>
   <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
+  <int value="1376355300" label="AndroidDesktopZoomScaling:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
   <int value="1376758377" label="StaticStorageQuota:disabled"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>

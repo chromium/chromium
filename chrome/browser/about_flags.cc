@@ -13351,6 +13351,12 @@ const FeatureEntry kFeatureEntries[] = {
          network::features::kUseUnexportableKeyServiceInBrowserProcess)}
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-desktop-zoom-scaling",
+     flag_descriptions::kAndroidDesktopZoomScalingName,
+     flag_descriptions::kAndroidDesktopZoomScalingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopZoomScaling)},
+#endif
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
