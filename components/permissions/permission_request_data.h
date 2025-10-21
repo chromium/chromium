@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/values.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
@@ -77,7 +78,9 @@ struct PermissionRequestData {
   }
 
   bool IsEligibleForHeuristicAutoGrant() const {
-    return embedded_permission_request_descriptor &&
+    return base::FeatureList::IsEnabled(
+               features::kPermissionHeuristicAutoGrant) &&
+           embedded_permission_request_descriptor &&
            embedded_permission_request_descriptor->geolocation &&
            !embedded_permission_request_descriptor->geolocation->autolocate;
   }

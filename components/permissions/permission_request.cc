@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
@@ -187,9 +186,7 @@ bool PermissionRequest::IsGeolocationElementInitiated() const {
 }
 
 bool PermissionRequest::IsEligibleForHeuristicAutoGrant() const {
-  return base::FeatureList::IsEnabled(
-             features::kPermissionHeuristicAutoGrant) &&
-         data_->IsEligibleForHeuristicAutoGrant();
+  return data_->IsEligibleForHeuristicAutoGrant();
 }
 
 std::optional<gfx::Rect> PermissionRequest::GetAnchorElementPosition() const {
