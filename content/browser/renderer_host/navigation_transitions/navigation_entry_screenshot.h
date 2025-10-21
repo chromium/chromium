@@ -13,6 +13,7 @@
 #include "cc/resources/ui_resource_client.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
@@ -80,6 +81,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
                             bool supports_etc_non_power_of_two);
   NavigationEntryScreenshot(
       scoped_refptr<gpu::ClientSharedImage> shared_image,
+      viz::ReleaseCallback release_callback,
       NavigationTransitionData::UniqueId unique_id,
       bool supports_etc_non_power_of_two,
       scoped_refptr<viz::RasterContextProvider> context_provider,
@@ -133,6 +135,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   size_t CompressedSizeForTesting() const;
 
  private:
+  class SharedImageHolder;
+
   void ReadBack();
   void OnReadBack(SkBitmap bitmap, bool success);
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
@@ -159,7 +163,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // entry.
   std::optional<cc::UIResourceBitmap> bitmap_;
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  scoped_refptr<SharedImageHolder> shared_image_holder_;
 
   // The compressed bitmap generated on a worker thread. `bitmap_` is discarded
   // when the compressed bitmap is available and this screenshot is no longer

@@ -25,6 +25,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -33,6 +34,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "ui/android/browser_controls_offset_tag_constraints.h"
 #include "ui/android/browser_controls_offset_tag_definitions.h"
 #include "ui/android/view_android.h"
@@ -247,7 +249,8 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>)> callback,
+    base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>,
+                            viz::ReleaseCallback)> callback,
     bool capture_exact_surface_id) {
   TRACE_EVENT(
       "ui", "DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface");
@@ -275,9 +278,15 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
   if (!shared_image) {
     LOG(WARNING)
         << "Could not create a shared image to copy from compositing surface";
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, viz::ReleaseCallback());
     return;
   }
+  viz::ReleaseCallback release_callback = base::BindOnce(
+      [](scoped_refptr<gpu::ClientSharedImage> shared_image,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        shared_image->UpdateDestructionSyncToken(sync_token);
+      },
+      shared_image);
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
   ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
@@ -293,9 +302,9 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
           viz::CopyOutputResult::Format::RGBA,
           viz::CopyOutputResult::Destination::kSharedImage,
           base::BindOnce(
-              [](base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>)>
-                     result_callback,
-                 scoped_refptr<gpu::ClientSharedImage> result_image,
+              [](base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>,
+                                         viz::ReleaseCallback)> result_callback,
+                 viz::ReleaseCallback release_callback,
                  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
                      keep_alive,
                  std::unique_ptr<viz::CopyOutputResult> result) {
@@ -304,12 +313,14 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
                 }
                 if (result->IsEmpty()) {
                   // Report a null shared image in case there was a failure.
-                  std::move(result_callback).Run(nullptr);
+                  std::move(result_callback)
+                      .Run(nullptr, viz::ReleaseCallback());
                   return;
                 }
-                std::move(result_callback).Run(std::move(result_image));
+                std::move(result_callback)
+                    .Run(result->GetSharedImage(), std::move(release_callback));
               },
-              std::move(callback), shared_image,
+              std::move(callback), std::move(release_callback),
               std::move(keep_surface_alive)));
 
   auto sync_token = shared_image_interface->GenVerifiedSyncToken();

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
@@ -17,6 +18,7 @@
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
@@ -94,6 +96,56 @@ void AdviseBitmap(SkBitmap& bitmap) {
 
 }  // namespace
 
+class NavigationEntryScreenshot::SharedImageHolder
+    : public base::RefCountedThreadSafe<SharedImageHolder> {
+ public:
+  static scoped_refptr<SharedImageHolder> Create(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      viz::ReleaseCallback release_callback) {
+    return new SharedImageHolder(std::move(shared_image),
+                                 std::move(release_callback));
+  }
+  SharedImageHolder(const SharedImageHolder&) = delete;
+  SharedImageHolder& operator=(const SharedImageHolder&) = delete;
+
+  // Returns a callback that stores the parameters in order to run the actual
+  // callback on destruction.
+  // The callback keeps an instance of this holder so that it's not destroyed
+  // prematurely. The release callback is called only once all users have
+  // released the references.
+  viz::ReleaseCallback CreateCallback() {
+    return base::BindOnce(&SharedImageHolder::DoReleaseCallback,
+                          base::WrapRefCounted(this));
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image() { return shared_image_; }
+
+ protected:
+  virtual ~SharedImageHolder() {
+    if (release_callback_) {
+      std::move(release_callback_).Run(destruction_sync_token_, is_lost_);
+    }
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<SharedImageHolder>;
+  SharedImageHolder(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                    viz::ReleaseCallback release_callback)
+      : shared_image_(std::move(shared_image)),
+        release_callback_(std::move(release_callback)) {}
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  viz::ReleaseCallback release_callback_;
+
+  void DoReleaseCallback(const gpu::SyncToken& sync_token, bool is_lost) {
+    destruction_sync_token_ = sync_token;
+    is_lost_ = is_lost;
+  }
+
+  gpu::SyncToken destruction_sync_token_;
+  bool is_lost_ = false;
+};
+
 // static
 const void* const NavigationEntryScreenshot::kUserDataKey =
     &NavigationEntryScreenshot::kUserDataKey;
@@ -125,15 +177,19 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
 
 NavigationEntryScreenshot::NavigationEntryScreenshot(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
+    viz::ReleaseCallback release_callback,
     NavigationTransitionData::UniqueId unique_id,
     bool supports_etc_non_power_of_two,
     scoped_refptr<viz::RasterContextProvider> context_provider,
     ScreenshotCallback screenshot_callback)
     : performance_scenarios::MatchingScenarioObserver(
           performance_scenarios::kDefaultIdleScenarios),
-      shared_image_(std::move(shared_image)),
+      shared_image_holder_(
+          SharedImageHolder::Create(std::move(shared_image),
+                                    std::move(release_callback))),
       unique_id_(unique_id),
-      dimensions_without_compression_(shared_image_->size()),
+      dimensions_without_compression_(
+          shared_image_holder_->shared_image()->size()),
       supports_etc_non_power_of_two_(supports_etc_non_power_of_two),
       context_provider_(std::move(context_provider)),
       screenshot_callback_(std::move(screenshot_callback)) {
@@ -189,8 +245,8 @@ size_t NavigationEntryScreenshot::SetCache(
   }
 
   size_t pixel_size = SkColorTypeBytesPerPixel(kN32_SkColorType);
-  if (shared_image_) {
-    return pixel_size * shared_image_->size().Area64();
+  if (shared_image_holder_) {
+    return pixel_size * shared_image_holder_->shared_image()->size().Area64();
   }
 
   // The shared image was lost, but this is still occupying some space.
@@ -227,22 +283,15 @@ void NavigationEntryScreenshot::OnContextLost() {
 
 std::pair<scoped_refptr<cc::slim::TextureLayer>, base::ScopedClosureRunner>
 NavigationEntryScreenshot::CreateTextureLayer() {
-  CHECK(shared_image_);
+  CHECK(shared_image_holder_);
   CHECK(texture_transferable_resource_.is_empty());
   // By the time the screenshot is created, the shared_image is already
   // finalized, so no sync token is necessary.
   gpu::SyncToken sync_token;
   texture_transferable_resource_ = viz::TransferableResource::Make(
-      shared_image_, viz::TransferableResource::ResourceSource::kUI,
-      sync_token);
-  // Storing a reference to the shared image in the callback so that it's alive
-  // while it's still in use.
-  texture_release_callback_ = base::BindOnce(
-      [](scoped_refptr<gpu::ClientSharedImage> shared_image,
-         const gpu::SyncToken& sync_token, bool lost_resource) {
-        shared_image->UpdateDestructionSyncToken(sync_token);
-      },
-      shared_image_);
+      shared_image_holder_->shared_image(),
+      viz::TransferableResource::ResourceSource::kUI, sync_token);
+  texture_release_callback_ = shared_image_holder_->CreateCallback();
   auto layer = cc::slim::TextureLayer::Create(this);
   layer->SetContentsOpaque(true);
   layer->NotifyUpdatedResource();
@@ -329,9 +378,12 @@ void NavigationEntryScreenshot::ReadBack() {
   TRACE_EVENT("content", "NavigationEntryScreenshot::ReadBack");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  SkImageInfo info = SkImageInfo::MakeN32(shared_image_->size().width(),
-                                          shared_image_->size().height(),
-                                          shared_image_->alpha_type());
+  gpu::ClientSharedImage* shared_image =
+      shared_image_holder_->shared_image().get();
+
+  SkImageInfo info = SkImageInfo::MakeN32(shared_image->size().width(),
+                                          shared_image->size().height(),
+                                          shared_image->alpha_type());
   SkBitmap read_back_bitmap;
   if (!read_back_bitmap.tryAllocPixels(info)) {
     OnReadBack(SkBitmap(), false);
@@ -346,13 +398,13 @@ void NavigationEntryScreenshot::ReadBack() {
   gfx::Point src_point;
   auto* raster_interface = context_provider_->RasterInterface();
   DCHECK(raster_interface);
-  auto scoped_access = shared_image_->BeginRasterAccess(
-      raster_interface, shared_image_->creation_sync_token(),
+  auto scoped_access = shared_image->BeginRasterAccess(
+      raster_interface, shared_image->creation_sync_token(),
       /*readonly=*/true);
   auto span = gfx::SkPixmapToWritableSpan(read_back_bitmap.pixmap());
   raster_interface->ReadbackARGBPixelsAsync(
-      shared_image_->mailbox(), shared_image_->GetTextureTarget(),
-      shared_image_->surface_origin(), shared_image_->size(), src_point, info,
+      shared_image->mailbox(), shared_image->GetTextureTarget(),
+      shared_image->surface_origin(), shared_image->size(), src_point, info,
       info.minRowBytes(), span,
       base::BindOnce(&NavigationEntryScreenshot::OnReadBack,
                      weak_factory_.GetWeakPtr(), std::move(read_back_bitmap)));
@@ -369,7 +421,7 @@ void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
       FROM_HERE,
       base::BindOnce(&NavigationEntryScreenshot::ResetContextProvider,
                      weak_factory_.GetWeakPtr()));
-  shared_image_.reset();
+  shared_image_holder_.reset();
   if (!success) {
     if (screenshot_callback_) {
       SkBitmap override_unused;
@@ -418,7 +470,7 @@ void NavigationEntryScreenshot::OnCompressionFinished(
 }
 
 bool NavigationEntryScreenshot::IsValid() const {
-  return shared_image_ || IsBitmapReady();
+  return shared_image_holder_ || IsBitmapReady();
 }
 
 bool NavigationEntryScreenshot::IsBitmapReady() const {

@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -171,7 +172,8 @@ void CacheScreenshotSharedImageImpl(
     bool is_copied_from_embedder,
     int copy_output_request_sequence,
     bool supports_etc_non_power_of_two,
-    scoped_refptr<gpu::ClientSharedImage> shared_image) {
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    viz::ReleaseCallback release_callback) {
   if (!controller) {
     // The tab was destroyed by the time we receive the shared image from the
     // GPU.
@@ -211,8 +213,9 @@ void CacheScreenshotSharedImageImpl(
           : NavigationEntryScreenshot::ScreenshotCallback();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      std::move(shared_image), screenshot_id, supports_etc_non_power_of_two,
-      std::move(raster_context_provider), bound_screenshot_callback);
+      std::move(shared_image), std::move(release_callback), screenshot_id,
+      supports_etc_non_power_of_two, std::move(raster_context_provider),
+      bound_screenshot_callback);
   NavigationEntryScreenshotCache* cache =
       controller->GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),

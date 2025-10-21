@@ -48,6 +48,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
@@ -1922,7 +1923,8 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcDelay(
 void RenderWidgetHostViewAndroid::CopySharedImageFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>)> callback) {
+    base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>,
+                            viz::ReleaseCallback)> callback) {
   CHECK(IsSurfaceAvailableForCopy())
       << "To copy the exact surface, it must be available for copy (embedded "
          "via the browser).";
@@ -1930,7 +1932,7 @@ void RenderWidgetHostViewAndroid::CopySharedImageFromExactSurface(
   CHECK(delegated_frame_host_);
   auto context_provider = GetRasterContextProvider();
   if (!context_provider) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, viz::ReleaseCallback());
     return;
   }
 
