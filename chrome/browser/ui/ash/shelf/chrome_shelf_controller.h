@@ -21,7 +21,6 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/ash/shelf/settings_window_observer.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "components/account_id/account_id.h"
 #include "components/app_icon_loader/app_icon_loader_delegate.h"
@@ -440,11 +439,6 @@ class ChromeShelfController
 
   // Used to get app info for tabs.
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
-
-  // TODO(crbug.com/40573204): Remove this once SystemWebApps are enabled by
-  // default.
-  // An observer that manages the shelf title and icon for settings windows.
-  std::unique_ptr<SettingsWindowObserver> settings_window_observer_;
 
   // Used to load the images for app items.
   std::map<Profile*, std::vector<std::unique_ptr<AppIconLoader>>>

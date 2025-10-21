@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
-#include "base/observer_list.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/sessions/core/session_id.h"
@@ -19,9 +18,11 @@ class Browser;
 class GURL;
 class Profile;
 
-namespace chrome {
+namespace aura {
+class WindowTracker;
+}  // namespace aura
 
-class SettingsWindowManagerObserver;
+namespace chrome {
 
 // Manages Settings windows for CrOS. Each Profile is associated with a single
 // Browser window for Settings that will be created when the Settings UI is
@@ -39,9 +40,6 @@ class SettingsWindowManager : public ash::SettingsAppManager {
   // See https://crbug.com/1067073.
   static void ForceDeprecatedSettingsWindowForTesting();
   static bool UseDeprecatedSettingsWindow(Profile* profile);
-
-  void AddObserver(SettingsWindowManagerObserver* observer);
-  void RemoveObserver(SettingsWindowManagerObserver* observer);
 
   // ash::SettingsAppManager:
   void Open(const user_manager::User& user, OpenParams params) override;
@@ -83,7 +81,7 @@ class SettingsWindowManager : public ash::SettingsAppManager {
  private:
   typedef std::map<Profile*, SessionID> ProfileSessionMap;
 
-  base::ObserverList<SettingsWindowManagerObserver>::Unchecked observers_;
+  std::unique_ptr<aura::WindowTracker> legacy_settings_title_updater_;
 
   // TODO(calamity): Remove when SystemWebApps are enabled by default.
   ProfileSessionMap settings_session_map_;

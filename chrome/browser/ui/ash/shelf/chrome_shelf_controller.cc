@@ -82,7 +82,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
@@ -302,10 +301,6 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
     if (!profile->IsGuestSession() && !profile->IsSystemProfile()) {
       profile = profile->GetOriginalProfile();
     }
-  }
-
-  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
-    settings_window_observer_ = std::make_unique<SettingsWindowObserver>();
   }
 
   // All profile relevant settings get bound to the current profile.
