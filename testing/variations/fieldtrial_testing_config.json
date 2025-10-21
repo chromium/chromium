@@ -2970,6 +2970,23 @@
             ]
         }
     ],
+    "AutofillPrioritizeSaveCardOverMandatoryReauth": [
+        {
+            "platforms": [
+                "android",
+                "windows",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPrioritizeSaveCardOverMandatoryReauth"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRelaxAddressImport": [
         {
             "platforms": [
