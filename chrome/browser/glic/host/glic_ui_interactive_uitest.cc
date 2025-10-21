@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -861,6 +862,53 @@ IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest,
       InAnyContext(SendAccelerator(test::kGlicHostElementId, escape_key)
                        .SetMustRemainVisible(false)),
       WaitForHide(kGlicViewElementId), CheckControllerShowing(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest,
+                       MultiWindowFreToGlicTransition) {
+  Browser* browser1 = browser();
+  Browser* browser2 = nullptr;
+  const GURL glic_url = GURL(features::kGlicGuestURL.Get());
+  ASSERT_TRUE(glic_url.is_valid());
+
+  RunTestSequence(
+      // Open Window 1 and verify FRE screen shows.
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+      InAnyContext(CheckElementVisible(kFreContainer, true)),
+      InAnyContext(CheckElementVisible(kGlicContainer, false)),
+      // Open Window 2 and verify FRE screen shows.
+      Do([&]() {
+        browser2 = CreateBrowser(browser1->profile());
+        // SetActiveBrowser to the newly opened window
+        SetActiveBrowser(browser2);
+        EXPECT_NE(browser(), browser1) << "Failed to switch to new browser";
+      }),
+      Do([&]() {
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
+      }),
+      InAnyContext(WaitForShow(kGlicViewElementId)),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+      InAnyContext(CheckElementVisible(kFreContainer, true)),
+      InAnyContext(CheckElementVisible(kGlicContainer, false)),
+      // Accept FRE in Window 1.
+      Do([&]() { SetActiveBrowser(browser1); }), InstrumentFreWebview(),
+      WaitForElementVisible(kGlicFreInnerContentsElementId,
+                            kMockFreClientContinueButton),
+      ClickFreWebviewElement(kMockFreClientContinueButton),
+      // Window 1 transitions to Glic app.
+      InAnyContext(
+          WaitForElementVisible(test::kGlicHostElementId, kGlicContainer)),
+      InAnyContext(CheckElementHidden(kFreContainer, true)),
+      InAnyContext(
+          WaitForElementVisible(test::kGlicHostElementId, kGlicGuestPanel)),
+      // Window 2 also transitions to Glic app.
+      Do([&]() { SetActiveBrowser(browser2); }),
+      InAnyContext(
+          WaitForElementVisible(test::kGlicHostElementId, kGlicContainer)),
+      InAnyContext(CheckElementHidden(kFreContainer, true)),
+      InAnyContext(
+          WaitForElementVisible(test::kGlicHostElementId, kGlicGuestPanel)));
 }
 
 }  // namespace glic

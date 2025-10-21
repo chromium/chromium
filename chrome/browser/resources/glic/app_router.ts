@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {FreAppController, type FreResult, FreResultType} from '/fre/fre_app_controller.js';
+import {FreAppController} from '/fre/fre_app_controller.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type PageInterface, type ProfileReadyState} from './glic.mojom-webui.js';
+import {type PageInterface, ProfileReadyState} from './glic.mojom-webui.js';
 import {GlicAppController} from './glic_app_controller.js';
 
 export enum AppView {
@@ -66,7 +66,7 @@ export class AppRouter implements PageInterface {
           this.freAppController = new FreAppController({
             partitionString: 'persist:glicpart',
             shouldSizeForDialog: false,
-            onResult: this.handleFreResult.bind(this),
+            onClose: this.close.bind(this),
           });
         }
         this.freContainer.hidden = false;
@@ -79,23 +79,12 @@ export class AppRouter implements PageInterface {
   }
 
   setProfileReadyState(state: ProfileReadyState) {
-    this.glicController?.setProfileReadyState(state);
-  }
-
-  handleFreResult(result: FreResult) {
-    switch (result.type) {
-      case FreResultType.ACCEPT:
-        this.transitionToGlic();
-        break;
-      case FreResultType.DISMISS:
-      case FreResultType.REJECT:
-        this.close();
-        break;
+    // If the view is currently FRE, transition to GLIC once in a ready state.
+    if (this.currentView === AppView.FRE &&
+        state === ProfileReadyState.kReady) {
+      this.switchToView(AppView.GLIC);
     }
-  }
-
-  transitionToGlic() {
-    this.switchToView(AppView.GLIC);
+    this.glicController?.setProfileReadyState(state);
   }
 
   close(): void {

@@ -42,7 +42,7 @@ export interface FreResult {
 interface FreControllerOptions {
   partitionString?: string;
   shouldSizeForDialog?: boolean;
-  onResult?: (result: FreResult) => void;
+  onClose?: () => void;
 }
 
 type PanelId = 'freGuestPanel'|'freOfflinePanel'|'freErrorPanel'|
@@ -80,7 +80,7 @@ export class FreAppController {
   private webviewContainer: HTMLElement;
   private partitionString: string;
   private shouldSizeForDialog: boolean;
-  private onResultCallback?: (result: FreResult) => void;
+  private onCloseCallback?: () => void;
 
 
   constructor(options: FreControllerOptions = {}) {
@@ -100,7 +100,7 @@ export class FreAppController {
         this.webviewContainer, '#freWebviewContainer not found in constructor');
     this.partitionString = options.partitionString ?? 'glicfrepart';
     this.shouldSizeForDialog = options.shouldSizeForDialog ?? true;
-    this.onResultCallback = options.onResult;
+    this.onCloseCallback = options.onClose;
 
 
     this.webview = this.createWebview();
@@ -522,16 +522,15 @@ export class FreAppController {
 
   private dismissFre(state: FreWebUiState): void {
     this.freHandler.dismissFre(state);
-    this.onResultCallback?.({type: FreResultType.DISMISS});
+    this.onCloseCallback?.();
   }
 
   private acceptFre(): void {
     this.freHandler.acceptFre();
-    this.onResultCallback?.({type: FreResultType.ACCEPT});
   }
 
   private rejectFre(): void {
     this.freHandler.rejectFre();
-    this.onResultCallback?.({type: FreResultType.REJECT});
+    this.onCloseCallback?.();
   }
 }
