@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,9 +80,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     public @Nullable Fragment onCreateInitialDetailFragment() {
         // Look at if there is a pending Intent and use it if it is.
         // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
-        Fragment fragment = processPendingFragmentIntent();
-        if (fragment != null) {
-            return fragment;
+        Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
+        if (processed != null) {
+            return processed.first;
         }
         return super.onCreateInitialDetailFragment();
     }
@@ -97,8 +98,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     @Override
     public void onResume() {
         // Update the detail pane, if the intent is specified.
-        Fragment fragment = processPendingFragmentIntent();
-        if (fragment != null) {
+        Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
+        if (processed != null) {
             // Opening a new page. If we already have back stack entries, clean it up for
             // - back button behavior
             // - detailed page title
@@ -110,11 +111,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             }
 
             // Then, open the fragment.
-            fragmentManager
-                    .beginTransaction()
+            var transaction = fragmentManager.beginTransaction();
+            transaction
                     .setReorderingAllowed(true)
-                    .replace(R.id.preferences_detail, fragment)
-                    .commit();
+                    .replace(R.id.preferences_detail, processed.first);
+            if (processed.second) {
+                transaction.addToBackStack(null);
+            }
+            transaction.commit();
             getSlidingPaneLayout().open();
         }
 
@@ -125,7 +129,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      * Processes the pending Intent if there is, and returns the Fragment to be used in the detailed
      * pane.
      */
-    private @Nullable Fragment processPendingFragmentIntent() {
+    private @Nullable Pair<Fragment, Boolean> processPendingFragmentIntent() {
         if (mPendingFragmentIntent == null) {
             return null;
         }
@@ -139,7 +143,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             return null;
         }
         Bundle arguments = intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
-        return Fragment.instantiate(requireActivity(), fragmentName, arguments);
+        boolean addToBackStack =
+                intent.getBooleanExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, false);
+        return new Pair<>(
+                Fragment.instantiate(requireActivity(), fragmentName, arguments), addToBackStack);
     }
 
     @Override

@@ -445,7 +445,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                         SettingsNavigationFactory.createSettingsNavigation()
                                                 .createSettingsIntent(
                                                         getActivity(),
-                                                        AutofillLocalCardEditor.class);
+                                                        AutofillLocalCardEditor.class,
+                                                        /* fragmentArgs= */ null,
+                                                        /* addToBackStack= */ true);
                                 startActivity(intent);
                             });
                     getPreferenceScreen().addPreference(addFirstCardPref);

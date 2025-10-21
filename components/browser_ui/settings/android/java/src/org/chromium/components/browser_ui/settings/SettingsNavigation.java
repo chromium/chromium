@@ -118,6 +118,21 @@ public interface SettingsNavigation {
      * Creates an intent for starting settings with the specified fragment and arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     * @param addToBackStack If true, the fragment will be stack on the backstack of the fragment
+     *     manager.
+     */
+    Intent createSettingsIntent(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs,
+            boolean addToBackStack);
+
+    /**
+     * Creates an intent for starting settings with the specified fragment and arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
      * @param fragment The fragment to show.
      * @param fragmentArgs A bundle of additional fragment arguments.
      */

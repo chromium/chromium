@@ -111,6 +111,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
     static final String EXTRA_SHOW_FRAGMENT_STANDALONE = "show_fragment_standalone";
+    static final String EXTRA_ADD_TO_BACK_STACK = "add_to_back_stack";
 
     /** The current instance of SettingsActivity in the resumed state, if any. */
     private static @Nullable SettingsActivity sResumedInstance;
@@ -673,7 +674,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      */
     @VisibleForTesting
     public @Nullable Fragment getMainFragment() {
-        return getSupportFragmentManager().findFragmentById(R.id.content);
+        if (mMultiColumnSettings == null) {
+            return getSupportFragmentManager().findFragmentById(R.id.content);
+        }
+        return mMultiColumnSettings
+                .getChildFragmentManager()
+                .findFragmentById(R.id.preferences_detail);
     }
 
     /** Returns the MultiColumnSettings if it is running in SettingsMultiColumn mode. */
@@ -871,7 +877,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mFinishedMainFragment = new WeakReference<>(fragment);
 
         if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentManager fragmentManager =
+                    mMultiColumnSettings == null
+                            ? getSupportFragmentManager()
+                            : mMultiColumnSettings.getChildFragmentManager();
             if (fragmentManager.getBackStackEntryCount() == 0) {
                 finish();
             } else {
