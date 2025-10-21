@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_coordinator.h"
 
 #import <optional>
 
@@ -38,7 +38,7 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
-@interface PasswordSuggestionBottomSheetCoordinator () {
+@interface CredentialSuggestionBottomSheetCoordinator () {
   // The password controller delegate used to open the password manager.
   id<PasswordControllerDelegate> _passwordControllerDelegate;
 
@@ -58,7 +58,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 @end
 
-@implementation PasswordSuggestionBottomSheetCoordinator
+@implementation CredentialSuggestionBottomSheetCoordinator
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController

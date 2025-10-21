@@ -10,7 +10,7 @@
 @protocol ReauthenticationProtocol;
 
 // Util class enabling a global override of the Reauthentication Module used in
-// newly-constructed PasswordSuggestionBottomSheetCoordinator, for testing
+// newly-constructed CredentialSuggestionBottomSheetCoordinator, for testing
 // purposes only.
 class ScopedPasswordSuggestionBottomSheetReauthModuleOverride {
  public:

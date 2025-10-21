@@ -153,7 +153,7 @@
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_coordinator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator_delegate.h"
@@ -474,8 +474,8 @@ const char kChromeAppStoreUrl[] =
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
 
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
-@property(nonatomic, strong) PasswordSuggestionBottomSheetCoordinator*
-    passwordSuggestionBottomSheetCoordinator;
+@property(nonatomic, strong) CredentialSuggestionBottomSheetCoordinator*
+    credentialSuggestionBottomSheetCoordinator;
 
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PaymentsSuggestionBottomSheetCoordinator*
@@ -923,8 +923,8 @@ const char kChromeAppStoreUrl[] =
 
   [self stopPasswordProtectionCoordinator];
 
-  [self.passwordSuggestionBottomSheetCoordinator stop];
-  self.passwordSuggestionBottomSheetCoordinator = nil;
+  [self.credentialSuggestionBottomSheetCoordinator stop];
+  self.credentialSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -1520,7 +1520,7 @@ const char kChromeAppStoreUrl[] =
 
   /* passwordSettingsCoordinator is created and started by a delegate method */
 
-  /* passwordSuggestionBottomSheetCoordinator is created and started by a
+  /* credentialSuggestionBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
@@ -1647,8 +1647,8 @@ const char kChromeAppStoreUrl[] =
 
   [self stopPasswordProtectionCoordinator];
 
-  [self.passwordSuggestionBottomSheetCoordinator stop];
-  self.passwordSuggestionBottomSheetCoordinator = nil;
+  [self.credentialSuggestionBottomSheetCoordinator stop];
+  self.credentialSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -2040,7 +2040,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
   // Do not present the bottom sheet if it is already being presented.
-  if (self.passwordSuggestionBottomSheetCoordinator) {
+  if (self.credentialSuggestionBottomSheetCoordinator) {
     return;
   }
   // Do not present the bottom sheet when the omnibox is being used to not
@@ -2049,18 +2049,18 @@ const char kChromeAppStoreUrl[] =
           ->IsOmniboxFocused()) {
     return;
   }
-  self.passwordSuggestionBottomSheetCoordinator =
-      [[PasswordSuggestionBottomSheetCoordinator alloc]
+  self.credentialSuggestionBottomSheetCoordinator =
+      [[CredentialSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
                               params:params
                             delegate:self];
-  self.passwordSuggestionBottomSheetCoordinator.settingsHandler =
+  self.credentialSuggestionBottomSheetCoordinator.settingsHandler =
       HandlerForProtocol(self.dispatcher, SettingsCommands);
-  self.passwordSuggestionBottomSheetCoordinator
+  self.credentialSuggestionBottomSheetCoordinator
       .browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
-  [self.passwordSuggestionBottomSheetCoordinator start];
+  [self.credentialSuggestionBottomSheetCoordinator start];
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
@@ -2471,8 +2471,8 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)dismissPasswordSuggestions {
-  [self.passwordSuggestionBottomSheetCoordinator stop];
-  self.passwordSuggestionBottomSheetCoordinator = nil;
+  [self.credentialSuggestionBottomSheetCoordinator stop];
+  self.credentialSuggestionBottomSheetCoordinator = nil;
 }
 
 - (void)dismissPaymentSuggestions {
