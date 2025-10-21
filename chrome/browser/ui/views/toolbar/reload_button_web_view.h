@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_WEB_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -18,7 +18,7 @@ class WebView;
 }
 
 // A view that displays the reload button as a WebView.
-class ReloadButtonWebView : public views::View {
+class ReloadButtonWebView : public views::View, public ReloadControl {
   METADATA_HEADER(ReloadButtonWebView, views::View)
 
  public:
@@ -27,7 +27,9 @@ class ReloadButtonWebView : public views::View {
   ReloadButtonWebView& operator=(const ReloadButtonWebView&) = delete;
   ~ReloadButtonWebView() override;
 
-  void ChangeMode(ReloadButton::Mode mode, bool force);
+  // ReloadControl overrides:
+  void ChangeMode(ReloadControl::Mode mode, bool force) override;
+  views::View* GetAsViewClassForTesting() override;
 
  private:
   raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;

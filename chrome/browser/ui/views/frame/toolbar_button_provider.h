@@ -18,7 +18,7 @@ class IconLabelBubbleView;
 class IntentChipButton;
 class PageActionIconView;
 class ReloadButton;
-class ReloadButtonWebView;
+class ReloadControl;
 class ToolbarButton;
 
 namespace gfx {
@@ -85,11 +85,9 @@ class ToolbarButtonProvider {
   // Returns the back button.
   virtual ToolbarButton* GetBackButton() = 0;
 
-  // Returns the reload button.
-  virtual ReloadButton* GetReloadButton() = 0;
-
-  // Returns the reload button web view.
-  virtual ReloadButtonWebView* GetReloadButtonWebView() = 0;
+  // Returns the reload button delegate, it can be either `ReloadButton` or
+  // `ReloadButtonWebView` depending on the enabled features.
+  virtual ReloadControl* GetReloadButton() = 0;
 
   // Returns the intent chip button, if present.
   virtual IntentChipButton* GetIntentChipButton() = 0;

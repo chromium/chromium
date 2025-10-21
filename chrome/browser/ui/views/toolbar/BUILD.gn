@@ -26,6 +26,7 @@ source_set("toolbar") {
     "pinned_toolbar_button_status_indicator.h",
     "reload_button.h",
     "reload_button_web_view.h",
+    "reload_control.h",
     "split_tabs_button.h",
     "toolbar_action_hover_card_bubble_view.h",
     "toolbar_action_hover_card_controller.h",

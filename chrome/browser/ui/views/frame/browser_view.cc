@@ -191,8 +191,7 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/reload_button.h"
-#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
+#include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
@@ -2079,18 +2078,11 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
 }
 
 void BrowserView::UpdateReloadStopState(bool is_loading, bool force) {
-  ReloadButton::Mode mode =
-      is_loading ? ReloadButton::Mode::kStop : ReloadButton::Mode::kReload;
-  if (features::IsWebUIReloadButtonEnabled()) {
-    auto* reload_button = toolbar_button_provider_->GetReloadButtonWebView();
-    if (reload_button) {
-      reload_button->ChangeMode(mode, force);
-    }
-  } else {
-    auto* reload_button = toolbar_button_provider_->GetReloadButton();
-    if (reload_button) {
-      reload_button->ChangeMode(mode, force);
-    }
+  ReloadControl::Mode mode =
+      is_loading ? ReloadControl::Mode::kStop : ReloadControl::Mode::kReload;
+  ReloadControl* reload_button = toolbar_button_provider_->GetReloadButton();
+  if (reload_button) {
+    reload_button->ChangeMode(mode, force);
   }
 }
 

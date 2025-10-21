@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
   // The choice of using the reload button as the starting position is
   // arbitrary.
   const gfx::Point start_position = ui_test_utils::GetCenterInScreenCoordinates(
-      toolbar_button_provider->GetReloadButton());
+      toolbar_button_provider->GetReloadButton()->GetAsViewClassForTesting());
   ui_controls::SendMouseMove(start_position.x(), start_position.y());
 
   const GURL first_url =

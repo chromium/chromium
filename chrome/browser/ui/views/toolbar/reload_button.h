@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
+#include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -29,20 +30,16 @@ class Profile;
 ////////////////////////////////////////////////////////////////////////////////
 
 class ReloadButton : public ToolbarButton,
+                     public ReloadControl,
                      public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(ReloadButton, ToolbarButton)
 
  public:
-  enum class Mode { kReload = 0, kStop };
-
   ReloadButton(Profile* profile, CommandUpdater* command_updater);
   ReloadButton(const ReloadButton&) = delete;
   ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
 
-  // Ask for a specified button state.  If |force| is true this will be applied
-  // immediately.
-  void ChangeMode(Mode mode, bool force);
   Mode visible_mode() const { return visible_mode_; }
 
   void SetVectorIconsForMode(Mode mode,
@@ -69,6 +66,11 @@ class ReloadButton : public ToolbarButton,
   bool IsCommandIdVisible(int command_id) const override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
+
+  // ReloadControl overrides:
+  void ChangeMode(Mode mode, bool force) override;
+  views::View* GetAsViewClassForTesting() override;
+
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:

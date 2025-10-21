@@ -1178,12 +1178,11 @@ ToolbarButton* ToolbarView::GetBackButton() {
   return back_;
 }
 
-ReloadButton* ToolbarView::GetReloadButton() {
+ReloadControl* ToolbarView::GetReloadButton() {
+  if (features::IsWebUIReloadButtonEnabled()) {
+    return reload_webview_;
+  }
   return reload_;
-}
-
-ReloadButtonWebView* ToolbarView::GetReloadButtonWebView() {
-  return reload_webview_;
 }
 
 IntentChipButton* ToolbarView::GetIntentChipButton() {

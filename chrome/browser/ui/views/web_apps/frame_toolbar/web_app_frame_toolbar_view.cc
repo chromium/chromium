@@ -298,12 +298,8 @@ ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
   return left_container_ ? left_container_->back_button() : nullptr;
 }
 
-ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
+ReloadControl* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
-}
-
-ReloadButtonWebView* WebAppFrameToolbarView::GetReloadButtonWebView() {
-  return nullptr;
 }
 
 IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {

@@ -33,9 +33,13 @@ ReloadButtonWebView::ReloadButtonWebView(BrowserWindowInterface* browser) {
 
 ReloadButtonWebView::~ReloadButtonWebView() = default;
 
-void ReloadButtonWebView::ChangeMode(ReloadButton::Mode mode, bool force) {
+void ReloadButtonWebView::ChangeMode(ReloadControl::Mode mode, bool force) {
   CHECK(reload_button_ui_);
-  reload_button_ui_->SetLoadingState(mode == ReloadButton::Mode::kStop, force);
+  reload_button_ui_->SetLoadingState(mode == ReloadControl::Mode::kStop, force);
+}
+
+views::View* ReloadButtonWebView::GetAsViewClassForTesting() {
+  return this;
 }
 
 BEGIN_METADATA(ReloadButtonWebView)

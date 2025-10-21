@@ -285,6 +285,10 @@ void ReloadButton::UpdateAccessibleHasPopup() {
   }
 }
 
+views::View* ReloadButton::GetAsViewClassForTesting() {
+  return this;
+}
+
 BEGIN_METADATA(ReloadButton)
 ADD_PROPERTY_METADATA(bool, MenuEnabled)
 END_METADATA
