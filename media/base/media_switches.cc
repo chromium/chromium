@@ -678,7 +678,7 @@ BASE_FEATURE(kAcceleratedVideoDecodeLinux,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kAcceleratedVideoDecodeLinuxGL, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAcceleratedVideoDecodeLinuxGL, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAcceleratedVideoEncodeLinux,
              "AcceleratedVideoEncoder",
