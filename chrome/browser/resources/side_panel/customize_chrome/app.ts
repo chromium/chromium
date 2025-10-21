@@ -29,7 +29,6 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
-import {CustomizeChromeImpression, recordCustomizeChromeImpression} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
 import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -204,8 +203,6 @@ export class AppElement extends AppElementBase {
               extensionsCardSectionObserver.disconnect();
               this.dispatchEvent(
                   new Event('detect-extensions-card-section-impression'));
-              recordCustomizeChromeImpression(
-                  CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED);
             }
           }, {
             threshold: 1.0,

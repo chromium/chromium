@@ -45,26 +45,6 @@ export function recordCustomizeChromeAction(action: CustomizeChromeAction) {
 }
 
 /**
- * Customize Chrome impressions. This enum must match the numbering for
- * NTPCustomizeChromeSidePanelImpression in enums.xml. These values are
- * persisted to logs. Entries should not be renumbered, removed or reused.
- *
- * MAX_VALUE should always be at the end to help get the current number of
- * buckets.
- */
-export enum CustomizeChromeImpression {
-  EXTENSIONS_CARD_SECTION_DISPLAYED,
-  MAX_VALUE = EXTENSIONS_CARD_SECTION_DISPLAYED,
-}
-
-export function recordCustomizeChromeImpression(
-    action: CustomizeChromeImpression) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      'NewTabPage.CustomizeChromeSidePanelImpression', action,
-      CustomizeChromeImpression.MAX_VALUE + 1);
-}
-
-/**
  * Types of images that are shown on the NTP (and therefore also appear in
  * Customize Chrome). This enum must match the numbering for NtpImageType in
  * enums.xml. These values are persisted to logs. Entries should not be

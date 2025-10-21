@@ -797,18 +797,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.CustomizeChromeSidePanelImpression"
-    enum="NTPCustomizeChromeSidePanelImpression" expires_after="2025-11-30">
-  <owner>howardcha@google.com</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>webstore-eng@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Captures the impressions for customizing Chrome sections within the
-    Customize Chrome Side Panel on the New Tab Page.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.Customized" enum="NTPCustomizedFeatures"
     expires_after="2026-03-22">
   <owner>romanarora@chromium.org</owner>

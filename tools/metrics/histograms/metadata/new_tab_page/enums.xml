@@ -396,10 +396,6 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Show footer toggle clicked"/>
 </enum>
 
-<enum name="NTPCustomizeChromeSidePanelImpression">
-  <int value="0" label="Extensions card section displayed"/>
-</enum>
-
 <enum name="NTPCustomizedFeatures">
   <int value="0" label="Background customized"/>
   <int value="1" label="Shortcut customized"/>
