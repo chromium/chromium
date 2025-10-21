@@ -12877,6 +12877,7 @@ from previous Chrome versions.
   <int value="-499923792" label="MigrateSyncingUserToSignedIn:disabled"/>
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>
   <int value="-499672058" label="RegionCaptureOfOtherTabs:disabled"/>
+  <int value="-499455057" label="HandleMdmErrorsForDasherAccounts:disabled"/>
   <int value="-499186481"
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>
   <int value="-498883807" label="AutofillParsingPatternProvider:disabled"/>
@@ -17922,6 +17923,7 @@ from previous Chrome versions.
   <int value="1292763218" label="SystemTrayUnified:disabled"/>
   <int value="1293262425" label="PasswordGenerationSoftNudge:enabled"/>
   <int value="1293292046" label="ReadAnythingOmniboxIcon:enabled"/>
+  <int value="1293335347" label="HandleMdmErrorsForDasherAccounts:enabled"/>
   <int value="1293473298" label="PageInfoAboutThisSiteNewIcon:disabled"/>
   <int value="1293697921" label="RequestDesktopSiteExceptions:enabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>

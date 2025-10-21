@@ -8518,6 +8518,11 @@ inline constexpr char kVariationsSeedCorpusDescription[] =
     "The value of the 'corpus' parameter in the variations seed request. "
     "If unspecified, the 'corpus' parameter is omitted from the request.";
 
+inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
+    "Mdm error handling for dasher accounts";
+inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =
+    "Enables the mdm error handling feature for dasher accounts";
+
 // ============================================================================
 // Don't just add flags to the end, put them in the alphabetical order.
 // ============================================================================

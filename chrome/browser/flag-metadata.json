@@ -6788,6 +6788,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "mdm-errors-for-dasher-accounts-handling",
+    "owners": ["wendlassida@google.com", "samarchehade@google.com", "chrome-signin-mobile-team@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "media-app-image-mantis-reimagine",
     "owners": [
       "cros-mantis@google.com"
