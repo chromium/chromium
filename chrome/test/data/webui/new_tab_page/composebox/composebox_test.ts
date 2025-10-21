@@ -744,6 +744,48 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(event.detail.composeboxText, 'test');
   });
 
+  test('escape key behavior with suggestions', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await microtasksFinished();
+    assertTrue(await areMatchesShowing());
+    const matchEls =
+        composeboxElement.$.matches.shadowRoot.querySelectorAll(
+            'ntp-composebox-match');
+
+    // Case 1: composeboxCloseByEscape_ = false. Escape should select the
+    // first suggestion.
+    (composeboxElement as any).composeboxCloseByEscape_ = false;
+    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    const closePromise = eventToPromise('close-composebox', composeboxElement);
+    let closed = false;
+    closePromise.then(() => closed = true);
+
+    composeboxElement.$.input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    assertFalse(closed);
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+
+    // Case 2: composeboxCloseByEscape_ = true. Escape should close the
+    // composebox.
+    (composeboxElement as any).composeboxCloseByEscape_ = true;
+    const whenCloseComposebox =
+        eventToPromise('close-composebox', composeboxElement);
+    composeboxElement.$.input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, composed: true}));
+    await whenCloseComposebox;
+  });
+
   test('session abandoned on cancel button click', async () => {
     // Arrange.
     createComposeboxElement();

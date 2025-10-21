@@ -630,6 +630,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
       this.closeComposebox_();
       e.preventDefault();
+      return;
     }
 
     // Do not handle the following keys if there are no matches available.
