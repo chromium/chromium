@@ -113,8 +113,8 @@ class PLATFORM_EXPORT MainThreadEventQueue
   // Type of dispatching of the event.
   enum class DispatchType { kBlocking, kNonBlocking };
 
-  void OnGestureScrollUpdateAck(mojom::blink::InputEventResultState ack_state);
-  void OnGestureScrollEndAck(mojom::blink::InputEventResultState ack_state);
+  void OnGestureScrollEventAck(WebInputEvent::Type type,
+                               mojom::blink::InputEventResultState ack_state);
 
   // Called once the compositor has handled |event| and indicated that it is
   // a non-blocking event to be queued to the main thread.
@@ -221,7 +221,8 @@ class PLATFORM_EXPORT MainThreadEventQueue
     bool sent_main_frame_request_ = false;
     // A PostTask to the main thread has been sent but not executed yet.
     bool sent_post_task_ = false;
-    bool gsu_acked_as_consumed_ = false;
+    // The optional only has a value set during an active scroll.
+    std::optional<bool> gsu_acked_as_consumed_ = std::nullopt;
     base::TimeTicks last_async_touch_move_timestamp_;
   };
 
@@ -239,7 +240,10 @@ class PLATFORM_EXPORT MainThreadEventQueue
   std::unique_ptr<InputEventPrediction> event_predictor_;
 
  private:
-  bool ShouldThrottleAsyncTouchMoves(bool gsu_acked_as_consumed);
+  void OnGestureScrollStartAck(mojom::blink::InputEventResultState ack_state);
+  void OnGestureScrollUpdateAck(mojom::blink::InputEventResultState ack_state);
+  void OnGestureScrollEndAck(mojom::blink::InputEventResultState ack_state);
+  bool ShouldThrottleAsyncTouchMoves(std::optional<bool> gsu_acked_as_consumed);
   // Returns false if we are trying to send a gesture scroll event to the main
   // thread when we shouldn't be.  Used for DCHECK in HandleEvent.
   bool Allowed(const WebInputEvent& event, bool force_allow);
