@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -52,11 +53,9 @@ class SplitViewBrowserTestMixin : public T {
 
   MultiContentsDropTargetView* drop_target_view() {
     MultiContentsDropTargetView* view =
-        views::ElementTrackerViews::GetInstance()
-            ->GetFirstMatchingViewAs<MultiContentsDropTargetView>(
-                MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
-                views::ElementTrackerViews::GetContextForWidget(
-                    multi_contents_view()->GetWidget()));
+        BrowserElementsViews::From(T::browser())
+            ->template GetViewAs<MultiContentsDropTargetView>(
+                MultiContentsDropTargetView::kMultiContentsDropTargetElementId);
 
     CHECK(view);
     return view;
