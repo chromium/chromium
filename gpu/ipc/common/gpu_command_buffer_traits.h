@@ -56,8 +56,8 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::VulkanYCbCrInfo> {
 };
 
 template <>
-struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::GpuMemoryBufferFormatSet> {
-  typedef gpu::GpuMemoryBufferFormatSet param_type;
+struct GPU_IPC_COMMON_EXPORT ParamTraits<gfx::GpuMemoryBufferFormatSet> {
+  typedef gfx::GpuMemoryBufferFormatSet param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

@@ -93,12 +93,12 @@ bool ParamTraits<gpu::MailboxHolder>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gpu::GpuMemoryBufferFormatSet>::Write(base::Pickle* m,
+void ParamTraits<gfx::GpuMemoryBufferFormatSet>::Write(base::Pickle* m,
                                                        const param_type& p) {
   WriteParam(m, p.ToEnumBitmask());
 }
 
-bool ParamTraits<gpu::GpuMemoryBufferFormatSet>::Read(
+bool ParamTraits<gfx::GpuMemoryBufferFormatSet>::Read(
     const base::Pickle* m,
     base::PickleIterator* iter,
     param_type* p) {
@@ -106,12 +106,12 @@ bool ParamTraits<gpu::GpuMemoryBufferFormatSet>::Read(
   if (!ReadParam(m, iter, &bitmask)) {
     return false;
   }
-  // Check deserialized bitmask contains only bits GpuMemoryBufferFormatSet
+  // Check deserialized bitmask contains only bits gfx::GpuMemoryBufferFormatSet
   // expects to be set based on largest enum it expects.
-  if (bitmask & ~gpu::GpuMemoryBufferFormatSet::All().ToEnumBitmask()) {
+  if (bitmask & ~gfx::GpuMemoryBufferFormatSet::All().ToEnumBitmask()) {
     return false;
   }
-  *p = gpu::GpuMemoryBufferFormatSet::FromEnumBitmask(bitmask);
+  *p = gfx::GpuMemoryBufferFormatSet::FromEnumBitmask(bitmask);
   return true;
 }
 

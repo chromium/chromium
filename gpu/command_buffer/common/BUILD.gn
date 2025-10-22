@@ -70,7 +70,6 @@ source_set("common_sources") {
     "discardable_handle.h",
     "gl2_types.h",
     "gpu_command_buffer_common_export.h",
-    "gpu_memory_buffer_support.h",
     "id_allocator.cc",
     "id_allocator.h",
     "mailbox_holder.cc",

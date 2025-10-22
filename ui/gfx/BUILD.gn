@@ -568,6 +568,7 @@ source_set("selection_bound_sources") {
 # Depend on this to use buffer_types.h without pulling in all of gfx.
 source_set("buffer_types") {
   sources = [ "buffer_types.h" ]
+  deps = [ "//base" ]
 }
 
 # The GPU memory buffer stuff is separate from "gfx" to allow GPU-related

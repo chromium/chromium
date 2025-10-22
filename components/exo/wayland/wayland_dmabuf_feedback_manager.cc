@@ -368,7 +368,7 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
   if (drm_formats_and_modifiers_.empty()) {
     // Fallback path, to be removed ASAP. We should not advertise the protocol
     // at all.
-    gpu::GpuMemoryBufferFormatSet format_set = caps.gpu_memory_buffer_formats;
+    gfx::GpuMemoryBufferFormatSet format_set = caps.gpu_memory_buffer_formats;
     for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
       gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
       if (format_set.Has(buffer_format)) {
