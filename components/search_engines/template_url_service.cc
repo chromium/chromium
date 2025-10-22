@@ -1318,6 +1318,10 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
 #endif
 }
 
+DefaultSearchManager* TemplateURLService::GetDefaultSearchManager() {
+  return &default_search_manager_;
+}
+
 const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {
   return loaded_ ? default_search_provider_.get()
                  : pre_loading_providers_->default_search_provider();

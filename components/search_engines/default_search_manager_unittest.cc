@@ -494,9 +494,12 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchReset) {
               kMirrorCheckReset),
       1);
 
-  // Ensure the notification is shown.
+  // Unacknowledged (notification not yet shown) reset occurred.
   EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  EXPECT_FALSE(pref_service()->GetTime(
+                   prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+               base::Time());
 
   // The DSE should now be the fallback.
   DefaultSearchManager::Source source;
@@ -515,7 +518,7 @@ TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
 
   // The DSE was reset and notification dialog will show.
   EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
   DefaultSearchManager::Source source;
   manager->GetDefaultSearchEngine(&source);
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
@@ -529,7 +532,7 @@ TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
 
   // Ensure the notification is not shown.
   EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -564,9 +567,13 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
               kResetSkippedForEnterpriseDevice),
       1);
 
-  // Ensure the notification is not shown.
+  // Reset did not occur.
   EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  // A mirror check reset time is not recorded.
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
 
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
@@ -601,9 +608,13 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfFeatureDisabled) {
   histograms.ExpectTotalCount(
       DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric, 0);
 
-  // Ensure the notification is not shown.
+  // Reset did not occur.
   EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  // A mirror check reset time is not recorded.
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
 
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
@@ -643,9 +654,13 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfPrefsMatch) {
               kNoTamperingDetected),
       1);
 
-  // Ensure the notification is not shown.
+  // Reset did not occur.
   EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  // A mirror check reset time is not recorded.
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
 
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
@@ -666,7 +681,7 @@ TEST_F(DefaultSearchManagerTest, RecentHmacReset) {
           .empty());
   set_mirrored_default_search_provider_data_pref("search_engine_A");
   // Simulate the HMAC based reset happened now.
-  PrefHashFilter::SetResetTime(pref_service());
+  PrefHashFilter::SetResetTimeForTesting(pref_service(), base::Time::Now());
 
   auto manager = create_manager();
 
@@ -690,9 +705,13 @@ TEST_F(DefaultSearchManagerTest, RecentHmacReset) {
               kRecentHmacReset),
       1);
 
-  // Ensure the notification is shown.
+  // Unacknowledged (notification not yet shown) reset occurred.
   EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  // A mirror check reset time is not recorded.
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
 }
 
 TEST_F(DefaultSearchManagerTest, StaleHmacReset) {
@@ -732,12 +751,16 @@ TEST_F(DefaultSearchManagerTest, StaleHmacReset) {
               kStaleHmacReset),
       1);
 
-  // Ensure the notification is not shown.
+  // Unacknowledged (notification not yet shown) DSE reset did not occur.
   EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  // A mirror check reset time is not recorded.
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
 }
 
-TEST_F(DefaultSearchManagerTest, EncryptionResetShowsNotification) {
+TEST_F(DefaultSearchManagerTest, EncryptionResetSetsUnacknowledgedResetPref) {
   base::test::ScopedFeatureList feature_list{
       switches::kResetTamperedDefaultSearchEngine};
   base::HistogramTester histograms;
@@ -756,14 +779,16 @@ TEST_F(DefaultSearchManagerTest, EncryptionResetShowsNotification) {
           ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
           .empty());
 
-  // Simulate an encryption-based reset by setting the reset time
-  // and clearing the main DSE pref.
-  PrefHashFilter::SetResetTime(pref_service());
+  // Simulate an encrypted hash based reset by clearing the main DSE pref.
   pref_service()->ClearPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 
-  // Ensure the notification is shown.
+  // Unacknowledged (notification not yet shown) reset occurred.
   EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification));
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  // A mirror check reset time is not recorded.
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

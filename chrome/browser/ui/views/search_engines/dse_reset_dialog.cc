@@ -22,6 +22,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
+#include "services/preferences/tracked/pref_hash_filter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
@@ -48,7 +49,41 @@ void OpenLearnMoreLink(Browser* browser, const ui::Event& event) {
       {});
 }
 
-void ShowSearchEngineResetNotification(Browser* browser) {
+// Checks if a default search engine reset occurred that requires the
+// notification to be shown.
+bool NeedsDseResetNotification(Profile* profile,
+                               DefaultSearchManager* default_search_manager) {
+  if (!default_search_manager->GetUnacknowledgedDefaultSearchEngineReset()) {
+    return false;
+  }
+
+  const base::Time mirror_check_dse_reset_time =
+      default_search_manager->GetDefaultSearchEngineMirrorCheckResetTimeStamp();
+  const base::Time hash_check_dse_reset_time =
+      PrefHashFilter::GetResetTime(profile->GetPrefs());
+  const base::Time notification_shown_for_reset_time =
+      default_search_manager->GetResetTimeForLastShownNotification();
+
+  // Unacknowledged mirror check based reset.
+  if (mirror_check_dse_reset_time > notification_shown_for_reset_time) {
+    default_search_manager->SetResetTimeForLastShownNotification(
+        mirror_check_dse_reset_time);
+    return true;
+  }
+
+  // Unacknowledged hash check based reset.
+  if (hash_check_dse_reset_time > notification_shown_for_reset_time) {
+    default_search_manager->SetResetTimeForLastShownNotification(
+        hash_check_dse_reset_time);
+    return true;
+  }
+
+  return false;
+}
+
+void ShowSearchEngineResetNotification(
+    Browser* browser,
+    DefaultSearchManager* default_search_manager) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view) {
     return;
@@ -88,8 +123,7 @@ void ShowSearchEngineResetNotification(Browser* browser) {
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 
   // Don't show this notification again.
-  browser->profile()->GetPrefs()->SetBoolean(
-      prefs::kShowDefaultSearchEngineResetNotification, false);
+  default_search_manager->SetUnacknowledgedDefaultSearchEngineReset(false);
 }
 
 }  // namespace
@@ -112,12 +146,13 @@ void MaybeShowSearchEngineResetNotification(
   Profile* profile = browser->profile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  if (!template_url_service) {
+  DefaultSearchManager* default_search_engine =
+      template_url_service->GetDefaultSearchManager();
+  if (!default_search_engine) {
     return;
   }
 
-  if (!profile->GetPrefs()->GetBoolean(
-          prefs::kShowDefaultSearchEngineResetNotification)) {
+  if (!NeedsDseResetNotification(profile, default_search_engine)) {
     return;
   }
 
@@ -125,12 +160,11 @@ void MaybeShowSearchEngineResetNotification(
   if (!template_url_service->GetDefaultSearchProvider() &&
       template_url_service->default_search_provider_source() ==
           DefaultSearchManager::FROM_POLICY) {
-    profile->GetPrefs()->SetBoolean(
-        prefs::kShowDefaultSearchEngineResetNotification, false);
+    default_search_engine->SetUnacknowledgedDefaultSearchEngineReset(false);
     return;
   }
 
-  ShowSearchEngineResetNotification(browser);
+  ShowSearchEngineResetNotification(browser, default_search_engine);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 

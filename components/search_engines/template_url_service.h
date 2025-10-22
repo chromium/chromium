@@ -399,6 +399,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
       search_engines::ChoiceMadeLocation choice_made_location =
           search_engines::ChoiceMadeLocation::kOther);
 
+  // Returns the DefaultSearchManager for this service.
+  DefaultSearchManager* GetDefaultSearchManager();
+
   // Returns the default search provider. If the TemplateURLService hasn't been
   // loaded, the default search provider is pulled from preferences.
   //

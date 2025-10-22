@@ -171,6 +171,29 @@ class DefaultSearchManager
   // engine will be defined by policy, extensions, or pre-populated data.
   void ClearUserSelectedDefaultSearchEngine();
 
+  // Returns whether an unacknowledged default search engine reset has occurred.
+  bool GetUnacknowledgedDefaultSearchEngineReset() const;
+
+  // Sets whether an unacknowledged default search engine reset has occurred.
+  void SetUnacknowledgedDefaultSearchEngineReset(bool unacknowledged_reset);
+
+  // Returns the time of the last mirror check based default search engine
+  // reset.
+  base::Time GetDefaultSearchEngineMirrorCheckResetTimeStamp() const;
+
+  // Sets the time of the last mirror check based default search engine reset.
+  // Only for testing.
+  void SetDefaultSearchEngineMirrorCheckResetTimeStampForTesting(
+      base::Time time);
+
+  // Returns the time of the default search engine reset for which a
+  // reset notification was last shown.
+  base::Time GetResetTimeForLastShownNotification() const;
+
+  // Sets the time of the default search engine reset for which a
+  // reset notification was last shown.
+  void SetResetTimeForLastShownNotification(base::Time time);
+
  private:
   // Handles changes to kDefaultSearchProviderData pref. This includes sync and
   // policy changes. Calls LoadDefaultSearchEngineFromPrefs() and

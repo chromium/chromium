@@ -5299,6 +5299,7 @@ if (!is_android) {
         "//components/send_tab_to_self",
         "//components/send_tab_to_self:test_support",
         "//components/user_education/views",
+        "//services/preferences/tracked",
         "//ui/base/dragdrop:types",
         "//ui/views",
         "//url",

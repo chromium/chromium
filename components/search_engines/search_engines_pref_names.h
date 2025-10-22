@@ -77,9 +77,20 @@ inline constexpr char kDefaultSearchProviderContextMenuAccessAllowed[] =
 inline constexpr char kDefaultSearchProviderEnabled[] =
     "default_search_provider.enabled";
 
-// Whether to show the default search engine reset notification.
-inline constexpr char kShowDefaultSearchEngineResetNotification[] =
-    "default_search_provider.show_reset_notification";
+// Tracks if a default search engine reset has occurred that the user hasn't
+// been notified of. This is set to true when a reset occurs and false after the
+// notification is shown.
+inline constexpr char kUnacknowledgedDefaultSearchEngineResetOccurred[] =
+    "default_search_provider.reset_occurred";
+
+// The time the last mirror check based reset occurred.
+inline constexpr char kDefaultSearchEngineMirrorCheckResetTimeStamp[] =
+    "default_search_provider.reset_time";
+
+// The time of the default search engine reset for which the last notification
+// was shown.
+inline constexpr char kResetTimeForLastShownNotification[] =
+    "default_search_provider.notification_reset_time";
 
 // The dictionary key used when the default search providers are given
 // in the preferences file. Normally they are copied from the main

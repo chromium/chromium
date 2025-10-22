@@ -149,7 +149,11 @@ void DefaultSearchManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kDefaultSearchProviderDataPrefName);
   registry->RegisterDictionaryPref(kMirroredDefaultSearchProviderDataPrefName);
   registry->RegisterBooleanPref(
-      prefs::kShowDefaultSearchEngineResetNotification, false);
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, false);
+  registry->RegisterTimePref(
+      prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp, base::Time());
+  registry->RegisterTimePref(prefs::kResetTimeForLastShownNotification,
+                             base::Time());
 }
 
 // static
@@ -277,15 +281,15 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
 
   if (base::FeatureList::IsEnabled(
           switches::kResetTamperedDefaultSearchEngine)) {
-    if (url_dict.empty() && HasRecentPrefReset()) {
+    if (url_dict.empty()) {
       pref_service_->SetBoolean(
-          prefs::kShowDefaultSearchEngineResetNotification, true);
+          prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, true);
     } else {
       // Cancel the pending notification if, following a security based DSE
       // reset, the DSE is changed by the user before the dialog is shown. In
       // other cases, this is a harmless no-op as the pref is already false.
       pref_service_->SetBoolean(
-          prefs::kShowDefaultSearchEngineResetNotification, false);
+          prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, false);
     }
   }
 
@@ -395,7 +399,7 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
     if (HasRecentPrefReset()) {   // HMAC reset occurred recently.
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::kRecentHmacReset;
       pref_service_->SetBoolean(
-          prefs::kShowDefaultSearchEngineResetNotification, true);
+          prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, true);
     } else {
       // HMAC reset occurred long ago, but mirrored pref was never cleared.
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::kStaleHmacReset;
@@ -409,7 +413,10 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
       // Clear the mirrored pref to eliminate future mismatch.
       pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
       pref_service_->SetBoolean(
-          prefs::kShowDefaultSearchEngineResetNotification, true);
+          prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, true);
+      pref_service_->SetTime(
+          prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp,
+          base::Time::Now());
     } else {
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::
           kResetSkippedForEnterpriseDevice;
@@ -431,4 +438,37 @@ bool DefaultSearchManager::HasRecentPrefReset() {
   // aware of it.
   const base::TimeDelta since_reset = base::Time::Now() - reset_time;
   return since_reset < kRecentResetThreshold;
+}
+
+bool DefaultSearchManager::GetUnacknowledgedDefaultSearchEngineReset() const {
+  return pref_service_->GetBoolean(
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred);
+}
+
+void DefaultSearchManager::SetUnacknowledgedDefaultSearchEngineReset(
+    bool unacknowledged_reset) {
+  pref_service_->SetBoolean(
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred,
+      unacknowledged_reset);
+}
+
+base::Time
+DefaultSearchManager::GetDefaultSearchEngineMirrorCheckResetTimeStamp() const {
+  return pref_service_->GetTime(
+      prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp);
+}
+
+void DefaultSearchManager::
+    SetDefaultSearchEngineMirrorCheckResetTimeStampForTesting(base::Time time) {
+  pref_service_->SetTime(prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp,
+                         time);
+}
+
+base::Time DefaultSearchManager::GetResetTimeForLastShownNotification() const {
+  return pref_service_->GetTime(prefs::kResetTimeForLastShownNotification);
+}
+
+void DefaultSearchManager::SetResetTimeForLastShownNotification(
+    base::Time time) {
+  pref_service_->SetTime(prefs::kResetTimeForLastShownNotification, time);
 }

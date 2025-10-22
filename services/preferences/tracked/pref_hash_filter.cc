@@ -195,10 +195,10 @@ void PrefHashFilter::ClearResetTime(PrefService* user_prefs) {
 }
 
 // static
-void PrefHashFilter::SetResetTime(PrefService* user_prefs) {
-  user_prefs->SetString(
-      user_prefs::kPreferenceResetTime,
-      base::NumberToString(base::Time::Now().ToInternalValue()));
+void PrefHashFilter::SetResetTimeForTesting(PrefService* user_prefs,
+                                            base::Time time) {
+  user_prefs->SetString(user_prefs::kPreferenceResetTime,
+                        base::NumberToString(time.ToInternalValue()));
 }
 
 void PrefHashFilter::Initialize(base::Value::Dict& pref_store_contents) {
