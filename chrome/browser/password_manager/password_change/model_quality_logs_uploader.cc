@@ -192,7 +192,8 @@ LoginPasswordType GetLoginAttemptPasswordType(
 
 ModelQualityLogsUploader::ModelQualityLogsUploader(
     content::WebContents* web_contents,
-    const GURL& change_password_url) {
+    const GURL& change_password_url)
+    : flow_start_time_(base::Time::Now()) {
   CHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
@@ -428,6 +429,10 @@ void ModelQualityLogsUploader::UploadFinalLog() {
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
           mqls_service->GetWeakPtr());
 
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->set_total_flow_time_ms(ComputeRequestLatencyMs(flow_start_time_));
   new_log_entry->log_ai_data_request()->MergeFrom(final_log_data_);
+
   optimization_guide::ModelQualityLogEntry::Upload(std::move(new_log_entry));
 }
