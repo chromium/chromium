@@ -37,7 +37,7 @@ int GetResourceIdFromTemplateURL(const TemplateURL& template_url) {
       [&](const auto& resource) { return resource.path == resource_name; });
 
   // Note: it is possible to have no resource id for a prepopulated search
-  // engine that was selected from a country outside of EEA countries.
+  // engine that was selected from a country outside of a choice screen region.
   if (resource_it != std::end(kSearchEnginesScaledResources)) {
     return resource_it->id;
   }
@@ -62,10 +62,10 @@ void GetSearchEngineFavicon(
     TemplateURLService* template_url_service,
     FaviconLoader* favicon_loader,
     FaviconLoader::FaviconAttributesCompletionBlock favicon_block_handler) {
-  if (regional_capabilities.IsInEeaCountry() &&
+  if (regional_capabilities.IsInSearchEngineChoiceScreenRegion() &&
       template_url.prepopulate_id() > 0) {
-    // For EEA countries, embedded favicons should be prefered, with a fall
-    // back using FaviconLoader APIs.
+    // For choice screen regions, embedded favicons should be prefered, with a
+    // fall back using FaviconLoader APIs.
     UIImage* image = SearchEngineFaviconFromTemplateURL(template_url);
     if (image) {
       FaviconAttributes* attributes =
