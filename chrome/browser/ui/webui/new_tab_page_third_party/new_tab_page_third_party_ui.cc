@@ -75,6 +75,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
       {"restoreThumbnailsShort", IDS_NEW_TAB_RESTORE_THUMBNAILS_SHORT_LINK},
       {"title", IDS_NEW_TAB_TITLE},
       {"undo", IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE},
+      {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
   };
 
   source->AddLocalizedStrings(kStrings);

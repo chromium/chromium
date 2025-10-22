@@ -157,15 +157,30 @@ function leaveUrlInput() {
   return microtasksFinished();
 }
 
-function setUpTest(singleRow: boolean, reflowOnOverflow: boolean) {
+interface SetUpTestOptions {
+  singleRow: boolean;
+  reflowOnOverflow: boolean;
+  enableShowMoreButton: boolean;
+}
+
+function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
+  const defaultOptions = {
+    singleRow: false,
+    reflowOnOverflow: false,
+    enableShowMoreButton: false,
+  };
+  const options = {...defaultOptions, ...providedOptions};
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
   createBrowserProxy();
   createWindowProxy();
 
   mostVisited = new MostVisitedElement();
-  mostVisited.singleRow = singleRow;
-  mostVisited.reflowOnOverflow = reflowOnOverflow;
+  mostVisited.singleRow = options.singleRow;
+  mostVisited.reflowOnOverflow = options.reflowOnOverflow;
+  if (options.enableShowMoreButton) {
+    mostVisited.setAttribute('enable-show-more-button', '');
+  }
   document.body.appendChild(mostVisited);
   assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
   return wide();
@@ -173,7 +188,7 @@ function setUpTest(singleRow: boolean, reflowOnOverflow: boolean) {
 
 suite('General', () => {
   setup(async () => {
-    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    await setUpTest();
   });
 
   test('empty shows add shortcut only', async () => {
@@ -210,13 +225,12 @@ suite('General', () => {
 suite('ShowMoreButton', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      ntpNextFeaturesEnabled: true,
       maxTilesBeforeShowMore: MAX_TILES_BEFORE_SHOW_MORE,
     });
   });
 
   test('Show more button is shown with 6 or more tiles', async () => {
-    await setUpTest(false, true);
+    await setUpTest({reflowOnOverflow: true, enableShowMoreButton: true});
     await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
     assertTrue(isVisible(getShowMoreButton()));
     assertAddShortcutHidden();
@@ -224,7 +238,7 @@ suite('ShowMoreButton', () => {
   });
 
   test('Show more button is hidden with 5 or fewer tiles', async () => {
-    await setUpTest(false, true);
+    await setUpTest({reflowOnOverflow: true, enableShowMoreButton: true});
     await addTiles(MAX_TILES_BEFORE_SHOW_MORE);
     assertFalse(isVisible(getShowMoreButton()));
     assertAddShortcutShown();
@@ -233,7 +247,7 @@ suite('ShowMoreButton', () => {
   test(
       'Clicking the show more button shows all tiles and hides the button',
       async () => {
-        await setUpTest(false, true);
+        await setUpTest({reflowOnOverflow: true, enableShowMoreButton: true});
         await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
         const showMoreButton = getShowMoreButton();
         assertTrue(isVisible(showMoreButton));
@@ -251,7 +265,7 @@ suite('ShowMoreButton', () => {
 
 function createLayoutsSuite(singleRow: boolean, reflowOnOverflow: boolean) {
   setup(async () => {
-    await setUpTest(singleRow, reflowOnOverflow);
+    await setUpTest({singleRow, reflowOnOverflow});
   });
 
   test('four tiles fit on one line with addShortcut', async () => {
@@ -383,7 +397,7 @@ function createLayoutsSuite(singleRow: boolean, reflowOnOverflow: boolean) {
 function createLayoutsWidthsSuite(singleRow: boolean) {
   suite('test various widths', () => {
     setup(async () => {
-      await setUpTest(singleRow, false);
+      await setUpTest({singleRow});
     });
 
     test('six / three is max for narrow', async () => {
@@ -492,7 +506,7 @@ function columnCount(): number {
 function createLayoutsWidthsReflowSuite(singleRow: boolean) {
   suite('test reflow on various widths', () => {
     setup(async () => {
-      await setUpTest(singleRow, /*reflowOnOverflow=*/ true);
+      await setUpTest({singleRow, reflowOnOverflow: true});
     });
 
     test('No hidden tiles', async () => {
@@ -562,7 +576,7 @@ suite('Reflow Layouts', () => {
 
 suite('LoggingAndUpdates', () => {
   setup(async () => {
-    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    await setUpTest();
   });
 
   test('rendering tiles logs event', async () => {
@@ -653,7 +667,7 @@ suite('Modification', () => {
   });
 
   setup(async () => {
-    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    await setUpTest();
   });
 
   suite('add dialog', () => {
@@ -1158,7 +1172,7 @@ suite('Modification', () => {
 
 function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
   setup(async () => {
-    await setUpTest(singleRow, reflowOnOverflow);
+    await setUpTest({singleRow, reflowOnOverflow});
   });
 
   test('drag first tile to second position', async () => {
@@ -1271,7 +1285,7 @@ suite('DragAndDrop', () => {
 
 suite('Theming', () => {
   setup(async () => {
-    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    await setUpTest();
   });
 
   test('RIGHT_TO_LEFT tile title text direction', async () => {
@@ -1338,7 +1352,7 @@ suite('Preloading', () => {
   suiteSetup(() => {});
 
   setup(async () => {
-    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    await setUpTest();
   });
 
   test('onMouseHover Trigger', async () => {
@@ -1385,7 +1399,7 @@ suite('EnterpriseShortcuts', () => {
   suiteSetup(() => {});
 
   setup(async () => {
-    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    await setUpTest();
   });
 
   function createEnterpriseShortcut(

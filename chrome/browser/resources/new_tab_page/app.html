@@ -87,7 +87,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   ${this.lazyRender_ ? html`
     ${this.shortcutsEnabled_ ? html`
       <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
-          single-row reflow-on-overflow>
+          single-row reflow-on-overflow
+          ?enable-show-more-button="${this.ntpNextFeaturesEnabled_}">
       </cr-most-visited>
     ` : ''}
     ${this.middleSlotPromoEnabled_ ? html`

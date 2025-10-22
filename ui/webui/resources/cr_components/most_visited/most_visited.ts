@@ -158,7 +158,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       tiles_: {type: Array, state: true},
       toastContent_: {type: String, state: true},
 
-      ntpNextFeaturesEnabled_: {type: Boolean},
+      enableShowMoreButton: {type: Boolean, reflect: true},
       showAll_: {type: Boolean, state: true},
       showShowMore_: {type: Boolean, state: true},
 
@@ -172,6 +172,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   accessor theme: MostVisitedTheme|null = null;
   accessor reflowOnOverflow: boolean = false;
   accessor singleRow: boolean = false;
+  accessor enableShowMoreButton: boolean = false;
   private accessor showAll_: boolean = false;
   protected accessor showShowMore_: boolean = false;
   protected accessor useWhiteTileIcon_: boolean = false;
@@ -197,10 +198,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private accessor maxVisibleColumnCount_: number = 0;
   protected accessor tiles_: MostVisitedTile[] = [];
   protected accessor visible_: boolean = false;
-  protected accessor ntpNextFeaturesEnabled_: boolean =
-      loadTimeData.getBoolean('ntpNextFeaturesEnabled');
-  private maxTilesBeforeShowMore_: number =
-      loadTimeData.getInteger('maxTilesBeforeShowMore');
+  private maxTilesBeforeShowMore_: number = 5;
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
   private pageHandler_: MostVisitedPageHandlerRemote;
@@ -320,6 +318,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
         changedPrivateProperties.has('dialogTileUrl_')) {
       this.dialogSaveDisabled_ = this.computeDialogSaveDisabled_();
     }
+
+    if (changedPrivateProperties.has('enableShowMoreButton')) {
+      this.maxTilesBeforeShowMore_ = this.computeMaxTilesBeforeShowMore_();
+    }
   }
 
   override firstUpdated() {
@@ -401,7 +403,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeMaxVisibleTiles_(): number {
-    if (this.ntpNextFeaturesEnabled_ && this.showShowMore_) {
+    if (this.enableShowMoreButton && this.showShowMore_) {
       return this.maxTilesBeforeShowMore_ + 1;
     }
 
@@ -420,8 +422,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
         this.tiles_ && this.tiles_.length < this.maxVisibleTiles_;
   }
 
+  private computeMaxTilesBeforeShowMore_(): number {
+    return this.enableShowMoreButton ?
+        loadTimeData.getInteger('maxTilesBeforeShowMore') :
+        5;
+  }
+
   private computeShowShowMore_(): boolean {
-    return this.ntpNextFeaturesEnabled_ && !this.showAll_ && this.tiles_ &&
+    return this.enableShowMoreButton && !this.showAll_ && this.tiles_ &&
         this.tiles_.length > this.maxTilesBeforeShowMore_;
   }
 
