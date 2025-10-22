@@ -221,13 +221,12 @@ crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 crbug.com/329138770 [ amd-0x7340 graphite-enabled no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2D [ Failure ]
 crbug.com/329138770 [ graphite-enabled intel no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2D [ Failure ]
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_ge_31.0.15.4601 release-x64 target-cpu-64 win11 ] SwapChainTraceTest_CanvasLowLatency2D [ Failure ]
-crbug.com/329138770 [ amd-0x150e graphite-enabled no-clang-coverage release-x64 target-cpu-64 win11 ] SwapChainTraceTest_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/329138770 [ amd-0x7340 graphite-enabled no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/329138770 [ graphite-enabled intel no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_ge_31.0.15.4601 release-x64 target-cpu-64 win11 ] SwapChainTraceTest_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/329138770 [ amd-0x7340 graphite-enabled no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2DImageData [ Failure ]
 crbug.com/329138770 [ graphite-enabled intel-0x4680 no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2DImageData [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatencyWebGL [ Failure ]
+crbug.com/329138770 [ graphite-enabled intel-0x9bc5 no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatencyWebGL [ Failure ]
 crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
@@ -271,9 +270,7 @@ crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineIn
 
 # Win11/RTX 4070 Super failures after upgrading to driver 580.88
 crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
-crbug.com/450323461 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
 crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
-crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ RetryOnFailure ]
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ win11 qualcomm ] WebGPUTraceTest* [ Failure ]
