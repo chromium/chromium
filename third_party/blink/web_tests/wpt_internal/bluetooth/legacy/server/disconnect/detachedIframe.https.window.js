@@ -3,6 +3,7 @@
 // META: script=/common/gc.js
 // META: script=/bluetooth/resources/bluetooth-test.js
 // META: script=/bluetooth/resources/bluetooth-fake-devices.js
+// META: timeout=long
 
 bluetooth_test(async () => {
   let iframe = document.createElement('iframe');
