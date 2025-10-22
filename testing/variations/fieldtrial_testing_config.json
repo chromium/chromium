@@ -14203,6 +14203,31 @@
             ]
         }
     ],
+    "InhibitSQLPreload": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "windows",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "InhibitSQLPreload",
+                    "enable_features": [
+                        "InhibitSQLPreload"
+                    ]
+                },
+                {
+                    "name": "InhibitSQLPreloadOnFixedSSD",
+                    "enable_features": [
+                        "InhibitSQLPreloadOnFixedSSD"
+                    ]
+                }
+            ]
+        }
+    ],
     "InlineFullscreenPerfExperiment": [
         {
             "platforms": [

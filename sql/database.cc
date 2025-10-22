@@ -27,6 +27,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
+#include "base/files/drive_info.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -77,6 +79,41 @@
 namespace sql {
 
 namespace {
+
+// Features to evaluate the hypothesis that preloading sql::Database causes
+// memory contention (using Browser.MainThreadsCongestion as a proxy) for
+// minimal gains.
+//
+// Context: We previously validated that preloading the main DLL causes memory
+// contention, and the benefits don't outweigh this downside on fixed SSDs.
+//
+// When enabled, the "preload" option is ignored unconditionally.
+BASE_FEATURE(kInhibitSQLPreload, base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// When enabled, the "preload" option is ignored *only if the database is on a
+// fixed SSD*.
+BASE_FEATURE(kInhibitSQLPreloadOnFixedSSD, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns true if `path` is on a drive that has no seek penalty and isn't
+// removable, or if that information cannot be obtained (most drives are fixed
+// and have no seek penalty, so `true` is the result that is most likely to be
+// correct).
+bool FilePathIsFixedSSD(const base::FilePath& path) {
+  std::optional<base::DriveInfo> drive_info = base::GetFileDriveInfo(path);
+  if (!drive_info) {
+    return true;
+  }
+
+  return !drive_info->has_seek_penalty.value_or(false)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+         && !drive_info->is_removable.value_or(false)
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+         && !drive_info->is_usb.value_or(false)
+#endif
+      ;
+}
 
 // The name of the main database associated with a sqlite3* connection.
 //
@@ -2247,12 +2284,21 @@ void Database::PreloadInternal(const base::FilePath& path) {
 
   // TODO(crbug.com/40904059): Consider moving this to a DCHECK after fixing
   // or migrating callsites that call Preload(...) on in-memory databases.
-  if (!in_memory_) {
+  if (in_memory_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kInhibitSQLPreload)) {
     return;
   }
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
+  if (base::FeatureList::IsEnabled(kInhibitSQLPreloadOnFixedSSD) &&
+      FilePathIsFixedSSD(path)) {
+    return;
+  }
 
   // Maximum number of bytes that will be prefetched from the database.
   //
