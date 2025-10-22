@@ -31,8 +31,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.webapps.AddToHomescreenProperties;
-import org.chromium.components.webapps.AddToHomescreenViewDelegate;
-import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappInstallSource;
@@ -50,8 +48,7 @@ import java.util.ArrayList;
 /** This class controls the Bottom Sheet PWA install functionality. */
 @JNINamespace("webapps")
 @NullMarked
-public class PwaBottomSheetController
-        implements UnownedUserData, AddToHomescreenViewDelegate, View.OnClickListener {
+public class PwaBottomSheetController implements UnownedUserData, View.OnClickListener {
     private final Context mContext;
 
     /** A pointer to the native version of this class. It's lifetime is controlled by this class. */
@@ -178,24 +175,6 @@ public class PwaBottomSheetController
         mContext = context;
     }
 
-    // AddToHomescreenViewDelegate:
-
-    @Override
-    public void onAddToHomescreen(String title, @AppType int type) {
-        onAddToHomescreen();
-    }
-
-    @Override
-    public boolean onAppDetailsRequested() {
-        return false;
-    }
-
-    @Override
-    public void onViewDismissed() {
-        // The bottom sheet observer OnSheetStateChanged() method is used instead to track when the
-        // sheet is dismissed.
-    }
-
     private void createWebContentsObserver(WebContents webContents) {
         assert mWebContentsObserver == null;
         mWebContentsObserver =
@@ -250,7 +229,7 @@ public class PwaBottomSheetController
         mScreenshotAdapter = new ScreenshotsAdapter(mContext, shouldPadForDialogContent);
         PwaInstallBottomSheetView view =
                 new PwaInstallBottomSheetView(mContext, mScreenshotAdapter);
-        mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view, this);
+        mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view);
         mModel =
                 new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS)
                         .with(AddToHomescreenProperties.ICON, new Pair<>(icon, isAdaptiveIcon))

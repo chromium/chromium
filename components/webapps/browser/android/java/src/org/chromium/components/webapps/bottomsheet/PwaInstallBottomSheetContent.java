@@ -8,12 +8,10 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.R;
 
 /**
@@ -25,16 +23,11 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     /** The view for our bottom sheet. */
     private final PwaInstallBottomSheetView mView;
 
-    /** The delegate handling the install. */
-    @VisibleForTesting protected final AddToHomescreenViewDelegate mDelegate;
-
     /** This content's priority. */
     private @ContentPriority int mPriority = ContentPriority.LOW;
 
-    public PwaInstallBottomSheetContent(
-            PwaInstallBottomSheetView view, AddToHomescreenViewDelegate delegate) {
+    public PwaInstallBottomSheetContent(PwaInstallBottomSheetView view) {
         mView = view;
-        mDelegate = delegate;
     }
 
     public void setPriority(@ContentPriority int priority) {
@@ -70,9 +63,7 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {
-        mDelegate.onViewDismissed();
-    }
+    public void destroy() {}
 
     @Override
     public int getPriority() {
