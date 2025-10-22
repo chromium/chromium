@@ -1082,7 +1082,14 @@
       name: "ColorSpaceDisplayP3Linear",
       status: "experimental",
     },
-    // Enable the rec2100-linear color space in CSS.
+    // Enable the srgb-linear and display-p3-linear color spaces in
+    // PredefinedColorSpace.
+    // https://chromestatus.com/feature/5122501071994880
+    {
+      name: "ColorSpacePredefinedLinearSpaces",
+      status: "experimental",
+    },
+    // Enable the rec2100-linear color space in CSS and PredefinedColorSpace.
     // https://chromestatus.com/feature/5204024772788224
     {
       name: "ColorSpaceRec2100Linear",

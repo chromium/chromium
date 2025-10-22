@@ -8,7 +8,8 @@ enum PredefinedColorSpace {
     "display-p3",
     "rec2100-hlg", // Enabled only in CanvasHDR
     "rec2100-pq", // Enabled only in CanvasHDR
-    "srgb-linear", // Enabled only in CanvasHDR
+    "srgb-linear", // Enabled in ColorSpacePredefinedLinearSpaces
+    "display-p3-linear", // Enabled in ColorSpacePredefinedLinearSpaces
     "rec2100-linear", // Enabled in ColorSpaceRec2100Linear
 };
 
