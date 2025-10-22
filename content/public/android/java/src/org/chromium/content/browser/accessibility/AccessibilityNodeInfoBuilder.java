@@ -105,8 +105,6 @@ public class AccessibilityNodeInfoBuilder {
     public static final String EXTRAS_KEY_HAS_IMAGE = "AccessibilityNodeInfo.hasImage";
     public static final String EXTRAS_KEY_HINT = "AccessibilityNodeInfo.hint";
     public static final String EXTRAS_KEY_OFFSCREEN = "AccessibilityNodeInfo.offscreen";
-    public static final String EXTRAS_KEY_ROLE_DESCRIPTION =
-            "AccessibilityNodeInfo.roleDescription";
     public static final String EXTRAS_KEY_SUPPORTED_ELEMENTS =
             "ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES";
     public static final String EXTRAS_KEY_TARGET_URL = "AccessibilityNodeInfo.targetUrl";
@@ -388,10 +386,10 @@ public class AccessibilityNodeInfoBuilder {
         }
         bundle.putCharSequence(EXTRAS_KEY_CHROME_ROLE, role);
 
-        // TODO(crbug.com/451797082): Replace by `setRoleDescription` API and
-        // consider not setting (or setting null value) when roleDescription is
-        // empty.
-        bundle.putCharSequence(EXTRAS_KEY_ROLE_DESCRIPTION, roleDescription);
+        if (!roleDescription.isEmpty()) {
+            node.setRoleDescription(roleDescription);
+        }
+
         // We added the hint Bundle extra pre Android-O, and keep it to not risk breaking changes.
         bundle.putCharSequence(EXTRAS_KEY_HINT, hint);
         if (!display.isEmpty()) {
