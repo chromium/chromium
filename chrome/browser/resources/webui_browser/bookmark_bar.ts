@@ -5,14 +5,27 @@
 import './bookmark_element.js';
 import './icons.html.js';
 
-import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import {getCss as getCrHiddenStyleCss} from '//resources/cr_elements/cr_hidden_style_lit.css.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getHtml} from './bookmark_bar.html.js';
 import type {BookmarkData} from './bookmark_bar.mojom-webui.js';
-import {BookmarkElement} from './bookmark_element.js';
+import {BookmarkType} from './bookmark_bar.mojom-webui.js';
+import type {BrowserProxy} from './bookmark_bar_browser_proxy.js';
+import {BrowserProxyImpl} from './bookmark_bar_browser_proxy.js';
 
-export class BookmarkBar extends CrLitElement {
+export class BookmarkBarElement extends CrLitElement {
   static get is() {
     return 'webui-browser-bookmark-bar';
+  }
+
+  static override get styles() {
+    return getCrHiddenStyleCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {
@@ -21,46 +34,77 @@ export class BookmarkBar extends CrLitElement {
     };
   }
 
-  protected accessor bookmarks_: BookmarkElement[] = [];
+  protected accessor bookmarks_: BookmarkData[] = [];
+  private listenerIds_: number[] = [];
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  override render() {
-    return html`${this.bookmarks_}`;
+  override connectedCallback() {
+    super.connectedCallback();
+
+    const callbackRouter = this.browserProxy_.callbackRouter;
+    this.listenerIds_ = [
+      callbackRouter.show.addListener(this.show_.bind(this)),
+      callbackRouter.hide.addListener(this.hide_.bind(this)),
+      callbackRouter.bookmarkLoaded.addListener(
+          this.loadBookmarkModel_.bind(this)),
+      callbackRouter.favIconChanged.addListener(this.updateFavIcon_.bind(this)),
+    ];
+
+    this.loadBookmarkModel_();
   }
 
-  addBookmark(data: BookmarkData) {
-    const bookmarkElement = new BookmarkElement(data);
-    this.bookmarks_ = [...this.bookmarks_, bookmarkElement];
+  override disconnectedCallback() {
+    super.disconnectedCallback();
 
+    this.listenerIds_.forEach(id => {
+      assert(this.browserProxy_.callbackRouter.removeListener(id));
+    });
+    this.listenerIds_ = [];
+  }
+
+  private async loadBookmarkModel_() {
+    this.bookmarks_ =
+        (await this.browserProxy_.handler.getBookmarkBar()).bookmarks;
+  }
+
+  private updateFavIcon_(data: BookmarkData) {
+    const index = this.bookmarks_.findIndex(item => item.id === data.id);
+    if (index === -1) {
+      return;
+    }
+
+    this.bookmarks_[index] = data;
     this.requestUpdate();
   }
 
-  updateFavIcon(data: BookmarkData) {
-    const updatedBookmark =
-        this.bookmarks_.find(bookmark => bookmark.bookmarkId === data.id);
-    if (updatedBookmark) {
-      updatedBookmark.updateFavIcon(data.pageUrlForFavicon);
-      this.requestUpdate();
+  private show_() {
+    this.hidden = false;
+  }
+
+  private hide_() {
+    this.hidden = true;
+  }
+
+  protected onBookmarkClick_(e: Event) {
+    e.preventDefault();
+
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number(currentTarget.dataset['index']);
+    const bookmark = this.bookmarks_[index]!;
+
+    // Only launch the bookmark if it's a URL.
+    if (bookmark.type !== BookmarkType.URL) {
+      return;
     }
-  }
 
-  resetBookmarks() {
-    // Reset the number of bookmarks to 0;
-    this.bookmarks_ = [];
-  }
-
-  show() {
-    this.dispatchEvent(new CustomEvent('show-bookmark-bar'));
-  }
-
-  hide() {
-    this.dispatchEvent(new CustomEvent('hide-bookmark-bar'));
+    this.browserProxy_.handler.openInNewTab(bookmark.id);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-bookmark-bar': BookmarkBar;
+    'webui-browser-bookmark-bar': BookmarkBarElement;
   }
 }
 
-customElements.define(BookmarkBar.is, BookmarkBar);
+customElements.define(BookmarkBarElement.is, BookmarkBarElement);

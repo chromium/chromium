@@ -6,29 +6,18 @@ import './icons.html.js';
 
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BookmarkData} from './bookmark_bar.mojom-webui.js';
 import {BookmarkType} from './bookmark_bar.mojom-webui.js';
 import {getCss} from './bookmark_element.css.js';
 import {getHtml} from './bookmark_element.html.js';
 
+const DEFAULT_FAVICON_URL: string = 'url(chrome://favicon2/)';
+
 export class BookmarkElement extends CrLitElement {
   static get is() {
     return 'webui-browser-bookmark-element';
   }
-
-  static override get properties() {
-    return {
-      bookmarkTitle_: {type: String},
-    };
-  }
-
-  bookmarkId: bigint;
-  protected accessor bookmarkTitle_: string;
-  protected bookmarkType_: BookmarkType;
-  private static defaultFavIconUrl_: string = 'url(chrome://favicon2/)';
-  private faviconUrl_: string = BookmarkElement.defaultFavIconUrl_;
 
   static override get styles() {
     return getCss();
@@ -38,44 +27,36 @@ export class BookmarkElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  constructor(data: BookmarkData) {
-    super();
-    this.bookmarkTitle_ = data.title;
-    this.bookmarkId = data.id;
-    this.bookmarkType_ = data.type;
-    this.updateFavIcon(data.pageUrlForFavicon);
+  static override get properties() {
+    return {
+      data: {type: Object},
+    };
   }
 
-  override update(changedProperties: PropertyValues) {
-    if (this.bookmarkType_ !== BookmarkType.FOLDER) {
-      this.style.setProperty('--favicon-url', `${this.faviconUrl_}`);
+  accessor data: BookmarkData = {
+    id: 0n,
+    title: '',
+    type: BookmarkType.URL,
+    pageUrlForFavicon: null,
+  };
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (this.data.type !== BookmarkType.FOLDER) {
+      this.style.setProperty('--favicon-url', `${this.computeFaviconUrl_()}`);
     }
-    super.update(changedProperties);
   }
 
-  updateFavIcon(pageUrlForFavicon: Url|null) {
+  private computeFaviconUrl_(): string {
+    if (!this.data.pageUrlForFavicon) {
+      return DEFAULT_FAVICON_URL;
+    }
+
     // getFaviconForPageURL, given a page URL, will construct a
     // chrome://favicon2/ URL that will request the icon from our local
     // cache considering sizes, resolution, etc.
-    if (pageUrlForFavicon) {
-      this.faviconUrl_ = getFaviconForPageURL(pageUrlForFavicon.url, false);
-    } else {
-      this.faviconUrl_ = BookmarkElement.defaultFavIconUrl_;
-    }
-  }
-
-  protected handleClick_(e: MouseEvent) {
-    e = e || window.event;
-    e.preventDefault();
-
-    // Only launch the bookmark if it's a URL.
-    if (this.bookmarkType_ === BookmarkType.URL) {
-      this.dispatchEvent(new CustomEvent('bookmark-click', {
-        bubbles: true,
-        composed: true,
-        detail: {bookmarkId: this.bookmarkId},
-      }));
-    }
+    return getFaviconForPageURL(this.data.pageUrlForFavicon.url, false);
   }
 }
 

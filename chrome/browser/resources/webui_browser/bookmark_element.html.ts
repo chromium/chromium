@@ -9,15 +9,14 @@ import type {BookmarkElement} from './bookmark_element.js';
 
 export function getHtml(this: BookmarkElement) {
   return html`
-  <div class="bookmark"
-    @click="${this.handleClick_}">
+  <div class="bookmark">
     <div id="faviconContainer">
       ${
-      this.bookmarkType_ === BookmarkType.FOLDER ?
+      this.data.type === BookmarkType.FOLDER ?
           html`<cr-icon id="folderIcon" icon="webui-browser:folder"></cr-icon>` :
           html`<div id="favicon"></div>`}
     </div>
-    <span class="bookmarkTitle">${this.bookmarkTitle_}</span>
+    <span class="bookmarkTitle">${this.data.title}</span>
   </div>
   `;
 }

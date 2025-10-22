@@ -22,8 +22,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {BookmarkBar} from './bookmark_bar.js';
-import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {SecurityIcon} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
@@ -38,7 +36,6 @@ export interface WebuiBrowserAppElement {
     appMenuButton: HTMLElement,
     avatarButton: HTMLElement,
     locationIconButton: HTMLElement,
-    bookmarkBar: BookmarkBar,
     contentRegion: ContentRegion,
     sidePanel: SidePanel,
     tabstrip: TabStrip,
@@ -70,7 +67,6 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     };
   }
 
-  private bookmarkBarController_: BookmarkBarController;
   private tabStripController_: TabStripController;
   private trackedElementManager_: TrackedElementManager;
   protected accessor backButtonDisabled_: boolean = true;
@@ -84,7 +80,6 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     super();
     ColorChangeUpdater.forDocument().start();
 
-    this.bookmarkBarController_ = new BookmarkBarController();
     this.tabStripController_ =
         new TabStripController(this, this.$.tabstrip, this.$.contentRegion);
     this.trackedElementManager_ = TrackedElementManager.getInstance();
@@ -249,24 +244,10 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   }
 
   protected override firstUpdated() {
-    this.bookmarkBarController_.init(this.$.bookmarkBar);
     BrowserProxy.getCallbackRouter().setFocusToLocationBar.addListener(
         this.setFocusToLocationBar.bind(this));
     BrowserProxy.getCallbackRouter().setReloadStopState.addListener(
         this.setReloadStopState.bind(this));
-  }
-
-  protected onShowBookmarkBar_() {
-    this.$.bookmarkBar.style.display = 'flex';
-  }
-
-  protected onHideBookmarkBar_() {
-    this.$.bookmarkBar.style.display = 'none';
-  }
-
-  protected onBookmarkButtonClick_(e: CustomEvent) {
-    const bookmarkId = e.detail.bookmarkId;
-    this.bookmarkBarController_.launchBookmark(bookmarkId);
   }
 
   protected onTabDragMouseDown_(e: MouseEvent) {
