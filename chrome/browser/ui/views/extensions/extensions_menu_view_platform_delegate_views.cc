@@ -328,6 +328,20 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestAdded(
   main_page->MaybeShowRequestsSection();
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestRemoved(
+    const extensions::ExtensionId& extension_id) {
+  CHECK(current_page_);
+
+  // Site access requests only affect the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page) {
+    return;
+  }
+
+  main_page->RemoveExtensionRequestingAccess(extension_id);
+  main_page->MaybeShowRequestsSection();
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
@@ -817,28 +831,6 @@ void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestUpdated(
   }
 
   // Otherwise, remove the request if existent.
-  main_page->RemoveExtensionRequestingAccess(extension_id);
-  main_page->MaybeShowRequestsSection();
-}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestRemoved(
-    const extensions::ExtensionId& extension_id,
-    int tab_id) {
-  DCHECK(current_page_);
-
-  // Ignore requests for other tabs.
-  int current_tab_id =
-      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
-  if (tab_id != current_tab_id) {
-    return;
-  }
-
-  // Site access requests only affect the main page.
-  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page) {
-    return;
-  }
-
   main_page->RemoveExtensionRequestingAccess(extension_id);
   main_page->MaybeShowRequestsSection();
 }

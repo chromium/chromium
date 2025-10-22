@@ -56,6 +56,8 @@ class ExtensionsMenuViewPlatformDelegateViews
   void DetachFromModel() override;
   void OnAccessRequestAdded(const extensions::ExtensionId& extension_id,
                             content::WebContents* web_contents) override;
+  void OnAccessRequestRemoved(
+      const extensions::ExtensionId& extension_id) override;
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
 
   // ExtensionsMenuHandler:
@@ -107,8 +109,6 @@ class ExtensionsMenuViewPlatformDelegateViews
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
   void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
-                                  int tab_id) override;
-  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
   void OnHostAccessRequestsCleared(int tab_id) override;
   void OnHostAccessRequestDismissedByUser(

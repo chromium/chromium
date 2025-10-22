@@ -264,6 +264,19 @@ void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
   platform_delegate_->OnAccessRequestAdded(extension_id, web_contents);
 }
 
+void ExtensionsMenuViewModel::OnHostAccessRequestRemoved(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  // Ignore requests for other tabs.
+  auto* web_contents = GetActiveWebContents();
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  platform_delegate_->OnAccessRequestRemoved(extension_id);
+}
+
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   platform_delegate_->OnActionAdded(action_id);
