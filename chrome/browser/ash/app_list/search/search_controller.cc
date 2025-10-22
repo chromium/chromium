@@ -146,20 +146,18 @@ void SearchController::StartSearch(const std::u16string& query) {
   categories_ = CreateAllCategories();
   SearchOptions search_options;
 
-  if (ash::features::IsLauncherSearchControlEnabled()) {
-    search_options.search_categories = std::vector<SearchCategory>();
-    base::flat_set<ControlCategory> disabled_categories;
-    for (const auto category : toggleable_categories_) {
-      if (!IsControlCategoryEnabled(profile_, category)) {
-        disabled_categories.insert(category);
-      }
+  search_options.search_categories = std::vector<SearchCategory>();
+  base::flat_set<ControlCategory> disabled_categories;
+  for (const auto category : toggleable_categories_) {
+    if (!IsControlCategoryEnabled(profile_, category)) {
+      disabled_categories.insert(category);
     }
+  }
 
-    for (const auto category : search_engine_->GetAllSearchCategories()) {
-      if (!disabled_categories.contains(
-              MapSearchCategoryToControlCategory(category))) {
-        search_options.search_categories->push_back(category);
-      }
+  for (const auto category : search_engine_->GetAllSearchCategories()) {
+    if (!disabled_categories.contains(
+            MapSearchCategoryToControlCategory(category))) {
+      search_options.search_categories->push_back(category);
     }
   }
 

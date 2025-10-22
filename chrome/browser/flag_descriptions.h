@@ -7951,12 +7951,6 @@ inline constexpr char kLauncherLocalImageSearchIcaDescription[] =
     "Enables on-device Image Content-based Annotation for local image search "
     "in the launcher.";
 
-inline constexpr char kLauncherSearchControlName[] =
-    "Enable launcher search control";
-inline constexpr char kLauncherSearchControlDescription[] =
-    "Enable search control in launcher so that users can customize the result "
-    "results provided.";
-
 inline constexpr char kLauncherNudgeSessionResetName[] =
     "Enable resetting launcher nudge data";
 inline constexpr char kLauncherNudgeSessionResetDescription[] =

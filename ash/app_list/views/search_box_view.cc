@@ -525,16 +525,14 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   SetPreferredStyleForAutocompleteText(font_list,
                                        cros_tokens::kCrosSysOnSurfaceVariant);
 
-  if (features::IsLauncherSearchControlEnabled()) {
-    views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
-        &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
-    filter_button->SetFlipCanvasOnPaintForRTLUI(false);
-    std::u16string filter_button_label(
-        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
-    filter_button->GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
-    filter_button->SetTooltipText(filter_button_label);
-  }
+  views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
+      &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
+  filter_button->SetFlipCanvasOnPaintForRTLUI(false);
+  std::u16string filter_button_label(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
+  filter_button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
+  filter_button->SetTooltipText(filter_button_label);
 
   views::ImageButton* close_button = CreateCloseButton(base::BindRepeating(
       &SearchBoxView::CloseButtonPressed, base::Unretained(this)));

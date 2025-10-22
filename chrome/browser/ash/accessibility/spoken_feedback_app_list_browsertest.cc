@@ -219,8 +219,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     }
 
     scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherSearchControl,
-         features::kFeatureManagementLocalImageSearch},
+        {features::kFeatureManagementLocalImageSearch},
         {features::kScannerDogfood, features::kSunfishFeature,
          ash::assistant::features::kEnableNewEntryPoint});
   }

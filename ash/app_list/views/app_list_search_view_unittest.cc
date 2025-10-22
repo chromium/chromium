@@ -298,10 +298,8 @@ class SearchViewTabletTest : public AppListSearchViewTest {
 class SearchResultImageViewTest : public SearchViewClamshellAndTabletTest {
  public:
   SearchResultImageViewTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherSearchControl,
-         features::kFeatureManagementLocalImageSearch},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementLocalImageSearch);
   }
 
   bool IsImageSearchEnabled(PrefService* prefs) {

@@ -1298,9 +1298,6 @@ BASE_FEATURE(kLauncherNudgeShortInterval, base::FEATURE_DISABLED_BY_DEFAULT);
 // user session.
 BASE_FEATURE(kLauncherNudgeSessionReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the launcher will only provide results based on the user control.
-BASE_FEATURE(kLauncherSearchControl, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Segmentation flag for local image search.
 BASE_FEATURE(kFeatureManagementLocalImageSearch,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3090,10 +3087,6 @@ bool IsLauncherNudgeShortIntervalEnabled() {
 
 bool IsLauncherNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kLauncherNudgeSessionReset);
-}
-
-bool IsLauncherSearchControlEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherSearchControl);
 }
 
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {

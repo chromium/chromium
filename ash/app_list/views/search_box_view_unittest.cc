@@ -798,9 +798,7 @@ class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewFilterButtonTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherSearchControl,
-         features::kFeatureManagementLocalImageSearch},
-        {});
+        {features::kFeatureManagementLocalImageSearch}, {});
   }
   SearchBoxViewFilterButtonTest(const SearchBoxViewFilterButtonTest&) = delete;
   SearchBoxViewFilterButtonTest& operator=(

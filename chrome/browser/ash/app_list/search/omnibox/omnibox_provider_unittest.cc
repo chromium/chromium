@@ -311,9 +311,7 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
 TEST_F(OmniboxProviderTest, WebSearchControl) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kLauncherSearchControl,
-       ash::features::kFeatureManagementLocalImageSearch},
-      {});
+      {ash::features::kFeatureManagementLocalImageSearch}, {});
   DisableWebSearch();
 
   StartSearch(u"query");
