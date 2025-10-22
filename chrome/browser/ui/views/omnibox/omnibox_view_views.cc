@@ -2240,7 +2240,13 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
         IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
   }
 
-  if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get().enabled) {
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(
+          location_bar_view_->profile());
+  const bool is_aim_entrypoint_enabled =
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
+
+  if (is_aim_entrypoint_enabled) {
     menu_contents->AddCheckItemWithStringId(
         IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
         IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON);

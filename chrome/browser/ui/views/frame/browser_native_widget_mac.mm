@@ -11,6 +11,7 @@
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -32,6 +33,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -295,9 +297,13 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       PrefService* prefs = browser->profile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowAiModeOmniboxButton);
-      // Disable this menu option if the AiMode feature is not enabled.
-      result->enable =
-          omnibox_feature_configs::AiModeOmniboxEntryPoint::Get().enabled;
+      const auto* aim_eligibility_service =
+          AimEligibilityServiceFactory::GetForProfile(browser->profile());
+      const bool is_aim_entrypoint_enabled =
+          OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+              aim_eligibility_service);
+      // Disable this menu option if the AI Mode feature is not enabled.
+      result->enable = is_aim_entrypoint_enabled;
       break;
     }
     case IDC_SHOW_SEARCH_TOOLS: {
