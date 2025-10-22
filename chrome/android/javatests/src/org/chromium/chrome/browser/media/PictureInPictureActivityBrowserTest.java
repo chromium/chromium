@@ -28,8 +28,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -57,8 +57,8 @@ import java.util.concurrent.TimeoutException;
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R) // crbug.com/452162997
 public class PictureInPictureActivityBrowserTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private ChromeTabbedActivity mActivity;
     private WebPageStation mPage;
@@ -72,6 +72,8 @@ public class PictureInPictureActivityBrowserTest {
 
     @Before
     public void setUp() {
+        // Some of the tests may finish the activity using moveTaskToBack.
+        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mPage.getActivity();
     }
@@ -106,6 +108,9 @@ public class PictureInPictureActivityBrowserTest {
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
 
         PictureInPictureActivity pipActivity = enterPip(webContents);
+        // Wait for remote actions to be loaded in the pip activity. This wait reduces the flakiness
+        // where the pip window is "hide" too quickly, and the action is ignored.
+        waitForRemoteActions(pipActivity);
         closePip(pipActivity);
         // Conference video should still be playing after closing pip.
         assertFalse(
@@ -168,5 +173,13 @@ public class PictureInPictureActivityBrowserTest {
         mPage = mPage.loadWebPageProgrammatically(url);
 
         return mActivityTestRule.getWebContents();
+    }
+
+    private void waitForRemoteActions(PictureInPictureActivity pipActivity) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !pipActivity.getActionsForTesting().isEmpty();
+                },
+                "No remote action is loaded.");
     }
 }
