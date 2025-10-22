@@ -12,6 +12,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
 
+class BrowserWindowInterface;
 class RootTabCollectionNode;
 class VerticalUnpinnedTabContainerView;
 class VerticalPinnedTabContainerView;
@@ -24,7 +25,7 @@ class VerticalTabStripStateController;
 
 namespace tabs_api {
 class TabStripService;
-}
+}  // namespace tabs_api
 
 namespace views {
 class ResizeArea;
@@ -44,7 +45,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   explicit VerticalTabStripRegionView(
       tabs_api::TabStripService* service_register,
       tabs::VerticalTabStripStateController* state_controller,
-      actions::ActionItem* root_action_item);
+      actions::ActionItem* root_action_item,
+      BrowserWindowInterface* browser);
   VerticalTabStripRegionView(const VerticalTabStripRegionView&) = delete;
   VerticalTabStripRegionView& operator=(const VerticalTabStripRegionView&) =
       delete;
@@ -63,6 +65,10 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
   VerticalTabStripTopContainer* GetTopContainer() {
     return top_button_container_;
+  }
+
+  VerticalTabStripBottomContainer* GetBottomContainer() {
+    return bottom_button_container_;
   }
 
   // views::View:

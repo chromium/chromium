@@ -37,7 +37,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroup);
 
   // Enumrates the different ways the everything menu can be shown.
-  enum class MenuContext { kAppMenu, kSavedTabGroupBar };
+  enum class MenuContext { kAppMenu, kSavedTabGroupBar, kVerticalTabStrip };
 
   STGEverythingMenu(views::MenuButtonController* menu_button_controller,
                     Browser* browser,

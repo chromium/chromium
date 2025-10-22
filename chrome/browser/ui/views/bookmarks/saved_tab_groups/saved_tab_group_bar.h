@@ -114,6 +114,11 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Returns the list of SavedTabGroupButtons in their current order.
   std::vector<SavedTabGroupButton*> GetSavedTabGroupButtons() const;
 
+  // When called, display a menu that shows a "Create new tab group" option and
+  // all the saved tab groups (if there are any). Pressing on the saved tab
+  // groups opens the group into the tab strip.
+  void ShowEverythingMenu();
+
  private:
   // Adds the saved group denoted by `guid` as a button in the
   // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
@@ -159,11 +164,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Creates the overflow button that houses saved tab groups that are not
   // visible in the SavedTabGroupBar.
   std::unique_ptr<SavedTabGroupOverflowButton> CreateOverflowButton();
-
-  // When called, display a menu that shows a "Create new tab group" option and
-  // all the saved tab groups (if there are any). Pressing on the saved tab
-  // groups opens the group into the tab strip.
-  void ShowEverythingMenu();
 
   // Updates the visibilites of all buttons up to `last_index_visible`. The
   // overflow button will be displayed based on `should_show_overflow`.

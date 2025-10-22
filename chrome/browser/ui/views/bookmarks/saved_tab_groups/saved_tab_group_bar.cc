@@ -110,21 +110,6 @@ SavedTabGroupBar::~SavedTabGroupBar() {
   tab_group_service_->RemoveObserver(this);
 }
 
-void SavedTabGroupBar::ShowEverythingMenu() {
-  base::RecordAction(base::UserMetricsAction(
-      "TabGroups_SavedTabGroups_EverythingButtonPressed"));
-  if (everything_menu_ && everything_menu_->IsShowing()) {
-    return;
-  }
-
-  everything_menu_ = std::make_unique<STGEverythingMenu>(
-      overflow_button_->button_controller(),
-      browser_->GetBrowserForMigrationOnly(),
-      STGEverythingMenu::MenuContext::kSavedTabGroupBar);
-
-  everything_menu_->RunMenu();
-}
-
 std::optional<size_t> SavedTabGroupBar::GetIndexOfGroup(
     const base::Uuid& guid) const {
   std::vector<SavedTabGroup> groups = tab_group_service_->GetAllGroups();
@@ -398,6 +383,21 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
   if (group.saved_tabs().size() == 0) {
     view->SetVisible(false);
   }
+}
+
+void SavedTabGroupBar::ShowEverythingMenu() {
+  base::RecordAction(base::UserMetricsAction(
+      "TabGroups_SavedTabGroups_EverythingButtonPressed"));
+  if (everything_menu_ && everything_menu_->IsShowing()) {
+    return;
+  }
+
+  everything_menu_ = std::make_unique<STGEverythingMenu>(
+      overflow_button_->button_controller(),
+      browser_->GetBrowserForMigrationOnly(),
+      STGEverythingMenu::MenuContext::kSavedTabGroupBar);
+
+  everything_menu_->RunMenu();
 }
 
 void SavedTabGroupBar::SavedTabGroupAdded(const base::Uuid& guid) {

@@ -7,13 +7,20 @@
 
 #include "ui/views/layout/flex_layout_view.h"
 
+class BrowserWindowInterface;
+
 namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
 
+namespace tab_groups {
+class STGEverythingMenu;
+}  // namespace tab_groups
+
 namespace views {
 class ActionViewController;
 class LabelButton;
+class MenuButtonController;
 }  // namespace views
 
 // Bottom container of the vertical tab strip, manages the new tab and tab group
@@ -23,15 +30,22 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
  public:
   VerticalTabStripBottomContainer(
       tabs::VerticalTabStripStateController* state_controller,
-      actions::ActionItem* root_action_item);
+      actions::ActionItem* root_action_item,
+      BrowserWindowInterface* browser);
   ~VerticalTabStripBottomContainer() override;
 
   views::LabelButton* AddChildButtonFor(actions::ActionId action_id);
 
+  void ShowEverythingMenu();
+
  private:
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::LabelButton> new_tab_button_ = nullptr;
+  raw_ptr<views::LabelButton> tab_group_button_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+  raw_ptr<views::MenuButtonController> everything_menu_controller_ = nullptr;
 
+  std::unique_ptr<tab_groups::STGEverythingMenu> everything_menu_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };
 

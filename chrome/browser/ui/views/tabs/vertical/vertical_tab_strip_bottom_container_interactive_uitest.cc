@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -43,16 +44,39 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
 
-  int tabs_before_click = browser()->tab_strip_model()->GetTabCount();
-
   RunTestSequence(
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 1),
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->GetTabCount(); },
-          tabs_before_click + 1));
+          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 2));
+}
+
+// This test checks that we can click the tab group button in the bottom
+// container of the vertical tab strip
+IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
+                       VerifyTabGroupButton) {
+  browser()
+      ->browser_window_features()
+      ->vertical_tab_strip_state_controller()
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+
+  RunTestSequence(
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 1),
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      EnsurePresent(kSavedTabGroupButtonElementId),
+      PressButton(kSavedTabGroupButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      EnsurePresent(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
+      SelectMenuItem(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
+      WaitForShow(kTabGroupEditorBubbleId),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 2));
 }
 
 }  // namespace base::test

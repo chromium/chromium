@@ -506,6 +506,24 @@ void BrowserActions::InitializeBrowserActions() {
           .Build());
 
   root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                // This functionality is controlled by the MenuButtonController.
+                // It should have a callback for ShowEverythingMenu.
+              },
+              bwi))
+          .SetActionId(kActionTabGroupsMenu)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_MENU)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_MENU)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kSavedTabGroupBarEverythingIcon, ui::kColorIcon))
+          .Build());
+
+  root_action_item_->AddChild(
       ChromeMenuAction(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,

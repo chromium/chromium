@@ -189,7 +189,6 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -891,7 +890,8 @@ BrowserView::BrowserView(Browser* browser)
                 .tab_strip_service_feature()
                 ->GetTabStripService(),
             browser_->GetFeatures().vertical_tab_strip_state_controller(),
-            browser_->GetActions()->root_action_item());
+            browser_->GetActions()->root_action_item(), browser_);
+
     vertical_tab_strip_container_ =
         AddChildView(std::move(vertical_tab_strip_container));
   }

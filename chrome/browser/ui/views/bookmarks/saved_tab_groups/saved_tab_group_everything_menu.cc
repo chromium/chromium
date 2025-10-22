@@ -280,6 +280,9 @@ bool STGEverythingMenu::ShouldShowSubmenu() {
     case MenuContext::kSavedTabGroupBar:
       return base::FeatureList::IsEnabled(
           features::kTabGroupMenuMoreEntryPoints);
+    case MenuContext::kVerticalTabStrip:
+      return base::FeatureList::IsEnabled(
+          features::kTabGroupMenuMoreEntryPoints);
   }
 }
 
@@ -301,6 +304,13 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
             base::UserMetricsAction("TabGroups_SavedTabGroups_"
                                     "CreateNewGroupTriggeredFromEverythingMenu_"
                                     "2"));
+        break;
+
+      case MenuContext::kVerticalTabStrip:
+        base::RecordAction(
+            base::UserMetricsAction("TabGroups_SavedTabGroups_"
+                                    "CreateNewGroupTriggeredFromVerticalTabs"));
+
         break;
     }
 

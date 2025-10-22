@@ -4,39 +4,53 @@
 
 source_set("vertical") {
   sources = [
-    "bottom_container_button.cc",
     "bottom_container_button.h",
-    "root_tab_collection_node.cc",
     "root_tab_collection_node.h",
-    "tab_collection_node.cc",
     "tab_collection_node.h",
-    "vertical_pinned_tab_container_view.cc",
     "vertical_pinned_tab_container_view.h",
-    "vertical_split_tab_view.cc",
     "vertical_split_tab_view.h",
-    "vertical_tab_strip_bottom_container.cc",
     "vertical_tab_strip_bottom_container.h",
-    "vertical_tab_strip_top_container.cc",
     "vertical_tab_strip_top_container.h",
-    "vertical_tab_strip_view.cc",
     "vertical_tab_strip_view.h",
-    "vertical_tab_view.cc",
     "vertical_tab_view.h",
-    "vertical_unpinned_tab_container_view.cc",
     "vertical_unpinned_tab_container_view.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:layout_constants",
-    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/tabs/tab_strip_api:mojom",
     "//chrome/browser/ui/tabs/tab_strip_api/observation",
-    "//chrome/browser/ui/tabs/tab_strip_api/utilities",
     "//ui/base/metadata",
     "//ui/gfx/geometry",
     "//ui/views",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "bottom_container_button.cc",
+    "root_tab_collection_node.cc",
+    "tab_collection_node.cc",
+    "vertical_pinned_tab_container_view.cc",
+    "vertical_split_tab_view.cc",
+    "vertical_tab_strip_bottom_container.cc",
+    "vertical_tab_strip_top_container.cc",
+    "vertical_tab_strip_view.cc",
+    "vertical_tab_view.cc",
+    "vertical_unpinned_tab_container_view.cc",
+  ]
+
+  deps = [
+    ":vertical",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/tabs/tab_strip_api/utilities",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

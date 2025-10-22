@@ -47719,6 +47719,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromVerticalTabs">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User pressed &quot;Create New Tab Group&quot; from the Everything menu in
+    the vertical tab strip.
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Deleted">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

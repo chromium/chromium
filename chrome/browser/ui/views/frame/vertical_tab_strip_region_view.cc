@@ -6,10 +6,14 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
@@ -37,7 +41,8 @@ constexpr int kRegionVerticalPadding = 5;
 VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs_api::TabStripService* service_register,
     tabs::VerticalTabStripStateController* state_controller,
-    actions::ActionItem* root_action_item)
+    actions::ActionItem* root_action_item,
+    BrowserWindowInterface* browser)
     : state_controller_(state_controller) {
   SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -56,14 +61,14 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   // Create child views.
   top_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripTopContainer>(
-          state_controller, root_action_item));
+          state_controller_, root_action_item));
 
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
   top_button_separator_->SetColorId(kColorTabDividerFrameActive);
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
-          state_controller, root_action_item));
+          state_controller_, root_action_item, browser));
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
 
@@ -71,7 +76,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   resize_area_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   collapsed_state_changed_subscription_ =
-      state_controller->RegisterOnStateChanged(base::BindRepeating(
+      state_controller_->RegisterOnStateChanged(base::BindRepeating(
           &VerticalTabStripRegionView::OnCollapsedStateChanged,
           base::Unretained(this)));
 
