@@ -27,23 +27,28 @@ std::string GetOriginName(ProfileKeepAliveOrigin origin) {
 
 }  // namespace
 
+// static
+std::unique_ptr<ScopedProfileKeepAlive> ScopedProfileKeepAlive::TryAcquire(
+    Profile* profile,
+    ProfileKeepAliveOrigin origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(profile);
+  if (AddKeepAlive(profile, origin)) {
+    auto keep_alive = base::WrapUnique(new ScopedProfileKeepAlive());
+    keep_alive->profile_ = profile->GetWeakPtr();
+    keep_alive->origin_ = origin;
+    return keep_alive;
+  } else {
+    return nullptr;
+  }
+}
+
 ScopedProfileKeepAlive::ScopedProfileKeepAlive(Profile* profile,
                                                ProfileKeepAliveOrigin origin)
     : profile_(profile->GetWeakPtr()), origin_(origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
-  // |profile_manager| can be nullptr in tests.
-  auto* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager) {
-    profile_manager->AddKeepAlive(profile_.get(), origin_);
-  } else {
-    // TODO(crbug.com/368360956): Not incrementing the refcount will cause
-    // `profile` to get destroyed too early. Remove or convert to a CHECK() once
-    // the root cause is fixed.
-    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
-                              GetOriginName(origin));
-    base::debug::DumpWithoutCrashing();
-  }
+  AddKeepAlive(profile, origin);
 }
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
@@ -62,6 +67,8 @@ ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
                        profile_, origin_));
   }
 }
+
+ScopedProfileKeepAlive::ScopedProfileKeepAlive() = default;
 
 // static
 void ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread(
@@ -93,4 +100,23 @@ void ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread(
     return;
   }
   profile_manager->RemoveKeepAlive(profile.get(), origin);
+}
+
+// static
+bool ScopedProfileKeepAlive::AddKeepAlive(Profile* profile,
+                                          ProfileKeepAliveOrigin origin) {
+  // |profile_manager| can be nullptr in tests.
+  auto* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager) {
+    return profile_manager->AddKeepAlive(profile, origin);
+  } else {
+    // TODO(nicolaso): Not incrementing the refcount will cause
+    // `profile` to get destroyed too early. Remove or convert to a CHECK()
+    // once the root cause is fixed.
+    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
+                              GetOriginName(origin));
+    base::debug::DumpWithoutCrashing();
+    // Return success for unit tests.
+    return true;
+  }
 }

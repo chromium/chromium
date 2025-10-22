@@ -439,9 +439,15 @@ class ProfileManager : public Profile::Delegate {
     bool created_ = false;
   };
 
-  // Increments/decrements the refcount on a |profile|. (it must not be an
-  // off-the-record profile)
-  void AddKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
+  // Increments/decrements the refcount on a |profile|. It must not be an
+  // off-the-record profile.
+  //
+  // AddKeepAlive() returns true if `profile` is currently owned by
+  // ProfileManager, and the keepalive was successfully added.
+  //
+  // Returns false if the keepalive can't be added, usually because `profile`
+  // is owned by ProfileDestroyer and scheduled for destruction soon.
+  bool AddKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
   void RemoveKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
 
   void RecordZombieMetrics();

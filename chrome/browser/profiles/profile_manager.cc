@@ -1247,7 +1247,7 @@ void ProfileManager::RecordZombieMetrics() {
   base::UmaHistogramCounts100("Profile.ZombieProfileCount", zombie_count);
 }
 
-void ProfileManager::AddKeepAlive(Profile* profile,
+bool ProfileManager::AddKeepAlive(Profile* profile,
                                   ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
@@ -1256,14 +1256,22 @@ void ProfileManager::AddKeepAlive(Profile* profile,
 
   ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
   if (!info) {
-    // Can be null in unit tests, when the Profile was not created via
-    // ProfileManager.
+    // Can be null in the following circumstances:
+    //
+    // 1. Unit tests, when the Profile was not created via ProfileManager.
+    // 2. AddKeepAlive() called too early during Profile creation.
+    // 3. AddKeepAlive() called too late during Profile's lifecycle: after we've
+    //    handed it off to ProfileDestroyer and it's scheduled for destruction.
+    //
+    // #1 is fine. #2 is always a bug, and #3 is usually a bug. You can mitigate
+    // #3 by using ScopedKeepAlive::TryAcquire() and checking if the result is
+    // null.
     VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
-            << ") called before the Profile was added to the ProfileManager. "
+            << ") too early or too late in Profile's lifecycle. "
             << "The keepalive was not added. This may cause a crash during "
             << "teardown. (except in unit tests, where Profiles may not be "
             << "registered with the ProfileManager)";
-    return;
+    return false;
   }
 
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
@@ -1288,6 +1296,8 @@ void ProfileManager::AddKeepAlive(Profile* profile,
        base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
     ClearFirstBrowserWindowKeepAlive(profile);
   }
+
+  return true;
 }
 
 void ProfileManager::RemoveKeepAlive(Profile* profile,
