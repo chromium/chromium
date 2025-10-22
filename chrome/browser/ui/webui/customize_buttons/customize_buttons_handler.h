@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class Profile;
 
@@ -38,6 +39,8 @@ class CustomizeButtonsHandler
   CustomizeButtonsHandler(const CustomizeButtonsHandler&) = delete;
   CustomizeButtonsHandler& operator=(const CustomizeButtonsHandler&) = delete;
   ~CustomizeButtonsHandler() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCustomizeChromeButtonElementId);
 
   // customize_buttons::mojom::CustomizeButtonsHandler:
   void IncrementCustomizeChromeButtonOpenCount() override;

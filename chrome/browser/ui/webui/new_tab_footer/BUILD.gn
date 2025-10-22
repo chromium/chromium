@@ -20,9 +20,11 @@ source_set("new_tab_footer") {
     "//chrome/browser/ui/webui/top_chrome",
     "//components/policy/core/browser",
     "//components/prefs",
+    "//components/user_education/webui",
     "//extensions/browser",
     "//ui/menus",
     "//ui/webui",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
 }
 

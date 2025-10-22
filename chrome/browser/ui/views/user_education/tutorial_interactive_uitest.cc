@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -171,7 +172,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 
   auto CheckWebUIHelpBubbleIsShowing(bool showing) {
     return InAnyContext(CheckElement(
-        NewTabPageUI::kCustomizeChromeButtonElementId,
+        CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
         [](ui::TrackedElement* el) {
           return el->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
               ->handler()
@@ -228,7 +229,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     TutorialDescription description;
     description.steps.emplace_back(
         TutorialDescription::BubbleStep(
-            NewTabPageUI::kCustomizeChromeButtonElementId)
+            CustomizeButtonsHandler::kCustomizeChromeButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
             .InAnyContext());

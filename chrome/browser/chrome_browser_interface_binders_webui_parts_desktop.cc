@@ -566,7 +566,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
     registry.ForWebUI<NewTabFooterUI>()
         .Add<color_change_listener::mojom::PageHandler>()
         .Add<customize_buttons::mojom::CustomizeButtonsHandlerFactory>()
-        .Add<new_tab_footer::mojom::NewTabFooterHandlerFactory>();
+        .Add<new_tab_footer::mojom::NewTabFooterHandlerFactory>()
+        .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
   }
 
   registry.ForWebUI<NewTabPageThirdPartyUI>()

@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -573,7 +574,7 @@ void MaybeRegisterChromeFeaturePromos(
                  user_education::FeaturePromoHandle promo_handle) {
                 ShowPromoInPage::Params params;
                 params.bubble_anchor_id =
-                    NewTabPageUI::kCustomizeChromeButtonElementId;
+                    CustomizeButtonsHandler::kCustomizeChromeButtonElementId;
                 params.bubble_arrow =
                     user_education::HelpBubbleArrow::kBottomRight;
                 params.bubble_text = l10n_util::GetStringUTF16(
@@ -1593,7 +1594,7 @@ void MaybeRegisterChromeTutorials(
     auto customize_chrome_tutorial = TutorialDescription::Create<
         kSidePanelCustomizeChromeTutorialMetricPrefix>(
         // Bubble step - customize chrome button
-        BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
+        BubbleStep(CustomizeButtonsHandler::kCustomizeChromeButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL)
             .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
             .InAnyContext(),
@@ -1634,7 +1635,7 @@ void MaybeRegisterChromeTutorials(
         HiddenStep::WaitForHidden(kChromeThemeBackElementName),
 
         // Completion of the tutorial.
-        BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
+        BubbleStep(CustomizeButtonsHandler::kCustomizeChromeButtonElementId)
             .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
             .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
             .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY)
