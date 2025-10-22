@@ -1155,8 +1155,6 @@ component("base") {
   # Android.
   if (is_android) {
     sources += [
-      "android/android_hardware_buffer_compat.cc",
-      "android/android_hardware_buffer_compat.h",
       "android/android_info.cc",
       "android/android_info.h",
       "android/android_input_receiver_compat.cc",
@@ -1216,10 +1214,6 @@ component("base") {
       "android/radio_utils.cc",
       "android/radio_utils.h",
       "android/requires_api.h",
-      "android/scoped_hardware_buffer_fence_sync.cc",
-      "android/scoped_hardware_buffer_fence_sync.h",
-      "android/scoped_hardware_buffer_handle.cc",
-      "android/scoped_hardware_buffer_handle.h",
       "android/scoped_input_event.cc",
       "android/scoped_input_event.h",
       "android/self_compaction_manager.cc",
@@ -1300,6 +1294,14 @@ component("base") {
 
     if (android_ndk_api_level >= 29) {
       deps += [ ":build_info_aidl_native" ]
+      sources += [
+        # Cronet uses lower NDK API level than is required for these files,
+        # but it doesn't need AHardwareBuffer anyway.
+        "android/scoped_hardware_buffer_fence_sync.cc",
+        "android/scoped_hardware_buffer_fence_sync.h",
+        "android/scoped_hardware_buffer_handle.cc",
+        "android/scoped_hardware_buffer_handle.h",
+      ]
     }
 
     if (use_clang_profiling) {

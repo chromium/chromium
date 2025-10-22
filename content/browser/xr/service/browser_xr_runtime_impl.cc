@@ -31,10 +31,6 @@
 #include "base/win/windows_types.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_hardware_buffer_compat.h"
-#endif
-
 namespace content {
 namespace {
 bool IsValidTransform(const gfx::Transform& transform) {

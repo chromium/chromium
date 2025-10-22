@@ -4,7 +4,8 @@
 
 #include "gpu/vulkan/vulkan_image.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
+#include <android/hardware_buffer.h>
+
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -127,8 +128,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
 
   // Get the AHB description.
   AHardwareBuffer_Desc ahb_desc = {};
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(ahb_handle.get(),
-                                                            &ahb_desc);
+  AHardwareBuffer_describe(ahb_handle.get(), &ahb_desc);
 
   // Get Vulkan Image usage flag equivalence of AHB usage.
   VkImageUsageFlags usage_flags = AHBUsageToImageUsage(ahb_desc.usage);

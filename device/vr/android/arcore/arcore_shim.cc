@@ -6,7 +6,6 @@
 
 #include <dlfcn.h>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/android_info.h"
 #include "base/logging.h"
 #include "device/vr/android/arcore/arcore_sdk.h"

@@ -4,7 +4,6 @@
 
 #include "device/vr/android/xr_image_transport_base.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"

@@ -4,7 +4,8 @@
 
 #include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
+#include <android/hardware_buffer.h>
+
 #include "base/logging.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/size.h"
@@ -56,10 +57,9 @@ base::android::ScopedHardwareBufferHandle CreateScopedHardwareBufferHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  CHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
   AHardwareBuffer* buffer = nullptr;
   AHardwareBuffer_Desc desc = GetBufferDescription(size, format, usage);
-  base::AndroidHardwareBufferCompat::GetInstance().Allocate(&desc, &buffer);
+  AHardwareBuffer_allocate(&desc, &buffer);
   if (!buffer) {
     LOG(ERROR) << "Failed to allocate AHardwareBuffer";
     return base::android::ScopedHardwareBufferHandle();

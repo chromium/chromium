@@ -4,11 +4,11 @@
 
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 
+#include <android/hardware_buffer.h>
 #include <android/native_window_jni.h>
 #include <jni.h>
 #include <stdint.h>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
@@ -368,8 +368,8 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
 
   // TODO(crbug.com/40749597): We suspect that buffer is already freed here and
   // it causes crash later. Trying to crash earlier.
-  base::AndroidHardwareBufferCompat::GetInstance().Acquire(buffer);
-  base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
+  AHardwareBuffer_acquire(buffer);
+  AHardwareBuffer_release(buffer);
 
   return std::make_unique<ScopedHardwareBufferImpl>(
       this, current_image_ref_->image(),
@@ -563,7 +563,7 @@ bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
   // Get the buffer descriptor. Note that for querying the buffer descriptor, we
   // do not need to wait on the AHB to be ready.
   AHardwareBuffer_Desc desc;
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
+  AHardwareBuffer_describe(buffer, &desc);
 
   *visible_rect = GetCropRectLocked();
   *coded_size = gfx::Size(desc.width, desc.height);

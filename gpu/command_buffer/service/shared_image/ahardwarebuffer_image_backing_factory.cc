@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/flat_set.h"
@@ -791,7 +790,6 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
       vulkan_context_provider_(vulkan_context_provider),
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gl_format_caps_(GLFormatCaps(feature_info)) {
-  DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
 
   // Build the feature info for all the supported formats.
   for (auto format : kSupportedFormats) {
@@ -857,7 +855,6 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
   DCHECK(!format.IsCompressed());
 
   if (!ValidateUsage(usage, size, format)) {
@@ -938,7 +935,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   hwb_desc.rfu1 = 0;
 
   // Allocate an AHardwareBuffer.
-  base::AndroidHardwareBufferCompat::GetInstance().Allocate(&hwb_desc, &buffer);
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
   if (!buffer) {
     LOG(ERROR) << "Failed to allocate AHardwareBuffer";
     return nullptr;
@@ -951,11 +948,11 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   if (!pixel_data.empty()) {
     // Get description about buffer to obtain stride
     AHardwareBuffer_Desc hwb_info;
-    base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer,
-                                                              &hwb_info);
+    AHardwareBuffer_describe(buffer, &hwb_info);
     void* address = nullptr;
-    if (int error = base::AndroidHardwareBufferCompat::GetInstance().Lock(
-            buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY, -1, 0, &address)) {
+    if (int error =
+            AHardwareBuffer_lock(buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY,
+                                 -1, nullptr, &address)) {
       LOG(ERROR) << "Failed to lock AHardwareBuffer: " << error;
       return nullptr;
     }
@@ -980,7 +977,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     }
 
     int32_t fence = -1;
-    base::AndroidHardwareBufferCompat::GetInstance().Unlock(buffer, &fence);
+    AHardwareBuffer_unlock(buffer, &fence);
     initial_upload_fd = base::ScopedFD(fence);
   }
 
@@ -1159,13 +1156,8 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
     return false;
   }
 
-  if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-    return false;
-  }
-
   AHardwareBuffer_Desc desc;
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(hardware_buffer,
-                                                            &desc);
+  AHardwareBuffer_describe(hardware_buffer, &desc);
 
   if (desc.format != AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420) {
     return false;
@@ -1183,9 +1175,9 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
 
   void* src_data = nullptr;
   int fence = -1;
-  int ret = base::AndroidHardwareBufferCompat::GetInstance().Lock(
-      hardware_buffer, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, fence, nullptr,
-      &src_data);
+  int ret = AHardwareBuffer_lock(hardware_buffer,
+                                 AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, fence,
+                                 nullptr, &src_data);
   if (ret != 0) {
     return false;
   }
@@ -1201,8 +1193,7 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
                        dst_buffer.subspan(desc.height * dst_stride).data(),
                        dst_stride, desc.width, desc.height);
 
-  base::AndroidHardwareBufferCompat::GetInstance().Unlock(hardware_buffer,
-                                                          &fence);
+  AHardwareBuffer_unlock(hardware_buffer, &fence);
   return result == 0;
 }
 

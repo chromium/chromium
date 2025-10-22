@@ -19,10 +19,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_hardware_buffer_compat.h"
-#endif
-
 namespace gpu {
 
 namespace {
@@ -84,9 +80,6 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
   }
   NOTREACHED();
 #elif BUILDFLAG(IS_ANDROID)
-  if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-    return false;
-  }
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:

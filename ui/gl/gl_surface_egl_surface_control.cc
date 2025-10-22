@@ -4,10 +4,11 @@
 
 #include "ui/gl/gl_surface_egl_surface_control.h"
 
+#include <android/hardware_buffer.h>
+
 #include <utility>
 #include <variant>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/apk_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/functional/bind.h"
@@ -35,7 +36,7 @@ constexpr char kChildSurfaceName[] = "ChromeChildSurface";
 
 gfx::Size GetBufferSize(const AHardwareBuffer* buffer) {
   AHardwareBuffer_Desc desc;
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
+  AHardwareBuffer_describe(buffer, &desc);
   return gfx::Size(desc.width, desc.height);
 }
 

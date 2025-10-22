@@ -8,7 +8,6 @@
 
 #include <optional>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -58,11 +57,7 @@ base::OnceClosure MappableBufferAHB::AllocateForTesting(
       .usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN,
   };
 
-  if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-    return base::DoNothing();
-  }
-
-  base::AndroidHardwareBufferCompat::GetInstance().Allocate(&desc, &buffer);
+  AHardwareBuffer_allocate(&desc, &buffer);
   *handle = gfx::GpuMemoryBufferHandle(
       base::android::ScopedHardwareBufferHandle::Adopt(buffer));
   return base::DoNothing();

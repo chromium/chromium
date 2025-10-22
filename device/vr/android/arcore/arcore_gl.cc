@@ -9,7 +9,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/jni_android.h"
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"

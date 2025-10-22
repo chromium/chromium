@@ -4,9 +4,10 @@
 
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
 
+#include <android/hardware_buffer.h>
+
 #include <utility>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/notimplemented.h"
@@ -380,8 +381,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     // the AHB must be used here, as the Dawn texture descriptor's size must
     // match that of the SharedTextureMemory (which comes from the AHB).
     AHardwareBuffer_Desc ahb_desc = {};
-    base::AndroidHardwareBufferCompat::GetInstance().Describe(
-        scoped_hardware_buffer_->buffer(), &ahb_desc);
+    AHardwareBuffer_describe(scoped_hardware_buffer_->buffer(), &ahb_desc);
     texture_descriptor.size = {ahb_desc.width, ahb_desc.height, 1};
 
     texture_descriptor.mipLevelCount = 1;

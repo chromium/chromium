@@ -41,10 +41,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_hardware_buffer_compat.h"
-#endif
-
 #if DCHECK_IS_ON()
 #define CALLED_ON_VALID_THREAD()                      \
   do {                                                \
@@ -772,7 +768,7 @@ bool SharedImageManager::SupportsScanoutImages() {
 #if BUILDFLAG(IS_APPLE)
   return true;
 #elif BUILDFLAG(IS_ANDROID)
-  return base::AndroidHardwareBufferCompat::IsSupportAvailable();
+  return true;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return supports_overlays_on_ozone_;
 #elif BUILDFLAG(IS_WIN)

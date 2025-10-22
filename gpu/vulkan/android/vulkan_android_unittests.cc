@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <android/hardware_buffer.h>
 #include <sys/eventfd.h>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
@@ -123,7 +123,7 @@ TEST_F(VulkanImplementationAndroidTest, CreateVkImageFromAHB) {
   hwb_desc.rfu1 = 0;
 
   // Allocate an AHardwareBuffer.
-  base::AndroidHardwareBufferCompat::GetInstance().Allocate(&hwb_desc, &buffer);
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
   EXPECT_TRUE(buffer);
 
   // Create a vkimage and import the AHB into it.

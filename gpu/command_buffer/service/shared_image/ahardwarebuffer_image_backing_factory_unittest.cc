@@ -9,7 +9,8 @@
 
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
+#include <android/hardware_buffer.h>
+
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -62,9 +63,6 @@ class AHardwareBufferImageBackingFactoryTest
   void SetUp() override {
     // AHardwareBuffer is only supported on ANDROID O+. Hence these tests
     // should not be run on android versions less that O.
-    if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-      GTEST_SKIP() << "AHardwareBuffer not supported";
-    }
 
     if (IsGraphiteDawn() && !IsGraphiteDawnSupported()) {
       GTEST_SKIP() << "Graphite/Dawn not supported";
@@ -385,7 +383,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest,
   hwb_desc.layers = 1;
   hwb_desc.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
   hwb_desc.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
-  base::AndroidHardwareBufferCompat::GetInstance().Allocate(&hwb_desc, &buffer);
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
   ASSERT_NE(buffer, nullptr);
 
   gfx::GpuMemoryBufferHandle handle;
