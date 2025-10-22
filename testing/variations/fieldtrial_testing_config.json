@@ -867,6 +867,21 @@
             ]
         }
     ],
+    "AndroidProgressBarVisualUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidProgressBarVisualUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidRaiseDisplayCriticalThreadPriority": [
         {
             "platforms": [
@@ -1075,44 +1090,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidTabHighlighting"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidThemeModule": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidProgressBarVisualUpdate",
-                        "AndroidTabGroupsColorUpdateGM3",
-                        "AndroidThemeModule",
-                        "CpaSpecUpdate",
-                        "GridTabSwitcherUpdate",
-                        "TabletTabStripAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_M139",
-                    "enable_features": [
-                        "AndroidProgressBarVisualUpdate",
-                        "AndroidTabGroupsColorUpdateGM3",
-                        "AndroidThemeModule",
-                        "CpaSpecUpdate",
-                        "GridTabSwitcherUpdate",
-                        "TabletTabStripAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_GtsOnly",
-                    "enable_features": [
-                        "AndroidThemeModule",
-                        "GridTabSwitcherUpdate"
                     ]
                 }
             ]

@@ -761,12 +761,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabGroupsColorUpdateGm3 =
-            newCachedFlag(
-                    ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3, false, /* defaultValueInTests= */ true);
+            newCachedFlag(ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
-    public static final CachedFlag sAndroidThemeModule =
-            newCachedFlag(ANDROID_THEME_MODULE, false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, true);
     public static final CachedFlag sAndroidThemeResourceProvider =
             newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidUseAdminsForEnterpriseInfo =
@@ -878,9 +876,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sContextMenuPictureInPictureAndroid =
             newCachedFlag(CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID, false);
-    public static final CachedFlag sCpaSpecUpdate =
-            newCachedFlag(
-                    CPA_SPEC_UPDATE, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sCpaSpecUpdate = newCachedFlag(CPA_SPEC_UPDATE, true);
     public static final CachedFlag sCpaTabGroupingButton =
             newCachedFlag(
                     CONTEXTUAL_PAGE_ACTION_TAB_GROUPING,
@@ -932,7 +928,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
     public static final CachedFlag sGridTabSwitcherUpdate =
-            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false, /* defaultValueInTests= */ true);
+            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, true);
     public static final CachedFlag sHistoryPaneAndroid =
             newCachedFlag(
                     HISTORY_PANE_ANDROID,
@@ -1059,10 +1055,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTabletTabStripAnimation =
-            newCachedFlag(
-                    TABLET_TAB_STRIP_ANIMATION,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(TABLET_TAB_STRIP_ANIMATION, true);
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
