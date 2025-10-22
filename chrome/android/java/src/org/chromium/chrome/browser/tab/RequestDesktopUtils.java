@@ -387,8 +387,7 @@ public class RequestDesktopUtils {
         }
 
         // Enable on large connected displays only when user has not explicitly set preference.
-        if (ChromeFeatureList.sDesktopUAOnConnectedDisplay.isEnabled()
-                && isOnEligibleExternalDisplayForDesktopUA(context)
+        if (isOnEligibleExternalDisplayForDesktopUA(context)
                 && !hasUserUpdatedContentSettings(url, profile)) {
             return true;
         }
@@ -489,20 +488,14 @@ public class RequestDesktopUtils {
         if (sDesktopUAAllowedOnExternalDisplayForOem == null) {
             Set<String> allowlist = new HashSet<>();
             String allowlistStr =
-                    ChromeFeatureList.getFieldTrialParamByFeature(
-                            ChromeFeatureList.DESKTOP_UA_ON_CONNECTED_DISPLAY,
-                            "ext_display_desktop_ua_oem_allowlist");
+                    ChromeFeatureList.sDesktopUAAllowedOnExternalDisplayForOem.getValue();
             if (!TextUtils.isEmpty(allowlistStr)) {
                 Collections.addAll(allowlist, allowlistStr.split(","));
             }
             sDesktopUAAllowedOnExternalDisplayForOem =
-                    !allowlist.isEmpty()
-                            && allowlist.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
+                    allowlist.isEmpty()
+                            || allowlist.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
         }
-        if (!sDesktopUAAllowedOnExternalDisplayForOem) {
-            return false;
-        }
-
-        return true;
+        return sDesktopUAAllowedOnExternalDisplayForOem;
     }
 }

@@ -4,8 +4,14 @@
 
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 
+#include "base/android/android_info.h"
 #include "base/android/device_info.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/preferences/android/chrome_shared_preferences.h"
@@ -26,6 +32,9 @@ enum class UserAgentRequestType {
   RequestMobile = 1,
 };
 }  // namespace rds_web_contents_observer
+
+static std::optional<bool>
+    s_is_oem_allowlisted_for_external_display_desktop_ua = false;
 
 RequestDesktopSiteWebContentsObserverAndroid::
     RequestDesktopSiteWebContentsObserverAndroid(content::WebContents* contents)
@@ -79,28 +88,9 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     }
   }
 
-  base::android::SharedPreferencesManager shared_prefs =
-      android::shared_preferences::GetChromeSharedPreferences();
-  // Enable on large connected displays only when user has not explicitly set
-  // preference. ie: user is using global setting and has not changed it.
-  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
-      web_contents()->GetTopLevelNativeWindow());
-  // Compute the display's diagonal length in inches.
-  float width_inches = static_cast<float>(display.GetSizeInPixel().width()) /
-                       display.GetPixelsPerInchX();
-  float height_inches = static_cast<float>(display.GetSizeInPixel().height()) /
-                        display.GetPixelsPerInchY();
-  double diagonal_inches =
-      std::sqrt(std::pow(width_inches, 2) + std::pow(height_inches, 2));
-  bool is_on_eligible_external_display =
-      display.id() != display::kDefaultDisplayId &&
-      diagonal_inches >= kDesktopSiteDisplaySizeThresholdInches;
+  // RDS External Display support.
   bool should_allow_on_external_display =
-      base::FeatureList::IsEnabled(
-          chrome::android::kDesktopUAOnConnectedDisplay) &&
-      is_on_eligible_external_display && is_global_setting &&
-      !shared_prefs.ContainsKey(
-          prefs::kRequestDesktopSiteGlobalSettingUserEnabled);
+      ShouldAllowOnExternalDisplay(is_global_setting);
   desktop_mode |= should_allow_on_external_display;
 
   // Override UA for renderer initiated navigation only. UA override for browser
@@ -130,3 +120,43 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RequestDesktopSiteWebContentsObserverAndroid);
+
+bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
+    bool is_global_setting) {
+  base::android::SharedPreferencesManager shared_prefs =
+      android::shared_preferences::GetChromeSharedPreferences();
+  // Enable on large connected displays only when user has not explicitly set
+  // preference. ie: user is using global setting and has not changed it.
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      web_contents()->GetTopLevelNativeWindow());
+  // Compute the display's diagonal length in inches.
+  float width_inches = static_cast<float>(display.GetSizeInPixel().width()) /
+                       display.GetPixelsPerInchX();
+  float height_inches = static_cast<float>(display.GetSizeInPixel().height()) /
+                        display.GetPixelsPerInchY();
+  double diagonal_inches =
+      std::sqrt(std::pow(width_inches, 2) + std::pow(height_inches, 2));
+  bool is_on_eligible_external_display =
+      display.id() != display::kDefaultDisplayId &&
+      diagonal_inches >= kDesktopSiteDisplaySizeThresholdInches;
+  if (!s_is_oem_allowlisted_for_external_display_desktop_ua.has_value()) {
+    std::string oemAllowlistStr = base::GetFieldTrialParamByFeatureAsString(
+        chrome::android::kDesktopUAOnConnectedDisplay,
+        "ext_display_desktop_ua_oem_allowlist", "");
+    if (oemAllowlistStr.empty()) {
+      s_is_oem_allowlisted_for_external_display_desktop_ua = true;
+    } else {
+      std::vector<std::string> allowlist =
+          base::SplitString(oemAllowlistStr, ",", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_NONEMPTY);
+      std::string manufacturer = base::android::android_info::manufacturer();
+      base::ToLowerASCII(manufacturer);
+      s_is_oem_allowlisted_for_external_display_desktop_ua =
+          base::Contains(allowlist, manufacturer);
+    }
+  }
+  return s_is_oem_allowlisted_for_external_display_desktop_ua.value() &&
+         is_on_eligible_external_display && is_global_setting &&
+         !shared_prefs.ContainsKey(
+             prefs::kRequestDesktopSiteGlobalSettingUserEnabled);
+}

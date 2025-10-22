@@ -1495,6 +1495,10 @@ public abstract class ChromeFeatureList {
                             "manufacturer_exclude_list",
                             "xiaomi");
 
+    public static final StringCachedFeatureParam sDesktopUAAllowedOnExternalDisplayForOem =
+            newStringCachedFeatureParam(
+                    DESKTOP_UA_ON_CONNECTED_DISPLAY, "ext_display_desktop_ua_oem_allowlist", "");
+
     /**
      * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
      * variant is NO_VARIANT.
@@ -1798,6 +1802,7 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
                     sCleanupLegacyTabStateBatchSize,
+                    sDesktopUAAllowedOnExternalDisplayForOem,
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeBottomChinOemMinVersions,
                     sEdgeToEdgeEverywhereOemList,

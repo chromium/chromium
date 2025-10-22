@@ -35,8 +35,11 @@ class RequestDesktopSiteWebContentsObserverAndroid
   friend class content::WebContentsUserData<
       RequestDesktopSiteWebContentsObserverAndroid>;
 
-  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  // Determines if desktop mode should be allowed based on external display
+  // conditions and OEM allowlist.
+  bool ShouldAllowOnExternalDisplay(bool is_global_setting);
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<PrefService> pref_service_;
 
   // The display size threshold in inches for enabling desktop user agent on
   // connected displays.

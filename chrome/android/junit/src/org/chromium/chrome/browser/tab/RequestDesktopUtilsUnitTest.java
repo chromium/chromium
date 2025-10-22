@@ -943,14 +943,14 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.DESKTOP_UA_ON_CONNECTED_DISPLAY)
-    public void testShouldOverrideDesktopSite_OEMAllowlistNotSet_shouldNotOverride() {
+    public void testShouldOverrideDesktopSite_OEMAllowlistNotSet_shouldOverride() {
         when(mDisplay.getDisplayId()).thenReturn(/*non built-in display*/ 2);
         String originalManufacturer = Build.MANUFACTURER;
         try {
             ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
             boolean shouldOverride =
                     RequestDesktopUtils.shouldOverrideDesktopSite(mProfile, mGoogleUrl, mActivity);
-            Assert.assertFalse("Desktop site should not be overridden.", shouldOverride);
+            Assert.assertTrue("Desktop site should be overridden.", shouldOverride);
         } finally {
             ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", originalManufacturer);
             RequestDesktopUtils.sDesktopUAAllowedOnExternalDisplayForOem = null;
