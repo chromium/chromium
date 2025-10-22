@@ -2586,23 +2586,15 @@ TEST_F(NativeWidgetMacTest,
 }
 
 // Tests behavior of window-modal dialogs, displayed as sheets.
-// TODO(crbug.com/453833804): Disabled on ASAN due to flakiness.
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-#define MAYBE_OnWidgetWindowModalVisibilityChanged \
-  DISABLED_OnWidgetWindowModalVisibilityChanged
-#else
-#define MAYBE_OnWidgetWindowModalVisibilityChanged \
-  OnWidgetWindowModalVisibilityChanged
-#endif
-TEST_F(NativeWidgetMacTest, MAYBE_OnWidgetWindowModalVisibilityChanged) {
-  Widget* parent_widget = CreateTopLevelPlatformWidget();
+TEST_F(NativeWidgetMacTest, OnWidgetWindowModalVisibilityChanged) {
+  WidgetAutoclosePtr parent_widget(CreateTopLevelPlatformWidget());
   parent_widget->Show();
   NSWindow* parent_nswindow =
       parent_widget->GetNativeWindow().GetNativeNSWindow();
 
   testing::NiceMock<WidgetModalVisibilityObserver> observer;
   base::ScopedObservation<Widget, WidgetObserver> observation(&observer);
-  observation.Observe(parent_widget);
+  observation.Observe(parent_widget.get());
 
   NSRect frame = NSMakeRect(0, 0, 200, 100);
   NSWindow* sheet_nswindow =
@@ -2612,16 +2604,15 @@ TEST_F(NativeWidgetMacTest, MAYBE_OnWidgetWindowModalVisibilityChanged) {
                                       defer:NO];
 
   EXPECT_CALL(observer,
-              OnWidgetWindowModalVisibilityChanged(parent_widget, true));
+              OnWidgetWindowModalVisibilityChanged(parent_widget.get(), true));
   [parent_nswindow beginSheet:sheet_nswindow completionHandler:nil];
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer,
-              OnWidgetWindowModalVisibilityChanged(parent_widget, false));
+              OnWidgetWindowModalVisibilityChanged(parent_widget.get(), false));
   [parent_nswindow endSheet:sheet_nswindow];
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return parent_nswindow.attachedSheet == nil; }));
-  parent_widget->CloseNow();
 }
 
 }  // namespace views::test
