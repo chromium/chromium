@@ -43,7 +43,9 @@ class TouchToFillPaymentMethodView {
   virtual bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) = 0;
   virtual bool ShowBnplIssuers(
-      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts) = 0;
+      const TouchToFillPaymentMethodViewController& controller,
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      const std::string& app_locale) = 0;
   virtual bool ShowErrorScreen(
       TouchToFillPaymentMethodViewController* controller,
       const std::u16string& title,

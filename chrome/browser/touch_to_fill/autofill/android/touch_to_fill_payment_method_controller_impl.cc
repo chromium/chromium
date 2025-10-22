@@ -182,7 +182,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers(
     const std::string& app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
-  if (!view_ || !view_->ShowBnplIssuers(bnpl_issuer_contexts)) {
+  if (!view_ ||
+      !view_->ShowBnplIssuers(*this, bnpl_issuer_contexts, app_locale)) {
     ResetJavaObject();
     return false;
   }

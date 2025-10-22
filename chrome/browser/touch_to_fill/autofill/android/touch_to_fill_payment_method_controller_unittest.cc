@@ -112,7 +112,9 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
   MOCK_METHOD(
       bool,
       ShowBnplIssuers,
-      (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts));
+      (const TouchToFillPaymentMethodViewController& controller,
+       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+       const std::string& app_locale));
   MOCK_METHOD(bool,
               ShowErrorScreen,
               (TouchToFillPaymentMethodViewController * controller,
@@ -473,11 +475,14 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuersPassesContextsToTheView) {
   // Test that the BNPL issuer contexts have propagated to the view.
   ASSERT_EQ(3U, bnpl_issuer_contexts_.size());
-  EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(testing::ElementsAre(
-                  EqualBnplIssuerContext(bnpl_issuer_contexts_[0]),
-                  EqualBnplIssuerContext(bnpl_issuer_contexts_[1]),
-                  EqualBnplIssuerContext(bnpl_issuer_contexts_[2]))));
+  EXPECT_CALL(
+      *mock_view_,
+      ShowBnplIssuers(Ref(payment_method_controller()),
+                      testing::ElementsAre(
+                          EqualBnplIssuerContext(bnpl_issuer_contexts_[0]),
+                          EqualBnplIssuerContext(bnpl_issuer_contexts_[1]),
+                          EqualBnplIssuerContext(bnpl_issuer_contexts_[2])),
+                      "en-US"));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
@@ -499,7 +504,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
                                  ElementsAreArray(suggestions_),
                                  /*should_show_scan_credit_card=*/true));
   EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_)))
+              ShowBnplIssuers(Ref(payment_method_controller()),
+                              ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
       .WillOnce(Return(true));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetSelectedIssuerCallback);
@@ -690,7 +696,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 TEST_F(TouchToFillPaymentMethodControllerTest,
        OnBnplIssuerSuggestionSelected_ForwardsCallToDelegate) {
   EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_)))
+              ShowBnplIssuers(Ref(payment_method_controller()),
+                              ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
       .WillOnce(Return(true));
   EXPECT_CALL(ttf_delegate(),
               OnBnplIssuerSuggestionSelected(/*issuer_id=*/"affirm"));
