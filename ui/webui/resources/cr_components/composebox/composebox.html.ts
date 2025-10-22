@@ -51,7 +51,7 @@ export function getHtml(this: ComposeboxElement) {
         </div>
       </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
-          .tabSuggestions_=${this.tabSuggestions_}
+          .tabSuggestions="${this.tabSuggestions_}"
           entrypoint-name="Composebox"
           @add-tab-context="${this.addTabContext_}"
           @add-file-context="${this.addFileContext_}"

@@ -26,23 +26,26 @@ export class RecentTabChipElement extends RecentTabChipBase {
 
   static override get properties() {
     return {
-      inputsDisabled_: {type: Boolean},
-      recentTab_: {type: Object},
+      // =========================================================================
+      // Public properties
+      // =========================================================================
+      inputsDisabled: {type: Boolean},
+      recentTab: {type: Object},
     };
   }
 
-  protected accessor inputsDisabled_: boolean = false;
-  protected accessor recentTab_: TabInfo|undefined = undefined;
+  accessor inputsDisabled: boolean = false;
+  accessor recentTab: TabInfo|undefined = undefined;
 
   protected addTabContext_(e: Event) {
     e.stopPropagation();
-    if (!this.recentTab_ || this.inputsDisabled_) {
+    if (!this.recentTab || this.inputsDisabled) {
       return;
     }
     this.fire('add-tab-context', {
-      id: this.recentTab_.tabId,
-      title: this.recentTab_.title,
-      url: this.recentTab_.url,
+      id: this.recentTab.tabId,
+      title: this.recentTab.title,
+      url: this.recentTab.url,
     });
   }
 }

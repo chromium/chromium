@@ -18,8 +18,8 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       this.shouldShowRecentTabChip_ ? html`
         <composebox-recent-tab-chip id="recentTabChip"
             class="upload-icon"
-            .recentTab_=${this.tabSuggestions_[0]}
-            .inputsDisabled_=${this.inputsDisabled_}
+            .recentTab="${this.tabSuggestions[0]}"
+            .inputsDisabled="${this.inputsDisabled_}"
             @add-tab-context="${this.addTabContext_}">
         </composebox-recent-tab-chip>
         ` :
@@ -42,7 +42,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         <composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             class="upload-icon no-overlap"
-            .tabSuggestions_=${this.tabSuggestions_}
+            .tabSuggestions="${this.tabSuggestions}"
             .entrypointName="${this.entrypointName}"
             @open-image-upload="${this.openImageUpload_}"
             @open-file-upload="${this.openFileUpload_}"

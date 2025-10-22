@@ -48,6 +48,9 @@ export class ContextMenuEntrypointElement extends
 
   static override get properties() {
     return {
+      // =========================================================================
+      // Public properties
+      // =========================================================================
       inputsDisabled: {type: Boolean},
       fileNum: {type: Number},
       showContextMenuDescription: {type: Boolean},
@@ -60,7 +63,12 @@ export class ContextMenuEntrypointElement extends
         type: Boolean,
       },
       disabledTabIds: {type: Object},
-      tabSuggestions_: {type: Array},
+      tabSuggestions: {type: Array},
+      entrypointName: {type: String},
+
+      // =========================================================================
+      // Protected properties
+      // =========================================================================
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
       showDeepSearch_: {
@@ -71,7 +79,6 @@ export class ContextMenuEntrypointElement extends
         reflect: true,
         type: Boolean,
       },
-      entrypointName: {type: String},
     };
   }
 
@@ -81,8 +88,9 @@ export class ContextMenuEntrypointElement extends
   accessor inCreateImageMode: boolean = false;
   accessor hasImageFiles: boolean = false;
   accessor disabledTabIds: Set<number> = new Set();
+  accessor tabSuggestions: TabInfo[] = [];
   accessor entrypointName: string = '';
-  protected accessor tabSuggestions_: TabInfo[] = [];
+
   protected accessor tabPreviewUrl_: string = '';
   protected accessor tabPreviewsEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
@@ -142,7 +150,7 @@ export class ContextMenuEntrypointElement extends
     e.stopPropagation();
 
     const tabElement = e.currentTarget! as HTMLButtonElement;
-    const tabInfo = this.tabSuggestions_[Number(tabElement.dataset['index'])];
+    const tabInfo = this.tabSuggestions[Number(tabElement.dataset['index'])];
 
     assert(tabInfo);
 
@@ -160,7 +168,7 @@ export class ContextMenuEntrypointElement extends
     }
 
     const tabElement = e.currentTarget! as HTMLElement;
-    const tabInfo = this.tabSuggestions_[Number(tabElement.dataset['index'])];
+    const tabInfo = this.tabSuggestions[Number(tabElement.dataset['index'])];
     assert(tabInfo);
 
     // Clear the preview URL before fetching the new one to make sure an old
