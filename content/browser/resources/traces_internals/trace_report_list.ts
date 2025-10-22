@@ -61,7 +61,7 @@ export class TraceReportListElement extends CrLitElement {
     return {
       traces_: {type: Array},
       isLoading_: {type: Boolean},
-      notification: {type: Notification},
+      notification: {type: Object},
     };
   }
 

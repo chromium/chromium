@@ -14,7 +14,7 @@ import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabElement} from './tab_element.js';
 import {getCss} from './tab_strip.css.js';
 import {getHtml} from './tab_strip.html.js';
-import {TabStripController} from './tab_strip_controller.js';
+import type {TabStripController} from './tab_strip_controller.js';
 
 export interface TabStrip {
   $: {
@@ -37,7 +37,7 @@ export class TabStrip extends CrLitElement {
 
   static override get properties() {
     return {
-      tabStripController: {type: TabStripController},
+      tabStripController: {type: Object},
     };
   }
 

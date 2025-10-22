@@ -87,7 +87,7 @@ export class AppElement extends AppElementBase {
       ntpNextFeaturesEnabled_: {type: Boolean},
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
-      newTabPageType_: {type: NewTabPageType},
+      newTabPageType_: {type: Number},
       showEditTheme_: {type: Boolean},
       showFooter_: {type: Boolean},
       showFooterForManagedBrowser_: {type: Boolean},

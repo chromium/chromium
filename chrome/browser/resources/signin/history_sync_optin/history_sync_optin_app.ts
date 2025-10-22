@@ -39,7 +39,7 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
         type: Boolean,
         reflect: true,
       },
-      screenMode_: {type: ScreenMode},
+      screenMode_: {type: Number},
     };
   }
 

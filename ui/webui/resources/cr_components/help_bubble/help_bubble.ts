@@ -83,7 +83,7 @@ export class HelpBubbleElement extends CrLitElement {
         reflect: true,
       },
       position: {
-        type: HelpBubbleArrowPosition,
+        type: Number,
         reflect: true,
       },
       bodyIconName: {type: String},

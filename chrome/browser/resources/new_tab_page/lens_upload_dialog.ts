@@ -128,7 +128,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
   static override get properties() {
     return {
-      dialogState_: {type: DialogState},
+      dialogState_: {type: Number},
       lensErrorMessage_: {type: Number},
       isHidden_: {type: Boolean},
       isNormalOrError_: {type: Boolean},
