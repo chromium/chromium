@@ -38,6 +38,9 @@ namespace web_app {
 // http://b/262606416.
 class FakeWebContentsManager : public WebContentsManager {
  public:
+  static constexpr std::string_view kBasicInstallIconUrl =
+      "https://www.example.com/icon.png";
+
   // Some helper methods.
   static webapps::mojom::WebPageMetadataPtr CreateMetadataWithTitle(
       std::u16string title);

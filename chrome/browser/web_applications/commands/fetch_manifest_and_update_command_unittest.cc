@@ -4,26 +4,37 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 
+#include "base/containers/contains.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
+#include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/test/sk_gmock_support.h"
 
 namespace web_app {
 namespace {
+using ::testing::Contains;
+using ::testing::Pair;
+
 static constexpr std::string_view kInstallUrl =
     "https://example.com/install.html";
 static constexpr std::string_view kStartUrl =
@@ -134,14 +145,89 @@ TEST_F(FetchManifestAndUpdateTest, ClearsPendingUpdateInfo) {
                    .has_value());
 }
 
-// TODO(http://crbug.com/452416687): Add tests for other updatable items, and
-// make sure the trusted icons update.
+TEST_F(FetchManifestAndUpdateTest, NoUpdate_IconFetchCallbackNotCalled) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
-// TODO(http://crbug.com/452416687): Add tests for failure conditions:
-// - Url load failure
-// - Primary page change
-// - Icon load failure
-// - Update failure
+  // This icon URL is defined and used by
+  // FakeWebContentsManager::CreateBasicInstallPageState.
+  const GURL kIconUrl(FakeWebContentsManager::kBasicInstallIconUrl);
+  bool icon_fetched_callback_called = false;
+  web_contents_manager().GetOrCreateIconState(kIconUrl).on_icon_fetched =
+      base::BindLambdaForTesting(
+          [&]() { icon_fetched_callback_called = true; });
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
+  EXPECT_FALSE(icon_fetched_callback_called);
+}
+
+TEST_F(FetchManifestAndUpdateTest, IconUpdate) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  const GURL kNewIconUrl("https://www.example.com/new_icon.png");
+  GetPageManifest()->icons[0].src = kNewIconUrl;
+  web_contents_manager().GetOrCreateIconState(kNewIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(144, SK_ColorRED)};
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccess);
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> future;
+  provider().icon_manager().ReadAllIcons(app_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  WebAppIconManager::WebAppBitmaps icon_bitmaps = future.Get();
+
+  EXPECT_THAT(
+      icon_bitmaps.trusted_icons.any,
+      Contains(Pair(144, gfx::test::EqualsBitmap(
+                             gfx::test::CreateBitmap(144, SK_ColorRED)))));
+}
+
+TEST_F(FetchManifestAndUpdateTest, UrlLoadFailure) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  web_contents_manager()
+      .GetOrCreatePageState(GURL(kInstallUrl))
+      .url_load_result = webapps::WebAppUrlLoaderResult::kFailedUnknownReason;
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kUrlLoadingError);
+}
+
+TEST_F(FetchManifestAndUpdateTest, PrimaryPageChangedDuringIconFetch) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  const GURL kNewIconUrl("https://www.example.com/new_icon.png");
+  GetPageManifest()->icons[0].src = kNewIconUrl;
+  auto& icon_state = web_contents_manager().GetOrCreateIconState(kNewIconUrl);
+  icon_state.bitmaps = {gfx::test::CreateBitmap(144, SK_ColorRED)};
+  icon_state.trigger_primary_page_changed_if_fetched = true;
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kPrimaryPageChanged);
+}
+
+TEST_F(FetchManifestAndUpdateTest, IconDownloadError) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  const GURL kNewIconUrl("https://www.example.com/new_icon.png");
+  GetPageManifest()->icons[0].src = kNewIconUrl;
+  // Not setting any icon state for kNewIconUrl, so it will fail to download.
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kIconDownloadError);
+}
+
+TEST_F(FetchManifestAndUpdateTest, InstallationError) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  GetPageManifest()->name = u"New Name";
+
+  provider().file_utils()->AsTestFileUtils()->SetRemainingDiskSpaceSize(0);
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kInstallationError);
+}
 
 }  // namespace
 }  // namespace web_app

@@ -470,7 +470,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     const GURL& manifest_url,
     const GURL& start_url,
     std::u16string_view name) {
-  const GURL kIconUrl = GURL("https://www.example.com/icon.png");
+  const GURL kIconUrl(kBasicInstallIconUrl);
   constexpr int kIconSize = 144;
 
   FakePageState& install_page_state = GetOrCreatePageState(install_url);

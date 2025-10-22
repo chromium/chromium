@@ -182,11 +182,18 @@ void FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest(
 }
 
 void FetchManifestAndUpdateCommand::OnIconsFetched() {
-  if (manifest_to_install_info_job_->icon_download_result() ==
-      IconsDownloadedResult::kAbortedDueToFailure) {
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kIconDownloadError);
-    return;
+  switch (manifest_to_install_info_job_->icon_download_result()) {
+    case IconsDownloadedResult::kCompleted:
+      break;
+    case IconsDownloadedResult::kPrimaryPageChanged:
+      CompleteAndSelfDestruct(
+          CommandResult::kSuccess,
+          FetchManifestAndUpdateResult::kPrimaryPageChanged);
+      return;
+    case IconsDownloadedResult::kAbortedDueToFailure:
+      CompleteAndSelfDestruct(CommandResult::kSuccess,
+                              FetchManifestAndUpdateResult::kIconDownloadError);
+      return;
   }
 
   install_info_->trusted_icons = install_info_->manifest_icons;
