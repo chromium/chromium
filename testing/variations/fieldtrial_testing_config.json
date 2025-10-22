@@ -6445,22 +6445,6 @@
             ]
         }
     ],
-    "ClientSideDetectionSendIntelligentScanInfoAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionSendIntelligentScanInfoAndroid",
-                        "OptimizationGuideOnDeviceModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionSendLlamaForcedTriggerInfo": [
         {
             "platforms": [
@@ -6475,6 +6459,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ClientSideDetectionSendLlamaForcedTriggerInfo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ClientSideDetectionShowScamVerdictWarningAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithWarning",
+                    "enable_features": [
+                        "ClientSideDetectionSendIntelligentScanInfoAndroid",
+                        "ClientSideDetectionShowScamVerdictWarningAndroid",
+                        "OptimizationGuideOnDeviceModel"
+                    ]
+                },
+                {
+                    "name": "EnabledMetricsCollection",
+                    "enable_features": [
+                        "ClientSideDetectionSendIntelligentScanInfoAndroid",
+                        "OptimizationGuideOnDeviceModel"
                     ]
                 }
             ]
