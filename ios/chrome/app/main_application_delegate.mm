@@ -308,8 +308,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 }
 
 - (void)sceneWillConnect:(NSNotification*)notification {
-  // TODO(crbug.com/40679152): This should be called later, or this flow should
-  // be changed completely.
   if (self.foregroundSceneCount == 0) {
     [_mainController
         applicationWillEnterForeground:UIApplication.sharedApplication
