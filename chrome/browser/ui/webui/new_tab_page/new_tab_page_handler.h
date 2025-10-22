@@ -193,6 +193,8 @@ class NewTabPageHandler
   // Called when the embedding BrowserWindowInterface has changed.
   void OnBrowserWindowInterfaceChanged();
 
+  bool CanShowCustomizeChromePromo();
+
   void LogEvent(NTPLoggingEventType event);
 
   typedef base::OnceCallback<void(bool success,

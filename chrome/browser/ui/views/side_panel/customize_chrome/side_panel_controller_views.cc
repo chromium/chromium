@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -81,6 +82,24 @@ void SidePanelControllerViews::OnEntryShown(SidePanelEntry* entry) {
 void SidePanelControllerViews::OnEntryHidden(SidePanelEntry* entry) {
   if (entry_state_changed_callback_) {
     entry_state_changed_callback_.Run(false);
+  }
+}
+
+void SidePanelControllerViews::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  // Only count explicit user action to close the SidePanel here.
+  // The SidePanel may be hidden if the user opens a new tab or navigates away
+  // without explicitly closing the it. In those cases the view of the SidePanel
+  // still exists, therefore we do not count those events. Also closing the
+  // browser with an opened SidePanel does not trigger this call.
+  // TODO(crbug.com/454215211): Follow up this check with more robust solution.
+  if (reason == SidePanelEntryHideReason::kSidePanelClosed &&
+      !entry->CachedView()) {
+    Profile* const profile =
+        Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+    profile->GetPrefs()->SetBoolean(prefs::kNtpCustomizeChromeExplicitlyClosed,
+                                    true);
   }
 }
 

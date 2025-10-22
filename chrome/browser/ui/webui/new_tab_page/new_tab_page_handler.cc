@@ -48,17 +48,21 @@
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
@@ -573,6 +577,10 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kNtpOutlookModuleVisible, false);
   registry->RegisterBooleanPref(prefs::kNtpSharepointModuleVisible, false);
   registry->RegisterIntegerPref(prefs::kNtpComposeButtonShownCountPrefName, 0);
+  registry->RegisterIntegerPref(
+      prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount, 0);
+  registry->RegisterBooleanPref(prefs::kNtpCustomizeChromeExplicitlyClosed,
+                                false);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(ntp_tiles::TileType type,
@@ -1159,9 +1167,16 @@ void NewTabPageHandler::OnBrowserWindowInterfaceChanged() {
 }
 
 void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeChromePromo)) {
+  if (!CanShowCustomizeChromePromo() ||
+      !base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeChromePromo)) {
     return;
   }
+
+  profile_->GetPrefs()->SetInteger(
+      prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount,
+      profile_->GetPrefs()->GetInteger(
+          prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount) +
+          1);
 
   actions::ActionManager::Get()
       .FindAction(kActionSidePanelShowCustomizeChrome)
@@ -1173,6 +1188,37 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
                       SidePanelOpenTrigger::
                           kNewTabPageAutomaticCustomizeChrome))
               .Build());
+}
+
+// TODO(crbug.com/452223973): Make this return an enum and record metrics.
+bool NewTabPageHandler::CanShowCustomizeChromePromo() {
+  auto* background_service =
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
+  if (background_service->GetCustomBackground() ||
+      theme_service->GetThemeID() != ThemeHelper::kDefaultThemeID) {
+    return false;
+  }
+
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kNtpCustomizeChromeExplicitlyClosed)) {
+    return false;
+  }
+
+  if (profile_->GetPrefs()->GetInteger(
+          prefs::kNtpCustomizeChromeButtonOpenCount) > 0) {
+    return false;
+  }
+
+  if (profile_->GetPrefs()->GetInteger(
+          prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount) >=
+      ntp_features::kNtpCustomizeChromePromoShownMaxCount.Get()) {
+    return false;
+  }
+
+  // TODO(crbug.com/443742711): Add check for per-session openings for panel on
+  // only first NTP variation.
+  return true;
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {

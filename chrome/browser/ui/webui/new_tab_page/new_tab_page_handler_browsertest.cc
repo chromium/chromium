@@ -14,8 +14,10 @@
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -108,7 +110,14 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
 class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
     : public NewTabPageHandlerBaseBrowserTest {
  protected:
-  base::HistogramTester histogram_tester_;
+  bool IsCustomizeChromeEntryShowing() {
+    return webui::GetBrowserWindowInterface(web_contents())
+        ->GetTabStripModel()
+        ->GetActiveTab()
+        ->GetTabFeatures()
+        ->customize_chrome_side_panel_controller()
+        ->IsCustomizeChromeEntryShowing();
+  }
 
   void OpenNewTabPageInForeground() {
     ui_test_utils::NavigateToURLWithDisposition(
@@ -116,6 +125,8 @@ class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -125,12 +136,77 @@ class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        OpenCustomizeChromePromoWhenFlagEnabled) {
   OpenNewTabPageInForeground();
-  EXPECT_TRUE(webui::GetBrowserWindowInterface(web_contents())
-                  ->GetTabStripModel()
-                  ->GetActiveTab()
-                  ->GetTabFeatures()
-                  ->customize_chrome_side_panel_controller()
-                  ->IsCustomizeChromeEntryShowing());
+  EXPECT_TRUE(IsCustomizeChromeEntryShowing());
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount),
+            1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+                       DontOpenPanelWhenUserCustomizedChromeAlready) {
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  theme_service->SetUserColorAndBrowserColorVariant(
+      SkColorSetRGB(0x00, 0x00, 0x00),
+      ui::mojom::BrowserColorVariant::kVibrant);
+
+  OpenNewTabPageInForeground();
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+                       DontOpenPanelWhenCustomizeButtonWasClickedBefore) {
+  profile()->GetPrefs()->SetInteger(prefs::kNtpCustomizeChromeButtonOpenCount,
+                                    1);
+
+  OpenNewTabPageInForeground();
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+                       DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
+  for (size_t i = 0;
+       i < ntp_features::kNtpCustomizeChromePromoShownMaxCount.Get(); ++i) {
+    OpenNewTabPageInForeground();
+    EXPECT_TRUE(IsCustomizeChromeEntryShowing());
+  }
+
+  OpenNewTabPageInForeground();
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome,
+      ntp_features::kNtpCustomizeChromePromoShownMaxCount.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+                       DontOpenPanelAgainWhenPanelWasExplicitlyCanceledBefore) {
+  OpenNewTabPageInForeground();
+  EXPECT_TRUE(IsCustomizeChromeEntryShowing());
+
+  // Simulate side panel closed via explicit user action. After that, no new
+  // Customize Chrome should be opened on the second NTP.
+  webui::GetBrowserWindowInterface(web_contents())
+      ->GetFeatures()
+      .side_panel_ui()
+      ->Close();
+
+  OpenNewTabPageInForeground();
+
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",

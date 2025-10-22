@@ -2422,6 +2422,12 @@ inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 // List keeping track of modules hidden in Customize Chrome.
 inline constexpr char kNtpCustomizeChromeHiddenModules[] =
     "NewTabPage.CustomizeChromeHiddenModules";
+// Number of how many times Customize Chrome was auto opened on NTP.
+inline constexpr char kNtpCustomizeChromeSidePanelAutoOpeningsCount[] =
+    "NewTabPage.CustomizeChromeSidePanelAutoOpeningsCount";
+// Whether user has explicitly canceled Customize Chrome side panel.
+inline constexpr char kNtpCustomizeChromeExplicitlyClosed[] =
+    "NewTabPage.CustomizeChromeExplicitlyClosed";
 // List keeping track of modules not allowed to show on New Tab Page.
 inline constexpr char kNtpHiddenModules[] = "NewTabPage.HiddenModules";
 // Time the Microsoft files module was last dismissed.
