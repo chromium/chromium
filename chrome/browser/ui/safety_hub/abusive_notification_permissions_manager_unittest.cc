@@ -528,7 +528,7 @@ TEST_F(
                                 /*is_ignored=*/false);
   EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
   // Simulate existing revoked notification setting with revocation source
-  // `kManualSafeBrowsingRevocationStr`.
+  // `kSafeBrowsingUnwantedRevocationStr`.
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
   content_settings::ContentSettingConstraints constraint;
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -537,12 +537,12 @@ TEST_F(
           base::Value::Dict()
               .Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)
               .Set(kAbusiveRevocationSourceKeyStr,
-                   kManualSafeBrowsingRevocationStr)),
+                   kSafeBrowsingUnwantedRevocationStr)),
       constraint);
   EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
   EXPECT_EQ(
       safe_browsing::NotificationRevocationSource::
-          kManualSafeBrowsingRevocation,
+          kSafeBrowsingUnwantedRevocation,
       AbusiveNotificationPermissionsManager::
           GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url2)));
 
@@ -563,7 +563,7 @@ TEST_F(
           GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
   EXPECT_EQ(
       safe_browsing::NotificationRevocationSource::
-          kManualSafeBrowsingRevocation,
+          kSafeBrowsingUnwantedRevocation,
       AbusiveNotificationPermissionsManager::
           GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url2)));
 }
@@ -645,7 +645,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        RegrantAndUndoMaintainExistingRevocationSource) {
   // Simulate existing revoked notification setting with revocation source
-  // `kManualSafeBrowsingRevocationStr`.
+  // `kSafeBrowsingUnwantedRevocationStr`.
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ASK);
   content_settings::ContentSettingConstraints constraint;
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -654,7 +654,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
           base::Value::Dict()
               .Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)
               .Set(kAbusiveRevocationSourceKeyStr,
-                   kManualSafeBrowsingRevocationStr)),
+                   kSafeBrowsingUnwantedRevocationStr)),
       constraint);
   auto manager = AbusiveNotificationPermissionsManager(
       mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
@@ -672,7 +672,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   ASSERT_EQ(
       safe_browsing::NotificationRevocationSource::
-          kManualSafeBrowsingRevocation,
+          kSafeBrowsingUnwantedRevocation,
       AbusiveNotificationPermissionsManager::
           GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
 }
@@ -786,7 +786,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, OnPermissionChanged) {
   AddRevokedAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ASK,
                                 /*is_ignored=*/false,
                                 safe_browsing::NotificationRevocationSource::
-                                    kManualSafeBrowsingRevocation);
+                                    kSafeBrowsingUnwantedRevocation);
   AddRevokedAbusiveNotification(
       url3, ContentSetting::CONTENT_SETTING_ALLOW,
       /*is_ignored=*/false,
@@ -1006,7 +1006,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.NotificationRevocationSource",
       safe_browsing::NotificationRevocationSource::
-          kManualSafeBrowsingRevocation,
+          kSafeBrowsingUnwantedRevocation,
       /* expected_count */ 1);
 }
 
@@ -1399,7 +1399,7 @@ TEST_F(SuspiciousNotificationRevocationTest,
   AddRevokedAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ASK,
                                 /*is_ignored=*/false,
                                 safe_browsing::NotificationRevocationSource::
-                                    kManualSafeBrowsingRevocation);
+                                    kSafeBrowsingUnwantedRevocation);
   AddRevokedAbusiveNotification(
       url4, ContentSetting::CONTENT_SETTING_ASK,
       /*is_ignored=*/false,

@@ -26,7 +26,7 @@ namespace safe_browsing {
 // LINT.IfChange(NotificationRevocationSource)
 enum class NotificationRevocationSource {
   kSocialEngineeringBlocklist = 0,
-  kManualSafeBrowsingRevocation = 1,
+  kSafeBrowsingUnwantedRevocation = 1,
   kStandardOneTapUnsubscribe = 2,
   kSuspiciousWarningOneTapUnsubscribe = 3,
   kDisruptiveAutoRevocation = 4,

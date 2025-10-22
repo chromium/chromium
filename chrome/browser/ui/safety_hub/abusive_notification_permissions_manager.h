@@ -26,7 +26,7 @@ inline constexpr int kCheckUrlTimeoutMs = 5000;
 // REVOKED_ABUSIVE_NOTIFICATION_PERMISSION to specify revocation reason.
 inline constexpr char kAbusiveRevocationSourceKeyStr[] = "revocation_source";
 inline constexpr char kSocialEngineeringBlocklistStr[] = "social_engineering";
-inline constexpr char kManualSafeBrowsingRevocationStr[] = "manual";
+inline constexpr char kSafeBrowsingUnwantedRevocationStr[] = "manual";
 inline constexpr char kSuspiciousContentAutoRevocationStr[] =
     "suspicious_content";
 }  // namespace

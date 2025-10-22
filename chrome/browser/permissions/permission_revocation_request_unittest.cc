@@ -195,7 +195,7 @@ TEST_F(PermissionRevocationRequestTest, SafeBrowsingTest) {
 
   histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
                                 safe_browsing::NotificationRevocationSource::
-                                    kManualSafeBrowsingRevocation,
+                                    kSafeBrowsingUnwantedRevocation,
                                 /* expected_count */ 1);
 }
 
@@ -588,7 +588,7 @@ TEST_F(PermissionShowManualRevocationsSafetyHubEnabledTest,
       origin_to_revoke));
   EXPECT_EQ(
       safe_browsing::NotificationRevocationSource::
-          kManualSafeBrowsingRevocation,
+          kSafeBrowsingUnwantedRevocation,
       AbusiveNotificationPermissionsManager::
           GetRevokedAbusiveNotificationRevocationSource(
               HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),

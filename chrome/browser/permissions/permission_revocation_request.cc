@@ -100,7 +100,7 @@ void RevokePermission(const GURL& origin, Profile* profile) {
         ExecuteAbusiveNotificationAutoRevocation(
             HostContentSettingsMapFactory::GetForProfile(profile), origin,
             safe_browsing::NotificationRevocationSource::
-                kManualSafeBrowsingRevocation,
+                kSafeBrowsingUnwantedRevocation,
             base::DefaultClock::GetInstance());
   } else {
     permissions::PermissionsClient::Get()
@@ -262,7 +262,7 @@ void PermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
     safe_browsing::SafeBrowsingMetricsCollector::
         LogSafeBrowsingNotificationRevocationSourceHistogram(
             safe_browsing::NotificationRevocationSource::
-                kManualSafeBrowsingRevocation);
+                kSafeBrowsingUnwantedRevocation);
   } else {
     NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
   }

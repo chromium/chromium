@@ -60,7 +60,7 @@ void RecordAbusiveNotificationPermissionChangedHistogram(
       source_str = "SocialEngineeringBlocklist";
       break;
     case safe_browsing::NotificationRevocationSource::
-        kManualSafeBrowsingRevocation:
+        kSafeBrowsingUnwantedRevocation:
       source_str = "ManualSafeBrowsingRevocation";
       break;
     case safe_browsing::NotificationRevocationSource::
@@ -86,15 +86,15 @@ safe_browsing::NotificationRevocationSource GetNotificationRevocationSource(
     return safe_browsing::NotificationRevocationSource::
         kSocialEngineeringBlocklist;
   }
-  if (source_str == kManualSafeBrowsingRevocationStr) {
+  if (source_str == kSafeBrowsingUnwantedRevocationStr) {
     return safe_browsing::NotificationRevocationSource::
-        kManualSafeBrowsingRevocation;
+        kSafeBrowsingUnwantedRevocation;
   }
   if (source_str == kSuspiciousContentAutoRevocationStr) {
     return safe_browsing::NotificationRevocationSource::
         kSuspiciousContentAutoRevocation;
   }
-  // Only `kSocialEngineeringBlocklist` and `kManualSafeBrowsingRevocation` are
+  // Only `kSocialEngineeringBlocklist` and `kSafeBrowsingUnwantedRevocation` are
   // stored in `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`, other type of
   // `NotificationRevocationSource` should never be the reason for abusive
   // notification revocation.
@@ -705,8 +705,8 @@ AbusiveNotificationPermissionsManager::GetRevocationSourceString(
         kSocialEngineeringBlocklist:
       return kSocialEngineeringBlocklistStr;
     case safe_browsing::NotificationRevocationSource::
-        kManualSafeBrowsingRevocation:
-      return kManualSafeBrowsingRevocationStr;
+        kSafeBrowsingUnwantedRevocation:
+      return kSafeBrowsingUnwantedRevocationStr;
     case safe_browsing::NotificationRevocationSource::
         kSuspiciousContentAutoRevocation:
       return kSuspiciousContentAutoRevocationStr;
