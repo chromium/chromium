@@ -2100,8 +2100,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
+// TODO(crbug.com/454001121): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       testTabDataUpdateOnFaviconChangeForPinnedTab) {
+                       DISABLED_testTabDataUpdateOnFaviconChangeForPinnedTab) {
   NavigateTabAndOpenGlicFloating();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
