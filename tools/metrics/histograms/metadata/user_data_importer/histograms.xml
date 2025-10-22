@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.Flow"
-    enum="BooleanStartedCompleted" expires_after="2025-11-30">
+    enum="BooleanStartedCompleted" expires_after="2026-04-05">
   <owner>fsenra@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.FlowDuration"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-04-05">
   <owner>fsenra@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
