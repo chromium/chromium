@@ -902,8 +902,10 @@ class MockRuntime {
       height: fakeXRViewInit.resolution.height
       },
       isFirstPersonObserver: fakeXRViewInit.isFirstPersonObserver ? true : false,
-      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset)
+      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset),
+      visibilityMaskId: { idValue : 0 }
     };
+
   }
 
   _setFeatures(supportedFeatures) {

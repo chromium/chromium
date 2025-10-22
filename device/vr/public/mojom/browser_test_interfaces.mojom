@@ -96,6 +96,13 @@ struct EventData {
   device.mojom.OpenXrInteractionProfileType interaction_profile = kInvalid;
 };
 
+// A simplified version of the device::mojom::XRVisibilityMask, because we only
+// need a handful of points to prove that things work.
+struct XRVisibilityMask {
+  array<float, 6> vertices;
+  array<uint32, 3> indices;
+};
+
 // Tests may implement this, and register it to control behavior of devices for
 // tests.  The test interface lives in the browser process, and may be consumed
 // by the device utility process.
@@ -144,6 +151,10 @@ interface XRTestHook {
 
   // Used to indicate if the Fake Runtime would allow creating any session.
   [Sync] WaitGetCanCreateSession() => (bool can_create_session);
+
+  // Called by the OpenXR test to get visibility mask data.
+  [Sync] WaitGetVisibilityMask(uint32 view_index)
+      => (XRVisibilityMask? mask);
 };
 
 // Interface exposed by IsolatedXRService to allow browser tests to hook VR APIs

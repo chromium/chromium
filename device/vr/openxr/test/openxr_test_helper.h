@@ -94,6 +94,10 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       uint32_t count,
       XrSecondaryViewConfigurationStateMSFT* states) const;
   XrViewConfigurationType PrimaryViewConfig() const;
+  XrResult GetVisibilityMask(XrViewConfigurationType view_configuration_type,
+                             uint32_t view_index,
+                             XrVisibilityMaskTypeKHR visibility_mask_type,
+                             XrVisibilityMaskKHR* visibility_mask);
 
   XrResult BeginSession(
       const std::vector<XrViewConfigurationType>& view_configs);
@@ -169,6 +173,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
       XR_EXT_HAND_TRACKING_EXTENSION_NAME,
+      XR_KHR_VISIBILITY_MASK_EXTENSION_NAME,
 #if BUILDFLAG(IS_WIN)
       XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
       XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,

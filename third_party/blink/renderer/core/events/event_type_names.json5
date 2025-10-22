@@ -352,6 +352,7 @@
     "validationstatuschange",
     "versionchange",
     "visibilitychange",
+    "visibilitymaskchange",
     "voiceschanged",
     "volumechange",
     "vrdisplayactivate",

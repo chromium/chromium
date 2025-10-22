@@ -5916,6 +5916,11 @@
       status: "experimental",
     },
     {
+      name: "WebXRVisibilityMask",
+      depends_on: ["WebXR"],
+      status: "experimental",
+    },
+    {
       name: "WidthAndHeightAsPresentationAttributesOnNestedSvg",
       // Disabled due to web compat issues, see https://crbug.com/449170647.
       status: "experimental",

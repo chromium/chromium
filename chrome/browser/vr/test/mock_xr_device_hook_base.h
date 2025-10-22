@@ -19,6 +19,7 @@
 #include "device/vr/test/test_hook.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 // A Mock XR Device. This is setup such that the runtime can query and receive
 // fake data from the runtime, and tests can customize this and inspect any
@@ -61,6 +62,10 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   void WaitGetCanCreateSession(
       device_test::mojom::XRTestHook::WaitGetCanCreateSessionCallback callback)
       override;
+  void WaitGetVisibilityMask(
+      uint32_t view_index,
+      device_test::mojom::XRTestHook::WaitGetVisibilityMaskCallback callback)
+      override;
 
   // MockXRDeviceHookBase
   void TerminateDeviceServiceProcessForTesting();
@@ -74,6 +79,9 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   void PopulateEvent(device_test::mojom::EventData data);
   void StopHooking();
   void SetCanCreateSession(bool can_create_session);
+  void SetVisibilityMaskForTesting(
+      uint32_t view_index,
+      device_test::mojom::XRVisibilityMaskPtr mask);
   uint32_t GetFrameCount() { return frame_count_; }
   void WaitNumFrames(uint32_t num_frames);
   void WaitForTotalFrameCount(uint32_t total_count);
@@ -95,6 +103,8 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   base::flat_map<unsigned int, device::ControllerFrameData> controller_data_map_
       GUARDED_BY(lock_);
   std::queue<device_test::mojom::EventData> event_data_queue_ GUARDED_BY(lock_);
+  absl::flat_hash_map<uint32_t, device_test::mojom::XRVisibilityMaskPtr>
+      visibility_masks_ GUARDED_BY(lock_);
 
  private:
   mojo::Receiver<device_test::mojom::XRTestHook> receiver_{this};

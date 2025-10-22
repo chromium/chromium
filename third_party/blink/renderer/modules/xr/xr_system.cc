@@ -1638,6 +1638,10 @@ void XRSystem::FinishSessionCreation(
   }
 
   query->Resolve(session, std::move(metrics_recorder));
+
+  // Do this after the resolve is sent so that the page can subscribe to any
+  // events. Then send off any events we want to fire off immediately.
+  session->DispatchInitialEvents();
 }
 
 void XRSystem::AddedEventListener(

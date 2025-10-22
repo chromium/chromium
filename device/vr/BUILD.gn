@@ -250,10 +250,15 @@ if (enable_vr) {
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
+        "openxr/openxr_visibility_mask_handler.cc",
+        "openxr/openxr_visibility_mask_handler.h",
         "openxr/scoped_openxr_object.h",
       ]
 
-      deps += [ ":vr_test_hook" ]
+      deps += [
+        ":vr_test_hook",
+        "//third_party/blink/public:blink_headers",
+      ]
 
       if (is_win) {
         libs = [

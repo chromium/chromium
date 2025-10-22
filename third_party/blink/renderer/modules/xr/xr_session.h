@@ -188,6 +188,7 @@ class XRSession final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeeze, kSqueeze)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezestart, kSqueezestart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezeend, kSqueezeend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(visibilitymaskchange, kVisibilitymaskchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(frameratechange, kFrameratechange)
 
   void updateRenderState(XRRenderStateInit* render_state_init,
@@ -432,6 +433,10 @@ class XRSession final : public EventTarget,
   }
 
   device::mojom::blink::XRLayerManager* LayerManager();
+
+  // This is an opportunity for the session to dispatch any initial set of
+  // events. Called by |XrSystem| after the session query has resolved.
+  void DispatchInitialEvents();
 
  private:
   class XRSessionResizeObserverDelegate;

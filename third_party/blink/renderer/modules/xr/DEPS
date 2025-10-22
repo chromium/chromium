@@ -6,6 +6,7 @@ include_rules = [
     "+device/vr/public/mojom/layer_id.h",
     "+device/vr/public/mojom/plane_id.h",
     "+device/vr/public/mojom/hit_test_subscription_id.h",
+    "+device/vr/public/mojom/visibility_mask_id.h",
     "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+device/vr/public/mojom/vr_service.mojom-blink-forward.h",
     "+device/vr/public/mojom/xr_session.mojom-blink.h",

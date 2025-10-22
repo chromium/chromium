@@ -20,6 +20,8 @@ constexpr unsigned int kMaxTrackedDevices = 64;
 constexpr unsigned int kMaxNumAxes = 5;
 constexpr unsigned int kNumJointsForTest =
     static_cast<unsigned int>(device::mojom::XRHandJoint::kMaxValue) + 1;
+constexpr unsigned int kNumVisibilityMaskVerticesForTest = 6;
+constexpr unsigned int kNumVisibilityMaskIndicesForTest = 3;
 
 // These are largely the same as the OpenVR button/axis constants, but kept
 // separate so they're more runtime-agnostic.
@@ -152,6 +154,11 @@ struct COMPONENT_EXPORT(VR_TEST_HOOK) ControllerFrameData {
   ControllerFrameData& operator=(ControllerFrameData&& other);
 };
 
+struct COMPONENT_EXPORT(VR_TEST_HOOK) VisibilityMaskData {
+  std::array<float, kNumVisibilityMaskVerticesForTest> vertices;
+  std::array<uint32_t, kNumVisibilityMaskIndicesForTest> indices;
+};
+
 inline gfx::Transform PoseFrameDataToTransform(PoseFrameData data) {
   // The gfx::Transform constructor takes arguments in row-major order, but
   // we're given data in column-major order. Construct in column-major order and
@@ -176,6 +183,8 @@ class VRTestHook {
   virtual ControllerFrameData WaitGetControllerData(unsigned int index) = 0;
   virtual device_test::mojom::EventData WaitGetEventData() = 0;
   virtual bool WaitGetCanCreateSession() = 0;
+  virtual std::optional<VisibilityMaskData> WaitGetVisibilityMask(
+      uint32_t view_index) = 0;
 
   virtual void AttachCurrentThread() = 0;
   virtual void DetachCurrentThread() = 0;

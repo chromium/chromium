@@ -25,6 +25,7 @@ namespace blink {
 class DOMPointReadOnly;
 class ExecutionContext;
 class WebGLRenderingContextBase;
+class V8XREye;
 
 NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
     const gfx::Transform&);
@@ -67,6 +68,8 @@ String XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
 
 bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
                                 const ExecutionContext* context);
+
+V8XREye GetV8Eye(const device::mojom::blink::XREye& eye);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_UTILS_H_

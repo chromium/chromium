@@ -77,6 +77,9 @@ struct OpenXrExtensionMethods {
   // Spatial Anchors
   OPENXR_DECLARE_FN(xrCreateSpatialAnchorEXT);
 
+  // Visibility Mask
+  OPENXR_DECLARE_FN(xrGetVisibilityMaskKHR);
+
 #if BUILDFLAG(IS_WIN)
   // Time
   OPENXR_DECLARE_FN(xrConvertWin32PerformanceCounterToTimeKHR);

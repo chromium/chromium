@@ -48,6 +48,19 @@ device_test::mojom::Eye XrEyeToMojoEye(device::XrEye eye) {
   }
 }
 
+device::VisibilityMaskData MojoToDeviceVisibilityData(
+    const device_test::mojom::XRVisibilityMaskPtr& visibility_mask) {
+  device::VisibilityMaskData ret;
+  for (uint32_t i = 0; i < device::kNumVisibilityMaskVerticesForTest; i++) {
+    ret.vertices[i] = visibility_mask->vertices[i];
+  }
+  for (uint32_t i = 0; i < device::kNumVisibilityMaskIndicesForTest; i++) {
+    ret.indices[i] = visibility_mask->indices[i];
+  }
+
+  return ret;
+}
+
 XRTestHookWrapper::XRTestHookWrapper(
     mojo::PendingRemote<device_test::mojom::XRTestHook> pending_hook)
     : pending_hook_(std::move(pending_hook)) {}
@@ -226,6 +239,20 @@ bool XRTestHookWrapper::WaitGetCanCreateSession() {
   // assume that we can, there's often enough default behavior to do so, and
   // some tests expect to be able to get a session without creating a test hook.
   return true;
+}
+
+std::optional<device::VisibilityMaskData>
+XRTestHookWrapper::WaitGetVisibilityMask(uint32_t view_index) {
+  if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    device_test::mojom::XRVisibilityMaskPtr mask;
+    hook_->WaitGetVisibilityMask(view_index, &mask);
+    if (mask) {
+      return MojoToDeviceVisibilityData(mask);
+    }
+  }
+
+  return std::nullopt;
 }
 
 void XRTestHookWrapper::AttachCurrentThread() {

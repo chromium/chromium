@@ -23,6 +23,7 @@
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/openxr/openxr_unbounded_space_provider.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
+#include "device/vr/openxr/openxr_visibility_mask_handler.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/vr_export.h"
@@ -258,6 +259,7 @@ class OpenXrApiWrapper {
   std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
   std::unique_ptr<OpenXrUnboundedSpaceProvider> unbounded_space_provider_;
+  std::unique_ptr<OpenXrVisibilityMaskHandler> visibility_mask_handler_;
 
   // The context provider is owned by the OpenXrRenderLoop, and may change when
   // there is a context lost.

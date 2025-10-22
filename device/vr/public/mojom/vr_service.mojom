@@ -275,10 +275,6 @@ struct Pose {
   gfx.mojom.Point3F position;
 };
 
-struct PlaneId {
-  uint64 id_value;
-};
-
 struct AnchorId {
   uint64 id_value;
 };
@@ -286,6 +282,15 @@ struct AnchorId {
 struct HitTestSubscriptionId {
   uint64 id_value;
 };
+
+struct PlaneId {
+  uint64 id_value;
+};
+
+struct XrVisibilityMaskId {
+  uint64 id_value;
+};
+
 
 struct XRRay {
   gfx.mojom.Point3F origin;
@@ -332,6 +337,27 @@ struct XRViewGeometry {
   gfx.mojom.Transform mojo_from_view;
 };
 
+// The VisibilityMask is used to describe the visible region of the view. It may
+// be omitted if the entire view is visible. The area described by the mesh
+// represented by this struct is the array that IS visible to the user and
+// therefore SHOULD BE drawn to by the page. This is retrieved from the device
+// runtime and then passed up to the renderer process.
+// This is a standard mesh representation with an array of vertices that are
+// indexed into by an array of indices used to describe the series of triangles
+// that make up the mesh, e.g. a square would be represented as:
+// vertices: {(0, 0), (1, 0), (1, 1), (0, 1)}
+// indices: { 0, 1, 2, 1, 2, 3 }
+// Which represents two triangles. One with vertices of 0, 1, 2 and one 1, 2, 3.
+struct XRVisibilityMask {
+  // Vertices are a list of X, Y coordinates that are referenced by the page to
+  // build the visibility mask.
+  array<gfx.mojom.PointF> vertices;
+  // This is the list of indices in the vertices list that the page should
+  // access in order to describe the region that SHOULD be drawn.
+  // Note that these are not checked for validity before being sent across.
+  array<uint32> unvalidated_indices;
+};
+
 // Information about a view for a given XR frame. A frame contains the state of
 // the XR device for a particular timestamp. A view represents the display or
 // a portion of the display, and contains all the information required to render
@@ -355,6 +381,17 @@ struct XRView {
   // capturing from the camera of an AR device.
   // https://immersive-web.github.io/webxr-ar-module/#first-person-observer-view
   bool is_first_person_observer = false;
+
+  // The visibility mask for the view. This is a mesh that indicates the
+  // portion of the view that is visible to the user. If it is missing, the
+  // entire view should be assumed to be visible to the user.
+  XRVisibilityMask? visibility_mask;
+
+  // This is used to indicate to the page when the visibility mask changes, so
+  // that pages can avoid potentially costly comparisons of the underlying
+  // arrays. This is sent from a trusted process to an untrusted one, so there's
+  // no risk here.
+  XrVisibilityMaskId visibility_mask_id;
 };
 
 struct VRStageParameters {

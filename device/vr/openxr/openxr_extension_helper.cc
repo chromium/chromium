@@ -158,6 +158,9 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
   // Spatial Anchors
   OPENXR_LOAD_FN(xrCreateSpatialAnchorEXT);
 
+  // Visibility Mask
+  OPENXR_LOAD_FN(xrGetVisibilityMaskKHR);
+
 #if BUILDFLAG(IS_WIN)
   OPENXR_LOAD_FN(xrConvertWin32PerformanceCounterToTimeKHR);
 #endif

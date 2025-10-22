@@ -11,6 +11,7 @@
 #include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/rgb_tuple_f32.h"
+#include "device/vr/public/mojom/visibility_mask_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -40,6 +41,20 @@ struct StructTraits<device::mojom::AnchorIdDataView, device::AnchorId> {
   static bool Read(device::mojom::AnchorIdDataView data,
                    device::AnchorId* out) {
     *out = device::AnchorId(data.id_value());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<device::mojom::XrVisibilityMaskIdDataView,
+                    device::XrVisibilityMaskId> {
+  static uint64_t id_value(const device::XrVisibilityMaskId& id) {
+    return id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::XrVisibilityMaskIdDataView data,
+                   device::XrVisibilityMaskId* out) {
+    *out = device::XrVisibilityMaskId(data.id_value());
     return true;
   }
 };

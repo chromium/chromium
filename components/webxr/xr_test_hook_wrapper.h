@@ -26,6 +26,7 @@ class XRTestHookWrapper : public device::VRTestHook {
       mojo::PendingRemote<device_test::mojom::XRTestHook> hook_info);
   virtual ~XRTestHookWrapper();
 
+  // VRTestHook
   void OnFrameSubmitted(const std::vector<device::ViewData>& views) override;
   device::DeviceConfig WaitGetDeviceConfig() override;
   device::PoseFrameData WaitGetPresentingPose() override;
@@ -38,6 +39,9 @@ class XRTestHookWrapper : public device::VRTestHook {
       unsigned int index) override;
   device_test::mojom::EventData WaitGetEventData() override;
   bool WaitGetCanCreateSession() override;
+  std::optional<device::VisibilityMaskData> WaitGetVisibilityMask(
+      uint32_t view_index) override;
+
   void AttachCurrentThread() override;
   void DetachCurrentThread() override;
 

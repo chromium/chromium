@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 
+#include "device/vr/public/mojom/visibility_mask_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
@@ -39,6 +40,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
          const gfx::Transform& ref_space_from_mojo);
 
   V8XREye eye() const;
+  unsigned index() const;
   device::mojom::blink::XREye EyeValue() const { return eye_; }
   gfx::Transform refSpaceFromMojo() const { return ref_space_from_mojo_; }
   XRViewData* ViewData() const { return view_data_.Get(); }
@@ -138,6 +140,12 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
   // Returns true if the viewport scale actually changed.
   bool ApplyViewportScaleForFrame();
 
+  const device::mojom::blink::XRVisibilityMaskPtr& visibility_mask() {
+    return visibility_mask_;
+  }
+  void OnVisibilityMaskChangeEvent();
+  bool NeedsVisibilityMaskChangeEvent() const;
+
   void Trace(Visitor*) const;
 
  private:
@@ -150,6 +158,10 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
   double current_viewport_scale_ = 1.0;
   bool viewport_modifiable_ = false;
   Member<XRDepthManager> depth_manager_;
+
+  device::mojom::blink::XRVisibilityMaskPtr visibility_mask_;
+  device::XrVisibilityMaskId visibility_mask_id_;
+  std::optional<device::XrVisibilityMaskId> last_evented_visibility_mask_id_;
 };
 
 }  // namespace blink

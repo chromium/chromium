@@ -7,6 +7,7 @@
 #include "content/public/test/xr_test_utils.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webxr/android/openxr_device_provider.h"
@@ -347,4 +348,27 @@ void MockXRDeviceHookBase::WaitGetCanCreateSession(
 void MockXRDeviceHookBase::SetCanCreateSession(bool can_create_session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   can_create_session_ = can_create_session;
+}
+
+void MockXRDeviceHookBase::SetVisibilityMaskForTesting(
+    uint32_t view_index,
+    device_test::mojom::XRVisibilityMaskPtr mask) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  base::AutoLock lock(lock_);
+  visibility_masks_[view_index] = std::move(mask);
+}
+
+void MockXRDeviceHookBase::WaitGetVisibilityMask(
+    uint32_t view_index,
+    device_test::mojom::XRTestHook::WaitGetVisibilityMaskCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
+  device_test::mojom::XRVisibilityMaskPtr mask;
+  {
+    base::AutoLock lock(lock_);
+    if (visibility_masks_.contains(view_index)) {
+      mask = visibility_masks_[view_index].Clone();
+    }
+  }
+
+  std::move(callback).Run(std::move(mask));
 }

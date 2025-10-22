@@ -18,6 +18,7 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -1177,6 +1178,61 @@ void OpenXrTestHelper::LocateJoints(
   }
 
   locations->isActive = true;
+}
+
+XrResult OpenXrTestHelper::GetVisibilityMask(
+    XrViewConfigurationType view_configuration_type,
+    uint32_t view_index,
+    XrVisibilityMaskTypeKHR visibility_mask_type,
+    XrVisibilityMaskKHR* visibility_mask) {
+  RETURN_IF(
+      view_configuration_type != XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+      XR_ERROR_VALIDATION_FAILURE,
+      "xrGetVisibilityMaskKHR only supports primary stereo for testing");
+  RETURN_IF(
+      visibility_mask_type != XR_VISIBILITY_MASK_TYPE_VISIBLE_TRIANGLE_MESH_KHR,
+      XR_ERROR_VALIDATION_FAILURE,
+      "xrGetVisibilityMaskKHR visibility_mask_type must be "
+      "VISIBLE_TRIANGLE_MESH");
+
+  std::optional<device::VisibilityMaskData> mask;
+  {
+    base::AutoLock auto_lock(lock_);
+    mask = test_hook_->WaitGetVisibilityMask(view_index);
+  }
+
+  if (!mask) {
+    visibility_mask->vertexCountOutput = 0;
+    visibility_mask->indexCountOutput = 0;
+    return XR_SUCCESS;
+  }
+
+  visibility_mask->vertexCountOutput = mask->vertices.size() / 2;
+  visibility_mask->indexCountOutput = mask->indices.size();
+
+  if (visibility_mask->vertexCapacityInput > 0) {
+    RETURN_IF(visibility_mask->vertexCapacityInput <
+                  visibility_mask->vertexCountOutput,
+              XR_ERROR_SIZE_INSUFFICIENT,
+              "xrGetVisibilityMaskKHR vertex buffer too small");
+    for (size_t i = 0; i < visibility_mask->vertexCountOutput; i++) {
+      visibility_mask->vertices[i] = {mask->vertices[i * 2],
+                                      mask->vertices[i * 2 + 1]};
+    }
+  }
+
+  if (visibility_mask->indexCapacityInput > 0) {
+    RETURN_IF(
+        visibility_mask->indexCapacityInput < visibility_mask->indexCountOutput,
+        XR_ERROR_SIZE_INSUFFICIENT,
+        "xrGetVisibilityMaskKHR index buffer too small");
+    // Force a deep-copy into the raw array that was passed in.
+    for (size_t i = 0; i < visibility_mask->indexCountOutput; i++) {
+      visibility_mask->indices[i] = mask->indices[i];
+    }
+  }
+
+  return XR_SUCCESS;
 }
 
 std::optional<gfx::Transform> OpenXrTestHelper::GetTransformForSpace(
