@@ -3846,7 +3846,7 @@ void NetworkHandler::LoadNetworkResource(
         network::mojom::CSPDirectiveName::ConnectSrc, gurl, gurl,
         /*has_followed_redirect=*/false, /*source_location=*/nullptr,
         network::CSPContext::CHECK_ENFORCED_CSP,
-        /*is_form_submission=*/false);
+        /*is_opaque_fenced_frame=*/false);
     if (!result.IsAllowed()) {
       callback->sendFailure(Response::ServerError("CSP violation"));
       return;
