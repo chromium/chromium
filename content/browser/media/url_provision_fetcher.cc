@@ -79,8 +79,9 @@ void URLProvisionFetcher::Retrieve(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(request_string);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->method = "POST";
-  resource_request->headers.SetHeader("User-Agent", "Widevine CDM v1.0");
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                      "Widevine CDM v1.0");
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->AttachStringForUpload("", "application/json");

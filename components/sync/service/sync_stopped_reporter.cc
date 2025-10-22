@@ -114,7 +114,7 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode =
       google_apis::GetOmitCredentialsModeForGaiaRequests();
-  resource_request->method = "POST";
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       base::StringPrintf("Bearer %s", access_token.c_str()));

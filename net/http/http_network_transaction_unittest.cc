@@ -15769,7 +15769,8 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeadersStripped) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
-  request.extra_headers.SetHeader("referer", "www.foo.com");
+  request.extra_headers.SetHeader(net::HttpRequestHeaders::kReferer,
+                                  "www.foo.com");
   request.extra_headers.SetHeader("hEllo", "Kitty");
   request.extra_headers.SetHeader("FoO", "bar");
   request.traffic_annotation =
@@ -15782,7 +15783,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeadersStripped) {
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"
-                "referer: www.foo.com\r\n"
+                "Referer: www.foo.com\r\n"
                 "hEllo: Kitty\r\n"
                 "FoO: bar\r\n\r\n"),
   };
@@ -24502,10 +24503,10 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
     session_deps_.network_error_logging_service =
         std::move(network_error_logging_service);
 
-    extra_headers_.SetHeader("User-Agent", kUserAgent);
-    extra_headers_.SetHeader("Referer", kReferrer);
+    extra_headers_.SetHeader(HttpRequestHeaders::kUserAgent, kUserAgent);
+    extra_headers_.SetHeader(HttpRequestHeaders::kReferer, kReferrer);
 
-    request_.method = "GET";
+    request_.method = HttpRequestHeaders::kGetMethod;
     request_.url = GURL(url_);
     request_.network_isolation_key = kNetworkIsolationKey;
     request_.network_anonymization_key = kNetworkAnonymizationKey;

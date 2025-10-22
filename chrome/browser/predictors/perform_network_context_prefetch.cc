@@ -138,12 +138,12 @@ void PrefetchResource(
   // We shouldn't be prefetching if data saver is enabled, so we should never
   // need to set the "save-data" header.
 
-  headers.SetHeader("User-Agent", user_agent);
+  headers.SetHeader(net::HttpRequestHeaders::kUserAgent, user_agent);
 
-  headers.SetHeader("Accept-Language", accept_language);
+  headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage, accept_language);
 
   headers.SetHeader(
-      "Accept",
+      net::HttpRequestHeaders::kAccept,
       blink::network_utils::GetAcceptHeaderForDestination(destination));
 
   // Add the X-Client-Data header for requests to Google properties.

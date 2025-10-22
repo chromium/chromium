@@ -3684,7 +3684,8 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
   RecordingNetLogObserver net_log_observer;
 
   SequencedSocketData data(reads, writes);
-  request_.extra_headers.SetHeader("User-Agent", "Chrome");
+  request_.extra_headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                   "Chrome");
   NormalSpdyTransactionHelper helper(
       request_, DEFAULT_PRIORITY,
       NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);

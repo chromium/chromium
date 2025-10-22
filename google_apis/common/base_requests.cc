@@ -245,7 +245,8 @@ void UrlFetchRequestBase::StartAfterPrepare(
   // headers, so calling it for each header will result in only the last header
   // being set in request headers.
   if (!custom_user_agent.empty())
-    request->headers.SetHeader("User-Agent", custom_user_agent);
+    request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                               custom_user_agent);
   request->headers.AddHeaderFromString(kGDataVersionHeader);
   request->headers.AddHeaderFromString(
       base::StringPrintf(kAuthorizationHeaderFormat, access_token.data()));
