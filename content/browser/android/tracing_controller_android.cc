@@ -9,6 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -53,8 +55,8 @@ void ReadJsonTraceData(
     tracing::TracePacketTokenizer& tokenizer,
     perfetto::TracingSession::ReadTraceCallbackArgs args) {
   if (args.size) {
-    auto packets =
-        tokenizer.Parse(reinterpret_cast<const uint8_t*>(args.data), args.size);
+    auto packets = tokenizer.Parse(UNSAFE_TODO(
+        base::span(reinterpret_cast<const uint8_t*>(args.data), args.size)));
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
         auto data_string = std::make_unique<std::string>(

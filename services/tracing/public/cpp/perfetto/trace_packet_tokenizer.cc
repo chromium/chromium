@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 
 namespace tracing {
@@ -24,26 +23,22 @@ TracePacketTokenizer::Packet::Packet() = default;
 TracePacketTokenizer::Packet::~Packet() = default;
 
 std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
-    const uint8_t* data,
-    size_t size) {
+    base::span<const uint8_t> data) {
   std::vector<perfetto::TracePacket> packets;
-  const uint8_t* data_end = UNSAFE_TODO(data + size);
-  const uint8_t* packet_ptr = data;
-
   // Only one fragmented packet can be finalized per call to Parse(), so clear
   // any previous one.
   assembled_packet_ = Packet();
 
-  while (packet_ptr < data_end) {
+  while (!data.empty()) {
     // First parse the packet header, i.e., the one byte field tag and the
     // variable sized packet length field.
     if (!next_packet_.parsed_size) {
       // Parse the field tag.
       auto prev_header_size = next_packet_.header.size();
-      size_t bytes_to_copy = kMaxHeaderSize - prev_header_size;
-      next_packet_.header.insert(
-          next_packet_.header.end(), packet_ptr,
-          std::min(UNSAFE_TODO(packet_ptr + bytes_to_copy), data_end));
+      auto bytes_to_copy =
+          data.first(std::min(kMaxHeaderSize - prev_header_size, data.size()));
+      next_packet_.header.insert(next_packet_.header.end(),
+                                 bytes_to_copy.begin(), bytes_to_copy.end());
       DCHECK(next_packet_.header.size() <= kMaxHeaderSize);
       if (next_packet_.header.size() < kMinHeaderSize) {
         // Not enough data -- try again later.
@@ -61,8 +56,8 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
         return packets;
       }
       // Find the start of the packet data after the size field.
-      UNSAFE_TODO(packet_ptr +=
-                  sizeof(kPacketTag) + size_field_size - prev_header_size);
+      data =
+          data.subspan(sizeof(kPacketTag) + size_field_size - prev_header_size);
     }
 
     // We've now parsed the the proto preamble and the size field for our
@@ -70,10 +65,10 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
     DCHECK(next_packet_.parsed_size);
     size_t remaining_size =
         next_packet_.parsed_size - next_packet_.partial_data.size();
-    if (UNSAFE_TODO(packet_ptr + remaining_size) > data_end) {
+    if (remaining_size > data.size()) {
       // Save remaining bytes into overflow buffer and try again later.
       next_packet_.partial_data.insert(next_packet_.partial_data.end(),
-                                       packet_ptr, data_end);
+                                       data.begin(), data.end());
       return packets;
     }
 
@@ -86,14 +81,13 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
       packets.back().AddSlice(&assembled_packet_.partial_data[0],
                               assembled_packet_.partial_data.size());
     }
-    UNSAFE_TODO(CHECK_LE(packet_ptr + remaining_size, data_end));
-    packets.back().AddSlice(packet_ptr, remaining_size);
-    UNSAFE_TODO(packet_ptr += remaining_size);
+    auto remaining_data = data.take_first(remaining_size);
+    packets.back().AddSlice(remaining_data.data(), remaining_data.size());
 
     // Start a new packet.
     next_packet_ = Packet();
   }
-  DCHECK_EQ(packet_ptr, data_end);
+  DCHECK(data.empty());
   return packets;
 }
 

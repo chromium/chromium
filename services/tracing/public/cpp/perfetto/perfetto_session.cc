@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback.h"
-
-#include "base/task/sequenced_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
-#include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
+#include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
 
@@ -75,8 +76,9 @@ void ReadTraceAsJson(
     base::OnceClosure on_data_complete_callback,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
   if (args.size) {
-    std::vector<perfetto::TracePacket> packets = tokenizer->data->Parse(
-        reinterpret_cast<const uint8_t*>(args.data), args.size);
+    std::vector<perfetto::TracePacket> packets =
+        tokenizer->data->Parse(UNSAFE_TODO(base::span(
+            reinterpret_cast<const uint8_t*>(args.data), args.size)));
     size_t total_size = 0;
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {

@@ -222,7 +222,7 @@ class StartupTracingController::BackgroundTracer {
     }
 
     std::vector<perfetto::TracePacket> packets = trace_packet_tokenizer_->Parse(
-        reinterpret_cast<const uint8_t*>(data), size);
+        UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(data), size)));
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
         UNSAFE_TODO(file_.WriteAtCurrentPos(

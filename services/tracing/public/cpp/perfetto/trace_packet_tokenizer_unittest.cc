@@ -25,7 +25,7 @@ class TracePacketTokenizerTest : public testing::Test {
                                                 size_t size) {
     input_chunks_.emplace_back(data, UNSAFE_TODO(data + size));
     auto& it = input_chunks_.back();
-    return tokenizer_.Parse(it.data(), it.size());
+    return tokenizer_.Parse(it);
   }
 
   void Reset() {
