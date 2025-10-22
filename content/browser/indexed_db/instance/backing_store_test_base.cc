@@ -122,11 +122,11 @@ BackingStoreTestBase::CreateAndBeginTransaction(
 
 void BackingStoreTestBase::CommitTransactionAndVerify(
     BackingStore::Transaction& transaction) {
-  EXPECT_NO_FATAL_FAILURE(CommitTransactionPhaseOneAndVerify(transaction));
+  ASSERT_TRUE(CommitTransactionPhaseOneAndVerify(transaction));
   EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
 }
 
-void BackingStoreTestBase::CommitTransactionPhaseOneAndVerify(
+bool BackingStoreTestBase::CommitTransactionPhaseOneAndVerify(
     BackingStore::Transaction& transaction) {
   bool blob_write_succeeded = false;
   base::RunLoop phase_one_blob_wait;
@@ -150,7 +150,7 @@ void BackingStoreTestBase::CommitTransactionPhaseOneAndVerify(
                   }))
           .ok());
   phase_one_blob_wait.Run();
-  EXPECT_TRUE(blob_write_succeeded);
+  return blob_write_succeeded;
 }
 
 std::vector<PartitionedLock> BackingStoreTestBase::CreateDummyLock() {
@@ -194,14 +194,14 @@ void BackingStoreWithExternalObjectsTestBase::SetUp() {
   // useful keys and values during tests
   if (IncludesBlobs()) {
     external_objects_.push_back(CreateBlobInfo(u"blob type", "blob payload"));
-    external_objects_.push_back(CreateBlobInfo(
+    external_objects_.push_back(CreateFileInfo(
         u"file name", u"file type",
         base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime1)),
-        kBlobFileData1.size()));
-    external_objects_.push_back(CreateBlobInfo(
+        kBlobFileData1));
+    external_objects_.push_back(CreateFileInfo(
         u"file name", u"file type",
         base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime2)),
-        kBlobFileData2.size()));
+        kBlobFileData2));
   }
   if (IncludesFileSystemAccessHandles()) {
     external_objects_.push_back(CreateFileSystemAccessHandle());
@@ -211,45 +211,45 @@ void BackingStoreWithExternalObjectsTestBase::SetUp() {
   key3_ = IndexedDBKey(u"key3");
 }
 
-IndexedDBExternalObject BackingStoreTestBase::CreateBlobInfo(
+IndexedDBExternalObject BackingStoreTestBase::CreateFileInfo(
     const std::u16string& file_name,
     const std::u16string& type,
     base::Time last_modified,
-    int64_t size) {
-  auto uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    std::string_view file_contents) {
   mojo::PendingRemote<blink::mojom::Blob> remote;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](std::string uuid,
+          [](std::string file_contents,
              mojo::PendingReceiver<blink::mojom::Blob> pending_receiver) {
-            mojo::MakeSelfOwnedReceiver(
-                std::make_unique<storage::FakeBlob>(uuid),
-                std::move(pending_receiver));
+            auto fake_blob = std::make_unique<storage::FakeBlob>(
+                base::Uuid::GenerateRandomV4().AsLowercaseString());
+            fake_blob->set_body(file_contents);
+            mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
+                                        std::move(pending_receiver));
           },
-          uuid, remote.InitWithNewPipeAndPassReceiver()));
+          std::string(file_contents), remote.InitWithNewPipeAndPassReceiver()));
   IndexedDBExternalObject info(std::move(remote), file_name, type,
-                               last_modified, size);
+                               last_modified, file_contents.size());
   return info;
 }
 
 IndexedDBExternalObject BackingStoreTestBase::CreateBlobInfo(
     const std::u16string& type,
     std::string_view blob_data) {
-  auto uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   mojo::PendingRemote<blink::mojom::Blob> remote;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](std::string uuid, std::string blob_data,
+          [](std::string blob_data,
              mojo::PendingReceiver<blink::mojom::Blob> pending_receiver) {
-            auto fake_blob = std::make_unique<storage::FakeBlob>(uuid);
+            auto fake_blob = std::make_unique<storage::FakeBlob>(
+                base::Uuid::GenerateRandomV4().AsLowercaseString());
             fake_blob->set_body(blob_data);
             mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
                                         std::move(pending_receiver));
           },
-          uuid, std::string(blob_data),
-          remote.InitWithNewPipeAndPassReceiver()));
+          std::string(blob_data), remote.InitWithNewPipeAndPassReceiver()));
   IndexedDBExternalObject info(std::move(remote), type, blob_data.size());
   return info;
 }

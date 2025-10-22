@@ -1032,7 +1032,7 @@ TEST_F(LevelDbBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   // to disk, so it's important to verify that a database with empty blobs
   // should be considered still valid.
   external_objects().push_back(
-      CreateBlobInfo(u"empty blob", u"file type", base::Time::Now(), 0u));
+      CreateFileInfo(u"empty blob", u"file type", base::Time::Now(), ""));
   // The V5 migration checks files on disk, so make sure our fake blob
   // context writes something there to check.
   blob_context_->SetWriteFilesToDisk(true);

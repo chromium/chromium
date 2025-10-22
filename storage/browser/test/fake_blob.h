@@ -5,6 +5,7 @@
 #ifndef STORAGE_BROWSER_TEST_FAKE_BLOB_H_
 #define STORAGE_BROWSER_TEST_FAKE_BLOB_H_
 
+#include <optional>
 #include <string>
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,7 +18,10 @@ namespace storage {
 class FakeBlob : public blink::mojom::Blob {
  public:
   explicit FakeBlob(const std::string& uuid);
+  ~FakeBlob() override;
 
+  // If no body is set, then reading will return an error through the
+  // BlobReaderClient interface. It's valid to set an empty body.
   void set_body(std::string_view body) { body_ = std::string(body); }
 
   mojo::PendingRemote<blink::mojom::Blob> Clone();
@@ -40,7 +44,7 @@ class FakeBlob : public blink::mojom::Blob {
 
  private:
   const std::string uuid_;
-  std::string body_;
+  std::optional<std::string> body_;
 };
 
 }  // namespace storage

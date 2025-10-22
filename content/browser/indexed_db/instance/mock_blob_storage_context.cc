@@ -4,10 +4,54 @@
 
 #include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 
+#include <optional>
+
 #include "base/files/important_file_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "net/base/net_errors.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::indexed_db {
+
+namespace {
+
+class DataPipeReader : public mojo::DataPipeDrainer::Client {
+ public:
+  DataPipeReader(std::string* data_out, base::OnceClosure done_callback)
+      : data_out_(data_out), done_callback_(std::move(done_callback)) {}
+
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_out_->append(base::as_string_view(data));
+  }
+
+  void OnDataComplete() override { std::move(done_callback_).Run(); }
+
+ private:
+  raw_ptr<std::string> data_out_;
+  base::OnceClosure done_callback_;
+};
+
+class MockBlobReaderClient : public blink::mojom::BlobReaderClient {
+ public:
+  void OnCalculatedSize(uint64_t total_size,
+                        uint64_t expected_content_size) override {}
+
+  void OnComplete(int32_t status, uint64_t data_length) override {
+    result_ = static_cast<net::Error>(status);
+  }
+
+  const std::optional<net::Error>& result() const { return result_; }
+
+ private:
+  std::optional<net::Error> result_;
+};
+
+}  // namespace
 
 MockBlobStorageContext::BlobWrite::BlobWrite() = default;
 MockBlobStorageContext::BlobWrite::BlobWrite(BlobWrite&& other) {
@@ -16,7 +60,7 @@ MockBlobStorageContext::BlobWrite::BlobWrite(BlobWrite&& other) {
 }
 
 MockBlobStorageContext::BlobWrite::BlobWrite(
-    mojo::PendingRemote<::blink::mojom::Blob> blob,
+    mojo::Remote<::blink::mojom::Blob> blob,
     base::FilePath path)
     : blob(std::move(blob)), path(path) {}
 
@@ -50,16 +94,39 @@ void MockBlobStorageContext::WriteBlobToFile(
     bool flush_on_write,
     std::optional<base::Time> last_modified,
     WriteBlobToFileCallback callback) {
-  writes_.emplace_back(std::move(blob), path);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
 
-  if (write_files_to_disk_) {
-    base::ImportantFileWriter::WriteFileAtomically(path, "fake contents");
+  mojo::Remote<blink::mojom::Blob> remote(std::move(blob));
+  MockBlobReaderClient client;
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
+  remote->ReadAll(std::move(producer_handle),
+                  client_receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop loop;
+  std::string received;
+  DataPipeReader reader(&received, loop.QuitClosure());
+  mojo::DataPipeDrainer drainer(&reader, std::move(consumer_handle));
+
+  client_receiver.FlushForTesting();
+  EXPECT_TRUE(client.result().has_value());
+
+  loop.Run();
+
+  writes_.emplace_back(std::move(remote), path);
+
+  if (client.result() == net::Error::OK && write_files_to_disk_) {
+    base::ImportantFileWriter::WriteFileAtomically(path, received);
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     storage::mojom::WriteBlobToFileResult::kSuccess));
+                     client.result() == net::Error::OK
+                         ? storage::mojom::WriteBlobToFileResult::kSuccess
+                         : storage::mojom::WriteBlobToFileResult::kIOError));
 }
 
 void MockBlobStorageContext::Clone(
@@ -77,7 +144,8 @@ BlobWriteCallback MockBlobStorageContext::CreateBlobWriteCallback(
          storage::mojom::WriteBlobToFileResult error) {
         switch (result) {
           case BlobWriteResult::kFailure:
-            NOTREACHED();
+            *succeeded = false;
+            break;
           case BlobWriteResult::kRunPhaseTwoAsync:
           case BlobWriteResult::kRunPhaseTwoAndReturnResult:
             DCHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);

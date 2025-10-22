@@ -16,8 +16,7 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
   struct BlobWrite {
     BlobWrite();
     BlobWrite(BlobWrite&& other);
-    BlobWrite(mojo::PendingRemote<::blink::mojom::Blob> blob,
-              base::FilePath path);
+    BlobWrite(mojo::Remote<::blink::mojom::Blob> blob, base::FilePath path);
     ~BlobWrite();
 
     int64_t GetBlobNumber() const;

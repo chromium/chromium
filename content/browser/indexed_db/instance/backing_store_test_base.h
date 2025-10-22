@@ -48,9 +48,8 @@ class BackingStoreTestBase : public testing::Test {
   // Commits both phase one and two of `transaction`. This also verifies commit
   // steps are successful.
   void CommitTransactionAndVerify(BackingStore::Transaction& transaction);
-  // Commits only phase one of `transaction`. This also verifies commit steps
-  // are successful.
-  void CommitTransactionPhaseOneAndVerify(
+  // Commits only phase one of `transaction` and returns true iff successful.
+  bool CommitTransactionPhaseOneAndVerify(
       BackingStore::Transaction& transaction);
 
   std::vector<PartitionedLock> CreateDummyLock();
@@ -59,10 +58,10 @@ class BackingStoreTestBase : public testing::Test {
 
   BackingStore* backing_store();
 
-  static IndexedDBExternalObject CreateBlobInfo(const std::u16string& file_name,
+  static IndexedDBExternalObject CreateFileInfo(const std::u16string& file_name,
                                                 const std::u16string& type,
                                                 base::Time last_modified,
-                                                int64_t size);
+                                                std::string_view file_contents);
   static IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
                                                 std::string_view blob_data);
 

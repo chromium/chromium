@@ -1127,7 +1127,7 @@ void DatabaseConnection::CancelBlobWriting() {
   outstanding_external_object_writes_ = 0;
   if (blob_write_callback_) {
     std::move(blob_write_callback_)
-        .Run(BlobWriteResult::kRunPhaseTwoAsync,
+        .Run(BlobWriteResult::kFailure,
              storage::mojom::WriteBlobToFileResult::kError);
   }
 }
