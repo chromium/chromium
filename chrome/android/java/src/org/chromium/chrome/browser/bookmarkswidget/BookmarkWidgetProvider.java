@@ -124,6 +124,7 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
                             : R.layout.bookmark_widget;
             RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
             views.setRemoteAdapter(R.id.bookmarks_list, updateIntent);
+            views.setEmptyView(R.id.bookmarks_list, R.id.empty_message);
 
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.bookmarks_list);
             views.setPendingIntentTemplate(
