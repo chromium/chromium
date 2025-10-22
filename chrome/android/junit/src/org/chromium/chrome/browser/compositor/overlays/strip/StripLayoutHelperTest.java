@@ -786,6 +786,37 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
+    public void testResizeStripOnTabClose_AnimateNtb_OneTab() {
+        initializeTest(
+                /* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 1);
+
+        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseButtonClick(
+                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+
+        // Verify the initial NTB offset.
+        assertEquals(
+                mStripLayoutHelper.getNewTabButton().getOffsetX(),
+                mStripLayoutHelper.getUnpinnedTabWidthForTesting() - TAB_OVERLAP_WIDTH_DP,
+                EPSILON);
+
+        final Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        // Initial animation is the tab removal animation, and after that ends the
+        // resizeStripOnTabClose animations begin.
+        runningAnimator.end();
+
+        // Verify that the end offset is immediately set, since we skip the animations when closing
+        // the final tab.
+        float expectedOffsetX = 0.f;
+        assertEquals(
+                "The NTB offset should immediately be reset.",
+                expectedOffsetX,
+                mStripLayoutHelper.getNewTabButton().getOffsetX(),
+                EPSILON);
+    }
+
+    @Test
     // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
     @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testComputeAndUpdateTabWidth_DontAnimateIfSizeNotChanging() {

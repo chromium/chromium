@@ -2992,6 +2992,7 @@ public class StripLayoutHelper
         if (runImprovedTabAnimations) {
             resizeStripOnTabClose();
         } else {
+            mNewTabButton.setOffsetX(/* offsetX= */ 0.f);
             mMultiStepTabCloseAnimRunning = false;
             // Resize the tabs appropriately.
             computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ false);
