@@ -28,8 +28,8 @@ namespace remoting {
 // MouseCursorMonitor.
 class PipewireMouseCursorCapturer {
  public:
-  using Callback = MouseCursorMonitor::Callback;
-  using Mode = MouseCursorMonitor::Mode;
+  using Callback = protocol::MouseCursorMonitor::Callback;
+  using Mode = protocol::MouseCursorMonitor::Mode;
 
   explicit PipewireMouseCursorCapturer(
       base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,

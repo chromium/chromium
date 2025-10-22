@@ -33,7 +33,9 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-class TestMouseCursorMonitor : public MouseCursorMonitor {
+constexpr base::TimeDelta kDefaultCaptureInterval = base::Milliseconds(100);
+
+class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   TestMouseCursorMonitor() : callback_(nullptr) {}
 
@@ -122,17 +124,14 @@ TEST_F(MouseShapePumpTest, DefaultCaptureInterval) {
 
   // Start the pump.
   pump_ = std::make_unique<MouseShapePump>(std::move(monitor), &client_stub_);
-  // Default capture interval is 100ms.
-  base::TimeDelta default_capure_interval = base::Milliseconds(100);
-
-  task_environment_.FastForwardBy(default_capure_interval -
+  task_environment_.FastForwardBy(kDefaultCaptureInterval -
                                   base::Milliseconds(1));
   ASSERT_EQ(test_monitor->get_capture_call_count(), 0);
 
   task_environment_.FastForwardBy(base::Milliseconds(2));
   ASSERT_EQ(test_monitor->get_capture_call_count(), 1);
 
-  task_environment_.FastForwardBy(default_capure_interval);
+  task_environment_.FastForwardBy(kDefaultCaptureInterval);
   ASSERT_EQ(test_monitor->get_capture_call_count(), 2);
 }
 

@@ -19,7 +19,7 @@ class DesktopSessionProxy;
 
 // Routes MouseCursorMonitor calls through the IPC channel to the
 // desktop session agent running in the desktop integration process.
-class IpcMouseCursorMonitor : public MouseCursorMonitor {
+class IpcMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   explicit IpcMouseCursorMonitor(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);

@@ -96,7 +96,7 @@ class DesktopSessionProxy
   std::unique_ptr<InputInjector> CreateInputInjector();
   std::unique_ptr<ScreenControls> CreateScreenControls();
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(webrtc::ScreenId id);
-  std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor();
+  std::unique_ptr<protocol::MouseCursorMonitor> CreateMouseCursorMonitor();
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
   std::unique_ptr<FileOperations> CreateFileOperations();

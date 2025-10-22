@@ -11,7 +11,7 @@
 
 namespace remoting {
 
-class PipewireMouseCursorMonitor : public MouseCursorMonitor {
+class PipewireMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   explicit PipewireMouseCursorMonitor(
       base::WeakPtr<PipewireMouseCursorCapturer> capturer);

@@ -38,7 +38,8 @@ class LegacyInteractionStrategy : public DesktopInteractionStrategy {
   std::unique_ptr<DesktopResizer> CreateDesktopResizer() override;
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       webrtc::ScreenId id) override;
-  std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor() override;
+  std::unique_ptr<protocol::MouseCursorMonitor> CreateMouseCursorMonitor()
+      override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;

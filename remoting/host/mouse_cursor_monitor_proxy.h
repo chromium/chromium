@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -21,7 +22,7 @@ class SingleThreadTaskRunner;
 
 namespace remoting {
 
-class MouseCursorMonitorProxy : public MouseCursorMonitor {
+class MouseCursorMonitorProxy : public protocol::MouseCursorMonitor {
  public:
   MouseCursorMonitorProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
@@ -41,9 +42,8 @@ class MouseCursorMonitorProxy : public MouseCursorMonitor {
 
   void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor);
   void OnMouseCursorPosition(const webrtc::DesktopVector& position);
-  void OnMouseCursorFractionalPosition(webrtc::ScreenId screen_id,
-                                       float fractional_x,
-                                       float fractional_y);
+  void OnMouseCursorFractionalPosition(
+      const protocol::FractionalCoordinate& position);
 
   base::ThreadChecker thread_checker_;
 

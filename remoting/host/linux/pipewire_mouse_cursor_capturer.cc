@@ -16,6 +16,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -85,12 +86,13 @@ void PipewireMouseCursorCapturer::Capture() {
         std::optional<webrtc::DesktopVector> cursor_position =
             stream->CaptureCursorPosition();
         if (cursor_position.has_value()) {
-          callback_->OnMouseCursorFractionalPosition(
-              screen_id,
-              CalculateFractionalCoordinate(cursor_position->x(),
-                                            monitor_it->second.width),
-              CalculateFractionalCoordinate(cursor_position->y(),
-                                            monitor_it->second.height));
+          protocol::FractionalCoordinate fractional_position;
+          fractional_position.set_screen_id(screen_id);
+          fractional_position.set_x(CalculateFractionalCoordinate(
+              cursor_position->x(), monitor_it->second.width));
+          fractional_position.set_y(CalculateFractionalCoordinate(
+              cursor_position->y(), monitor_it->second.height));
+          callback_->OnMouseCursorFractionalPosition(fractional_position);
           need_position = false;
         }
       } else {

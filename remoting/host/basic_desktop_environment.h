@@ -45,7 +45,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       webrtc::ScreenId id) override;
   DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() override;
-  std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor() override;
+  std::unique_ptr<protocol::MouseCursorMonitor> CreateMouseCursorMonitor()
+      override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;

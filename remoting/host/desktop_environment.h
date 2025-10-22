@@ -55,7 +55,8 @@ class DesktopEnvironment {
   // (for example, in the Network process if multi-process is enabled).
   virtual DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() = 0;
 
-  virtual std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor() = 0;
+  virtual std::unique_ptr<protocol::MouseCursorMonitor>
+  CreateMouseCursorMonitor() = 0;
   virtual std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)>
           callback) = 0;

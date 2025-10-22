@@ -10,7 +10,7 @@
 
 namespace remoting {
 
-class FakeMouseCursorMonitor : public MouseCursorMonitor {
+class FakeMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   FakeMouseCursorMonitor();
 

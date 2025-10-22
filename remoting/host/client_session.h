@@ -90,7 +90,7 @@ class ClientSession : public protocol::HostStub,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
                       public DesktopAndCursorComposerNotifier::EventHandler,
-                      public MouseCursorMonitor::Callback,
+                      public protocol::MouseCursorMonitor::Callback,
                       public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.

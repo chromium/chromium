@@ -10,7 +10,7 @@
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-namespace remoting {
+namespace remoting::protocol {
 
 // An adaptor that adapts webrtc::MouseCursorMonitor to
 // remoting::MouseCursorMonitor.
@@ -37,6 +37,6 @@ class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor {
   std::unique_ptr<webrtc::MouseCursorMonitor> monitor_;
 };
 
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_

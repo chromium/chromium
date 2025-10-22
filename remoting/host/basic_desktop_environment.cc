@@ -106,7 +106,7 @@ DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
   return display_info_monitor_.get();
 }
 
-std::unique_ptr<MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 BasicDesktopEnvironment::CreateMouseCursorMonitor() {
   return interaction_strategy_->CreateMouseCursorMonitor();
 }

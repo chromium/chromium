@@ -68,7 +68,7 @@ class InputEventTracker;
 class DesktopSessionAgent
     : public base::RefCountedThreadSafe<DesktopSessionAgent>,
       public IPC::Listener,
-      public MouseCursorMonitor::Callback,
+      public protocol::MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public mojom::DesktopSessionAgent,
       public mojom::DesktopSessionControl {

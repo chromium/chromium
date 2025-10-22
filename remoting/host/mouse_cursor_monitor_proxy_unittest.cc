@@ -37,7 +37,7 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-class ThreadCheckMouseCursorMonitor : public MouseCursorMonitor {
+class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   explicit ThreadCheckMouseCursorMonitor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -78,8 +78,9 @@ class ThreadCheckMouseCursorMonitor : public MouseCursorMonitor {
   raw_ptr<Callback> callback_;
 };
 
-class MouseCursorMonitorProxyTest : public testing::Test,
-                                    public MouseCursorMonitor::Callback {
+class MouseCursorMonitorProxyTest
+    : public testing::Test,
+      public protocol::MouseCursorMonitor::Callback {
  public:
   MouseCursorMonitorProxyTest() : capture_thread_("test capture thread") {
     capture_thread_.Start();
@@ -119,7 +120,7 @@ TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
   proxy_ = std::make_unique<MouseCursorMonitorProxy>(
       capture_thread_.task_runner(),
-      base::ReturnValueOnce<std::unique_ptr<MouseCursorMonitor>>(
+      base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
           std::make_unique<ThreadCheckMouseCursorMonitor>(
               capture_thread_.task_runner())));
   proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);

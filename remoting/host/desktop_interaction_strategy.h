@@ -54,7 +54,8 @@ class DesktopInteractionStrategy {
   virtual std::unique_ptr<DesktopResizer> CreateDesktopResizer() = 0;
   virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       webrtc::ScreenId id) = 0;
-  virtual std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor() = 0;
+  virtual std::unique_ptr<protocol::MouseCursorMonitor>
+  CreateMouseCursorMonitor() = 0;
   virtual std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)>
           callback) = 0;

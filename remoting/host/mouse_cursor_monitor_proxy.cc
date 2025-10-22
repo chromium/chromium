@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -27,7 +28,8 @@
 
 namespace remoting {
 
-class MouseCursorMonitorProxy::Core : public MouseCursorMonitor::Callback {
+class MouseCursorMonitorProxy::Core
+    : public protocol::MouseCursorMonitor::Callback {
  public:
   explicit Core(base::WeakPtr<MouseCursorMonitorProxy> proxy);
 
@@ -46,9 +48,8 @@ class MouseCursorMonitorProxy::Core : public MouseCursorMonitor::Callback {
   // MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
-  void OnMouseCursorFractionalPosition(webrtc::ScreenId screen_id,
-                                       float fractional_x,
-                                       float fractional_y) override;
+  void OnMouseCursorFractionalPosition(
+      const protocol::FractionalCoordinate& position) override;
 
   base::ThreadChecker thread_checker_;
 
@@ -114,15 +115,13 @@ void MouseCursorMonitorProxy::Core::OnMouseCursorPosition(
 }
 
 void MouseCursorMonitorProxy::Core::OnMouseCursorFractionalPosition(
-    webrtc::ScreenId screen_id,
-    float fractional_x,
-    float fractional_y) {
+    const protocol::FractionalCoordinate& position) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   caller_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MouseCursorMonitorProxy::OnMouseCursorFractionalPosition,
-                     proxy_, screen_id, fractional_x, fractional_y));
+                     proxy_, position));
 }
 
 MouseCursorMonitorProxy::MouseCursorMonitorProxy(
@@ -167,12 +166,9 @@ void MouseCursorMonitorProxy::OnMouseCursorPosition(
 }
 
 void MouseCursorMonitorProxy::OnMouseCursorFractionalPosition(
-    webrtc::ScreenId screen_id,
-    float fractional_x,
-    float fractional_y) {
+    const protocol::FractionalCoordinate& position) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  callback_->OnMouseCursorFractionalPosition(screen_id, fractional_x,
-                                             fractional_y);
+  callback_->OnMouseCursorFractionalPosition(position);
 }
 
 }  // namespace remoting

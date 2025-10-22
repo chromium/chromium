@@ -29,7 +29,7 @@ constexpr base::TimeDelta kMinCursorCaptureInterval = base::Milliseconds(10);
 namespace remoting {
 
 MouseShapePump::MouseShapePump(
-    std::unique_ptr<MouseCursorMonitor> mouse_cursor_monitor,
+    std::unique_ptr<protocol::MouseCursorMonitor> mouse_cursor_monitor,
     protocol::CursorShapeStub* cursor_shape_stub)
     : mouse_cursor_monitor_(std::move(mouse_cursor_monitor)),
       cursor_shape_stub_(cursor_shape_stub) {
@@ -53,7 +53,7 @@ void MouseShapePump::SetSendCursorPositionToClient(
 }
 
 void MouseShapePump::SetMouseCursorMonitorCallback(
-    MouseCursorMonitor::Callback* callback) {
+    protocol::MouseCursorMonitor::Callback* callback) {
   callback_ = callback;
 }
 
@@ -123,17 +123,14 @@ void MouseShapePump::OnMouseCursorPosition(
   }
 }
 
-void MouseShapePump::OnMouseCursorFractionalPosition(webrtc::ScreenId screen_id,
-                                                     float fractional_x,
-                                                     float fractional_y) {
-  if (send_cursor_position_to_client_) {
-    protocol::HostCursorPosition position;
-    auto* coordinate = position.mutable_fractional_coordinate();
-    coordinate->set_screen_id(screen_id);
-    coordinate->set_x(fractional_x);
-    coordinate->set_y(fractional_y);
-    cursor_shape_stub_->SetHostCursorPosition(position);
+void MouseShapePump::OnMouseCursorFractionalPosition(
+    const protocol::FractionalCoordinate& fractional_position) {
+  if (!send_cursor_position_to_client_) {
+    return;
   }
+  protocol::HostCursorPosition position;
+  *position.mutable_fractional_coordinate() = fractional_position;
+  cursor_shape_stub_->SetHostCursorPosition(position);
 }
 
 }  // namespace remoting

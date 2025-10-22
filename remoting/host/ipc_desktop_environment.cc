@@ -86,7 +86,7 @@ DesktopDisplayInfoMonitor* IpcDesktopEnvironment::GetDisplayInfoMonitor() {
   return nullptr;
 }
 
-std::unique_ptr<MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 IpcDesktopEnvironment::CreateMouseCursorMonitor() {
   return desktop_session_proxy_->CreateMouseCursorMonitor();
 }

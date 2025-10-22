@@ -117,7 +117,7 @@ std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
   return proxy;
 }
 
-std::unique_ptr<MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 GnomeInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<PipewireMouseCursorMonitor>(

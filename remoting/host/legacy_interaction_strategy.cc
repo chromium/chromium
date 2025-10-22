@@ -147,18 +147,18 @@ LegacyInteractionStrategy::CreateDisplayInfoMonitor() {
       ui_task_runner_, DesktopDisplayInfoLoader::Create());
 }
 
-std::unique_ptr<MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 LegacyInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   auto creator = base::BindOnce(
       [](webrtc::DesktopCaptureOptions options)
-          -> std::unique_ptr<MouseCursorMonitor> {
+          -> std::unique_ptr<protocol::MouseCursorMonitor> {
 #if BUILDFLAG(IS_CHROMEOS)
-        return std::make_unique<WebrtcMouseCursorMonitorAdaptor>(
+        return std::make_unique<protocol::WebrtcMouseCursorMonitorAdaptor>(
             std::make_unique<MouseCursorMonitorAura>());
 #else   // BUILDFLAG(IS_CHROMEOS)
-        return std::make_unique<WebrtcMouseCursorMonitorAdaptor>(
+        return std::make_unique<protocol::WebrtcMouseCursorMonitorAdaptor>(
             webrtc::MouseCursorMonitor::Create(options));
 #endif  // BUILDFLAG(IS_CHROMEOS)
       },
