@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -426,12 +427,20 @@ void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
   switch (border_painting_type) {
     case kDontPaint:
       break;
-    case kPaintWithoutClip:
-      BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
-                                  paint_info, adjusted_frame_rect, line_style_,
-                                  kBackgroundBleedNone, sides_to_include);
+    case kPaintWithoutClip: {
+      std::optional<BorderShapeReferenceRects> border_shape_rects;
+      if (const LayoutObject* layout_object =
+              inline_box_fragment_.GetLayoutObject()) {
+        border_shape_rects = ComputeBorderShapeReferenceRects(
+            adjusted_frame_rect, line_style_, *layout_object);
+      }
+      BoxPainterBase::PaintBorder(
+          image_observer_, *document_, node_, paint_info, adjusted_frame_rect,
+          line_style_, kBackgroundBleedNone, sides_to_include,
+          border_shape_rects ? &*border_shape_rects : nullptr);
       break;
-    case kPaintWithClip:
+    }
+    case kPaintWithClip: {
       // FIXME: What the heck do we do with RTL here? The math we're using is
       // obviously not right, but it isn't even clear how this should work at
       // all.
@@ -439,10 +448,19 @@ void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
           PaintRectForImageStrip(adjusted_frame_rect, TextDirection::kLtr);
       GraphicsContextStateSaver state_saver(paint_info.context);
       paint_info.context.Clip(adjusted_clip_rect);
-      BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
-                                  paint_info, image_strip_paint_rect,
-                                  line_style_);
+      std::optional<BorderShapeReferenceRects> clipped_border_shape_rects;
+      if (const LayoutObject* layout_object =
+              inline_box_fragment_.GetLayoutObject()) {
+        clipped_border_shape_rects = ComputeBorderShapeReferenceRects(
+            image_strip_paint_rect, line_style_, *layout_object);
+      }
+      BoxPainterBase::PaintBorder(
+          image_observer_, *document_, node_, paint_info,
+          image_strip_paint_rect, line_style_, kBackgroundBleedNone,
+          PhysicalBoxSides(),
+          clipped_border_shape_rects ? &*clipped_border_shape_rects : nullptr);
       break;
+    }
   }
 }
 

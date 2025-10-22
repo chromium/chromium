@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
@@ -2738,8 +2739,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
     if (NeedsInnerBorderShapeClip(object_)) {
       const auto& box = To<LayoutBox>(object_);
       PhysicalRect box_rect(context_.current.paint_offset, box.StitchedSize());
+      std::optional<BorderShapeReferenceRects> border_shape_rects =
+          ComputeBorderShapeReferenceRects(box_rect, box.StyleRef(), box);
+      const PhysicalRect inner_reference_rect =
+          border_shape_rects ? border_shape_rects->inner : box_rect;
       const Path inner_path =
-          *BorderShapePainter::InnerPath(box_rect, box.StyleRef());
+          *BorderShapePainter::InnerPath(box.StyleRef(), inner_reference_rect);
       gfx::RectF layout_clip_rect(box_rect);
       PhysicalOffset offset = -OffsetInStitchedFragments(BoxFragment());
       layout_clip_rect.Offset(gfx::Vector2dF(offset));

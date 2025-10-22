@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
+#include "third_party/blink/renderer/core/paint/geometry_box_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -104,31 +105,6 @@ PhysicalRect BorderBoxRect(const LayoutBoxModelObject& object) {
     }
   }
   return PhysicalRect();
-}
-
-// TODO(crbug.com/1473440): Convert this to take a PhysicalBoxFragment
-// instead of a LayoutBoxModelObject.
-PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
-    GeometryBox geometry_box,
-    const LayoutBoxModelObject& object) {
-  // It is complex to map from an SVG border box to a reference box (for
-  // example, `GeometryBox::kViewBox` is independent of the border box) so we
-  // use `SVGResources::ReferenceBoxForEffects` for SVG reference boxes.
-  CHECK(!object.IsSVGChild());
-
-  switch (geometry_box) {
-    case GeometryBox::kPaddingBox:
-      return -object.BorderOutsets();
-    case GeometryBox::kContentBox:
-    case GeometryBox::kFillBox:
-      return -(object.BorderOutsets() + object.PaddingOutsets());
-    case GeometryBox::kMarginBox:
-      return object.MarginOutsets();
-    case GeometryBox::kBorderBox:
-    case GeometryBox::kStrokeBox:
-    case GeometryBox::kViewBox:
-      return PhysicalBoxStrut();
-  }
 }
 
 // Should the paint offset be applied to clip-path geometry for
@@ -251,7 +227,8 @@ gfx::RectF CalcLocalReferenceBox(
 
   const auto& box = To<LayoutBoxModelObject>(object);
   PhysicalRect reference_box = BorderBoxRect(box);
-  reference_box.Expand(ReferenceBoxBorderBoxOutsets(geometry_box, box));
+  reference_box.Expand(
+      GeometryBoxUtils::ReferenceBoxBorderBoxOutsets(geometry_box, box));
   return gfx::RectF(reference_box);
 }
 
@@ -306,11 +283,11 @@ ContouredRect ClipPathClipper::RoundedReferenceBox(GeometryBox geometry_box,
   ContouredRect contoured_border_box_rect =
       ContouredBorderGeometry::ContouredBorder(box.StyleRef(), border_box_rect);
   if (geometry_box == GeometryBox::kMarginBox) {
-    contoured_border_box_rect.OutsetWithCornerCorrection(
-        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
+    contoured_border_box_rect.OutsetWithCornerCorrection(gfx::OutsetsF(
+        GeometryBoxUtils::ReferenceBoxBorderBoxOutsets(geometry_box, box)));
   } else {
-    contoured_border_box_rect.Outset(
-        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
+    contoured_border_box_rect.Outset(gfx::OutsetsF(
+        GeometryBoxUtils::ReferenceBoxBorderBoxOutsets(geometry_box, box)));
   }
   return contoured_border_box_rect;
 }

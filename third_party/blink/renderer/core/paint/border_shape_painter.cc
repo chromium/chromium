@@ -6,6 +6,7 @@
 
 #include <numbers>
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_border_shape.h"
@@ -20,23 +21,25 @@
 
 namespace blink {
 namespace {
-std::optional<Path> InnerPathIgnoringStroke(const PhysicalRect& rect,
+
+std::optional<Path> InnerPathIgnoringStroke(const PhysicalRect& reference_rect,
                                             const ComputedStyle& style) {
   if (!style.HasBorderShape()) {
     return std::nullopt;
   }
 
-  return style.BorderShape()->InnerShape().GetPath(gfx::RectF(rect),
-                                                   style.EffectiveZoom(), 1);
+  const StyleBorderShape& border_shape = *style.BorderShape();
+  return border_shape.InnerShape().GetPath(gfx::RectF(reference_rect),
+                                           style.EffectiveZoom(), 1);
 }
 
 // static
-StrokeData GetBorderShapeStrokeData(const PhysicalRect& rect,
+StrokeData GetBorderShapeStrokeData(const PhysicalRect& reference_rect,
                                     const ComputedStyle& style) {
   StrokeData stroke_data;
   const float zoom = style.EffectiveZoom();
   const float zoomed_reference_box_normal_length =
-      gfx::Vector2dF(rect.size.width, rect.size.height).Length() /
+      gfx::Vector2dF(reference_rect.Width(), reference_rect.Height()).Length() /
       std::numbers::sqrt2;
   const float unzoomed_reference_box_normal_length =
       zoomed_reference_box_normal_length / zoom;
@@ -52,20 +55,23 @@ StrokeData GetBorderShapeStrokeData(const PhysicalRect& rect,
 }
 }  // namespace
 
-std::optional<Path> BorderShapePainter::OuterPath(const PhysicalRect& rect,
-                                                  const ComputedStyle& style) {
+std::optional<Path> BorderShapePainter::OuterPath(
+    const ComputedStyle& style,
+    const PhysicalRect& outer_reference_rect) {
   if (!style.HasBorderShape()) {
     return std::nullopt;
   }
 
-  return style.BorderShape()->OuterShape().GetPath(gfx::RectF(rect),
-                                                   style.EffectiveZoom(), 1);
+  const StyleBorderShape& border_shape = *style.BorderShape();
+  return border_shape.OuterShape().GetPath(gfx::RectF(outer_reference_rect),
+                                           style.EffectiveZoom(), 1);
 }
 
-std::optional<Path> BorderShapePainter::InnerPath(const PhysicalRect& rect,
-                                                  const ComputedStyle& style) {
+std::optional<Path> BorderShapePainter::InnerPath(
+    const ComputedStyle& style,
+    const PhysicalRect& inner_reference_rect) {
   std::optional<Path> inner_path_from_shape =
-      InnerPathIgnoringStroke(rect, style);
+      InnerPathIgnoringStroke(inner_reference_rect, style);
   if (!inner_path_from_shape) {
     return std::nullopt;
   }
@@ -73,10 +79,13 @@ std::optional<Path> BorderShapePainter::InnerPath(const PhysicalRect& rect,
   if (!style.HasVisibleStroke()) {
     return inner_path_from_shape;
   }
+
+  StrokeData stroke_data =
+      GetBorderShapeStrokeData(inner_reference_rect, style);
   SkOpBuilder builder;
   builder.add(inner_path_from_shape->GetSkPath(), SkPathOp::kUnion_SkPathOp);
-  Path stroke_path = inner_path_from_shape->StrokePath(
-      GetBorderShapeStrokeData(rect, style), AffineTransform());
+  Path stroke_path =
+      inner_path_from_shape->StrokePath(stroke_data, AffineTransform());
   builder.add(stroke_path.GetSkPath(), kDifference_SkPathOp);
   SkPath result;
   return builder.resolve(&result) ? Path(result) : inner_path_from_shape;
@@ -84,15 +93,16 @@ std::optional<Path> BorderShapePainter::InnerPath(const PhysicalRect& rect,
 
 // static
 bool BorderShapePainter::Paint(GraphicsContext& context,
-                               const PhysicalRect& rect,
-                               const ComputedStyle& style) {
+                               const ComputedStyle& style,
+                               const PhysicalRect& outer_reference_rect,
+                               const PhysicalRect& inner_reference_rect) {
   const StyleBorderShape* border_shape = style.BorderShape();
   if (!border_shape) {
     return false;
   }
 
-  const Path outer_path = *OuterPath(rect, style);
-  const Path inner_path = *InnerPathIgnoringStroke(rect, style);
+  const Path outer_path = *OuterPath(style, outer_reference_rect);
+  const Path inner_path = *InnerPathIgnoringStroke(inner_reference_rect, style);
 
   const AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBorder));
@@ -113,7 +123,7 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
   }
 
   context.SetStrokeColor(style.StrokePaint().GetColor().GetColor());
-  context.SetStroke(GetBorderShapeStrokeData(rect, style));
+  context.SetStroke(GetBorderShapeStrokeData(outer_reference_rect, style));
   context.StrokePath(outer_path, auto_dark_mode);
   if (outer_path != inner_path) {
     context.StrokePath(inner_path, auto_dark_mode);

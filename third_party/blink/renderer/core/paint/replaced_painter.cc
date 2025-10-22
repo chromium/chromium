@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
@@ -458,10 +459,13 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
                                          paint_info, snapped_paint_rect);
     }
     if (!theme_painted) {
+      std::optional<BorderShapeReferenceRects> border_shape_rects =
+          ComputeBorderShapeReferenceRects(paint_rect, style, layout_replaced_);
       BoxPainterBase::PaintBorder(
           layout_replaced_, layout_replaced_.GetDocument(),
           layout_replaced_.GeneratingNode(), paint_info, paint_rect, style,
-          box_decoration_data.GetBackgroundBleedAvoidance());
+          box_decoration_data.GetBackgroundBleedAvoidance(), PhysicalBoxSides(),
+          border_shape_rects ? &*border_shape_rects : nullptr);
     }
   }
 

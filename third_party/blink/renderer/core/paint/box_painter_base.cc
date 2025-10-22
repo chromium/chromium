@@ -261,7 +261,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
       style, paint_rect, sides_to_include);
 
   const std::optional<Path> border_shape_outer_path =
-      BorderShapePainter::OuterPath(paint_rect, style);
+      BorderShapePainter::OuterPath(style, paint_rect);
   bool has_border_radius = style.HasBorderRadius() && !border_shape_outer_path;
   bool has_opaque_background =
       !background_is_skipped &&
@@ -1432,15 +1432,22 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   context.EndLayer();  // Background layer.
 }
 
-void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
-                                 const Document& document,
-                                 Node* node,
-                                 const PaintInfo& info,
-                                 const PhysicalRect& rect,
-                                 const ComputedStyle& style,
-                                 BackgroundBleedAvoidance bleed_avoidance,
-                                 PhysicalBoxSides sides_to_include) {
-  if (BorderShapePainter::Paint(info.context, rect, style)) {
+void BoxPainterBase::PaintBorder(
+    const ImageResourceObserver& obj,
+    const Document& document,
+    Node* node,
+    const PaintInfo& info,
+    const PhysicalRect& rect,
+    const ComputedStyle& style,
+    BackgroundBleedAvoidance bleed_avoidance,
+    PhysicalBoxSides sides_to_include,
+    const BorderShapeReferenceRects* border_shape_rects) {
+  const PhysicalRect outer_reference_rect =
+      border_shape_rects ? border_shape_rects->outer : rect;
+  const PhysicalRect inner_reference_rect =
+      border_shape_rects ? border_shape_rects->inner : rect;
+  if (BorderShapePainter::Paint(info.context, style, outer_reference_rect,
+                                inner_reference_rect)) {
     return;
   }
 

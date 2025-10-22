@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
@@ -1504,10 +1505,13 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
     if (!theme_painted) {
       Node* generating_node = layout_object.GeneratingNode();
       const Document& document = layout_object.GetDocument();
+      std::optional<BorderShapeReferenceRects> border_shape_rects =
+          ComputeBorderShapeReferenceRects(paint_rect, style, layout_object);
       PaintBorder(*box_fragment_.GetLayoutObject(), document, generating_node,
                   paint_info, paint_rect, style,
                   box_decoration_data.GetBackgroundBleedAvoidance(),
-                  box_fragment_.SidesToInclude());
+                  box_fragment_.SidesToInclude(),
+                  border_shape_rects ? &*border_shape_rects : nullptr);
     }
   }
 

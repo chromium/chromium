@@ -25,6 +25,7 @@ namespace blink {
 
 class BackgroundImageGeometry;
 class BoxBackgroundPaintContext;
+struct BorderShapeReferenceRects;
 class ComputedStyle;
 class ContouredRect;
 class Document;
@@ -95,7 +96,8 @@ class BoxPainterBase {
       const PhysicalRect&,
       const ComputedStyle&,
       BackgroundBleedAvoidance = kBackgroundBleedNone,
-      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
+      PhysicalBoxSides sides_to_include = PhysicalBoxSides(),
+      const BorderShapeReferenceRects* border_shape_rects = nullptr);
 
   static bool ShouldForceWhiteBackgroundForPrintEconomy(const Document&,
                                                         const ComputedStyle&);
