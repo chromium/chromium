@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_
 
-#include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
@@ -64,11 +64,12 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
 
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
-  base::CallbackListSubscription RegisterActorTabIndicatorStateChangedCallback(
+  [[nodiscard]] base::ScopedClosureRunner
+  RegisterActorTabIndicatorStateChangedCallback(
       ActorTabIndicatorStateChangedCallback callback) override;
-  base::CallbackListSubscription RegisterActorOverlayStateChange(
+  [[nodiscard]] base::ScopedClosureRunner RegisterActorOverlayStateChange(
       ActorOverlayStateChangeCallback callback) override;
-  base::CallbackListSubscription RegisterActorOverlayBackgroundChange(
+  [[nodiscard]] base::ScopedClosureRunner RegisterActorOverlayBackgroundChange(
       ActorOverlayBackgroundChangeCallback callback) override;
 
  private:
@@ -112,6 +113,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
 
   void UpdateOmniboxTabHelperObserver();
 
+  void UnregisterActorOverlayStateChange();
+  void UnregisterActorOverlayBackgroundChange();
+  void UnregisterActorTabIndicatorStateChange();
+
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
       .actor_overlay = ActorOverlayState(),
@@ -131,18 +136,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
-  using ActorTabIndicatorStateChangedCallbackList =
-      base::RepeatingCallbackList<void(bool)>;
-  ActorTabIndicatorStateChangedCallbackList
-      on_actor_tab_indicator_changed_callbacks_;
-  using ActorOverlayStateChangedCallbackList =
-      base::RepeatingCallbackList<void(bool, ActorOverlayState)>;
-  ActorOverlayStateChangedCallbackList
-      on_actor_overlay_state_changed_callbacks_;
-  using ActorOverlayBackgroundChangeCallbackList =
-      base::RepeatingCallbackList<void(bool)>;
-  ActorOverlayBackgroundChangeCallbackList
-      actor_overlay_background_changed_callbacks_;
+  ActorTabIndicatorStateChangedCallback
+      on_actor_tab_indicator_changed_callback_;
+  ActorOverlayStateChangeCallback on_actor_overlay_state_changed_callback_;
+  ActorOverlayBackgroundChangeCallback
+      actor_overlay_background_changed_callback_;
 
   // The Actor Keyed Service for the associated profile.
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;

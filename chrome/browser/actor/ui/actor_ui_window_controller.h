@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -67,8 +68,8 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
 
   std::vector<base::CallbackListSubscription>
       web_contents_callback_subscriptions_;
-  std::vector<base::CallbackListSubscription>
-      actor_ui_tab_controller_callback_subscriptions_;
+  std::vector<base::ScopedClosureRunner>
+      actor_ui_tab_controller_callback_runners_;
   raw_ptr<views::WebView> contents_container_view_ = nullptr;
   raw_ptr<ActorOverlayWebView> overlay_ = nullptr;
 

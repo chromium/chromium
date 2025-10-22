@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_INTERFACE_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_INTERFACE_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -107,16 +108,17 @@ class ActorUiTabControllerInterface {
   // Callbacks:
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(bool)>;
-  virtual base::CallbackListSubscription
+  [[nodiscard]] virtual base::ScopedClosureRunner
   RegisterActorTabIndicatorStateChangedCallback(
       ActorTabIndicatorStateChangedCallback callback) = 0;
   using ActorOverlayStateChangeCallback =
       base::RepeatingCallback<void(bool, ActorOverlayState)>;
-  virtual base::CallbackListSubscription RegisterActorOverlayStateChange(
-      ActorOverlayStateChangeCallback callback) = 0;
+  [[nodiscard]] virtual base::ScopedClosureRunner
+  RegisterActorOverlayStateChange(ActorOverlayStateChangeCallback callback) = 0;
   using ActorOverlayBackgroundChangeCallback =
       base::RepeatingCallback<void(bool)>;
-  virtual base::CallbackListSubscription RegisterActorOverlayBackgroundChange(
+  [[nodiscard]] virtual base::ScopedClosureRunner
+  RegisterActorOverlayBackgroundChange(
       ActorOverlayBackgroundChangeCallback callback) = 0;
 
  private:

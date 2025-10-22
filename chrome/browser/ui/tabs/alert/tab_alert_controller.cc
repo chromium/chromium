@@ -80,11 +80,11 @@ TabAlertController::TabAlertController(TabInterface& tab)
 
   if (auto* actor_ui_tab_controller =
           actor::ui::ActorUiTabController::From(&tab)) {
-    callback_subscriptions_.emplace_back(
+    actor_tab_indicator_callback_runner_ =
         actor_ui_tab_controller->RegisterActorTabIndicatorStateChangedCallback(
             base::BindRepeating(
                 &TabAlertController::OnActorTabIndicatorStateChanged,
-                base::Unretained(this))));
+                base::Unretained(this)));
   }
 
 #if BUILDFLAG(ENABLE_GLIC)

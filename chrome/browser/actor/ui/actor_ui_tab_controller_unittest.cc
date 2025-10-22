@@ -328,7 +328,7 @@ TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnHoverChanges) {
   auto* mock_handoff_button_controller =
       tab_controller_factory()->handoff_button_controller();
 
-  std::vector<base::CallbackListSubscription> subscriptions;
+  std::vector<base::ScopedClosureRunner> subscriptions;
   ON_CALL(*mock_handoff_button_controller, IsHovering())
       .WillByDefault(Return(false));
   subscriptions.push_back(
@@ -385,5 +385,52 @@ TEST_F(ActorUiTabControllerTest, From_RecordsHistogramWhenTabDoesNotExist) {
       "Actor.Ui.TabController.Error",
       ActorUiTabControllerError::kRequestedForNonExistentTab, 1);
 }
+
+TEST_F(ActorUiTabControllerTest, RegisterNullCallbackDeathTest) {
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)tab_controller()->RegisterActorOverlayStateChange(
+          ActorUiTabControllerInterface::ActorOverlayStateChangeCallback()),
+      "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)tab_controller()->RegisterActorOverlayBackgroundChange(
+          ActorUiTabControllerInterface::
+              ActorOverlayBackgroundChangeCallback()),
+      "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)tab_controller()->RegisterActorTabIndicatorStateChangedCallback(
+          ActorUiTabControllerInterface::
+              ActorTabIndicatorStateChangedCallback()),
+      "");
+}
+
+TEST_F(ActorUiTabControllerTest, RegisterCallbackWhileRegisteredDeathTest) {
+  auto valid_overlay_state_cb =
+      base::BindRepeating([](bool, ActorOverlayState) {});
+  auto valid_overlay_bg_cb = base::BindRepeating([](bool) {});
+  auto valid_tab_indicator_cb = base::BindRepeating([](bool) {});
+
+  auto runner1 =
+      tab_controller()->RegisterActorOverlayStateChange(valid_overlay_state_cb);
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)tab_controller()->RegisterActorOverlayStateChange(
+          valid_overlay_state_cb),
+      "");
+
+  auto runner2 = tab_controller()->RegisterActorOverlayBackgroundChange(
+      valid_overlay_bg_cb);
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)tab_controller()->RegisterActorOverlayBackgroundChange(
+          valid_overlay_bg_cb),
+      "");
+
+  auto runner3 =
+      tab_controller()->RegisterActorTabIndicatorStateChangedCallback(
+          valid_tab_indicator_cb);
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)tab_controller()->RegisterActorTabIndicatorStateChangedCallback(
+          valid_tab_indicator_cb),
+      "");
+}
+
 }  // namespace
 }  // namespace actor::ui

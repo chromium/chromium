@@ -127,6 +127,7 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // Subscriptions to be notified when an alert status has changed.
   base::CallbackListSubscription recently_audible_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
+  base::ScopedClosureRunner actor_tab_indicator_callback_runner_;
 
   ui::ScopedUnownedUserData<TabAlertController> scoped_unowned_user_data_;
 };

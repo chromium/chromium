@@ -92,12 +92,6 @@ bool ActorUiTabController::ShouldShowActorTabIndicator() {
          should_show_actor_tab_indicator_;
 }
 
-base::CallbackListSubscription
-ActorUiTabController::RegisterActorTabIndicatorStateChangedCallback(
-    ActorTabIndicatorStateChangedCallback callback) {
-  return on_actor_tab_indicator_changed_callbacks_.Add(std::move(callback));
-}
-
 void ActorUiTabController::OnTabWillDetach(
     tabs::TabInterface* tab_interface,
     tabs::TabInterface::DetachReason reason) {
@@ -132,16 +126,43 @@ void ActorUiTabController::UpdateOmniboxTabHelperObserver() {
   }
 }
 
-base::CallbackListSubscription
-ActorUiTabController::RegisterActorOverlayBackgroundChange(
-    ActorOverlayBackgroundChangeCallback callback) {
-  return actor_overlay_background_changed_callbacks_.Add(std::move(callback));
+[[nodiscard]] base::ScopedClosureRunner
+ActorUiTabController::RegisterActorTabIndicatorStateChangedCallback(
+    ActorTabIndicatorStateChangedCallback callback) {
+  // Crash if attempting to register a null callback, or if a callback is
+  // already registered.
+  CHECK(!callback.is_null());
+  CHECK(on_actor_tab_indicator_changed_callback_.is_null());
+  on_actor_tab_indicator_changed_callback_ = std::move(callback);
+  return base::ScopedClosureRunner(base::BindOnce(
+      &ActorUiTabController::UnregisterActorTabIndicatorStateChange,
+      weak_factory_.GetWeakPtr()));
 }
 
-base::CallbackListSubscription
+[[nodiscard]] base::ScopedClosureRunner
+ActorUiTabController::RegisterActorOverlayBackgroundChange(
+    ActorOverlayBackgroundChangeCallback callback) {
+  // Crash if attempting to register a null callback, or if a callback is
+  // already registered.
+  CHECK(!callback.is_null());
+  CHECK(actor_overlay_background_changed_callback_.is_null());
+  actor_overlay_background_changed_callback_ = std::move(callback);
+  return base::ScopedClosureRunner(base::BindOnce(
+      &ActorUiTabController::UnregisterActorOverlayBackgroundChange,
+      weak_factory_.GetWeakPtr()));
+}
+
+[[nodiscard]] base::ScopedClosureRunner
 ActorUiTabController::RegisterActorOverlayStateChange(
     ActorOverlayStateChangeCallback callback) {
-  return on_actor_overlay_state_changed_callbacks_.Add(std::move(callback));
+  // Crash if attempting to register a null callback, or if a callback is
+  // already registered.
+  CHECK(!callback.is_null());
+  CHECK(on_actor_overlay_state_changed_callback_.is_null());
+  on_actor_overlay_state_changed_callback_ = std::move(callback);
+  return base::ScopedClosureRunner(
+      base::BindOnce(&ActorUiTabController::UnregisterActorOverlayStateChange,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ActorUiTabController::SetActorTabIndicatorVisibility(
@@ -154,11 +175,13 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
     return;
   }
   should_show_actor_tab_indicator_ = should_show_tab_indicator;
-  on_actor_tab_indicator_changed_callbacks_.Notify(
-      should_show_actor_tab_indicator_);
-  // Notify tab strip model of state change.
-  tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
-      base::to_address(tab_), TabChangeType::kAll);
+  if (on_actor_tab_indicator_changed_callback_) {
+    on_actor_tab_indicator_changed_callback_.Run(
+        should_show_actor_tab_indicator_);
+    // Notify tab strip model of state change.
+    tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
+        base::to_address(tab_), TabChangeType::kAll);
+  }
 #endif
   return;
 }
@@ -174,8 +197,9 @@ void ActorUiTabController::UpdateUi(UiResultCallback callback) {
   // TODO(crbug.com/447593256): Propagate errors when component update fails.
   // TODO(crbug.com/428216197): Only notify relevant UI components on change and
   // decouple visibility + state changes into 2 functions.
-  if (features::kGlicActorUiOverlay.Get()) {
-    on_actor_overlay_state_changed_callbacks_.Notify(
+  if (features::kGlicActorUiOverlay.Get() &&
+      on_actor_overlay_state_changed_callback_) {
+    on_actor_overlay_state_changed_callback_.Run(
         ComputeActorOverlayVisibility(), current_ui_tab_state_.actor_overlay);
   }
   if (features::kGlicActorUiHandoffButton.Get()) {
@@ -312,8 +336,9 @@ void ActorUiTabController::UpdateScrimBackground() {
   should_show_scrim_background_ = should_show_scrim_background;
   // TODO(chrstne): Move this notify to UpdateUI + consolidate visibility &
   // background into 1 struct.
-  if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_background_changed_callbacks_.Notify(
+  if (features::kGlicActorUiOverlay.Get() &&
+      actor_overlay_background_changed_callback_) {
+    actor_overlay_background_changed_callback_.Run(
         should_show_scrim_background_);
   }
 }
@@ -325,6 +350,18 @@ void ActorUiTabController::OnOverlayHoverStatusChanged(bool is_hovering) {
 
 void ActorUiTabController::OnHandoffButtonHoverStatusChanged() {
   update_scrim_background_debounce_timer_.Reset();
+}
+
+void ActorUiTabController::UnregisterActorOverlayStateChange() {
+  on_actor_overlay_state_changed_callback_.Reset();
+}
+
+void ActorUiTabController::UnregisterActorOverlayBackgroundChange() {
+  actor_overlay_background_changed_callback_.Reset();
+}
+
+void ActorUiTabController::UnregisterActorTabIndicatorStateChange() {
+  on_actor_tab_indicator_changed_callback_.Reset();
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

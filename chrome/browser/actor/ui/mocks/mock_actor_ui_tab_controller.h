@@ -53,16 +53,16 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
   MOCK_METHOD(bool, ShouldShowActorTabIndicator, (), (override));
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(bool)>;
-  MOCK_METHOD(base::CallbackListSubscription,
+  MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorTabIndicatorStateChangedCallback,
               (ActorTabIndicatorStateChangedCallback callback),
               (override));
   MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
-  MOCK_METHOD(base::CallbackListSubscription,
+  MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorOverlayStateChange,
               (ActorOverlayStateChangeCallback callback),
               (override));
-  MOCK_METHOD(base::CallbackListSubscription,
+  MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorOverlayBackgroundChange,
               (ActorOverlayBackgroundChangeCallback callback),
               (override));

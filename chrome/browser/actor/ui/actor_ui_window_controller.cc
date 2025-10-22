@@ -65,16 +65,16 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
           tabs::TabInterface::GetFromContents(web_view->web_contents())) {
     if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
       if (features::kGlicActorUiOverlay.Get()) {
-        actor_ui_tab_controller_callback_subscriptions_.push_back(
+        actor_ui_tab_controller_callback_runners_.push_back(
             tab_controller->RegisterActorOverlayStateChange(base::BindRepeating(
                 &ActorUiContentsContainerController::UpdateOverlayState,
                 weak_ptr_factory_.GetWeakPtr())));
+        actor_ui_tab_controller_callback_runners_.push_back(
+            tab_controller->RegisterActorOverlayBackgroundChange(
+                base::BindRepeating(&ActorUiContentsContainerController::
+                                        OnActorOverlayBackgroundChange,
+                                    weak_ptr_factory_.GetWeakPtr())));
       }
-      actor_ui_tab_controller_callback_subscriptions_.push_back(
-          tab_controller->RegisterActorOverlayBackgroundChange(
-              base::BindRepeating(&ActorUiContentsContainerController::
-                                      OnActorOverlayBackgroundChange,
-                                  weak_ptr_factory_.GetWeakPtr())));
 
       // Record user action if associated task isn't paused or stopped
       actor::ActorKeyedService* actor_service =
@@ -128,7 +128,7 @@ void ActorUiContentsContainerController::OnWebContentsDetached(
   // tab.
   Observe(nullptr);
   view_observation_.Reset();
-  actor_ui_tab_controller_callback_subscriptions_.clear();
+  actor_ui_tab_controller_callback_runners_.clear();
 
   if (overlay_) {
     overlay_->CloseUI();
