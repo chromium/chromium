@@ -12,6 +12,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_v4_decider.h"
+#include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 namespace cc {
 class ScrollJankUkmReporter;
@@ -42,33 +43,12 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   static constexpr int kHistogramEmitFrequency = 64;
   static constexpr const char* kDelayedFramesWindowHistogram =
       "Event.ScrollJank.DelayedFramesPercentage.FixedWindow";
-  static constexpr const char* kDelayedFramesWindowV4Histogram =
-      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow";
-  static constexpr const char*
-      kMissedVsyncDueToDeceleratingInputFrameDeliveryV4Histogram =
-          "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-          "MissedVsyncDueToDeceleratingInputFrameDelivery";
-  static constexpr const char* kMissedVsyncDuringFastScrollV4Histogram =
-      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-      "MissedVsyncDuringFastScroll";
-  static constexpr const char* kMissedVsyncAtStartOfFlingV4Histogram =
-      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-      "MissedVsyncAtStartOfFling";
-  static constexpr const char* kMissedVsyncDuringFlingV4Histogram =
-      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-      "MissedVsyncDuringFlingV4Histogram";
   static constexpr const char* kDelayedFramesPerScrollHistogram =
       "Event.ScrollJank.DelayedFramesPercentage.PerScroll";
-  static constexpr const char* kDelayedFramesPerScrollV4Histogram =
-      "Event.ScrollJank.DelayedFramesPercentage4.PerScroll";
   static constexpr const char* kMissedVsyncsSumInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsSum.FixedWindow";
-  static constexpr const char* kMissedVsyncsSumInWindowV4Histogram =
-      "Event.ScrollJank.MissedVsyncsSum4.FixedWindow";
   static constexpr const char* kMissedVsyncsMaxInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsMax.FixedWindow";
-  static constexpr const char* kMissedVsyncsMaxInWindowV4Histogram =
-      "Event.ScrollJank.MissedVsyncsMax4.FixedWindow";
   static constexpr const char* kMissedVsyncsMaxPerScrollHistogram =
       "Event.ScrollJank.MissedVsyncsMax.PerScroll";
   static constexpr const char* kMissedVsyncsSumPerScrollHistogram =
@@ -79,8 +59,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
  private:
   void EmitPerWindowHistogramsAndResetCounters();
   void EmitPerScrollHistogramsAndResetCounters();
-  void EmitPerWindowV4HistogramsAndResetCounters();
-  void EmitPerScrollV4HistogramsAndResetCounters();
   void ReportLatestPresentationDataV4(
       ScrollUpdateEventMetrics& earliest_event,
       base::TimeTicks first_input_generation_v4_ts,
@@ -90,8 +68,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
       bool has_inertial_input,
       float abs_total_raw_delta_pixels,
       float max_abs_inertial_raw_delta_pixels);
-  void UpdateDelayedFrameAndMissedVsyncCountersV4(
-      const JankReasonArray<int>& missed_vsyncs_per_reason);
 
   // We could have two different frames with same presentation time and due to
   // this just having previous frame's data is not enough for calculating the
@@ -110,47 +86,12 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
     int num_presented_frames = 0;
   };
 
-  struct JankDataFixedWindowV4 {
-    // Total number of frames that Chrome presented.
-    int presented_frames = 0;
-
-    // Total number of frames that Chrome didn't present on time, i.e. presented
-    // one or more VSyncs later than it should have (for any reason).
-    // Must be less than or equal to `presented_frames`.
-    int delayed_frames = 0;
-
-    // Number of frames that Chrome didn't present on time for each reason.
-    // Each value must be less than or equal to `delayed_frames`.
-    JankReasonArray<int> delayed_frames_per_reason = {};
-
-    // Total number of VSyncs that Chrome missed (for any reason). Whenever a
-    // frame is missed, it could be delayed by >=1 vsyncs, this helps us track
-    // how "long" the janks are.
-    // Must be greater than or equal to `delayed_frames`.
-    int missed_vsyncs = 0;
-
-    // Maximum number of consecutive VSyncs that Chrome missed (for any reason).
-    // Must be less than or equal to `missed_vsyncs`.
-    int max_consecutive_missed_vsyncs = 0;
-  };
-
-  struct JankDataPerScrollV4 {
-    // Total number of frames that Chrome presented.
-    int presented_frames = 0;
-
-    // Total number of frames that Chrome didn't present on time, i.e. presented
-    // one or more VSyncs later than it should have (for any reason).
-    // Must be less than or equal to `presented_frames`.
-    int delayed_frames = 0;
-  };
-
   JankData fixed_window_;
-  JankDataFixedWindowV4 fixed_window_v4_;
   std::optional<JankData> per_scroll_;
-  std::optional<JankDataPerScrollV4> per_scroll_v4_;
 
   raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
   ScrollJankV4Decider v4_decider_;
+  ScrollJankV4HistogramEmitter v4_histogram_emitter_;
 };
 
 }  // namespace cc

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -52,27 +53,27 @@ constexpr int kFirstWindowSize = kHistogramEmitFrequency + 1;
 constexpr const char* kDelayedFramesWindowHistogram =
     ScrollJankDroppedFrameTracker::kDelayedFramesWindowHistogram;
 constexpr const char* kDelayedFramesWindowV4Histogram =
-    ScrollJankDroppedFrameTracker::kDelayedFramesWindowV4Histogram;
+    ScrollJankV4HistogramEmitter::kDelayedFramesWindowHistogram;
 constexpr const char*
     kMissedVsyncDueToDeceleratingInputFrameDeliveryV4Histogram =
-        ScrollJankDroppedFrameTracker::
-            kMissedVsyncDueToDeceleratingInputFrameDeliveryV4Histogram;
+        ScrollJankV4HistogramEmitter::
+            kMissedVsyncDueToDeceleratingInputFrameDeliveryHistogram;
 constexpr const char* kMissedVsyncDuringFastScrollV4Histogram =
-    ScrollJankDroppedFrameTracker::kMissedVsyncDuringFastScrollV4Histogram;
+    ScrollJankV4HistogramEmitter::kMissedVsyncDuringFastScrollHistogram;
 constexpr const char* kMissedVsyncAtStartOfFlingV4Histogram =
-    ScrollJankDroppedFrameTracker::kMissedVsyncAtStartOfFlingV4Histogram;
+    ScrollJankV4HistogramEmitter::kMissedVsyncAtStartOfFlingHistogram;
 constexpr const char* kMissedVsyncDuringFlingV4Histogram =
-    ScrollJankDroppedFrameTracker::kMissedVsyncDuringFlingV4Histogram;
+    ScrollJankV4HistogramEmitter::kMissedVsyncDuringFlingHistogram;
 constexpr const char* kDelayedFramesPerScrollHistogram =
     ScrollJankDroppedFrameTracker::kDelayedFramesPerScrollHistogram;
 constexpr const char* kDelayedFramesPerScrollV4Histogram =
-    ScrollJankDroppedFrameTracker::kDelayedFramesPerScrollV4Histogram;
+    ScrollJankV4HistogramEmitter::kDelayedFramesPerScrollHistogram;
 constexpr const char* kMissedVsyncsSumInWindowHistogram =
     ScrollJankDroppedFrameTracker::kMissedVsyncsSumInWindowHistogram;
 constexpr const char* kMissedVsyncsSumInWindowV4Histogram =
-    ScrollJankDroppedFrameTracker::kMissedVsyncsSumInWindowV4Histogram;
+    ScrollJankV4HistogramEmitter::kMissedVsyncsSumInWindowHistogram;
 constexpr const char* kMissedVsyncsMaxInWindowV4Histogram =
-    ScrollJankDroppedFrameTracker::kMissedVsyncsMaxInWindowV4Histogram;
+    ScrollJankV4HistogramEmitter::kMissedVsyncsMaxInWindowHistogram;
 constexpr const char* kMissedVsyncsMaxInWindowHistogram =
     ScrollJankDroppedFrameTracker::kMissedVsyncsMaxInWindowHistogram;
 constexpr const char* kMissedVsyncsSumPerScrollHistogram =
