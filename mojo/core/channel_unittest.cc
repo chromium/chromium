@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -838,6 +839,16 @@ class CallbackIpczChannelDelegate : public Channel::Delegate {
 // Note: While this test emulates sending behavior of old clients, it does not
 // emulate old receiving behaviors.
 TEST(ChannelTest, IpczHeaderCompatibilityTest) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (Channel::SupportsMultipleNotifiers()) {
+    // The test constructs messages as if the feature is enabled. Enable the
+    // feature to match behavior on the receiving side.
+    scoped_feature_list.InitAndEnableFeature(
+        mojo::core::kMojoLinuxChannelSharedMem);
+  }
+#endif
+
   // The delegate is created before the task environment, because it will be
   // notified when the channel is destructed, which happens when the task
   // environment is shut down.
@@ -861,6 +872,7 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
   // - The sender is ahead of the receiver
   //
   // In all cases, the message should be correctly received, and not corrupted.
+  [[maybe_unused]] uint32_t channel_sequence_number = 0;
   for (size_t actual_header_size :
        {Channel::Message::kMinIpczHeaderSize,
         sizeof(Channel::Message::IpczHeader),
@@ -877,6 +889,12 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
     if (Channel::Message::IsAtLeastV2(*header)) {
       header->v2.creation_timeticks_us =
           (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
+    }
+
+    if (Channel::Message::IsExperimentalV3(*header)) {
+      Channel::Message::SetType(*header, Channel::Message::MessageType::NORMAL);
+      Channel::Message::SetChannelSequenceNumber(*header,
+                                                 ++channel_sequence_number);
     }
 
     auto on_message = [&](const void* payload, size_t payload_size,

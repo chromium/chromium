@@ -465,12 +465,8 @@ bool ChannelPosix::FlushOutgoingMessagesNoLock() {
   return true;
 }
 
-void ChannelPosix::RejectUpgradeOffer() {
+void ChannelPosix::RejectPreIpczUpgradeOffer() {
   Write(Message::CreateMessage(0, 0, Message::MessageType::UPGRADE_REJECT));
-}
-
-void ChannelPosix::AcceptUpgradeOffer() {
-  Write(Message::CreateMessage(0, 0, Message::MessageType::UPGRADE_ACCEPT));
 }
 
 void ChannelPosix::OnWriteError(Error error) {
@@ -505,7 +501,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
       // ChannelPosix itself does not support upgrades, if the message was
       // delivered here it could have been when this channel was created we
       // didn't support upgrades but another process does.
-      RejectUpgradeOffer();
+      RejectPreIpczUpgradeOffer();
       return true;
     }
 #if BUILDFLAG(IS_IOS)

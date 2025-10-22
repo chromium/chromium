@@ -94,7 +94,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     return IPCZ_INVALID_DRIVER_HANDLE;
   }
 
-  auto transport = base::MakeRefCounted<Transport>(
+  auto transport = Transport::Create(
       endpoint_types, PlatformChannelEndpoint(std::move(handle)),
       std::move(remote_process), remote_process_trust);
   transport->SetErrorHandler(error_handler, error_handler_context);

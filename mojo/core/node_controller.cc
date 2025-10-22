@@ -1131,10 +1131,6 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     }
   }
 #endif
-  if (inviter->HasLocalCapability(kNodeCapabilitySupportsUpgrade) &&
-      inviter->HasRemoteCapability(kNodeCapabilitySupportsUpgrade)) {
-    inviter->OfferChannelUpgrade();
-  }
 
   DVLOG(1) << "Client " << name_ << " accepted by broker " << broker_name;
 }
@@ -1269,11 +1265,6 @@ void NodeController::OnIntroduce(const ports::NodeName& from_node,
   AddPeer(name, channel, true /* start_channel */);
 
   channel->SetRemoteCapabilities(remote_capabilities);
-
-  if (channel->HasLocalCapability(kNodeCapabilitySupportsUpgrade) &&
-      channel->HasRemoteCapability(kNodeCapabilitySupportsUpgrade)) {
-    channel->OfferChannelUpgrade();
-  }
 }
 
 void NodeController::OnBroadcast(const ports::NodeName& from_node,

@@ -61,8 +61,9 @@ class ChannelPosix : public Channel,
   );
   virtual void OnWriteError(Error error) LOCKS_EXCLUDED(write_lock_);
 
-  void RejectUpgradeOffer();
-  void AcceptUpgradeOffer();
+  // Keeps the functionality to reject upgrade offers for old (pre-ipcz) clients
+  // that ignored the advertised capabilities and offered an upgrade anyway.
+  void RejectPreIpczUpgradeOffer();
 
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
   scoped_refptr<Channel> self_;

@@ -897,6 +897,8 @@ bool NodeChannel::HasLocalCapability(const uint64_t capability) const {
 }
 
 void NodeChannel::SetLocalCapabilities(const uint64_t capabilities) {
+  CHECK(!(kNodeCapabilitySupportsUpgradeRemoved & capabilities))
+      << "Channel upgrade not supported";
   if (GetConfiguration().dont_advertise_capabilities) {
     return;
   }
@@ -907,10 +909,6 @@ void NodeChannel::SetLocalCapabilities(const uint64_t capabilities) {
 void NodeChannel::InitializeLocalCapabilities() {
   if (GetConfiguration().dont_advertise_capabilities) {
     return;
-  }
-
-  if (core::Channel::SupportsChannelUpgrade()) {
-    SetLocalCapabilities(kNodeCapabilitySupportsUpgrade);
   }
 }
 

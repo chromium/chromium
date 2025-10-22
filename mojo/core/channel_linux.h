@@ -54,6 +54,9 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
                         std::vector<PlatformHandle> handles) override;
   void OnWriteError(Error error) override;
 
+  void RejectUpgradeOffer();
+  void AcceptUpgradeOffer();
+
   void StartOnIOThread() override;
   void ShutDownOnIOThread() override;
 

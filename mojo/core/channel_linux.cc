@@ -626,6 +626,12 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
+      if (!is_for_ipcz()) {
+        LOG(ERROR) << "Rejecting UPGRADE_OFFER for non-ipcz transport";
+        RejectUpgradeOffer();
+        return true;
+      }
+
       if (handles.size() != 2) {
         LOG(ERROR) << "Received an UPGRADE_OFFER without two FDs";
         RejectUpgradeOffer();
@@ -758,6 +764,12 @@ void ChannelLinux::SharedMemReadReady() {
           break;
         }
 
+        if (!DispatchDelayedMessages()) {
+          LOG(ERROR) << "Error dispatching queued messages";
+          read_fail = true;
+          OnError(Error::kReceivedMalformedData);
+        }
+
         // The next message will start after read_size_hint bytes the writer
         // guarantees that we wrote a full message and we've guaranteed that the
         // message was dispatched correctly so we know where the next message
@@ -772,6 +784,23 @@ void ChannelLinux::SharedMemReadReady() {
 void ChannelLinux::OnWriteError(Error error) {
   reject_writes_ = true;
   ChannelPosix::OnWriteError(error);
+}
+
+void ChannelLinux::RejectUpgradeOffer() {
+  if (is_for_ipcz()) {
+    ChannelPosix::Write(
+        Message::CreateIpczMessage({}, {}, Message::MessageType::UPGRADE_REJECT,
+                                   IncrementLastSentChannelSequenceNumber()));
+  } else {
+    ChannelPosix::RejectPreIpczUpgradeOffer();
+  }
+}
+
+void ChannelLinux::AcceptUpgradeOffer() {
+  CHECK(is_for_ipcz());
+  ChannelPosix::Write(
+      Message::CreateIpczMessage({}, {}, Message::MessageType::UPGRADE_ACCEPT,
+                                 IncrementLastSentChannelSequenceNumber()));
 }
 
 void ChannelLinux::ShutDownOnIOThread() {
@@ -837,12 +866,13 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
   UpgradeOfferMessage offer_msg;
   offer_msg.num_pages = num_pages_;
   offer_msg.version = notifier_version;
-  MessagePtr msg = Message::CreateMessage(sizeof(UpgradeOfferMessage),
-                                          /*num handles=*/fds.size(),
-                                          Message::MessageType::UPGRADE_OFFER);
-  msg->SetHandles(std::move(fds));
-  memcpy(msg->mutable_payload(), &offer_msg, sizeof(offer_msg));
-
+  MessagePtr msg;
+  DCHECK(is_for_ipcz());
+  auto data = base::span(reinterpret_cast<const uint8_t*>(&offer_msg),
+                         sizeof(UpgradeOfferMessage));
+  msg = Message::CreateIpczMessage(data, std::move(fds),
+                                   Message::MessageType::UPGRADE_OFFER,
+                                   IncrementLastSentChannelSequenceNumber());
   ChannelPosix::Write(std::move(msg));
 }
 
@@ -876,9 +906,9 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
 
 // static
 bool ChannelLinux::UpgradesEnabled() {
-  if (!g_params_set.load())
+  if (!g_params_set.load()) {
     return g_use_shared_mem.load();
-
+  }
   return base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);
 }
 

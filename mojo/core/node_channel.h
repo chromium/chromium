@@ -27,7 +27,9 @@ namespace mojo {
 namespace core {
 
 inline constexpr uint64_t kNodeCapabilityNone = 0;
-inline constexpr uint64_t kNodeCapabilitySupportsUpgrade = 1;
+
+// Removed capability bit. Must not be reused.
+inline constexpr uint64_t kNodeCapabilitySupportsUpgradeRemoved = 1;
 
 inline constexpr uint32_t kNodeChannelHeaderSize = 8;
 
