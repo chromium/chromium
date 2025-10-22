@@ -30,13 +30,13 @@ struct FitTextScale;
 struct LogicalLineItem;
 struct TextFragmentPaintInfo;
 
-// Data for SVG text in addition to FragmentItem.
-// Each text items for SVG <text> has this instance.
+// Structure of additional fields that are rarely used for a Text type
+// FragmentItem.
 //
-// For a non-SVG text item, it has this instance if text-grow or text-shrunk
-// is applied.
-// TODO(crbug.com/417306102): We should rename it.
-struct SvgFragmentData : public GarbageCollected<SvgFragmentData> {
+// * Each text items for SVG <text> has this instance.
+// * An item with ruby annotation has this instance.
+// * An item with text-grow or text-shrunk has this instance.
+struct TextFragmentRareData : public GarbageCollected<TextFragmentRareData> {
  public:
   void Trace(Visitor* visitor) const { visitor->Trace(scaled_font); }
 
@@ -70,10 +70,10 @@ class CORE_EXPORT FragmentItem final {
    public:
     void Trace(Visitor* visitor) const {
       visitor->Trace(shape_result);
-      visitor->Trace(svg_data);
+      visitor->Trace(rare_data);
     }
     Member<const ShapeResultView> shape_result;
-    Member<const SvgFragmentData> svg_data;
+    Member<const TextFragmentRareData> rare_data;
     // TODO(kojii): |text_offset| should match to the offset in |shape_result|.
     // Consider if we should remove them, or if keeping them is easier.
     const TextOffsetRange text_offset;
@@ -85,10 +85,10 @@ class CORE_EXPORT FragmentItem final {
    public:
     void Trace(Visitor* visitor) const {
       visitor->Trace(shape_result);
-      visitor->Trace(extra_data);
+      visitor->Trace(rare_data);
     }
     Member<const ShapeResultView> shape_result;
-    Member<const SvgFragmentData> extra_data;
+    Member<const TextFragmentRareData> rare_data;
     String text;
   };
   // A start marker of a line box.
@@ -153,10 +153,10 @@ class CORE_EXPORT FragmentItem final {
   bool IsListMarker() const;
 
   bool IsSvgText() const {
-    return Type() == kText && text_.svg_data && text_.svg_data->is_svg;
+    return Type() == kText && text_.rare_data && text_.rare_data->is_svg;
   }
 
-  void SetSvgFragmentData(const SvgFragmentData* data,
+  void SetSvgFragmentData(const TextFragmentRareData* data,
                           const PhysicalRect& unscaled_rect,
                           bool is_hidden);
   void SetSvgLineLocalRect(const PhysicalRect& unscaled_rect);
@@ -521,12 +521,13 @@ class CORE_EXPORT FragmentItem final {
 
   const FragmentItem* operator->() const { return this; }
 
-  const SvgFragmentData* GetSvgFragmentData() const {
+  // Returns a TextFragmetnRareData only if it's for SVG text.
+  const TextFragmentRareData* GetSvgFragmentData() const {
     if (Type() != kText) {
       return nullptr;
     }
-    const auto* svg_data = text_.svg_data.Get();
-    return svg_data && svg_data->is_svg ? svg_data : nullptr;
+    const auto* data = text_.rare_data.Get();
+    return data && data->is_svg ? data : nullptr;
   }
   // Returns true if BuildSvgTransformForPaint() returns non-identity transform.
   bool HasSvgTransformForPaint() const;

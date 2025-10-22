@@ -857,7 +857,7 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     gfx::RectF unscaled_rect = gfx::ScaleRect(scaled_rect, 1 / scaling_factor);
-    auto* data = MakeGarbageCollected<SvgFragmentData>();
+    auto* data = MakeGarbageCollected<TextFragmentRareData>();
     data->rect = scaled_rect;
     data->length_adjust_scale = info.length_adjust_scale;
     data->is_svg = true;
