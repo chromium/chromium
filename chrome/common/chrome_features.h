@@ -1255,6 +1255,12 @@ BASE_DECLARE_FEATURE(kWebAppManifestIconUpdating);
 // Enable the usage of a single icon across the whole web applications system.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebAppUsePrimaryIcon);
+
+// Periodically query a preinstalled app for updating, with the intention of
+// doing this for all preinstalled apps with cheap install_urls (that do not
+// redirect etc).
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kWebAppPeriodicPreinstallUpdate);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(CHROME_FEATURES)

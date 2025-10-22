@@ -17,9 +17,11 @@
 #include "base/functional/concurrent_closures.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -54,7 +56,10 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
+#include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -70,13 +75,11 @@
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/rand_util.h"
 #include "chrome/browser/web_applications/commands/rewrite_diy_icons_command.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "content/public/browser/browser_thread.h"
 #endif
 namespace webapps {
 enum class WebappInstallSource;
@@ -507,16 +510,12 @@ void WebAppProvider::OnSyncBridgeReady() {
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
 
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
-                           AsWeakPtr()),
-            base::Minutes(1));
-  }
-#endif
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
+                         AsWeakPtr()),
+          base::RandTimeDeltaUpTo(base::Minutes(20)));
 }
 
 void WebAppProvider::CheckIsConnected() const {
@@ -525,33 +524,43 @@ void WebAppProvider::CheckIsConnected() const {
                         "for on_registry_ready().";
 }
 
-#if BUILDFLAG(IS_MAC)
 void WebAppProvider::DoDelayedPostStartupWork() {
-  CHECK(base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate));
-
-  const WebAppRegistrar& registrar = registrar_unsafe();
-
-  for (const auto& app : registrar.GetApps()) {
-    // Skip apps that don't match our criteria
-    if (!registrar.AppMatches(app.app_id(),
-                              WebAppFilter::IsDiyWithOsShortcut())) {
-      continue;
-    }
-
-    // Skip apps that are already masked
-    if (registrar.IsDiyAppIconsMarkedMaskedOnMac(app.app_id())) {
-      continue;
-    }
-
-    // Skip apps with open windows
-    if (ui_manager_->GetNumWindowsForApp(app.app_id()) != 0) {
-      continue;
-    }
-
-    // Schedule the command for eligible apps
-    scheduler().RewriteDiyIcons(app.app_id(), base::DoNothing());
+  if (base::FeatureList::IsEnabled(features::kWebAppPeriodicPreinstallUpdate)) {
+    GURL install_url = GURL(webapps::kMailGoogleChatInstallUrl);
+    GURL::Replacements add_query;
+    add_query.SetQueryStr("usp=chrome_preinstall_update");
+    install_url = install_url.ReplaceComponents(add_query);
+    scheduler().FetchManifestAndUpdate(
+        install_url, webapps::ManifestId(webapps::kMailGoogleChatManifestId),
+        // TODO(http://crbug.com/452416687): Add metrics.
+        base::DoNothing());
   }
-}
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
+    const WebAppRegistrar& registrar = registrar_unsafe();
+
+    for (const auto& app : registrar.GetApps()) {
+      // Skip apps that don't match our criteria
+      if (!registrar.AppMatches(app.app_id(),
+                                WebAppFilter::IsDiyWithOsShortcut())) {
+        continue;
+      }
+
+      // Skip apps that are already masked
+      if (registrar.IsDiyAppIconsMarkedMaskedOnMac(app.app_id())) {
+        continue;
+      }
+
+      // Skip apps with open windows
+      if (ui_manager_->GetNumWindowsForApp(app.app_id()) != 0) {
+        continue;
+      }
+
+      // Schedule the command for eligible apps
+      scheduler().RewriteDiyIcons(app.app_id(), base::DoNothing());
+    }
+  }
 #endif
+}
 
 }  // namespace web_app

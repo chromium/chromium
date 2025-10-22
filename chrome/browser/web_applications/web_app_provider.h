@@ -252,9 +252,7 @@ class WebAppProvider : public KeyedService {
   // Returns a nullptr in the default implementation
   virtual FakeWebAppProvider* AsFakeWebAppProviderForTesting();
 
-#if BUILDFLAG(IS_MAC)
   void DoDelayedPostStartupWork();
-#endif
 
  protected:
   virtual void StartImpl();
