@@ -95,6 +95,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -785,6 +786,17 @@ const std::vector<scoped_refptr<AwOriginMatchedHeader>>&
 AwBrowserContext::GetOriginMatchedHeaders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return origin_matched_headers_;
+}
+
+void AwBrowserContext::AddQuicHints(JNIEnv* env,
+                                    const std::vector<GURL>& origins) {
+  std::vector<url::SchemeHostPort> scheme_host_ports(origins.size());
+  for (const GURL& origin : origins) {
+    scheme_host_ports.emplace_back(origin);
+  }
+
+  GetDefaultStoragePartition()->GetNetworkContext()->AddQuicHints(
+      scheme_host_ports, net::NetworkAnonymizationKey());
 }
 
 void AwBrowserContext::SetServiceWorkerIoThreadClient(

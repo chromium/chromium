@@ -3567,6 +3567,34 @@ void NetworkContext::GetDeviceBoundSessionManager(
   }
 }
 
+void NetworkContext::AddQuicHints(
+    const std::vector<url::SchemeHostPort>& origins,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  CHECK(url_request_context_);
+
+  for (const auto& origin : origins) {
+    url::CanonHostInfo host_info;
+    std::string canonical_host(
+        net::CanonicalizeHost(origin.host(), &host_info));
+    if (!host_info.IsIPAddress() &&
+        !net::IsCanonicalizedHostCompliant(canonical_host)) {
+      LOG(ERROR) << "Invalid QUIC hint host: " << origin.host();
+      continue;
+    }
+
+    // The AlternativeService hostname can be used to signal a change of host.
+    // By passing in an empty host, the origin's host will be used.
+    net::AlternativeService alternative_service(net::NextProto::kProtoQUIC, "",
+                                                origin.port());
+
+    url::SchemeHostPort canonical_origin(url::kHttpsScheme, canonical_host,
+                                         origin.port());
+    url_request_context_->http_server_properties()->SetQuicAlternativeService(
+        canonical_origin, network_anonymization_key, alternative_service,
+        base::Time::Max(), quic::ParsedQuicVersionVector());
+  }
+}
+
 void NetworkContext::GetIpProxyStatus(GetIpProxyStatusCallback callback) {
   ip_protection::IpProxyStatus status =
       ip_protection::IpProxyStatus::kUnavailable;

@@ -75,6 +75,7 @@ import "services/network/public/mojom/web_transport.mojom";
 import "services/network/public/mojom/websocket.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
 
 [EnableIf=is_chromeos]
@@ -1850,4 +1851,9 @@ interface NetworkContext {
   [AllowedContext=sandbox.mojom.Context.kBrowser]
   GetDeviceBoundSessionManager(
       pending_receiver<DeviceBoundSessionManager> device_bound_session_manager);
+
+  // Request that the network service prioritizes QUIC connections to the given
+  // origins.
+  AddQuicHints(array<url.mojom.SchemeHostPort> origins,
+              NetworkAnonymizationKey network_anonymization_key);
 };

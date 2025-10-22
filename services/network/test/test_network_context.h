@@ -400,6 +400,9 @@ class TestNetworkContext : public mojom::NetworkContext {
       const base::UnguessableToken& throttling_profile_id,
       mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
       override {}
+  void AddQuicHints(
+      const std::vector<url::SchemeHostPort>& origins,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {}
 };
 
 }  // namespace network

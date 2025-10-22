@@ -589,6 +589,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void GetBoundNetworkForTesting(
       GetBoundNetworkForTestingCallback callback) override;
 
+  void AddQuicHints(
+      const std::vector<url::SchemeHostPort>& origins,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
+
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override;

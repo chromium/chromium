@@ -11981,6 +11981,38 @@ TEST_F(NetworkContextTest, EnableDurableMessageCollector) {
       network_context->num_devtools_durable_message_collectors_for_testing());
 }
 
+TEST_F(NetworkContextTest, AddQuicHints) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  url::SchemeHostPort google("https", "www.google.com", 443);
+  url::SchemeHostPort example("https", "www.example.com", 443);
+  std::vector<url::SchemeHostPort> origins = {google, example};
+
+  net::NetworkAnonymizationKey key = net::NetworkAnonymizationKey();
+  network_context->AddQuicHints(origins, key);
+
+  net::AlternativeServiceInfoVector google_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(google, key);
+  EXPECT_EQ(1u, google_infos.size());
+
+  EXPECT_EQ(443, google_infos[0].GetHostPortPair().port());
+  EXPECT_EQ("www.google.com", google_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, google_infos[0].protocol());
+
+  net::AlternativeServiceInfoVector example_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(example, key);
+  EXPECT_EQ(1u, example_infos.size());
+
+  EXPECT_EQ(443, example_infos[0].GetHostPortPair().port());
+  EXPECT_EQ("www.example.com", example_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, example_infos[0].protocol());
+}
+
 }  // namespace
 
 }  // namespace network

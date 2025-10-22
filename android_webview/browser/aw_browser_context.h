@@ -247,6 +247,9 @@ class AwBrowserContext : public content::BrowserContext,
   const std::vector<scoped_refptr<AwOriginMatchedHeader>>&
   GetOriginMatchedHeaders();
 
+  // Adds a QUIC hints for the given origins.
+  void AddQuicHints(JNIEnv* env, const std::vector<GURL>& origins);
+
  private:
   friend class AwBrowserContextIoThreadHandle;
   void CreateUserPrefService();
