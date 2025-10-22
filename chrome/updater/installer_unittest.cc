@@ -27,8 +27,7 @@
 namespace updater {
 
 TEST(InstallerTest, Simple) {
-  base::test::TaskEnvironment environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment environment_;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
@@ -84,8 +83,7 @@ TEST(InstallerTest, Simple) {
 
 #if BUILDFLAG(IS_MAC)
 TEST(InstallerTest, LoadFromPath) {
-  base::test::TaskEnvironment environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment environment_;
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -179,8 +177,7 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
 }
 
 TEST(InstallerTest, LoadFromPath_KeysMissing) {
-  base::test::TaskEnvironment environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment environment_;
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -226,8 +223,7 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
 }
 
 TEST(InstallerTest, GetInstalledFileReturnsNothing) {
-  base::test::TaskEnvironment environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment environment_;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());

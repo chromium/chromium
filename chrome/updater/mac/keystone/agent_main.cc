@@ -230,7 +230,8 @@ int KSAgentAppMain(int argc, const char* argv[]) {
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
 
   return base::MakeRefCounted<KSAgentApp>(ParseCommandLine(argc, argv))->Run();
 }

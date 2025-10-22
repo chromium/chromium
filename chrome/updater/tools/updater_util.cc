@@ -740,7 +740,8 @@ int UpdaterUtilMain(int argc, char** argv) {
   InitializeThreadPool("updater-util");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
   return base::MakeRefCounted<UpdaterUtilApp>()->Run();
 }
 

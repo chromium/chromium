@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
@@ -162,7 +163,8 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   ScopedIPCSupportWrapper ipc_support;
 
   // Only tasks and timers are supported on the main sequence.
-  base::SingleThreadTaskExecutor main_task_executor;
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
 
   if (command_line->HasSwitch(kForceInstallSwitch)) {
     const int recover_result = MakeAppRecover()->Run();
