@@ -8,7 +8,9 @@ desc: |-
 
   This policy has no effect when the Gemini app is disabled. For example, the Gemini app can be disabled by <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy.
 
-  For more information, please see https://support.google.com/chrome/a/answer/16291696.
+  For more information on Gemini in Chrome, please see https://support.google.com/chrome/a/answer/16291696.
+
+  Gemini's actuation is not available in all countries or all languages. Setting this policy does not guarantee the feature will be enabled; it remains subject to availability. For more info on the roll-out, check the Enterprise Release Notes: https://support.google.com/chrome/a/answer/7679408?hl=en
 
 owners:
 - liuwilliam@chromium.org
