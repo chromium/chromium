@@ -26,12 +26,12 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
  public:
   static const char kSupplementName[];
 
-  // Getter for navigator.printing
+  // Getter for printing
   static WebPrintingManager* GetWebPrintingManager(ExecutionContext&);
 
   explicit WebPrintingManager(ExecutionContext*);
 
-  // navigator.printing.getPrinters()
+  // printing.getPrinters()
   ScriptPromise<IDLSequence<WebPrinter>> getPrinters(ScriptState*,
                                                      ExceptionState&);
 
