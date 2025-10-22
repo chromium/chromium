@@ -30,10 +30,12 @@ bool CandidatesAreValid(
       return false;
     }
 
-    // Only "prerender" action supports `target_browsing_context_name_hint`.
-    // Invalid Speculation Rules are ignored and invalid candidates are not
-    // produced in Blink.
+    // Only "prerender" and "prerender-until-script" actions support
+    // `target_browsing_context_name_hint`. Invalid Speculation Rules are
+    // ignored and invalid candidates are not produced in Blink.
     if (candidate->action != blink::mojom::SpeculationAction::kPrerender &&
+        candidate->action !=
+            blink::mojom::SpeculationAction::kPrerenderUntilScript &&
         candidate->target_browsing_context_name_hint !=
             blink::mojom::SpeculationTargetHint::kNoHint) {
       mojo::ReportBadMessage("SH_TARGET_HINT_ON_PREFETCH");

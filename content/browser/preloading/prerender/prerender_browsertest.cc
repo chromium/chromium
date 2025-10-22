@@ -2815,11 +2815,13 @@ class PrerenderTargetHintBrowserTest : public PrerenderBrowserTest {
  public:
   void TestActivateOnWindowOpen(std::string_view window_features);
 
-  std::string SpeculationRulesInsertionScriptWithBothTargetHint(GURL url) {
+  std::string SpeculationRulesInsertionScriptWithBothTargetHint(
+      const GURL& url,
+      const std::string& action = "prerender") {
     constexpr char add_speculationrules_with_both_target_hints[] = R"({
       var script = document.createElement('script');
       script.type = 'speculationrules';
-      script.text = `{"prerender": [
+      script.text = `{"$2": [
           {"target_hint": "_self", "urls": ["$1"]},
           {"target_hint": "_blank", "urls": ["$1"]}
         ]
@@ -2828,15 +2830,17 @@ class PrerenderTargetHintBrowserTest : public PrerenderBrowserTest {
     })";
 
     return base::ReplaceStringPlaceholders(
-        add_speculationrules_with_both_target_hints, {url.spec()}, nullptr);
+        add_speculationrules_with_both_target_hints, {url.spec(), action},
+        nullptr);
   }
 
   std::string SpeculationRulesInsertionScriptWithOneSelfAndTwoBlankTargetHint(
-      GURL url) {
+      const GURL& url,
+      const std::string& action = "prerender") {
     constexpr char add_speculationrules_with_both_target_hints[] = R"({
       var script = document.createElement('script');
       script.type = 'speculationrules';
-      script.text = `{"prerender": [
+      script.text = `{"$2": [
           {"target_hint": "_self", "urls": ["$1"]},
           {"target_hint": "_blank", "urls": ["$1"]},
           {"target_hint": "_blank", "urls": ["$1"]}
@@ -2846,17 +2850,20 @@ class PrerenderTargetHintBrowserTest : public PrerenderBrowserTest {
     })";
 
     return base::ReplaceStringPlaceholders(
-        add_speculationrules_with_both_target_hints, {url.spec()}, nullptr);
+        add_speculationrules_with_both_target_hints, {url.spec(), action},
+        nullptr);
   }
 
-  std::string SpeculationRulesWithIdAndTargetHint(GURL url,
-                                                  std::string id,
-                                                  std::string target_hint) {
+  std::string SpeculationRulesWithIdAndTargetHint(
+      const GURL& url,
+      const std::string& id,
+      const std::string& target_hint,
+      const std::string& action = "prerender") {
     constexpr char add_speculationrules_with_id_and_target_hint[] = R"({
       var script = document.createElement('script');
       script.type = 'speculationrules';
       script.id = '$1';
-      script.text = `{"prerender":
+      script.text = `{"$4":
                       [{
                         "target_hint": "$2",
                         "urls": ["$3"]
@@ -2867,7 +2874,7 @@ class PrerenderTargetHintBrowserTest : public PrerenderBrowserTest {
 
     return base::ReplaceStringPlaceholders(
         add_speculationrules_with_id_and_target_hint,
-        {id, target_hint, url.spec()}, nullptr);
+        {id, target_hint, url.spec(), action}, nullptr);
   }
 };
 
@@ -15754,7 +15761,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
   EXPECT_NE(new_window_process, prerender_process);
 }
 
-class PrerenderUntilScriptBrowserTest : public PrerenderBrowserTest {
+class PrerenderUntilScriptBrowserTest : public PrerenderTargetHintBrowserTest {
  public:
   PrerenderUntilScriptBrowserTest() {
     feature_list_.InitAndEnableFeature(blink::features::kPrerenderUntilScript);
@@ -15959,6 +15966,68 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest,
   prerender_helper()->WaitForRequest(beacon_url, 1);
   ASSERT_EQ(false, EvalJs(web_contents_impl(), "document.prerendering"));
   EXPECT_EQ(false, EvalJs(web_contents_impl(), "executed_during_prerendering"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest, TargetBlank) {
+  const GURL url = GetUrl("/simple_links.html");
+  const GURL prerender_url = GetUrl("/prerender/deferred_script.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Inject some links to the page.
+  std::string add_link_script = base::ReplaceStringPlaceholders(
+      R"(
+        const link = document.getElementById('same_site_new_window_link');
+        link.href = "$1";
+      )",
+      {prerender_url.spec()}, nullptr);
+  ASSERT_TRUE(ExecJs(web_contents(), add_link_script));
+
+  const std::string add_speculation_rules_target_hint_blank_script =
+      SpeculationRulesWithIdAndTargetHint(prerender_url, "blank_specrules",
+                                          "_blank", "prerender_until_script");
+
+  // Adding speculation rules with target_hint=_blank.
+  WebContents* prerender_web_contents = nullptr;
+  base::RunLoop run_loop;
+  auto creation_subscription = RegisterWebContentsCreationCallback(
+      base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+        prerender_web_contents = web_contents;
+        run_loop.QuitClosure().Run();
+      }));
+  EXPECT_TRUE(
+      ExecJs(web_contents(), add_speculation_rules_target_hint_blank_script));
+  // Wait for the new tab prerender.
+  run_loop.Run();
+
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+  GURL image_url = GetUrl("/blank.jpg");
+  prerender_helper()->WaitForRequest(image_url, 1);
+
+  // Click the link annotated with "target=_blank". This should activate the
+  // prerendered page.
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 prerender_url);
+  EXPECT_TRUE(ExecJs(web_contents(), "clickSameSiteNewWindowLink();"));
+
+  // The signal that indicates the activated page starts to execute scripts.
+  GURL beacon_url = GetUrl("/activation-beacon");
+  prerender_helper()->WaitForRequest(beacon_url, 1);
+  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), prerender_url);
+  EXPECT_TRUE(prerender_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(prerender_url));
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+  EXPECT_EQ(prerender_helper()->GetRequestCount(prerender_url), 1);
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
+
+  EXPECT_EQ(false, EvalJs(prerender_web_contents, "document.prerendering"));
+  EXPECT_EQ(false,
+            EvalJs(prerender_web_contents, "executed_during_prerendering"));
 }
 
 }  // namespace content
