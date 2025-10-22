@@ -3734,6 +3734,23 @@
       "features": [
         "disable_d3d12_av1_multi_ref_encoding"
       ]
+    },
+    {
+      "id": 465,
+      "cr_bugs": [394698156],
+      "description": "Older (2020) intel iris driver seems to have an elevated crash rate when using HW accelerated video decode.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "=",
+        "value": "27.20.100.8439"
+      },
+      "features": [
+        "disable_d3d11_video_decoder"
+      ],
+      "device_id": ["0x9a49", "0x9a78"]
     }
   ]
 }
