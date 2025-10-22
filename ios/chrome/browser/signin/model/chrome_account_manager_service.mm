@@ -61,16 +61,16 @@ class SkipRestricted {
 // Filter class skipping identities that do not have the given Gaia ID.
 class KeepGaiaID {
  public:
-  explicit KeepGaiaID(NSString* gaia_id) : gaia_id_(gaia_id) {
-    DCHECK(gaia_id_.length);
+  explicit KeepGaiaID(const GaiaId& gaia_id) : gaia_id_(gaia_id) {
+    DCHECK(!gaia_id_.empty());
   }
 
   bool ShouldFilter(id<SystemIdentity> identity) const {
-    return ![gaia_id_ isEqualToString:identity.gaiaID];
+    return gaia_id_ != identity.gaiaId;
   }
 
  private:
-  NSString* gaia_id_ = nil;
+  GaiaId gaia_id_;
 };
 
 // Filter skipping identities if either sub-filter match.
@@ -248,7 +248,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 
   return IterateOverIdentities(
       FindFirstIdentity{},
-      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id.ToNSString()}},
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
       profile_name_);
 }
 
@@ -297,15 +297,15 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
-    const GaiaId& gaia_id) const {
-  return GetIdentityOnDeviceWithGaiaID(gaia_id.ToNSString());
+    NSString* gaia_id) const {
+  return GetIdentityOnDeviceWithGaiaID(GaiaId(gaia_id));
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
-    NSString* gaia_id) const {
+    const GaiaId& gaia_id) const {
   // Do not iterate if the gaia ID is invalid (since `KeepGaiaId` requires a
   // non-empty ID).
-  if (!gaia_id.length) {
+  if (gaia_id.empty()) {
     return nil;
   }
   return IterateOverAllIdentitiesOnDevice(
@@ -318,7 +318,7 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
     const std::vector<AccountInfo>& account_infos) const {
   NSMutableArray<id<SystemIdentity>>* identities = [NSMutableArray array];
   for (const AccountInfo& account_info : account_infos) {
-    NSString* gaia_id = account_info.gaia.ToNSString();
+    GaiaId gaia_id = account_info.gaia;
     id<SystemIdentity> identity = GetIdentityOnDeviceWithGaiaID(gaia_id);
     if (identity) {
       [identities addObject:identity];
