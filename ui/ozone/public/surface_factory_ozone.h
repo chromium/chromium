@@ -152,7 +152,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       gfx::BufferUsage usage,
       std::optional<gfx::Size> framebuffer_size = std::nullopt);
 
-  virtual bool CanCreateNativePixmapForFormat(gfx::BufferFormat format);
+  virtual bool CanCreateNativePixmapForFormat(viz::SharedImageFormat format);
 
   // Create a single native buffer from an existing handle. Takes ownership of
   // |handle| and can be called on any thread.

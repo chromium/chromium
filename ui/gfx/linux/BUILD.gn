@@ -58,6 +58,7 @@ if (ozone_platform_x11) {
       ":drm",
       ":gbm",
       "//base",
+      "//components/viz/common/resources:shared_image_format",
       "//skia",
       "//ui/gfx:buffer_types",
       "//ui/gfx:memory_buffer",

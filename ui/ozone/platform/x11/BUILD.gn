@@ -53,6 +53,7 @@ source_set("x11") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//net",
     "//skia",

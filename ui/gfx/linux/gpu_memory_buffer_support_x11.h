@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
                                           const gfx::Size& size,
                                           gfx::BufferUsage usage);
 
-  bool CanCreateNativePixmapForFormat(gfx::BufferFormat format);
+  bool CanCreateNativePixmapForFormat(viz::SharedImageFormat format);
   std::unique_ptr<GbmBuffer> CreateBufferFromHandle(
       const gfx::Size& size,
       gfx::BufferFormat format,
