@@ -132,7 +132,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         mTestServer = mActivityTestRule.getTestServer();
         DigitalIdentityProvider.setDelegateForTesting(new ReturnTokenIdentityCredentialsDelegate());
 
-        mPage = mActivityTestRule.startOnTestServerUrl(TEST_PAGE);
+        // startOnTestServerUrl is flaky. Using startOnBlankPage() instead with loadUrl()
+        mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PAGE));
 
         mModalDialogManager = getActivity().getModalDialogManager();
     }
