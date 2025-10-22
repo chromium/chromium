@@ -332,7 +332,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
 
     /** Implements {@link HistorySyncCoordinator.HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync(boolean isHistorySyncAccepted) {
+    public void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted) {
         mViewHolder.removeAllViews();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();

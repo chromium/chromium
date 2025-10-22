@@ -159,7 +159,8 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
 
@@ -180,7 +181,8 @@ public class HistorySyncTest {
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
@@ -202,7 +204,8 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
     }
 
     @Test
@@ -222,7 +225,8 @@ public class HistorySyncTest {
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
@@ -240,7 +244,7 @@ public class HistorySyncTest {
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock, atLeastOnce())
-                .dismissHistorySync(/* isHistorySyncAccepted= */ false);
+                .dismissHistorySync(/* didSignOut= */ true, /* isHistorySyncAccepted= */ false);
         CriteriaHelper.pollUiThread(
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -260,7 +264,8 @@ public class HistorySyncTest {
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
 
         histogramWatcher.assertExpected();
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ true, /* isHistorySyncAccepted= */ false);
     }
 
     @Test

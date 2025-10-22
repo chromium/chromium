@@ -112,7 +112,7 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync(boolean isHistorySyncAccepted) {
+    public void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted) {
         assumeNonNull(getPageDelegate()).advanceToNextPage();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();

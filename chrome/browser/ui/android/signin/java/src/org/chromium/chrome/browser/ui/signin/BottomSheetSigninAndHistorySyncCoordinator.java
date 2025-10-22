@@ -287,7 +287,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync(boolean isHistorySyncAccepted) {
+    public void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted) {
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
@@ -424,8 +424,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                                             PropertyModel model,
                                             @DialogDismissalCause int dismissalCause) {
                                         if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync(/* isHistorySyncAccepted= */ false);
+                                            dismissHistorySync(
+                                                    /* didSignOut= */ false,
+                                                    /* isHistorySyncAccepted= */ false);
                                         } else {
+                                            // TODO(crbug.com/453930445): onFlowComplete can be
+                                            // called twice, hide behind seamless sign-in flag
                                             onFlowComplete(
                                                     SigninAndHistorySyncCoordinator.Result
                                                             .INTERRUPTED);
@@ -434,11 +438,15 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                                 })
                         .with(
                                 ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                                // TODO(crbug.com/453930445): remove entire handleOnBackPressed
+                                // block, back pressing by default dismisses the dialog
                                 new OnBackPressedCallback(true) {
                                     @Override
                                     public void handleOnBackPressed() {
                                         if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync(/* isHistorySyncAccepted= */ false);
+                                            dismissHistorySync(
+                                                    /* didSignOut= */ false,
+                                                    /* isHistorySyncAccepted= */ false);
                                         } else {
                                             onFlowComplete(
                                                     SigninAndHistorySyncCoordinator.Result
