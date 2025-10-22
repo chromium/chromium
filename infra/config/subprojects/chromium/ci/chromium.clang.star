@@ -1294,6 +1294,11 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "lexan@google.com",
+    # Clang ToT Win compiles get timeouts often.
+    siso_configs = [
+        "builder",
+        "no-remote-timeout",
+    ],
 )
 
 ci.builder(
