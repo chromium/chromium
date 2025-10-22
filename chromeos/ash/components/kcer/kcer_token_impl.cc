@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/kcer/kcer_utils.h"
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_database.h"
@@ -134,49 +135,6 @@ bssl::UniquePtr<ASN1_OCTET_STRING> UnwrapEcPoint(
   return result;
 }
 
-// Backwards compatible with how NSS generated CKA_ID for RSA keys.
-Pkcs11Id MakePkcs11IdFromRsaKey(bssl::UniquePtr<RSA> rsa_key) {
-  const BIGNUM* modulus = RSA_get0_n(rsa_key.get());
-  if (!modulus) {
-    LOG(ERROR) << "Could not parse RSA public key";
-    return {};
-  }
-
-  std::vector<uint8_t> modulus_bytes(BN_num_bytes(modulus));
-  // BN_bn2bin returns an absolute value of `modulus`, but according to RFC 8017
-  // Section 3.1 the RSA modulus is a positive integer.
-  BN_bn2bin(modulus, modulus_bytes.data());
-
-  return MakePkcs11Id(modulus_bytes);
-}
-
-// Backwards compatible with how NSS generated CKA_ID for EC keys.
-Pkcs11Id MakePkcs11IdFromEcKey(bssl::UniquePtr<EC_KEY> ec_key) {
-  const EC_POINT* point = EC_KEY_get0_public_key(ec_key.get());
-  const EC_GROUP* group = EC_KEY_get0_group(ec_key.get());
-
-  if (!point || !group) {
-    LOG(ERROR) << "Could not parse EC public key";
-    return {};
-  }
-
-  // Serialize the public key as an uncompressed point in X9.62 form.
-  bssl::ScopedCBB cbb;
-  uint8_t* point_bytes = nullptr;
-  size_t point_bytes_len = 0;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EC_POINT_point2cbb(
-          cbb.get(), group, point,
-          point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED,
-          /*ctx=*/nullptr) ||
-      !CBB_finish(cbb.get(), &point_bytes, &point_bytes_len)) {
-    return {};
-  }
-  bssl::UniquePtr<uint8_t> point_bytes_deleter(point_bytes);
-
-  return MakePkcs11Id(UNSAFE_TODO(base::span(point_bytes, point_bytes_len)));
-}
-
 // Calculates PKCS#11 id for the provided public key SPKI.
 Pkcs11Id GetPkcs11IdFromSpki(const PublicKeySpki& public_key_spki) {
   if (public_key_spki->empty()) {
@@ -184,29 +142,21 @@ Pkcs11Id GetPkcs11IdFromSpki(const PublicKeySpki& public_key_spki) {
     return {};
   }
 
-  const std::vector<uint8_t>& spki = public_key_spki.value();
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
-  bssl::UniquePtr<EVP_PKEY> evp_key(EVP_parse_public_key(&cbs));
-  if (!evp_key || CBS_len(&cbs) != 0) {
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(*public_key_spki);
+  if (!key.has_value()) {
     LOG(ERROR) << "Could not parse public key";
     return {};
   }
 
-  if (EVP_PKEY_base_id(evp_key.get()) == EVP_PKEY_RSA) {
-    bssl::UniquePtr<RSA> rsa_key(EVP_PKEY_get1_RSA(evp_key.get()));
-    if (!rsa_key) {
-      return {};
-    }
-    return MakePkcs11IdFromRsaKey(std::move(rsa_key));
+  if (key->IsRsa()) {
+    // Backwards compatible with how NSS generated CKA_ID for RSA keys.
+    return MakePkcs11Id(key->GetRsaModulus());
   }
 
-  if (EVP_PKEY_base_id(evp_key.get()) == EVP_PKEY_EC) {
-    bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(evp_key.get()));
-    if (!ec_key) {
-      return {};
-    }
-    return MakePkcs11IdFromEcKey(std::move(ec_key));
+  if (key->IsEc()) {
+    // Backwards compatible with how NSS generated CKA_ID for EC keys.
+    return MakePkcs11Id(key->ToUncompressedForm());
   }
 
   return {};
