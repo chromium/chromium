@@ -5,18 +5,16 @@
 """A script to evaluate prompts using promptfoo."""
 
 import argparse
-import dataclasses
-import fnmatch
 import logging
 import os
 import pathlib
 import subprocess
 import sys
 import tempfile
-import yaml
 
 import checkout_helpers
 import constants
+import eval_config
 import promptfoo_installation
 import results
 import workers
@@ -27,13 +25,6 @@ from agents.common import gemini_helpers
 TESTCASE_EXTENSION = '.promptfoo.yaml'
 _SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
 _TOTAL_SHARDS_ENV_VAR = 'GTEST_TOTAL_SHARDS'
-
-
-@dataclasses.dataclass
-class PassKConfig:
-    """Configuration for a pass@k test."""
-    runs_per_test: int
-    pass_k_threshold: int
 
 
 def _check_uncommitted_changes(cwd):
@@ -68,18 +59,18 @@ def _build_chromium(cwd):
     logging.info('Finished building')
 
 
-def _discover_testcase_files() -> list[pathlib.Path]:
+def _discover_testcase_files() -> list[eval_config.TestConfig]:
     """Discovers all testcase files that can be run by this test runner.
 
     Returns:
-        A list of Paths, each path pointing to a .yaml file containing a
+        A list of TestConfigs, each corresponding to a .yaml file containing a
         promptfoo test case. No specific ordering is guaranteed.
     """
     extensions_path = constants.CHROMIUM_SRC / 'agents' / 'extensions'
     all_tests = list(extensions_path.glob(f'*/tests/**/*{TESTCASE_EXTENSION}'))
     prompts_path = constants.CHROMIUM_SRC / 'agents' / 'prompts' / 'eval'
     all_tests.extend(list(prompts_path.glob(f'**/*{TESTCASE_EXTENSION}')))
-    return all_tests
+    return [eval_config.TestConfig.from_file(t) for t in all_tests]
 
 
 def _determine_shard_values(
@@ -150,7 +141,7 @@ def _get_tests_to_run(
     shard_index: int | None,
     total_shards: int | None,
     test_filter: str | None,
-) -> list[pathlib.Path]:
+) -> list[eval_config.TestConfig]:
     """Retrieves which tests should be run for this invocation.
 
     Automatically discovers any valid tests on disk and filters them based on
@@ -163,24 +154,16 @@ def _get_tests_to_run(
             containing a ::-separated list of globs to use for filtering.
 
     Returns:
-        A potentially empty list of paths, each path pointing to a valid test
+        A potentially empty list of TestConfigs, each pointing to a valid test
         to be run.
     """
     shard_index, total_shards = _determine_shard_values(
         shard_index, total_shards)
     configs_to_run = _discover_testcase_files()
     if test_filter:
-        # Temporarily make the paths relative to the root so that filtering
-        # does not take into account any path components outside of the
-        # Chromium checkout.
-        all_string_configs = [
-            str(c.relative_to(constants.CHROMIUM_SRC)) for c in configs_to_run
-        ]
-        filtered_configs = set()
-        for f in test_filter.split('::'):
-            filtered_configs |= set(fnmatch.filter(all_string_configs, f))
+        filters = test_filter.split('::')
         configs_to_run = [
-            constants.CHROMIUM_SRC / pathlib.Path(c) for c in filtered_configs
+            c for c in configs_to_run if c.matches_filter(filters)
         ]
     configs_to_run.sort()
     configs_to_run = configs_to_run[shard_index::total_shards]
@@ -241,40 +224,38 @@ def _fetch_sandbox_image() -> bool:
         return False
 
 
-def _read_pass_k_config(test_file: pathlib.Path) -> PassKConfig:
-    """Reads the pass@k config from the test file.
+def _run_tests_with_retries(worker_pool: workers.WorkerPool,
+                            configs_to_run: list[eval_config.TestConfig],
+                            retries: int) -> list[results.TestResult]:
+    """Runs tests, retrying failed tests up to a given number of times.
 
     Args:
-        test_file: The path to the test file.
+        worker_pool: The worker pool to run tests on.
+        configs_to_run: A list of test configs to run.
+        retries: The number of times to retry failed tests.
 
     Returns:
-        A PassKConfig object with the pass@k settings.
+        A list of PassKTestResult objects.
     """
-    with open(test_file, 'r', encoding='utf-8') as f:
-        config = yaml.safe_load(f)
+    assert configs_to_run, 'configs_to_run should not be empty'
 
-    runs_per_test = 1
-    pass_k_threshold = 1
-    if config.get('tests'):
-        if len(config['tests']) > 1:
-            logging.warning(
-                'Pass@k settings can only be specified on the first test in a '
-                'promptfoo config. Settings on other tests will be ignored.')
+    configs_for_current_iteration = configs_to_run
+    failed_test_results = []
+    for iteration in range(retries + 1):
+        if iteration != 0:
+            logging.info('Retrying %d failed tests (attempt %d of %d)',
+                         len(configs_for_current_iteration), iteration,
+                         retries)
 
-        test = config['tests'][0]
-        if test.get('metadata'):
-            runs_per_test = test['metadata'].get('runs_per_test', 1)
-            if not isinstance(runs_per_test, int):
-                raise ValueError(
-                    f'runs_per_test in {test_file} must be an integer.')
+        worker_pool.queue_tests(configs_for_current_iteration)
+        configs_for_current_iteration = []
+        failed_test_results = worker_pool.wait_for_all_queued_tests()
+        if not failed_test_results:
+            break
 
-            pass_k_threshold = test['metadata'].get('pass_k_threshold', 1)
-            if not isinstance(pass_k_threshold, int):
-                raise ValueError(
-                    f'pass_k_threshold in {test_file} must be an integer.')
+        configs_for_current_iteration = [r.config for r in failed_test_results]
 
-    return PassKConfig(runs_per_test=runs_per_test,
-                       pass_k_threshold=pass_k_threshold)
+    return failed_test_results
 
 
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
@@ -329,21 +310,9 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
         worker_options,
         result_options,
     )
-    configs_for_current_iteration = configs_to_run
-    failed_test_results = []
-    for iteration in range(args.retries + 1):
-        if iteration != 0:
-            logging.info('Re-running %d failed tests',
-                         len(configs_for_current_iteration))
-        worker_pool.queue_tests(configs_for_current_iteration)
-        configs_for_current_iteration = []
-        failed_test_results = worker_pool.wait_for_all_queued_tests()
-        if not failed_test_results:
-            break
 
-        configs_for_current_iteration = [
-            tr.test_file for tr in failed_test_results
-        ]
+    failed_test_results = _run_tests_with_retries(worker_pool, configs_to_run,
+                                                  args.retries)
 
     worker_pool.shutdown_blocking()
     returncode = 0
@@ -356,7 +325,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
             len(failed_test_results), args.retries)
         logging.warning('Failed tests:')
         for ftr in failed_test_results:
-            logging.warning('  %s', ftr.test_file)
+            logging.warning('  %s', ftr.config.test_file)
     else:
         logging.info('Successfully ran %d tests', len(configs_to_run))
 

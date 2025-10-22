@@ -5,13 +5,13 @@
 
 import dataclasses
 import logging
-import pathlib
 import pprint
 import queue
 import sys
 import threading
 
 import constants
+import eval_config
 
 sys.path.insert(0, str(constants.CHROMIUM_SRC / 'build' / 'util'))
 from lib.results import result_sink
@@ -23,8 +23,8 @@ _RESULT_THREAD_POLLING_SLEEP_DURATION = 0.5
 @dataclasses.dataclass
 class TestResult:
     """Represents the result of a single test run."""
-    # The path to the test file that was run.
-    test_file: pathlib.Path
+    # The config used for this test.
+    config: eval_config.TestConfig
     # Whether the test ran successfully.
     success: bool
     # The duration of the test run in seconds.
@@ -39,9 +39,11 @@ class TestResult:
     #   },
     # }
     metrics: dict[str, dict | float]
+    # The number of successful runs for this test.
+    successful_runs: int | None = None
 
     def __lt__(self, other: 'TestResult') -> bool:
-        return self.test_file < other.test_file
+        return self.config.test_file < other.config.test_file
 
 
 @dataclasses.dataclass
@@ -79,7 +81,8 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
         result_sink_client: A ResultSinkClient to use for reporting.
         test_result: A TestResult instance containing the result to report.
     """
-    relative_path = test_result.test_file.relative_to(constants.CHROMIUM_SRC)
+    relative_path = test_result.config.test_file.relative_to(
+        constants.CHROMIUM_SRC)
     posix_path = relative_path.as_posix()
     result_sink_client.Post(
         test_id=str(posix_path),
@@ -138,11 +141,12 @@ class ResultThread(threading.Thread):
                 report_result(self._result_sink_client, test_result)
             if test_result.success:
                 logging.info('Test passed in %.2f seconds: %s',
-                             test_result.duration, str(test_result.test_file))
+                             test_result.duration,
+                             str(test_result.config.test_file))
             else:
                 logging.warning('Test failed in %.2f seconds: %s',
                                 test_result.duration,
-                                str(test_result.test_file))
+                                str(test_result.config.test_file))
                 self.failed_result_output_queue.put(test_result)
 
             self.total_results_reported.increment()

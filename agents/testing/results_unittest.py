@@ -11,6 +11,7 @@ import time
 import unittest
 import unittest.mock
 
+import eval_config
 import results
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
@@ -25,61 +26,70 @@ _POLLING_INTERVAL = 100
 class TestResultTest(unittest.TestCase):
 
     def test_lt_less_than(self):
-        result1 = results.TestResult(test_file=pathlib.Path('a'),
-                                     success=True,
-                                     duration=1,
-                                     test_log='',
-                                     metrics={})
-        result2 = results.TestResult(test_file=pathlib.Path('b'),
-                                     success=True,
-                                     duration=1,
-                                     test_log='',
-                                     metrics={})
+        result1 = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('a')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
+        result2 = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('b')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
         self.assertLess(result1, result2)
 
     def test_lt_greater_than(self):
-        result1 = results.TestResult(test_file=pathlib.Path('b'),
-                                     success=True,
-                                     duration=1,
-                                     test_log='',
-                                     metrics={})
-        result2 = results.TestResult(test_file=pathlib.Path('a'),
-                                     success=True,
-                                     duration=1,
-                                     test_log='',
-                                     metrics={})
+        result1 = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('b')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
+        result2 = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('a')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
         self.assertGreater(result1, result2)
 
     def test_lt_equal(self):
-        result1 = results.TestResult(test_file=pathlib.Path('a'),
-                                     success=True,
-                                     duration=1,
-                                     test_log='',
-                                     metrics={})
-        result2 = results.TestResult(test_file=pathlib.Path('a'),
-                                     success=False,
-                                     duration=2,
-                                     test_log='log',
-                                     metrics={})
+        result1 = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('a')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
+        result2 = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('a')),
+            success=False,
+            duration=2,
+            test_log='log',
+            metrics={})
         self.assertFalse(result1 < result2)
         self.assertFalse(result2 < result1)
 
     def test_sort(self):
-        result_b = results.TestResult(test_file=pathlib.Path('b'),
-                                      success=True,
-                                      duration=1,
-                                      test_log='',
-                                      metrics={})
-        result_a = results.TestResult(test_file=pathlib.Path('a'),
-                                      success=True,
-                                      duration=1,
-                                      test_log='',
-                                      metrics={})
-        result_c = results.TestResult(test_file=pathlib.Path('c'),
-                                      success=True,
-                                      duration=1,
-                                      test_log='',
-                                      metrics={})
+        result_b = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('b')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
+        result_a = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('a')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
+        result_c = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('c')),
+            success=True,
+            duration=1,
+            test_log='',
+            metrics={})
         result_list = [result_b, result_c, result_a]
         self.assertEqual(sorted(result_list), [result_a, result_b, result_c])
 
@@ -88,8 +98,10 @@ class ReportResultTest(unittest.TestCase):
 
     def test_report_result(self):
         mock_client = unittest.mock.Mock(spec=result_sink.ResultSinkClient)
+        config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
+                                        'some_test.yaml')
         test_result = results.TestResult(
-            test_file=CHROMIUM_SRC / 'some_test.yaml',
+            config=config,
             success=True,
             duration=1.23,
             test_log='log',
@@ -111,8 +123,10 @@ class ReportResultTest(unittest.TestCase):
 
     def test_report_result_failure(self):
         mock_client = unittest.mock.Mock(spec=result_sink.ResultSinkClient)
+        config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
+                                        'some_test.yaml')
         test_result = results.TestResult(
-            test_file=CHROMIUM_SRC / 'some_test.yaml',
+            config=config,
             success=False,
             duration=1.23,
             test_log='log',
@@ -218,23 +232,25 @@ class ResultThreadTest(unittest.TestCase):
         thread.join(1)
         return thread
 
-    def test_successful_result(self):
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=True,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+    def test_passed_result(self):
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=True,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         thread = self._run_test_with_results([test_result])
 
         self.assertEqual(thread.total_results_reported.get(), 1)
         self.assertTrue(thread.failed_result_output_queue.empty())
 
     def test_failed_result(self):
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=False,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=False,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         thread = self._run_test_with_results([test_result])
 
         self.assertEqual(thread.total_results_reported.get(), 1)
@@ -243,17 +259,20 @@ class ResultThreadTest(unittest.TestCase):
 
     def test_multiple_results(self):
         results_to_send = [
-            results.TestResult(test_file='test1.yaml',
+            results.TestResult(config=eval_config.TestConfig(
+                test_file=pathlib.Path('test1.yaml')),
                                success=True,
                                duration=1.0,
                                test_log='log1',
                                metrics={}),
-            results.TestResult(test_file='test2.yaml',
+            results.TestResult(config=eval_config.TestConfig(
+                test_file=pathlib.Path('test2.yaml')),
                                success=False,
                                duration=2.0,
                                test_log='log2',
                                metrics={}),
-            results.TestResult(test_file='test3.yaml',
+            results.TestResult(config=eval_config.TestConfig(
+                test_file=pathlib.Path('test3.yaml')),
                                success=True,
                                duration=3.0,
                                test_log='log3',
@@ -296,44 +315,48 @@ class ResultThreadTest(unittest.TestCase):
 
     def test_print_output_on_success_true(self):
         self.result_options.print_output_on_success = True
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=True,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=True,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_stdout.write.assert_called_once_with('log')
 
     def test_print_output_on_success_false(self):
         self.result_options.print_output_on_success = False
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=True,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=True,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_stdout.write.assert_not_called()
 
     def test_always_print_output_on_failure(self):
         self.result_options.print_output_on_success = False
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=False,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=False,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_stdout.write.assert_called_once_with('log')
 
     def test_result_sink_client_none(self):
         self.mock_try_init_client.return_value = None
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=True,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=True,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_report_result.assert_not_called()
@@ -341,11 +364,12 @@ class ResultThreadTest(unittest.TestCase):
     def test_result_sink_client_valid(self):
         mock_client = unittest.mock.Mock()
         self.mock_try_init_client.return_value = mock_client
-        test_result = results.TestResult(test_file='test.yaml',
-                                         success=True,
-                                         duration=1.0,
-                                         test_log='log',
-                                         metrics={})
+        test_result = results.TestResult(
+            config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
+            success=True,
+            duration=1.0,
+            test_log='log',
+            metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_report_result.assert_called_once_with(

@@ -22,6 +22,7 @@ import checkout_helpers
 import constants
 import promptfoo_installation
 import results
+import eval_config
 
 sys.path.append(str(constants.CHROMIUM_SRC))
 from agents.common import tempfile_ext
@@ -161,8 +162,9 @@ class WorkerPool:
     def __del__(self):
         self.shutdown_blocking(2)
 
-    def queue_tests(self,
-                    tests: collections.abc.Collection[pathlib.Path]) -> None:
+    def queue_tests(
+            self,
+            tests: collections.abc.Collection[eval_config.TestConfig]) -> None:
         """Queues the provided tests to be run.
 
         Args:
@@ -325,7 +327,7 @@ class WorkerThread(threading.Thread):
     def __init__(self, worker_index: int,
                  promptfoo: promptfoo_installation.PromptfooInstallation,
                  worker_options: WorkerOptions,
-                 test_input_queue: queue.Queue[pathlib.Path],
+                 test_input_queue: queue.Queue[eval_config.TestConfig],
                  test_result_queue: queue.Queue[results.TestResult], **kwargs):
         """
         Args:
@@ -358,17 +360,63 @@ class WorkerThread(threading.Thread):
     def _run_incoming_tests_until_shutdown(self) -> None:
         while not self._shutdown_event.is_set():
             try:
-                test_path = self._test_input_queue.get(
+                config = self._test_input_queue.get(
                     timeout=_AVAILABLE_TEST_POLLING_SLEEP_DURATION)
             except queue.Empty:
                 continue
-            self._run_one_test(test_path)
+            self._run_one_config(config)
 
-    def _run_one_test(self, test_path: pathlib.Path) -> None:
-        """Runs a single Promptfoo test and queues a TestResult.
+    def _run_one_config(self, config: eval_config.TestConfig) -> None:
+        """Runs a single test config and queues a TestResult.
 
         Args:
-            test_path: The path to the Promptfoo test config file to run.
+            config: The TestConfig object for the test to run.
+        """
+        successful_runs = 0
+        total_duration = 0
+        all_logs = []
+        first_iteration_metrics = None
+
+        for i in range(config.runs_per_test):
+            logging.info('Running test %s (iteration %d of %d)',
+                         config.test_file, i + 1, config.runs_per_test)
+            iteration_result = self._run_single_iteration(config)
+            if first_iteration_metrics is None:
+                first_iteration_metrics = iteration_result.metrics
+
+            if iteration_result.success:
+                successful_runs += 1
+            total_duration += iteration_result.duration
+            all_logs.append(iteration_result.test_log)
+
+            # Exit early if the test has already passed.
+            if successful_runs >= config.pass_k_threshold:
+                break
+
+            # Exit early if the test can no longer pass.
+            num_failures = (i + 1) - successful_runs
+            max_failures_allowed = (config.runs_per_test -
+                                    config.pass_k_threshold)
+            if num_failures > max_failures_allowed:
+                break
+
+        success = successful_runs >= config.pass_k_threshold
+        # TODO(crbug.com/449818513): Report per-iteration metrics instead of
+        # just the first.
+        r = results.TestResult(success=success,
+                               duration=total_duration,
+                               test_log='\n'.join(all_logs),
+                               metrics=first_iteration_metrics or {},
+                               successful_runs=successful_runs,
+                               config=config)
+        self._test_result_queue.put(r)
+
+    def _run_single_iteration(
+            self, config: eval_config.TestConfig) -> results.TestResult:
+        """Runs a single iteration of a test and returns a TestResult.
+
+        Args:
+            config: The TestConfig object for the test to run.
         """
         with (
                 WorkDir(
@@ -391,7 +439,7 @@ class WorkerThread(threading.Thread):
                 # tables don't render properly in captured logs.
                 '--no-table',
                 '-c',
-                str(test_path),
+                str(config.test_file),
                 '--var',
                 f'console_width={self._console_width}',
                 '--var',
@@ -413,14 +461,13 @@ class WorkerThread(threading.Thread):
             proc = self._promptfoo.run(command, cwd=workdir.path / 'src')
             duration = time.time() - start_time
 
-            r = results.TestResult(
-                test_file=test_path,
+            return results.TestResult(
+                config=config,
                 success=not proc.returncode,
                 duration=duration,
                 test_log=proc.stdout,
                 metrics=_extract_metrics_from_promptfoo_results(
                     promptfoo_output))
-            self._test_result_queue.put(r)
 
     def shutdown(self) -> None:
         """Tells the thread to shut down gracefully."""

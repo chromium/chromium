@@ -18,6 +18,7 @@ from pyfakefs import fake_filesystem_unittest
 import promptfoo_installation
 import results
 import workers
+import eval_config
 
 # pylint: disable=protected-access
 
@@ -628,10 +629,10 @@ class WorkerThreadUnittest(unittest.TestCase):
         self.mock_get_gclient_root.return_value = pathlib.Path('/root')
         self.addCleanup(get_gclient_root_patcher.stop)
 
-    def _create_and_run_worker(self, test_paths):
+    def _create_and_run_worker(self, configs):
         """Helper to create and run a worker thread."""
-        for path in test_paths:
-            self.test_input_queue.put(path)
+        for config in configs:
+            self.test_input_queue.put(config)
 
         worker = workers.WorkerThread(
             worker_index=0,
@@ -642,7 +643,7 @@ class WorkerThreadUnittest(unittest.TestCase):
         )
         worker.start()
 
-        while self.test_result_queue.qsize() < len(test_paths):
+        while self.test_result_queue.qsize() < len(configs):
             worker.maybe_reraise_fatal_exception()
             time.sleep(_POLLING_INTERVAL)
 
@@ -651,9 +652,8 @@ class WorkerThreadUnittest(unittest.TestCase):
         return worker
 
     def test_run_one_test_pass(self):
-        """Tests running a single passing test."""
-        test_path = pathlib.Path('/test/a.yaml')
-        self._create_and_run_worker([test_path])
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))
+        self._create_and_run_worker([config])
 
         self.mock_workdir.assert_called_once_with('workdir-0',
                                                   pathlib.Path('/root'), True,
@@ -661,28 +661,27 @@ class WorkerThreadUnittest(unittest.TestCase):
         self.mock_promptfoo.run.assert_called_once()
         self.assertEqual(self.test_result_queue.qsize(), 1)
         result = self.test_result_queue.get()
-        self.assertEqual(result.test_file, test_path)
+        self.assertEqual(result.config.test_file, config.test_file)
         self.assertTrue(result.success)
 
     def test_run_one_test_fail(self):
         """Tests running a single failing test."""
         self.mock_promptfoo.run.return_value = subprocess.CompletedProcess(
             args=[], returncode=1, stdout='Failure')
-        test_path = pathlib.Path('/test/a.yaml')
-        self._create_and_run_worker([test_path])
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))
+        self._create_and_run_worker([config])
 
         self.assertEqual(self.test_result_queue.qsize(), 1)
         result = self.test_result_queue.get()
-        self.assertEqual(result.test_file, test_path)
+        self.assertEqual(result.config.test_file, config.test_file)
         self.assertFalse(result.success)
 
     def test_run_multiple_tests(self):
-        """Tests running multiple tests."""
-        test_paths = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml')
+        configs = [
+            eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml')),
+            eval_config.TestConfig(test_file=pathlib.Path('/test/b.yaml'))
         ]
-        self._create_and_run_worker(test_paths)
+        self._create_and_run_worker(configs)
 
         self.assertEqual(self.mock_workdir.call_count, 2)
         self.assertEqual(self.mock_promptfoo.run.call_count, 2)
@@ -714,7 +713,8 @@ class WorkerThreadUnittest(unittest.TestCase):
         """Tests that sandbox and verbose flags are passed to promptfoo."""
         self.worker_options.sandbox = True
         self.worker_options.verbose = True
-        self._create_and_run_worker([pathlib.Path('/test/a.yaml')])
+        self._create_and_run_worker(
+            [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))])
 
         self.mock_promptfoo.run.assert_called_once()
         command = self.mock_promptfoo.run.call_args[0][0]
@@ -724,17 +724,184 @@ class WorkerThreadUnittest(unittest.TestCase):
         self.assertIn(f'console_width={shutil.get_terminal_size().columns}',
                       command)
 
-
     def test_gemini_cli_bin(self):
         """Tests that gemini_cli_bin is passed to promptfoo."""
         gemini_cli_bin = pathlib.Path('/', 'custom', 'gemini')
         self.worker_options.gemini_cli_bin = gemini_cli_bin
-        self._create_and_run_worker([pathlib.Path('/test/a.yaml')])
+        self._create_and_run_worker(
+            [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))])
 
         self.mock_promptfoo.run.assert_called_once()
         command = self.mock_promptfoo.run.call_args[0][0]
         self.assertIn('--var', command)
         self.assertIn(f'gemini_cli_bin={gemini_cli_bin}', command)
+
+
+class RunOneConfigTest(WorkerThreadUnittest):
+    """Tests for the `_run_one_config` method in `workers.py`."""
+
+    def test_aggregation(self):
+        """Tests that all metrics are aggregated correctly."""
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'),
+                                        runs_per_test=3,
+                                        pass_k_threshold=2)
+        results_to_return = [
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1.0,
+                               test_log='log1',
+                               metrics={'token_usage': {
+                                   'total': 10
+                               }}),
+            results.TestResult(config=config,
+                               success=False,
+                               duration=1.5,
+                               test_log='log2',
+                               metrics={'token_usage': {
+                                   'total': 5
+                               }}),
+            results.TestResult(config=config,
+                               success=True,
+                               duration=2.0,
+                               test_log='log3',
+                               metrics={'token_usage': {
+                                   'total': 15
+                               }}),
+        ]
+        with mock.patch.object(workers.WorkerThread,
+                               '_run_single_iteration',
+                               side_effect=results_to_return):
+            self._create_and_run_worker([config])
+
+        self.assertEqual(self.test_result_queue.qsize(), 1)
+        result = self.test_result_queue.get()
+        self.assertTrue(result.success)
+        self.assertEqual(result.successful_runs, 2)
+        self.assertEqual(result.duration, 4.5)
+        self.assertEqual(result.test_log, 'log1\nlog2\nlog3')
+
+    def test_success_criteria_pass(self):
+        """Tests that a test is marked as successful when it passes."""
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'),
+                                        runs_per_test=3,
+                                        pass_k_threshold=2)
+        results_to_return = [
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=False,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+        ]
+        with mock.patch.object(workers.WorkerThread,
+                               '_run_single_iteration',
+                               side_effect=results_to_return):
+            self._create_and_run_worker([config])
+
+        self.assertEqual(self.test_result_queue.qsize(), 1)
+        result = self.test_result_queue.get()
+        self.assertTrue(result.success)
+        self.assertEqual(result.successful_runs, 2)
+
+    def test_success_criteria_fail(self):
+        """Tests that a test is marked as failed when it does not pass."""
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'),
+                                        runs_per_test=3,
+                                        pass_k_threshold=3)
+        results_to_return = [
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=False,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+        ]
+        with mock.patch.object(workers.WorkerThread,
+                               '_run_single_iteration',
+                               side_effect=results_to_return):
+            self._create_and_run_worker([config])
+
+        self.assertEqual(self.test_result_queue.qsize(), 1)
+        result = self.test_result_queue.get()
+        self.assertFalse(result.success)
+        self.assertEqual(result.successful_runs, 2)
+
+    def test_early_exit_on_pass(self):
+        """Tests that the test exits early when the pass threshold is met."""
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'),
+                                        runs_per_test=5,
+                                        pass_k_threshold=2)
+        results_to_return = [
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=True,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+        ]
+        with mock.patch.object(workers.WorkerThread,
+                               '_run_single_iteration',
+                               side_effect=results_to_return) as mock_run:
+            self._create_and_run_worker([config])
+            self.assertEqual(mock_run.call_count, 2)
+
+        self.assertEqual(self.test_result_queue.qsize(), 1)
+        result = self.test_result_queue.get()
+        self.assertTrue(result.success)
+
+    def test_early_exit_on_fail(self):
+        """Tests that the test exits early when it can no longer pass."""
+        config = eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'),
+                                        runs_per_test=5,
+                                        pass_k_threshold=3)
+        results_to_return = [
+            results.TestResult(config=config,
+                               success=False,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=False,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+            results.TestResult(config=config,
+                               success=False,
+                               duration=1,
+                               test_log='',
+                               metrics={}),
+        ]
+        with mock.patch.object(workers.WorkerThread,
+                               '_run_single_iteration',
+                               side_effect=results_to_return) as mock_run:
+            self._create_and_run_worker([config])
+            self.assertEqual(mock_run.call_count, 3)
+
+        self.assertEqual(self.test_result_queue.qsize(), 1)
+        result = self.test_result_queue.get()
+        self.assertFalse(result.success)
 
 
 class WorkerPoolUnittest(unittest.TestCase):
@@ -821,11 +988,11 @@ class WorkerPoolUnittest(unittest.TestCase):
             worker_options=self.worker_options,
             result_options=self.result_options,
         )
-        test_paths = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml')
+        configs = [
+            eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml')),
+            eval_config.TestConfig(test_file=pathlib.Path('/test/b.yaml'))
         ]
-        pool.queue_tests(test_paths)
+        pool.queue_tests(configs)
         self.assertEqual(pool._test_input_queue.qsize(), 2)
         pool.shutdown_blocking(1)
 
@@ -838,11 +1005,11 @@ class WorkerPoolUnittest(unittest.TestCase):
             worker_options=self.worker_options,
             result_options=self.result_options,
         )
-        test_paths = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml')
+        configs = [
+            eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml')),
+            eval_config.TestConfig(test_file=pathlib.Path('/test/b.yaml'))
         ]
-        pool.queue_tests(test_paths)
+        pool.queue_tests(configs)
         failed_tests = pool.wait_for_all_queued_tests()
         self.assertEqual(len(failed_tests), 0)
         self.assertEqual(self.mock_atomic_counter.return_value.get.call_count,
@@ -852,7 +1019,8 @@ class WorkerPoolUnittest(unittest.TestCase):
     def test_wait_for_all_queued_tests_with_failures(self):
         """Tests that failed tests are returned."""
         self.mock_atomic_counter.return_value.get.return_value = 1
-        failed_test = results.TestResult(test_file='fail.yaml',
+        config = eval_config.TestConfig(test_file='fail.yaml')
+        failed_test = results.TestResult(config=config,
                                          success=False,
                                          duration=1,
                                          test_log='',
@@ -868,7 +1036,8 @@ class WorkerPoolUnittest(unittest.TestCase):
             worker_options=self.worker_options,
             result_options=self.result_options,
         )
-        pool.queue_tests([pathlib.Path('fail.yaml')])
+        pool.queue_tests(
+            [eval_config.TestConfig(test_file=pathlib.Path('fail.yaml'))])
         failed_tests = pool.wait_for_all_queued_tests()
         self.assertEqual(len(failed_tests), 1)
         self.assertEqual(failed_tests[0], failed_test)
@@ -920,7 +1089,8 @@ class WorkerPoolUnittest(unittest.TestCase):
             pathlib.Path('/test/a.yaml'),
             pathlib.Path('/test/b.yaml')
         ]
-        pool.queue_tests(test_paths)
+        configs = [eval_config.TestConfig(test_file=p) for p in test_paths]
+        pool.queue_tests(configs)
         failed_tests = pool.wait_for_all_queued_tests()
         self.assertEqual(len(failed_tests), 0)
         self.assertEqual(self.mock_atomic_counter.return_value.get.call_count,
@@ -929,7 +1099,7 @@ class WorkerPoolUnittest(unittest.TestCase):
 
     def test_worker_thread_fatal_exception(self):
         """Tests that a fatal exception in a worker thread is propagated."""
-        self.mock_worker_thread.return_value.maybe_reraise_fatal_exception.\
+        self.mock_worker_thread.return_value.maybe_reraise_fatal_exception. \
             side_effect = ValueError('Worker Error')
         pool = workers.WorkerPool(
             num_workers=1,
@@ -937,14 +1107,15 @@ class WorkerPoolUnittest(unittest.TestCase):
             worker_options=self.worker_options,
             result_options=self.result_options,
         )
-        pool.queue_tests([pathlib.Path('/test/a.yaml')])
+        pool.queue_tests(
+            [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))])
         with self.assertRaisesRegex(ValueError, 'Worker Error'):
             pool.wait_for_all_queued_tests()
         pool.shutdown_blocking(1)
 
     def test_result_thread_fatal_exception(self):
         """Tests that a fatal exception in the result thread is propagated."""
-        self.mock_result_thread.return_value.maybe_reraise_fatal_exception.\
+        self.mock_result_thread.return_value.maybe_reraise_fatal_exception. \
             side_effect = ValueError('Result Error')
         pool = workers.WorkerPool(
             num_workers=1,
@@ -952,7 +1123,8 @@ class WorkerPoolUnittest(unittest.TestCase):
             worker_options=self.worker_options,
             result_options=self.result_options,
         )
-        pool.queue_tests([pathlib.Path('/test/a.yaml')])
+        pool.queue_tests(
+            [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))])
         with self.assertRaisesRegex(ValueError, 'Result Error'):
             pool.wait_for_all_queued_tests()
         pool.shutdown_blocking(1)

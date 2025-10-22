@@ -14,6 +14,7 @@ from unittest import mock
 
 from pyfakefs import fake_filesystem_unittest
 
+import eval_config
 import eval_prompts
 import results
 
@@ -93,14 +94,20 @@ class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
     def test_discover_testcase_files(self):
         """Tests that testcase files are discovered correctly."""
         self.fs.create_file(
-            '/chromium/src/agents/extensions/ext1/tests/test1.promptfoo.yaml')
-        self.fs.create_file('/chromium/src/agents/extensions/ext2/tests/sub/'
-                            'test2.promptfoo.yaml')
+            '/chromium/src/agents/extensions/ext1/tests/test1.promptfoo.yaml',
+            contents='tests: [{}]')
         self.fs.create_file(
-            '/chromium/src/agents/prompts/eval/test3.promptfoo.yaml')
+            '/chromium/src/agents/extensions/ext2/tests/sub/'
+            'test2.promptfoo.yaml',
+            contents='tests: [{}]')
         self.fs.create_file(
-            '/chromium/src/agents/prompts/eval/sub/test4.promptfoo.yaml')
-        self.fs.create_file('/chromium/src/agents/prompts/eval/test5.yaml')
+            '/chromium/src/agents/prompts/eval/test3.promptfoo.yaml',
+            contents='tests: [{}]')
+        self.fs.create_file(
+            '/chromium/src/agents/prompts/eval/sub/test4.promptfoo.yaml',
+            contents='tests: [{}]')
+        self.fs.create_file('/chromium/src/agents/prompts/eval/test5.yaml',
+                            contents='tests: [{}]')
 
         expected_files = [
             pathlib.Path('/chromium/src/agents/extensions/ext1/tests/'
@@ -117,7 +124,7 @@ class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
         # We need to convert to strings before comparing since pathlib.Paths
         # created using pyfakefs are different than those created manually even
         # if they refer to the same path.
-        self.assertCountEqual([str(p) for p in found_files],
+        self.assertCountEqual([str(c.test_file) for c in found_files],
                               [str(p) for p in expected_files])
 
 
@@ -276,77 +283,97 @@ class GetTestsToRunUnittest(fake_filesystem_unittest.TestCase):
     def test_get_tests_to_run_no_sharding_no_filter(self):
         """Tests that all tests are returned with no sharding or filtering."""
         self.mock_determine_shard_values.return_value = (0, 1)
-        self.mock_discover_testcase_files.return_value = [
+        test_paths = [
             pathlib.Path('/chromium/src/test/a.yaml'),
             pathlib.Path('/chromium/src/test/b.yaml'),
             pathlib.Path('/chromium/src/test/c.yaml'),
         ]
+        self.mock_discover_testcase_files.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
+        ]
 
         result = eval_prompts._get_tests_to_run(None, None, None)
-        self.assertEqual(len(result), 3)
-        self.assertIn(pathlib.Path('/chromium/src/test/a.yaml'), result)
-        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result)
-        self.assertIn(pathlib.Path('/chromium/src/test/c.yaml'), result)
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 3)
+        self.assertIn(pathlib.Path('/chromium/src/test/a.yaml'), result_paths)
+        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result_paths)
+        self.assertIn(pathlib.Path('/chromium/src/test/c.yaml'), result_paths)
 
     def test_get_tests_to_run_with_filter(self):
         """Tests that tests are filtered correctly."""
         self.mock_determine_shard_values.return_value = (0, 1)
-        self.mock_discover_testcase_files.return_value = [
+        test_paths = [
             pathlib.Path('/chromium/src/test/a.yaml'),
             pathlib.Path('/chromium/src/test/b.yaml'),
             pathlib.Path('/chromium/src/test/c.yaml'),
         ]
+        self.mock_discover_testcase_files.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
+        ]
 
         result = eval_prompts._get_tests_to_run(None, None, '*/b.yaml')
-        self.assertEqual(len(result), 1)
-        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result)
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 1)
+        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result_paths)
 
     def test_get_tests_to_run_with_multiple_filters(self):
         """Tests that tests are filtered correctly with multiple filters."""
         self.mock_determine_shard_values.return_value = (0, 1)
-        self.mock_discover_testcase_files.return_value = [
+        test_paths = [
             pathlib.Path('/chromium/src/test/a.yaml'),
             pathlib.Path('/chromium/src/test/b.yaml'),
             pathlib.Path('/chromium/src/test/c.yaml'),
         ]
+        self.mock_discover_testcase_files.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
+        ]
 
         result = eval_prompts._get_tests_to_run(None, None,
                                                 '*/a.yaml::*/c.yaml')
-        self.assertEqual(len(result), 2)
-        self.assertIn(pathlib.Path('/chromium/src/test/a.yaml'), result)
-        self.assertIn(pathlib.Path('/chromium/src/test/c.yaml'), result)
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 2)
+        self.assertIn(pathlib.Path('/chromium/src/test/a.yaml'), result_paths)
+        self.assertIn(pathlib.Path('/chromium/src/test/c.yaml'), result_paths)
 
     def test_get_tests_to_run_with_sharding(self):
         """Tests that tests are sharded correctly."""
         self.mock_determine_shard_values.return_value = (1, 2)
-        self.mock_discover_testcase_files.return_value = [
+        test_paths = [
             pathlib.Path('/chromium/src/test/a.yaml'),
             pathlib.Path('/chromium/src/test/b.yaml'),
             pathlib.Path('/chromium/src/test/c.yaml'),
             pathlib.Path('/chromium/src/test/d.yaml'),
         ]
+        self.mock_discover_testcase_files.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
+        ]
 
         result = eval_prompts._get_tests_to_run(1, 2, None)
-        self.assertEqual(len(result), 2)
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 2)
         # The list is sorted before sharding
-        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result)
-        self.assertIn(pathlib.Path('/chromium/src/test/d.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result_paths)
+        self.assertIn(pathlib.Path('/chromium/src/test/d.yaml'), result_paths)
 
     def test_get_tests_to_run_with_sharding_and_filter(self):
         """Tests that tests are filtered and then sharded correctly."""
         self.mock_determine_shard_values.return_value = (0, 2)
-        self.mock_discover_testcase_files.return_value = [
+        test_paths = [
             pathlib.Path('/chromium/src/test/a.yaml'),
             pathlib.Path('/chromium/src/test/b.yaml'),
             pathlib.Path('/chromium/src/test/c.yaml'),
             pathlib.Path('/chromium/src/test/d_filtered.yaml'),
             pathlib.Path('/chromium/src/test/e_filtered.yaml'),
         ]
+        self.mock_discover_testcase_files.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
+        ]
 
         result = eval_prompts._get_tests_to_run(0, 2, '*filtered*')
-        self.assertEqual(len(result), 1)
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 1)
         self.assertIn(pathlib.Path('/chromium/src/test/d_filtered.yaml'),
-                      result)
+                      result_paths)
 
     def test_get_tests_to_run_no_tests_found(self):
         """Tests that an empty list is returned when no tests are found."""
@@ -355,122 +382,6 @@ class GetTestsToRunUnittest(fake_filesystem_unittest.TestCase):
 
         result = eval_prompts._get_tests_to_run(None, None, None)
         self.assertEqual(len(result), 0)
-
-
-class ReadPassKConfigUnittest(fake_filesystem_unittest.TestCase):
-    """Unit tests for the `_read_pass_k_config` function."""
-
-    def setUp(self):
-        """Sets up the fake filesystem."""
-        self.setUpPyfakefs()
-
-    def test_empty_config(self):
-        """Tests that default values are returned for an empty config."""
-        self.fs.create_file('test.yaml', contents='{}')
-        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-        self.assertEqual(config.runs_per_test, 1)
-        self.assertEqual(config.pass_k_threshold, 1)
-
-    def test_no_tests_key(self):
-        """Tests that default values are returned when 'tests' is missing."""
-        self.fs.create_file('test.yaml', contents='foo: bar')
-        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-        self.assertEqual(config.runs_per_test, 1)
-        self.assertEqual(config.pass_k_threshold, 1)
-
-    def test_empty_tests_list(self):
-        """Tests that default values are returned for an empty 'tests' list."""
-        self.fs.create_file('test.yaml', contents='tests: []')
-        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-        self.assertEqual(config.runs_per_test, 1)
-        self.assertEqual(config.pass_k_threshold, 1)
-
-    def test_no_metadata(self):
-        """Tests that default values are returned for tests with no metadata."""
-        self.fs.create_file('test.yaml', contents='tests:\n  - foo: bar')
-        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-        self.assertEqual(config.runs_per_test, 1)
-        self.assertEqual(config.pass_k_threshold, 1)
-
-    def test_empty_metadata(self):
-        """Tests that default values are returned for empty metadata."""
-        self.fs.create_file('test.yaml', contents='tests:\n  - metadata: {}')
-        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-        self.assertEqual(config.runs_per_test, 1)
-        self.assertEqual(config.pass_k_threshold, 1)
-
-    def test_with_settings(self):
-        """Tests that pass@k settings are read correctly."""
-        yaml_with_settings = """
-tests:
-  - metadata:
-      runs_per_test: 5
-      pass_k_threshold: 3
-"""
-        self.fs.create_file('test.yaml', contents=yaml_with_settings)
-        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-        self.assertEqual(config.runs_per_test, 5)
-        self.assertEqual(config.pass_k_threshold, 3)
-
-    def test_first_test_has_settings(self):
-        """Tests that settings are read from the first test with metadata."""
-        yaml_first_test_has_settings = """
-tests:
-  - metadata:
-      runs_per_test: 5
-      pass_k_threshold: 3
-  - metadata:
-      runs_per_test: 10
-      pass_k_threshold: 8
-"""
-        self.fs.create_file('test.yaml', contents=yaml_first_test_has_settings)
-        with self.assertLogs(level='WARNING') as cm:
-            config = eval_prompts._read_pass_k_config(
-                pathlib.Path('test.yaml'))
-            self.assertIn('Settings on other tests will be ignored',
-                          cm.output[0])
-        self.assertEqual(config.runs_per_test, 5)
-        self.assertEqual(config.pass_k_threshold, 3)
-
-    def test_later_test_has_settings(self):
-        """Tests that settings are read from the first test with metadata."""
-        yaml_later_test_has_settings = """
-tests:
-  - {}
-  - metadata:
-      runs_per_test: 5
-      pass_k_threshold: 3
-"""
-        self.fs.create_file('test.yaml', contents=yaml_later_test_has_settings)
-        with self.assertLogs(level='WARNING') as cm:
-            config = eval_prompts._read_pass_k_config(
-                pathlib.Path('test.yaml'))
-            self.assertIn('Settings on other tests will be ignored',
-                          cm.output[0])
-        self.assertEqual(config.runs_per_test, 1)
-        self.assertEqual(config.pass_k_threshold, 1)
-
-    def test_invalid_runs_type(self):
-        """Tests that a ValueError is raised for a non-integer runs_per_test."""
-        yaml_invalid_runs = """
-tests:
-  - metadata:
-      runs_per_test: "5"
-"""
-        self.fs.create_file('test.yaml', contents=yaml_invalid_runs)
-        with self.assertRaisesRegex(ValueError, 'must be an integer'):
-            eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
-
-    def test_invalid_threshold_type(self):
-        """Tests that a ValueError is raised for a non-integer value."""
-        yaml_invalid_threshold = """
-tests:
-  - metadata:
-      pass_k_threshold: 3.5
-"""
-        self.fs.create_file('test.yaml', contents=yaml_invalid_threshold)
-        with self.assertRaisesRegex(ValueError, 'must be an integer'):
-            eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
 
 
 class PerformChromiumSetupUnittest(unittest.TestCase):
@@ -653,7 +564,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         get_tests_to_run_patcher = mock.patch('eval_prompts._get_tests_to_run')
         self.mock_get_tests_to_run = get_tests_to_run_patcher.start()
         self.mock_get_tests_to_run.return_value = [
-            pathlib.Path('/test/a.yaml')
+            eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))
         ]
         self.addCleanup(get_tests_to_run_patcher.stop)
 
@@ -694,7 +605,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertEqual(result_opts.git_revision, None)
 
         self.mock_worker_pool.return_value.queue_tests.assert_called_once_with(
-            [pathlib.Path('/test/a.yaml')])
+            [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))])
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             assert_called_once()
         self.mock_worker_pool.return_value.shutdown_blocking.assert_called_once(
@@ -702,12 +613,13 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertEqual(returncode, 0)
 
     def test_run_prompt_eval_tests_one_test_fail(self):
-        """Tests running a single failing test."""
-        failed_test = results.TestResult(test_file='test',
+        config = eval_config.TestConfig(test_file='test')
+        failed_test = results.TestResult(config=config,
                                          success=False,
                                          duration=1,
                                          test_log='',
-                                         metrics={})
+                                         metrics={},
+                                         successful_runs=0)
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = [
                 failed_test
@@ -730,16 +642,21 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
 
     def test_run_prompt_eval_tests_multiple_tests_one_fail(self):
         """Tests running multiple tests where one fails."""
-        self.mock_get_tests_to_run.return_value = [
+        test_paths = [
             pathlib.Path('/test/a.yaml'),
             pathlib.Path('/test/b.yaml'),
             pathlib.Path('/test/c.yaml'),
         ]
-        failed_test = results.TestResult(test_file='test',
+        self.mock_get_tests_to_run.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
+        ]
+        config = eval_config.TestConfig(test_file='test')
+        failed_test = results.TestResult(config=config,
                                          success=False,
                                          duration=1,
                                          test_log='',
-                                         metrics={})
+                                         metrics={},
+                                         successful_runs=0)
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = [
                 failed_test
@@ -793,11 +710,13 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
     def test_run_prompt_eval_tests_retry_pass(self):
         """Tests that a test that passes on retry is recorded as a success."""
         self.args.retries = 1
-        failed_test = results.TestResult(test_file='test',
+        config = eval_config.TestConfig(test_file='test')
+        failed_test = results.TestResult(config=config,
                                          success=False,
                                          duration=1,
                                          test_log='',
-                                         metrics={})
+                                         metrics={},
+                                         successful_runs=0)
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             side_effect = [
                 [failed_test],
@@ -815,11 +734,13 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
     def test_run_prompt_eval_tests_retry_fail(self):
         """Tests that a test that fails all retries is recorded as a fail."""
         self.args.retries = 2
-        failed_test = results.TestResult(test_file='test',
+        config = eval_config.TestConfig(test_file='test')
+        failed_test = results.TestResult(config=config,
                                          success=False,
                                          duration=1,
                                          test_log='',
-                                         metrics={})
+                                         metrics={},
+                                         successful_runs=0)
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = [
                 failed_test
@@ -872,7 +793,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         """Tests that tests are repeated correctly."""
         self.args.isolated_script_test_repeat = 3
         self.mock_get_tests_to_run.return_value = [
-            pathlib.Path('/test/a.yaml')
+            eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))
         ]
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = []
@@ -882,15 +803,19 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             self.assertIn('Successfully ran 4 tests', cm.output[-1])
 
         self.mock_worker_pool.return_value.queue_tests.assert_called_once_with(
-            [pathlib.Path('/test/a.yaml')] * 4)
+            [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))] *
+            4)
         self.assertEqual(returncode, 0)
 
     def test_run_prompt_eval_tests_full_parallel(self):
         """Tests that a -1 parallel workers makes a worker for each test."""
-        self.mock_get_tests_to_run.return_value = [
+        test_paths = [
             pathlib.Path('/test/a.yaml'),
             pathlib.Path('/test/b.yaml'),
             pathlib.Path('/test/c.yaml'),
+        ]
+        self.mock_get_tests_to_run.return_value = [
+            eval_config.TestConfig(test_file=p) for p in test_paths
         ]
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = []
