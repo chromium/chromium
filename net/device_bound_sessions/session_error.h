@@ -83,7 +83,13 @@ struct NET_EXPORT SessionError {
     kRelyingPartyWellKnownHasRelyingOrigins = 64,
     kInvalidFederatedSessionProviderSessionMissing = 65,
     kInvalidFederatedSessionWrongProviderOrigin = 66,
-    kMaxValue = kInvalidFederatedSessionWrongProviderOrigin,
+    kInvalidCredentialsCookieCreationTime = 67,
+    kInvalidCredentialsCookieName = 68,
+    kInvalidCredentialsCookieParsing = 69,
+    kInvalidCredentialsCookieUnpermittedAttribute = 70,
+    kInvalidCredentialsCookieInvalidDomain = 71,
+    kInvalidCredentialsCookiePrefix = 72,
+    kMaxValue = kInvalidCredentialsCookiePrefix,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

@@ -305,6 +305,12 @@ chromium-metrics-reviews@google.com.
       label="Federated session invalid due to provider session not found"/>
   <int value="66"
       label="Federated session invalid due to provider origin mismatch"/>
+  <int value="67" label="Invalid credentials - cookie creation time invalid"/>
+  <int value="68" label="Invalid credentials - cookie name invalid"/>
+  <int value="69" label="Invalid credentials - cookie parsing failed"/>
+  <int value="70" label="Invalid credentials - cookie attribute not permitted"/>
+  <int value="71" label="Invalid credentials - cookie invalid domain"/>
+  <int value="72" label="Invalid credentials - cookie invalid prefix"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

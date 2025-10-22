@@ -20,6 +20,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/url_request/url_request.h"
 #include "url/url_canon.h"
 
@@ -85,19 +86,22 @@ CookieSourceScheme CookieSourceSchemeFromProtoEnum(
 }  // namespace
 
 // static
-std::optional<CookieCraving> CookieCraving::Create(
+base::expected<CookieCraving, SessionError> CookieCraving::Create(
     const GURL& url,
     const std::string& name,
     const std::string& attributes,
     base::Time creation_time) {
-  if (!url.is_valid() || creation_time.is_null()) {
-    return std::nullopt;
+  CHECK(url.is_valid());
+  if (creation_time.is_null()) {
+    return base::unexpected(
+        SessionError{SessionError::kInvalidCredentialsCookieCreationTime});
   }
 
   // Check the name first individually, otherwise the next step which cobbles
   // together a cookie line may mask issues with the name.
   if (!ParsedCookie::IsValidCookieName(name)) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::kInvalidCredentialsCookieName});
   }
 
   // Construct an imitation "Set-Cookie" line to feed into ParsedCookie.
@@ -109,7 +113,8 @@ std::optional<CookieCraving> CookieCraving::Create(
 
   ParsedCookie parsed_cookie(line_to_parse);
   if (!parsed_cookie.IsValid()) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::kInvalidCredentialsCookieParsing});
   }
 
   static constexpr auto kPermittedAttributes =
@@ -119,7 +124,8 @@ std::optional<CookieCraving> CookieCraving::Create(
           [](std::string_view attribute, std::string_view value) {
             return base::Contains(kPermittedAttributes, attribute);
           })) {
-    return std::nullopt;
+    return base::unexpected(SessionError{
+        SessionError::kInvalidCredentialsCookieUnpermittedAttribute});
   }
 
   // `domain` is the domain key for storing the CookieCraving, determined
@@ -137,7 +143,8 @@ std::optional<CookieCraving> CookieCraving::Create(
   // domain is non-empty, which CanonicalCookie does not. See comment below in
   // IsValid().
   if (!domain || domain->empty()) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::kInvalidCredentialsCookieInvalidDomain});
   }
 
   std::string path =
@@ -145,7 +152,8 @@ std::optional<CookieCraving> CookieCraving::Create(
 
   CookiePrefix prefix = cookie_util::GetCookiePrefix(name);
   if (!cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie)) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::kInvalidCredentialsCookiePrefix});
   }
 
   // Note: This is a deviation from CanonicalCookie::Create(), which allows
@@ -180,7 +188,8 @@ std::optional<CookieCraving> CookieCraving::Create(
     // no point in creating the craving.
     // TODO(crbug.com/435221694): See related TODO below for plan for
     // longer-term fix.
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::kInvalidCredentialsCookie});
   }
 
   return cookie_craving;

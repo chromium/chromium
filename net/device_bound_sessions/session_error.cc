@@ -33,6 +33,12 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kInvalidCredentialsType:
     case kInvalidCredentialsEmptyName:
     case kInvalidCredentialsCookie:
+    case kInvalidCredentialsCookieCreationTime:
+    case kInvalidCredentialsCookieName:
+    case kInvalidCredentialsCookieParsing:
+    case kInvalidCredentialsCookieUnpermittedAttribute:
+    case kInvalidCredentialsCookieInvalidDomain:
+    case kInvalidCredentialsCookiePrefix:
     case kInvalidFetcherUrl:
     case kInvalidRefreshUrl:
     case kScopeOriginSameSiteMismatch:
@@ -97,6 +103,12 @@ bool SessionError::IsServerError() const {
     case kInvalidCredentialsType:
     case kInvalidCredentialsEmptyName:
     case kInvalidCredentialsCookie:
+    case kInvalidCredentialsCookieCreationTime:
+    case kInvalidCredentialsCookieName:
+    case kInvalidCredentialsCookieParsing:
+    case kInvalidCredentialsCookieUnpermittedAttribute:
+    case kInvalidCredentialsCookieInvalidDomain:
+    case kInvalidCredentialsCookiePrefix:
     case kInvalidChallenge:
     case kTooManyChallenges:
     case kInvalidFetcherUrl:

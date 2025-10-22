@@ -43,9 +43,9 @@ CookieCraving CreateValidCookieCraving(
     const std::string& name,
     const std::string& attributes,
     base::Time creation_time = kCreationTime) {
-  std::optional<CookieCraving> maybe_cc =
+  base::expected<CookieCraving, SessionError> maybe_cc =
       CookieCraving::Create(url, name, attributes, creation_time);
-  EXPECT_TRUE(maybe_cc);
+  EXPECT_TRUE(maybe_cc.has_value());
   EXPECT_TRUE(maybe_cc->IsValid());
   return std::move(*maybe_cc);
 }
@@ -182,55 +182,70 @@ TEST_F(CookieCravingTest, CreateFailParse) {
   const struct {
     const char* name;
     const char* attributes;
+    SessionError::ErrorType expected_error;
   } kParseFailInputs[] = {
       // Empty name is not permitted.
-      {"", ""},
+      {"", "", SessionError::kInvalidCredentialsCookie},
       // Invalid characters in name.
-      {"blah\nsomething", "Secure; Path=/"},
-      {"blah=something", "Secure; Path=/"},
-      {"blah;something", "Secure; Path=/"},
+      {"blah\nsomething", "Secure; Path=/",
+       SessionError::kInvalidCredentialsCookieName},
+      {"blah=something", "Secure; Path=/",
+       SessionError::kInvalidCredentialsCookieName},
+      {"blah;something", "Secure; Path=/",
+       SessionError::kInvalidCredentialsCookieName},
       // Truncated lines are blocked.
-      {"name", "Secure;\n Path=/"},
+      {"name", "Secure;\n Path=/",
+       SessionError::kInvalidCredentialsCookieParsing},
   };
   for (const auto& input : kParseFailInputs) {
-    std::optional<CookieCraving> cc = CookieCraving::Create(
+    SCOPED_TRACE(testing::Message()
+                 << "Name: " << input.name
+                 << ". Attributes: " << input.attributes << ".");
+    base::expected<CookieCraving, SessionError> cc = CookieCraving::Create(
         GURL(kUrlString), input.name, input.attributes, kCreationTime);
-    EXPECT_FALSE(cc);
+    EXPECT_FALSE(cc.has_value());
+    EXPECT_EQ(cc.error().type, input.expected_error);
   }
 }
 
 // Test cases where the Create() params are not valid.
 TEST_F(CookieCravingTest, CreateFailInvalidParams) {
-  // Invalid URL.
-  std::optional<CookieCraving> cc =
-      CookieCraving::Create(GURL(), kName, "", kCreationTime);
-  EXPECT_FALSE(cc);
-
   // Null creation time.
-  cc = CookieCraving::Create(GURL(kUrlString), kName, "", base::Time());
-  EXPECT_FALSE(cc);
+  base::expected<CookieCraving, SessionError> cc =
+      CookieCraving::Create(GURL(kUrlString), kName, "", base::Time());
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type,
+            SessionError::kInvalidCredentialsCookieCreationTime);
 }
 
 TEST_F(CookieCravingTest, CreateFailBadDomain) {
   // URL does not match domain.
-  std::optional<CookieCraving> cc = CookieCraving::Create(
+  base::expected<CookieCraving, SessionError> cc = CookieCraving::Create(
       GURL(kUrlString), kName, "Domain=other.test", kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type,
+            SessionError::kInvalidCredentialsCookieInvalidDomain);
 
   // Public suffix is not allowed to be Domain attribute.
   cc = CookieCraving::Create(GURL(kUrlString), kName, "Domain=test",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type,
+            SessionError::kInvalidCredentialsCookieInvalidDomain);
 
   // IP addresses cannot set suffixes as the Domain attribute.
   cc = CookieCraving::Create(GURL("http://1.2.3.4"), kName, "Domain=2.3.4",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type,
+            SessionError::kInvalidCredentialsCookieInvalidDomain);
 
   // Forbidden attributes even if the attribute is in the name field too.
   cc = CookieCraving::Create(GURL(kUrlString), "partitioned", "partitioned",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type,
+            SessionError::kInvalidCredentialsCookieUnpermittedAttribute);
 }
 
 TEST_F(CookieCravingTest, CreateFailInvalidPrefix) {
@@ -239,73 +254,88 @@ TEST_F(CookieCravingTest, CreateFailInvalidPrefix) {
       {features::kPrefixCookieHttp, features::kPrefixCookieHostHttp}, {});
 
   // __Host- with insecure URL.
-  std::optional<CookieCraving> cc =
+  base::expected<CookieCraving, SessionError> cc =
       CookieCraving::Create(GURL("http://insecure.test"), "__Host-blah",
                             "Secure; Path=/", kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 
   // __Host- with non-Secure cookie.
   cc = CookieCraving::Create(GURL(kUrlString), "__Host-blah", "Path=/",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 
   // __Host- with Domain attribute value.
   cc = CookieCraving::Create(GURL(kUrlString), "__Host-blah",
                              "Secure; Path=/; Domain=example.test",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 
   // __Host- with non-root path.
   cc = CookieCraving::Create(GURL(kUrlString), "__Host-blah",
                              "Secure; Path=/foo", kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 
   // __Secure- with non-Secure cookie.
   cc = CookieCraving::Create(GURL(kUrlString), "__Secure-blah", "",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 
   // Prefixes are checked case-insensitively, so these CookieCravings are also
   // invalid for not satisfying the prefix requirements.
   // Missing Secure.
   cc = CookieCraving::Create(GURL(kUrlString), "__host-blah", "Path=/",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   // Specifies Domain.
   cc = CookieCraving::Create(GURL(kUrlString), "__HOST-blah",
                              "Secure; Path=/; Domain=example.test",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   // Missing Secure.
   cc = CookieCraving::Create(GURL(kUrlString), "__SeCuRe-blah", "",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah", "Path=/",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah", "secure;Path=/",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah", "Path=/",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/", kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   // TODO(crbug.com/435221694): This kind of cookie should actually be valid and
   // move to CreateWithPrefix test. See other TODOs linked to this bug for plans
   // for the fix.
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/;httpOnly", kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookie);
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/cookies/;httpOnly", kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/;httpOnly;Domain=example.test",
                              kCreationTime);
-  EXPECT_FALSE(cc);
+  EXPECT_FALSE(cc.has_value());
+  EXPECT_EQ(cc.error().type, SessionError::kInvalidCredentialsCookiePrefix);
 }
 
 // Valid cases were tested as part of the successful Create() tests above, so

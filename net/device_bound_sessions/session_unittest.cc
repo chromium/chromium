@@ -141,6 +141,14 @@ TEST_F(SessionTest, InvalidScopeOrigin) {
   EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidScopeOrigin);
 }
 
+TEST_F(SessionTest, InvalidFetcherUrl) {
+  auto params = CreateValidParams();
+  params.fetcher_url = GURL();
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidFetcherUrl);
+}
+
 TEST_F(SessionTestWithOriginTrialFeedback, InvalidScopeOriginWithPath) {
   auto params = CreateValidParams();
   params.scope.origin = "https://example.test/path";
@@ -263,7 +271,7 @@ TEST_F(SessionTest, CreateWithInvalidCredential) {
       "test_cookie",
       /*attributes=*/"Domain=some-other-domain.test"}};
   EXPECT_EQ(Session::CreateIfValid(params).error().type,
-            SessionError::kInvalidCredentialsCookie);
+            SessionError::kInvalidCredentialsCookieInvalidDomain);
 
   // Try to create a cookie with no name.
   params.credentials = {

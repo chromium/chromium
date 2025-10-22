@@ -156,13 +156,12 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
                   candidate_refresh_endpoint));
 
   for (const auto& cred : params.credentials) {
-    std::optional<CookieCraving> craving = CookieCraving::Create(
+    base::expected<CookieCraving, SessionError> craving = CookieCraving::Create(
         params.fetcher_url, cred.name, cred.attributes, base::Time::Now());
-    if (craving) {
-      session->cookie_cravings_.push_back(*craving);
+    if (craving.has_value()) {
+      session->cookie_cravings_.push_back(craving.value());
     } else {
-      return base::unexpected(
-          SessionError{SessionError::kInvalidCredentialsCookie});
+      return base::unexpected(SessionError{std::move(craving.error())});
     }
   }
 
@@ -481,6 +480,12 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kInvalidCredentialsType:
     case kInvalidCredentialsEmptyName:
     case kInvalidCredentialsCookie:
+    case kInvalidCredentialsCookieCreationTime:
+    case kInvalidCredentialsCookieName:
+    case kInvalidCredentialsCookieParsing:
+    case kInvalidCredentialsCookieUnpermittedAttribute:
+    case kInvalidCredentialsCookieInvalidDomain:
+    case kInvalidCredentialsCookiePrefix:
     case kInvalidChallenge:
     case kTooManyChallenges:
     case kInvalidFetcherUrl:

@@ -12,6 +12,7 @@
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/device_bound_sessions/session_error.h"
 
 namespace net {
 class URLRequest;
@@ -63,9 +64,10 @@ class NET_EXPORT CookieCraving : public CookieBase {
   // Creates a new CookieCraving in the context of `url`, given a `name` and
   // associated cookie `attributes`. (Note that CookieCravings do not have a
   // "value".) `url` must be valid. `creation_time` may not be null. May return
-  // nullopt if an attribute value is invalid. If a CookieCraving is returned,
-  // it will satisfy IsValid(). If there is leading or trailing whitespace in
-  // `name`, it will get trimmed.
+  // a SessionError if the CookieCraving is invalid, such as if an attribute
+  // value is invalid. If a CookieCraving is returned, it will satisfy
+  // IsValid(). If there is leading or trailing whitespace in `name`, it will
+  // get trimmed.
   //
   // Partitioned cookies are not supported. Attempts to create a
   // partitioned CookieCraving will fail.
@@ -92,10 +94,11 @@ class NET_EXPORT CookieCraving : public CookieBase {
   //    secure source_scheme, if that cookie was Secure, on the basis that that
   //    URL might be trustworthy when checked later. CookieCraving does not
   //    allow this.
-  static std::optional<CookieCraving> Create(const GURL& url,
-                                             const std::string& name,
-                                             const std::string& attributes,
-                                             base::Time creation_time);
+  static base::expected<CookieCraving, SessionError> Create(
+      const GURL& url,
+      const std::string& name,
+      const std::string& attributes,
+      base::Time creation_time);
 
   CookieCraving(const CookieCraving& other);
   CookieCraving(CookieCraving&& other);
