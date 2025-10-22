@@ -28228,6 +28228,24 @@
             ]
         }
     ],
+    "YourSavedInfoBrandingInSettings": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enable",
+                    "enable_features": [
+                        "YourSavedInfoBrandingInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "ZPSPrefetchDebouncingDesktop": [
         {
             "platforms": [
