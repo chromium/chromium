@@ -58,6 +58,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         TabCloseMethod.SWIPE,
         TabCloseMethod.TAB_LIST_EDITOR,
         TabCloseMethod.TAB_GRID_DIALOG,
+        TabCloseMethod.CLOSED_WHILE_REAUTH_VISIBLE,
         TabCloseMethod.OTHER,
     })
     @Retention(RetentionPolicy.CLASS)
@@ -65,7 +66,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         int SWIPE = 0;
         int TAB_LIST_EDITOR = 1;
         int TAB_GRID_DIALOG = 2;
-        int OTHER = 3;
+        int CLOSED_WHILE_REAUTH_VISIBLE = 3;
+        int OTHER = 4;
     }
 
     private final IncognitoTabModelObserver mIncognitoTabModelObserver =
@@ -287,9 +289,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
         boolean isNotVisibleOrSelected =
                 !getIsVisibleSupplier().get() || !filter.getTabModel().isActiveModel();
-        boolean incognitoReauthShowing =
-                mIncognitoReauthController != null
-                        && mIncognitoReauthController.isIncognitoReauthPending();
+        boolean incognitoReauthShowing = isIncognitoReauthPending();
 
         if (isNotVisibleOrSelected || incognitoReauthShowing) {
             coordinator.resetWithListOfTabs(null);
@@ -318,10 +318,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
     @Override
     protected void requestAccessibilityFocusOnCurrentTab() {
-        if (mIncognitoReauthController != null
-                && mIncognitoReauthController.isReauthPageShowing()) {
-            return;
-        }
+        if (isIncognitoReauthShowing()) return;
 
         super.requestAccessibilityFocusOnCurrentTab();
     }
@@ -398,7 +395,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         boolean isTabGridDialogVisible =
                 dialogShowingOrAnimationSupplier != null && dialogShowingOrAnimationSupplier.get();
 
-        if (wasClosedViaSwipe) {
+        if (isIncognitoReauthShowing()) {
+            return TabCloseMethod.CLOSED_WHILE_REAUTH_VISIBLE;
+        } else if (wasClosedViaSwipe) {
             return TabCloseMethod.SWIPE;
         } else if (wasClosedViaTabListEditor) {
             return TabCloseMethod.TAB_LIST_EDITOR;
@@ -495,6 +494,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
          *   <li>The final tab was closed via the tab list editor.
          *   <li>The final tab was closed via a swipe.
          *   <li>The tab grid dialog is visible.
+         *   <li>The incognito reauth screen is visible.
          * </ul>
          */
         @EnsuresNonNullIf(
@@ -544,5 +544,17 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
         return mHubSearchEnabledStateSupplier;
+    }
+
+    /** Returns whether the incognito reauth screen is showing. */
+    private boolean isIncognitoReauthShowing() {
+        return mIncognitoReauthController != null
+                && mIncognitoReauthController.isReauthPageShowing();
+    }
+
+    /** Returns whether the incognito reauth is pending the reauth screen may not be visible. */
+    private boolean isIncognitoReauthPending() {
+        return mIncognitoReauthController != null
+                && mIncognitoReauthController.isIncognitoReauthPending();
     }
 }
