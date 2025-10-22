@@ -30,8 +30,8 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "services/device/public/mojom/geoposition.mojom-blink.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -120,6 +121,21 @@ bool ValidateGeoposition(const device::mojom::blink::Geoposition& position) {
          position.longitude >= -180. && position.longitude <= 180. &&
          position.accuracy >= 0. && !position.timestamp.is_null();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// On Android, `enableHighAccuracy` previously always returned a precise
+// location. With the `ApproximateGeolocationPermissionEnabled` feature, the
+// location provider reuses the same accuracy setting but can return precise or
+// approximate locations. To ensure consistent accuracy for sites before and
+// after this feature, we override the accuracy setting here.
+PositionOptions* OverrideAccuracyHint(const PositionOptions* options) {
+  PositionOptions* copied_options = PositionOptions::Create();
+  copied_options->setTimeout(options->timeout());
+  copied_options->setMaximumAge(options->maximumAge());
+  copied_options->setEnableHighAccuracy(true);
+  return copied_options;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -213,7 +229,15 @@ void Geolocation::RecordOriginTypeAccess() const {
 void Geolocation::getCurrentPositionForBindings(
     V8PositionCallback* success_callback,
     V8PositionErrorCallback* error_callback,
-    const PositionOptions* options) {
+    const PositionOptions* v8_options) {
+  const PositionOptions* options =
+#if BUILDFLAG(IS_ANDROID)
+      RuntimeEnabledFeatures::ApproximateGeolocationPermissionEnabled()
+          ? OverrideAccuracyHint(v8_options)
+          : v8_options;
+#else
+      v8_options;
+#endif
   if (options->enableHighAccuracy()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
@@ -256,7 +280,15 @@ void Geolocation::GetCurrentPosition(
 int Geolocation::watchPositionForBindings(
     V8PositionCallback* success_callback,
     V8PositionErrorCallback* error_callback,
-    const PositionOptions* options) {
+    const PositionOptions* v8_options) {
+  const PositionOptions* options =
+#if BUILDFLAG(IS_ANDROID)
+      RuntimeEnabledFeatures::ApproximateGeolocationPermissionEnabled()
+          ? OverrideAccuracyHint(v8_options)
+          : v8_options;
+#else
+      v8_options;
+#endif
   if (options->enableHighAccuracy()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationGetCurrentPositionHighAccuracy);

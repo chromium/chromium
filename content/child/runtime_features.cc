@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "components/attribution_reporting/features.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -347,6 +348,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"AttributionReporting",
            raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
+          {"ApproximateGeolocationPermission",
+           raw_ref(
+               content_settings::features::kApproximateGeolocationPermission)},
           {"AndroidDownloadableFontsMatching",
            raw_ref(features::kAndroidDownloadableFontsMatching)},
 #if BUILDFLAG(IS_ANDROID)

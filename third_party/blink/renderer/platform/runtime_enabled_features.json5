@@ -566,6 +566,12 @@
       status: "experimental",
     },
     {
+      name: "ApproximateGeolocationPermission",
+      // This feature is controlled by the kApproximateGeolocationPermission
+      // base::Feature in the browser process.
+      base_feature: "none",
+    },
+    {
       name: "AppTitle",
       status: "experimental",
       origin_trial_feature_name: "AppTitle",
