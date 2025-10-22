@@ -667,7 +667,7 @@ public class SiteSettingsCategory {
      *
      * @param permission The string of the permission to check.
      */
-    private boolean permissionOnInAndroid(String permission, Context context) {
+    protected boolean permissionOnInAndroid(String permission, Context context) {
         return PackageManager.PERMISSION_GRANTED
                 == ApiCompatibilityUtils.checkPermission(
                         context, permission, Process.myPid(), Process.myUid());

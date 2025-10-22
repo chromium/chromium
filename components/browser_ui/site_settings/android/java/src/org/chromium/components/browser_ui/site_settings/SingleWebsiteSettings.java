@@ -1258,6 +1258,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         preference.setOnPreferenceChangeListener(this);
         @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
+        LocationCategory locationCategory =
+                new LocationCategory(getBrowserContextHandle(), !mHasApproximateLocationGrant);
+
         preference.setSummary(
                 isEmbargoed
                         ? getString(R.string.automatically_blocked)
@@ -1266,7 +1269,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                         contentType,
                                         value,
                                         isOneTime,
-                                        mHasApproximateLocationGrant)));
+                                        mHasApproximateLocationGrant,
+                                        locationCategory.hasPreciseOnlyBlockedWarning(
+                                                getContext()))));
         if (preference instanceof ChromeImageViewPreference) {
             ChromeImageViewPreference oneTimePreference = (ChromeImageViewPreference) preference;
             oneTimePreference.setImageView(
@@ -1614,12 +1619,19 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         } else {
             mSite.setContentSetting(browserContextHandle, type, permission);
         }
+        LocationCategory locationCategory =
+                new LocationCategory(getBrowserContextHandle(), !mHasApproximateLocationGrant);
+
         // In Clank, one time grants are only possible via prompt, not via page
         // info.
         preference.setSummary(
                 getString(
                         ContentSettingsResources.getCategorySummary(
-                                type, permission, false, mHasApproximateLocationGrant)));
+                                type,
+                                permission,
+                                false,
+                                mHasApproximateLocationGrant,
+                                locationCategory.hasPreciseOnlyBlockedWarning(getContext()))));
         preference.setIcon(getContentSettingsIcon(type, permission));
 
         if (mWebsiteSettingsObserver != null) {

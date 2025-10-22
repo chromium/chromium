@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import androidx.preference.Preference;
@@ -45,6 +46,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -250,6 +252,125 @@ public class SingleWebsiteSettingsTest {
         settingsActivity.finish();
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testGeolocationPermissionWithOnlyCoarseAppLevelPermission() {
+        // Disable android location permission.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+
+        GeolocationSetting allowSetting =
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        GeolocationSetting askSetting =
+                new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
+
+        Website website =
+                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.DURABLE);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
+
+        // Check initial state
+        String preferenceKey =
+                SingleWebsiteSettings.getPreferenceKey(
+                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
+        Preference preference = websitePreferences.findPreference(preferenceKey);
+        assertNotNull("Geolocation Preference not found.", preference);
+        assertEquals("Allowed • Using approximate", preference.getSummary());
+        assertTrue(preference.isEnabled());
+
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void
+            testGeolocationPermissionWithOnlyCoarseAppLevelPermissionAndApproxGeolocationPermissionDisabled() {
+        // Disable android location permission.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+
+        Website website =
+                createWebsiteWithGeolocationPermission(ContentSetting.ALLOW, SessionModel.DURABLE);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
+
+        // Check initial state
+        String preferenceKey =
+                SingleWebsiteSettings.getPreferenceKey(ContentSettingsType.GEOLOCATION);
+        Preference preference = websitePreferences.findPreference(preferenceKey);
+        assertNotNull("Geolocation Preference not found.", preference);
+        assertEquals("Allowed", preference.getSummary());
+        assertTrue(preference.isEnabled());
+
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testGeolocationPermissionWithOnlyCoarseAppLevelPermissionOneTime() {
+        // Disable android location permission.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+
+        GeolocationSetting allowSetting =
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        Website website =
+                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.ONE_TIME);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
+
+        // Check initial state
+        String preferenceKey =
+                SingleWebsiteSettings.getPreferenceKey(
+                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
+        Preference preference = websitePreferences.findPreference(preferenceKey);
+        assertNotNull("Geolocation Preference not found.", preference);
+        assertEquals("Allowed this time • Using approximate", preference.getSummary());
+        assertTrue(preference.isEnabled());
+
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void
+            testGeolocationPermissionWithOnlyCoarseAppLevelPermissionOneTimeAndApproxGeolocationPermissionDisabled() {
+        // Disable android location permission.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+
+        Website website =
+                createWebsiteWithGeolocationPermission(ContentSetting.ALLOW, SessionModel.ONE_TIME);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
+
+        // Check initial state
+        String preferenceKey =
+                SingleWebsiteSettings.getPreferenceKey(ContentSettingsType.GEOLOCATION);
+        Preference preference = websitePreferences.findPreference(preferenceKey);
+        assertNotNull("Geolocation Preference not found.", preference);
+        assertEquals("Allowed this time", preference.getSummary());
+        assertTrue(preference.isEnabled());
+
+        settingsActivity.finish();
+    }
+
     private static void runGeolocationTest(
             GeolocationSetting allowSetting,
             GeolocationSetting blockSetting,
@@ -332,10 +453,11 @@ public class SingleWebsiteSettingsTest {
         Website website = new Website(WebsiteAddress.create(origin), WebsiteAddress.create(origin));
         String object =
                 """
-                 {"name": "Some device",
-                  "ephemeral-guid": "1",
-                  "product-id": "2",
-                  "serial-number": "3"}""";
+                {"name": "Some device",
+                 "ephemeral-guid": "1",
+                 "product-id": "2",
+                 "serial-number": "3"}\
+                """;
         website.addChosenObjectInfo(
                 new ChosenObjectInfo(
                         ContentSettingsType.USB_CHOOSER_DATA,
@@ -548,6 +670,23 @@ public class SingleWebsiteSettingsTest {
                 () ->
                         info.setGeolocationSetting(
                                 ProfileManager.getLastUsedRegularProfile(), setting));
+        website.setPermissionInfo(info);
+        return website;
+    }
+
+    private static Website createWebsiteWithGeolocationPermission(
+            @ContentSetting int setting, int sessionModel) {
+        WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
+        Website website = new Website(address, address);
+        PermissionInfo info =
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION,
+                        website.getAddress().getOrigin(),
+                        website.getAddress().getOrigin(),
+                        /* isEmbargoed= */ false,
+                        sessionModel);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting));
         website.setPermissionInfo(info);
         return website;
     }
