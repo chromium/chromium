@@ -3479,24 +3479,6 @@ uint32_t LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
 
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect_in_dips) {
-  if (!GetDocument()->GetSettings()) {
-    // TODO(http://crbug.com/446990195): Diagnose root cause of this crash
-    // and remove this logging.
-    SCOPED_CRASH_KEY_BOOL("Blink", "update_wco_is_attached", IsAttached());
-    SCOPED_CRASH_KEY_BOOL("Blink", "update_wco_is_detached", IsDetached());
-    SCOPED_CRASH_KEY_BOOL("Blink", "update_wco_is_provisional",
-                          IsProvisional());
-    SCOPED_CRASH_KEY_BOOL("Blink", "update_wco_initial_empty_doc",
-                          GetDocument()->IsInitialEmptyDocument());
-    SCOPED_CRASH_KEY_STRING32("Blink", "update_wco_null_settings_reason",
-                              !GetDocument()->GetFrame() ? "detached from frame"
-                              : !GetDocument()->GetFrame()->GetPage()
-                                  ? "detached from page"
-                                  : "other: frame and page still valid");
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
   // The rect passed to us from content is in DIP screen space, relative to the
   // main frame, and needs to move to CSS space. This doesn't take the page's
   // zoom factor into account so we must scale by the inverse of the page zoom

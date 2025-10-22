@@ -217,13 +217,6 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // crbug.com/453113611
     "SubprocessMetricsProvider-histogram",
 
-    // crbug.com/446990195
-    "Blink-update_wco_is_attached",
-    "Blink-update_wco_is_detached",
-    "Blink-update_wco_is_provisional",
-    "Blink-update_wco_initial_empty_doc",
-    "Blink-update_wco_null_settings_reason",
-
     nullptr};
 // clang-format on
 
