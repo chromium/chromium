@@ -126,9 +126,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // ContextualTaskSyncBridge::Observer implementation.
   void OnContextualTaskDataStoreLoaded() override;
   void OnTaskAddedOrUpdatedRemotely(
-      const std::vector<ContextualTask>& task_entities) override;
-  void OnTaskRemovedRemotely(
-      const std::vector<base::Uuid>& task_entities) override;
+      const std::vector<ContextualTask>& contextual_tasks) override;
+  void OnTaskRemovedRemotely(const std::vector<base::Uuid>& task_ids) override;
 
   void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
   void NotifyTaskUpdated(const ContextualTask& task, TriggerSource source);

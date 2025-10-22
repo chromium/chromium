@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/contextual_tasks/internal/account_utils.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
+#include "components/contextual_tasks/internal/conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
@@ -130,7 +131,9 @@ void ContextualTasksServiceImpl::UpdateThreadForTask(
   // ID, it indicates a mismatch or an attempt to update a different thread, so
   // we return.
   std::optional<Thread> thread = it->second.GetThread();
-  if (thread.has_value() && thread->server_id != server_id) {
+  // If the task doesn't exist doesn't have the right thread, return early.
+  if (thread.has_value() &&
+      (thread->server_id != server_id || thread->type != thread_type)) {
     return;
   }
 
@@ -332,7 +335,8 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
     }
 
     auto it = thread_map.find(task.GetThread()->server_id);
-    if (it == thread_map.end()) {
+    if (it == thread_map.end() ||
+        ToThreadType(it->second.specifics().type()) != task.GetThread()->type) {
       continue;
     }
 
@@ -430,13 +434,33 @@ void ContextualTasksServiceImpl::OnContextualTaskDataStoreLoaded() {
 }
 
 void ContextualTasksServiceImpl::OnTaskAddedOrUpdatedRemotely(
-    const std::vector<ContextualTask>& task_entities) {
+    const std::vector<ContextualTask>& contextual_tasks) {
   CHECK(!supports_ephemeral_only_);
+  for (const auto& task : contextual_tasks) {
+    if (tasks_.find(task.GetTaskId()) == tasks_.end()) {
+      tasks_.insert_or_assign(task.GetTaskId(), task);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                         weak_ptr_factory_.GetWeakPtr(), task,
+                         TriggerSource::kRemote));
+    } else {
+      tasks_.insert_or_assign(task.GetTaskId(), task);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                         weak_ptr_factory_.GetWeakPtr(), task,
+                         TriggerSource::kRemote));
+    }
+  }
 }
 
 void ContextualTasksServiceImpl::OnTaskRemovedRemotely(
-    const std::vector<base::Uuid>& task_entities) {
+    const std::vector<base::Uuid>& task_ids) {
   CHECK(!supports_ephemeral_only_);
+  for (const auto& task_id : task_ids) {
+    RemoveTaskInternal(task_id, TriggerSource::kRemote);
+  }
 }
 
 void ContextualTasksServiceImpl::NotifyTaskAdded(const ContextualTask& task,
