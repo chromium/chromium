@@ -9,9 +9,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/payments/content/web_payments_web_data_service.h"
 
 namespace payments {
+
+class WebPaymentsWebDataService;
 
 class BrowserBoundKeyDeleter : public KeyedService {
  public:

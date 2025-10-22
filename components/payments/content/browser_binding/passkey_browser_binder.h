@@ -81,7 +81,7 @@ class PasskeyBrowserBinder {
       scoped_refptr<WebPaymentsWebDataService> web_data_service);
   PasskeyBrowserBinder(const PasskeyBrowserBinder&) = delete;
   PasskeyBrowserBinder& operator=(const PasskeyBrowserBinder&) = delete;
-  ~PasskeyBrowserBinder();
+  virtual ~PasskeyBrowserBinder();
 
   // Represents a browser bound key that has not yet been associated. If
   // BindKey() is not called when this class goes out of scope, the wrapped
@@ -171,21 +171,16 @@ class PasskeyBrowserBinder {
   void UpdateKeyLastUsedToNow(const std::vector<uint8_t>& credential_id,
                               const std::string& relying_party);
 
-  // Deletes all unknown browser bound keys, querying using the provided
-  // `get_matching_credential_ids_callback` to find credentials matching each
-  // relying party in the BBK storage. The
-  // `get_matching_credential_ids_callback` must be valid until `callback` is
-  // invoked. `callback` may hold and release the reference to this
-  // PasskeyBrowserBinder object (DeleteAllUnknownBrowserBoundKeys will run
-  // `callback` as its last action).
-  void DeleteAllUnknownBrowserBoundKeys(
-      base::RepeatingCallback<
-          void(const std::string& relying_party_id,
-               const std::vector<std::vector<uint8_t>>& credential_ids,
-               bool require_third_party_payment_bit_set,
-               base::OnceCallback<void(std::vector<std::vector<uint8_t>>)>)>
-          get_matching_credential_ids_callback,
-      base::OnceClosure callback);
+  // Retrieves all browser bound keys from the web data service and runs
+  // `callback` with the result.
+  virtual void GetAllBrowserBoundKeys(
+      base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)> callback);
+
+  // Deletes the provided browser bound keys from the web data service.
+  // `callback` is run once the database operation completes.
+  virtual void DeleteBrowserBoundKeys(
+      base::OnceClosure callback,
+      std::vector<BrowserBoundKeyMetadata> bbk_metas);
 
   // Injects the random bytes function for testing.
   void SetRandomBytesAsVectorCallbackForTesting(
@@ -214,12 +209,6 @@ class PasskeyBrowserBinder {
       base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
           callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
-
-  // Called after internal authenticator was called to find stale BBKs.
-  // `callback` is Run once the database operation completes.
-  void DeleteBrowserBoundKeys(
-      base::OnceClosure callback,
-      std::vector<BrowserBoundKeyMetadata> stale_bbk_metas);
 
   // Records a creation or retrieval metric.
   void RecordCreationOrRetrieval(bool is_creation, bool did_succeed);

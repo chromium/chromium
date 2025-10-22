@@ -70,11 +70,11 @@ source_set("browser_bound_key_deleter") {
   public_deps = [
     "//base",  # base/no_destructor.h
     "//components/keyed_service/content",
-    "//components/payments/content:utils",
   ]
   deps = [
     ":passkey_browser_binder",
     "//components/keyed_service/content",
+    "//components/payments/content:utils",
     "//components/webdata_services",
     "//content/public/browser",
   ]
@@ -87,6 +87,7 @@ source_set("browser_bound_key_deleter") {
     deps += [
       ":android",
       "//components/webauthn/android",
+      "//components/webauthn/core/browser",
     ]
   }
 
@@ -123,14 +124,24 @@ if (is_android) {
 
   source_set("android_unittests") {
     testonly = true
-    sources = [ "browser_bound_key_store_android_unittest.cc" ]
+    sources = [
+      "browser_bound_key_deleter_android_unittest.cc",
+      "browser_bound_key_store_android_unittest.cc",
+    ]
     deps = [
       ":android",
+      ":browser_bound_key_deleter",
       ":interface",
+      ":test_support",
       "//base",
+      "//base/test:test_support",
+      "//components/payments/content:test_support",
       "//components/payments/content/android/spc:browser_binding_jni",
+      "//components/webauthn/core/browser:test_support",
+      "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/blink/public:blink_headers",
     ]
   }
 }
@@ -199,9 +210,15 @@ source_set("test_support") {
   sources = [
     "mock_browser_bound_key_deleter.cc",
     "mock_browser_bound_key_deleter.h",
+    "mock_browser_bound_key_store.cc",
+    "mock_browser_bound_key_store.h",
+    "mock_passkey_browser_binder.cc",
+    "mock_passkey_browser_binder.h",
   ]
   public_deps = [
     ":browser_bound_key_deleter",
+    ":interface",
+    ":passkey_browser_binder",
     "//testing/gmock",
   ]
 }

@@ -12,6 +12,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/payments/content/browser_binding/browser_bound_key_deleter.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/browser_context.h"

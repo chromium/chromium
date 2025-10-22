@@ -5,17 +5,13 @@
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/barrier_callback.h"
-#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -31,16 +27,6 @@ namespace payments {
 namespace {
 // The length of the random browser bound key identifiers.
 constexpr size_t kBrowserBoundKeyIdLength = 32;
-
-using GetMatchingCredentialIdsCallback = base::RepeatingCallback<void(
-    const std::string& relying_party_id,
-    const std::vector<std::vector<uint8_t>>& credential_ids,
-    bool require_third_party_payment_bit_set,
-    base::OnceCallback<void(std::vector<std::vector<uint8_t>>)>)>;
-
-// Type for a map from string (relying party) to a vector of BBK metadata.
-using RelyingPartyToBkkMetadata =
-    base::flat_map<std::string, std::vector<BrowserBoundKeyMetadata>>;
 
 // Converts a generic `result` of unique_ptr<WDTypedResult> to a vector of
 // uint8_t, representing a BrowserBoundKey.
@@ -80,61 +66,6 @@ static bool ConvertWDTypedResultToBool(WebDataServiceBase::Handle handle,
     return static_cast<WDResult<bool>*>(result.get())->GetValue();
   }
   return false;
-}
-
-static RelyingPartyToBkkMetadata GroupByRelyingPartyId(
-    std::vector<BrowserBoundKeyMetadata> bbk_metas) {
-  RelyingPartyToBkkMetadata grouped;
-  for (auto& bbk_meta : bbk_metas) {
-    grouped[bbk_meta.passkey.relying_party_id].push_back(std::move(bbk_meta));
-  }
-  return grouped;
-}
-
-static std::vector<BrowserBoundKeyMetadata> RemoveMatchingCredentialIds(
-    std::vector<BrowserBoundKeyMetadata> bbks,
-    std::vector<std::vector<uint8_t>> matching_credential_ids) {
-  std::erase_if(bbks, [&matching_credential_ids](auto& bbk) {
-    return base::Contains(matching_credential_ids, bbk.passkey.credential_id);
-  });
-  return bbks;
-}
-
-// Flattens a vector of vector of metadata to a vector of metadata.
-static std::vector<BrowserBoundKeyMetadata> Flatten(
-    std::vector<std::vector<BrowserBoundKeyMetadata>> nested) {
-  std::vector<BrowserBoundKeyMetadata> flattened;
-  for (auto& inner : nested) {
-    std::ranges::move(inner, std::back_inserter(flattened));
-  }
-  return flattened;
-}
-
-// Finds the BBKs in `stored_bbks` that are no longer present in
-// `get_matching_credential_ids_callback`. `callback` will be invoked with a
-// vector of the browser bound key metadatas that are no longer valid.
-static void FindDeletedPasskeys(
-    GetMatchingCredentialIdsCallback get_matching_credential_ids_callback,
-    base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)> callback,
-    std::vector<BrowserBoundKeyMetadata> stored_bbks) {
-  RelyingPartyToBkkMetadata bbks_by_relying_party =
-      GroupByRelyingPartyId(std::move(stored_bbks));
-  auto barrier_callback =
-      base::BarrierCallback<std::vector<BrowserBoundKeyMetadata>>(
-          bbks_by_relying_party.size(),
-          base::BindOnce(&Flatten).Then(std::move(callback)));
-  for (std::pair<std::string, std::vector<BrowserBoundKeyMetadata>>& entry :
-       bbks_by_relying_party) {
-    auto stored_credential_ids =
-        base::ToVector(entry.second, [](const BrowserBoundKeyMetadata& bbk) {
-          return bbk.passkey.credential_id;
-        });
-    get_matching_credential_ids_callback.Run(
-        entry.first, stored_credential_ids,
-        /*require_third_party_payment_bit=*/false,
-        base::BindOnce(&RemoveMatchingCredentialIds, std::move(entry.second))
-            .Then(barrier_callback));
-  }
 }
 
 }  // namespace
@@ -235,30 +166,22 @@ void PasskeyBrowserBinder::UpdateKeyLastUsedToNow(
           .Then(base::BindOnce(RecordBrowserBoundKeyMetadataUpdated)));
 }
 
-void PasskeyBrowserBinder::DeleteAllUnknownBrowserBoundKeys(
-    GetMatchingCredentialIdsCallback get_matching_credential_ids_callback,
-    base::OnceClosure callback) {
-  // `callback` may be holding the reference to this PasskeyBrowserBinder, so
-  // after `callback` is run `this` may not be accessed.
-  base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)>
-      delete_browser_bound_keys_and_finish =
-          base::BindOnce(&PasskeyBrowserBinder::DeleteBrowserBoundKeys,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+void PasskeyBrowserBinder::GetAllBrowserBoundKeys(
+    base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)> callback) {
   web_data_service_->GetAllBrowserBoundKeys(
       base::BindOnce(&ConvertWDTypedResultToBrowserBoundKeyMetadata)
-          .Then(base::BindOnce(
-              &FindDeletedPasskeys, get_matching_credential_ids_callback,
-              std::move(delete_browser_bound_keys_and_finish))));
+          .Then(std::move(callback)));
 }
 
 void PasskeyBrowserBinder::DeleteBrowserBoundKeys(
     base::OnceClosure callback,
-    std::vector<BrowserBoundKeyMetadata> stale_bbk_metas) {
-  if (stale_bbk_metas.empty()) {
+    std::vector<BrowserBoundKeyMetadata> bbk_metas) {
+  if (bbk_metas.empty()) {
+    std::move(callback).Run();
     return;
   }
   web_data_service_->DeleteBrowserBoundKeys(
-      base::ToVector(stale_bbk_metas,
+      base::ToVector(bbk_metas,
                      [](auto& meta) { return std::move(meta.passkey); }),
       std::move(callback));
 }
