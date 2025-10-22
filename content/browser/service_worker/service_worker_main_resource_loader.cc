@@ -115,6 +115,16 @@ void RecordSyntheticResponseEligibility(
                                 eligibility);
 }
 
+void MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
+    scoped_refptr<ServiceWorkerVersion> version,
+    blink::mojom::ServiceWorkerFetchHandlerBypassOption option) {
+  static const bool bypass_subresource(
+      blink::features::kServiceWorkerSyntheticResponseBypassSubresource.Get());
+  if (bypass_subresource) {
+    version->set_fetch_handler_bypass_option(option);
+  }
+}
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -1059,6 +1069,10 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       RecordSyntheticResponseEligibility(
           SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
     }
+    MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
+        version, blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+                     kSyntheticResponseDryRunMode);
+
     return false;
   }
 
@@ -1137,6 +1151,10 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
           SyntheticResponseEligibility::kEligible);
       break;
   }
+
+  MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
+      version,
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kSyntheticResponse);
 
   return true;
 }

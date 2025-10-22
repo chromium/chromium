@@ -2261,6 +2261,14 @@ BASE_FEATURE_PARAM(bool,
                    "dry_run",
                    false);
 
+// If true, the service worker for synthetic response doesn't intercept
+// subresources.
+BASE_FEATURE_PARAM(bool,
+                   kServiceWorkerSyntheticResponseBypassSubresource,
+                   &kServiceWorkerSyntheticResponse,
+                   "bypass_subresource",
+                   false);
+
 // 'Mode' parameter for blink::features::kSoftNavigationHeuristics.
 const base::FeatureParam<SoftNavigationHeuristicsMode>::Option
     kSoftNavigationHeuristicsModes[] = {

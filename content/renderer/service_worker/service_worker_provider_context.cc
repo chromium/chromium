@@ -146,6 +146,15 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
     }
   }
 
+  if (fetch_handler_bypass_option_ ==
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kSyntheticResponse ||
+      fetch_handler_bypass_option_ ==
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kSyntheticResponseDryRunMode) {
+    return nullptr;
+  }
+
   if (!subresource_loader_factory_) {
     CHECK(!controller_connector_);
     CHECK(remote_controller_ || need_router_evaluate_);

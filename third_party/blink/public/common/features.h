@@ -1712,6 +1712,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kServiceWorkerSyntheticResponseDryRun);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kServiceWorkerSyntheticResponseBypassSubresource);
+
 // 'Mode' parameter for blink::features::kSoftNavigationHeuristics.
 enum class SoftNavigationHeuristicsMode : uint8_t {
   kBasic,
