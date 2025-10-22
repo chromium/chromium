@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/run_loop.h"
@@ -103,14 +103,14 @@ autofill::PasswordFormFillData CreatePasswordFillData(
 }  // namespace
 
 // Expose the internal disconnect function for testing purposes
-@interface PasswordSuggestionBottomSheetMediator ()
+@interface CredentialSuggestionBottomSheetMediator ()
 
 - (void)disconnect;
 
 @end
 
 // Test provider that records invocations of its interface methods.
-@interface PasswordSuggestionBottomSheetMediatorTestSuggestionProvider
+@interface CredentialSuggestionBottomSheetMediatorTestSuggestionProvider
     : NSObject <FormSuggestionProvider>
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
@@ -135,7 +135,7 @@ autofill::PasswordFormFillData CreatePasswordFillData(
 
 @end
 
-@implementation PasswordSuggestionBottomSheetMediatorTestSuggestionProvider {
+@implementation CredentialSuggestionBottomSheetMediatorTestSuggestionProvider {
   NSArray<FormSuggestion*>* _suggestions;
   NSString* _formName;
   autofill::FormRendererId _formRendererID;
@@ -165,7 +165,7 @@ autofill::PasswordFormFillData CreatePasswordFillData(
                                 payload:autofill::Suggestion::Payload()
                          requiresReauth:NO]
   ];
-  return [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
+  return [[CredentialSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
       initWithSuggestions:suggestions];
 }
 
@@ -238,9 +238,9 @@ autofill::PasswordFormFillData CreatePasswordFillData(
 
 @end
 
-class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
+class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
-  PasswordSuggestionBottomSheetMediatorTest()
+  CredentialSuggestionBottomSheetMediatorTest()
       : web_state_(std::make_unique<web::FakeWebState>()),
         web_state_ptr_(web_state_.get()) {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
@@ -287,7 +287,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
     web_state_->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                     std::move(frames_manager));
 
-    // Create the PasswordTabHelper so the password provider is available.
+    // Create the PasswordTabHelper so the credential suggestion provider is
+    // available.
     PasswordTabHelper::CreateForWebState(web_state_.get());
 
     consumer_ =
@@ -317,8 +318,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   }
 
   void CreateMediator() {
-    // Create the FormSuggestionTabHelper with test providers used by password
-    // sheet v1.
+    // Create the FormSuggestionTabHelper with test providers used by the
+    // credential bottom sheet v1.
     FormSuggestionTabHelper::CreateForWebState(web_state_.get(),
                                                suggestion_providers_);
 
@@ -326,7 +327,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
         std::move(web_state_),
         WebStateList::InsertionParams::Automatic().Activate());
 
-    // Create a frame so password suggestions can be provided for that frame.
+    // Create a frame so credential suggestions can be provided for that frame.
     auto main_frame = web::FakeWebFrame::Create(
         kMainFrameId, /*is_main_frame=*/true, GURL(kTestUrl));
     main_frame_ptr_ = main_frame.get();
@@ -339,17 +340,17 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
                 profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
-    // Set up the fill data for the real password provider.
+    // Set up the fill data for the real credential suggestion provider.
     if ([suggestion_providers_ count] > 0) {
       ASSERT_EQ(1u, [suggestion_providers_ count]);
-      PasswordSuggestionBottomSheetMediatorTestSuggestionProvider* provider =
+      CredentialSuggestionBottomSheetMediatorTestSuggestionProvider* provider =
           base::apple::ObjCCastStrict<
-              PasswordSuggestionBottomSheetMediatorTestSuggestionProvider>(
+              CredentialSuggestionBottomSheetMediatorTestSuggestionProvider>(
               [suggestion_providers_ objectAtIndex:0]);
       SetUpFillDataInPasswordManager(provider.forSingleUsernameForm);
     }
 
-    mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
+    mediator_ = [[CredentialSuggestionBottomSheetMediator alloc]
           initWithWebStateList:web_state_list_.get()
                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                    profile_.get())
@@ -377,7 +378,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   // Creates the bottom sheet mediator with the default suggestions providers.
   void CreateMediatorWithDefaultSuggestions() {
     CreateMediatorWithSuggestions(
-        @[ [PasswordSuggestionBottomSheetMediatorTestSuggestionProvider
+        @[ [CredentialSuggestionBottomSheetMediatorTestSuggestionProvider
             providerWithSuggestions] ]);
   }
 
@@ -418,18 +419,18 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;
   autofill::FormActivityParams params_;
-  PasswordSuggestionBottomSheetMediator* mediator_;
+  CredentialSuggestionBottomSheetMediator* mediator_;
   id presenter_;
 };
 
-// Tests PasswordSuggestionBottomSheetMediator can be initialized.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest, Init) {
+// Tests CredentialSuggestionBottomSheetMediator can be initialized.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest, Init) {
   CreateMediator();
   EXPECT_TRUE(mediator_);
 }
 
 // Tests consumer when suggestions are available.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
+TEST_F(CredentialSuggestionBottomSheetMediatorTest, WithSuggestions) {
   CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);
 
@@ -444,10 +445,10 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
 
 // Tests setting the consumer when suggestions are available for a single
 // username form and the feature is enabled.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest,
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
        WithSuggestions_ForSingleUsernameForm) {
   id<FormSuggestionProvider> provider =
-      [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
+      [[CredentialSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
           initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];
 
   CreateMediatorWithSuggestions(@[ provider ]);
@@ -462,31 +463,32 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
+TEST_F(CredentialSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
   CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);
 
   EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
             0);
-  [mediator_ onDismissWithoutAnyPasswordAction];
+  [mediator_ onDismissWithoutAnyCredentialAction];
   EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
             1);
-  [mediator_ onDismissWithoutAnyPasswordAction];
+  [mediator_ onDismissWithoutAnyCredentialAction];
   EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
             2);
-  [mediator_ onDismissWithoutAnyPasswordAction];
+  [mediator_ onDismissWithoutAnyCredentialAction];
   EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
             3);
 
   // Expect failure after 3 times.
 #if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH([mediator_ onDismissWithoutAnyPasswordAction],
+  EXPECT_DEATH([mediator_ onDismissWithoutAnyCredentialAction],
                "Failed when dismiss count is incremented higher than the "
                "expected value.");
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 }
 
-TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       SuggestionUsernameHasSuffix) {
   CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);
 
@@ -512,7 +514,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
   EXPECT_EQ(credential.value(), expectedCredential);
 }
 
-TEST_F(PasswordSuggestionBottomSheetMediatorTest,
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
        SuggestionUsernameWithoutSuffix) {
   CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);
@@ -542,7 +544,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
 // Tests that the mediator is correctly cleaned up when the WebStateList is
 // destroyed. There are a lot of checked observer lists that could potentially
 // cause a crash in the process, so this test ensures they're executed.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest,
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
        CleansUpWhenWebStateListDestroyed) {
   CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);

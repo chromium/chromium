@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_mediator.h"
 
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
@@ -184,8 +184,8 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 @end
 
-@interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
-                                                     CRWWebStateObserver>
+@interface CredentialSuggestionBottomSheetMediator () <WebStateListObserving,
+                                                       CRWWebStateObserver>
 // List of suggestions in the bottom sheet.
 @property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
@@ -197,7 +197,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 @end
 
-@implementation PasswordSuggestionBottomSheetMediator {
+@implementation CredentialSuggestionBottomSheetMediator {
   // The interfaces for getting and manipulating a user's saved passwords.
   scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
   scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
@@ -451,7 +451,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   }
 }
 
-- (void)onDismissWithoutAnyPasswordAction {
+- (void)onDismissWithoutAnyCredentialAction {
   [self incrementDismissCount];
   [self markSharedPasswordNotificationsDisplayed];
 }

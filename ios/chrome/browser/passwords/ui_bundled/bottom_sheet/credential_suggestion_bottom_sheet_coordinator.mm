@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -47,7 +47,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 }
 
 // This mediator is used to fetch data related to the bottom sheet.
-@property(nonatomic, strong) PasswordSuggestionBottomSheetMediator* mediator;
+@property(nonatomic, strong) CredentialSuggestionBottomSheetMediator* mediator;
 
 // This view controller is used to display the bottom sheet.
 @property(nonatomic, strong)
@@ -90,7 +90,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     if (!self.reauthModule) {
       self.reauthModule = [[ReauthenticationModule alloc] init];
     }
-    self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
+    self.mediator = [[CredentialSuggestionBottomSheetMediator alloc]
           initWithWebStateList:webStateList
                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                    profile)
@@ -268,7 +268,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.mediator refocus];
 
   [self.mediator logExitReason:kDismissal];
-  [self.mediator onDismissWithoutAnyPasswordAction];
+  [self.mediator onDismissWithoutAnyCredentialAction];
 
   // Disconnect as a last step of cleaning up the presentation. This should
   // always be kept as the last step.

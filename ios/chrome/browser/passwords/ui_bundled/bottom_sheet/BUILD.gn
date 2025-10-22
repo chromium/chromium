@@ -6,9 +6,9 @@ source_set("bottom_sheet") {
   sources = [
     "credential_suggestion_bottom_sheet_coordinator.h",
     "credential_suggestion_bottom_sheet_coordinator.mm",
+    "credential_suggestion_bottom_sheet_mediator.h",
+    "credential_suggestion_bottom_sheet_mediator.mm",
     "password_suggestion_bottom_sheet_exit_reason.h",
-    "password_suggestion_bottom_sheet_mediator.h",
-    "password_suggestion_bottom_sheet_mediator.mm",
   ]
   deps = [
     ":bottom_sheet_ui",
@@ -174,7 +174,7 @@ source_set("eg_test_support+eg2") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "password_suggestion_bottom_sheet_mediator_unittest.mm" ]
+  sources = [ "credential_suggestion_bottom_sheet_mediator_unittest.mm" ]
   deps = [
     ":bottom_sheet",
     ":bottom_sheet_ui",

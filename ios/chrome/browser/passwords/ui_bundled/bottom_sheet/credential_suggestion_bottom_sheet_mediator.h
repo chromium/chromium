@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
 #import <optional>
 
@@ -43,7 +43,7 @@ class GURL;
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
-@interface PasswordSuggestionBottomSheetMediator
+@interface CredentialSuggestionBottomSheetMediator
     : NSObject <PasswordSuggestionBottomSheetDelegate>
 
 - (instancetype)
@@ -79,7 +79,7 @@ class GURL;
 // The bottom sheet suggestions consumer.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetConsumer> consumer;
 
-// Logs bottom sheet exit reasons, like dismissal or using a password.
+// Logs bottom sheet exit reasons, like dismissal or using a credential.
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;
 
 // Sends the information about which suggestion from the bottom sheet was
@@ -89,8 +89,8 @@ class GURL;
                  completion:(ProceduralBlock)completion;
 
 // Handler called to perform operations (e.g. increment the dismiss count) when
-// the sheet was dismissed without using any password action.
-- (void)onDismissWithoutAnyPasswordAction;
+// the sheet was dismissed without using any credential action.
+- (void)onDismissWithoutAnyCredentialAction;
 
 // Refocuses the login field that was blurred to show this bottom sheet, if
 // deemded needed.
@@ -102,4 +102,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
