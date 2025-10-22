@@ -407,7 +407,7 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
     ) -> Any:
         params = {"descriptor": descriptor, "state": state, "origin": origin}
         if embedded_origin is not None:
-            params["embeddedOrigin"] = embedded_origin
+            params["embedded_origin"] = embedded_origin
 
         return await self.webdriver.bidi_session.permissions.set_permission(**params)
 
