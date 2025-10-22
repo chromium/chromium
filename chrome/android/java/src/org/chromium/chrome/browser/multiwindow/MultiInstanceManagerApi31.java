@@ -252,6 +252,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void openUrlInSelectedWindow(LoadUrlParams loadUrlParams, int parentTabId) {
+        // TODO(crbug.com/451706863): Add tests for methods using dialogs.
         if (MultiWindowUtils.getInstanceCount() == 1) {
 
             ChromeAsyncTabLauncher chromeAsyncTabLauncher =
