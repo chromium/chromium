@@ -606,8 +606,7 @@ TEST_F(BabelOrcaProducerTest,
   // this object to the caption controller.
   media::mojom::LanguageIdentificationEventPtr language_id_event =
       media::mojom::LanguageIdentificationEvent::New(
-          kTranslationTargetLocale,
-          media::mojom::ConfidenceLevel::kDefaultValue);
+          kTranslationTargetLocale, media::mojom::ConfidenceLevel::kUnknown);
   language_id_event->asr_switch_result =
       media::mojom::AsrSwitchResult::kSwitchSucceeded;
 

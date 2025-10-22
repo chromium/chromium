@@ -12,9 +12,8 @@ module media.mojom;
 // numeric values should never be reused.
 //
 // LINT.IfChange(SpeechRecognitionErrorCode)
-[Stable, Extensible]
 enum SpeechRecognitionErrorCode {
-  [Default] kNone = 0,
+  kNone = 0,
   kNoSpeech = 1,
   kAborted = 2,
   kAudioCapture = 3,
