@@ -258,7 +258,8 @@ void AppServiceProxyAsh::PauseApps(
         });
 
     // The app pause dialog can't be loaded for unit tests.
-    if (!data.second.should_show_pause_dialog || is_using_testing_profile_) {
+    if (skip_pause_dialog_for_testing_ ||
+        !data.second.should_show_pause_dialog) {
       auto* publisher = GetPublisher(app_type);
       if (publisher) {
         publisher->PauseApp(data.first);

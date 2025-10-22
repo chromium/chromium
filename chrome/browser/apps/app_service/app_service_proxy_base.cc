@@ -136,7 +136,7 @@ void AppServiceProxyBase::ReinitializeForTesting(
   // after full profile initialization to ensure the App Service implementation
   // has all of profile state it needs.
   profile_ = profile;
-  is_using_testing_profile_ = true;
+  skip_pause_dialog_for_testing_ = true;
   app_registry_cache_.ReinitializeForTesting();  // IN-TEST
 
   preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(

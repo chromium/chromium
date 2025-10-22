@@ -459,7 +459,7 @@ class AppServiceProxyBase : public KeyedService,
   // WebApps) can run on Chrome.
   std::unique_ptr<apps::BrowserAppLauncher> browser_app_launcher_;
 
-  bool is_using_testing_profile_ = false;
+  bool skip_pause_dialog_for_testing_ = false;
   base::OnceClosure dialog_created_callback_;
 
  private:
