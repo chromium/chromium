@@ -528,6 +528,13 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
       input_arguments);
 }
 
+std::unique_ptr<ToolRequest> MakeMediaControlRequest(
+    tabs::TabInterface& tab,
+    MediaControl media_control) {
+  return std::make_unique<MediaControlToolRequest>(tab.GetHandle(),
+                                                   media_control);
+}
+
 std::vector<std::unique_ptr<ToolRequest>> ToRequestList(
     std::unique_ptr<ToolRequest> request) {
   std::vector<std::unique_ptr<ToolRequest>> vec;

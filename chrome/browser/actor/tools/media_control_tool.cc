@@ -8,7 +8,9 @@
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/action_result.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
@@ -42,8 +44,37 @@ void MediaControlTool::Invoke(InvokeCallback callback) {
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
-  PostResponseTask(std::move(callback),
-                   MakeResult(mojom::ActionResultCode::kOk));
+
+  // Get the media session associated with the tab's web contents.
+  CHECK(tab->GetContents());
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(tab->GetContents());
+  if (!media_session) {
+    PostResponseTask(std::move(callback),
+                     MakeResult(mojom::ActionResultCode::kMediaControlNoMedia));
+    return;
+  }
+
+  // Invoke the appropriate media control action.
+  std::visit(
+      absl::Overload(
+          [media_session](const PlayMedia& arg) {
+            // Resume media playback.
+            media_session->Resume(content::MediaSession::SuspendType::kUI);
+          },
+          [media_session](const PauseMedia& arg) {
+            // Suspend media playback.
+            media_session->Suspend(content::MediaSession::SuspendType::kUI);
+          },
+          [media_session](const SeekMedia& arg) {
+            // Seek to a specific time in the media.
+            media_session->SeekTo(
+                base::Microseconds(arg.seek_time_microseconds));
+          }),
+      media_control_);
+
+  // Post a task to run the callback with a success result.
+  PostResponseTask(std::move(callback), MakeOkResult());
 }
 
 std::string MediaControlTool::DebugString() const {

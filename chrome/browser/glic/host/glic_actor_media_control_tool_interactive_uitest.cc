@@ -33,13 +33,41 @@ MultiStep GlicActorMediaControlToolUiTest::MediaControlAction(
                        std::move(expected_result));
 }
 
-// A placeholder test to ensure it is set up correctly.
-IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, PlaceholderTest) {
+IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, NoMedia) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
-  RunTestSequence(InitializeWithOpenGlicWindow(),
-                  StartActorTaskInNewTab(url, kNewActorTabId),
-                  MediaControlAction(actor::SeekMedia(1000000)));
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(url, kNewActorTabId),
+      MediaControlAction(actor::PauseMedia(),
+                         actor::mojom::ActionResultCode::kMediaControlNoMedia));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, PauseAndPlayMedia) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL url = embedded_test_server()->GetURL("/actor/media.html");
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(url, kNewActorTabId),
+      ExecuteJs(kNewActorTabId, "play"),
+      MediaControlAction(actor::PauseMedia()),
+      WaitForJsResult(kNewActorTabId, "() => { return event_log.join(','); }",
+                      "pause"),
+      MediaControlAction(actor::PlayMedia()),
+      WaitForJsResult(kNewActorTabId, "() => { return event_log.join(','); }",
+                      "pause,play"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, SeekMedia) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL url = embedded_test_server()->GetURL("/actor/media.html");
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(url, kNewActorTabId),
+      ExecuteJs(kNewActorTabId, "play"),
+      MediaControlAction(actor::SeekMedia(1000000)),
+      WaitForJsResult(kNewActorTabId, "() => { return event_log.join(','); }",
+                      "seek 1"));
 }
 
 }  //  namespace

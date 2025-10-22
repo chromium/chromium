@@ -407,6 +407,14 @@ enum ActionResultCode {
   kLoginDeviceReauthFailed = 907,
 
   // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1000-1099: Errors for media control.
+
+  // The media control action failed because there is no media on the page.
+  kMediaControlNoMedia = 1000,
+
+  // Please see the comment above about adding new values.
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)

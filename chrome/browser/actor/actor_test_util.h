@@ -171,6 +171,9 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     content::RenderFrameHost& rfh,
     const std::string& name,
     const std::string& input_arguments);
+std::unique_ptr<ToolRequest> MakeMediaControlRequest(
+    tabs::TabInterface& tab,
+    MediaControl media_control);
 
 // A helper to create a vector of ToolRequests suitable for passing to
 // ExecutionEngine::Act. Note that this will necessarily move the ToolRequest
