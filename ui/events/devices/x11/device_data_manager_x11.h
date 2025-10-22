@@ -294,14 +294,14 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   struct ScrollInfo {
     struct AxisInfo {
       // The scroll valuator number of this scroll axis.
-      int number;
+      int number = -1;
       // The scroll increment; a value of n indicates n movement equals one
       // traditional scroll unit.
-      double increment;
+      double increment = 0.0;
       // Current scroll position; used to find the difference between events.
-      double position;
+      double position = 0.0;
       // If true then scroll has been seen in this direction.
-      bool seen;
+      bool seen = false;
     };
 
     AxisInfo vertical, horizontal;
