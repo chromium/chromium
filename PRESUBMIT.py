@@ -2287,7 +2287,7 @@ _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS = [
     r'^tools/vscode/',
 ]
 
-# These are not checked on the public chromium-presubmit trybot.
+# These are not checked on the public linux-presubmit trybot.
 # Add files here that rely on .py files that exists only for target_os="android"
 # checkouts.
 _ANDROID_SPECIFIC_PYDEPS_FILES = [
