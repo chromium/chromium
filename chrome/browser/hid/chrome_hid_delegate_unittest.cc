@@ -1061,6 +1061,11 @@ class ChromeHidDelegateServiceWorkerTestBase
         profile_, GetHidConnectionTrackerTestingFactory());
     return testing_profile;
   }
+
+ private:
+  // EmbeddedWorkerInstanceTestHarness initializes the full device service.
+  // Override the UsbDeviceManager to prevent access to real devices.
+  device::ScopedUsbDeviceManagerOverrider usb_device_manager_overrider_;
 };
 
 class ChromeHidDelegateServiceWorkerTest
@@ -1068,9 +1073,6 @@ class ChromeHidDelegateServiceWorkerTest
  public:
   // ChromeHidTestHelper
   void SetUpOriginUrl() override { SetUpWebPageOriginUrl(); }
-
- private:
-  device::ScopedUsbDeviceManagerOverrider usb_device_manager_overrider_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
