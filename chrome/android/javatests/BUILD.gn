@@ -1294,7 +1294,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
     "src/org/chromium/chrome/browser/tab/TabStateTest.java",
     "src/org/chromium/chrome/browser/tab/TabUmaTest.java",
     "src/org/chromium/chrome/browser/tab/TabViewManagerTest.java",
-    "src/org/chromium/chrome/browser/tab/TabWebContentsObserverTest.java",
     "src/org/chromium/chrome/browser/tab/UndoIntegrationTest.java",
     "src/org/chromium/chrome/browser/tab/state/ArchivePersistedTabDataTest.java",
     "src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorageTest.java",

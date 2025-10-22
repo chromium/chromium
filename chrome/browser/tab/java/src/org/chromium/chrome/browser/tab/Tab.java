@@ -52,19 +52,21 @@ public interface Tab extends TabLifecycle {
     /** Tracks the media indicator state of the tab. */
     @IntDef({
         MediaState.NONE,
-        MediaState.AUDIBLE,
         MediaState.MUTED,
+        MediaState.AUDIBLE,
         MediaState.RECORDING,
-        MediaState.SHARING
+        MediaState.SHARING,
+        MediaState.MAX_VALUE,
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     @interface MediaState {
         int NONE = 0;
-        int AUDIBLE = 1;
-        int MUTED = 2;
+        int MUTED = 1;
+        int AUDIBLE = 2;
         int RECORDING = 3;
         int SHARING = 4;
+        int MAX_VALUE = SHARING;
     }
 
     /** The result of the loadUrl. */

@@ -1823,19 +1823,22 @@ class TabListMediator implements TabListNotificationHandler {
     private @MediaState int getTabGridMediaIndicator(Tab representativeTab) {
         if (!ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) return MediaState.NONE;
 
-        if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(representativeTab)) {
-            return representativeTab.getMediaState();
+        @MediaState int stateToReturn = representativeTab.getMediaState();
+        // If the tab is not in a group, or the  state has the highest priority, then return
+        // the state of the representative tab.
+        if (!mActionsOnAllRelatedTabs
+                || !isTabInTabGroup(representativeTab)
+                || stateToReturn == MediaState.MAX_VALUE) {
+            return stateToReturn;
         }
+
         List<Tab> relatedTabs = getRelatedTabsForId(representativeTab.getId());
-        // TODO(crbug.com/430072416): Add other media indicators and adjust priority.
-        @MediaState int stateToReturn = MediaState.NONE;
         for (Tab tab : relatedTabs) {
-            @MediaState int state = tab.getMediaState();
-            if (state == MediaState.AUDIBLE) {
-                return MediaState.AUDIBLE;
-            } else if (state == MediaState.MUTED) {
-                stateToReturn = MediaState.MUTED;
+            @MediaState int currentState = tab.getMediaState();
+            if (currentState > stateToReturn) {
+                stateToReturn = currentState;
             }
+            if (stateToReturn == MediaState.MAX_VALUE) return stateToReturn;
         }
         return stateToReturn;
     }

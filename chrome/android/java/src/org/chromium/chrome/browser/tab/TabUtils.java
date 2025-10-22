@@ -367,6 +367,7 @@ public class TabUtils {
         return switch (mediaState) {
             case MediaState.AUDIBLE -> R.drawable.volume_up_24dp;
             case MediaState.MUTED -> R.drawable.volume_off_24dp;
+            case MediaState.RECORDING -> R.drawable.radio_button_checked_24dp;
             default -> Resources.ID_NULL;
         };
     }

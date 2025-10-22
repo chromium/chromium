@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.serial.SerialNotificationManager;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -464,29 +463,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                     && ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_INPUT_FOCUS)) {
                 view.requestRectangleOnScreen(boundsInView);
-            }
-        }
-
-        @Override
-        public void mediaStartedPlaying() {
-            WebContents contents = mTab.getWebContents();
-            if (contents == null) {
-                mTab.setMediaState(MediaState.NONE);
-            } else {
-                mTab.setMediaState(contents.isAudioMuted() ? MediaState.MUTED : MediaState.AUDIBLE);
-            }
-        }
-
-        @Override
-        public void mediaStoppedPlaying() {
-            mTab.setMediaState(MediaState.NONE);
-        }
-
-        @Override
-        public void didUpdateAudioMutingState(boolean muted) {
-            @MediaState int state = mTab.getMediaState();
-            if (state == MediaState.AUDIBLE || state == MediaState.MUTED) {
-                mTab.setMediaState(muted ? MediaState.MUTED : MediaState.AUDIBLE);
             }
         }
     }

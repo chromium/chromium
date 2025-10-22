@@ -162,6 +162,9 @@ class TabAndroid : public tabs::TabInterface,
 
   bool IsTrustedWebActivity() const;
 
+  // Set the media state of the tab. This is called by MediaStateObserver.
+  void SetMediaState(int media_state);
+
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.

@@ -5400,6 +5400,16 @@ public class TabListMediatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
+    public void testMediaState_TabRecording() {
+        assertEquals(MediaState.NONE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+
+        updateTabMediaState(mTab1, MediaState.RECORDING);
+        assertEquals(
+                MediaState.RECORDING, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
     public void testMediaState_TabGroup() {
         when(mTab1.getMediaState()).thenReturn(MediaState.MUTED);
         when(mTab2.getMediaState()).thenReturn(MediaState.AUDIBLE);
@@ -5422,6 +5432,12 @@ public class TabListMediatorUnitTest {
         // MUTED has priority over NONE.
         updateTabMediaState(mTab1, MediaState.NONE);
         assertEquals(MediaState.MUTED, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+
+        // RECORDING has priority over AUDIBLE.
+        updateTabMediaState(mTab1, MediaState.RECORDING);
+        updateTabMediaState(mTab2, MediaState.AUDIBLE);
+        assertEquals(
+                MediaState.RECORDING, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
     }
 
     @Test

@@ -2766,7 +2766,9 @@ class TabImpl implements Tab {
     }
 
     @Override
+    @CalledByNative
     public void setMediaState(@MediaState int mediaState) {
+        if (mMediaState == mediaState) return;
         mMediaState = mediaState;
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             for (TabObserver observer : mObservers) {
