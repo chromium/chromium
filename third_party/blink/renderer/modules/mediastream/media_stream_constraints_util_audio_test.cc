@@ -22,6 +22,7 @@
 #include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -2198,6 +2199,15 @@ class MediaStreamConstraintsEchoCancellationModeScreenCaptureTest
   }
 };
 
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       Unconstrained) {
+  constraint_factory_.Reset();
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
 TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest, ExactAll) {
   constraint_factory_.Reset();
   constraint_factory_.basic().echo_cancellation.SetExactString("all");
@@ -2211,7 +2221,7 @@ TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest, IdealAll) {
   AudioCaptureSettings settings = SelectSettings(true, capabilities_);
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
-            EchoCancellationMode::kDisabled);
+            EchoCancellationMode::kBrowserDecides);
 }
 
 TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
@@ -2229,7 +2239,31 @@ TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
   AudioCaptureSettings settings = SelectSettings(true, capabilities_);
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
-            EchoCancellationMode::kDisabled);
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       MediaStreamSourceEmpty) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().media_stream_source.SetExact("");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       MediaStreamSourceNonEmpty) {
+  for (const auto& source :
+       {kMediaStreamSourceTab, kMediaStreamSourceScreen,
+        kMediaStreamSourceDesktop, kMediaStreamSourceSystem}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().media_stream_source.SetExact(source);
+    AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+    EXPECT_TRUE(settings.HasValue());
+    EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+              EchoCancellationMode::kDisabled);
+  }
 }
 
 }  // namespace blink
