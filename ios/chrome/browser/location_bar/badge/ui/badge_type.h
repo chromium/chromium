@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_BADGE_TYPE_H_
 
 // Features that can be displayed as a badge in the location bar.
-enum class BadgeType {
+enum class LocationBarBadgeType {
   kNone = 0,
   kBadgeView,
   kIncognito,

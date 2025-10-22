@@ -5,14 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_COORDINATOR_LOCATION_BAR_BADGE_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_COORDINATOR_LOCATION_BAR_BADGE_COORDINATOR_H_
 
-#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator for the location bar badge.
+@protocol LocationBarBadgeCoordinatorDelegate;
+@class LocationBarBadgeMediator;
+@class LocationBarBadgeViewController;
+
+// Coordinator for the leading badge in the location bar. Handles expanding the
+// leading badge into a chip. Responsible for all leading badges and chips
+// within the omnibox. Multiple features will send badge configurations to
+// prompt badge updates within LocationBarBadge.
 @interface LocationBarBadgeCoordinator : ChromeCoordinator
+
+// The delegate for this coordinator.
+@property(nonatomic, weak) id<LocationBarBadgeCoordinatorDelegate> delegate;
 
 // The mediator for location bar badge.
 @property(nonatomic, strong) LocationBarBadgeMediator* mediator;
+
+// The view controller for this coordinator.
+@property(nonatomic, strong) LocationBarBadgeViewController* viewController;
 
 @end
 

@@ -6,16 +6,23 @@ source_set("coordinator") {
   sources = [
     "location_bar_badge_coordinator.h",
     "location_bar_badge_coordinator.mm",
+    "location_bar_badge_coordinator_delegate.h",
     "location_bar_badge_mediator.h",
     "location_bar_badge_mediator.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/browser/badges/ui_bundled",
+    "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/location_bar/badge/ui",
     "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:omnibox_util",
   ]
   frameworks = [ "UIKit.framework" ]
 }

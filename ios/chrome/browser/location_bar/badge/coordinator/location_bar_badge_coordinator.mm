@@ -4,22 +4,142 @@
 
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator.h"
 
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
+
+@interface LocationBarBadgeCoordinator () <
+    ContextualPanelEntrypointCommands,
+    ContextualPanelEntrypointMediatorDelegate>
+@end
 
 @implementation LocationBarBadgeCoordinator {
-  LocationBarBadgeViewController* _viewController;
+  // The mediator for location bar badge.
+  LocationBarBadgeMediator* _locationBarBadgeMediator;
+  // The mediator for contextual panel badge and chip.
+  ContextualPanelEntrypointMediator* _contextualPanelEntryPointMediator;
+
+  // Observer that updates LocationBarBadgeViewController for
+  // fullscreen events.
+  std::unique_ptr<FullscreenUIUpdater> _locationBarBadgeFullscreenUIUpdater;
+
+  // The AnimatedFullscreenDisabler to disable fullscreen momentarily as the
+  // large entrypoint is shown.
+  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
 }
 
 - (void)start {
   _viewController = [[LocationBarBadgeViewController alloc] init];
-  _mediator = [[LocationBarBadgeMediator alloc] init];
-  _mediator.consumer = _viewController;
+  _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+  [self createContextualPanelEntryPointMediator];
+  _locationBarBadgeMediator = [[LocationBarBadgeMediator alloc] init];
+  _locationBarBadgeMediator.consumer = _viewController;
 }
 
 - (void)stop {
   _viewController = nil;
-  _mediator = nil;
+  [self stopContextualPanelEntrypointMediator];
+  _locationBarBadgeMediator = nil;
+  _locationBarBadgeFullscreenUIUpdater = nullptr;
+  _animatedFullscreenDisabler = nullptr;
+}
+
+#pragma mark ContextualPanelEntrypointMediatorDelegate
+
+- (BOOL)canShowLargeContextualPanelEntrypoint:
+    (ContextualPanelEntrypointMediator*)mediator {
+  // TODO(crbug.com/450006763): Connect coordinator to LocationBarCoordinator.
+  return [self.delegate canShowLargeContextualPanelEntrypoint:self];
+}
+
+- (void)setLocationBarLabelCenteredBetweenContent:
+            (ContextualPanelEntrypointMediator*)mediator
+                                         centered:(BOOL)centered {
+  [self.delegate setLocationBarLabelCenteredBetweenContent:self
+                                                  centered:centered];
+}
+
+- (void)enableFullscreen {
+  _animatedFullscreenDisabler = nullptr;
+}
+
+- (void)disableFullscreen {
+  _animatedFullscreenDisabler =
+      std::make_unique<AnimatedScopedFullscreenDisabler>(
+          FullscreenController::FromBrowser(self.browser));
+  _animatedFullscreenDisabler->StartAnimation();
+}
+
+- (BOOL)isBottomOmniboxActive {
+  return IsCurrentLayoutBottomOmnibox(self.browser);
+}
+
+- (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
+  return [self.viewController helpAnchorUsingBottomOmnibox:isBottomOmnibox];
+}
+
+#pragma mark - ContextualPanelEntrypointCommands
+
+- (void)notifyContextualPanelEntrypointIPHDismissed {
+  [self enableFullscreen];
+  [_contextualPanelEntryPointMediator.consumer setEntrypointColored:NO];
+}
+
+#pragma mark - Private
+
+// Creates a Contextual Panel entry point mediator.
+- (void)createContextualPanelEntryPointMediator {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
+  [dispatcher
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+
+  id<ContextualSheetCommands> contextualSheetHandler =
+      HandlerForProtocol(dispatcher, ContextualSheetCommands);
+  id<ContextualPanelEntrypointIPHCommands> entrypointHelpHandler =
+      HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
+
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+
+  _contextualPanelEntryPointMediator =
+      [[ContextualPanelEntrypointMediator alloc]
+            initWithWebStateList:webStateList
+               engagementTracker:engagementTracker
+          contextualSheetHandler:contextualSheetHandler
+           entrypointHelpHandler:entrypointHelpHandler];
+  _contextualPanelEntryPointMediator.delegate = self;
+
+  _contextualPanelEntryPointMediator.consumer = _viewController;
+  _viewController.mutator = _contextualPanelEntryPointMediator;
+
+  _locationBarBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      FullscreenController::FromBrowser(self.browser), self.viewController);
+}
+
+// Cleans up ContextualPanelEntrypointMediator.
+- (void)stopContextualPanelEntrypointMediator {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  [dispatcher stopDispatchingToTarget:self];
+
+  [_contextualPanelEntryPointMediator disconnect];
+  _contextualPanelEntryPointMediator.consumer = nil;
+  _contextualPanelEntryPointMediator.delegate = nil;
+  _contextualPanelEntryPointMediator = nil;
 }
 
 @end
