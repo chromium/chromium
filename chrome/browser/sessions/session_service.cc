@@ -677,27 +677,32 @@ void SessionService::CommitPendingCloses() {
 }
 
 bool SessionService::IsOnlyOneTabLeft() const {
-  if (profile()->AsTestingProfile())
+  if (profile()->AsTestingProfile()) {
     return is_only_one_tab_left_for_test_;
+  }
 
   int window_count = 0;
+  bool is_only_one_tab_left = true;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this, &window_count](BrowserWindowInterface* browser) {
+      [this, &is_only_one_tab_left,
+       &window_count](BrowserWindowInterface* browser) {
         const SessionID window_id = browser->GetSessionID();
         if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly()) &&
             window_closing_ids_.find(window_id) == window_closing_ids_.end()) {
           if (++window_count > 1) {
-            return false;
+            is_only_one_tab_left = false;
           }
           // By the time this is invoked the tab has been removed. As such, we
           // use > 0 here rather than > 1.
           if (browser->GetTabStripModel()->count() > 0) {
-            return false;
+            is_only_one_tab_left = false;
           }
         }
-        return true;
+        // Continue until the above checks confirm there is more than one
+        // trackable tab left, or all browsers are exhausted.
+        return is_only_one_tab_left;
       });
-  return window_count <= 1;
+  return is_only_one_tab_left;
 }
 
 bool SessionService::HasOpenTrackableBrowsers(SessionID window_id) const {

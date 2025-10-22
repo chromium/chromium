@@ -3493,6 +3493,29 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
   EXPECT_NE(new_browser1, new_browser2);
 }
 
+// Regression test for crbug.com/453705033.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
+                       CorrectlyReportsHasOpenTrackableBrowsersOnTabClose) {
+  // Create a multi-tab single browser environment.
+  for (const auto& url : {GetUrl1(), GetUrl2(), GetUrl3()}) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+  EXPECT_EQ(4, browser()->GetTabStripModel()->count());
+
+  // SessionService should report there are open trackable browsers.
+  SessionServiceTestHelper helper(browser()->profile());
+  EXPECT_TRUE(helper.GetHasOpenTrackableBrowsers());
+
+  // Close the first tab.
+  chrome::CloseTab(browser());
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
+
+  // SessionService should still report there are open trackable browsers.
+  EXPECT_TRUE(helper.GetHasOpenTrackableBrowsers());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Skip for ChromeOS because the keep alive is not created for ChromeOS.
 // See https://crbug.com/1174627.
