@@ -47,7 +47,7 @@ ContextualTasksContextServiceFactory::~ContextualTasksContextServiceFactory() =
 std::unique_ptr<KeyedService>
 ContextualTasksContextServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(kContextualTasks)) {
+  if (!base::FeatureList::IsEnabled(kContextualTasksContext)) {
     return nullptr;
   }
 

@@ -102,7 +102,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {kContextualTasks, passage_embeddings::kPassageEmbedder},
+        {kContextualTasksContext, passage_embeddings::kPassageEmbedder},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }

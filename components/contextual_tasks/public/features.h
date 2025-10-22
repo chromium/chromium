@@ -10,11 +10,15 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+BASE_DECLARE_FEATURE(kContextualTasksContext);
 
 namespace flag_descriptions {
 
 extern const char kContextualTasksName[];
 extern const char kContextualTasksDescription[];
+
+extern const char kContextualTasksContextName[];
+extern const char kContextualTasksContextDescription[];
 
 }  // namespace flag_descriptions
 
