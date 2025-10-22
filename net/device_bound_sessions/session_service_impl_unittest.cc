@@ -231,23 +231,6 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
 }
 
-TEST_F(SessionServiceImplTest, RegisterNoId) {
-  AddSessionsForTesting({{/*session_id=*/"", kRefreshUrlString, kOrigin}});
-
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
-
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-
-  HttpRequestHeaders extra_headers;
-  std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), &extra_headers,
-                            FirstPartySetMetadata());
-  // session_id is empty, so should not be valid
-  EXPECT_FALSE(maybe_deferral);
-}
-
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
       SessionError::kNetError, kRefreshUrlString);

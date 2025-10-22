@@ -90,10 +90,9 @@ Session::~Session() = default;
 // static
 base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
     const SessionParams& params) {
+  CHECK(!params.session_id.empty());
   if (!params.fetcher_url.is_valid()) {
     return base::unexpected(SessionError{SessionError::kInvalidFetcherUrl});
-  } else if (params.session_id.empty()) {
-    return base::unexpected(SessionError{SessionError::kInvalidSessionId});
   }
 
   // If there is an origin in the scope, verify it is valid. Default to the

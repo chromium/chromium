@@ -561,6 +561,43 @@ TEST_P(RegistrationTest, NoScopeJson) {
 TEST_P(RegistrationTest, NoSessionIdJson) {
   constexpr char kTestingJson[] =
       R"({
+  "scope": {
+    "include_site": true
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidSessionId);
+}
+
+TEST_P(RegistrationTest, EmptySessionIdJson) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "",
+  "scope": {
+    "include_site": true
+  },
   "credentials": [{
     "type": "cookie",
     "name": "auth_cookie",
