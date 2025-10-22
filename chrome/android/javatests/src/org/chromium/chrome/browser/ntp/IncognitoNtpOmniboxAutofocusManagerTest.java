@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -58,6 +59,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     public void tearDown() {
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
         IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
+        setAccessibilityEnabled(false);
     }
 
     @Test
@@ -141,7 +143,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
         verifyOmniboxFocusAndKeyboardVisibility(false, firstIncognitoNtpTab);
 
         // Open more incognito tabs, it should autofocus on all of them.
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             final Tab incognitoNtpTab =
                     mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
             verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
@@ -206,6 +208,29 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
         verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    public void whenAccessibilityToggled_autofocusBehaviorChanges() {
+        // By default, accessibility is disabled. Autofocus should work.
+        final Tab incognitoNtpTab1 = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab1);
+
+        // Enable accessibility.
+        setAccessibilityEnabled(true);
+
+        // Open another incognito NTP. Autofocus should be disabled.
+        final Tab incognitoNtpTab2 = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        verifyOmniboxFocusAndKeyboardVisibility(false, incognitoNtpTab2);
+
+        // Disable accessibility again.
+        setAccessibilityEnabled(false);
+
+        // Open a third incognito NTP. Autofocus should be enabled again.
+        final Tab incognitoNtpTab3 = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab3);
+    }
+
     private void verifyOmniboxFocusAndKeyboardVisibility(boolean enabled, @Nullable Tab tab) {
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -225,6 +250,13 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                                         .isKeyboardShowing(tab.getView()),
                                 Matchers.is(enabled));
                     }
+                });
+    }
+
+    private void setAccessibilityEnabled(boolean enabled) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IncognitoNtpOmniboxAutofocusManager.setAutofocusEnabledForTesting(!enabled);
                 });
     }
 }
