@@ -909,7 +909,6 @@ class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {
  public:
   void SetUp() override {
     ArcAppsPublisherTest::SetUp();
-    app_service_proxy()->ReinitializeForTesting(profile());
     service()->SetSkipAlmanacForTesting(true);
   }
 
