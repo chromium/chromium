@@ -255,9 +255,7 @@ class RasterBufferProviderTest
                                   gfx::ColorSpace());
   }
 
-  void AppendTask(unsigned id,
-                  const gfx::Size& size,
-                  bool depends_on_at_raster_decodes) {
+  void AppendTask(unsigned id, const gfx::Size& size) {
     ResourcePool::InUsePoolResource resource = AllocateResource(size);
     // The raster buffer has no tile ids associated with it for partial update,
     // so doesn't need to provide a valid dirty rect.
@@ -269,9 +267,7 @@ class RasterBufferProviderTest
     resources_.push_back(std::move(resource));
   }
 
-  void AppendTask(unsigned id) {
-    AppendTask(id, gfx::Size(1, 1), false /* depends_on_at_raster_decodes */);
-  }
+  void AppendTask(unsigned id) { AppendTask(id, gfx::Size(1, 1)); }
 
   void AppendBlockingTask(unsigned id, base::Lock* lock) {
     ResourcePool::InUsePoolResource resource =
@@ -516,15 +512,15 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
 
   // Schedule a few tasks.
   constexpr gfx::Size size(1, 1);
-  AppendTask(0u, size, false /* depends_on_at_raster_decodes */);
-  AppendTask(1u, size, false /* depends_on_at_raster_decodes */);
-  AppendTask(2u, size, false /* depends_on_at_raster_decodes */);
-  AppendTask(3u, size, false /* depends_on_at_raster_decodes */);
-  AppendTask(4u, size, false /* depends_on_at_raster_decodes */);
-  AppendTask(5u, size, true /* depends_on_at_raster_decodes */);
-  AppendTask(6u, size, true /* depends_on_at_raster_decodes */);
-  AppendTask(7u, size, true /* depends_on_at_raster_decodes */);
-  AppendTask(8u, size, true /* depends_on_at_raster_decodes */);
+  AppendTask(0u, size);
+  AppendTask(1u, size);
+  AppendTask(2u, size);
+  AppendTask(3u, size);
+  AppendTask(4u, size);
+  AppendTask(5u, size);
+  AppendTask(6u, size);
+  AppendTask(7u, size);
+  AppendTask(8u, size);
   ScheduleTasks();
   RunMessageLoopUntilAllTasksHaveCompleted();
 
