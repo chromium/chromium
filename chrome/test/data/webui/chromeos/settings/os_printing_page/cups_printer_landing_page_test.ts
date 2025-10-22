@@ -8,6 +8,7 @@ import type {CupsPrinterInfo, PrinterListEntry, SettingsCupsEditPrinterDialogEle
 import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/lazy_load.js';
 import type {CrInputElement, CrSearchableDropDownElement, CrToastElement} from 'chrome://os-settings/os_settings.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -16,6 +17,7 @@ import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos
 import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotReached, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -1169,26 +1171,29 @@ suite('CupsNearbyPrintersTests', () => {
   let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
   let printerEntryListTestElement: HTMLElement;
   let wifi1: NetworkStateProperties;
+  let networkConfigRemote: FakeNetworkConfig;
 
-
-  setup(() => {
+  setup(async function() {
     cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
 
     CupsPrintersBrowserProxyImpl.setInstanceForTesting(
         cupsPrintersBrowserProxy);
 
-    // Simulate internet connection.
-    wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
-    wifi1.connectionState = ConnectionStateType.kOnline;
+    networkConfigRemote = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        networkConfigRemote);
 
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
 
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
-    page.onActiveNetworksChanged([wifi1]);
+    await flushTasks();
 
-    flush();
+    // Simulate internet connection.
+    wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
+    wifi1.connectionState = ConnectionStateType.kOnline;
+    page.onActiveNetworksChanged([wifi1]);
   });
 
   teardown(() => {
@@ -1459,11 +1464,7 @@ suite('CupsNearbyPrintersTests', () => {
     // connected to a network.
     assertTrue(!!page.shadowRoot!.querySelector('#cloudOffIcon'));
     assertTrue(!!page.shadowRoot!.querySelector('#connectionMessage'));
-    const addManualPrinterButton =
-        page.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#addManualPrinterButton');
-    assertTrue(!!addManualPrinterButton);
-    assertTrue(addManualPrinterButton.disabled);
+    assertFalse(!!page.shadowRoot!.querySelector('#addManualPrinterButton'));
   });
 
   test('checkNetworkConnection', async () => {
@@ -1477,11 +1478,8 @@ suite('CupsNearbyPrintersTests', () => {
     // connected.
     assertTrue(!!page.shadowRoot!.querySelector('#cloudOffIcon'));
     assertTrue(!!page.shadowRoot!.querySelector('#connectionMessage'));
-    const addManualPrinterButton =
-        page.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#addManualPrinterButton');
-    assertTrue(!!addManualPrinterButton);
-    assertTrue(addManualPrinterButton.disabled);
+    assertFalse(!!page.shadowRoot!.querySelector('#addManualPrinterButton'));
+
     // Simulate connecting to a network with connectivity.
     wifi1.connectionState = ConnectionStateType.kOnline;
     page.onActiveNetworksChanged([wifi1]);
