@@ -146,6 +146,7 @@ TrimAutofillValuableMetadataSpecificsDataForCaching(
   trimmed_specifics.clear_valuable_id();
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_last_used_date_unix_epoch_micros();
+  trimmed_specifics.clear_last_modified_date_unix_epoch_micros();
   // LINT.ThenChange(//components/sync/protocol/autofill_valuable_metadata_specifics.proto:AutofillValuableMetadataSpecifics)
   return trimmed_specifics;
 }

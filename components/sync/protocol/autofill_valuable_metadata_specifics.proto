@@ -25,5 +25,8 @@ message AutofillValuableMetadataSpecifics {
 
   // The timestamp of the last use of the Valuable.
   optional int64 last_used_date_unix_epoch_micros = 3;
+
+  // The timestamp of the last time the Valuable was modified.
+  optional int64 last_modified_date_unix_epoch_micros = 4;
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableMetadataSpecificsDataForCaching)
