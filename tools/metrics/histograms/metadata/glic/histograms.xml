@@ -145,6 +145,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnModeChange"/>
     <variant name="OnModelChanged"/>
     <variant name="OnReaction"/>
+    <variant name="OnRecordUseCounter"/>
     <variant name="OnResponseRated"/>
     <variant name="OnResponseStarted"/>
     <variant name="OnResponseStopped"/>
@@ -198,6 +199,17 @@ chromium-metrics-reviews@google.com.
     The number of tab data updates sent by TabDataObserver while on each web
     page. Recorded when a cross-document navigation completes, or when tab data
     is no longer observed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Api.UseCounter" enum="GlicWebUseCounter"
+    expires_after="2026-08-03">
+  <owner>dtapuska@google.com</owner>
+  <owner>kmg@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records a use counter histogram. Each sample represents a single
+    RecordUseCounter call the front end has made.
   </summary>
 </histogram>
 

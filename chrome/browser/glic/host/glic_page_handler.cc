@@ -1303,6 +1303,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnModelChanged(model);
   }
 
+  void OnRecordUseCounter(uint16_t counter) override {
+    glic_service_->metrics()->OnRecordUseCounter(counter);
+  }
+
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
   }

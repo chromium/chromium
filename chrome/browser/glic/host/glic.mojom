@@ -778,6 +778,14 @@ interface WebClientHandler {
   // Called when the web client changes the model.
   OnModelChanged(WebClientModel model);
 
+  // Called when the web client wants to record a use counter.
+  // The counter values matches the WebUseCounter enum. We do not use the
+  // explicit type because we do not want enforcement of the range of the
+  // enum because of versioning issues between the front end and chrome.
+  // eg. The front end could be newer than chrome and we want the counter
+  // still logged, but may not exist in chrome's version of WebUseCounter.
+  OnRecordUseCounter(uint16 counter);
+
   // Called when the user rates a response.
   OnResponseRated(bool positive);
 
@@ -968,6 +976,18 @@ enum WebClientModel {
   // Actor operation mode.
   kActor = 1,
 };
+
+// @generate glic_api
+// Web client's user counter.
+// LINT.IfChange(WebUseCounter)
+[Stable, Extensible]
+enum WebUseCounter {
+  // Default counter. Never used.
+  [Default] kDefault = 0,
+  kSubmitPromptWithAutoMode = 1,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebUseCounter)
 
 [Stable, Extensible]
 enum ResponseStopCause {

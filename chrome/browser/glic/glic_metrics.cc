@@ -524,6 +524,15 @@ void GlicMetrics::OnModelChanged(mojom::WebClientModel model) {
   current_model_ = model;
 }
 
+void GlicMetrics::OnRecordUseCounter(uint16_t counter) {
+  static_assert(1000u > static_cast<uint32_t>(mojom::WebUseCounter::kMaxValue));
+  // Since the front end can contain a newer version than what chrome is
+  // build against we use a sparse histogram.
+  base::UmaHistogramSparse(
+      "Glic.Api.UseCounter",
+      std::clamp(static_cast<uint32_t>(counter), 0u, 1000u));
+}
+
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
   base::UmaHistogramEnumeration(

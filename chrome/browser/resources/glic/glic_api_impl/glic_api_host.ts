@@ -996,6 +996,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.onModelChanged(request.model);
   }
 
+  glicBrowserOnRecordUseCounter(request: {counter: number}): void {
+    this.handler.onRecordUseCounter(request.counter);
+  }
+
   glicBrowserLogBeginAsyncEvent(request: {
     asyncEventId: number,
     taskId: number,

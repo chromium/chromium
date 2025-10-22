@@ -379,6 +379,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserOnRecordUseCounter: {
+    request: {
+      counter: number,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserOnResponseRated: {
     request: {
       positive: boolean,
@@ -776,6 +782,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OnModeChange: 70,
         SubscribeToCaptureRegion: 71,
         UnsubscribeFromCaptureRegion: 72,
+        OnRecordUseCounter: 73,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

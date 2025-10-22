@@ -946,6 +946,11 @@ export declare interface GlicBrowserHostMetrics {
    * scope.
    */
   onModelChanged?(model: WebClientModel): void;
+
+  /**
+   * Called when we want to record an use counter metric.
+   */
+  onRecordUseCounter?(action: WebUseCounter): void;
 }
 
 export enum ResponseStopCause {
@@ -1976,6 +1981,7 @@ export interface ExtensibleEnums {
   actorTaskPauseReason: typeof ActorTaskPauseReason;
   actorTaskStopReason: typeof ActorTaskStopReason;
   UserGrantedPermissionDuration: typeof UserGrantedPermissionDuration;
+  webUseCounter: typeof WebUseCounter;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2181,6 +2187,15 @@ export enum WebClientModel {
   DEFAULT = 0,
   // Actor operation mode.
   ACTOR = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Web client's user counter.
+export enum WebUseCounter {
+  // Default counter. Never used.
+  DEFAULT = 0,
+  SUBMIT_PROMPT_WITH_AUTO_MODE = 1,
 }
 
 ///////////////////////////////////////////////

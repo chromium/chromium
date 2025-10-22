@@ -951,5 +951,22 @@ TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnlyOnce) {
                                        1);
 }
 
+TEST_F(GlicMetricsTest, OnRecordUseCounter) {
+  metrics_->OnRecordUseCounter(
+      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue));
+  metrics_->OnRecordUseCounter(
+      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue) + 1);
+  metrics_->OnRecordUseCounter(1001);
+
+  histogram_tester_.ExpectBucketCount("Glic.Api.UseCounter", 1000, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Api.UseCounter",
+      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Api.UseCounter",
+      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue) + 1, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Api.UseCounter", 3);
+}
+
 }  // namespace
 }  // namespace glic

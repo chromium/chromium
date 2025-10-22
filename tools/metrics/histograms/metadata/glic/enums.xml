@@ -335,6 +335,7 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="OnModeChange"/>
   <int value="71" label="SubscribeToCaptureRegion"/>
   <int value="72" label="UnsubscribeFromCaptureRegion"/>
+  <int value="73" label="OnRecordUseCounter"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
@@ -550,6 +551,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebClientMode) -->
+
+<!-- LINT.IfChange(GlicWebUseCounter) -->
+
+<enum name="GlicWebUseCounter">
+  <int value="0" label="Default"/>
+  <int value="1" label="Submit Prompt with Auto Mode"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUseCounter) -->
 
 <!-- LINT.IfChange(GlicWebviewExitReason) -->
 
