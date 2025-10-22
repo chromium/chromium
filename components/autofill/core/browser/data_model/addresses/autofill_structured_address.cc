@@ -359,8 +359,8 @@ PostalCodeNode::~PostalCodeNode() = default;
 std::u16string PostalCodeNode::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
-  return NormalizeAndRewrite(common_country_code, value,
-                             /*keep_white_space=*/false);
+  return normalization::NormalizeForComparison(
+      value, normalization::WhitespaceSpec::kDiscard);
 }
 
 SortingCodeNode::SortingCodeNode(SubcomponentsList children)
