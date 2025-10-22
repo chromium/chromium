@@ -88,6 +88,7 @@ void ReceiverValidatorForDebugging<CompressionStream>::Validate(
   CHECK(!isolate->HasPendingException());
   CHECK(!object.IsEmpty());
   CHECK(!object->IsNull());
+  CHECK(object->IsApiWrapper());
 
   static auto* const script_url =
       AllocateCrashKeyString("script_url", base::debug::CrashKeySize::Size256);
@@ -123,6 +124,8 @@ void ReceiverValidatorForDebugging<CompressionStream>::Validate(
                     ToBlinkString<String>(isolate, object->GetConstructorName(),
                                           kDoNotExternalize)
                         .Utf8());
+
+  CHECK_EQ(0, object->InternalFieldCount());
 
   static auto* const wrappable =
       AllocateCrashKeyString("wrappable", base::debug::CrashKeySize::Size32);
