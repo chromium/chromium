@@ -30,6 +30,7 @@ source_set("coordinator") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:pref_names",
     "//components/commerce/core:shopping_service",
+    "//components/crash/core/common:crash_key",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/ntp_tiles:pref_names",

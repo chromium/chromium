@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/i18n/message_formatter.h"
@@ -14,6 +15,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
@@ -179,6 +181,16 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     if (!config) {
       continue;
     }
+
+    if ([collectionConfiguration.configurationOrder
+            containsObject:config.configurationID]) {
+      static crash_reporter::CrashKeyString<64> id_key(
+          "duplicate-recent-configuration-id");
+      id_key.Set(base::SysNSStringToUTF8(config.configurationID));
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+
     collectionConfiguration.configurations[config.configurationID] = config;
     [collectionConfiguration.configurationOrder
         addObject:config.configurationID];
