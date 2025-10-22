@@ -1123,6 +1123,15 @@ void AuthenticatorCommonImpl::MakeCredential(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(device::kWebAuthnActorCheck) &&
+      GetContentClient()->browser()->ShouldDisallowCredentialRequest(
+          WebContents::FromRenderFrameHost(GetRenderFrameHost()))) {
+    req_state_->request_outcome = MakeCredentialOutcome::kBlockedByEmbedder;
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   const std::string relying_party_id = options->relying_party.id;
   const blink::mojom::RemoteDesktopClientOverridePtr&
       remote_desktop_client_override = options->remote_desktop_client_override;
@@ -1562,6 +1571,15 @@ void AuthenticatorCommonImpl::GetCredential(
           &public_key_options->allow_credentials)) {
     mojo::ReportBadMessage("invalid allow_credentials length");
     req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(device::kWebAuthnActorCheck) &&
+      GetContentClient()->browser()->ShouldDisallowCredentialRequest(
+          WebContents::FromRenderFrameHost(GetRenderFrameHost()))) {
+    req_state_->request_outcome = GetAssertionOutcome::kBlockedByEmbedder;
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     return;

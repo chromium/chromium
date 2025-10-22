@@ -338,6 +338,11 @@ bool TestAuthenticatorContentBrowserClient::
   return is_webauthn_security_level_acceptable;
 }
 
+bool TestAuthenticatorContentBrowserClient::ShouldDisallowCredentialRequest(
+    WebContents* web_contents) {
+  return should_disallow_credential_request;
+}
+
 std::unique_ptr<AuthenticatorRequestClientDelegate>
 TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
     RenderFrameHost* render_frame_host) {

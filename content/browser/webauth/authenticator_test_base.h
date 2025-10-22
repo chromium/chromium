@@ -453,6 +453,7 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
   bool IsSecurityLevelAcceptableForWebAuthn(content::RenderFrameHost* rfh,
                                             const url::Origin& origin) override;
+  bool ShouldDisallowCredentialRequest(WebContents* web_contents) override;
 
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
@@ -482,6 +483,9 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
   // The return value of IsSecurityLevelAcceptableForWebAuthn.
   bool is_webauthn_security_level_acceptable = true;
+
+  // The return value of ShouldDisallowCredentialRequest.
+  bool should_disallow_credential_request = false;
 
   // Whether discovery of the enclave authenticator was requested or not.
   std::optional<bool> enclave_authenticator_should_be_discovered_;

@@ -3358,6 +3358,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // experiments. For more details, see
   // https://docs.google.com/document/d/1bBhfhO7BotUB7Myy_8mtFF_4lI5N8hUyNayV_gI019Y/edit?tab=t.0#heading=h.9osmajzfan4b
   virtual bool UsePreloadServingMetrics();
+#if !BUILDFLAG(IS_ANDROID)
+  // Gives the content embedder a chance to disallow a credential request,
+  // for example if there's an active actor task in the tab associated with
+  // `web_contents`.
+  virtual bool ShouldDisallowCredentialRequest(WebContents* web_contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace content

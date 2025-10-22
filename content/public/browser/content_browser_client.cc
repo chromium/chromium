@@ -2008,4 +2008,11 @@ bool ContentBrowserClient::UsePreloadServingMetrics() {
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+bool ContentBrowserClient::ShouldDisallowCredentialRequest(
+    WebContents* web_contents) {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace content

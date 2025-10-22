@@ -23,6 +23,10 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/mocks/mock_event_dispatcher.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
@@ -39,6 +43,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -1516,6 +1521,120 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, Allowlist_NotAllowedError) {
       /*offsets=*/nullptr);
   const auto& result = content::EvalJs(web_contents, script);
   EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
+}
+
+class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
+ protected:
+  static constexpr std::string_view kMakeCredentialScript = R"((() => {
+    return navigator.credentials.create({ publicKey: {
+      rp: { id: "www.example.com", name: "example" },
+      user: { id: new Uint8Array([0]), name: "foo", displayName: "Foo" },
+      pubKeyCredParams: [{type: "public-key", alg: -7}],
+      challenge: new Uint8Array([0,1,2,3]),
+      timeout: 10000,
+    }}).then(c => 'webauthn: OK',
+              e => 'error ' + e);
+  })())";
+
+ public:
+  WebAuthnActorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnActorCheck, password_manager::features::kActorLogin},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    WebAuthnBrowserTest::SetUpOnMainThread();
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+    virtual_device_factory_ = virtual_device_factory.get();
+    virtual_device_factory->mutable_state()->InjectResidentKey(
+        kCredentialID, "www.example.com", std::vector<uint8_t>{5, 6, 7, 8},
+        "flandre", "Flandre Scarlet");
+    virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
+    device::VirtualCtap2Device::Config config;
+    config.resident_key_support = true;
+    config.internal_uv_support = true;
+    virtual_device_factory->SetCtap2Config(std::move(config));
+    auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+            std::move(virtual_device_factory));
+  }
+
+  void CreateActingTask() {
+    auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+    std::unique_ptr<actor::ExecutionEngine> execution_engine =
+        std::make_unique<actor::ExecutionEngine>(browser()->profile());
+
+    std::unique_ptr<actor::ActorTask> actor_task =
+        std::make_unique<actor::ActorTask>(
+            browser()->profile(), std::move(execution_engine),
+            actor::ui::NewUiEventDispatcher(
+                actor_service->GetActorUiStateManager()));
+    actor_task->SetState(actor::ActorTask::State::kActing);
+
+    base::RunLoop loop;
+    actor_task->AddTab(
+        browser()->GetActiveTabInterface()->GetHandle(),
+        base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
+          EXPECT_TRUE(actor::IsOk(*result));
+          loop.Quit();
+        }));
+    loop.Run();
+
+    actor_service->AddActiveTask(std::move(actor_task));
+  }
+
+  void PostRunTestOnMainThread() override {
+    // To avoid dangling raw_ptr's these values need to be destroyed before
+    // this test class.
+    virtual_device_factory_ = nullptr;
+    auth_env_.reset();
+    WebAuthnBrowserTest::PostRunTestOnMainThread();
+  }
+
+ protected:
+  raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest, MakeCredentialsActorIsActive) {
+  CreateActingTask();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  content::EvalJsResult result =
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredentialScript);
+  EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest, GetCredentialsActorIsActive) {
+  CreateActingTask();
+  virtual_device_factory_->mutable_state()->InjectRegistration(
+      kCredentialID, "www.example.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  content::EvalJsResult result =
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kGetAssertionCredID1234);
+  EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest,
+                       GetCredentialsActorIsNotActive) {
+  virtual_device_factory_->mutable_state()->InjectRegistration(
+      kCredentialID, "www.example.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  // Since there is no active actor task, the request is not rejected.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kGetAssertionCredID1234));
 }
 
 }  // namespace

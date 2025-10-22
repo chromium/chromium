@@ -1201,6 +1201,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool UsePrefetchPrerenderIntegration() override;
   bool UsePreloadServingMetrics() override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool ShouldDisallowCredentialRequest(
+      content::WebContents* web_contents) override;
+#endif  //! BUILDFLAG(IS_ANDROID)
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

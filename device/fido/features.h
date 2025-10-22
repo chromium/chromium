@@ -29,6 +29,9 @@ COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthUseNativeWinApi);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnActorCheck);
+
 // These five feature flags control whether iCloud Keychain is the default
 // mechanism for platform credential creation in different situations.
 // "Active" means that the user is an active user of the profile authenticator,

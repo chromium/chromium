@@ -259,6 +259,7 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_service_factory.h"
 #include "components/pdf/common/pdf_util.h"
@@ -6826,18 +6827,10 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
 
 #if !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = web_contents_getter.Run();
-  if (web_contents) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    const auto* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents);
-    auto* actor_service = actor::ActorKeyedService::Get(profile);
+  if (ShouldDisallowCredentialRequest(web_contents)) {
     // If actor is active, bail out early to prevent it from launching external
     // applications.
-    if (tab_interface && actor_service &&
-        actor_service->IsActiveOnTab(*tab_interface)) {
-      return false;
-    }
+    return false;
   }
 #endif  //! BUILDFLAG(IS_ANDROID)
 
@@ -8777,3 +8770,20 @@ bool ChromeContentBrowserClient::UsePrefetchPrerenderIntegration() {
 bool ChromeContentBrowserClient::UsePreloadServingMetrics() {
   return features::kDsePreload2UsePreloadServingMetrics.Get();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool ChromeContentBrowserClient::ShouldDisallowCredentialRequest(
+    content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin) ||
+      !web_contents) {
+    return false;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  const auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  return tab_interface && actor_service &&
+         actor_service->IsActiveOnTab(*tab_interface);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

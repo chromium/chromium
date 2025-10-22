@@ -29,6 +29,7 @@ enum class GetAssertionOutcome {
   kEnclaveError = 12,
   kUiTimeout = 13,
   kOtherFailure = 14,
+  kBlockedByEmbedder = 15,
 };
 
 // MakeCredentialOutcome corresponds to metrics enum
@@ -57,6 +58,7 @@ enum class MakeCredentialOutcome {
   kUiTimeout = 16,
   kOtherFailure = 17,
   kConditionalCreateFailure = 18,
+  kBlockedByEmbedder = 19,
 };
 
 // LINT.IfChange(AuthenticationRequestMode)
