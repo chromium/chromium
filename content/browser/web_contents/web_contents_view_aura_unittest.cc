@@ -145,6 +145,7 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
     root_window()->SetBounds(kBounds);
     GetNativeView()->SetBounds(kBounds);
     GetNativeView()->Show();
+    GetView()->GetContentNativeView()->Show();
     root_window()->AddChild(GetNativeView());
     occluding_window_ = aura::test::CreateTestWindow(
         {.parent = root_window(),
@@ -875,6 +876,33 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   EXPECT_TRUE(exchange_data->IsFromPrivileged());
 }
 
+TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
+  const char kGoogleUrl[] = "https://google.com/";
+
+  std::u16string url_string = u"https://google.com/";
+
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  // Mark the Web Contents as native UI.
+  WebContentsViewAura* view = GetView();
+
+  DropData drop_data;
+  drop_data.url = GURL(kGoogleUrl);
+
+  view->GetContentNativeView()->Hide();
+  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  EXPECT_FALSE(exchange_data);
+}
+
 // If the event location is not in the WebContentsViewAura, the drag will not be
 // started.
 TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
@@ -923,7 +951,6 @@ TEST_F(WebContentsViewAuraTest, EmptyTextInDropDataIsNonNullInOSExchangeData) {
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
-
   // This condition is needed to avoid calling WebContentsViewAura::EndDrag
   // which will result NOTREACHED being called in
   // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
