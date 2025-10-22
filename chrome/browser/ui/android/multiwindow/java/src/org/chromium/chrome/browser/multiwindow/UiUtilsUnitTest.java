@@ -5,17 +5,27 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,11 +34,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowDialog;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.components.favicon.LargeIconBridge;
 
 /** Tests for {@link UiUtils}. */
@@ -54,7 +68,9 @@ public class UiUtilsUnitTest {
     @Mock Drawable mDrawable;
     @Mock LargeIconBridge mIconBridge;
 
-    UiUtils mUiUtils;
+    private final @NameWindowDialogSource int mNameWindowDialogSource =
+            NameWindowDialogSource.WINDOW_MANAGER;
+    private UiUtils mUiUtils;
 
     @Before
     public void setUp() {
@@ -80,6 +96,85 @@ public class UiUtilsUnitTest {
                         return null;
                     }
                 };
+    }
+
+    @Test
+    public void testShowNameWindowDialog_Success() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        Callback<String> mockCallback = mock(Callback.class);
+        String currentTitle = "Window 1";
+        String newTitle = "My Window";
+
+        UiUtils.showNameWindowDialog(activity, currentTitle, mockCallback, mNameWindowDialogSource);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue(dialog.isShowing());
+
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        editText.setText(newTitle);
+
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        assertFalse(dialog.isShowing());
+        verify(mockCallback).onResult(newTitle);
+    }
+
+    @Test
+    public void testShowNameWindowDialog_EmptyTitleError() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        Callback<String> mockCallback = mock(Callback.class);
+        String currentTitle = "Window 1";
+        doReturn("Error").when(mContext).getString(anyInt());
+
+        UiUtils.showNameWindowDialog(activity, currentTitle, mockCallback, mNameWindowDialogSource);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue(dialog.isShowing());
+
+        TextInputLayout textInputLayout = dialog.findViewById(R.id.new_window_title);
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        editText.setText("   "); // Whitespace only.
+
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        assertTrue(dialog.isShowing());
+        assertNotNull(textInputLayout.getError());
+        verify(mockCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testShowNameWindowDialog_SameTitle() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        Callback<String> mockCallback = mock(Callback.class);
+        String currentTitle = "Window 1";
+
+        UiUtils.showNameWindowDialog(activity, currentTitle, mockCallback, mNameWindowDialogSource);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue(dialog.isShowing());
+
+        // EditText is already pre-filled with currentTitle.
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        assertFalse(dialog.isShowing());
+        verify(mockCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testShowNameWindowDialog_Cancel() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        Callback<String> mockCallback = mock(Callback.class);
+        String currentTitle = "Window 1";
+
+        UiUtils.showNameWindowDialog(activity, currentTitle, mockCallback, mNameWindowDialogSource);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue(dialog.isShowing());
+
+        dialog.findViewById(R.id.negative_button).performClick();
+
+        assertFalse(dialog.isShowing());
+        verify(mockCallback, never()).onResult(any());
     }
 
     private void testItemTitle(boolean shouldOpenIncognitoAsWindow) {

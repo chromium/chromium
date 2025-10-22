@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -31,6 +32,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -41,6 +43,8 @@ import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.test.core.app.ApplicationProvider;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.junit.After;
 import org.junit.Before;
@@ -55,7 +59,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -79,6 +85,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -215,7 +222,6 @@ public class MultiInstanceManagerApi31UnitTest {
             new OneshotSupplierImpl<>();
 
     private MultiInstanceManagerApi31 createMultiInstanceManager(Activity activity) {
-        when(activity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
         return new TestMultiInstanceManagerApi31(
                 activity,
                 mTabModelOrchestratorSupplier,
@@ -673,6 +679,8 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstanceManagerApi31.removeInstanceInfo(0);
 
         // Trying to allocate a new instance with preferNew should fail.
+        when(mActivityTask59.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
         Pair<Integer, Integer> instanceIdInfo =
                 createMultiInstanceManager(mActivityTask59)
                         .allocInstanceId(PASSED_ID_INVALID, TASK_ID_59, /* preferNew= */ true);
@@ -2174,5 +2182,101 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Message identifier should match.",
                 MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
                 message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+    }
+
+    @Test
+    public void testShowNameWindowDialog_UsesCustomTitle() {
+        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        var manager = createMultiInstanceManager(realActivity);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+
+        final String customTitle = "Custom Title";
+        final String defaultTitle = "Default Title";
+        MultiInstanceManagerApi31.writeCustomTitle(INSTANCE_ID_1, customTitle);
+        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+
+        manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue("Dialog should be showing.", dialog.isShowing());
+
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        assertEquals(
+                "Dialog should be pre-filled with the custom title.",
+                customTitle,
+                editText.getText().toString());
+    }
+
+    @Test
+    public void testShowNameWindowDialog_UsesRegularTitleAsFallback() {
+        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        var manager = createMultiInstanceManager(realActivity);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+
+        final String defaultTitle = "Default Title";
+        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(MultiInstanceManagerApi31.customTitleKey(INSTANCE_ID_1));
+
+        manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue("Dialog should be showing.", dialog.isShowing());
+
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        assertEquals(
+                "Dialog should be pre-filled with the regular title.",
+                defaultTitle,
+                editText.getText().toString());
+    }
+
+    @Test
+    public void testShowNameWindowDialog_DialogCallbackUpdatesTitle() {
+        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        var manager = createMultiInstanceManager(realActivity);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+        final String defaultTitle = "Default Title";
+        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+
+        manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue("Dialog should be showing.", dialog.isShowing());
+
+        final String newTitle = "Custom Title";
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        editText.setText(newTitle);
+
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        assertFalse("Dialog should be dismissed.", dialog.isShowing());
+        assertEquals(
+                "New custom title should be saved.",
+                newTitle,
+                MultiInstanceManagerApi31.readCustomTitle(INSTANCE_ID_1));
+    }
+
+    @Test
+    public void testShowNameWindowDialog_DialogCallbackIgnoresDefaultTitle() {
+        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        var manager = createMultiInstanceManager(realActivity);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+        final String defaultTitle = "Default Title";
+        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+
+        manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue("Dialog should be showing.", dialog.isShowing());
+
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        editText.setText(defaultTitle);
+
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        assertFalse("Dialog should be dismissed.", dialog.isShowing());
+        assertNull(
+                "Custom title should not be saved if identical to default title.",
+                MultiInstanceManagerApi31.readCustomTitle(INSTANCE_ID_1));
     }
 }

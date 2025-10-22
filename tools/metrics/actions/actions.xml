@@ -4648,6 +4648,32 @@ should be able to be added at any place in this file.
   <description>The survey infobar was displayed.</description>
 </action>
 
+<action name="Android.TabStripMenu.ChangeWindowName">
+  <owner>aishwaryarj@google.com</owner>
+  <description>
+    User tapped 'Save' on the dialog opened via the tab strip context menu to
+    successfully save and change the name of a Chrome window and dismiss the
+    dialog.
+  </description>
+</action>
+
+<action name="Android.TabStripMenu.NameWindow">
+  <owner>aishwaryarj@google.com</owner>
+  <description>
+    User tapped 'Name window' on the tab strip context menu to name a Chrome
+    window.
+  </description>
+</action>
+
+<action name="Android.TabStripMenu.SaveWindowName">
+  <owner>aishwaryarj@google.com</owner>
+  <description>
+    User tapped 'Save' on the dialog opened via the tab strip context menu to
+    successfully save (with or without changing) the name of a Chrome window and
+    dismiss the dialog.
+  </description>
+</action>
+
 <action name="Android.WindowManager.ChangeWindowName">
   <owner>aishwaryarj@google.com</owner>
   <owner>rathomas@google.com</owner>
@@ -4708,8 +4734,8 @@ should be able to be added at any place in this file.
   <owner>rathomas@google.com</owner>
   <description>
     User tapped 'Save' on the dialog opened via the 3-dot menu on the in-app
-    window manager to successfully save the name of a Chrome window and dismiss
-    the dialog.
+    window manager to successfully save (with or without changing) the name of a
+    Chrome window and dismiss the dialog.
   </description>
 </action>
 

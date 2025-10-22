@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1079,11 +1080,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         writeTitle(index, tab.getTitle());
     }
 
-    private static void writeTitle(int index, String title) {
+    @VisibleForTesting
+    static void writeTitle(int index, String title) {
         ChromeSharedPreferences.getInstance().writeString(titleKey(index), title);
     }
 
-    private static void writeCustomTitle(int index, String customTitle) {
+    @VisibleForTesting
+    static void writeCustomTitle(int index, String customTitle) {
         ChromeSharedPreferences.getInstance().writeString(customTitleKey(index), customTitle);
     }
 
@@ -1627,5 +1630,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     public void showInstanceCreationLimitMessage(@Nullable MessageDispatcher messageDispatcher) {
         MultiWindowUtils.showInstanceCreationLimitMessage(
                 messageDispatcher, mActivity, this::showInstanceSwitcherDialog);
+    }
+
+    @Override
+    public void showNameWindowDialog(@NameWindowDialogSource int source) {
+        String customTitle = readCustomTitle(mInstanceId);
+        String currentTitle = TextUtils.isEmpty(customTitle) ? readTitle(mInstanceId) : customTitle;
+
+        UiUtils.showNameWindowDialog(
+                mActivity,
+                assumeNonNull(currentTitle),
+                newTitle -> writeCustomTitle(mInstanceId, newTitle),
+                source);
     }
 }

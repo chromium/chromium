@@ -112,6 +112,7 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/favicon/android:java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_library_java",

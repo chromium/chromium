@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -293,6 +294,15 @@ public abstract class MultiInstanceManager {
      * @param messageDispatcher The {@link MessageDispatcher} to enqueue the instance limit message.
      */
     public void showInstanceCreationLimitMessage(@Nullable MessageDispatcher messageDispatcher) {
+        // Not implemented
+    }
+
+    /**
+     * Shows a dialog to name the current window.
+     *
+     * @param source The {@link NameWindowDialogSource} that tracks the caller of this method.
+     */
+    public void showNameWindowDialog(@NameWindowDialogSource int source) {
         // Not implemented
     }
 

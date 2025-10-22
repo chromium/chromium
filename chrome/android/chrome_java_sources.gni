@@ -353,6 +353,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabContextMenuCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupContextMenuCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabLoadTracker.java",
+  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripIphController.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ExternalViewDragDropReorderStrategy.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/GroupReorderStrategy.java",

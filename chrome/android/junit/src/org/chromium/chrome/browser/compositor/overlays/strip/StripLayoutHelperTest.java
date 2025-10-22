@@ -224,6 +224,8 @@ public class StripLayoutHelperTest {
     @Mock private Bitmap mAvatarBitmap;
     @Mock private TintedCompositorButton mCloseButton;
     @Mock TabStripIphController mController;
+    @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
+
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
@@ -2619,20 +2621,57 @@ public class StripLayoutHelperTest {
     private void onLongPress_OffTab() {
         // Initialize.
         initializeTest(false, false, 0);
+        // Set internal state for height, width and paddings.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, 0, 0, 0, 0);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
 
         // Long press past the last tab.
+        int x = (int) SCREEN_WIDTH - 10;
+        int y = 0;
         mStripLayoutHelper.setTabAtPositionForTesting(null);
-        mStripLayoutHelper.onLongPress(150f, 0f);
+        mStripLayoutHelper.onLongPress(x, y);
 
-        // Verify that we show the popup menu anchored on the close button.
+        // Verify that we do not show the popup menu anchored on the close button.
         assertFalse(
                 "Should not be in reorder mode after long press on empty space on tab strip.",
                 mStripLayoutHelper.getInReorderModeForTesting());
         assertFalse(
                 "Should not show after long press on empty space on tab strip.",
                 mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+
+        // Verify that we show the strip context menu.
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
+        assertEquals(new Rect(x, y, x, y), rect);
+    }
+
+    @Test
+    public void testRightClickOnEmptyStripSpaceShowsStripContextMenu() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        // Set internal state for height, width and paddings.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, 0, 0, 0, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
+
+        // Right-click on the empty strip space.
+        int x = (int) SCREEN_WIDTH - 10;
+        int y = 0;
+        mStripLayoutHelper.click(0, x, y, MotionEvent.BUTTON_SECONDARY, 0);
+
+        // Verify that we show the strip context menu.
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
+        assertEquals(new Rect(x, y, x, y), rect);
     }
 
     @Test

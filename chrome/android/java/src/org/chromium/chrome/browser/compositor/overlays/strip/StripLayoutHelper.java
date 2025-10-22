@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
@@ -625,6 +626,9 @@ public class StripLayoutHelper
     private @MonotonicNonNull TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @MonotonicNonNull TabGroupListBottomSheetCoordinator
             mTabGroupListBottomSheetCoordinator;
+    // Set when the context menu triggered by a gesture on empty strip space is shown for the first
+    // time.
+    private @MonotonicNonNull TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
 
     // Tab group share.
     // These are set if shouldEnableGroupSharing() is true.
@@ -2274,9 +2278,10 @@ public class StripLayoutHelper
         if (stripView == null) {
             // Broadcast to start moving the window instance as the user has long pressed on the
             // open space of the tab strip.
-            // TODO(crbug.com/358191015): Decouple the move window broadcast from this method and
-            // maybe move to #onLongPress when `stripView` is null.
             sendMoveWindowBroadcast(mToolbarContainerView, x, y);
+
+            // Show the tab strip context menu at the long-press position on the empty space.
+            showTabStripContextMenu(x, y);
             return;
         }
 
@@ -2366,7 +2371,8 @@ public class StripLayoutHelper
         if (groupTitle == null || groupTitle.getTabGroupId() == null) return;
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
-        getAnchorRect(groupTitle, anchorRectProvider);
+        groupTitle.getAnchorRect(anchorRectProvider.getRect());
+        getAdjustedAnchorRect(anchorRectProvider);
         // If the menu is already showing (which may happen if the user does two long presses in
         // quick succession and showing the menu is slow), then abort.
         // Also note that we can assume mTabGroupContextMenuCoordinator is non-null since this
@@ -2420,7 +2426,8 @@ public class StripLayoutHelper
                             });
         }
         RectProvider anchorRectProvider = new RectProvider();
-        getAnchorRect(anchorTab, anchorRectProvider);
+        anchorTab.getAnchorRect(anchorRectProvider.getRect());
+        getAdjustedAnchorRect(anchorRectProvider);
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
         mTabContextMenuCoordinator.showMenu(anchorRectProvider, tabIds);
     }
@@ -2573,13 +2580,13 @@ public class StripLayoutHelper
         }
     }
 
-    private void getAnchorRect(StripLayoutView stripLayoutView, RectProvider anchorRectProvider) {
+    private void getAdjustedAnchorRect(RectProvider anchorRectProvider) {
         int[] toolbarCoordinates = new int[2];
         Rect backgroundPadding = new Rect();
         mToolbarContainerView.getLocationInWindow(toolbarCoordinates);
         Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, mIncognito);
         background.getPadding(backgroundPadding);
-        stripLayoutView.getAnchorRect(anchorRectProvider.getRect());
+
         // Use parent toolbar view coordinates to offset title rect.
         // Also shift the anchor left by menu padding to align the menu exactly with title x.
         int xOffset =
@@ -2767,6 +2774,13 @@ public class StripLayoutHelper
             TabContextMenuCoordinator tabGroupContextMenuCoordinator) {
         mTabContextMenuCoordinator = tabGroupContextMenuCoordinator;
         ResettersForTesting.register(() -> mTabContextMenuCoordinator = null);
+    }
+
+    @SuppressWarnings("NullAway")
+    void setTabStripContextMenuCoordinatorForTesting(
+            TabStripContextMenuCoordinator tabStripContextMenuCoordinator) {
+        mTabStripContextMenuCoordinator = tabStripContextMenuCoordinator;
+        ResettersForTesting.register(() -> mTabStripContextMenuCoordinator = null);
     }
 
     private void clearLastHoveredTab() {
@@ -3073,8 +3087,14 @@ public class StripLayoutHelper
      */
     public void click(long time, float x, float y, int buttons, int modifiers) {
         StripLayoutView clickedView = determineClickedView(x, y, buttons);
-        if (clickedView == null) return;
         clearLastHoveredTab();
+        if (clickedView == null) {
+            if (MotionEventUtils.isSecondaryClick(buttons)) {
+                // A right click on empty strip space should trigger the strip context menu.
+                showTabStripContextMenu(x, y);
+            }
+            return;
+        }
         if (MotionEventUtils.isSecondaryClick(buttons)) {
             showContextMenu(clickedView);
         } else {
@@ -3173,6 +3193,37 @@ public class StripLayoutHelper
             return true;
         }
         return false;
+    }
+
+    /**
+     * Shows the context menu originating at strip coordinates ({@code xDp}, {@code yDp}) to handle
+     * a long-press or right-click event at this position. The coordinates are assumed to lie on the
+     * empty space of the tab strip. For context menus associated with gestures on a {@link
+     * StripLayoutView}, see {@link #showContextMenu(StripLayoutView)}.
+     *
+     * @param xDp The x coordinate of the position of the gesture event.
+     * @param yDp The y coordinate of the position of the gesture event.
+     */
+    private void showTabStripContextMenu(float xDp, float yDp) {
+        if (mTabStripContextMenuCoordinator == null) {
+            mTabStripContextMenuCoordinator =
+                    new TabStripContextMenuCoordinator(mContext, mMultiInstanceManager);
+        }
+
+        // Determine the anchor view rect to position the menu.
+        float dpToPx = mContext.getResources().getDisplayMetrics().density;
+        RectProvider anchorRectProvider = new RectProvider();
+        anchorRectProvider.setRect(
+                new Rect(
+                        Math.round(xDp * dpToPx),
+                        Math.round(yDp * dpToPx),
+                        Math.round(xDp * dpToPx),
+                        Math.round(yDp * dpToPx)));
+        getAdjustedAnchorRect(anchorRectProvider);
+
+        var activity = assertNonNull(mWindowAndroid.getActivity().get());
+        mTabStripContextMenuCoordinator.showMenu(
+                anchorRectProvider, assumeNonNull(mModel).isIncognito(), activity);
     }
 
     private List<Integer> getMultiSelectedTabIds() {

@@ -12,13 +12,10 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -35,14 +32,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.util.TimeTextResolver;
@@ -67,7 +63,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Coordinator to construct the instance switcher dialog. TODO: Resolve various inconsistencies that
@@ -737,60 +732,22 @@ public class InstanceSwitcherCoordinator {
     }
 
     private void showNameWindowDialog(InstanceInfo item) {
-        RecordUserAction.record("Android.WindowManager.NameWindow");
-        int style = R.style.Theme_Chromium_Multiwindow_RenameWindowDialog;
         ListItem listItem = assumeNonNull(getInstanceListItem(item));
         String currentTitle = listItem.model.get(InstanceSwitcherItemProperties.TITLE);
-        Dialog dialog = new Dialog(mContext, style);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setContentView(R.layout.rename_window_dialog);
 
-        Resources res = mContext.getResources();
-        ((TextView) dialog.findViewById(R.id.title))
-                .setText(res.getString(R.string.instance_switcher_name_window_confirm_header));
+        Callback<String> nameChangedCallback =
+                newTitle -> {
+                    listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
+                    listItem.model.set(
+                            InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION,
+                            mContext.getString(
+                                    R.string.instance_switcher_item_more_menu_content_description,
+                                    newTitle));
+                    mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
+                };
 
-        TextInputLayout textInputLayout = dialog.findViewById(R.id.new_window_title);
-        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
-        editText.setText(currentTitle);
-        editText.requestFocus();
-        Window window = assumeNonNull(dialog.getWindow());
-        window.setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-                        | WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
-        TextView positiveButton = dialog.findViewById(R.id.positive_button);
-        positiveButton.setOnClickListener(
-                v -> {
-                    String newTitle = Objects.toString(editText.getText(), "").trim();
-                    if (!TextUtils.isEmpty(newTitle)) {
-                        RecordUserAction.record("Android.WindowManager.SaveWindowName");
-                        if (!newTitle.equals(currentTitle)) {
-                            listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
-                            listItem.model.set(
-                                    InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION,
-                                    mContext.getString(
-                                            R.string
-                                                    .instance_switcher_item_more_menu_content_description,
-                                            newTitle));
-                            RecordUserAction.record("Android.WindowManager.ChangeWindowName");
-                            mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
-                        }
-                        dialog.dismiss();
-                    } else {
-                        textInputLayout.setError(
-                                mContext.getString(
-                                        R.string.instance_switcher_name_window_missing_title));
-                        textInputLayout.requestFocus();
-                    }
-                });
-
-        TextView negativeButton = dialog.findViewById(R.id.negative_button);
-        negativeButton.setOnClickListener(
-                v -> {
-                    dialog.dismiss();
-                });
-
-        dialog.show();
+        UiUtils.showNameWindowDialog(
+                mContext, currentTitle, nameChangedCallback, NameWindowDialogSource.WINDOW_MANAGER);
     }
 
     private void updateTabTitle(int numActiveInstances, int numInactiveInstances) {
