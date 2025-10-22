@@ -1729,11 +1729,6 @@ BASE_FEATURE(kWinPinPWAShortcutWithLAF, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// A feature to indicate whether setting wake time >24hours away is supported by
-// the platform's RTC.
-// TODO(b/187516317): Remove when the issue is resolved in FW.
-BASE_FEATURE(kSupportsRtcWakeOver24Hours, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A feature to enable event based log uploads. See
 // go/cros-eventbasedlogcollection-dd.
 BASE_FEATURE(kEventBasedLogUpload, base::FEATURE_ENABLED_BY_DEFAULT);
