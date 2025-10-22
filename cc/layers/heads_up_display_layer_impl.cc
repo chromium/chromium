@@ -58,6 +58,7 @@
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -79,10 +80,12 @@ void DrawArc(PaintCanvas* canvas,
              const PaintFlags& flags) {
   DCHECK_GT(sweep_angle, 0.f);
   DCHECK_LT(sweep_angle, 360.f);
-  SkPath path;
-  path.moveTo(oval.centerX(), oval.centerY());
-  path.arcTo(oval, start_angle, sweep_angle, false /* forceMoveTo */);
-  path.close();
+  const SkPath path =
+      SkPathBuilder()
+          .moveTo(oval.centerX(), oval.centerY())
+          .arcTo(oval, start_angle, sweep_angle, false /* forceMoveTo */)
+          .close()
+          .detach();
   canvas->drawPath(path, flags);
 }
 
@@ -707,16 +710,16 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   DrawGraphLines(canvas, &flags, graph_bounds);
 
   // Collect the frames graph data.
-  SkPath good_path;
-  SkPath dropped_path;
-  SkPath partial_path;
+  SkPathBuilder good_path;
+  SkPathBuilder dropped_path;
+  SkPathBuilder partial_path;
   for (auto it = frame_sorter->End(); it; --it) {
     const auto state = **it;
     int x = graph_bounds.left() + it.index();
-    SkPath& path = state == FrameInfo::FrameFinalState::kDropped ? dropped_path
-                   : state == FrameInfo::FrameFinalState::kPresentedAll
-                       ? good_path
-                       : partial_path;
+    SkPathBuilder& path =
+        state == FrameInfo::FrameFinalState::kDropped        ? dropped_path
+        : state == FrameInfo::FrameFinalState::kPresentedAll ? good_path
+                                                             : partial_path;
     path.moveTo(x, graph_bounds.top());
     path.lineTo(x, graph_bounds.bottom());
   }
@@ -727,13 +730,13 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   flags.setStrokeWidth(1);
 
   flags.setColor(DebugColors::FPSDisplaySuccessfulFrame());
-  canvas->drawPath(good_path, flags);
+  canvas->drawPath(good_path.detach(), flags);
 
   flags.setColor(DebugColors::FPSDisplayDroppedFrame());
-  canvas->drawPath(dropped_path, flags);
+  canvas->drawPath(dropped_path.detach(), flags);
 
   flags.setColor(DebugColors::FPSDisplayMissedFrame());
-  canvas->drawPath(partial_path, flags);
+  canvas->drawPath(partial_path.detach(), flags);
 
   return area;
 }

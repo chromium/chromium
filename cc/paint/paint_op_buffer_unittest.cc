@@ -57,6 +57,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -597,16 +598,14 @@ TEST(PaintOpBufferTest, SlowPaths) {
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
 
   // Antialiased convex path is not slow.
-  SkPath path;
-  path.addCircle(2, 2, 5);
+  const SkPath path = SkPath::Circle(2, 2, 5);
   EXPECT_TRUE(path.isConvex());
   buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
                           UsePaintCache::kDisabled);
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
 
   // Concave paths are slow only when antialiased.
-  SkPath concave = path;
-  concave.addCircle(3, 4, 2);
+  const SkPath concave = SkPathBuilder(path).addCircle(3, 4, 2).detach();
   EXPECT_FALSE(concave.isConvex());
   buffer.push<ClipPathOp>(concave, SkClipOp::kIntersect, /*antialias=*/true,
                           UsePaintCache::kDisabled);
@@ -650,8 +649,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     PaintOpBuffer buffer;
     EXPECT_FALSE(buffer.has_non_aa_paint());
 
-    SkPath path;
-    path.addCircle(2, 2, 5);
+    const SkPath path = SkPath::Circle(2, 2, 5);
 
     // ClipPathOp with AA
     buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
@@ -686,8 +684,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintOpBuffer sub_buffer;
-    SkPath path;
-    path.addCircle(2, 2, 5);
+    const SkPath path = SkPath::Circle(2, 2, 5);
     sub_buffer.push<ClipPathOp>(path, SkClipOp::kIntersect,
                                 /*antialias=*/false, UsePaintCache::kDisabled);
     EXPECT_TRUE(sub_buffer.has_non_aa_paint());
@@ -1167,19 +1164,19 @@ std::vector<SkM44> test_matrices = {
 
 std::vector<SkPath> test_paths = {
     [] {
-      SkPath path;
-      path.moveTo(SkIntToScalar(20), SkIntToScalar(20));
-      path.lineTo(SkIntToScalar(80), SkIntToScalar(20));
-      path.lineTo(SkIntToScalar(30), SkIntToScalar(30));
-      path.lineTo(SkIntToScalar(20), SkIntToScalar(80));
-      return path;
+      return SkPathBuilder()
+          .moveTo(SkIntToScalar(20), SkIntToScalar(20))
+          .lineTo(SkIntToScalar(80), SkIntToScalar(20))
+          .lineTo(SkIntToScalar(30), SkIntToScalar(30))
+          .lineTo(SkIntToScalar(20), SkIntToScalar(80))
+          .detach();
     }(),
     [] {
-      SkPath path;
-      path.addCircle(2, 2, 5);
-      path.addCircle(3, 4, 2);
-      path.addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6);
-      return path;
+      return SkPathBuilder()
+          .addCircle(2, 2, 5)
+          .addCircle(3, 4, 2)
+          .addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6)
+          .detach();
     }(),
     SkPath(),
 };
@@ -4434,13 +4431,14 @@ TEST(PaintOpBufferTest, PlaybackDrawRecordNestedNonLocalAndNonLocalCTM) {
 }
 
 TEST(PaintOpBufferTest, PathCaching) {
-  SkPath path;
+  SkPathBuilder path_builder;
   PaintFlags flags;
 
   // Grow path large enough to trigger caching
-  path.moveTo(0, 0);
+  path_builder.moveTo(0, 0);
   for (int x = 1; x < 100; ++x)
-    path.lineTo(x, x % 1);
+    path_builder.lineTo(x, x % 1);
+  const SkPath path = path_builder.detach();
 
   TestOptionsProvider options_provider;
 

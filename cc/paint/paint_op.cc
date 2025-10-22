@@ -40,6 +40,8 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -1537,10 +1539,7 @@ void DrawLineOp::RasterWithFlags(const DrawLineOp* op,
                                  const PlaybackParams& params) {
   flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
     if (op->draw_as_path) {
-      SkPath path;
-      path.moveTo(op->x0, op->y0);
-      path.lineTo(op->x1, op->y1);
-      c->drawPath(path, p);
+      c->drawPath(SkPath::Line({op->x0, op->y0}, {op->x1, op->y1}), p);
     } else {
       c->drawLine(op->x0, op->y0, op->x1, op->y1, p);
     }
@@ -1574,9 +1573,11 @@ void DrawArcImpl(SkCanvas* canvas,
     canvas->drawOval(oval, paint);
   } else {
     // Closed partial arcs -> general SkPath.
-    SkPath path;
-    path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
-    path.close();
+    const SkPath path =
+        SkPathBuilder()
+            .arcTo(oval, start_angle_degrees, sweep_angle_degrees, false)
+            .close()
+            .detach();
     canvas->drawPath(path, paint);
   }
 }

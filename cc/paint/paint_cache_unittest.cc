@@ -14,9 +14,7 @@ namespace {
 constexpr size_t kDefaultBudget = 1024u;
 
 SkPath CreatePath() {
-  SkPath path;
-  path.addCircle(2, 2, 5);
-  return path;
+  return SkPath::Circle(2, 2, 5);
 }
 
 sk_sp<SkRuntimeEffect> GetEffect() {
