@@ -64,15 +64,6 @@ public abstract class TabModelOrchestrator {
     }
 
     /**
-     * Sets {@link TabPersistentStoreImpl} for testing.
-     *
-     * @param tabPersistentStore The {@link TabPersistentStoreImpl}.
-     */
-    void setTabPersistentStoreForTesting(TabPersistentStore tabPersistentStore) {
-        mTabPersistentStore = tabPersistentStore;
-    }
-
-    /**
      * @return The {@link TabPersistentStore} managed by this orchestrator.
      */
     public TabPersistentStore getTabPersistentStore() {
@@ -300,5 +291,23 @@ public abstract class TabModelOrchestrator {
     protected void markTabModelsInitialized() {
         if (mIsDestroyed) return;
         mTabModelsInitialized = true;
+    }
+
+    /**
+     * Sets {@link TabPersistentStoreImpl} for testing.
+     *
+     * @param tabPersistentStore The {@link TabPersistentStoreImpl}.
+     */
+    void setTabPersistentStoreForTesting(TabPersistentStore tabPersistentStore) {
+        mTabPersistentStore = tabPersistentStore;
+    }
+
+    /**
+     * Sets {@link TabPersistencePolicy} for testing.
+     *
+     * @param tabPersistencePolicy The {@link TabPersistencePolicy}.
+     */
+    void setTabPersistencePolicyForTesting(TabPersistencePolicy tabPersistencePolicy) {
+        mTabPersistencePolicy = tabPersistencePolicy;
     }
 }

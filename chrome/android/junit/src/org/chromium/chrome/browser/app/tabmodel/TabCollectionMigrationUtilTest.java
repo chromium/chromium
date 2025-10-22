@@ -16,7 +16,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for {@link TabCollectionMigrationUtil}. */
@@ -37,7 +38,7 @@ public class TabCollectionMigrationUtilTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
     public void testSetAndGet_featureEnabled() {
         assertFalse(
                 "Value should be false by default.",
@@ -51,7 +52,7 @@ public class TabCollectionMigrationUtilTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
     public void testSetAndGet_featureDisabled() {
         // Set to true explicitly to ensure the new value is written.
         ContextUtils.getApplicationContext()
@@ -79,7 +80,7 @@ public class TabCollectionMigrationUtilTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
     public void testSetAndGet_multipleFiles() {
         assertFalse(
                 "Value should be false by default for FILENAME_1.",

@@ -226,7 +226,6 @@ import java.util.function.Supplier;
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.DATA_SHARING_JOIN_ONLY,
-    ChromeFeatureList.TAB_COLLECTION_ANDROID, // crbug.com/454100056
 })
 public class TabListMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -1226,7 +1225,7 @@ public class TabListMediatorUnitTest {
     public void tabClosure() {
         assertThat(mModelList.size(), equalTo(2));
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
 
         verify(mTab2).removeObserver(any());
         assertThat(mModelList.size(), equalTo(1));
@@ -1248,7 +1247,7 @@ public class TabListMediatorUnitTest {
     public void tabClosure_IgnoresUpdatesForTabsOutsideOfModel() {
         mTabModelObserverCaptor
                 .getValue()
-                .willCloseTab(prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL), true);
+                .didRemoveTabForClosure(prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL));
 
         assertThat(mModelList.size(), equalTo(2));
     }
@@ -1447,8 +1446,8 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
 
         // Remove the first two tabs.
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
         doReturn(newTab).when(mTabGroupModelFilter).getRepresentativeTabAt(0);
         when(mTabModel.getTabAt(0)).thenReturn(newTab);
         when(mTabModel.getCount()).thenReturn(1);
@@ -1726,7 +1725,7 @@ public class TabListMediatorUnitTest {
     public void tabClosureUndone() {
         assertThat(mModelList.size(), equalTo(2));
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
 
         assertThat(mModelList.size(), equalTo(1));
         assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -1747,7 +1746,7 @@ public class TabListMediatorUnitTest {
 
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
 
         assertThat(mModelList.size(), equalTo(1));
         assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -1781,7 +1780,7 @@ public class TabListMediatorUnitTest {
 
         // This crashed previously when it tried to update the message instead of the tab group
         // (crbug.com/347970497).
-        mTabModelObserverCaptor.getValue().willCloseTab(newTab, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(newTab);
         verify(model, times(0)).set(eq(TabProperties.TAB_ID), anyInt());
     }
 
@@ -3272,7 +3271,7 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties();
 
         assertThat(mModelList.size(), equalTo(2));
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
         verify(mTab2).removeObserver(mTabObserverCaptor.getValue());
         assertThat(mModelList.size(), equalTo(1));
         assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -3285,7 +3284,7 @@ public class TabListMediatorUnitTest {
         verify(mTab2, times(2)).addObserver(mTabObserverCaptor.getValue());
 
         assertThat(mModelList.size(), equalTo(2));
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
         assertThat(mModelList.size(), equalTo(1));
         verify(mTab2).removeObserver(any());
 
@@ -3331,8 +3330,8 @@ public class TabListMediatorUnitTest {
         for (boolean signedInAndSyncEnabled : new boolean[] {false, true}) {
             for (boolean priceTrackingEnabled : new boolean[] {false, true}) {
                 for (boolean incognito : new boolean[] {false, true}) {
-                    TabListMediator mMediatorSpy = spy(mMediator);
-                    doReturn(false).when(mMediatorSpy).isTabInTabGroup(any());
+                    TabListMediator mediatorSpy = spy(mMediator);
+                    doReturn(false).when(mediatorSpy).isTabInTabGroup(any());
                     PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(
                             signedInAndSyncEnabled);
                     PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
@@ -3342,7 +3341,7 @@ public class TabListMediatorUnitTest {
                     responses.put(TAB2_URL, ANY_EMPTY);
                     mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, responses);
                     PersistedTabDataConfiguration.setUseTestConfig(true);
-                    initAndAssertAllProperties(mMediatorSpy);
+                    initAndAssertAllProperties(mediatorSpy);
                     List<Tab> tabs = new ArrayList<>();
                     doReturn(incognito).when(mTab1).isIncognito();
                     doReturn(incognito).when(mTab2).isIncognito();
@@ -3356,7 +3355,7 @@ public class TabListMediatorUnitTest {
                     tabs.add(mTabModel.getTabAt(0));
                     tabs.add(mTabModel.getTabAt(1));
 
-                    mMediatorSpy.resetWithListOfTabs(tabs, null, /* quickMode= */ false);
+                    mediatorSpy.resetWithListOfTabs(tabs, null, /* quickMode= */ false);
                     if (signedInAndSyncEnabled && priceTrackingEnabled && !incognito) {
                         mModelList
                                 .get(0)
@@ -4247,7 +4246,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
         doReturn(false).when(mTab1).isClosing();
 
-        mTabModelObserverCaptor.getValue().willCloseTab(tab3, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
 
         assertEquals(2, mModelList.size());
 
@@ -4274,7 +4273,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
         doReturn(true).when(mTab1).isClosing();
 
-        mTabModelObserverCaptor.getValue().willCloseTab(tab3, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
 
         assertEquals(2, mModelList.size());
 
@@ -4299,7 +4298,7 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
 
         assertEquals(1, mModelList.size());
 
@@ -4983,7 +4982,7 @@ public class TabListMediatorUnitTest {
         mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
         var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
 
         callback.onResult(true);
         assertFalse(mModelList.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
@@ -5001,8 +5000,8 @@ public class TabListMediatorUnitTest {
         var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
 
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
-        mTabModelObserverCaptor.getValue().willCloseTab(newTab, /* didCloseAlone= */ false);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(newTab);
 
         callback.onResult(true);
 
