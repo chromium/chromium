@@ -177,7 +177,8 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public boolean swipeToDismissEnabled() {
-            return true;
+            // Required to be false for tapping scrim to return bottomsheet to peek state.
+            return false;
         }
 
         @Override
