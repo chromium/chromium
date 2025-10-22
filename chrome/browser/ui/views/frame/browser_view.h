@@ -1096,9 +1096,6 @@ class BrowserView : public BrowserWindow,
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
 
-  bool ShouldUseBrowserContentMinimumSize() const;
-  bool IsBrowserAWebApp() const;
-
   class ExclusiveAccessContextImpl;
   std::unique_ptr<ExclusiveAccessContextImpl> exclusive_access_context_;
 

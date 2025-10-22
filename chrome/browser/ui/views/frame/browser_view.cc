@@ -5078,18 +5078,35 @@ void BrowserView::AddedToWidget() {
 
   // TODO(crbug.com/40664862): Remove BrowserViewLayout dependence on
   // Widget and move to the constructor.
-  BrowserViewLayout* browser_view_layout =
-      SetLayoutManager(std::make_unique<BrowserViewLayout>(
-          BrowserViewLayoutDelegateImplBase::CreateDelegate(*this), this,
-          window_scrim_view_, main_region_, main_container_, top_container_,
-          web_app_frame_toolbar_, web_app_window_title_, tab_strip_region_view_,
-          vertical_tab_strip_container_, toolbar_, infobar_container_,
-          contents_container_, multi_contents_view_,
-          left_aligned_side_panel_separator_, contents_height_side_panel_,
-          right_aligned_side_panel_separator_, side_panel_rounded_corner_,
-          top_container_separator_));
-  browser_view_layout->SetUseBrowserContentMinimumSize(
-      ShouldUseBrowserContentMinimumSize());
+  BrowserViewLayoutViews layout_views;
+
+  // LINT.IfChange(BrowserViewLayoutViews)
+  layout_views.browser_view = this;
+  layout_views.window_scrim = window_scrim_view_;
+  layout_views.main_region = main_region_;
+  layout_views.main_container = main_container_;
+  layout_views.top_container = top_container_;
+  layout_views.web_app_frame_toolbar = web_app_frame_toolbar_;
+  layout_views.web_app_window_title = web_app_window_title_;
+  layout_views.tab_strip_region_view = tab_strip_region_view_;
+  layout_views.tab_strip = tab_strip_region_view_->tab_strip();
+  layout_views.vertical_tab_strip_container = vertical_tab_strip_container_;
+  layout_views.toolbar = toolbar_;
+  layout_views.infobar_container = infobar_container_;
+  layout_views.contents_container = contents_container_;
+  layout_views.multi_contents_view = multi_contents_view_;
+  layout_views.contents_height_side_panel = contents_height_side_panel_;
+  layout_views.left_aligned_side_panel_separator =
+      left_aligned_side_panel_separator_;
+  layout_views.right_aligned_side_panel_separator =
+      right_aligned_side_panel_separator_;
+  layout_views.side_panel_rounded_corner = side_panel_rounded_corner_;
+  layout_views.top_container_separator = top_container_separator_;
+  // LINT.ThenChange(//chrome/browser/ui/views/frame/browser_view_layout.h:BrowserViewLayoutViews)
+
+  SetLayoutManager(BrowserViewLayout::CreateLayout(
+      BrowserViewLayoutDelegateImplBase::CreateDelegate(*this), browser(),
+      std::move(layout_views)));
 
   EnsureFocusOrder();
 
@@ -6084,19 +6101,6 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
         allowed_without_policy &&
         GetProfile()->GetPrefs()->GetBoolean(fullscreen_pref_path));
   }
-}
-
-bool BrowserView::ShouldUseBrowserContentMinimumSize() const {
-  return browser()->is_type_normal() || IsBrowserAWebApp();
-}
-
-bool BrowserView::IsBrowserAWebApp() const {
-  bool is_web_app = browser()->is_type_app() && GetIsWebAppType();
-#if BUILDFLAG(IS_CHROMEOS)
-  // app_controller() is only available if the BrowserView is a WebAppType.
-  is_web_app = is_web_app && !browser()->app_controller()->system_app();
-#endif
-  return is_web_app;
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

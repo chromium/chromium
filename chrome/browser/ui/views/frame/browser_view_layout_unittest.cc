@@ -226,18 +226,22 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>(
         immersive_mode_controller_.get());
     delegate_ = delegate.get();
-    auto layout = std::make_unique<BrowserViewLayout>(
-        std::move(delegate),
-        /*browser_view=*/nullptr, /*window_scrim=*/nullptr, main_region_,
-        main_container_, top_container_,
-        /*web_app_frame_toolbar=*/nullptr,
-        /*web_app_window_title=*/nullptr, tab_strip_region_view_,
-        /*vertical_tab_strip_container=*/nullptr, toolbar_, infobar_container_,
-        contents_container_,
-        /*multi_contents_view=*/nullptr, left_aligned_side_panel_separator_,
-        /*contents_height_side_panel=*/nullptr,
-        right_aligned_side_panel_separator_, side_panel_rounded_corner_,
-        separator_);
+    BrowserViewLayoutViews layout_views;
+    layout_views.main_region = main_region_;
+    layout_views.main_container = main_container_;
+    layout_views.top_container = top_container_;
+    layout_views.tab_strip_region_view = tab_strip_region_view_;
+    layout_views.toolbar = toolbar_;
+    layout_views.infobar_container = infobar_container_;
+    layout_views.contents_container = contents_container_;
+    layout_views.left_aligned_side_panel_separator =
+        left_aligned_side_panel_separator_;
+    layout_views.right_aligned_side_panel_separator =
+        right_aligned_side_panel_separator_;
+    layout_views.side_panel_rounded_corner = side_panel_rounded_corner_;
+    layout_views.top_container_separator = separator_;
+    auto layout = BrowserViewLayout::CreateLayout(std::move(delegate), nullptr,
+                                                  std::move(layout_views));
     layout->set_webui_tab_strip(webui_tab_strip());
     layout_ = layout.get();
     browser_view_->SetLayoutManager(std::move(layout));
@@ -313,7 +317,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
 // Test basic construction and initialization.
 TEST_F(BrowserViewLayoutTest, BrowserViewLayout) {
   EXPECT_TRUE(layout()->GetWebContentsModalDialogHost());
-  EXPECT_FALSE(layout()->IsInfobarVisible());
+  EXPECT_FALSE(layout()->IsInfobarVisibleForTesting());
 }
 
 // Test the core layout functions.
