@@ -54,7 +54,7 @@ namespace {
 BASE_FEATURE(kWebNNUseDataPipe, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to allow multiple threads.
-BASE_FEATURE(kWebNNAllowMultipleThreads, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebNNAllowMultipleThreads, base::FEATURE_ENABLED_BY_DEFAULT);
 
 WebNNContextProviderImpl::BackendForTesting* g_backend_for_testing = nullptr;
 
@@ -117,18 +117,6 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-base::flat_set<scoped_refptr<base::SequencedTaskRunner>>
-WebNNContextProviderImpl::GetAllContextTaskRunnersForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::flat_set<scoped_refptr<base::SequencedTaskRunner>> runners;
-  for (auto& impl : context_impls_) {
-    runners.insert(impl->owning_task_runner());
-  }
-
-  return runners;
 }
 
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(

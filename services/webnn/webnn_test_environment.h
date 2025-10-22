@@ -27,11 +27,6 @@ class WebNNTestEnvironment {
       mojo::PendingReceiver<mojom::WebNNContextProvider> pending_receiver);
 
  private:
-  // Initialize a GPU Scheduler so tests can also use a scheduler
-  // runner without the GPU service. The sync point manager must come first
-  // since it is passed to the scheduler as a naked pointer.
-  gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler scheduler_{&sync_point_manager_};
   std::unique_ptr<WebNNContextProviderImpl> context_provider_;
 };
 

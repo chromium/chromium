@@ -32,6 +32,15 @@ WebNNTestEnvironment::WebNNTestEnvironment(
         DISABLE_WEBNN_FOR_NPU);
   }
 
+  // Initialize a Gpu Scheduler so tests can also use a scheduler
+  // runner without the Gpu service. We only need to initialize once for the
+  // whole GPU process and no teardown logic is needed, so use a global
+  // singleton here. The sync point manager must come first since it is
+  // passed to the scheduler as a naked pointer.
+  static base::NoDestructor<gpu::SyncPointManager> g_webnn_sync_point_manager;
+  static base::NoDestructor<gpu::Scheduler> g_webnn_scheduler{
+      g_webnn_sync_point_manager.get()};
+
   // All tests use the same client ID since no other client exists.
   constexpr int32_t kFakeClientIdForTesting = 0;
 
@@ -39,8 +48,8 @@ WebNNTestEnvironment::WebNNTestEnvironment(
       /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
       std::move(gpu_info), /*shared_image_manager=*/nullptr,
       std::move(lose_all_contexts_callback),
-      base::SingleThreadTaskRunner::GetCurrentDefault(), &scheduler_,
-      kFakeClientIdForTesting);
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      g_webnn_scheduler.get(), kFakeClientIdForTesting);
 }
 
 void WebNNTestEnvironment::BindWebNNContextProvider(
@@ -48,23 +57,6 @@ void WebNNTestEnvironment::BindWebNNContextProvider(
   context_provider_->BindWebNNContextProvider(std::move(pending_receiver));
 }
 
-WebNNTestEnvironment::~WebNNTestEnvironment() {
-  // Destroy all WebNNContextImpls on their owning sequences before destroying
-  // the gpu::Scheduler, since the contexts may post tasks to the same
-  // sequences.
-  auto pending_runners =
-      context_provider_->GetAllContextTaskRunnersForTesting();
-
-  // Drop all references to the contexts so their destructors run.
-  context_provider_.reset();
-
-  // Drain each task runner to ensure all tasks posted by contexts have
-  // completed.
-  for (auto& runner : pending_runners) {
-    base::RunLoop loop;
-    runner->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();  // Blocks until all previously posted tasks complete
-  }
-}
+WebNNTestEnvironment::~WebNNTestEnvironment() = default;
 
 }  // namespace webnn::test
