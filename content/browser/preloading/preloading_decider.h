@@ -139,13 +139,14 @@ class CONTENT_EXPORT PreloadingDecider
   // discarded by Prefetcher yet, and we should wait for it to finish.
   bool ShouldWaitForPrefetchResult(const GURL& url);
 
-  // Prerenders the |url| if it is safe and eligible to be prerendered. Returns
-  // false for the first bool if no suitable (given |enacting_predictor|)
-  // on-standby candidate is found for the given |url|, or the Prerenderer does
-  // not accept the candidate. Returns true for the second bool if a
-  // PreloadingPrediction has been added.
-  std::pair<bool, bool> MaybePrerender(
+  // Performs "prerender" or "prerender-until-script" `action` for the `url` if
+  // it is safe and eligible to be prerendered. Returns false for the first bool
+  // if no suitable (given `enacting_predictor`) on-standby candidate is found
+  // for the given `url`, or the Prerenderer does not accept the candidate.
+  // Returns true for the second bool if a PreloadingPrediction has been added.
+  std::pair<bool, bool> MaybePrerenderForAction(
       const GURL& url,
+      blink::mojom::SpeculationAction action,
       const PreloadingPredictor& enacting_predictor,
       PreloadingConfidence confidence,
       EagernessSet eagerness_to_exclude);

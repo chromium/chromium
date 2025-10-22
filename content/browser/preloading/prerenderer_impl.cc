@@ -47,9 +47,12 @@ PreloadingType ConvertSpeculationActionToPreloadingType(
 
 }  // namespace
 
+// TODO(crbug.com/428500219): We should allow prerender-until-script to be
+// upgraded to prerender.
 struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationInjectionType injection_type;
   blink::mojom::SpeculationEagerness eagerness;
+  blink::mojom::SpeculationAction action;
   bool is_target_blank;
   FrameTreeNodeId prerender_host_id;
   GURL url;
@@ -88,6 +91,7 @@ PrerendererImpl::PrerenderInfo::PrerenderInfo(
     const blink::mojom::SpeculationCandidatePtr& candidate)
     : injection_type(candidate->injection_type),
       eagerness(candidate->eagerness),
+      action(candidate->action),
       is_target_blank(candidate->target_browsing_context_name_hint ==
                       blink::mojom::SpeculationTargetHint::kBlank),
       url(candidate->url) {}
@@ -514,10 +518,11 @@ void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
 
       if (erasing_prerender_it != started_prerenders_.end()) {
         auto url = erasing_prerender_it->url;
+        blink::mojom::SpeculationAction action = erasing_prerender_it->action;
         started_prerenders_.erase(erasing_prerender_it);
 
         // Notify PreloadingDecider.
-        prerender_cancellation_callback_.Run(url);
+        prerender_cancellation_callback_.Run(url, action);
       }
       break;
     }
