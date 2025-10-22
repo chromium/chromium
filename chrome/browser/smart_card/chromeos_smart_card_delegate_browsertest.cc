@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
@@ -17,11 +18,14 @@
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -223,4 +227,25 @@ IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
   tab_interface->Close();
 
   EXPECT_FALSE(HasReaderPermission(origin, kDummyReader));
+}
+
+class ChromeOsSmartCardDelegateBrowserTestGuestMode
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+// This is essentially just a sanity check of whether the
+// SmartCardPermissionContext will be created successfully in guest mode.
+// Probably to be deleted as a part of this: TODO(crbug.com/454152416)
+IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTestGuestMode,
+                       GuestModeCreatePermissionContext) {
+  ASSERT_NO_FATAL_FAILURE(
+      SmartCardPermissionContextFactory::GetForProfile(*profile()););
 }
