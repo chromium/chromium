@@ -108,10 +108,9 @@ class COMPONENT_EXPORT(
   // Depends on /proc/self/pagemap to determine the mapped and resident pages
   // within bounds (|start_address| inclusive and |end_address| exclusive).
   //
-  // Does not use mincore() because the latter only reports resident pages. The
-  // mincore() would report a page as resident if that page was accessed from a
-  // different process (such as the commonly used prefetch of the native
-  // library).
+  // Does not use mincore(). Note: in recent kernels mincore() only reports
+  // residence correctly for the files the calling process could (if tried) open
+  // for writing. See can_do_mincore() in mm/mincore.c.
   //
   // Tested only on Android.
   static MappedAndResidentPagesDumpState GetMappedAndResidentPages(
