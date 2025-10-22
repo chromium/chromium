@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "crypto/evp.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -84,31 +85,16 @@ base::Value::Dict ConvertES256PkeySpkiToJwk(
 
 base::Value::Dict ConvertRS256PkeySpkiToJwk(
     base::span<const uint8_t> pkey_spki) {
-  bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PublicKeyFromBytes(pkey_spki);
-  if (!pkey || EVP_PKEY_id(pkey.get()) != EVP_PKEY_RSA) {
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pkey_spki);
+  if (!key || !key->IsRsa()) {
     return base::Value::Dict();
   }
-
-  RSA* rsa_key = EVP_PKEY_get0_RSA(pkey.get());
-  if (!rsa_key) {
-    return base::Value::Dict();
-  }
-
-  const BIGNUM* n = RSA_get0_n(rsa_key);
-  const BIGNUM* e = RSA_get0_e(rsa_key);
-  if (!n || !e) {
-    return base::Value::Dict();
-  }
-
-  std::vector<uint8_t> n_bytes(BN_num_bytes(n));
-  std::vector<uint8_t> e_bytes(BN_num_bytes(e));
-  BN_bn2bin(n, n_bytes.data());
-  BN_bn2bin(e, e_bytes.data());
 
   return base::Value::Dict()
       .Set(kKeyTypeParam, kRsaKeyType)
-      .Set(kRsaModulus, Base64UrlEncode(n_bytes))
-      .Set(kRsaExponent, Base64UrlEncode(e_bytes));
+      .Set(kRsaModulus, Base64UrlEncode(key->GetRsaModulus()))
+      .Set(kRsaExponent, Base64UrlEncode(key->GetRsaExponent()));
 }
 }  // namespace
 
