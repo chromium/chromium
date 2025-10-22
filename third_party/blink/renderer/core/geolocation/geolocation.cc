@@ -291,7 +291,7 @@ int Geolocation::watchPositionForBindings(
 #endif
   if (options->enableHighAccuracy()) {
     UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
+                      WebFeature::kGeolocationWatchPositionHighAccuracy);
   }
 
   if (!GetFrame())
