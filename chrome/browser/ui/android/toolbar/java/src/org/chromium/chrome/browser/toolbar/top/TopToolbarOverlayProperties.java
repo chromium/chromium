@@ -47,6 +47,8 @@ public class TopToolbarOverlayProperties {
     /** The current x offset of the top toolbar. */
     public static final WritableFloatPropertyKey X_OFFSET = new WritableFloatPropertyKey();
 
+    // TODO(https://crbug.com/454338286): rename and check existing usages, and make sure the height
+    // of the bookmarks bar is taken into account when positioning the toolbar.
     /** The current y offset of the top toolbar. */
     public static final WritableFloatPropertyKey CONTENT_OFFSET = new WritableFloatPropertyKey();
 
