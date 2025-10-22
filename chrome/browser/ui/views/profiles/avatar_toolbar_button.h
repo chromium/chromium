@@ -111,9 +111,6 @@ class AvatarToolbarButton : public ToolbarButton,
   void MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
       const AccountInfo& account_info);
 
-  // Attempts showing the In-Product-Help for web sign out.
-  void MaybeShowWebSignoutIPH(const GaiaId& gaia_id);
-
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
 
@@ -178,11 +175,6 @@ class AvatarToolbarButton : public ToolbarButton,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error,
-      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
-      override;
 
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;

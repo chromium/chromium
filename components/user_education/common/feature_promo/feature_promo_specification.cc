@@ -53,7 +53,6 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
           "IPH_DesktopPWAsLinkCapturingLaunch",
           "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
           "IPH_ExplicitBrowserSigninPreferenceRemembered",
-          "IPH_SignoutWebIntercept",
           "IPH_PwaQuietNotification",
       });
   return kAllowedPromoNames.contains(promo_feature.name);

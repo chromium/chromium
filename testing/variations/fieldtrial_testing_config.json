@@ -25497,9 +25497,6 @@
                         "IPH_SignInBenefits",
                         "ReplaceSyncPromosWithSignInPromos",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
-                    ],
-                    "disable_features": [
-                        "IPH_SignoutWebIntercept"
                     ]
                 }
             ]

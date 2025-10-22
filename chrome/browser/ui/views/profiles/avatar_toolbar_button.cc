@@ -507,13 +507,6 @@ void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
       std::move(params));
 }
 
-void AvatarToolbarButton::MaybeShowWebSignoutIPH(const GaiaId& gaia_id) {
-  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-      user_education::FeaturePromoParams(
-          feature_engagement::kIPHSignoutWebInterceptFeature,
-          gaia_id.ToString()));
-}
-
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
   observer_list_.Notify(&Observer::OnMouseExited);
   ToolbarButton::OnMouseExited(event);
@@ -620,31 +613,6 @@ void AvatarToolbarButton::OnExtendedAccountInfoUpdated(
       !info.given_name.empty()) {
     gaia_id_for_signin_choice_remembered_ = GaiaId();
     MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(info);
-  }
-}
-
-void AvatarToolbarButton::OnErrorStateOfRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error,
-    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  Profile* profile = browser_->profile();
-  CHECK(profile);
-  PrefService* prefs = profile->GetPrefs();
-  CHECK(prefs);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
-      account_info == identity_manager->GetPrimaryAccountInfo(
-                          signin::ConsentLevel::kSignin) &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      error.state() ==
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS &&
-      token_operation_source == signin_metrics::SourceForRefreshTokenOperation::
-                                    kDiceResponseHandler_Signout) {
-    MaybeShowWebSignoutIPH(account_info.gaia);
   }
 }
 
