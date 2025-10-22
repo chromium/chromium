@@ -471,11 +471,6 @@ bool ShouldSkipSubtree(const LayoutObject& object) {
     return true;
   }
 
-  // Table caption is communicated by the table name.
-  if (object.IsTableCaption()) {
-    return true;
-  }
-
   // Skip empty text.
   auto* layout_text = DynamicTo<LayoutText>(object);
   if (layout_text && layout_text->IsAllCollapsibleWhitespace()) {

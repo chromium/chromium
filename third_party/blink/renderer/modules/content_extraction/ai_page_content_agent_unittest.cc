@@ -1027,9 +1027,12 @@ TEST_F(AIPageContentAgentTest, Table) {
 
   const auto& table = *root.children_nodes[0];
   CheckTableNode(table, "Table caption");
-  ASSERT_EQ(table.children_nodes.size(), 4u);
+  ASSERT_EQ(table.children_nodes.size(), 5u);
 
-  const auto& header1 = *table.children_nodes[0];
+  const auto& caption_text = *table.children_nodes[0];
+  CheckTextNode(caption_text, "Table caption");
+
+  const auto& header1 = *table.children_nodes[1];
   CheckTableRowNode(header1, mojom::blink::AIPageContentTableRowType::kHeader);
   ASSERT_EQ(header1.children_nodes.size(), 1u);
 
@@ -1037,7 +1040,7 @@ TEST_F(AIPageContentAgentTest, Table) {
   CheckTableCellNode(header1_cell1);
   CheckTextNode(*header1_cell1.children_nodes[0], "Header");
 
-  const auto& row1 = *table.children_nodes[1];
+  const auto& row1 = *table.children_nodes[2];
   CheckTableRowNode(row1, mojom::blink::AIPageContentTableRowType::kBody);
   ASSERT_EQ(row1.children_nodes.size(), 2u);
 
@@ -1049,7 +1052,7 @@ TEST_F(AIPageContentAgentTest, Table) {
   CheckTableCellNode(row1_cell2);
   CheckTextNode(*row1_cell2.children_nodes[0], "Row 1 Column 2");
 
-  const auto& row2 = *table.children_nodes[2];
+  const auto& row2 = *table.children_nodes[3];
   CheckTableRowNode(row2, mojom::blink::AIPageContentTableRowType::kBody);
   ASSERT_EQ(row2.children_nodes.size(), 2u);
 
@@ -1061,7 +1064,7 @@ TEST_F(AIPageContentAgentTest, Table) {
   CheckTableCellNode(row2_cell2);
   CheckTextNode(*row2_cell2.children_nodes[0], "Row 2 Column 2");
 
-  const auto& footer = *table.children_nodes[3];
+  const auto& footer = *table.children_nodes[4];
   CheckTableRowNode(footer, mojom::blink::AIPageContentTableRowType::kFooter);
   ASSERT_EQ(footer.children_nodes.size(), 2u);
 
@@ -1207,6 +1210,40 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
   const auto& row4_cell4 = *row4.children_nodes[3];
   CheckTableCellNode(row4_cell4);
   CheckTextNode(*row4_cell4.children_nodes[0], "987-654-3210");
+}
+
+TEST_F(AIPageContentAgentTest, FigureCaptionDisplayAsTableCaption) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <figure style='display:table'>
+            <figcaption style='display:table-caption'>
+              <a href='https://www.youtube.com/'>Youtube</a>
+            </figcaption>
+          </figure>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& figure = *root.children_nodes.at(0);
+  ASSERT_TRUE(figure.content_attributes->node_interaction_info);
+  EXPECT_EQ(figure.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kTable);
+
+  ASSERT_EQ(figure.children_nodes.size(), 1u);
+  const auto& fig_caption = *figure.children_nodes.at(0);
+  ASSERT_TRUE(fig_caption.content_attributes->node_interaction_info);
+  EXPECT_EQ(fig_caption.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+
+  ASSERT_EQ(fig_caption.children_nodes.size(), 1u);
+  const auto& anchor = *fig_caption.children_nodes.at(0);
+  CheckAnchorNode(anchor, blink::KURL("https://www.youtube.com/"), {});
 }
 
 TEST_F(AIPageContentAgentTest, LandmarkSections) {
