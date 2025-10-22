@@ -37,6 +37,7 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void DetachFromModel() override {}
   void OnAccessRequestAdded(const extensions::ExtensionId& extension_id,
                             content::WebContents* web_contents) override {}
+  void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
 };
 
 }  // namespace

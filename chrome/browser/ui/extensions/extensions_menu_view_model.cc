@@ -118,11 +118,14 @@ void LogSiteSettingsUpdate(PermissionsManager::UserSiteSetting site_setting) {
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     BrowserWindowInterface* browser,
     std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate)
-    : browser_(browser), platform_delegate_(std::move(platform_delegate)) {
+    : browser_(browser),
+      platform_delegate_(std::move(platform_delegate)),
+      toolbar_model_(ToolbarActionsModel::Get(browser_->GetProfile())) {
   platform_delegate_->AttachToModel(this);
 
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(browser_->GetProfile()));
+  toolbar_model_observation_.Observe(toolbar_model_.get());
 }
 
 ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
@@ -259,6 +262,33 @@ void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
   }
 
   platform_delegate_->OnAccessRequestAdded(extension_id, web_contents);
+}
+
+void ExtensionsMenuViewModel::OnToolbarActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {
+  platform_delegate_->OnActionAdded(action_id);
+}
+
+void ExtensionsMenuViewModel::OnToolbarActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  // TODO(crbug.com/449814184): implement and remove observer from
+  // ExtensionsMenuViewPlatformDelegateViews.
+}
+
+void ExtensionsMenuViewModel::OnToolbarActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  // TODO(crbug.com/449814184): implement and remove observer from
+  // ExtensionsMenuViewPlatformDelegateViews.
+}
+
+void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
+  // TODO(crbug.com/449814184): implement and remove observer from
+  // ExtensionsMenuViewPlatformDelegateViews.
+}
+
+void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
+  // TODO(crbug.com/449814184): implement and remove observer from
+  // ExtensionsMenuViewPlatformDelegateViews.
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

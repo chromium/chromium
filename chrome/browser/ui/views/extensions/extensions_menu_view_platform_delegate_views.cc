@@ -328,6 +328,20 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestAdded(
   main_page->MaybeShowRequestsSection();
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {
+  CHECK(current_page_);
+
+  // A new toolbar action only affects the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page) {
+    return;
+  }
+
+  int index = FindIndex(*toolbar_model_, action_id);
+  InsertMenuItemMainPage(main_page, action_id, index);
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
   UpdateMainPage(main_page.get(), GetActiveWebContents());
@@ -648,21 +662,7 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
-    const ToolbarActionsModel::ActionId& action_id) {
-  DCHECK(current_page_);
-
-  // Do nothing when site permission page is opened as a new extension doesn't
-  // affect the site permissions page of another extension.
-  if (GetSitePermissionsPage(current_page_.view())) {
-    return;
-  }
-
-  // Insert a menu item for the extension when main page is opened.
-  auto* main_page = GetMainPage(current_page_.view());
-  DCHECK(main_page);
-  int index = FindIndex(*toolbar_model_, action_id);
-  InsertMenuItemMainPage(main_page, action_id, index);
-}
+    const ToolbarActionsModel::ActionId& action_id) {}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
@@ -912,6 +912,8 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
   Profile* profile = browser_->profile();
   content::WebContents* web_contents = GetActiveWebContents();
 
+  // TODO(crbug.com/449814184): Move this computation to the platform-agnostic
+  // model.
   bool is_enterprise = extensions::ExtensionSystem::Get(profile)
                            ->management_policy()
                            ->HasEnterpriseForcedAccess(*extension);

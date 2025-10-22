@@ -32,6 +32,13 @@ class ExtensionsMenuViewPlatformDelegate {
   // delegate to the model, since same name causes parameter type mismatch.
   virtual void OnAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                     content::WebContents* web_contents) = 0;
+
+  // Notifies the delegate that a new toolbar action was added.
+  // TODO(crbug.com/449814184): Rename to `OnToolbarActionAdded` after we
+  // finish migrating all ToolbarActionsModel::Observer method from the platform
+  // delegate to the model, since same name causes parameter type mismatch.
+  virtual void OnActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_H_

@@ -41,6 +41,7 @@ source_set("extensions") {
     }
     public_deps += [
       "//base",
+      "//chrome/browser/ui/toolbar",
       "//extensions/browser",
       "//extensions/common",
       "//ui/base:types",
