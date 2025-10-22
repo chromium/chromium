@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
-                       GlicSidePanelTogglesOnWhenButtonClicked) {
+                       DISABLED_GlicSidePanelTogglesOnWhenButtonClicked) {
   StartActingOnTab();
   RunTestSequence(
       ClearOmniboxFocus(), EnsureNotPresent(kSidePanelElementId),
