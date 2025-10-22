@@ -1670,8 +1670,8 @@ targets.mixin(
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu",
         },
     ),

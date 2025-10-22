@@ -610,8 +610,8 @@
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -639,8 +639,8 @@
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -667,8 +667,8 @@
         "name": "dawn_end2end_tests",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -696,8 +696,8 @@
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -725,8 +725,8 @@
         "name": "dawn_end2end_wire_tests",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -752,8 +752,8 @@
         "name": "gl_tests_passthrough",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -783,8 +783,8 @@
         ],
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -813,8 +813,8 @@
         "name": "dawn_perf_tests",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -836,8 +836,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -869,8 +869,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -902,8 +902,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -938,8 +938,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -976,8 +976,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1015,8 +1015,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1053,8 +1053,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1091,8 +1091,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1128,8 +1128,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1167,8 +1167,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1201,8 +1201,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1234,8 +1234,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1272,8 +1272,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -1313,8 +1313,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "gpu": "10de:2184-440.100|10de:2184-535.183.01",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6|Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
