@@ -141,7 +141,8 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
 // and the lower side is blue in the page.
-- (void)testTwoColorsSnapshot {
+// TODO(crbug.com/454267702): test is flaky, disable it.
+- (void)DISABLED_testTwoColorsSnapshot {
   // TODO(crbug.com/453575683): Re-enable the test.
 #if TARGET_OS_SIMULATOR
   if (@available(iOS 26.1, *)) {
