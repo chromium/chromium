@@ -5,10 +5,22 @@
 package org.chromium.chrome.browser.omnibox;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 
 /** Listener to be notified on url focus changes. */
 @NullMarked
 public interface UrlFocusChangeListener {
+    /**
+     * Triggered before the URL input field focus is requested.
+     *
+     * <p><b>Note:</b> This method is not guaranteed to be called in all scenarios where the URL
+     * input field gains focus.
+     *
+     * @param tab The currently active {@link Tab}.
+     */
+    default void onUrlFocusWillBeRequested(@Nullable Tab tab) {}
+
     /**
      * Triggered when the URL input field has gained or lost focus.
      *

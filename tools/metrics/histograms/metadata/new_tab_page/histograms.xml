@@ -1116,6 +1116,85 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.KeyboardHeightPercentage"
+    units="Percents" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The software keyboard height as a percentage of the tab height. Emitted when
+    the omnibox was focused for any reason, including autofocus.
+  </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.NtpTextContentNoPaddingsHeightPercentage"
+    units="Percents" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The height of the Incognito New Tab Page's text content, expressed as a
+    percentage of the tab height. This value can exceed 100%. This measurement
+    excludes the padding above the topmost text element and below the bottommost
+    text element. Emitted when the omnibox was focused for any reason, including
+    autofocus.
+  </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.NtpTextContentWithTopPaddingHeightPercentage"
+    units="Percents" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The height of the Incognito New Tab Page's text content, expressed as a
+    percentage of the tab height. This value can exceed 100%. This measurement
+    includes the padding above the topmost text element but excludes the padding
+    below the bottommost one. Emitted when the omnibox was focused for any
+    reason, including autofocus.
+  </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.Incognito.OmniboxAutofocus.{FocusEvent}.NtpTextContentNoPaddingsBehindKeyboardHeightPercentage"
+    units="Percents" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The percentage of the Incognito New Tab Page's text content that is hidden
+    by the software keyboard. This calculation is based on the text content's
+    height, which excludes the padding above the topmost and below the
+    bottommost text elements. {FocusEvent}
+  </summary>
+  <token key="FocusEvent">
+    <variant name="OnAutofocus"
+        summary="Emitted when the omnibox was autofocused."/>
+    <variant name="OnFocus"
+        summary="Emitted when the omnibox was focused for any reason,
+                 including autofocus."/>
+  </token>
+</histogram>
+
+<histogram
+    name="NewTabPage.Incognito.OmniboxAutofocus.{FocusEvent}.NtpTextContentWithTopPaddingBehindKeyboardHeightPercentage"
+    units="Percents" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The percentage of the Incognito New Tab Page's text content that is hidden
+    by the software keyboard. This calculation is based on the text content's
+    height, which includes the padding above the topmost text element but
+    excludes the padding below the bottommost one. {FocusEvent}
+  </summary>
+  <token key="FocusEvent">
+    <variant name="OnAutofocus"
+        summary="Emitted when the omnibox was autofocused."/>
+    <variant name="OnFocus"
+        summary="Emitted when the omnibox was focused for any reason,
+                 including autofocus."/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Lens.UploadDialog.DialogAction"
     enum="NewTabPageLensUploadDialogActions" expires_after="2025-02-10">
   <owner>nguyenbryan@google.com</owner>

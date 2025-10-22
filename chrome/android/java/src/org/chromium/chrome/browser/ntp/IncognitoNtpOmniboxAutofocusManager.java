@@ -53,7 +53,8 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
     private final LayoutManagerImpl mLayoutManager;
     private final LayoutStateObserver mLayoutStateObserver;
     private final Function<Tab, @Nullable View> mNtpViewProvider;
-    private final Function<View, Double> mNtpContentHeightProvider;
+    private final Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
+            mNtpContentMetricsProvider;
     private final UrlFocusChangeListener mUrlFocusChangeListener;
 
     /** Enable autofocus when it's not the first tab seen in this session. */
@@ -71,6 +72,8 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
     private boolean mIsLayoutInTransition;
     private int mTabsPreviouslyOpenedCount;
     private final @NonNull GestureDetector mNtpSingleTapDetector;
+    private boolean mIsAutofocusing;
+    private double mTabHeightBeforeFocus;
 
     /**
      * Overrides the result of {@link #checkAutofocusAllowedWithPrediction(Tab)} for testing
@@ -97,8 +100,8 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
      * @param layoutManager The {@link LayoutManagerImpl} to observe for layout changes.
      * @param tabModelSelector The {@link TabModelSelector} to observe.
      * @param ntpViewProvider Provides the NTP view.
-     * @param ntpContentHeightProvider Provides the height of the main text content area on the
-     *     Incognito NTP, excluding all paddings after very last TextView.
+     * @param ntpContentMetricsProvider Provides metrics of the main text content area on the
+     *     Incognito NTP.
      */
     public static @Nullable IncognitoNtpOmniboxAutofocusManager maybeCreate(
             @NonNull Context context,
@@ -106,7 +109,9 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
             @NonNull LayoutManagerImpl layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Function<Tab, @Nullable View> ntpViewProvider,
-            @NonNull Function<View, Double> ntpContentHeightProvider) {
+            @NonNull
+                    Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
+                            ntpContentMetricsProvider) {
         if (ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled() && omniboxStub != null) {
             return new IncognitoNtpOmniboxAutofocusManager(
                     context,
@@ -114,7 +119,7 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
                     layoutManager,
                     tabModelSelector,
                     ntpViewProvider,
-                    ntpContentHeightProvider);
+                    ntpContentMetricsProvider);
         }
         return null;
     }
@@ -125,12 +130,14 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
             @NonNull LayoutManagerImpl layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Function<Tab, @Nullable View> ntpViewProvider,
-            @NonNull Function<View, Double> ntpContentHeightProvider) {
+            @NonNull
+                    Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
+                            ntpContentMetricsProvider) {
         mOmniboxStub = omniboxStub;
         mTabModelSelector = tabModelSelector;
         mLayoutManager = layoutManager;
         mNtpViewProvider = ntpViewProvider;
-        mNtpContentHeightProvider = ntpContentHeightProvider;
+        mNtpContentMetricsProvider = ntpContentMetricsProvider;
         mTabsPreviouslyOpenedCount = 0;
         mTabObserver =
                 new EmptyTabObserver() {
@@ -178,6 +185,19 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
                         }
 
                         if (hasFocus) {
+                            boolean wasTriggeredByAutofocus = mIsAutofocusing;
+                            mIsAutofocusing = false;
+
+                            final IncognitoNtpUtils.IncognitoNtpContentMetrics ntpMetrics =
+                                    mNtpContentMetricsProvider.apply(ntpView);
+                            IncognitoNtpOmniboxAutofocusTracker
+                                    .collectLayoutMetricsOnKeyboardVisible(
+                                            tab,
+                                            mTabHeightBeforeFocus,
+                                            ntpMetrics,
+                                            wasTriggeredByAutofocus);
+                            mTabHeightBeforeFocus = 0;
+
                             ntpView.setOnTouchListener(
                                     (v, event) -> {
                                         boolean consumed =
@@ -190,6 +210,16 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
                                     });
                         } else {
                             ntpView.setOnTouchListener(null);
+                        }
+                    }
+
+                    @Override
+                    public void onUrlFocusWillBeRequested(@Nullable Tab tab) {
+                        if (tab != null
+                                && tab.isIncognitoBranded()
+                                && UrlUtilities.isNtpUrl(tab.getUrl())
+                                && tab.getView() != null) {
+                            mTabHeightBeforeFocus = tab.getView().getHeight();
                         }
                     }
                 };
@@ -316,7 +346,8 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
                                             && !mIsWithPredictionEnabled
                                             && !mIsWithHardwareKeyboardEnabled;
                             boolean isAutofocusAllowedNotFirstTab =
-                                    mIsAutofocusOnNotFirstTabEnabled && checkAutofocusAllowedNotFirstTab();
+                                    mIsAutofocusOnNotFirstTabEnabled
+                                            && checkAutofocusAllowedNotFirstTab();
                             boolean isAutofocusAllowedWithPrediction =
                                     mIsWithPredictionEnabled
                                             && checkAutofocusAllowedWithPrediction(tab);
@@ -339,6 +370,7 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
 
     /** Performs the actual focus action and updates the state. */
     private void autofocus(Tab tab) {
+        mIsAutofocusing = true;
         mOmniboxStub.setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
 
         // Mark the tab as processed to prevent future autofocus attempts.
@@ -377,10 +409,13 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
         View ntpView = mNtpViewProvider.apply(tab);
         if (ntpView != null) {
             final double tabViewHeight = tab.getView().getHeight();
-            final double ntpTextContentHeight = mNtpContentHeightProvider.apply(ntpView);
+            final IncognitoNtpUtils.IncognitoNtpContentMetrics ntpMetrics =
+                    mNtpContentMetricsProvider.apply(ntpView);
+            final double ntpTextContentHeightWithTopPadding =
+                    ntpMetrics.textContentHeightPx + ntpMetrics.textContentTopPaddingPx;
 
             final double freeSpacePercentage =
-                    (tabViewHeight - ntpTextContentHeight) / tabViewHeight * 100d;
+                    (tabViewHeight - ntpTextContentHeightWithTopPadding) / tabViewHeight * 100d;
 
             if (freeSpacePercentage >= AUTOFOCUS_PREDICTION_FREE_SPACE_THRESHOLD_PERCENT) {
                 return true;

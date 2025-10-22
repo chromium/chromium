@@ -890,7 +890,7 @@ class LocationBarMediator
                     && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
                 String existingText = mUrlCoordinator.getTextWithoutAutocomplete();
                 mUrlCoordinator.clearFocus();
-                mUrlCoordinator.requestFocus();
+                requestUrlFocus();
                 // Existing text (e.g. if the user pasted via the fakebox) from the fake box
                 // should be restored after toggling the focus.
                 if (!TextUtils.isEmpty(existingText)) {
@@ -1215,6 +1215,18 @@ class LocationBarMediator
     /* package */ void forceOnTextChanged() {
         String textWithoutAutocomplete = mUrlCoordinator.getTextWithoutAutocomplete();
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete);
+    }
+
+    /**
+     * Requests the URL focus.
+     *
+     * <p>Notifies listeners that the URL focus is about to be requested.
+     */
+    /* package */ void requestUrlFocus() {
+        for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
+            listener.onUrlFocusWillBeRequested(mLocationBarDataProvider.getTab());
+        }
+        mUrlCoordinator.requestFocus();
     }
 
     // Private methods
@@ -1703,7 +1715,7 @@ class LocationBarMediator
             if (urlHasFocus && mUrlFocusedWithoutAnimations) {
                 handleUrlFocusAnimation(true);
             } else {
-                mUrlCoordinator.requestFocus();
+                requestUrlFocus();
             }
         } else {
             assert pastedText == null;
