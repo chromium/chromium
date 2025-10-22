@@ -1386,8 +1386,9 @@ TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
   };
 
   TestExecutingBooleanJavaScriptOnElement(
-      @"__gCrWeb.fill.isAutofillableInputElement(%@)", elements_expecting_true,
-      std::size(elements_expecting_true));
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isAutofillableInputElement')(%@)",
+      elements_expecting_true, std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {

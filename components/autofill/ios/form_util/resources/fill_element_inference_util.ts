@@ -38,7 +38,7 @@ gCrWebLegacy.fill.hasTagName = function(node: Element, tag: string): boolean {
  *     autofilled.
  */
 export function isAutofillableElement(element: Element): boolean {
-  return gCrWebLegacy.fill.isAutofillableInputElement(element) ||
+  return isAutofillableInputElement(element) ||
       gCrWebLegacy.fill.isSelectElement(element) || isTextAreaElement(element);
 }
 
@@ -331,12 +331,12 @@ gCrWebLegacy.fill.isCheckableElement = function(element: any): boolean {
  * @return Whether element is one of the input element types that
  *     can be autofilled.
  */
-gCrWebLegacy.fill.isAutofillableInputElement = function(element: Element):
-    boolean {
-      return isTextField(element) ||
-          (gCrWebLegacy.fill.isCheckableElement(element) &&
-          !autofillFormFeaturesApi.getFunction('isAutofillIgnoreCheckableElementsEnabled')());
-    };
+export function isAutofillableInputElement(element: Element): boolean {
+  return isTextField(element) ||
+      (gCrWebLegacy.fill.isCheckableElement(element) &&
+       !autofillFormFeaturesApi.getFunction(
+           'isAutofillIgnoreCheckableElementsEnabled')());
+}
 
 /**
  * Represents an inferred label. Should only be constructed by

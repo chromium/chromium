@@ -523,7 +523,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
     return;
   }
 
-  if (gCrWebLegacy.fill.isAutofillableInputElement(element) ||
+  if (inferenceUtil.isAutofillableInputElement(element) ||
       inferenceUtil.isTextAreaElement(element) ||
       gCrWebLegacy.fill.isSelectElement(element)) {
     field.is_autofilled = (element as any).isAutofilled;
@@ -533,7 +533,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
         element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
   }
 
-  if (gCrWebLegacy.fill.isAutofillableInputElement(element)) {
+  if (inferenceUtil.isAutofillableInputElement(element)) {
     if (isTextField(element)) {
       field.max_length = (element as HTMLInputElement).maxLength;
       if (field.max_length === -1) {
