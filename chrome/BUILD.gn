@@ -443,10 +443,6 @@ if (is_win) {
     if (use_aura) {
       deps += [ "//ui/compositor" ]
     }
-
-    if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/schedqos" ]
-    }
   }
 
   copy("copy_first_run") {
