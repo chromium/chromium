@@ -9,6 +9,7 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -21,11 +22,16 @@ import java.nio.ByteBuffer;
 @SuppressWarnings("unused")
 @NullMarked
 public class ComposeBoxQueryControllerBridge {
-
     private long mNativeInstance;
 
-    public ComposeBoxQueryControllerBridge(Profile profile) {
-        mNativeInstance = ComposeBoxQueryControllerBridgeJni.get().init(profile);
+    private ComposeBoxQueryControllerBridge(long nativeInstance) {
+        mNativeInstance = nativeInstance;
+    }
+
+    public static @Nullable ComposeBoxQueryControllerBridge getForProfile(Profile profile) {
+        long nativeInstance = ComposeBoxQueryControllerBridgeJni.get().init(profile);
+        if (nativeInstance == 0L) return null;
+        return new ComposeBoxQueryControllerBridge(nativeInstance);
     }
 
     public void destroy() {
@@ -50,7 +56,7 @@ public class ComposeBoxQueryControllerBridge {
      *
      * @return unique token representig the file, used to manipulate added files.
      */
-    String addFile(String fileName, String fileType, byte[] fileData) {
+    @Nullable String addFile(String fileName, String fileType, byte[] fileData) {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(fileData.length);
         byteBuffer.put(fileData);
         return ComposeBoxQueryControllerBridgeJni.get()
@@ -80,7 +86,7 @@ public class ComposeBoxQueryControllerBridge {
         void notifySessionAbandoned(long nativeInstance);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
-        String addFile(
+        @Nullable String addFile(
                 long nativeInstance,
                 @JniType("std::string") String fileName,
                 @JniType("std::string") String fileType,

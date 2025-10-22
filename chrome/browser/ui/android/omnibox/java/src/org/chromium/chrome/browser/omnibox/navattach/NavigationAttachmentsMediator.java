@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -30,7 +31,6 @@ import com.google.common.collect.Ordering;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -73,7 +72,7 @@ class NavigationAttachmentsMediator {
     private final Drawable mFallbackDrawable;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
-    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mAiModeSessionActive;
 
     NavigationAttachmentsMediator(
@@ -82,11 +81,11 @@ class NavigationAttachmentsMediator {
             PropertyModel model,
             NavigationAttachmentsViewHolder viewHolder,
             ModelList modelList,
-            ObservableSupplier<Profile> profileObservableSupplier,
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ModelList tabAttachmentsModelList) {
+            ModelList tabAttachmentsModelList,
+            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -98,6 +97,7 @@ class NavigationAttachmentsMediator {
         mFallbackDrawable =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
+        mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -109,19 +109,6 @@ class NavigationAttachmentsMediator {
                 NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED, this::onClipboardClicked);
         mModel.set(
                 NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, this::onUseAiModeChanged);
-        new OneShotCallback<>(profileObservableSupplier, this::initializeBridge);
-    }
-
-    /** Clean up resources used by this class. */
-    void destroy() {
-        if (mComposeBoxQueryControllerBridge != null) {
-            mComposeBoxQueryControllerBridge.destroy();
-        }
-    }
-
-    @VisibleForTesting
-    void initializeBridge(Profile profile) {
-        mComposeBoxQueryControllerBridge = new ComposeBoxQueryControllerBridge(profile);
     }
 
     /**
@@ -130,7 +117,6 @@ class NavigationAttachmentsMediator {
      * @param enabled Whether the AI mode is enabled.
      */
     void onUseAiModeChanged(boolean enabled) {
-        if (mComposeBoxQueryControllerBridge == null) return;
         if (mAiModeSessionActive == enabled) return;
 
         mAiModeSessionActive = enabled;
@@ -152,14 +138,10 @@ class NavigationAttachmentsMediator {
      * @param visible Whether the toolbar should be visible.
      */
     void setToolbarVisible(boolean visible) {
-        // Don't toggle visibility until we have a bridge to talk to.
-        if (mComposeBoxQueryControllerBridge == null) return;
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
     }
 
     public void setNavigationTypeVisible(boolean showNavigationType) {
-        // Don't toggle visibility until we have a bridge to talk to.
-        if (mComposeBoxQueryControllerBridge == null) return;
         // Don't take an action if the state isn't really changing.
         if (mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE)
                 == showNavigationType) return;
@@ -183,8 +165,6 @@ class NavigationAttachmentsMediator {
      * @return The URL for the AIM service.
      */
     GURL getAimUrl(String queryText) {
-        assert mComposeBoxQueryControllerBridge != null;
-        if (mComposeBoxQueryControllerBridge == null) return GURL.emptyGURL();
         return mComposeBoxQueryControllerBridge.getAimUrl(queryText);
     }
 
@@ -399,6 +379,8 @@ class NavigationAttachmentsMediator {
      */
     /* package */ void addAttachment(AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
         String token = uploadAttachment(attachmentDetails);
+        if (TextUtils.isEmpty(token)) return;
+
         onUseAiModeChanged(true);
 
         PropertyModel model =
@@ -428,15 +410,10 @@ class NavigationAttachmentsMediator {
      */
     public void removeAttachment(ListItem item, String token) {
         mModelList.remove(item);
-        assert mComposeBoxQueryControllerBridge != null;
-        if (mComposeBoxQueryControllerBridge == null) return;
         mComposeBoxQueryControllerBridge.removeAttachment(token);
     }
 
-    private String uploadAttachment(AttachmentDetails attachmentDetails) {
-        assert mComposeBoxQueryControllerBridge != null;
-        if (mComposeBoxQueryControllerBridge == null) return "";
-
+    private @Nullable String uploadAttachment(AttachmentDetails attachmentDetails) {
         return mComposeBoxQueryControllerBridge.addFile(
                 attachmentDetails.title, attachmentDetails.mimeType, attachmentDetails.data);
     }

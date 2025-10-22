@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -34,7 +33,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,7 +43,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +54,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock NavigationAttachmentsViewHolder mViewHolder;
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock WindowAndroid mWindowAndroid;
-    private @Mock Profile mProfile;
-    private @Mock ComposeBoxQueryControllerBridge.Natives mNativeMock;
+    private @Mock ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @Mock Clipboard mClipboard;
     private @Mock TabModelSelector mTabModelSelector;
     private @Mock Bitmap mBitmap;
@@ -70,7 +66,6 @@ public class NavigationAttachmentsMediatorUnitTest {
     private Context mContext;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private final ModelList mTabAttachmentsModelList = new ModelList();
     private final List<Tab> mTabs = new ArrayList<>();
@@ -79,7 +74,6 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void setUp() {
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
 
-        mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
         mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
@@ -91,12 +85,10 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mModel,
                                 mViewHolder,
                                 new ModelList(),
-                                mProfileSupplier,
                                 new ObservableSupplierImpl<>(),
                                 mTabModelSelectorSupplier,
-                                mTabAttachmentsModelList));
-        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
-        doReturn(123L).when(mNativeMock).init(mProfile);
+                                mTabAttachmentsModelList,
+                                mComposeBoxQueryControllerBridge));
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
         Clipboard.setInstanceForTesting(mClipboard);
@@ -110,14 +102,12 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void onUrlFocusChange_toolbarVisibleWhenFocused() {
-        mMediator.initializeBridge(mProfile);
         mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
     @Test
     public void onUrlFocusChange_viewsHiddenWhenNotFocused() {
-        mMediator.initializeBridge(mProfile);
         // Show it first
         mMediator.setToolbarVisible(true);
         mMediator.setNavigationTypeVisible(true);
@@ -227,8 +217,9 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void addAttachment_addAttachment() {
-        mMediator.initializeBridge(mProfile);
+    public void addAttachment_addAttachment_success() {
+        // Success is captured with a valid unique token.
+        doReturn("123").when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(
@@ -239,9 +230,23 @@ public class NavigationAttachmentsMediatorUnitTest {
                         byteArray);
         mMediator.addAttachment(attachmentDetails);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(byteArray.length);
-        byteBuffer.put(byteArray);
-        verify(mNativeMock).addFile(123L, "title", "image", byteBuffer);
+        verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
+    }
+
+    @Test
+    public void addAttachment_addAttachment_failure() {
+        // Failure: no token.
+        doReturn(null).when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
+        byte[] byteArray = new byte[] {1, 2, 3};
+        AttachmentDetails attachmentDetails =
+                new AttachmentDetails(
+                        NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                        null,
+                        "title",
+                        "image",
+                        byteArray);
+        mMediator.addAttachment(attachmentDetails);
+        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 
     @Test
@@ -254,11 +259,10 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         modelList,
-                        mProfileSupplier,
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
-                        mTabAttachmentsModelList);
-        mMediator.initializeBridge(mProfile);
+                        mTabAttachmentsModelList,
+                        mComposeBoxQueryControllerBridge);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
 
@@ -268,14 +272,13 @@ public class NavigationAttachmentsMediatorUnitTest {
         mMediator.onUseAiModeChanged(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, modelList.size());
-        verify(mNativeMock).notifySessionAbandoned(123L);
+        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
     }
 
     @Test
     public void onUseAiModeChanged_on_startsSession() {
-        mMediator.initializeBridge(mProfile);
         mMediator.onUseAiModeChanged(true);
-        verify(mNativeMock).notifySessionStarted(123L);
+        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
     }
 
     @Test
@@ -288,52 +291,51 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         new ModelList(),
-                        mProfileSupplier,
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
-                        mTabAttachmentsModelList);
+                        mTabAttachmentsModelList,
+                        mComposeBoxQueryControllerBridge);
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);
-        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
 
         mediator.setToolbarVisible(false);
-        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
     }
 
     @Test
     public void setToolbarVisible_stateNotChanged_doesNothing() {
-        mMediator.initializeBridge(mProfile);
         // Initial state is false. Calling with false should do nothing.
         mMediator.setToolbarVisible(false);
-        verify(mNativeMock, never()).notifySessionStarted(anyLong());
-        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
         // Transition to true. Should NOT start a session.
         mMediator.setNavigationTypeVisible(true);
-        verify(mNativeMock, never()).notifySessionStarted(anyLong());
-        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
         // Manually start a session to test the hiding part.
         mMediator.onUseAiModeChanged(true);
-        verify(mNativeMock).notifySessionStarted(123L);
-        Mockito.clearInvocations(mNativeMock);
+        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
+        Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
 
         // Calling with true again. Should do nothing.
         mMediator.setNavigationTypeVisible(true);
-        verify(mNativeMock, never()).notifySessionStarted(anyLong());
-        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
         // Transition to false. Should abandon the session.
         mMediator.setNavigationTypeVisible(false);
-        verify(mNativeMock, never()).notifySessionStarted(anyLong());
-        verify(mNativeMock).notifySessionAbandoned(123L);
-        Mockito.clearInvocations(mNativeMock);
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
 
         // Calling with false again. Should do nothing.
         mMediator.setNavigationTypeVisible(false);
-        verify(mNativeMock, never()).notifySessionStarted(anyLong());
-        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
     }
 
     @Test

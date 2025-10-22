@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -35,7 +40,13 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                     new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
     private final boolean mAimToggleOnly;
     private final PropertyModel mModel;
+    private final Context mContext;
+    private final WindowAndroid mWindowAndroid;
+    private final ModelList mModelList = new ModelList();
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ModelList mTabAttachmentsModelList = new ModelList();
     private @Nullable NavigationAttachmentsMediator mMediator;
+    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
 
     public NavigationAttachmentsCoordinator(
             Context context,
@@ -44,9 +55,12 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        mContext = context;
+        mWindowAndroid = windowAndroid;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_attachments_toolbar) == null) {
-            mMediator = null;
             mViewHolder = null;
             mLocationBarDataProvider = null;
             mAimToggleOnly = false;
@@ -56,17 +70,15 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
         mAimToggleOnly = OmniboxFeatures.sAimToggleOnly.getValue();
         mLocationBarDataProvider = locationBarDataProvider;
-        ModelList tabAttachmentsModelList = new ModelList();
 
         var popup =
                 new NavigationAttachmentsPopup(
-                        context,
+                        mContext,
                         parent.findViewById(R.id.location_bar_attachments_add),
-                        tabAttachmentsModelList);
+                        mTabAttachmentsModelList);
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
 
-        var modelList = new ModelList();
-        var adapter = new NavigationAttachmentsRecyclerViewAdapter(modelList);
+        var adapter = new NavigationAttachmentsRecyclerViewAdapter(mModelList);
         mViewHolder.attachmentsView.setAdapter(adapter);
 
         mModel =
@@ -77,23 +89,35 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
+        new OneShotCallback<>(profileObservableSupplier, this::onProfileAvailable);
+    }
+
+    @VisibleForTesting
+    void onProfileAvailable(Profile profile) {
+        // Reset previous Mediator instance in case we migrate to continuous Profile observing.
+        mMediator = null;
+
+        mComposeBoxQueryControllerBridge = ComposeBoxQueryControllerBridge.getForProfile(profile);
+        if (mComposeBoxQueryControllerBridge == null) return;
+
         mMediator =
                 new NavigationAttachmentsMediator(
-                        context,
-                        windowAndroid,
+                        mContext,
+                        mWindowAndroid,
                         mModel,
-                        mViewHolder,
-                        modelList,
-                        profileObservableSupplier,
+                        assumeNonNull(mViewHolder),
+                        mModelList,
                         mAutocompleteRequestTypeSupplier,
-                        tabModelSelectorSupplier,
-                        tabAttachmentsModelList);
+                        mTabModelSelectorSupplier,
+                        mTabAttachmentsModelList,
+                        mComposeBoxQueryControllerBridge);
     }
 
     public void destroy() {
-        if (mMediator != null) {
-            mMediator.destroy();
-            mMediator = null;
+        mMediator = null;
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.destroy();
+            mComposeBoxQueryControllerBridge = null;
         }
     }
 
@@ -120,14 +144,6 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
         mMediator.setToolbarVisible(shouldShowToolbar);
     }
 
-    @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
-        return mViewHolder;
-    }
-
-    void setMediatorForTesting(NavigationAttachmentsMediator mediator) {
-        mMediator = mediator;
-    }
-
     /**
      * @return An {@link ObservableSupplier} that notifies observers when the autocomplete request
      *     type changes.
@@ -145,5 +161,17 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
     public PropertyModel getModelForTesting() {
         return mModel;
+    }
+
+    @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
+        return mViewHolder;
+    }
+
+    void setMediatorForTesting(NavigationAttachmentsMediator mediator) {
+        mMediator = mediator;
+    }
+
+    @Nullable NavigationAttachmentsMediator getMediatorForTesting() {
+        return mMediator;
     }
 }

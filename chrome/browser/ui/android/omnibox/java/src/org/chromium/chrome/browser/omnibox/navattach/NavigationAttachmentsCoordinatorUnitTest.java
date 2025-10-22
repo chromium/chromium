@@ -4,18 +4,20 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -60,13 +62,14 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private @Mock ComposeBoxQueryControllerBridge.Natives mControllerMock;
-    private @Mock Profile mProfileMock;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
     private @Mock NavigationAttachmentsMediator mMediator;
     private @Mock TabModelSelector mTabModelSelector;
     private @Mock TabModel mTabModel;
     private @Mock Bitmap mBitmap;
+    private @Mock Profile mProfile;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -81,6 +84,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Before
     public void setUp() {
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mControllerMock);
+
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -93,8 +97,25 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                                     .inflate(R.layout.navigation_attachments_bar, mParent, true);
                         });
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFunction);
-        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
-        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
+
+        lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+        lenient().doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
+        lenient()
+                .doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyInt());
+
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        mParent,
+                        mProfileSupplier,
+                        mLocationBarDataProvider,
+                        mTabModelSelectorSupplier);
+
+        // By default, make the Mediator available.
+        mCoordinator.setMediatorForTesting(mMediator);
     }
 
     @After
@@ -104,105 +125,78 @@ public class NavigationAttachmentsCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testToolbarVisibility_featureEnabled() {
-        mCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        mActivity,
-                        mWindowAndroid,
-                        mParent,
-                        mProfileSupplier,
-                        mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
+    public void testOnProfileAvailable_featureEnabled_withBridge() {
+        // Start with a default state.
+        mCoordinator.setMediatorForTesting(null);
 
-        doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
-                .when(mLocationBarDataProvider)
-                .getPageClassification(anyInt());
-
-        mProfileSupplier.set(mProfileMock);
-        View navigationToolbar = mParent.findViewById(R.id.location_bar_attachments_toolbar);
-        assertEquals(View.GONE, navigationToolbar.getVisibility());
-
-        mCoordinator.onUrlFocusChange(true);
-        assertEquals(View.VISIBLE, navigationToolbar.getVisibility());
-
-        mCoordinator.onUrlFocusChange(false);
-        assertEquals(View.GONE, navigationToolbar.getVisibility());
+        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        mProfileSupplier.set(mProfile);
+        assertNotNull(mCoordinator.getMediatorForTesting());
+        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testAdapter_isSet() {
-        mCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        mActivity,
-                        mWindowAndroid,
-                        mParent,
-                        mProfileSupplier,
-                        mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
-        NavigationAttachmentsViewHolder viewHolder = mCoordinator.getViewHolderForTesting();
-        assertNotNull(viewHolder);
-        assertNotNull(viewHolder.attachmentsView.getAdapter());
+    public void testOnProfileAvailable_featureEnabled_noBridge() {
+        // Start with a default state.
+        mCoordinator.setMediatorForTesting(null);
+
+        doReturn(/* nativeInstance= */ 0L).when(mControllerMock).init(any(Profile.class));
+        mProfileSupplier.set(mProfile);
+        assertNull(mCoordinator.getMediatorForTesting());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testOnProfileAvailable_featureDisabled() {
+        // Start with a default state.
+        mCoordinator.setMediatorForTesting(null);
+
+        mProfileSupplier.set(mProfile);
+        verify(mControllerMock, never()).init(any());
+        assertNull(mCoordinator.getMediatorForTesting());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testToolbarVisibility_featureEnabled_mediatorNotInitialized() {
+        // Case where the Profile is not initialized, or the Bridge was not instantiated.
+        mCoordinator.setMediatorForTesting(null);
+
+        // Nothing should happen (including no crashes).
+        mCoordinator.onUrlFocusChange(true);
+        mCoordinator.onUrlFocusChange(false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testToolbarVisibility_featureEnabled_mediatorInitialized() {
+        // Mediator set by setUp().
+
+        mCoordinator.onUrlFocusChange(true);
+        verify(mMediator).setToolbarVisible(true);
+
+        mCoordinator.onUrlFocusChange(false);
+        verify(mMediator).setToolbarVisible(false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testToolbarVisibility_featureEnabled() {
+        // ViewHolder should be initialized as part of the init method.
+        assertNotNull(mCoordinator.getViewHolderForTesting());
     }
 
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureDisabled() {
-        mCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        mActivity,
-                        mWindowAndroid,
-                        mParent,
-                        mProfileSupplier,
-                        mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
+        // Nothing should get initialized.
         assertNull(mCoordinator.getViewHolderForTesting());
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testAddButton_togglesPopup() {
-        mCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        mActivity,
-                        mWindowAndroid,
-                        mParent,
-                        mProfileSupplier,
-                        mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
-        NavigationAttachmentsViewHolder viewHolder = mCoordinator.getViewHolderForTesting();
-        assertNotNull(viewHolder);
-        View addButton = viewHolder.addButton;
-        assertNotNull(addButton);
-        NavigationAttachmentsPopup popup = viewHolder.popup;
-        assertNotNull(popup);
-
-        // Popup should not be showing initially.
-        assertFalse(popup.isShowing());
-
-        // Click the add button to show the popup.
-        addButton.performClick();
-        assertTrue(popup.isShowing());
-
-        // Click the add button again to hide the popup.
-        addButton.performClick();
-        assertFalse(popup.isShowing());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_basedOnPageClassification() {
-        mCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        mActivity,
-                        mWindowAndroid,
-                        mParent,
-                        mProfileSupplier,
-                        mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
-        mCoordinator.setMediatorForTesting(mMediator);
-        mProfileSupplier.set(mProfileMock);
-
         final Set<PageClassification> supportedPageClassifications =
                 EnumSet.of(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
@@ -219,6 +213,11 @@ public class NavigationAttachmentsCoordinatorUnitTest {
 
             boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
             Mockito.verify(mMediator).setToolbarVisible(shouldBeVisible);
+
+            if (shouldBeVisible) {
+                mCoordinator.onUrlFocusChange(false);
+                Mockito.verify(mMediator).setToolbarVisible(false);
+            }
         }
     }
 
@@ -226,15 +225,6 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testAimToggleOnly() {
         OmniboxFeatures.sAimToggleOnly.setForTesting(true);
-        mCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        mActivity,
-                        mWindowAndroid,
-                        mParent,
-                        mProfileSupplier,
-                        mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
-
         assertFalse(
                 mCoordinator
                         .getModelForTesting()
