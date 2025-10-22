@@ -13,7 +13,7 @@ import * as RenderCoordinator from 'devtools/ui/components/render_coordinator/re
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
-  TestRunner.addResult(`Verify that breakpoints are moved appropriately in case of page reload.\n`);
+  TestRunner.addResult(`Verify that breakpoints are moved appropriately in case of binding removal.\n`);
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function addFooJS() {
@@ -53,7 +53,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       }
     },
 
-    async function reloadPageAndDumpBreakpoints(next) {
+    async function removeBindingAndDumpBreakpoints(next) {
       const onBreakpointSet = async () => {
         // Explicitly request an update to reflect the up-to-date breakpoint list.
         await Sources.BreakpointsView.BreakpointsSidebarController.instance().update();
@@ -64,11 +64,11 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       // Wait until the move from network => filesystem happens via
       // `setBreakpoint`, before dumping the breakpoint sidebar pane.
       TestRunner.addSniffer(Breakpoints.BreakpointManager.BreakpointManager.prototype, 'setBreakpoint', onBreakpointSet, true);
+
+      // This call is causing the move from network => filesystem to happen.
+      // Usually, this happens during a page reload.
       await testMapping.removeBinding('foo.js');
-      await TestRunner.reloadPagePromise();
-      await TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.FileSystem);
-      testMapping.addBinding('foo.js');
-    }
+    },
   ]);
 
   async function dumpBreakpointSidebarPane() {

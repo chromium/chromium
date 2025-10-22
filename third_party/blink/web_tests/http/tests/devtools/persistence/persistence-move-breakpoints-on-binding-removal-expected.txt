@@ -1,4 +1,4 @@
-Verify that breakpoints are moved appropriately in case of page reload.
+Verify that breakpoints are moved appropriately in case of binding removal.
 
 
 Running: addFileSystem
@@ -8,7 +8,6 @@ Running: addNetworkFooJS
 Running: setBreakpointInFileSystemUISourceCode
 http://127.0.0.1:8000/devtools/persistence/resources/foo.js:3
 
-Running: reloadPageAndDumpBreakpoints
-Page reloaded.
+Running: removeBindingAndDumpBreakpoints
 file:///var/www/devtools/persistence/resources/foo.js:1
 

@@ -9818,13 +9818,6 @@ crbug.com/414630818 http/tests/devtools/coverage/coverage-view-filter.js [ Failu
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view.js [ Failure Pass ]
 
-
-
-
-
-# Gardener 2025-09-26
-crbug.com/448325313 [ Mac ] http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Failure Pass ]
-
 # Gardener 2025-10-01
 crbug.com/448484970 [ Win11-arm64 ] external/wpt/webxr/xrSession_visibilityState_inline.https.html [ Failure Pass ]
 crbug.com/448484970 [ Mac ] external/wpt/webxr/xrSession_visibilityState_inline.https.html [ Failure Pass ]
