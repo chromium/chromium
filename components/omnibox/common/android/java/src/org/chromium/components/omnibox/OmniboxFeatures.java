@@ -212,8 +212,10 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxImprovementForLFF, "switch_to_tab_chip", false);
 
     // This parameter enables removing suggestion via "x" button.
-    public static final BooleanCachedFeatureParam sOmniboxImprovementForRemoveSuggestionViaButton =
-            newBooleanParam(sOmniboxImprovementForLFF, "remove_suggestion_via_button", false);
+    public static final BooleanCachedFeatureParam
+            sOmniboxImprovementForLFFRemoveSuggestionViaButton =
+                    newBooleanParam(
+                            sOmniboxImprovementForLFF, "remove_suggestion_via_button", false);
 
     // This parameter enables persisting editing state.
     public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFPersistEditingState =

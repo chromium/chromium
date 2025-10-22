@@ -62,7 +62,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyHighlightToMatchRegions(text, suggestion.getDisplayTextClassifications());
         model.set(TailSuggestionViewProperties.TEXT, text);
 
-        setRefineAction(model, input, suggestion, position);
+        setRemoveOrRefineAction(model, input, suggestion, position);
     }
 
     @Override

@@ -36,6 +36,8 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -52,6 +54,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
+    private final boolean mShouldShowRemoveButton;
 
     /**
      * @param uiContext Context object containing common UI dependencies.
@@ -71,6 +74,14 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
         mActionChipsProcessor = new ActionChipsProcessor(uiContext.host);
+
+        mShouldShowRemoveButton =
+                OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()
+                        && OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton
+                                .getValue()
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                        && (DeviceInput.supportsAlphabeticKeyboard()
+                                || DeviceInput.supportsPrecisionPointer());
     }
 
     /**
@@ -141,11 +152,33 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param position The position of the button in the list.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public void setRefineAction(
+    public void setRemoveOrRefineAction(
             PropertyModel model,
             AutocompleteInput input,
             AutocompleteMatch suggestion,
             int position) {
+        if (mShouldShowRemoveButton) {
+            if (suggestion.isDeletable()) {
+                setActionButtons(
+                        model,
+                        List.of(
+                                new Action(
+                                        OmniboxDrawableState.forSmallIcon(
+                                                mContext, R.drawable.btn_close, true),
+                                        OmniboxResourceProvider.getString(
+                                                mContext,
+                                                R.string.accessibility_omnibox_remove_suggestion),
+                                        null,
+                                        /* showOnlyOnFocus= */ true,
+                                        () -> {
+                                            RecordUserAction.record(
+                                                    "MobileOmniboxRemoveSuggestion.Button");
+                                            mSuggestionHost.deleteMatch(suggestion);
+                                        })));
+            }
+            return;
+        }
+
         if (suggestion.hasTabMatch() || suggestion.getType() == OmniboxSuggestionType.OPEN_TAB) {
             return;
         }
@@ -197,7 +230,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param suggestion Selected suggestion.
      */
     protected void onSuggestionLongClicked(AutocompleteMatch suggestion) {
-        mSuggestionHost.onDeleteMatch(suggestion, suggestion.getDisplayText());
+        mSuggestionHost.confirmDeleteMatch(suggestion, suggestion.getDisplayText());
     }
 
     /**

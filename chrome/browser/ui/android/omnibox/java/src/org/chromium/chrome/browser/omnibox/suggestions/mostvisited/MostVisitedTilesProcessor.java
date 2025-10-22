@@ -144,7 +144,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                             mSuggestionHost.onSuggestionClicked(match, matchIndex, match.getUrl());
                         },
                         v -> {
-                            mSuggestionHost.onDeleteMatch(match, title);
+                            mSuggestionHost.confirmDeleteMatch(match, title);
                             return true;
                         });
 

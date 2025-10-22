@@ -27390,6 +27390,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxRemoveSuggestion.Button">
+  <owner>jianli@chromium.org</owner>
+  <description>
+    User clicks the remove button to remove the suggestion.
+  </description>
+</action>
+
+<action name="MobileOmniboxRemoveSuggestion.LongPress">
+  <owner>jianli@chromium.org</owner>
+  <description>
+    User long pressed an omnibox search suggestion to remove the suggestion.
+  </description>
+</action>
+
 <action name="MobileOmniboxRichInlineRemoved">
   <owner>christianxu@chromium.org</owner>
   <description>

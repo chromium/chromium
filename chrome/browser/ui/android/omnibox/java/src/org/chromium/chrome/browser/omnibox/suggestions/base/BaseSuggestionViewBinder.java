@@ -260,6 +260,7 @@ public final class BaseSuggestionViewBinder<T extends View>
                     sds.isLarge ? sLargeIconRoundingRadius : sSmallIconRoundingRadius);
         }
 
+        rciv.setVisibility(sds == null ? View.GONE : View.VISIBLE);
         updateIcon(model, rciv, sds, ChromeColors.getSecondaryIconTintRes(isIncognito(model)));
     }
 
@@ -339,7 +340,6 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** Update image view using supplied drawable state object. */
     private static void updateIcon(
             PropertyModel model, ImageView view, OmniboxDrawableState sds, @ColorRes int tintRes) {
-        view.setVisibility(sds == null ? View.GONE : View.VISIBLE);
         if (sds == null) {
             // Release any drawable that is still attached to this view to reclaim memory.
             view.setImageDrawable(null);

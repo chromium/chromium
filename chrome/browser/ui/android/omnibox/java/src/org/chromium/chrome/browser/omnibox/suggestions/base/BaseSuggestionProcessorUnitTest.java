@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,10 +52,12 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -116,6 +119,7 @@ public class BaseSuggestionProcessorUnitTest {
     private @Mock Bitmap mBitmap;
 
     private Context mContext;
+    private AutocompleteUIContext mUiContext;
     private TestBaseSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
@@ -124,7 +128,7 @@ public class BaseSuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
-        AutocompleteUIContext uiContext =
+        mUiContext =
                 new AutocompleteUIContext(
                         mContext,
                         mSuggestionHost,
@@ -134,7 +138,7 @@ public class BaseSuggestionProcessorUnitTest {
                         mTabSupplier,
                         mShareDelegateSupplier,
                         new ObservableSupplierImpl<>(ControlsPosition.TOP));
-        mProcessor = new TestBaseSuggestionProcessor(uiContext);
+        mProcessor = new TestBaseSuggestionProcessor(mUiContext);
         mInput = new AutocompleteInput();
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
@@ -162,6 +166,31 @@ public class BaseSuggestionProcessorUnitTest {
                         .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+    }
+
+    private void createDeletableSuggestion(int type, boolean isSearch, GURL url) {
+        mSuggestion =
+                new AutocompleteMatchBuilder(type)
+                        .setIsSearch(isSearch)
+                        .setUrl(url)
+                        .setDeletable(true)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+    }
+
+    private Action setUpDeleteScenarioForRemoveActionTesting() {
+        // Recreate the suggestion processor to respect any overridden features and params.
+        mProcessor = new TestBaseSuggestionProcessor(mUiContext);
+
+        createDeletableSuggestion(
+                OmniboxSuggestionType.SEARCH_HISTORY, /* isSearch= */ true, TEST_URL);
+        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(1, actions.size());
+
+        return actions.get(0);
     }
 
     @Test
@@ -255,13 +284,13 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    public void setTabSwitchOrRefineAction_refineActionForSearch() {
+    public void setRemoveOrRefineAction_refineActionForSearch() {
         createSuggestion(
                 OmniboxSuggestionType.SEARCH_HISTORY,
                 /* isSearch= */ true,
                 /* hasTabMatch= */ false,
                 TEST_URL);
-        mProcessor.setRefineAction(mModel, mInput, mSuggestion, 0);
+        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());
@@ -284,13 +313,13 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    public void setTabSwitchOrRefineAction_refineActionForUrl() {
+    public void setRemoveOrRefineAction_refineActionForUrl() {
         createSuggestion(
                 OmniboxSuggestionType.HISTORY_URL,
                 /* isSearch= */ false,
                 /* hasTabMatch= */ false,
                 TEST_URL);
-        mProcessor.setRefineAction(mModel, mInput, mSuggestion, 0);
+        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());
@@ -306,6 +335,87 @@ public class BaseSuggestionProcessorUnitTest {
         var monitor = new UserActionTester();
         action.callback.run();
         Assert.assertEquals(1, monitor.getActionCount("MobileOmniboxRefineSuggestion.Url"));
+        Assert.assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
+    }
+
+    @Test
+    @Config(qualifiers = "w400dp")
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
+    public void setRemoveOrRefineAction_noRmoveActionOnPhone() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
+
+        var action = setUpDeleteScenarioForRemoveActionTesting();
+
+        // Refine action is shown instead.
+        var expectedDescription =
+                mContext.getString(
+                        R.string.accessibility_omnibox_btn_refine, mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
+    public void setRemoveOrRefineAction_noRemoveActionOnTabletWithoutPeripherals() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
+        DeviceInput.setSupportsPrecisionPointerForTesting(false);
+        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
+
+        var action = setUpDeleteScenarioForRemoveActionTesting();
+
+        // Refine action is shown instead.
+        var expectedDescription =
+                mContext.getString(
+                        R.string.accessibility_omnibox_btn_refine, mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
+    public void setRemoveOrRefineAction_removeActionOnTabletWithAlphabeticKeyboard() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
+
+        var action = setUpDeleteScenarioForRemoveActionTesting();
+
+        var expectedDescription =
+                mContext.getString(
+                        R.string.accessibility_omnibox_remove_suggestion,
+                        mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+        Assert.assertEquals(
+                R.drawable.btn_close, shadowOf(action.icon.drawable).getCreatedFromResId());
+
+        var monitor = new UserActionTester();
+        action.callback.run();
+        Assert.assertEquals(1, monitor.getActionCount("MobileOmniboxRemoveSuggestion.Button"));
+        Assert.assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
+    public void setRemoveOrRefineAction_removeActionOnTabletWithPrecisionPointer() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
+
+        var action = setUpDeleteScenarioForRemoveActionTesting();
+
+        var expectedDescription =
+                mContext.getString(
+                        R.string.accessibility_omnibox_remove_suggestion,
+                        mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+        Assert.assertEquals(
+                R.drawable.btn_close, shadowOf(action.icon.drawable).getCreatedFromResId());
+
+        var monitor = new UserActionTester();
+        action.callback.run();
+        Assert.assertEquals(1, monitor.getActionCount("MobileOmniboxRemoveSuggestion.Button"));
         Assert.assertEquals(1, monitor.getActions().size());
         monitor.tearDown();
     }
