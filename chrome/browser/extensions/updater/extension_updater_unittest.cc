@@ -52,6 +52,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -2911,6 +2912,26 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchPriority) {
 TEST_F(ExtensionUpdaterTest, TestExtensionPriority) {
   TestSingleExtensionDownloadingPriority(DownloadFetchPriority::kBackground);
   TestSingleExtensionDownloadingPriority(DownloadFetchPriority::kForeground);
+}
+
+TEST_F(ExtensionUpdaterTest, TestProfileDestruction) {
+  ExtensionUpdater updater(profile());
+  // Create an active ProfileManager, and do NOT make it the owner of profile().
+  // This causes ScopedProfileKeepAlive::TryAcquire() to fail.
+  auto testing_profile_manager = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager->SetUp());
+
+  ExtensionDownloaderTestHelper helper;
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  // Verify that CheckNow() doesn't do anything in this state.
+  updater.SetUpdatingStartedCallbackForTesting(base::BindLambdaForTesting(
+      [&]() { ADD_FAILURE() << "Updating should not have started."; }));
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
+  updater.Start();
+  updater.CheckNow(ExtensionUpdater::CheckParams());
+  base::RunLoop().RunUntilIdle();
 }
 
 class CanUseUpdateServiceTest : public ExtensionUpdaterTest {

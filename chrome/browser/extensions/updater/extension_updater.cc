@@ -440,6 +440,14 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
     will_check_soon_ = false;
   }
 
+  std::unique_ptr<ScopedProfileKeepAlive> keep_alive =
+      ScopedProfileKeepAlive::TryAcquire(
+          profile_, ProfileKeepAliveOrigin::kExtensionUpdater);
+  if (!keep_alive) {
+    // Profile will be destroyed soon, don't start an update check.
+    return;
+  }
+
   int request_id = next_request_id_++;
 
   VLOG(2) << "Starting update check " << request_id;
@@ -453,8 +461,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   request.update_found_callback = params.update_found_callback;
   request.callback = std::move(params.callback);
   request.install_immediately = params.install_immediately;
-  request.profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kExtensionUpdater);
+  request.profile_keep_alive = std::move(keep_alive);
 
   EnsureDownloaderCreated();
 
