@@ -123,6 +123,7 @@ public class AndroidPaymentAppFinderUnitTest {
                         });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+        Mockito.when(mDelegate.prefsCanMakePayment()).thenReturn(true);
     }
 
     @After
