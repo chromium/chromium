@@ -4,6 +4,7 @@
 
 package org.chromium.ui.hierarchicalmenu;
 
+import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
@@ -63,6 +64,14 @@ public class FlyoutController<T> {
          *     item.
          */
         List<FlyoutPopupEntry<T>> getFlyoutWindows();
+
+        /**
+         * Gets the coordinates of a given popup window, relative to the main application window.
+         *
+         * @param popupWindow The popup window instance.
+         * @return The {@link Rect} representing the popup's position and size.
+         */
+        Rect getPopupRect(T popupWindow);
 
         /**
          * Adds a flyout popup.
@@ -187,6 +196,16 @@ public class FlyoutController<T> {
         if (item.model.containsKey(mKeyProvider.getSubmenuItemsKey()) && !keepChildWindow) {
             mFlyoutHandler.addFlyoutWindow(item, view, levelOfHoveredItem);
         }
+    }
+
+    /**
+     * Gets the {@link Rect} of the main (non-flyout) popup of the menu.
+     *
+     * @return The rect of the main popup.
+     */
+    public Rect getMainPopupRect() {
+        T mainPopup = mFlyoutHandler.getFlyoutWindows().get(0).popupWindow;
+        return mFlyoutHandler.getPopupRect(mainPopup);
     }
 
     /**

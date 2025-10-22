@@ -8,20 +8,25 @@ import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
+import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -45,6 +50,8 @@ import java.util.List;
  */
 @NullMarked
 public class HierarchicalMenuController<T> {
+    private final Context mContext;
+
     private final @Nullable FlyoutController<T> mFlyoutController;
     private final HierarchicalMenuKeyProvider mKeyProvider;
 
@@ -57,6 +64,7 @@ public class HierarchicalMenuController<T> {
     /**
      * Creates an instance of the controller.
      *
+     * @param context The application's {@link Context} to retrieve resources.
      * @param keyProvider The {@link HierarchicalMenuKeyProvider} for the controller to use.
      * @param flyoutHandler The {@link FlyoutHandler} for the controller to use for displaying
      *     flyout popups.
@@ -64,9 +72,11 @@ public class HierarchicalMenuController<T> {
      *     true}) or flyout ({@code false}), overriding the default.
      */
     public HierarchicalMenuController(
+            Context context,
             HierarchicalMenuKeyProvider keyProvider,
             @Nullable FlyoutHandler<T> flyoutHandler,
             @Nullable Boolean drillDownOverrideValue) {
+        mContext = context;
         mFlyoutController =
                 flyoutHandler != null
                         ? new FlyoutController<T>(flyoutHandler, keyProvider, this)
@@ -85,10 +95,14 @@ public class HierarchicalMenuController<T> {
     }
 
     /**
-     * Determines whether to use a drill-down menu style. Currently defaults to using drilldown
-     * unless an override value is given.
+     * Determines whether to use a drill-down menu style. If an override value is given, it is
+     * respected. If the override value is null and a pointer device is connected, we use the window
+     * width and the position of the main, non-flyout popup to calculate whether to use flyout or
+     * drilldown. For flyout to be chosen, there has to be enough space for a set margin and a set
+     * spacing in at least one side of the main popup window for the maximum width flyout popup to
+     * fit in.
      *
-     * @return True to use the drill-down style, false to use the flyout style.
+     * @return True to use the drilldown, false to use the flyout style.
      */
     public boolean shouldUseDrillDown() {
         if (mDrillDownOverrideValue != null) {
@@ -102,7 +116,57 @@ public class HierarchicalMenuController<T> {
             return true;
         }
 
-        // TODO(http://crbug.com/440938039): Return `false` when conditions qualify for flyout.
+        if (!DeviceInput.supportsPrecisionPointer()) {
+            return true;
+        }
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        DisplayAndroidManager.getDefaultDisplayForContext(mContext).getMetrics(displayMetrics);
+
+        return !possibleToFitFlyout(
+                mFlyoutController.getMainPopupRect(),
+                displayMetrics.widthPixels,
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.hierarchical_menu_min_spacing_for_flyout),
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.hierarchical_menu_min_margin_for_flyout),
+                mContext.getResources().getDimensionPixelSize(R.dimen.list_menu_width));
+    }
+
+    /**
+     * In order for flyout to fit, the available space, either to the left or the right of the main
+     * popup, has to be larger than minSpacing + maxFlyoutWidth + minMargin.
+     *
+     * <pre>
+     *     +----------------------+
+     *     +----------------------+
+     *     |     +------+         |
+     *     |     | main |         |
+     *     |     |  +--------+    |
+     *     |     +--| flyout |    |
+     *     |        +--------+    |
+     *     +----------------------+
+     *           <-->         <--->
+     *        minSpacing    minMargin
+     *           <---------------->
+     *             availableSpace
+     * </pre>
+     */
+    @VisibleForTesting
+    static boolean possibleToFitFlyout(
+            Rect mainPopupRect,
+            int windowWidth,
+            int minSpacing,
+            int minMargin,
+            int maxFlyoutWidth) {
+        int spaceToLeft = mainPopupRect.right;
+        int spaceToRight = windowWidth - mainPopupRect.left;
+        int availableSpace = spaceToLeft > spaceToRight ? spaceToLeft : spaceToRight;
+
+        if (availableSpace < minSpacing + maxFlyoutWidth + minMargin) {
+            return false;
+        }
+
         return true;
     }
 

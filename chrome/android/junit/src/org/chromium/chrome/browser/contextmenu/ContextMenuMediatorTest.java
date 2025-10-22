@@ -140,6 +140,7 @@ public class ContextMenuMediatorTest {
 
         mHierarchicalMenuController =
                 new HierarchicalMenuController(
+                        mActivity,
                         new ListMenuUtils.ListMenuKeyProvider(),
                         /* flyoutHandler= */ null,
                         /* drillDownOverrideValue= */ true);

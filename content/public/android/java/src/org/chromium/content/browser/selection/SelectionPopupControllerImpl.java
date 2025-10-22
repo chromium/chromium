@@ -369,8 +369,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mCustomActionMenuItemClickListeners = new HashMap<>();
         getPopupController().registerPopup(this);
 
+        assumeNonNull(mContext);
         mHierarchicalMenuController =
                 new HierarchicalMenuController<SelectionPopupController>(
+                        mContext,
                         new ListMenuUtils.ListMenuKeyProvider(),
                         // TODO(crbug.com/433410990): Implement flyouts for selected text context
                         // menu.
@@ -379,6 +381,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             public List<FlyoutController.FlyoutPopupEntry<SelectionPopupController>>
                                     getFlyoutWindows() {
                                 return Collections.emptyList();
+                            }
+
+                            @Override
+                            public Rect getPopupRect(SelectionPopupController popupWindow) {
+                                return new Rect();
                             }
 
                             @Override

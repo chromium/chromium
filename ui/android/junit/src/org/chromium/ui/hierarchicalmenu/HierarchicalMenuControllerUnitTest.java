@@ -5,6 +5,7 @@
 package org.chromium.ui.hierarchicalmenu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -26,12 +27,12 @@ import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_IT
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_ITEMS;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
 
+import android.content.Context;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.modelutil.ListObservable;
@@ -82,8 +84,11 @@ public class HierarchicalMenuControllerUnitTest {
 
     @Before
     public void setUp() {
+        Context context = ContextUtils.getApplicationContext();
+
         mController =
                 new HierarchicalMenuController(
+                        context,
                         HierarchicalMenuTestUtils.createKeyProvider(),
                         /* flyoutHandler= */ null,
                         /* drillDownOverrideValue= */ true);
@@ -140,8 +145,8 @@ public class HierarchicalMenuControllerUnitTest {
                                 .build());
         mModelList.add(mListItemWithoutModelClickCallback);
 
-        when(mListView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
-        when(mParentView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mListView.getContext()).thenReturn(context);
+        when(mParentView.getContext()).thenReturn(context);
     }
 
     @Test
@@ -467,6 +472,32 @@ public class HierarchicalMenuControllerUnitTest {
                 "New root mListItemWithoutModelClickCallback should be highlighted",
                 true,
                 mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
+    }
+
+    @Test
+    public void possibleToFitFlyout_CorrectlyCalculatesFitForVariousLayouts() {
+        int windowWidth = 1000;
+        int minSpacing = 48;
+        int minMargin = 48;
+        int menuMaxWidth = 500;
+
+        Rect mainPopupRect = new Rect(450, 0, 550, 100);
+        assertFalse(
+                "Should return false when there is not enough space to either side.",
+                HierarchicalMenuController.possibleToFitFlyout(
+                        mainPopupRect, windowWidth, minSpacing, minMargin, menuMaxWidth));
+
+        mainPopupRect = new Rect(50, 0, 150, 100);
+        assertTrue(
+                "Should return true when there is enough space to the right.",
+                HierarchicalMenuController.possibleToFitFlyout(
+                        mainPopupRect, windowWidth, minSpacing, minMargin, menuMaxWidth));
+
+        mainPopupRect = new Rect(850, 0, 950, 100);
+        assertTrue(
+                "Should return true when there is enough space to the right.",
+                HierarchicalMenuController.possibleToFitFlyout(
+                        mainPopupRect, windowWidth, minSpacing, minMargin, menuMaxWidth));
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {

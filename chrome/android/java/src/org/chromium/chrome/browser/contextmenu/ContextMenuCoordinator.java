@@ -329,6 +329,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
         HierarchicalMenuController hierarchicalMenuController =
                 new HierarchicalMenuController(
+                        mActivity,
                         new ListMenuUtils.ListMenuKeyProvider(),
                         /* flyoutHandler= */ this,
                         /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
@@ -391,6 +392,11 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     @Override
     public List<FlyoutPopupEntry<ContextMenuDialog>> getFlyoutWindows() {
         return mDialogs;
+    }
+
+    @Override
+    public Rect getPopupRect(ContextMenuDialog popupWindow) {
+        return popupWindow.getDialogRect();
     }
 
     @Override

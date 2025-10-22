@@ -22,12 +22,11 @@ import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_IT
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_ITEMS;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +37,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
@@ -73,10 +73,14 @@ public class FlyoutControllerUnitTest {
     private ListItem mListItemWithoutModelClickCallback;
     private HierarchicalMenuController mHierarchicalMenuController;
 
+    private Context mContext;
+
     @Before
     public void setUp() {
+        mContext = ContextUtils.getApplicationContext();
         mHierarchicalMenuController =
                 new HierarchicalMenuController(
+                        mContext,
                         HierarchicalMenuTestUtils.createKeyProvider(),
                         /* flyoutHandler= */ null,
                         /* drillDownOverrideValue= */ false);
@@ -136,7 +140,7 @@ public class FlyoutControllerUnitTest {
                                 .with(IS_HIGHLIGHTED, false)
                                 .build());
 
-        when(mListView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mListView.getContext()).thenReturn(mContext);
         when(mListView.getHandler()).thenReturn(new Handler(Looper.getMainLooper()));
     }
 

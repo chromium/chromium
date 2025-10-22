@@ -283,6 +283,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
         mContext = context;
         mHierarchicalMenuController =
                 new HierarchicalMenuController(
+                        context,
                         new ListMenuUtils.ListMenuKeyProvider(),
                         /* flyoutHandler= */ null,
                         /* drillDownOverrideValue= */ true);

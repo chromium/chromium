@@ -251,6 +251,7 @@ public class BasicListMenu implements ListMenu {
             @Nullable FlyoutHandler flyoutHandler) {
         HierarchicalMenuController hierarchicalMenuController =
                 new HierarchicalMenuController(
+                        mListMenuLayout.getContext(),
                         new ListMenuUtils.ListMenuKeyProvider(),
                         flyoutHandler,
                         drillDownOverrideValue);

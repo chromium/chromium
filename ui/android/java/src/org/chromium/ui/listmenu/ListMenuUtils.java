@@ -13,6 +13,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
+import android.graphics.Rect;
 import android.view.View;
 import android.widget.ListView;
 
@@ -115,6 +116,28 @@ public class ListMenuUtils {
             modelList.add(listItem);
         }
         return modelList;
+    }
+
+    /**
+     * Calculates the Rect of a given View in the coordinate space of a root View. This is useful
+     * when you need to position a UI element (like a popup) relative to a specific view, but need
+     * the coordinates to be based on the root view's visible area, which accounts for when the
+     * window is not placed in the origin of the screen.
+     *
+     * @param view The View whose position and size are to be calculated.
+     * @return A new {@link Rect} containing the coordinates and dimensions of the {@code view}
+     *     relative to the visible frame of the {@code rootView}.
+     */
+    public static Rect getViewRectRelativeToItsRootView(View view) {
+        Rect rootViewRect = new Rect();
+        view.getRootView().getWindowVisibleDisplayFrame(rootViewRect);
+        int[] viewCoordinates = new int[2];
+        view.getLocationOnScreen(viewCoordinates);
+
+        int left = viewCoordinates[0] - rootViewRect.left;
+        int top = viewCoordinates[1] - rootViewRect.top;
+
+        return new Rect(left, top, left + view.getWidth(), top + view.getHeight());
     }
 
     public static class ListMenuKeyProvider implements HierarchicalMenuKeyProvider {

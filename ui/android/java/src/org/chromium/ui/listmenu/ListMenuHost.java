@@ -229,6 +229,17 @@ public class ListMenuHost
     }
 
     @Override
+    public Rect getPopupRect(AnchoredPopupWindow popupWindow) {
+        View contentView = popupWindow.getContentView();
+
+        if (contentView == null) {
+            return new Rect();
+        }
+
+        return ListMenuUtils.getViewRectRelativeToItsRootView(contentView);
+    }
+
+    @Override
     public void removeFlyoutWindows(int clearFromIndex) {
         if (clearFromIndex >= mPopupMenus.size()) {
             return;

@@ -13,6 +13,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
@@ -106,6 +107,11 @@ public class BrowserUiListMenuRenderTest {
                                 public List<FlyoutController.FlyoutPopupEntry<BasicListMenu>>
                                         getFlyoutWindows() {
                                     return Collections.emptyList();
+                                }
+
+                                @Override
+                                public Rect getPopupRect(BasicListMenu popupWindow) {
+                                    return new Rect();
                                 }
 
                                 @Override

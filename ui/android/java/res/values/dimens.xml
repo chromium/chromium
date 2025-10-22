@@ -121,6 +121,16 @@ found in the LICENSE file.
 
     <dimen name="list_menu_flyout_popup_horizontal_overlap">8dp</dimen>
 
+    <!-- Hierarchical menu -->
+    <!--
+         min_spacing is the minimum non-overlapping width of the main popup
+         and the flyout popup.
+         min_margin is the minimum margin between flyout popup and the edge
+         of the window.
+    -->
+    <dimen name="hierarchical_menu_min_spacing_for_flyout">48dp</dimen>
+    <dimen name="hierarchical_menu_min_margin_for_flyout">48dp</dimen>
+
     <!-- Automotive -->
     <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
 
