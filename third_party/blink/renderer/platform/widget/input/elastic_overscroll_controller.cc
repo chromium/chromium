@@ -62,9 +62,7 @@ constexpr bool kOverscrollNonScrollableDirection = true;
 
 ElasticOverscrollController::ElasticOverscrollController(
     cc::ScrollElasticityHelper* helper)
-    : helper_(helper),
-      state_(kStateInactive),
-      received_overscroll_update_(false) {}
+    : helper_(helper) {}
 
 std::unique_ptr<ElasticOverscrollController>
 ElasticOverscrollController::Create(cc::ScrollElasticityHelper* helper) {
@@ -79,14 +77,16 @@ ElasticOverscrollController::Create(cc::ScrollElasticityHelper* helper) {
 
 void ElasticOverscrollController::ObserveRealScrollBegin(bool enter_momentum,
                                                          bool leave_momentum) {
+  OverscrollEntry& entry = EnsureEntry();
   if (enter_momentum) {
-    if (state_ == kStateInactive)
-      state_ = kStateMomentumScroll;
+    if (entry.state == kStateInactive) {
+      entry.state = kStateMomentumScroll;
+    }
   } else if (leave_momentum) {
-    scroll_velocity_ = gfx::Vector2dF();
-    last_scroll_event_timestamp_ = base::TimeTicks();
-    state_ = kStateActiveScroll;
-    pending_overscroll_delta_ = gfx::Vector2dF();
+    entry.scroll_velocity = gfx::Vector2dF();
+    entry.last_scroll_event_timestamp = base::TimeTicks();
+    entry.state = kStateActiveScroll;
+    entry.pending_overscroll_delta = gfx::Vector2dF();
   }
 }
 
@@ -96,24 +96,33 @@ void ElasticOverscrollController::ObserveScrollUpdate(
     const base::TimeTicks& event_timestamp,
     const cc::OverscrollBehavior overscroll_behavior,
     bool has_momentum) {
-  if (state_ == kStateMomentumAnimated || state_ == kStateInactive)
+  OverscrollEntry& entry = EnsureEntry();
+  if (entry.state == kStateMomentumAnimated || entry.state == kStateInactive) {
     return;
+  }
 
-  if (!received_overscroll_update_ && !unused_scroll_delta.IsZero()) {
-    overscroll_behavior_ = overscroll_behavior;
-    received_overscroll_update_ = true;
+  if (!entry.received_overscroll_update && !unused_scroll_delta.IsZero()) {
+    entry.overscroll_behavior = overscroll_behavior;
+    entry.received_overscroll_update = true;
   }
 
   UpdateVelocity(event_delta, event_timestamp);
   Overscroll(unused_scroll_delta);
-  if (has_momentum && !helper_->StretchAmount().IsZero())
+  if (has_momentum && !helper_->StretchAmount().IsZero()) {
     EnterStateMomentumAnimated(event_timestamp);
+  }
 }
 
 void ElasticOverscrollController::ObserveRealScrollEnd(
     const base::TimeTicks event_timestamp) {
-  if (state_ == kStateMomentumAnimated || state_ == kStateInactive)
+  OverscrollEntry* entry = GetEntry();
+  if (!entry) {
     return;
+  }
+  if (entry->state == kStateMomentumAnimated ||
+      entry->state == kStateInactive) {
+    return;
+  }
 
   if (helper_->StretchAmount().IsZero()) {
     EnterStateInactive();
@@ -129,8 +138,9 @@ void ElasticOverscrollController::ObserveGestureEventAndResult(
 
   switch (gesture_event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin: {
-      received_overscroll_update_ = false;
-      overscroll_behavior_ = cc::OverscrollBehavior();
+      OverscrollEntry& entry = EnsureEntry();
+      entry.received_overscroll_update = false;
+      entry.overscroll_behavior = cc::OverscrollBehavior();
       if (gesture_event.data.scroll_begin.synthetic)
         return;
 
@@ -172,34 +182,50 @@ void ElasticOverscrollController::ObserveGestureEventAndResult(
 void ElasticOverscrollController::UpdateVelocity(
     const gfx::Vector2dF& event_delta,
     const base::TimeTicks& event_timestamp) {
+  OverscrollEntry& entry = EnsureEntry();
   float time_delta =
-      (event_timestamp - last_scroll_event_timestamp_).InSecondsF();
+      (event_timestamp - entry.last_scroll_event_timestamp).InSecondsF();
   if (time_delta < kScrollVelocityZeroingTimeout && time_delta > 0) {
-    scroll_velocity_ = gfx::Vector2dF(event_delta.x() / time_delta,
-                                      event_delta.y() / time_delta);
+    entry.scroll_velocity = gfx::Vector2dF(event_delta.x() / time_delta,
+                                           event_delta.y() / time_delta);
   } else {
-    scroll_velocity_ = gfx::Vector2dF();
+    entry.scroll_velocity = gfx::Vector2dF();
   }
-  last_scroll_event_timestamp_ = event_timestamp;
+  entry.last_scroll_event_timestamp = event_timestamp;
+}
+const ElasticOverscrollController::OverscrollEntry*
+ElasticOverscrollController::GetEntry() const {
+  auto it = entries_.find(default_element_id_);
+  if (it != entries_.end()) {
+    return &(it->second);
+  }
+  return nullptr;
+}
+ElasticOverscrollController::OverscrollEntry*
+ElasticOverscrollController::GetEntry() {
+  return const_cast<OverscrollEntry*>(std::as_const(*this).GetEntry());
 }
 
 void ElasticOverscrollController::Overscroll(
     const gfx::Vector2dF& overscroll_delta) {
+  OverscrollEntry& entry = EnsureEntry();
   gfx::Vector2dF adjusted_overscroll_delta = overscroll_delta;
 
   // The effect can be dynamically disabled by setting styles to disallow user
   // scrolling. When disabled, disallow active or momentum overscrolling, but
   // allow any current overscroll to animate back.
-  if (!helper_->IsUserScrollableHorizontal())
+  if (!helper_->IsUserScrollableHorizontal()) {
     adjusted_overscroll_delta.set_x(0);
-  if (!helper_->IsUserScrollableVertical())
+  }
+  if (!helper_->IsUserScrollableVertical()) {
     adjusted_overscroll_delta.set_y(0);
+  }
 
   if (adjusted_overscroll_delta.IsZero())
     return;
 
-  adjusted_overscroll_delta += pending_overscroll_delta_;
-  pending_overscroll_delta_ = gfx::Vector2dF();
+  adjusted_overscroll_delta += entry.pending_overscroll_delta;
+  entry.pending_overscroll_delta = gfx::Vector2dF();
 
   // TODO (arakeri): Make this prefer the writing mode direction instead.
   // Only allow one direction to overscroll at a time, and slightly prefer
@@ -212,28 +238,34 @@ void ElasticOverscrollController::Overscroll(
   if (!kOverscrollNonScrollableDirection) {
     // Check whether each direction is scrollable and 0 out the overscroll if it
     // is not.
-    if (!CanScrollHorizontally())
+    if (!CanScrollHorizontally()) {
       adjusted_overscroll_delta.set_x(0);
-    if (!CanScrollVertically())
+    }
+    if (!CanScrollVertically()) {
       adjusted_overscroll_delta.set_y(0);
+    }
   }
 
   // Don't allow overscrolling in a direction where scrolling is possible.
-  if (!PinnedHorizontally(adjusted_overscroll_delta.x()))
+  if (!PinnedHorizontally(adjusted_overscroll_delta.x())) {
     adjusted_overscroll_delta.set_x(0);
-  if (!PinnedVertically(adjusted_overscroll_delta.y()))
+  }
+  if (!PinnedVertically(adjusted_overscroll_delta.y())) {
     adjusted_overscroll_delta.set_y(0);
+  }
 
   // Don't allow overscrolling in a direction that has
   // OverscrollBehaviorTypeNone.
-  if (overscroll_behavior_.x == cc::OverscrollBehavior::Type::kNone)
+  if (entry.overscroll_behavior.x == cc::OverscrollBehavior::Type::kNone) {
     adjusted_overscroll_delta.set_x(0);
-  if (overscroll_behavior_.y == cc::OverscrollBehavior::Type::kNone)
+  }
+  if (entry.overscroll_behavior.y == cc::OverscrollBehavior::Type::kNone) {
     adjusted_overscroll_delta.set_y(0);
+  }
 
   // Require a minimum of 10 units of overscroll before starting the rubber-band
   // stretch effect, so that small stray motions don't trigger it. If that
-  // minimum isn't met, save what remains in |pending_overscroll_delta_| for
+  // minimum isn't met, save what remains in |pending_overscroll_delta| for
   // the next event.
   gfx::Vector2dF old_stretch_amount = helper_->StretchAmount();
   gfx::Vector2dF stretch_scroll_force_delta;
@@ -242,56 +274,68 @@ void ElasticOverscrollController::Overscroll(
           kRubberbandMinimumRequiredDeltaBeforeStretch) {
     stretch_scroll_force_delta.set_x(adjusted_overscroll_delta.x());
   } else {
-    pending_overscroll_delta_.set_x(adjusted_overscroll_delta.x());
+    entry.pending_overscroll_delta.set_x(adjusted_overscroll_delta.x());
   }
   if (old_stretch_amount.y() != 0 ||
       fabsf(adjusted_overscroll_delta.y()) >=
           kRubberbandMinimumRequiredDeltaBeforeStretch) {
     stretch_scroll_force_delta.set_y(adjusted_overscroll_delta.y());
   } else {
-    pending_overscroll_delta_.set_y(adjusted_overscroll_delta.y());
+    entry.pending_overscroll_delta.set_y(adjusted_overscroll_delta.y());
   }
 
   // Update the stretch amount according to the spring equations.
   if (stretch_scroll_force_delta.IsZero())
     return;
-  stretch_scroll_force_ += stretch_scroll_force_delta;
+  entry.stretch_scroll_force += stretch_scroll_force_delta;
   gfx::Vector2dF new_stretch_amount =
-      StretchAmountForAccumulatedOverscroll(stretch_scroll_force_);
+      StretchAmountForAccumulatedOverscroll(entry.stretch_scroll_force);
   helper_->SetStretchAmount(new_stretch_amount);
 }
 
 void ElasticOverscrollController::EnterStateInactive() {
-  DCHECK_NE(kStateInactive, state_);
+  OverscrollEntry* entry = GetEntry();
+  if (!entry) {
+    return;
+  }
+  DCHECK_NE(kStateInactive, entry->state);
   DCHECK(helper_->StretchAmount().IsZero());
-  state_ = kStateInactive;
-  stretch_scroll_force_ = gfx::Vector2dF();
+  // The entry is not erased from the map to avoid potential iterator
+  // invalidation.
+  // TODO(crbug.com/41102897): Do a sweep pass to erase inactive entries.
+  entry->state = kStateInactive;
+  entry->stretch_scroll_force = gfx::Vector2dF();
 }
 
 void ElasticOverscrollController::EnterStateMomentumAnimated(
     const base::TimeTicks& triggering_event_timestamp) {
-  DCHECK_NE(kStateMomentumAnimated, state_);
-  state_ = kStateMomentumAnimated;
+  OverscrollEntry& entry = EnsureEntry();
+  DCHECK_NE(kStateMomentumAnimated, entry.state);
+  entry.state = kStateMomentumAnimated;
 
   // If the scroller isn't stretched, there's nothing to animate.
-  if (helper_->StretchAmount().IsZero())
+  if (helper_->StretchAmount().IsZero()) {
     return;
+  }
 
-  momentum_animation_start_time_ = triggering_event_timestamp;
-  momentum_animation_initial_stretch_ = helper_->StretchAmount();
-  momentum_animation_initial_velocity_ = scroll_velocity_;
+  entry.momentum_animation_start_time = triggering_event_timestamp;
+  entry.momentum_animation_initial_stretch = helper_->StretchAmount();
+  entry.momentum_animation_initial_velocity = entry.scroll_velocity;
 
   // Similarly to the logic in Overscroll, prefer vertical scrolling to
   // horizontal scrolling.
-  if (fabsf(momentum_animation_initial_velocity_.y()) >=
-      fabsf(momentum_animation_initial_velocity_.x()))
-    momentum_animation_initial_velocity_.set_x(0);
+  if (fabsf(entry.momentum_animation_initial_velocity.y()) >=
+      fabsf(entry.momentum_animation_initial_velocity.x())) {
+    entry.momentum_animation_initial_velocity.set_x(0);
+  }
 
-  if (!CanScrollHorizontally())
-    momentum_animation_initial_velocity_.set_x(0);
+  if (!CanScrollHorizontally()) {
+    entry.momentum_animation_initial_velocity.set_x(0);
+  }
 
-  if (!CanScrollVertically())
-    momentum_animation_initial_velocity_.set_y(0);
+  if (!CanScrollVertically()) {
+    entry.momentum_animation_initial_velocity.set_y(0);
+  }
 
   DidEnterMomentumAnimatedState();
 
@@ -303,13 +347,19 @@ void ElasticOverscrollController::EnterStateMomentumAnimated(
 }
 
 void ElasticOverscrollController::Animate(base::TimeTicks time) {
-  if (state_ != kStateMomentumAnimated)
+  OverscrollEntry* entry = GetEntry();
+  if (!entry) {
     return;
+  }
+
+  if (entry->state != kStateMomentumAnimated) {
+    return;
+  }
 
   // If the new stretch amount is near zero, set it directly to zero and enter
   // the inactive state.
   const gfx::Vector2dF new_stretch_amount = StretchAmountForTimeDelta(
-      std::max(time - momentum_animation_start_time_, base::TimeDelta()));
+      std::max(time - entry->momentum_animation_start_time, base::TimeDelta()));
   if (fabs(new_stretch_amount.x()) < 1 && fabs(new_stretch_amount.y()) < 1) {
     helper_->SetStretchAmount(gfx::Vector2dF());
     helper_->AnimationFinished();
@@ -317,7 +367,7 @@ void ElasticOverscrollController::Animate(base::TimeTicks time) {
     return;
   }
 
-  stretch_scroll_force_ =
+  entry->stretch_scroll_force =
       AccumulatedOverscrollForStretchAmount(new_stretch_amount);
   helper_->SetStretchAmount(new_stretch_amount);
   // TODO(danakj): Make this a return value back to the compositor to have it
@@ -353,10 +403,21 @@ bool ElasticOverscrollController::CanScrollVertically() const {
   return helper_->MaxScrollOffset().y() > 0;
 }
 
+ElasticOverscrollController::OverscrollEntry&
+ElasticOverscrollController::EnsureEntry() {
+  return entries_[default_element_id_];
+}
+
 void ElasticOverscrollController::ReconcileStretchAndScroll() {
-  gfx::Vector2dF stretch = helper_->StretchAmount();
-  if (stretch.IsZero())
+  OverscrollEntry* entry = GetEntry();
+  if (!entry) {
     return;
+  }
+
+  gfx::Vector2dF stretch = helper_->StretchAmount();
+  if (stretch.IsZero()) {
+    return;
+  }
 
   gfx::PointF scroll_offset = helper_->ScrollOffset();
   gfx::PointF max_scroll_offset = helper_->MaxScrollOffset();
@@ -383,22 +444,27 @@ void ElasticOverscrollController::ReconcileStretchAndScroll() {
         static_cast<float>(scroll_offset.y() - max_scroll_offset.y())));
   }
 
-  if (stretch_adjustment.IsZero())
+  if (stretch_adjustment.IsZero()) {
     return;
+  }
 
   gfx::Vector2dF new_stretch_amount = stretch + stretch_adjustment;
   helper_->ScrollBy(-stretch_adjustment);
   helper_->SetStretchAmount(new_stretch_amount);
 
   // Update the internal state for the active scroll to avoid discontinuities.
-  if (state_ == kStateActiveScroll) {
-    stretch_scroll_force_ =
+  if (entry->state == kStateActiveScroll) {
+    entry->stretch_scroll_force =
         AccumulatedOverscrollForStretchAmount(new_stretch_amount);
   }
 }
 
 gfx::Vector2dF ElasticOverscrollController::StretchAmount() const {
   return helper_->StretchAmount();
+}
+
+gfx::Size ElasticOverscrollController::ScrollBounds() const {
+  return helper_->ScrollBounds();
 }
 
 }  // namespace blink

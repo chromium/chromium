@@ -132,7 +132,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, NoSyntheticEventsOverscroll) {
   event.data.scroll_begin.synthetic = true;
   controller_.ObserveGestureEventAndResult(event,
                                            cc::InputHandlerScrollResult());
-  EXPECT_EQ(controller_.state_,
+  EXPECT_EQ(controller_.EnsureEntry().state,
             ElasticOverscrollController::State::kStateInactive);
 }
 
@@ -168,7 +168,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, ReconcileStretchAndScroll) {
 TEST_F(ElasticOverscrollControllerBezierTest, VerifyInitialStretchDelta) {
   // Set up the state to be in kStateMomentumAnimated with some amount of
   // diagonal stretch.
-  controller_.state_ =
+  controller_.EnsureEntry().state =
       ElasticOverscrollController::State::kStateMomentumAnimated;
   helper_.SetStretchAmount(Vector2dF(5, 10));
   helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 20),
@@ -176,7 +176,8 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyInitialStretchDelta) {
   controller_.ReconcileStretchAndScroll();
   controller_.bounce_forwards_duration_x_ = base::Milliseconds(1000);
   controller_.bounce_forwards_duration_y_ = base::Milliseconds(1000);
-  controller_.momentum_animation_initial_stretch_ = gfx::Vector2dF(10.f, 10.f);
+  controller_.EnsureEntry().momentum_animation_initial_stretch =
+      gfx::Vector2dF(10.f, 10.f);
 
   // Verify that the momentum_animation_start_time_ doesn't get reset when the
   // animation ticks.
@@ -186,22 +187,25 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyInitialStretchDelta) {
   // After 2 frames.
   controller_.Animate(animation_start_time);
   helper_.ScrollBy(Vector2dF(0, 2));
-  EXPECT_NE(controller_.momentum_animation_start_time_, animation_start_time);
-  EXPECT_EQ(controller_.state_,
+  EXPECT_NE(controller_.EnsureEntry().momentum_animation_start_time,
+            animation_start_time);
+  EXPECT_EQ(controller_.EnsureEntry().state,
             ElasticOverscrollController::State::kStateMomentumAnimated);
 
   // After 8 frames.
   controller_.Animate(animation_start_time + base::Milliseconds(128));
   helper_.ScrollBy(Vector2dF(0, 8));
-  EXPECT_NE(controller_.momentum_animation_start_time_, animation_start_time);
-  EXPECT_EQ(controller_.state_,
+  EXPECT_NE(controller_.EnsureEntry().momentum_animation_start_time,
+            animation_start_time);
+  EXPECT_EQ(controller_.EnsureEntry().state,
             ElasticOverscrollController::State::kStateMomentumAnimated);
 
   // After 64 frames the forward animation should no longer be active.
   controller_.Animate(animation_start_time + base::Milliseconds(1024));
   helper_.ScrollBy(Vector2dF(0, 64));
-  EXPECT_NE(controller_.momentum_animation_start_time_, animation_start_time);
-  EXPECT_EQ(controller_.state_,
+  EXPECT_NE(controller_.EnsureEntry().momentum_animation_start_time,
+            animation_start_time);
+  EXPECT_EQ(controller_.EnsureEntry().state,
             ElasticOverscrollController::State::kStateInactive);
   EXPECT_EQ(Vector2dF(), helper_.StretchAmount());
 }
@@ -227,7 +231,8 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyBackwardAnimationTick) {
                                             gfx::PointF(100, 100));
 
   // Test vertical overscroll.
-  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  EXPECT_EQ(controller_.EnsureEntry().state,
+            ElasticOverscrollController::kStateInactive);
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
   SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(0, -100));
@@ -239,7 +244,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyBackwardAnimationTick) {
 
   // Frame 2.
   controller_.Animate(now + base::Milliseconds(32));
-  EXPECT_EQ(controller_.state_,
+  EXPECT_EQ(controller_.EnsureEntry().state,
             ElasticOverscrollController::kStateMomentumAnimated);
   ASSERT_FLOAT_EQ(helper_.StretchAmount().y(), -14);
 
@@ -251,7 +256,8 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyBackwardAnimationTick) {
   controller_.Animate(now + base::Milliseconds(240));
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
 
-  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  EXPECT_EQ(controller_.EnsureEntry().state,
+            ElasticOverscrollController::kStateInactive);
 
   // Test horizontal overscroll.
   SendGestureScrollBegin(PhaseState::kNonMomentum);
@@ -265,14 +271,15 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyBackwardAnimationTick) {
 
   // Frame 5. The stretch amount moving closer to 0 proves that we're animating.
   controller_.Animate(now + base::Milliseconds(80));
-  EXPECT_EQ(controller_.state_,
+  EXPECT_EQ(controller_.EnsureEntry().state,
             ElasticOverscrollController::kStateMomentumAnimated);
   ASSERT_FLOAT_EQ(helper_.StretchAmount().x(), -5);
 
   // Frame 15. StretchAmount < abs(1), so snap to 0. state_ is kStateInactive.
   controller_.Animate(now + base::Milliseconds(240));
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
-  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  EXPECT_EQ(controller_.EnsureEntry().state,
+            ElasticOverscrollController::kStateInactive);
 }
 
 // Tests that the bounce forward animation ticks as expected.
@@ -281,11 +288,12 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
                                             gfx::PointF(100, 100));
 
   // Test vertical forward bounce animations.
-  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  EXPECT_EQ(controller_.EnsureEntry().state,
+            ElasticOverscrollController::kStateInactive);
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
   SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(0, -100));
-  controller_.scroll_velocity_ = gfx::Vector2dF(0.f, -4000.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(0.f, -4000.f);
 
   // This signals that the finger has lifted off which triggers a fling.
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -299,7 +307,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
 
   for (int i = 0; i < TOTAL_FRAMES; i++) {
     controller_.Animate(now + base::Milliseconds(i * 16));
-    EXPECT_EQ(controller_.state_,
+    EXPECT_EQ(controller_.EnsureEntry().state,
               (stretch_amount_y[i] == 0
                    ? ElasticOverscrollController::kStateInactive
                    : ElasticOverscrollController::kStateMomentumAnimated));
@@ -309,7 +317,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
   // Test horizontal forward bounce animations.
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-50, 0));
-  controller_.scroll_velocity_ = gfx::Vector2dF(-3000.f, 0.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(-3000.f, 0.f);
   SendGestureScrollEnd(now);
 
   const std::array<int, TOTAL_FRAMES> stretch_amount_x = {
@@ -319,7 +327,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
 
   for (int i = 0; i < TOTAL_FRAMES; i++) {
     controller_.Animate(now + base::Milliseconds(i * 16));
-    EXPECT_EQ(controller_.state_,
+    EXPECT_EQ(controller_.EnsureEntry().state,
               (stretch_amount_x[i] == 0
                    ? ElasticOverscrollController::kStateInactive
                    : ElasticOverscrollController::kStateMomentumAnimated));
@@ -333,21 +341,21 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
 TEST_F(ElasticOverscrollControllerBezierTest,
        VerifyForwardAnimationIsNotPlayed) {
   EXPECT_EQ(Vector2dF(), helper_.StretchAmount());
-  controller_.scroll_velocity_ = gfx::Vector2dF(0.f, -199.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(0.f, -199.f);
   controller_.DidEnterMomentumAnimatedState();
   EXPECT_TRUE(controller_.bounce_forwards_distance_.IsZero());
 
-  controller_.scroll_velocity_ = gfx::Vector2dF(-199.f, 0.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(-199.f, 0.f);
   controller_.DidEnterMomentumAnimatedState();
   EXPECT_TRUE(controller_.bounce_forwards_distance_.IsZero());
 
   // When velocity > 200, forward animation is expected to be played.
-  controller_.scroll_velocity_ = gfx::Vector2dF(0.f, -201.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(0.f, -201.f);
   controller_.DidEnterMomentumAnimatedState();
   EXPECT_EQ(gfx::Vector2dF(0, -16),
             gfx::ToRoundedVector2d(controller_.bounce_forwards_distance_));
 
-  controller_.scroll_velocity_ = gfx::Vector2dF(-201.f, 0.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(-201.f, 0.f);
   controller_.DidEnterMomentumAnimatedState();
   EXPECT_EQ(gfx::Vector2dF(-16, 0),
             gfx::ToRoundedVector2d(controller_.bounce_forwards_distance_));
@@ -412,7 +420,8 @@ TEST_F(ElasticOverscrollControllerBezierTest,
                                             gfx::PointF(100, 100));
 
   // Test vertical forward bounce animations.
-  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  EXPECT_EQ(controller_.EnsureEntry().state,
+            ElasticOverscrollController::kStateInactive);
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
   // The gesture will be much greater vertically than horizontally. This should
@@ -423,7 +432,7 @@ TEST_F(ElasticOverscrollControllerBezierTest,
   EXPECT_GT(fabsf(helper_.StretchAmount().x()), 0);
   EXPECT_GT(fabsf(helper_.StretchAmount().y()), 0);
 
-  controller_.scroll_velocity_ = gfx::Vector2dF(-1000.f, -4000.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(-1000.f, -4000.f);
 
   // This signals that the finger has lifted off which triggers a fling.
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -489,7 +498,8 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyOneAxisForwardAnimation) {
                                             gfx::PointF(100, 100));
 
   // Test vertical forward bounce animations.
-  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  EXPECT_EQ(controller_.EnsureEntry().state,
+            ElasticOverscrollController::kStateInactive);
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
   // The gesture will be much greater vertically than horizontally. This should
@@ -500,7 +510,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyOneAxisForwardAnimation) {
   // reset its value.
   EXPECT_GT(fabsf(helper_.StretchAmount().x()), 0);
 
-  controller_.scroll_velocity_ = gfx::Vector2dF(0, -4000.f);
+  controller_.EnsureEntry().scroll_velocity = gfx::Vector2dF(0, -4000.f);
 
   // This signals that the finger has lifted off which triggers a fling.
   const base::TimeTicks now = base::TimeTicks::Now();

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -49,6 +50,10 @@ namespace blink {
 // details like the stretch distance, the bounce animations etc will be
 // implemented by the subclasses.
 class PLATFORM_EXPORT ElasticOverscrollController {
+  // TODO(crbug.com/41102897): Refactor to use latched scroller instead, to
+  // support non-root scrollers.
+  static constexpr cc::ElementId default_element_id_{};
+
  public:
   explicit ElasticOverscrollController(cc::ScrollElasticityHelper* helper);
   virtual ~ElasticOverscrollController() = default;
@@ -84,7 +89,7 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   virtual void DidEnterMomentumAnimatedState() = 0;
 
   // The parameter "delta" is the difference between the time "Animate" is
-  // called and momentum_animation_start_time_. Using this information, the
+  // called and `momentum_animation_start_time`. Using this information, the
   // stretch amount for a scroller is determined. This is how the bounce
   // animation basically "ticks".
   virtual gfx::Vector2d StretchAmountForTimeDelta(
@@ -95,35 +100,14 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   virtual gfx::Vector2d StretchAmountForAccumulatedOverscroll(
       const gfx::Vector2dF& accumulated_overscroll) const = 0;
 
-  // Does the inverse of StretchAmountForAccumulatedOverscroll. As in, takes in
-  // the bounce distance and calculates how much is actually overscrolled.
+  // Does the inverse of `StretchAmountForAccumulatedOverscroll`. As in, takes
+  // in the bounce distance and calculates how much is actually overscrolled.
   virtual gfx::Vector2d AccumulatedOverscrollForStretchAmount(
       const gfx::Vector2dF& stretch_amount) const = 0;
 
-  gfx::Size scroll_bounds() const { return helper_->ScrollBounds(); }
-  gfx::Vector2dF scroll_velocity() const { return scroll_velocity_; }
-
-  // TODO (arakeri): Need to be cleared when we leave MomentumAnimated.
-  // Momentum animation state. This state is valid only while the state is
-  // MomentumAnimated, and is initialized in EnterStateMomentumAnimated.
-  gfx::Vector2dF momentum_animation_initial_stretch_;
-  gfx::Vector2dF momentum_animation_initial_velocity_;
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyBackwardAnimationTick);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyForwardAnimationTick);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyForwardAnimationIsNotPlayed);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyInitialStretchDelta);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           NoSyntheticEventsOverscroll);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyDifferentDurationForwardAnimations);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyOneAxisForwardAnimation);
+  // TODO(crbug.com/41102897): Refactor to pass in latched scroller element id,
+  // to support non-root scrollers.
+  gfx::Size ScrollBounds() const;
 
   enum State {
     // The initial state, during which the overscroll amount is zero and
@@ -149,12 +133,68 @@ class PLATFORM_EXPORT ElasticOverscrollController {
     kStateMomentumAnimated,
   };
 
+  struct OverscrollEntry {
+    base::TimeTicks momentum_animation_start_time;
+    State state = kStateInactive;
+
+    // If there is no overscroll, require a minimum overscroll delta before
+    // starting the rubber-band effect. Track the amount of scrolling that has
+    // has occurred but has not yet caused rubber-band stretching in
+    // |pending_overscroll_delta|.
+    gfx::Vector2dF pending_overscroll_delta;
+
+    // Maintain a calculation of the velocity of the scroll, based on the input
+    // scroll delta divide by the time between input events. Track this velocity
+    // in |scroll_velocity| and the previous input event timestamp for finite
+    // differencing in |last_scroll_event_timestamp|.
+    gfx::Vector2dF scroll_velocity;
+    base::TimeTicks last_scroll_event_timestamp;
+
+    // The force of the rubber-band spring. This is equal to the cumulative sum
+    // of all overscroll offsets since entering a non-Inactive state. This is
+    // reset to zero only when entering the Inactive state.
+    gfx::Vector2dF stretch_scroll_force;
+
+    bool received_overscroll_update = false;
+    cc::OverscrollBehavior overscroll_behavior;
+
+    // TODO (arakeri): Need to be cleared when we leave MomentumAnimated.
+    // Momentum animation state. This state is valid only while the state is
+    // MomentumAnimated, and is initialized in EnterStateMomentumAnimated.
+    gfx::Vector2dF momentum_animation_initial_stretch;
+    gfx::Vector2dF momentum_animation_initial_velocity;
+  };
+
+  // Gets an `OverscrollEntry` for the root scroller. Returns nullptr if it does
+  // not exist.
+  const OverscrollEntry* GetEntry() const;
+  OverscrollEntry* GetEntry();
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyBackwardAnimationTick);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyForwardAnimationTick);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyForwardAnimationIsNotPlayed);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyInitialStretchDelta);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           NoSyntheticEventsOverscroll);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyDifferentDurationForwardAnimations);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyOneAxisForwardAnimation);
+
   void UpdateVelocity(const gfx::Vector2dF& event_delta,
                       const base::TimeTicks& event_timestamp);
   void Overscroll(const gfx::Vector2dF& overscroll_delta);
   void EnterStateMomentumAnimated(
       const base::TimeTicks& triggering_event_timestamp);
   void EnterStateInactive();
+
+  // TODO(crbug.com/41102897): Refactor to pass in latched scroller element id,
+  // to support non-root scrollers.
 
   // Returns true if |direction| is pointing in a direction in which it is not
   // possible to scroll any farther horizontally (or vertically). It is only in
@@ -167,30 +207,11 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   bool CanScrollHorizontally() const;
   bool CanScrollVertically() const;
 
-  base::TimeTicks momentum_animation_start_time_;
+  // Gets or creates an `OverscrollEntry` for the root scroller.
+  OverscrollEntry& EnsureEntry();
+
   raw_ptr<cc::ScrollElasticityHelper> helper_;
-  State state_;
-
-  // If there is no overscroll, require a minimum overscroll delta before
-  // starting the rubber-band effect. Track the amount of scrolling that has
-  // has occurred but has not yet caused rubber-band stretching in
-  // |pending_overscroll_delta_|.
-  gfx::Vector2dF pending_overscroll_delta_;
-
-  // Maintain a calculation of the velocity of the scroll, based on the input
-  // scroll delta divide by the time between input events. Track this velocity
-  // in |scroll_velocity| and the previous input event timestamp for finite
-  // differencing in |last_scroll_event_timestamp_|.
-  gfx::Vector2dF scroll_velocity_;
-  base::TimeTicks last_scroll_event_timestamp_;
-
-  // The force of the rubber-band spring. This is equal to the cumulative sum
-  // of all overscroll offsets since entering a non-Inactive state. This is
-  // reset to zero only when entering the Inactive state.
-  gfx::Vector2dF stretch_scroll_force_;
-
-  bool received_overscroll_update_;
-  cc::OverscrollBehavior overscroll_behavior_;
+  base::flat_map<cc::ElementId, OverscrollEntry> entries_;
 };
 
 }  // namespace blink

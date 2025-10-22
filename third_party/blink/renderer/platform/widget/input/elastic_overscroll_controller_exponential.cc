@@ -35,6 +35,8 @@ void ElasticOverscrollControllerExponential::DidEnterMomentumAnimatedState() {}
 
 gfx::Vector2d ElasticOverscrollControllerExponential::StretchAmountForTimeDelta(
     const base::TimeDelta& delta) const {
+  const OverscrollEntry* state = GetEntry();
+  CHECK(state);
   // Compute the stretch amount at a given time after some initial conditions.
   // Do this by first computing an intermediary position given the initial
   // position, initial velocity, time elapsed, and no external forces. Then
@@ -46,8 +48,8 @@ gfx::Vector2d ElasticOverscrollControllerExponential::StretchAmountForTimeDelta(
       expf((-delta.InSecondsF() * kRubberbandStiffness) / period);
 
   return gfx::ToRoundedVector2d(gfx::ScaleVector2d(
-      momentum_animation_initial_stretch_ +
-          gfx::ScaleVector2d(momentum_animation_initial_velocity_,
+      state->momentum_animation_initial_stretch +
+          gfx::ScaleVector2d(state->momentum_animation_initial_velocity,
                              delta.InSecondsF() * amplitude),
       critical_dampening_factor));
 }
