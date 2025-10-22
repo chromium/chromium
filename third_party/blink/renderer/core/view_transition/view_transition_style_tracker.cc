@@ -2210,7 +2210,6 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
                            ? AnimationUAStylesScoped()
                            : AnimationUAStyles());
-    builder.AddFlagGuardedDefaultAnimationStyles();
   }
 
   // If we started the animation then we always create the full dynamic style

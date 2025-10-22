@@ -856,6 +856,26 @@ The test verifies functionality of querying style information for view-transitio
                                         name : left
                                         value : 0px
                                     }
+                                    [5] : {
+                                        name : animation-delay
+                                        value : inherit
+                                    }
+                                    [6] : {
+                                        name : animation-timing-function
+                                        value : inherit
+                                    }
+                                    [7] : {
+                                        name : animation-iteration-count
+                                        value : inherit
+                                    }
+                                    [8] : {
+                                        name : animation-direction
+                                        value : inherit
+                                    }
+                                    [9] : {
+                                        name : animation-play-state
+                                        value : inherit
+                                    }
                                 ]
                                 shorthandEntries : [
                                     [0] : {
@@ -918,108 +938,6 @@ The test verifies functionality of querying style information for view-transitio
                         }
                     }
                     [2] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-image-pair(*)
-                                    }
-                                ]
-                                text : ::view-transition-image-pair(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-delay
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [3] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-image-pair(*)
-                                    }
-                                ]
-                                text : ::view-transition-image-pair(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-timing-function
-                                        value : inherit
-                                    }
-                                    [1] : {
-                                        name : animation-iteration-count
-                                        value : inherit
-                                    }
-                                    [2] : {
-                                        name : animation-direction
-                                        value : inherit
-                                    }
-                                    [3] : {
-                                        name : animation-play-state
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [4] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -1131,6 +1049,26 @@ The test verifies functionality of querying style information for view-transitio
                                         name : left
                                         value : 0px
                                     }
+                                    [5] : {
+                                        name : animation-delay
+                                        value : inherit
+                                    }
+                                    [6] : {
+                                        name : animation-timing-function
+                                        value : inherit
+                                    }
+                                    [7] : {
+                                        name : animation-iteration-count
+                                        value : inherit
+                                    }
+                                    [8] : {
+                                        name : animation-direction
+                                        value : inherit
+                                    }
+                                    [9] : {
+                                        name : animation-play-state
+                                        value : inherit
+                                    }
                                 ]
                                 shorthandEntries : [
                                     [0] : {
@@ -1214,108 +1152,6 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-image-pair(*)
-                                    }
-                                ]
-                                text : ::view-transition-image-pair(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-delay
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [3] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-image-pair(*)
-                                    }
-                                ]
-                                text : ::view-transition-image-pair(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-timing-function
-                                        value : inherit
-                                    }
-                                    [1] : {
-                                        name : animation-iteration-count
-                                        value : inherit
-                                    }
-                                    [2] : {
-                                        name : animation-direction
-                                        value : inherit
-                                    }
-                                    [3] : {
-                                        name : animation-play-state
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [4] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
                                             c : 1
                                         }
                                         text : ::view-transition-image-pair(shared)
@@ -1339,7 +1175,7 @@ The test verifies functionality of querying style information for view-transitio
                             ]
                         }
                     }
-                    [5] : {
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -1476,6 +1312,26 @@ The test verifies functionality of querying style information for view-transitio
                                         name : block-size
                                         value : auto
                                     }
+                                    [4] : {
+                                        name : animation-delay
+                                        value : inherit
+                                    }
+                                    [5] : {
+                                        name : animation-timing-function
+                                        value : inherit
+                                    }
+                                    [6] : {
+                                        name : animation-iteration-count
+                                        value : inherit
+                                    }
+                                    [7] : {
+                                        name : animation-direction
+                                        value : inherit
+                                    }
+                                    [8] : {
+                                        name : animation-play-state
+                                        value : inherit
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -1555,108 +1411,6 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-old(*)
-                                    }
-                                ]
-                                text : ::view-transition-old(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-delay
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [3] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-old(*)
-                                    }
-                                ]
-                                text : ::view-transition-old(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-timing-function
-                                        value : inherit
-                                    }
-                                    [1] : {
-                                        name : animation-iteration-count
-                                        value : inherit
-                                    }
-                                    [2] : {
-                                        name : animation-direction
-                                        value : inherit
-                                    }
-                                    [3] : {
-                                        name : animation-play-state
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [4] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
                                             c : 1
                                         }
                                         text : ::view-transition-old(root)
@@ -1680,7 +1434,7 @@ The test verifies functionality of querying style information for view-transitio
                             ]
                         }
                     }
-                    [5] : {
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -1891,6 +1645,26 @@ The test verifies functionality of querying style information for view-transitio
                                         name : block-size
                                         value : auto
                                     }
+                                    [4] : {
+                                        name : animation-delay
+                                        value : inherit
+                                    }
+                                    [5] : {
+                                        name : animation-timing-function
+                                        value : inherit
+                                    }
+                                    [6] : {
+                                        name : animation-iteration-count
+                                        value : inherit
+                                    }
+                                    [7] : {
+                                        name : animation-direction
+                                        value : inherit
+                                    }
+                                    [8] : {
+                                        name : animation-play-state
+                                        value : inherit
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -1970,108 +1744,6 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-old(*)
-                                    }
-                                ]
-                                text : ::view-transition-old(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-delay
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [3] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-old(*)
-                                    }
-                                ]
-                                text : ::view-transition-old(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-timing-function
-                                        value : inherit
-                                    }
-                                    [1] : {
-                                        name : animation-iteration-count
-                                        value : inherit
-                                    }
-                                    [2] : {
-                                        name : animation-direction
-                                        value : inherit
-                                    }
-                                    [3] : {
-                                        name : animation-play-state
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [4] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
                                             c : 1
                                         }
                                         text : ::view-transition-old(shared)
@@ -2095,7 +1767,7 @@ The test verifies functionality of querying style information for view-transitio
                             ]
                         }
                     }
-                    [5] : {
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -2306,6 +1978,26 @@ The test verifies functionality of querying style information for view-transitio
                                         name : block-size
                                         value : auto
                                     }
+                                    [4] : {
+                                        name : animation-delay
+                                        value : inherit
+                                    }
+                                    [5] : {
+                                        name : animation-timing-function
+                                        value : inherit
+                                    }
+                                    [6] : {
+                                        name : animation-iteration-count
+                                        value : inherit
+                                    }
+                                    [7] : {
+                                        name : animation-direction
+                                        value : inherit
+                                    }
+                                    [8] : {
+                                        name : animation-play-state
+                                        value : inherit
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -2364,108 +2056,6 @@ The test verifies functionality of querying style information for view-transitio
                         }
                     }
                     [2] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-new(*)
-                                    }
-                                ]
-                                text : ::view-transition-new(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-delay
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [3] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-new(*)
-                                    }
-                                ]
-                                text : ::view-transition-new(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-timing-function
-                                        value : inherit
-                                    }
-                                    [1] : {
-                                        name : animation-iteration-count
-                                        value : inherit
-                                    }
-                                    [2] : {
-                                        name : animation-direction
-                                        value : inherit
-                                    }
-                                    [3] : {
-                                        name : animation-play-state
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [4] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -2573,6 +2163,26 @@ The test verifies functionality of querying style information for view-transitio
                                         name : block-size
                                         value : auto
                                     }
+                                    [4] : {
+                                        name : animation-delay
+                                        value : inherit
+                                    }
+                                    [5] : {
+                                        name : animation-timing-function
+                                        value : inherit
+                                    }
+                                    [6] : {
+                                        name : animation-iteration-count
+                                        value : inherit
+                                    }
+                                    [7] : {
+                                        name : animation-direction
+                                        value : inherit
+                                    }
+                                    [8] : {
+                                        name : animation-play-state
+                                        value : inherit
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -2652,108 +2262,6 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-new(*)
-                                    }
-                                ]
-                                text : ::view-transition-new(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-delay
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [3] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
-                                            c : 0
-                                        }
-                                        text : ::view-transition-new(*)
-                                    }
-                                ]
-                                text : ::view-transition-new(*)
-                            }
-                            startingStyles : [
-                            ]
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-timing-function
-                                        value : inherit
-                                    }
-                                    [1] : {
-                                        name : animation-iteration-count
-                                        value : inherit
-                                    }
-                                    [2] : {
-                                        name : animation-direction
-                                        value : inherit
-                                    }
-                                    [3] : {
-                                        name : animation-play-state
-                                        value : inherit
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [4] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            ruleTypes : [
-                            ]
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        specificity : {
-                                            a : 0
-                                            b : 0
                                             c : 1
                                         }
                                         text : ::view-transition-new(shared)
@@ -2777,7 +2285,7 @@ The test verifies functionality of querying style information for view-transitio
                             ]
                         }
                     }
-                    [5] : {
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -3300,6 +2808,26 @@ Dumping styles for : ::view-transition-image-pair with id root{
                                 name : left
                                 value : 0px
                             }
+                            [5] : {
+                                name : animation-delay
+                                value : inherit
+                            }
+                            [6] : {
+                                name : animation-timing-function
+                                value : inherit
+                            }
+                            [7] : {
+                                name : animation-iteration-count
+                                value : inherit
+                            }
+                            [8] : {
+                                name : animation-direction
+                                value : inherit
+                            }
+                            [9] : {
+                                name : animation-play-state
+                                value : inherit
+                            }
                         ]
                         shorthandEntries : [
                             [0] : {
@@ -3362,108 +2890,6 @@ Dumping styles for : ::view-transition-image-pair with id root{
                 }
             }
             [2] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-image-pair(*)
-                            }
-                        ]
-                        text : ::view-transition-image-pair(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-delay
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [3] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-image-pair(*)
-                            }
-                        ]
-                        text : ::view-transition-image-pair(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-timing-function
-                                value : inherit
-                            }
-                            [1] : {
-                                name : animation-iteration-count
-                                value : inherit
-                            }
-                            [2] : {
-                                name : animation-direction
-                                value : inherit
-                            }
-                            [3] : {
-                                name : animation-play-state
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [4] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -3643,6 +3069,26 @@ Dumping styles for : ::view-transition-old with id root{
                                 name : block-size
                                 value : auto
                             }
+                            [4] : {
+                                name : animation-delay
+                                value : inherit
+                            }
+                            [5] : {
+                                name : animation-timing-function
+                                value : inherit
+                            }
+                            [6] : {
+                                name : animation-iteration-count
+                                value : inherit
+                            }
+                            [7] : {
+                                name : animation-direction
+                                value : inherit
+                            }
+                            [8] : {
+                                name : animation-play-state
+                                value : inherit
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -3722,108 +3168,6 @@ Dumping styles for : ::view-transition-old with id root{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-old(*)
-                            }
-                        ]
-                        text : ::view-transition-old(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-delay
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [3] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-old(*)
-                            }
-                        ]
-                        text : ::view-transition-old(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-timing-function
-                                value : inherit
-                            }
-                            [1] : {
-                                name : animation-iteration-count
-                                value : inherit
-                            }
-                            [2] : {
-                                name : animation-direction
-                                value : inherit
-                            }
-                            [3] : {
-                                name : animation-play-state
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [4] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
                                     c : 1
                                 }
                                 text : ::view-transition-old(root)
@@ -3847,7 +3191,7 @@ Dumping styles for : ::view-transition-old with id root{
                     ]
                 }
             }
-            [5] : {
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -4130,6 +3474,26 @@ Dumping styles for : ::view-transition-new with id root{
                                 name : block-size
                                 value : auto
                             }
+                            [4] : {
+                                name : animation-delay
+                                value : inherit
+                            }
+                            [5] : {
+                                name : animation-timing-function
+                                value : inherit
+                            }
+                            [6] : {
+                                name : animation-iteration-count
+                                value : inherit
+                            }
+                            [7] : {
+                                name : animation-direction
+                                value : inherit
+                            }
+                            [8] : {
+                                name : animation-play-state
+                                value : inherit
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -4188,108 +3552,6 @@ Dumping styles for : ::view-transition-new with id root{
                 }
             }
             [2] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-new(*)
-                            }
-                        ]
-                        text : ::view-transition-new(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-delay
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [3] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-new(*)
-                            }
-                        ]
-                        text : ::view-transition-new(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-timing-function
-                                value : inherit
-                            }
-                            [1] : {
-                                name : animation-iteration-count
-                                value : inherit
-                            }
-                            [2] : {
-                                name : animation-direction
-                                value : inherit
-                            }
-                            [3] : {
-                                name : animation-play-state
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [4] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -4772,6 +4034,26 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                                 name : left
                                 value : 0px
                             }
+                            [5] : {
+                                name : animation-delay
+                                value : inherit
+                            }
+                            [6] : {
+                                name : animation-timing-function
+                                value : inherit
+                            }
+                            [7] : {
+                                name : animation-iteration-count
+                                value : inherit
+                            }
+                            [8] : {
+                                name : animation-direction
+                                value : inherit
+                            }
+                            [9] : {
+                                name : animation-play-state
+                                value : inherit
+                            }
                         ]
                         shorthandEntries : [
                             [0] : {
@@ -4855,108 +4137,6 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-image-pair(*)
-                            }
-                        ]
-                        text : ::view-transition-image-pair(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-delay
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [3] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-image-pair(*)
-                            }
-                        ]
-                        text : ::view-transition-image-pair(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-timing-function
-                                value : inherit
-                            }
-                            [1] : {
-                                name : animation-iteration-count
-                                value : inherit
-                            }
-                            [2] : {
-                                name : animation-direction
-                                value : inherit
-                            }
-                            [3] : {
-                                name : animation-play-state
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [4] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
                                     c : 1
                                 }
                                 text : ::view-transition-image-pair(shared)
@@ -4980,7 +4160,7 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                     ]
                 }
             }
-            [5] : {
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -5189,6 +4369,26 @@ Dumping styles for : ::view-transition-old with id shared{
                                 name : block-size
                                 value : auto
                             }
+                            [4] : {
+                                name : animation-delay
+                                value : inherit
+                            }
+                            [5] : {
+                                name : animation-timing-function
+                                value : inherit
+                            }
+                            [6] : {
+                                name : animation-iteration-count
+                                value : inherit
+                            }
+                            [7] : {
+                                name : animation-direction
+                                value : inherit
+                            }
+                            [8] : {
+                                name : animation-play-state
+                                value : inherit
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -5268,108 +4468,6 @@ Dumping styles for : ::view-transition-old with id shared{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-old(*)
-                            }
-                        ]
-                        text : ::view-transition-old(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-delay
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [3] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-old(*)
-                            }
-                        ]
-                        text : ::view-transition-old(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-timing-function
-                                value : inherit
-                            }
-                            [1] : {
-                                name : animation-iteration-count
-                                value : inherit
-                            }
-                            [2] : {
-                                name : animation-direction
-                                value : inherit
-                            }
-                            [3] : {
-                                name : animation-play-state
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [4] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
                                     c : 1
                                 }
                                 text : ::view-transition-old(shared)
@@ -5393,7 +4491,7 @@ Dumping styles for : ::view-transition-old with id shared{
                     ]
                 }
             }
-            [5] : {
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -5676,6 +4774,26 @@ Dumping styles for : ::view-transition-new with id shared{
                                 name : block-size
                                 value : auto
                             }
+                            [4] : {
+                                name : animation-delay
+                                value : inherit
+                            }
+                            [5] : {
+                                name : animation-timing-function
+                                value : inherit
+                            }
+                            [6] : {
+                                name : animation-iteration-count
+                                value : inherit
+                            }
+                            [7] : {
+                                name : animation-direction
+                                value : inherit
+                            }
+                            [8] : {
+                                name : animation-play-state
+                                value : inherit
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -5755,108 +4873,6 @@ Dumping styles for : ::view-transition-new with id shared{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-new(*)
-                            }
-                        ]
-                        text : ::view-transition-new(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-delay
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [3] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
-                                    c : 0
-                                }
-                                text : ::view-transition-new(*)
-                            }
-                        ]
-                        text : ::view-transition-new(*)
-                    }
-                    startingStyles : [
-                    ]
-                    style : {
-                        cssProperties : [
-                            [0] : {
-                                name : animation-timing-function
-                                value : inherit
-                            }
-                            [1] : {
-                                name : animation-iteration-count
-                                value : inherit
-                            }
-                            [2] : {
-                                name : animation-direction
-                                value : inherit
-                            }
-                            [3] : {
-                                name : animation-play-state
-                                value : inherit
-                            }
-                        ]
-                        shorthandEntries : [
-                        ]
-                    }
-                    supports : [
-                    ]
-                }
-            }
-            [4] : {
-                matchingSelectors : [
-                    [0] : 0
-                ]
-                rule : {
-                    containerQueries : [
-                    ]
-                    layers : [
-                    ]
-                    media : [
-                    ]
-                    origin : user-agent
-                    ruleTypes : [
-                    ]
-                    scopes : [
-                    ]
-                    selectorList : {
-                        selectors : [
-                            [0] : {
-                                specificity : {
-                                    a : 0
-                                    b : 0
                                     c : 1
                                 }
                                 text : ::view-transition-new(shared)
@@ -5880,7 +4896,7 @@ Dumping styles for : ::view-transition-new with id shared{
                     ]
                 }
             }
-            [5] : {
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]

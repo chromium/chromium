@@ -5432,15 +5432,7 @@
       status: "stable",
     },
     {
-      name: "ViewTransitionAnimationDelayInherit",
-      status: "stable",
-    },
-    {
       name: "ViewTransitionAsyncFinished",
-      status: "stable",
-    },
-    {
-      name: "ViewTransitionInheritAnimationProperties",
       status: "stable",
     },
     {
