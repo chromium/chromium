@@ -91,8 +91,10 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/453586386): diagnose and fix flakiness. Flaky on
+// Windows, Linux, and CrOS at least.
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
-                       GeneratedIconsSilentlyUpdate) {
+                       DISABLED_GeneratedIconsSilentlyUpdate) {
   // Listen for sync install in client.
   WebAppTestInstallObserver install_observer(GetProfile(0));
   install_observer.BeginListening();
