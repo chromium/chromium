@@ -145,10 +145,8 @@ void ActorUiContentsContainerController::OnActorOverlayBackgroundChange(
 
 void ActorUiContentsContainerController::UpdateOverlayState(
     bool is_visible,
-    ActorOverlayState state,
-    base::OnceClosure callback) {
+    ActorOverlayState state) {
   if (!overlay_) {
-    std::move(callback).Run();
     return;
   }
 
@@ -160,7 +158,6 @@ void ActorUiContentsContainerController::UpdateOverlayState(
   }
 
   overlay_->SetBorderGlowVisibility(state.border_glow_visible);
-  std::move(callback).Run();
 }
 
 }  // namespace actor::ui

@@ -62,9 +62,7 @@ class HandoffButtonController {
   HandoffButtonController(const HandoffButtonController&) = delete;
   HandoffButtonController& operator=(const HandoffButtonController&) = delete;
 
-  virtual void UpdateState(const HandoffButtonState& state,
-                           bool is_visible,
-                           base::OnceClosure callback);
+  virtual void UpdateState(const HandoffButtonState& state, bool is_visible);
   // Returns true if the mouse is currently hovering over the handoff button.
   virtual bool IsHovering();
 

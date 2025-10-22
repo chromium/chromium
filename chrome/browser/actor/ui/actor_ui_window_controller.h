@@ -54,9 +54,7 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   void OnWebContentsDetached(views::WebView* web_view);
 
   // Updates the overlay_ state.
-  void UpdateOverlayState(bool is_visible,
-                          ActorOverlayState state,
-                          base::OnceClosure callback);
+  void UpdateOverlayState(bool is_visible, ActorOverlayState state);
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
