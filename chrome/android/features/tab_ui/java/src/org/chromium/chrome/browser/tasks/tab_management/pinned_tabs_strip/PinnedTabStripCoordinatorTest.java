@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
 /** Unit tests for {@link PinnedTabStripCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,6 +55,7 @@ public class PinnedTabStripCoordinatorTest {
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private PinnedTabStripMediator mMediator;
     @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    @Mock private ItemTouchHelper2 mItemTouchHelper;
 
     private PinnedTabStripCoordinator mCoordinator;
 
@@ -85,6 +87,12 @@ public class PinnedTabStripCoordinatorTest {
                             ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
                         return mMediator;
                     }
+
+                    @Override
+                    ItemTouchHelper2 createItemTouchHelper(
+                            PinnedTabStripItemTouchHelperCallback callback) {
+                        return mItemTouchHelper;
+                    }
                 };
     }
 
@@ -110,6 +118,11 @@ public class PinnedTabStripCoordinatorTest {
 
         scrollListenerCaptor.getValue().onScrolled(mTabGridListRecyclerView, 0, 10);
         verify(mMediator).onScrolled();
+    }
+
+    @Test
+    public void testAttachesItemTouchHelper() {
+        verify(mItemTouchHelper).attachToRecyclerView(mCoordinator.getPinnedTabsRecyclerView());
     }
 
     @Test

@@ -16,9 +16,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TIT
 
 import static java.lang.Math.max;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.util.Size;
+import android.view.View;
 
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -30,17 +31,21 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridViewRectUpdater;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +58,7 @@ import java.util.List;
 @NullMarked
 public class PinnedTabStripMediator {
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final TabListModel mTabGridListModel;
     private final TabListCoordinator mTabLisCoordinator;
     private final TabListModel mPinnedTabsModelList;
@@ -62,6 +67,7 @@ public class PinnedTabStripMediator {
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
     private final TabModelObserver mTabModelObserver;
     private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private @Nullable PinnedTabStripItemContextMenuCoordinator mContextMenuCoordinator;
 
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -84,14 +90,14 @@ public class PinnedTabStripMediator {
      * @param tabGroupModelFilterSupplier The supplier of the current {@link TabGroupModelFilter}.
      */
     public PinnedTabStripMediator(
-            Context context,
+            Activity activity,
             GridLayoutManager tabGridListLayoutManager,
             TabListCoordinator tabListCoordinator,
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
             ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        mContext = context;
+        mActivity = activity;
         mTabGridListLayoutManager = tabGridListLayoutManager;
         mTabGridListModel = tabGridListModel;
         mPinnedTabsModelList = pinnedTabsModelList;
@@ -115,6 +121,22 @@ public class PinnedTabStripMediator {
                     }
                 };
         mTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(mOnTabGroupModelFilterChanged);
+    }
+
+    /**
+     * Called when a long press is detected on a pinned tab.
+     *
+     * @param tabId The id of the tab that was long pressed.
+     * @param view The view that was long pressed.
+     * @return A {@link CancelLongPressTabItemEventListener} to be notified when the long press is
+     *     cancelled.
+     */
+    @Nullable CancelLongPressTabItemEventListener onLongPress(
+            @TabId int tabId, @Nullable View view) {
+        if (view == null || mContextMenuCoordinator == null) return null;
+        ViewRectProvider viewRectProvider = new ViewRectProvider(view, TabGridViewRectUpdater::new);
+        mContextMenuCoordinator.showMenu(viewRectProvider, tabId);
+        return mContextMenuCoordinator::dismiss;
     }
 
     /**
@@ -231,7 +253,8 @@ public class PinnedTabStripMediator {
         // resource fetch calls.
         @Px
         int delta =
-                mContext.getResources()
+                mActivity
+                        .getResources()
                         .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_width_delta);
         mTabListItemCurrentWidth = cardSize.getWidth() - delta;
         onPinnedTabStripItemWidthChanged();
@@ -250,7 +273,7 @@ public class PinnedTabStripMediator {
     private void onPinnedTabStripItemWidthChanged() {
         if (mPinnedTabsModelList.isEmpty()) return;
 
-        Resources res = mContext.getResources();
+        Resources res = mActivity.getResources();
         @Px int minAllowedWidth = PinnedTabStripUtils.getMinAllowedWidthForPinTabStripItemPx(res);
         float widthPercentage =
                 PinnedTabStripUtils.getWidthPercentageMultiplier(
@@ -279,7 +302,14 @@ public class PinnedTabStripMediator {
         }
         if (newFilter != null) {
             newFilter.addObserver(mTabModelObserver);
+            mContextMenuCoordinator =
+                    PinnedTabStripItemContextMenuCoordinator.createContextMenuCoordinator(
+                            mActivity, newFilter);
         }
+    }
+
+    void setContextMenuCoordinatorForTesting(PinnedTabStripItemContextMenuCoordinator coordinator) {
+        mContextMenuCoordinator = coordinator;
     }
 
     void destroy() {

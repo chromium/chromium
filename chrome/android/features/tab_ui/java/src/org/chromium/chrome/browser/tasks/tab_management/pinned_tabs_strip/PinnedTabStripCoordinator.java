@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
 /**
  * The coordinator for the pinned tabs strip, which is a RecyclerView that shows a list of pinned
@@ -92,6 +94,16 @@ public class PinnedTabStripCoordinator {
                         pinnedTabStripPropertyModel,
                         tabGroupModelFilterSupplier);
 
+        PinnedTabStripItemTouchHelperCallback callback =
+                new PinnedTabStripItemTouchHelperCallback(
+                        activity,
+                        pinnedTabsModelList,
+                        () -> mPinnedTabsRecyclerView,
+                        mMediator::onLongPress);
+
+        ItemTouchHelper2 itemTouchHelper = createItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mPinnedTabsRecyclerView);
+
         tabGridListRecyclerView.addOnScrollListener(
                 new RecyclerView.OnScrollListener() {
                     @Override
@@ -99,6 +111,11 @@ public class PinnedTabStripCoordinator {
                         mMediator.onScrolled();
                     }
                 });
+    }
+
+    @VisibleForTesting
+    ItemTouchHelper2 createItemTouchHelper(PinnedTabStripItemTouchHelperCallback callback) {
+        return new ItemTouchHelper2(callback);
     }
 
     /** Returns the {@link TabListRecyclerView} for the pinned tabs strip. */

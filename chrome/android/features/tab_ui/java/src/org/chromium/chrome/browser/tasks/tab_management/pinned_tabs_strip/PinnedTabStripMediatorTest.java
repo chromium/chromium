@@ -10,10 +10,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.util.Size;
+import android.view.View;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -31,16 +33,23 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /** Unit tests for {@link PinnedTabStripMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,6 +71,12 @@ public class PinnedTabStripMediatorTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
+    @Mock private PinnedTabStripItemContextMenuCoordinator mMenuCoordinator;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModel mIncognitoTabModel;
+    @Mock private Profile mProfile;
+    @Mock TabGroupSyncService mTabGroupSyncService;
+    @Mock CollaborationService mCollaborationService;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -74,6 +89,12 @@ public class PinnedTabStripMediatorTest {
 
     @Before
     public void setUp() {
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mIncognitoTabGroupModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
+        when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -104,7 +125,16 @@ public class PinnedTabStripMediatorTest {
         when(mLayoutManager.getSpanCount()).thenReturn(2);
 
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mMediator.setContextMenuCoordinatorForTesting(mMenuCoordinator);
         verify(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
+    }
+
+    @Test
+    public void testOnLongPress() {
+        View view = new View(mActivity);
+        int tabId = 123123;
+        mMediator.onLongPress(tabId, view);
+        verify(mMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
     }
 
     @Test
