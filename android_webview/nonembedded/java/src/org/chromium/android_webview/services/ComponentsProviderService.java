@@ -283,7 +283,6 @@ public class ComponentsProviderService extends Service {
             return;
         }
 
-        // TODO(crbug.com/40796101): schedule it as a periodic job.
         final SharedPreferences sharedPreferences =
                 ContextUtils.getApplicationContext()
                         .getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
