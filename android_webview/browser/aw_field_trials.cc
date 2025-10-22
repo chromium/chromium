@@ -301,6 +301,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       features::kAAudioPerStreamDeviceSelection);
 
+  // WebView exposes text autosizing to apps via setLayoutAlgorithm(), so
+  // we keep text autosizing support in WebView for now. Further WebView
+  // work will take place in https://crbug.com/391990606.
+  aw_feature_overrides.DisableFeature(blink::features::kForceOffTextAutosizing);
+
   // Local Network Access restrictions should not be enforced in WebView.
   // The LNA permission is auto-granted in WebView, but the permission
   // policy currently blocks iframes from using it. crbug.com/442879527

@@ -1783,6 +1783,8 @@ void UpdateScreenInfoAndResizeView(
 }  // namespace
 
 TEST_F(WebFrameTest, ChangeInFixedLayoutResetsTextAutosizingMultipliers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
   RegisterMockedHttpURLLoad("fixed_layout.html");
 
   int viewport_width = 640;
@@ -1814,6 +1816,8 @@ TEST_F(WebFrameTest, ChangeInFixedLayoutResetsTextAutosizingMultipliers) {
 }
 
 TEST_F(WebFrameTest, WorkingTextAutosizingMultipliers_VirtualViewport) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
   const std::string html_file = "fixed_layout.html";
   RegisterMockedHttpURLLoad(html_file);
 
@@ -1835,6 +1839,8 @@ TEST_F(WebFrameTest, WorkingTextAutosizingMultipliers_VirtualViewport) {
 
 TEST_F(WebFrameTest,
        VisualViewportSetSizeInvalidatesTextAutosizingMultipliers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
   RegisterMockedHttpURLLoad("iframe_reload.html");
   RegisterMockedHttpURLLoad("visible_iframe.html");
 

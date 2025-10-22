@@ -881,7 +881,7 @@ BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
 
 // Text autosizing uses heuristics to inflate text sizes on devices with
 // small screens. This feature is for disabling these heuristics.
-BASE_FEATURE(kForceOffTextAutosizing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceOffTextAutosizing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Automatically convert light-themed pages to use a Blink-generated dark theme
 BASE_FEATURE(kForceWebContentsDarkMode,

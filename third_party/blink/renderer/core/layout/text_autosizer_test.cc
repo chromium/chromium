@@ -57,7 +57,11 @@ class TextAutosizerTest : public RenderingTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list;
+
   void SetUp() override {
+    feature_list.InitAndDisableFeature(
+        blink::features::kForceOffTextAutosizing);
     GetTextAutosizerClient().set_device_scale_factor(1.f);
     RenderingTest::SetUp();
     GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
@@ -1118,7 +1122,10 @@ class TextAutosizerSimTest : public SimTest {
   TextAutosizerSimTest() {}
 
  private:
+  base::test::ScopedFeatureList feature_list;
   void SetUp() override {
+    feature_list.InitAndDisableFeature(
+        blink::features::kForceOffTextAutosizing);
     SimTest::SetUp();
 
     WebSettings* web_settings = WebView().GetSettings();

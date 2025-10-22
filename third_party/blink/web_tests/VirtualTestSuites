@@ -4425,6 +4425,26 @@
     "expires": "Jan 1, 2026"
   },
   {
+    "prefix": "text-autosizing",
+    "owners": [
+      "dgrogan@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "fast/text-autosizing",
+      "http/tests/devtools/text-autosizing-override.js",
+      "http/tests/text-autosizing/narrow-iframe.html",
+      "http/tests/text-autosizing/wide-iframe.html"
+    ],
+    "args": [
+      "--disable-features=ForceOffTextAutosizing"
+    ],
+    "exclusive_tests": "ALL",
+    "expires": "June 1, 2026"
+  },
+  {
     "prefix": "text-contrast-gamma",
     "owners": [
       "kschmi@microsoft.com"
