@@ -66,160 +66,7 @@ class FeedMetricsRecorderTest : public PlatformTest {
   std::unique_ptr<base::UserActionTester> actions_tester_;
 };
 
-#pragma mark - All Feeds Good Visit tests
-
-// Tests that a Good Visit is recorded when a url is added to Read Later.
-TEST_F(FeedMetricsRecorderTest, GoodExplicitInteraction) {
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Add URL to Read Later constitutes a Good Visit by itself.
-  [recorder_ recordAddURLToReadLater];
-  // There should be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is recorded when we open a url in a new incognito
-// tab.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_OpenInNewIncognitoTab) {
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // After Action, Good Visit should be recorded.
-  [recorder_ recordOpenURLInIncognitoTab];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is recorded when we do a long press on a card.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_LongPress) {
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // After Action, Good Visit should be recorded.
-  [recorder_ recordNativeContextMenuVisibilityChanged:YES];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is only logged once for each Good Visit session.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_OnlyLoggedOncePerVisit) {
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Start with a Good Visit.
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  // Adding to Read Later should count as a Good Visit, but we only log one Good
-  // Visit per session, so the histogram count should remain at 1.
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is not logged when a non-Good Visit action is
-// triggered.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_NonGoodVisitActionTriggered) {
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Trigger a non-Good Visit action.
-  [recorder_ recordDeviceOrientationChanged:UIDeviceOrientationLandscapeRight];
-  // There should not be a Good Visit recorded as the action was not a trigger
-  // for a Good Visit.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-}
-
-// Tests for switching feeds
-
-// Tests that a Good Visit is recorded when a url is added to Read Later and
-// switching between feeds.
-TEST_F(FeedMetricsRecorderTest,
-       GoodExplicitInteraction_SeparateFeedGoodVisits) {
-  // All histograms should be 0
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Default feed is Discover
-  // Add URL to Read Later constitutes a Good Visit for AllFeeds and Discover.
-  [recorder_ recordAddURLToReadLater];
-  // There should be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-#pragma mark - AllFeeds Time Based Tests
-
-TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeed) {
-  base::ScopedMockClockOverride mock_clock;
-
-  [recorder_ recordNTPDidChangeVisibility:YES];
-  [recorder_ recordFeedScrolled:kMinScrollForGoodVisitTests];
-
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  mock_clock.Advance(base::Seconds(kGoodVisitTimeInFeedSeconds) +
-                     kAddedTimeForMockClock);
-  // Calling an arbitrary GV action. This action should not trigger a GV by
-  // itself, but cycles the checks for other GV paths.
-  [recorder_ recordFeedScrolled:kMinScrollForGoodVisitTests];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Short Click Visit is recorded appropriately.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisit) {
-  base::ScopedMockClockOverride mock_clock;
-  // Trigger article click
-  [recorder_ recordOpenURLInSameTab];
-  [recorder_ recordNTPDidChangeVisibility:NO];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  mock_clock.Advance(
-      (base::Seconds(kNonShortClickSeconds) + kAddedTimeForMockClock));
-  // Coming back to the main feed. There should be a Good Visit.
-  [recorder_ recordNTPDidChangeVisibility:YES];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that the session expires accordingly.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_SessionExpiration) {
-  base::ScopedMockClockOverride mock_clock;
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Trigger Good Visit
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  [recorder_ recordAddURLToReadLater];
-  // Check it's not double logged
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  [recorder_ recordNTPDidChangeVisibility:NO];
-
-  // Trigger session expiration by waiting `kMinutesBetweenSessions`
-  mock_clock.Advance(
-      (base::Minutes(kMinutesBetweenSessions) + kAddedTimeForMockClock));
-  // Coming back to the main feed. Session should have been reset so there
-  // should be 2 histograms.
-  [recorder_ recordNTPDidChangeVisibility:YES];
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 2);
-}
-
-#pragma mark - Discover Feed Good Visit tests
+#pragma mark - Good Visit tests
 
 // Tests that a Good Visit is recorded when a url is added to Read Later.
 TEST_F(FeedMetricsRecorderTest, GoodExplicitInteraction_Discover) {
@@ -321,6 +168,32 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitDiscover) {
   [recorder_ recordNTPDidChangeVisibility:YES];
   histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 1);
+}
+
+// Tests that the session expires accordingly.
+TEST_F(FeedMetricsRecorderTest, GoodVisit_SessionExpirationDiscover) {
+  base::ScopedMockClockOverride mock_clock;
+  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
+                                       FeedEngagementType::kGoodVisit, 0);
+  // Trigger Good Visit
+  [recorder_ recordAddURLToReadLater];
+  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
+                                       FeedEngagementType::kGoodVisit, 1);
+  [recorder_ recordAddURLToReadLater];
+  // Check it's not double logged
+  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
+                                       FeedEngagementType::kGoodVisit, 1);
+  [recorder_ recordNTPDidChangeVisibility:NO];
+
+  // Trigger session expiration by waiting `kMinutesBetweenSessions`
+  mock_clock.Advance(
+      (base::Minutes(kMinutesBetweenSessions) + kAddedTimeForMockClock));
+  // Coming back to the main feed. Session should have been reset so there
+  // should be 2 histograms.
+  [recorder_ recordNTPDidChangeVisibility:YES];
+  [recorder_ recordAddURLToReadLater];
+  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
+                                       FeedEngagementType::kGoodVisit, 2);
 }
 
 #pragma mark - Time Spent in Feed tests.

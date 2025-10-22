@@ -232,6 +232,14 @@ inline constexpr char kFirstFollowUIShownCount[] =
 // enabled.
 inline constexpr char kFirstFollowUpdateUIShownCount[] =
     "follow.first_follow_update_ui_modal_count";
+inline constexpr char kLongFollowingFeedVisitTimeAggregateKey[] =
+    "LongFollowingFeedInteractionTimeDelta";
+inline constexpr char kLastInteractionTimeForFollowingGoodVisits[] =
+    "LastInteractionTimeForGoodVisitsFollowing";
+inline constexpr char kLastInteractionTimeForGoodVisits[] =
+    "LastInteractionTimeForGoodVisits";
+inline constexpr char kLongFeedVisitTimeAggregateKey[] = "LongFeedInteractionTimeDelta";
+inline constexpr char kLastUsedFeedForGoodVisitsKey[] = "LastUsedFeedForGoodVisits";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -907,16 +915,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kActivityBucketKey, 0);
   registry->RegisterDoublePref(kTimeSpentInFeedAggregateKey, 0.0);
   registry->RegisterTimePref(kLastDayTimeInFeedReportedKey, base::Time());
-  registry->RegisterTimePref(kLastInteractionTimeForFollowingGoodVisits,
-                             base::Time());
   registry->RegisterTimePref(kLastInteractionTimeForDiscoverGoodVisits,
                              base::Time());
-  registry->RegisterTimePref(kLastInteractionTimeForGoodVisits, base::Time());
   registry->RegisterDoublePref(kLongDiscoverFeedVisitTimeAggregateKey, 0.0);
-  registry->RegisterDoublePref(kLongFollowingFeedVisitTimeAggregateKey, 0.0);
-  registry->RegisterDoublePref(kLongFeedVisitTimeAggregateKey, 0.0);
   registry->RegisterTimePref(kArticleVisitTimestampKey, base::Time());
-  registry->RegisterIntegerPref(kLastUsedFeedForGoodVisitsKey, 0);
   registry->RegisterListPref(kActivityBucketLastReportedDateArrayKey);
 
   registry->RegisterBooleanPref(prefs::kDetectUnitsEnabled, true);
@@ -1115,6 +1117,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
   registry->RegisterIntegerPref(kFirstFollowUIShownCount, 0);
   registry->RegisterIntegerPref(kFirstFollowUpdateUIShownCount, 0);
+  registry->RegisterDoublePref(kLongFollowingFeedVisitTimeAggregateKey, 0.0);
+  registry->RegisterTimePref(kLastInteractionTimeForFollowingGoodVisits,
+                             base::Time());
+  registry->RegisterTimePref(kLastInteractionTimeForGoodVisits, base::Time());
+  registry->RegisterDoublePref(kLongFeedVisitTimeAggregateKey, 0.0);
+  registry->RegisterIntegerPref(kLastUsedFeedForGoodVisitsKey, 0);
 
   // Deprecated 10/2025. Use
   // `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` instead.
@@ -1332,6 +1340,12 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
                     prefs::kHomeCustomizationMostVisitedEnabled, prefs);
   prefs->ClearPref(kFirstFollowUIShownCount);
   prefs->ClearPref(kFirstFollowUpdateUIShownCount);
+  prefs->ClearPref(kLongFollowingFeedVisitTimeAggregateKey);
+  prefs->ClearPref(kLastInteractionTimeForFollowingGoodVisits);
+  prefs->ClearPref(kLastInteractionTimeForGoodVisits);
+  prefs->ClearPref(kLongFeedVisitTimeAggregateKey);
+  prefs->ClearPref(kLastUsedFeedForGoodVisitsKey);
+
 }
 
 void MigrateObsoleteUserDefault() {

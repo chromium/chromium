@@ -7,12 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// Enum representing the different feeds displayed on the NTP.
-typedef NS_ENUM(NSInteger, FeedType) {
-  FeedTypeDiscover = 0,
-  FeedTypeFollowing
-};
-
 // Enum representing the reasons why the feed would be started.
 typedef NS_ENUM(NSUInteger, FeedStartReason) {
   FeedStartReasonLaunch = 0,

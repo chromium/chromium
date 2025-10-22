@@ -11,18 +11,10 @@ const int kMinutesBetweenSessions = 5;
 const int kMaxCardsInFeed = 50;
 
 const char kArticleVisitTimestampKey[] = "ShortClickInteractionTimestamp";
-const char kLongFeedVisitTimeAggregateKey[] = "LongFeedInteractionTimeDelta";
 const char kLongDiscoverFeedVisitTimeAggregateKey[] =
     "LongDiscoverFeedInteractionTimeDelta";
-const char kLongFollowingFeedVisitTimeAggregateKey[] =
-    "LongFollowingFeedInteractionTimeDelta";
-const char kLastUsedFeedForGoodVisitsKey[] = "LastUsedFeedForGoodVisits";
-const char kLastInteractionTimeForGoodVisits[] =
-    "LastInteractionTimeForGoodVisits";
 const char kLastInteractionTimeForDiscoverGoodVisits[] =
     "LastInteractionTimeForGoodVisitsDiscover";
-const char kLastInteractionTimeForFollowingGoodVisits[] =
-    "LastInteractionTimeForGoodVisitsFollowing";
 const char kLastDayTimeInFeedReportedKey[] = "LastDayTimeInFeedReported";
 const char kTimeSpentInFeedAggregateKey[] = "TimeSpentInFeedAggregate";
 const char kActivityBucketLastReportedDateKey[] =

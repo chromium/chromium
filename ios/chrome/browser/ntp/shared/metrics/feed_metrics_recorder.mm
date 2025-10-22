@@ -48,12 +48,9 @@ using feed::FeedUserActionType;
 // FeedEngagementType::kFeedScrolled.
 @property(nonatomic, assign) BOOL scrolledReportedDiscover;
 @property(nonatomic, assign) BOOL scrolledReportedFollowing;
-
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kGoodVisit.
-@property(nonatomic, assign) BOOL goodVisitReportedAllFeeds;
 @property(nonatomic, assign) BOOL goodVisitReportedDiscover;
-@property(nonatomic, assign) BOOL goodVisitReportedFollowing;
 
 // Tracking property to avoid duplicate recordings of the Activity Buckets
 // metric.
@@ -71,22 +68,15 @@ using feed::FeedUserActionType;
 @property(nonatomic, assign) BOOL goodVisitScroll;
 // The timestamp when the first metric is being recorded for this session.
 @property(nonatomic, assign) base::Time sessionStartTime;
-// The timestamp when the last interaction happens for Good Visits.
-@property(nonatomic, assign) base::Time lastInteractionTimeForGoodVisits;
 @property(nonatomic, assign)
     base::Time lastInteractionTimeForDiscoverGoodVisits;
-@property(nonatomic, assign)
-    base::Time lastInteractionTimeForFollowingGoodVisits;
 // The timestamp when the feed becomes visible again for Good Visits. It
 // is reset when a new Good Visit session starts
 @property(nonatomic, assign) base::Time feedBecameVisibleTime;
 // The time the user has spent in the feed during a Good Visit session.
 // This property is preserved across NTP usages if they are part of the same
 // Good Visit Session.
-@property(nonatomic, assign)
-    NSTimeInterval previousTimeInFeedForGoodVisitSession;
 @property(nonatomic, assign) NSTimeInterval discoverPreviousTimeInFeedGV;
-@property(nonatomic, assign) NSTimeInterval followingPreviousTimeInFeedGV;
 
 // The aggregate of time a user has spent in the feed for
 // `ContentSuggestions.Feed.TimeSpentInFeed`
@@ -163,12 +153,6 @@ using feed::FeedUserActionType;
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                     kOpenedFeedSurface
                                   asInteraction:NO];
-    base::Time lastInteractionTimeForGoodVisitsDate =
-        self.prefService->GetTime(kLastInteractionTimeForGoodVisits);
-    if (lastInteractionTimeForGoodVisitsDate != base::Time()) {
-      self.lastInteractionTimeForGoodVisits =
-          lastInteractionTimeForGoodVisitsDate;
-    }
 
     base::Time lastInteractionTimeForDiscoverGoodVisitsDate =
         self.prefService->GetTime(kLastInteractionTimeForDiscoverGoodVisits);
@@ -177,42 +161,16 @@ using feed::FeedUserActionType;
           lastInteractionTimeForDiscoverGoodVisitsDate;
     }
 
-    base::Time lastInteractionTimeForFollowingGoodVisitsDate =
-        self.prefService->GetTime(kLastInteractionTimeForFollowingGoodVisits);
-    if (lastInteractionTimeForFollowingGoodVisitsDate != base::Time()) {
-      self.lastInteractionTimeForFollowingGoodVisits =
-          lastInteractionTimeForFollowingGoodVisitsDate;
-    }
-
     // Total time spent in feed metrics.
     self.timeSpentInFeed = base::Seconds(
         self.prefService->GetDouble(kTimeSpentInFeedAggregateKey));
     [self computeActivityBuckets];
     [self recordTimeSpentInFeedIfDayIsDone];
 
-    self.previousTimeInFeedForGoodVisitSession =
-        self.prefService->GetDouble(kLongFeedVisitTimeAggregateKey);
     self.discoverPreviousTimeInFeedGV =
         self.prefService->GetDouble(kLongDiscoverFeedVisitTimeAggregateKey);
-    self.followingPreviousTimeInFeedGV =
-        self.prefService->GetDouble(kLongFollowingFeedVisitTimeAggregateKey);
 
-    // TODO(crbug.com/40075889) This scenario can happen (this is very rare)
-    // because key kLongFeedVisitTimeAggregateKey was moved out of
-    // NSUserDefaults later than kLongDiscoverFeedVisitTimeAggregateKey and
-    // kLongFollowingFeedVisitTimeAggregateKey. Clean this code in the future.
-    if (self.previousTimeInFeedForGoodVisitSession <
-            self.discoverPreviousTimeInFeedGV ||
-        self.previousTimeInFeedForGoodVisitSession <
-            self.followingPreviousTimeInFeedGV) {
-      self.previousTimeInFeedForGoodVisitSession =
-          std::max(self.discoverPreviousTimeInFeedGV,
-                   self.followingPreviousTimeInFeedGV);
-    }
-
-    if (self.previousTimeInFeedForGoodVisitSession < 0 ||
-        self.discoverPreviousTimeInFeedGV < 0 ||
-        self.followingPreviousTimeInFeedGV < 0) {
+    if (self.discoverPreviousTimeInFeedGV < 0) {
       base::debug::DumpWithoutCrashing();
     }
 
@@ -227,22 +185,14 @@ using feed::FeedUserActionType;
       // kNonShortClickSeconds in a feed article.
       if (base::Time::Now() - articleVisitStart >
           base::Seconds(kNonShortClickSeconds)) {
-        // Trigger a GV for a specific feed.
-        FeedType lastUsedFeedType =
-            self.prefService->GetInteger(kLastUsedFeedForGoodVisitsKey) == 1
-                ? FeedTypeFollowing
-                : FeedTypeDiscover;
-        [self recordEngagedGoodVisits:lastUsedFeedType allFeedsOnly:NO];
+        // Trigger a GV for the feed.
+        [self recordEngagedGoodVisits];
       }
       // Clear PrefService for new session.
       self.prefService->ClearPref(kArticleVisitTimestampKey);
     }
   } else {
-    // Once the NTP becomes hidden, check for Good Visit which updates
-    // `self.previousTimeInFeedForGoodVisitSession` and then we save it in
-    // PrefService.
-
-    // Also calculate total aggregate for the time in feed aggregate metric.
+    // Calculates total aggregate for the time in feed aggregate metric.
 
     // When the user opens the browser directly to a website while they
     // originally were on the NTP. Set `feedBecameVisibleTime` to now if it has
@@ -256,12 +206,8 @@ using feed::FeedUserActionType;
     [self checkEngagementGoodVisitWithInteraction:NO];
     self.prefService->SetDouble(kTimeSpentInFeedAggregateKey,
                                 self.timeSpentInFeed.InSecondsF());
-    self.prefService->SetDouble(kLongFeedVisitTimeAggregateKey,
-                                self.previousTimeInFeedForGoodVisitSession);
     self.prefService->SetDouble(kLongDiscoverFeedVisitTimeAggregateKey,
                                 self.discoverPreviousTimeInFeedGV);
-    self.prefService->SetDouble(kLongFollowingFeedVisitTimeAggregateKey,
-                                self.followingPreviousTimeInFeedGV);
   }
 }
 
@@ -789,56 +735,25 @@ using feed::FeedUserActionType;
   }
   // Determine if this interaction is part of a new session.
   base::Time now = base::Time::Now();
-  if ((now - self.lastInteractionTimeForGoodVisits) >
+  if ((now - self.lastInteractionTimeForDiscoverGoodVisits) >
       base::Minutes(kMinutesBetweenSessions)) {
     [self resetGoodVisitSession];
-  } else {
-    // Check if Discover only session has expired.
-    if ((now - self.lastInteractionTimeForDiscoverGoodVisits) >
-        base::Minutes(kMinutesBetweenSessions)) {
-      [self resetGoodVisitSessionForFeed:FeedTypeDiscover];
-    }
-    // Check if Following only session has expired.
-    if ((now - self.lastInteractionTimeForFollowingGoodVisits) >
-        base::Minutes(kMinutesBetweenSessions)) {
-      [self resetGoodVisitSessionForFeed:FeedTypeFollowing];
-    }
   }
-  self.lastInteractionTimeForGoodVisits = now;
   self.lastInteractionTimeForDiscoverGoodVisits = now;
-  // If the session hasn't been reset and a GoodVisit has already been
-  // reported for all possible surfaces return early as an optimization.
-  if (self.goodVisitReportedDiscover && self.goodVisitReportedFollowing &&
-      self.goodVisitReportedAllFeeds) {
-    return;
-  }
-
   // Report a Good Visit if any of the conditions below is YES and
   // no Good Visit has been recorded for the past `kMinutesBetweenSessions`:
   // 1. Good Explicit Interaction (add to reading list, long press, open in
   // new incognito tab ...).
-
   if (interacted) {
-    [self recordEngagedGoodVisits:FeedTypeDiscover allFeedsOnly:NO];
+    [self recordEngagedGoodVisits];
     return;
   }
   // 2. Good time in feed (`kGoodVisitTimeInFeedSeconds` with >= 1 scroll in an
   // entire session).
-  if (([self timeSpentForCurrentGoodVisitSessionInFeed:FeedTypeDiscover] >
-       kGoodVisitTimeInFeedSeconds) &&
+  [self updateTimeSpentForCurrentGoodVisitSessionInFeed];
+  if (self.discoverPreviousTimeInFeedGV > kGoodVisitTimeInFeedSeconds &&
       self.goodVisitScroll) {
-    [self recordEngagedGoodVisits:FeedTypeDiscover allFeedsOnly:YES];
-
-    // Check if Good Visit should be triggered for Discover feed.
-    if (self.discoverPreviousTimeInFeedGV > kGoodVisitTimeInFeedSeconds) {
-      [self recordEngagedGoodVisits:FeedTypeDiscover allFeedsOnly:NO];
-    }
-
-    // Check if Good Visit should be triggered for Following feed.
-    if (self.followingPreviousTimeInFeedGV > kGoodVisitTimeInFeedSeconds) {
-      [self recordEngagedGoodVisits:FeedTypeFollowing allFeedsOnly:NO];
-    }
-    return;
+    [self recordEngagedGoodVisits];
   }
 }
 
@@ -899,83 +814,26 @@ using feed::FeedUserActionType;
   base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
 }
 
-// Records Good Visits for both the Following and Discover feed.
-// `allFeedsOnly` will be YES when no individual feed should report a Good
-// Visit, but a Good Visit should be triggered for all Feeds.
-- (void)recordEngagedGoodVisits:(FeedType)feedType
-                   allFeedsOnly:(BOOL)allFeedsOnly {
-  // Check if the user has previously engaged with the feed in the same
-  // session.
-  // If neither feed has been engaged with, log "AllFeeds" engagement.
-  if (!self.goodVisitReportedAllFeeds) {
-    // Log for the all feeds aggregate.
-    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
-                                  FeedEngagementType::kGoodVisit);
-    self.goodVisitReportedAllFeeds = YES;
-  }
-  if (allFeedsOnly) {
+- (void)recordEngagedGoodVisits {
+  if (self.goodVisitReportedDiscover) {
     return;
   }
-  // A Good Visit for AllFeeds should have been reported in order to report feed
-  // specific Good Visits.
-  DCHECK(self.goodVisitReportedAllFeeds);
-  // Log interaction for Discover feed.
-  if (feedType == FeedTypeDiscover && !self.goodVisitReportedDiscover) {
-    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kGoodVisit);
-    self.goodVisitReportedDiscover = YES;
-  }
-
-  // Log interaction for Following feed.
-  if (feedType == FeedTypeFollowing && !self.goodVisitReportedFollowing) {
-    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kGoodVisit);
-    self.goodVisitReportedFollowing = YES;
-  }
+  base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                FeedEngagementType::kGoodVisit);
+  self.goodVisitReportedDiscover = YES;
 }
 
 // Calculates the time the user has spent in the feed during a good
 // visit session.
-- (NSTimeInterval)timeSpentForCurrentGoodVisitSessionInFeed:
-    (FeedType)currentFeed {
+- (void)updateTimeSpentForCurrentGoodVisitSessionInFeed {
   // Add the time spent since last recording.
   base::Time now = base::Time::Now();
   base::TimeDelta additionalTimeInFeed = now - self.feedBecameVisibleTime;
-
   if (additionalTimeInFeed.is_negative()) {
-    // TODO(crbug.com/340554892): Fix Good Visits metric.
-    // Temporary fix, but it should reduce the number of occurances.
     self.feedBecameVisibleTime = now;
-    additionalTimeInFeed = now - self.feedBecameVisibleTime;
+    return;
   }
-  // Temporary fix to resolve negative values in prefs.
-  // TODO(crbug.com/329274886): Remove fix once crashes are down to zero.
-  if (self.previousTimeInFeedForGoodVisitSession < 0) {
-    self.previousTimeInFeedForGoodVisitSession = 0;
-  }
-  self.previousTimeInFeedForGoodVisitSession =
-      self.previousTimeInFeedForGoodVisitSession +
-      additionalTimeInFeed.InSecondsF();
-  if (self.previousTimeInFeedForGoodVisitSession < 0) {
-    base::debug::DumpWithoutCrashing();
-  }
-
-  // Calculate for specific feed.
-  switch (currentFeed) {
-    case FeedTypeFollowing:
-      self.followingPreviousTimeInFeedGV += additionalTimeInFeed.InSecondsF();
-      break;
-    case FeedTypeDiscover:
-      self.discoverPreviousTimeInFeedGV += additionalTimeInFeed.InSecondsF();
-      break;
-  }
-
-  DCHECK_LE(self.followingPreviousTimeInFeedGV,
-            self.previousTimeInFeedForGoodVisitSession);
-  DCHECK_LE(self.discoverPreviousTimeInFeedGV,
-            self.previousTimeInFeedForGoodVisitSession);
-
-  return self.previousTimeInFeedForGoodVisitSession;
+  self.discoverPreviousTimeInFeedGV += additionalTimeInFeed.InSecondsF();
 }
 
 // Resets the session tracking values, this occurs if there's been
@@ -1003,39 +861,17 @@ using feed::FeedUserActionType;
 - (void)resetGoodVisitSession {
   // Reset defaults for new session.
   self.prefService->ClearPref(kArticleVisitTimestampKey);
-  self.prefService->ClearPref(kLongFeedVisitTimeAggregateKey);
+  self.prefService->ClearPref(kLongDiscoverFeedVisitTimeAggregateKey);
+
   base::Time now = base::Time::Now();
 
-  self.lastInteractionTimeForGoodVisits = now;
-  self.prefService->SetTime(kLastInteractionTimeForGoodVisits, now);
+  self.lastInteractionTimeForDiscoverGoodVisits = now;
+  self.prefService->SetTime(kLastInteractionTimeForDiscoverGoodVisits, now);
+
   self.feedBecameVisibleTime = now;
-
   self.goodVisitScroll = NO;
-
-  self.goodVisitReportedAllFeeds = NO;
-  // Reset individual feeds.
-  [self resetGoodVisitSessionForFeed:FeedTypeFollowing];
-  [self resetGoodVisitSessionForFeed:FeedTypeDiscover];
-}
-
-// Resets a Good Visit session for an individual feed. Used to allow for
-// sessions to expire only for specific feeds.
-- (void)resetGoodVisitSessionForFeed:(FeedType)feedType {
-  base::Time now = base::Time::Now();
-  if (feedType == FeedTypeDiscover) {
-    self.prefService->ClearPref(kLongDiscoverFeedVisitTimeAggregateKey);
-    self.lastInteractionTimeForDiscoverGoodVisits = now;
-    self.prefService->SetTime(kLastInteractionTimeForDiscoverGoodVisits, now);
-    self.discoverPreviousTimeInFeedGV = 0;
-    self.goodVisitReportedDiscover = NO;
-  }
-  if (feedType == FeedTypeFollowing) {
-    self.prefService->ClearPref(kLongFollowingFeedVisitTimeAggregateKey);
-    self.lastInteractionTimeForFollowingGoodVisits = now;
-    self.prefService->SetTime(kLastInteractionTimeForFollowingGoodVisits, now);
-    self.followingPreviousTimeInFeedGV = 0;
-    self.goodVisitReportedFollowing = NO;
-  }
+  self.goodVisitReportedDiscover = NO;
+  self.discoverPreviousTimeInFeedGV = 0;
 }
 
 // Records the time a user has spent in the feed for a day when 24hrs have
@@ -1086,7 +922,6 @@ using feed::FeedUserActionType;
   // Save the time of the open so we can then calculate how long the user spent
   // in that page.
   self.prefService->SetTime(kArticleVisitTimestampKey, base::Time::Now());
-  self.prefService->SetInteger(kLastUsedFeedForGoodVisitsKey, FeedTypeDiscover);
   [self.NTPActionsDelegate feedArticleOpened];
 }
 

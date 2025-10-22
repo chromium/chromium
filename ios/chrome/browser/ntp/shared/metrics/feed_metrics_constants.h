@@ -34,14 +34,9 @@ extern const int kMaxCardsInFeed;
 // Stores the time when the user visits an article on the feed.
 extern const char kArticleVisitTimestampKey[];
 // Stores the time elapsed on the feed when the user leaves.
-extern const char kLongFeedVisitTimeAggregateKey[];
-extern const char kLongFollowingFeedVisitTimeAggregateKey[];
 extern const char kLongDiscoverFeedVisitTimeAggregateKey[];
-extern const char kLastUsedFeedForGoodVisitsKey[];
 // Stores the last interaction time for Good Visits (NSDate).
-extern const char kLastInteractionTimeForGoodVisits[];
 extern const char kLastInteractionTimeForDiscoverGoodVisits[];
-extern const char kLastInteractionTimeForFollowingGoodVisits[];
 // Stores the last day the Time in Feed was reported on UMA. It stores the
 // midnight (beginning of the day) of the last interaction.
 extern const char kLastDayTimeInFeedReportedKey[];
