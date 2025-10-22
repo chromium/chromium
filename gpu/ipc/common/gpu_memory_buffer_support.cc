@@ -49,7 +49,7 @@ GpuMemoryBufferSupport::~GpuMemoryBufferSupport() = default;
 
 // static
 bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   DCHECK_NE(gfx::SHARED_MEMORY_BUFFER, GetNativeGpuMemoryBufferType());
 
@@ -61,19 +61,19 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
     case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
-      return format == gfx::BufferFormat::BGRA_8888 ||
-             format == gfx::BufferFormat::RGBA_8888 ||
-             format == gfx::BufferFormat::BGRX_8888 ||
-             format == gfx::BufferFormat::RGBX_8888 ||
-             format == gfx::BufferFormat::R_8 ||
-             format == gfx::BufferFormat::RG_88 ||
-             format == gfx::BufferFormat::R_16 ||
-             format == gfx::BufferFormat::RG_1616 ||
-             format == gfx::BufferFormat::RGBA_F16 ||
-             format == gfx::BufferFormat::BGRA_1010102 ||
-             format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-             format == gfx::BufferFormat::YUVA_420_TRIPLANAR ||
-             format == gfx::BufferFormat::P010;
+      return format == viz::SinglePlaneFormat::kBGRA_8888 ||
+             format == viz::SinglePlaneFormat::kRGBA_8888 ||
+             format == viz::SinglePlaneFormat::kBGRX_8888 ||
+             format == viz::SinglePlaneFormat::kRGBX_8888 ||
+             format == viz::SinglePlaneFormat::kR_8 ||
+             format == viz::SinglePlaneFormat::kRG_88 ||
+             format == viz::SinglePlaneFormat::kR_16 ||
+             format == viz::SinglePlaneFormat::kRG_1616 ||
+             format == viz::SinglePlaneFormat::kRGBA_F16 ||
+             format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+             format == viz::MultiPlaneFormat::kNV12 ||
+             format == viz::MultiPlaneFormat::kNV12A ||
+             format == viz::MultiPlaneFormat::kP010;
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
     case gfx::BufferUsage::PROTECTED_SCANOUT:
     case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
@@ -90,9 +90,9 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
-      return format == gfx::BufferFormat::RGBA_8888 ||
-             format == gfx::BufferFormat::RGBX_8888 ||
-             format == gfx::BufferFormat::BGR_565;
+      return format == viz::SinglePlaneFormat::kRGBA_8888 ||
+             format == viz::SinglePlaneFormat::kRGBX_8888 ||
+             format == viz::SinglePlaneFormat::kBGR_565;
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
@@ -107,16 +107,19 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
   }
   NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
-  return ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(format,
-                                                                         usage);
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          format);
+  return ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+      buffer_format, usage);
 #elif BUILDFLAG(IS_WIN)
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
-      return format == gfx::BufferFormat::RGBA_8888 ||
-             format == gfx::BufferFormat::RGBX_8888 ||
-             format == gfx::BufferFormat::BGRA_8888 ||
-             format == gfx::BufferFormat::BGRX_8888;
+      return format == viz::SinglePlaneFormat::kRGBA_8888 ||
+             format == viz::SinglePlaneFormat::kRGBX_8888 ||
+             format == viz::SinglePlaneFormat::kBGRA_8888 ||
+             format == viz::SinglePlaneFormat::kBGRX_8888;
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
@@ -180,7 +183,8 @@ GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations() {
 
   for (auto format : kBufferFormats) {
     for (auto usage : kUsages) {
-      if (IsNativeGpuMemoryBufferConfigurationSupported(format, usage)) {
+      if (IsNativeGpuMemoryBufferConfigurationSupported(
+              viz::GetSharedImageFormat(format), usage)) {
         configurations.insert(gfx::BufferUsageAndFormat(usage, format));
       }
     }
