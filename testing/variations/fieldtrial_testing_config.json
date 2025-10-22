@@ -13848,6 +13848,24 @@
             ]
         }
     ],
+    "IOSTipsNotificationsAlternativeStrings": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1",
+                    "params": {
+                        "TipsNotificationsAlternativeStringVersion": "1"
+                    },
+                    "enable_features": [
+                        "IOSTipsNotificationsAlternativeStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTrustedVaultNotification": [
         {
             "platforms": [
