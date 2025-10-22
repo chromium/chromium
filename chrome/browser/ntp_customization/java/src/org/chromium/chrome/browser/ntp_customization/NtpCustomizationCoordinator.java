@@ -213,7 +213,7 @@ public class NtpCustomizationCoordinator {
 
     private void showNtpCardsBottomSheet() {
         if (mNtpCardsCoordinator == null) {
-            mNtpCardsCoordinator = new NtpCardsCoordinator(mContext, mDelegate);
+            mNtpCardsCoordinator = new NtpCardsCoordinator(mContext, mDelegate, mProfileSupplier);
         }
         mMediator.showBottomSheet(NTP_CARDS);
     }

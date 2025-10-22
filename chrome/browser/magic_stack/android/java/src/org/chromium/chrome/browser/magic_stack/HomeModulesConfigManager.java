@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 
 import android.content.Context;
 
@@ -13,7 +13,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
@@ -171,19 +170,6 @@ public class HomeModulesConfigManager {
             }
         }
         return false;
-    }
-
-    /** Returns the preference key of the module type. */
-    String getSettingsPreferenceKey(@ModuleType int moduleType) {
-        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
-
-        // All the educational tip modules are controlled by the same preference key.
-        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
-            return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
-                    String.valueOf(DEFAULT_BROWSER_PROMO));
-        }
-
-        return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
     }
 
     /** Sets a mocked instance for testing. */

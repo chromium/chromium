@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getEducationalTipModuleList;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -232,30 +233,24 @@ public class HomeModulesConfigManagerUnitTest {
         assertFalse(TextUtils.equals(singleTabPreferenceKey, priceChangePreferenceKey));
         assertFalse(TextUtils.equals(defaultBrowserPromoPreferenceKey, priceChangePreferenceKey));
 
-        assertEquals(
-                singleTabPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.SINGLE_TAB));
+        assertEquals(singleTabPreferenceKey, getSettingsPreferenceKey(ModuleType.SINGLE_TAB));
 
         // Verifies that all the educational tip modules are shared with the same preference key.
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(
-                        ModuleType.DEFAULT_BROWSER_PROMO));
+                getSettingsPreferenceKey(ModuleType.DEFAULT_BROWSER_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP_PROMO));
+                getSettingsPreferenceKey(ModuleType.TAB_GROUP_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(
-                        ModuleType.TAB_GROUP_SYNC_PROMO));
+                getSettingsPreferenceKey(ModuleType.TAB_GROUP_SYNC_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
+                getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
 
         // Verifies that the PRICE_CHANGE has its own preference key.
-        assertEquals(
-                priceChangePreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
+        assertEquals(priceChangePreferenceKey, getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
     }
 
     private void registerModuleConfigChecker(int size) {

@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,33 +42,58 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesUtils;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link NtpCardsMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
 public class NtpCardsMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PropertyModel mContainerPropertyModel;
     @Mock private PropertyModel mBottomSheetPropertyModel;
     @Mock private BottomSheetDelegate mDelegate;
+    @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsNatives;
+    @Mock private PrefService mPrefService;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
 
+    private Supplier<@Nullable Profile> mProfileSupplier;
     private NtpCardsMediator mNtpCardsMediator;
     private Context mContext;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mProfileSupplier = () -> mProfile;
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         mNtpCardsMediator =
-                new NtpCardsMediator(mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate);
+                new NtpCardsMediator(
+                        mContainerPropertyModel,
+                        mBottomSheetPropertyModel,
+                        mDelegate,
+                        mProfileSupplier);
     }
 
     @Test
@@ -106,7 +135,8 @@ public class NtpCardsMediatorUnitTest {
         // Verifies that when the feed settings bottom sheet should show alone, the back press
         // handler should be set to null.
         when(mDelegate.shouldShowAlone()).thenReturn(true);
-        new NtpCardsMediator(mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate);
+        new NtpCardsMediator(
+                mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate, mProfileSupplier);
         verify(mBottomSheetPropertyModel).set(BACK_PRESS_HANDLER, null);
 
         // Verifies that when the feed settings bottom sheet is part of the navigation flow starting
@@ -115,7 +145,8 @@ public class NtpCardsMediatorUnitTest {
         View backButton = mock(View.class);
         clearInvocations(mBottomSheetPropertyModel);
         when(mDelegate.shouldShowAlone()).thenReturn(false);
-        new NtpCardsMediator(mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate);
+        new NtpCardsMediator(
+                mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate, mProfileSupplier);
         verify(mBottomSheetPropertyModel)
                 .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
         mBackPressHandlerCaptor.getValue().onClick(backButton);
@@ -123,10 +154,43 @@ public class NtpCardsMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
     public void testDestroy() {
-        mNtpCardsMediator.destroy();
+        NtpCardsMediator spy = spy(mNtpCardsMediator);
+        spy.destroy();
 
         verify(mBottomSheetPropertyModel).set(eq(BACK_PRESS_HANDLER), eq(null));
         verify(mContainerPropertyModel).set(eq(LIST_CONTAINER_VIEW_DELEGATE), eq(null));
+        verify(spy).updateUserPrefs();
+    }
+
+    @Test
+    public void updateUserPrefsTest() {
+        // Set a preference value.
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String prefKey = HomeModulesUtils.getSettingsPreferenceKey(ModuleType.SINGLE_TAB);
+        sharedPreferencesManager.writeBoolean(prefKey, true);
+
+        mNtpCardsMediator.updateUserPrefs();
+
+        // Verify that UserPrefs.setBoolean is called.
+        verify(mPrefService).setBoolean(Pref.TAB_RESUMPTION_HOME_MODULE_ENABLED, true);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+    public void updateUserPrefsTest_FeatureDisabled() {
+        mNtpCardsMediator.updateUserPrefs();
+
+        // Verify that UserPrefs.setBoolean is not called.
+        verify(mPrefService, never()).setBoolean(anyString(), anyBoolean());
+    }
+
+    @Test
+    public void updateUserPrefsTest_ProfileNull() {
+        mNtpCardsMediator.updateUserPrefs();
+
+        // Verify that UserPrefs.setBoolean is not called.
+        verify(mPrefService, never()).setBoolean(anyString(), anyBoolean());
     }
 }

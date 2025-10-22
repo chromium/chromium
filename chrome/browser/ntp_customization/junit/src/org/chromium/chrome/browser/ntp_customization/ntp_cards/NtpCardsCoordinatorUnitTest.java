@@ -17,24 +17,34 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for {@link NtpCardsCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
 public class NtpCardsCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private BottomSheetDelegate mBottomSheetDelegate;
+    @Mock private Profile mProfile;
 
     private NtpCardsCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
-        mCoordinator = new NtpCardsCoordinator(context, Mockito.mock(BottomSheetDelegate.class));
+        mCoordinator =
+                new NtpCardsCoordinator(
+                        context, mBottomSheetDelegate, new ObservableSupplierImpl<>(mProfile));
     }
 
     @Test

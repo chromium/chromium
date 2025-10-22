@@ -242,6 +242,8 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//components/image_fetcher:java",
     "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/android_deps:org_robolectric_shadows_framework_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

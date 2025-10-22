@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getTitleForModuleType;
 
 import android.content.Context;
@@ -38,7 +39,7 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
         for (@ModuleType int moduleType : moduleTypeShownInSettings) {
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
-            currentSwitch.setKey(homeModulesConfigManager.getSettingsPreferenceKey(moduleType));
+            currentSwitch.setKey(getSettingsPreferenceKey(moduleType));
             currentSwitch.setTitle(getTitleForModuleType(moduleType, context));
 
             // Set up listeners and update the page.

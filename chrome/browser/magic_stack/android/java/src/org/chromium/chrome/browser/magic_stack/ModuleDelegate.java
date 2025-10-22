@@ -18,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 /** The interface for magic stack which owns a list of modules. */
 @NullMarked
 public interface ModuleDelegate {
+    // LINT.IfChange(HomeModuleTypes)
     /**
      * Module types that are shown in the magic stack on the home surfaces.
      *
@@ -53,6 +54,8 @@ public interface ModuleDelegate {
         int HISTORY_SYNC_PROMO = 10;
         int NUM_ENTRIES = 11;
     }
+
+    // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes)
 
     /**
      * Called when a module has a PropertyModel ready. This could be called multiple times from the
