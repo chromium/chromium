@@ -87,20 +87,6 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
                    bool is_warning) override;
   void OnOrbError(const std::optional<std::string>& devtools_request_id,
                   const GURL& url) override;
-  void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
-                                      const std::vector<GURL>& urls) override;
-  void OnSubresourceWebBundleMetadataError(
-      const std::string& devtools_request_id,
-      const std::string& error_message) override;
-  void OnSubresourceWebBundleInnerResponse(
-      const std::string& inner_request_devtools_id,
-      const GURL& url,
-      const std::optional<std::string>& bundle_request_devtools_id) override;
-  void OnSubresourceWebBundleInnerResponseError(
-      const std::string& inner_request_devtools_id,
-      const GURL& url,
-      const std::string& error_message,
-      const std::optional<std::string>& bundle_request_devtools_id) override;
   void OnSharedDictionaryError(
       const std::string& devtool_request_id,
       const GURL& url,

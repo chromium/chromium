@@ -35,8 +35,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const GURL& bundle_url,
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      std::optional<std::string> devtools_request_id,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
 

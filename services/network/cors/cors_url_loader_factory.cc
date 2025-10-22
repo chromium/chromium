@@ -399,17 +399,10 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       network::mojom::RequestDestination::kWebBundle) {
     DCHECK(resource_request.web_bundle_token_params.has_value());
 
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
-    if (resource_request.devtools_request_id.has_value()) {
-      devtools_observer = GetDevToolsObserver(resource_request);
-    }
-
     base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
         context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
             resource_request.url, *resource_request.web_bundle_token_params,
-            process_id_, std::move(devtools_observer),
-            resource_request.devtools_request_id, cross_origin_embedder_policy_,
-            coep_reporter());
+            process_id_, cross_origin_embedder_policy_, coep_reporter());
     client = web_bundle_url_loader_factory->MaybeWrapURLLoaderClient(
         std::move(client));
     if (!client) {

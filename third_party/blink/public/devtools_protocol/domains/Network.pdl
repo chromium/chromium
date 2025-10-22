@@ -1929,50 +1929,6 @@ domain Network
   # Fired once security policy has been updated.
   experimental event policyUpdated
 
-  # Fired once when parsing the .wbn file has succeeded.
-  # The event contains the information about the web bundle contents.
-  experimental event subresourceWebBundleMetadataReceived
-    parameters
-      # Request identifier. Used to match this information to another event.
-      RequestId requestId
-      # A list of URLs of resources in the subresource Web Bundle.
-      array of string urls
-
-  # Fired once when parsing the .wbn file has failed.
-  experimental event subresourceWebBundleMetadataError
-    parameters
-      # Request identifier. Used to match this information to another event.
-      RequestId requestId
-      # Error message
-      string errorMessage
-
-  # Fired when handling requests for resources within a .wbn file.
-  # Note: this will only be fired for resources that are requested by the webpage.
-  experimental event subresourceWebBundleInnerResponseParsed
-    parameters
-      # Request identifier of the subresource request
-      RequestId innerRequestId
-      # URL of the subresource resource.
-      string innerRequestURL
-      # Bundle request identifier. Used to match this information to another event.
-      # This made be absent in case when the instrumentation was enabled only
-      # after webbundle was parsed.
-      optional RequestId bundleRequestId
-
-  # Fired when request for resources within a .wbn file failed.
-  experimental event subresourceWebBundleInnerResponseError
-    parameters
-      # Request identifier of the subresource request
-      RequestId innerRequestId
-      # URL of the subresource resource.
-      string innerRequestURL
-      # Error message
-      string errorMessage
-      # Bundle request identifier. Used to match this information to another event.
-      # This made be absent in case when the instrumentation was enabled only
-      # after webbundle was parsed.
-      optional RequestId bundleRequestId
-
   experimental type CrossOriginOpenerPolicyValue extends string
     enum
       SameOrigin
