@@ -162,19 +162,19 @@ class KeyboardAccessoryMediator
      *     bar.
      */
     private void setBarContents(List<BarItem> scrollableItems) {
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList
-                                .AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_WIDTH_ADJUSTMENT)) {
-            // TODO: crbug.com/385172647 - Create groups only for the docked keyboard accessory.
+        // Chip width limiting works when the keyboard accessory spans the whole screen width. Thus
+        // the chip group is created only for the docked keyboard accessory. If the suggestions are
+        // not grouped initially and then grouped when the STYLE is set, it can cause a UI glitch.
+        // However, the manual filling component's STYLE property is updated when the component is
+        // shown, so it's not possible.
+        if (shouldLimitSuggestionWidth()) {
+            // Create chip group to limit chip width only when the keyboard accessory style is set
+            // to docked.
             scrollableItems = createGroupBarItem(scrollableItems);
         }
         // TODO(crbug.com/441006939): Show dismiss on first launch too.
         List<BarItem> fixedBarItems = new ArrayList<BarItem>();
-        if (mIsLargeFormFactorSupplier.get()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
+        if (showFloatingKeyboardAccessory()) {
             fixedBarItems.add(mModel.get(SHEET_OPENER_ITEM));
             fixedBarItems.add(mModel.get(DISMISS_ITEM));
         } else {
@@ -185,7 +185,11 @@ class KeyboardAccessoryMediator
         mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
     }
 
-    private List<BarItem> createGroupBarItem(List<BarItem> scrollableItems) {
+    private List<BarItem> createGroupBarItem(Iterable<BarItem> scrollableItemsIterable) {
+        List<BarItem> scrollableItems = new ArrayList<>();
+        for (BarItem item : scrollableItemsIterable) {
+            scrollableItems.add(item);
+        }
         List<ActionBarItem> autofillBarItems = new ArrayList<>();
         // Collect at most 3 Autofill suggestions that are in the beginning of the list.
         for (int i = 0; i < scrollableItems.size() && autofillBarItems.size() < 3; i++) {
@@ -208,6 +212,18 @@ class KeyboardAccessoryMediator
         GroupBarItem groupBarItem = new GroupBarItem(autofillBarItems);
         scrollableItems.add(0, groupBarItem);
         return scrollableItems;
+    }
+
+    private List<BarItem> ungroupBarItems(Iterable<BarItem> scrollableItems) {
+        List<BarItem> barItems = new ArrayList<>();
+        for (BarItem barItem : scrollableItems) {
+            if (barItem instanceof GroupBarItem) {
+                barItems.addAll(barItem.getActionBarItems());
+            } else {
+                barItems.add(barItem);
+            }
+        }
+        return barItems;
     }
 
     private List<BarItem> collectItemsToRetain(@AccessoryAction int actionType) {
@@ -425,6 +441,11 @@ class KeyboardAccessoryMediator
 
     void setStyle(KeyboardAccessoryStyle style) {
         mModel.set(STYLE, style);
+        if (style.isDocked()) {
+            mModel.get(BAR_ITEMS).set(createGroupBarItem(mModel.get(BAR_ITEMS)));
+        } else {
+            mModel.get(BAR_ITEMS).set(ungroupBarItems(mModel.get(BAR_ITEMS)));
+        }
     }
 
     void setHasStickyLastItem(boolean hasStickyLastItem) {
@@ -509,6 +530,20 @@ class KeyboardAccessoryMediator
             }
         }
         return R.string.select_passkey;
+    }
+
+    private boolean showFloatingKeyboardAccessory() {
+        return mIsLargeFormFactorSupplier.get()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
+    }
+
+    private boolean shouldLimitSuggestionWidth() {
+        return !showFloatingKeyboardAccessory()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_WIDTH_ADJUSTMENT);
     }
 
     void addObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
