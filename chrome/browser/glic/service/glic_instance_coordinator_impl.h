@@ -156,7 +156,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   std::unique_ptr<HostManager> host_manager_;
 
-  raw_ptr<GlicInstance> active_instance_ = nullptr;
+  raw_ptr<GlicInstanceImpl> active_instance_ = nullptr;
+  raw_ptr<GlicInstanceImpl> last_active_instance_ = nullptr;
   base::RepeatingCallbackList<void(GlicInstance*)>
       active_instance_changed_callback_list_;
 

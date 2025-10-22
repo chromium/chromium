@@ -1380,6 +1380,11 @@ inline constexpr char kGlicEntrypointVariationsName[] =
     "Glic Entrypoint Variations";
 inline constexpr char kGlicEntrypointVariationsDescription[] =
     "Enables visual tweaks to the Glic entry button in the tab strip.";
+inline constexpr char kGlicDefaultToLastActiveConversationName[] =
+    "Glic Default To Last Active Conversation";
+inline constexpr char kGlicDefaultToLastActiveConversationDescription[] =
+    "Enables the last active conversation as the default conversation when "
+    "opening a new Glic side panel instance.";
 
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";

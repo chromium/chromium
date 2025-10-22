@@ -5537,6 +5537,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-default-to-last-active-conversation",
+    "owners": [ "sanaakbani@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-detached",
     "owners": [
       "dewittj@chromium.org",

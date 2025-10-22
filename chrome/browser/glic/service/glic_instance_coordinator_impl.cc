@@ -74,6 +74,7 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
   // Delete all instances before destruction. Destroying web contents can result
   // in various calls to dependencies.
   active_instance_ = nullptr;
+  last_active_instance_ = nullptr;
   auto instances = std::exchange(instances_, {});
   instances.clear();
   warmed_instance_.reset();
@@ -83,7 +84,8 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
     GlicInstance* instance,
     bool is_active) {
   if (is_active && active_instance_ != instance) {
-    active_instance_ = instance;
+    active_instance_ = static_cast<GlicInstanceImpl*>(instance);
+    last_active_instance_ = active_instance_;
   } else if (!is_active && active_instance_ == instance) {
     active_instance_ = nullptr;
   } else {
@@ -284,6 +286,12 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     return instance;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kGlicDefaultToLastActiveConversation) &&
+      last_active_instance_) {
+    return last_active_instance_;
+  }
+
   // Create a new conversation and instance.
   auto* new_instance = CreateGlicInstance();
   if (tab) {
@@ -326,6 +334,13 @@ void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
   auto* floaty_instance = GetInstanceWithFloaty();
+  if (!floaty_instance && base::FeatureList::IsEnabled(
+                              features::kGlicDefaultToLastActiveConversation)) {
+    floaty_instance = last_active_instance_;
+  }
+
+  // If there's not an open floaty, or a last active instance, create a new
+  // instance.
   if (!floaty_instance) {
     floaty_instance = CreateGlicInstance();
   }
@@ -351,6 +366,9 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
   InstanceId id = instance->id();
   auto instance_value = std::exchange(instances_[id], {});
   instances_.erase(id);
+  if (instance == last_active_instance_) {
+    last_active_instance_ = nullptr;
+  }
 }
 
 void GlicInstanceCoordinatorImpl::SwitchConversation(

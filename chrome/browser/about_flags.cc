@@ -11800,6 +11800,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicEntrypointVariations,
                                     kGlicEntrypointVariations,
                                     "GlicEntrypointVariations")},
+    {"glic-default-to-last-active-conversation",
+     flag_descriptions::kGlicDefaultToLastActiveConversationName,
+     flag_descriptions::kGlicDefaultToLastActiveConversationDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicDefaultToLastActiveConversation)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
