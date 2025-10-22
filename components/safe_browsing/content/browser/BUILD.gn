@@ -165,9 +165,11 @@ source_set("unit_tests") {
     "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
     "client_side_phishing_model_unittest.cc",
+    "credit_card_form_event_unittest.cc",
   ]
 
   deps = [
+    ":client_side_detection",
     ":client_side_detection_images_cache",
     "//base",
     "//base/test:test_support",
@@ -277,6 +279,8 @@ if (safe_browsing_mode != 0) {
     sources = [
       "client_side_detection_host.cc",
       "client_side_detection_host.h",
+      "credit_card_form_event.cc",
+      "credit_card_form_event.h",
       "safe_browsing_tab_observer.cc",
       "safe_browsing_tab_observer.h",
     ]

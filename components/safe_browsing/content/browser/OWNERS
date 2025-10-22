@@ -9,3 +9,4 @@ per-file ui_manager*=skrakowi@chromium.org
 # CSD model
 # For non-mechanical changes, please send to nwokedi@ first as pre-reviewer.
 per-file client_side_*=andysjlim@chromium.org
+per-file credit_card_form*=andysjlim@chromium.org
