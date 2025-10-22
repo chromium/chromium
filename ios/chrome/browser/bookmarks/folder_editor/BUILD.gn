@@ -18,8 +18,8 @@ source_set("coordinator_headers") {
     "//ios/chrome/browser/bookmarks/folder_chooser/coordinator",
   ]
   sources = [
-    "bookmarks_folder_editor_coordinator.h",
-    "bookmarks_folder_editor_coordinator_delegate.h",
+    "coordinator/bookmarks_folder_editor_coordinator.h",
+    "coordinator/bookmarks_folder_editor_coordinator_delegate.h",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 }
@@ -29,7 +29,7 @@ source_set("coordinator_headers") {
 # Contains coordinator implementation.
 source_set("coordinator_impl") {
   visibility = [ ":folder_editor" ]
-  sources = [ "bookmarks_folder_editor_coordinator.mm" ]
+  sources = [ "coordinator/bookmarks_folder_editor_coordinator.mm" ]
   deps = [
     ":coordinator_headers",
     ":ui",
@@ -51,8 +51,8 @@ source_set("coordinator_impl") {
 source_set("ui") {
   visibility = [ ":coordinator_impl" ]
   sources = [
-    "bookmarks_folder_editor_view_controller.h",
-    "bookmarks_folder_editor_view_controller.mm",
+    "ui/bookmarks_folder_editor_view_controller.h",
+    "ui/bookmarks_folder_editor_view_controller.mm",
   ]
   deps = [
     "//base",
