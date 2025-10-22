@@ -1893,7 +1893,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (stripLayoutHelperManager == null) return false;
             return stripLayoutHelperManager.openKeyboardFocusedContextMenu();
         } else if (id == R.id.focus_bookmarks) {
-            if (mBookmarkBarCoordinator != null) mBookmarkBarCoordinator.requestFocus();
+            if (mBookmarkBarCoordinator != null && mBookmarkBarCoordinator.isVisible()) {
+                mBookmarkBarCoordinator.requestFocus();
+            }
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
