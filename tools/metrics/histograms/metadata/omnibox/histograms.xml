@@ -158,6 +158,8 @@ chromium-metrics-reviews@google.com.
   <variant name="JOURNEYS"
       summary="Journeys landing page, side Panel or the NTP"/>
   <variant name="JUMP_START" summary="JumpStart Omnibox (Android)"/>
+  <variant name="LENS_SIDE_PANEL_COMPOSEBOX"
+      summary="Lens side panel composebox"/>
   <variant name="LENS_SIDE_PANEL_SEARCHBOX"
       summary="Lens side panel searchbox"/>
   <variant name="NTP"

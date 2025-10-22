@@ -25,7 +25,7 @@ class SearchTermsData {
     CROS_APP_LIST,   // Chrome OS app list searchbox.
     NTP_MODULE,      // NTP modules.
     LENS_OVERLAY,    // Lens Overlay searchboxes.
-    NTP_COMPOSEBOX,  // Lens Overlay searchboxes.
+    NTP_COMPOSEBOX,  // NTP or Lens Side Panel composebox.
   };
 
   // Utility function that takes a snapshot of a different SearchTermsData

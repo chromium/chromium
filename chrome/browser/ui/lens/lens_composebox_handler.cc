@@ -79,10 +79,7 @@ LensComposeboxOmniboxClient::~LensComposeboxOmniboxClient() = default;
 
 metrics::OmniboxEventProto::PageClassification
 LensComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  // TODO(crbug.com/441808425): This page classification should be passed in
-  // from the embedder so that it can be customized. Currently, Lens is logging
-  // as NTP_COMPOSEBOX, but it should be its own page classification.
-  return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+  return metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX;
 }
 
 void LensComposeboxOmniboxClient::OnAutocompleteAccept(

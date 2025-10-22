@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -170,9 +171,8 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
   if (search_terms_args.page_classification ==
           metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX ||
       search_terms_args.page_classification ==
-          metrics::OmniboxEventProto::NTP_COMPOSEBOX ||
-      search_terms_args.page_classification ==
-          metrics::OmniboxEventProto::NTP_REALBOX) {
+          metrics::OmniboxEventProto::NTP_REALBOX ||
+      omnibox::IsComposebox(search_terms_args.page_classification)) {
     send_request_and_session_ids =
         lens_overlay_suggest_inputs
             ->send_gsession_vsrid_for_contextual_suggest();
@@ -300,6 +300,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
     }
     case metrics::OmniboxEventProto::NTP_REALBOX:
     case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
+    case metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX:
       if (search_terms_args.lens_overlay_suggest_inputs.has_value()) {
         url = net::AppendOrReplaceQueryParameter(url, "client",
                                                  "chrome-contextual");

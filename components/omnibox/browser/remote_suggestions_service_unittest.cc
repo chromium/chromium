@@ -13,8 +13,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/lens/lens_features.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -565,6 +567,76 @@ TEST_F(RemoteSuggestionsServiceTest,
   TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  search_terms_args.lens_overlay_suggest_inputs =
+      std::make_optional<lens::proto::LensOverlaySuggestInputs>();
+  search_terms_args.lens_overlay_suggest_inputs->set_encoded_image_signals(
+      "iil");
+
+  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      google_template_url, search_terms_args, SearchTermsData());
+
+  // No additional query params is appended for empty Lens suggest inputs.
+  // iil is not expected to be sent for contextual searchbox requests.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&gs_ps=1");
+
+  search_terms_args.lens_overlay_suggest_inputs->set_encoded_request_id(
+      "vsrid");
+  search_terms_args.lens_overlay_suggest_inputs->set_search_session_id(
+      "gsessionid");
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      google_template_url, search_terms_args, SearchTermsData());
+
+  // No additional query params are appended for empty Lens suggest inputs
+  // because send_gsession_vsrid_for_contextual_suggest is false.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&gs_ps=1");
+
+  search_terms_args.lens_overlay_suggest_inputs
+      ->set_send_gsession_vsrid_for_contextual_suggest(true);
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      google_template_url, search_terms_args, SearchTermsData());
+
+  // Appended gsessionid and vsrids.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&gs_ps=1&vsrid=vsrid&"
+            "gsessionid=gsessionid");
+
+  search_terms_args.lens_overlay_suggest_inputs
+      ->set_contextual_visual_input_type("vit");
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      google_template_url, search_terms_args, SearchTermsData());
+
+  // Appended vit.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&gs_ps=1&vit=vit&vsrid="
+            "vsrid&gsessionid=gsessionid");
+}
+
+TEST_F(RemoteSuggestionsServiceTest,
+       LensOverlaySuggestInputsAppendedQueryParamsForLensComposeboxContextual) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensAimSuggestions,
+      {{lens::features::kLensAimSuggestionsType.name,
+        lens::features::kLensAimSuggestionsTypeContextual}});
+
+  // Set up a Google search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
+  TemplateURL google_template_url(google_template_url_data);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX;
   search_terms_args.lens_overlay_suggest_inputs =
       std::make_optional<lens::proto::LensOverlaySuggestInputs>();
   search_terms_args.lens_overlay_suggest_inputs->set_encoded_image_signals(
