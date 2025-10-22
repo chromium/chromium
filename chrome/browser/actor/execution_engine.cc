@@ -84,6 +84,23 @@ void PostTaskForActCallback(
 
 }  // namespace
 
+ToolDelegate::CredentialWithPermission::CredentialWithPermission() = default;
+ToolDelegate::CredentialWithPermission::CredentialWithPermission(
+    const actor_login::Credential& credential,
+    webui::mojom::UserGrantedPermissionDuration permission_duration)
+    : credential(credential), permission_duration(permission_duration) {}
+ToolDelegate::CredentialWithPermission::CredentialWithPermission(
+    const CredentialWithPermission&) = default;
+ToolDelegate::CredentialWithPermission::CredentialWithPermission(
+    CredentialWithPermission&&) = default;
+ToolDelegate::CredentialWithPermission&
+ToolDelegate::CredentialWithPermission::operator=(
+    const CredentialWithPermission&) = default;
+ToolDelegate::CredentialWithPermission&
+ToolDelegate::CredentialWithPermission::operator=(CredentialWithPermission&&) =
+    default;
+ToolDelegate::CredentialWithPermission::~CredentialWithPermission() = default;
+
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
@@ -620,11 +637,12 @@ void ExecutionEngine::PromptToSelectCredential(
 }
 
 void ExecutionEngine::SetUserSelectedCredential(
-    const actor_login::Credential& credential) {
-  user_selected_credentials_[credential.request_origin] = credential;
+    const ToolDelegate::CredentialWithPermission& credential_with_permission) {
+  user_selected_credentials_[credential_with_permission.credential
+                                 .request_origin] = credential_with_permission;
 }
 
-const std::optional<actor_login::Credential>
+const std::optional<ToolDelegate::CredentialWithPermission>
 ExecutionEngine::GetUserSelectedCredential(
     const url::Origin& request_origin) const {
   auto it = user_selected_credentials_.find(request_origin);

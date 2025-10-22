@@ -167,6 +167,8 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
                 response: {
                   taskId: request.taskId,
                   selectedCredentialId: request.credentials[1].id,
+                  // 1 corresponds to UserGrantedPermissionDuration.ALWAYS_ALLOW
+                  permissionDuration: 1,
                 }
               });
 
@@ -265,6 +267,7 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
       mock_login_service().last_credential_used();
   ASSERT_TRUE(last_credential_used.has_value());
   EXPECT_EQ(u"username2", last_credential_used->username);
+  EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
 }
 
 }  // namespace actor

@@ -12,8 +12,10 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor_webui.mojom-data-view.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
@@ -105,11 +107,14 @@ void AttemptLoginTool::Invoke(InvokeCallback callback) {
   // First check if there is a user selected credential for the current request
   // origin. If so, use it immediately.
   const url::Origin& current_origin = main_rfh->GetLastCommittedOrigin();
-  const std::optional<actor_login::Credential> user_selected_credential =
-      tool_delegate().GetUserSelectedCredential(current_origin);
-  if (user_selected_credential.has_value()) {
+  const std::optional<ToolDelegate::CredentialWithPermission>
+      user_selected_credential_and_pemission =
+          tool_delegate().GetUserSelectedCredential(current_origin);
+  if (user_selected_credential_and_pemission.has_value()) {
     GetActorLoginService().AttemptLogin(
-        tab, *user_selected_credential, /*should_store_permission=*/false,
+        tab, user_selected_credential_and_pemission->credential,
+        user_selected_credential_and_pemission->permission_duration ==
+            webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -258,7 +263,11 @@ void AttemptLoginTool::OnCredentialSelected(
   }
 
   // Cache the user selected credential for reuse.
-  tool_delegate().SetUserSelectedCredential(*selected_credential);
+  tool_delegate().SetUserSelectedCredential(
+      ToolDelegate::CredentialWithPermission(
+          *selected_credential,
+          response->permission_duration.value_or(
+              webui::mojom::UserGrantedPermissionDuration::kOneTime)));
 
   tabs::TabInterface* tab = tab_handle_.Get();
   if (!tab) {

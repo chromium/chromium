@@ -64,6 +64,7 @@ void MockActorLoginService::AttemptLogin(
     bool should_store_permission,
     actor_login::LoginStatusResultOrErrorReply callback) {
   last_credential_used_ = credential;
+  last_permission_was_permanent_ = should_store_permission;
   std::move(callback).Run(login_status_);
 }
 
@@ -85,6 +86,9 @@ void MockActorLoginService::SetLoginStatus(
 const std::optional<actor_login::Credential>&
 MockActorLoginService::last_credential_used() const {
   return last_credential_used_;
+}
+bool MockActorLoginService::last_permission_was_permanent() const {
+  return last_permission_was_permanent_;
 }
 
 ActorToolsTest::ActorToolsTest() {

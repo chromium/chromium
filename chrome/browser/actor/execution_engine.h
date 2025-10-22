@@ -118,8 +118,8 @@ class ExecutionEngine : public ToolDelegate {
       const base::flat_map<std::string, gfx::Image>& icons,
       ToolDelegate::CredentialSelectedCallback callback) override;
   void SetUserSelectedCredential(
-      const actor_login::Credential& credential) override;
-  const std::optional<actor_login::Credential> GetUserSelectedCredential(
+      const CredentialWithPermission& credential) override;
+  const std::optional<CredentialWithPermission> GetUserSelectedCredential(
       const url::Origin& request_origin) const override;
 
   // Callback for when a credential is selected, in response to
@@ -280,7 +280,7 @@ class ExecutionEngine : public ToolDelegate {
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the
   // `Credential::request_origin`.
-  base::flat_map<url::Origin, actor_login::Credential>
+  base::flat_map<url::Origin, CredentialWithPermission>
       user_selected_credentials_;
 
   base::ObserverList<StateObserver> observers_;

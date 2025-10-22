@@ -11,13 +11,13 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace actor_login {
 class ActorLoginService;
-struct Credential;
 }  // namespace actor_login
 
 namespace favicon {
@@ -62,12 +62,33 @@ class ToolDelegate {
       const base::flat_map<std::string, gfx::Image>& icons,
       CredentialSelectedCallback callback) = 0;
 
+  // Combines a `credential` and the duration of the permission a user chose in
+  // the account picker.
+  struct CredentialWithPermission {
+    CredentialWithPermission();
+    CredentialWithPermission(
+        const actor_login::Credential& credential,
+        webui::mojom::UserGrantedPermissionDuration permission_duration);
+    CredentialWithPermission(const CredentialWithPermission&);
+    CredentialWithPermission(CredentialWithPermission&&);
+    CredentialWithPermission& operator=(const CredentialWithPermission&);
+    CredentialWithPermission& operator=(CredentialWithPermission&&);
+    ~CredentialWithPermission();
+
+    actor_login::Credential credential;
+    // The duration of the permission the user gave for `credential`. As opposed
+    // to actor_login::Credential::has_persistent_permission, this comes from
+    // the credential picker and is not yet stored in the PWM DB.
+    webui::mojom::UserGrantedPermissionDuration permission_duration;
+  };
   // Sets / gets the credential that the user has chosen to allow the
   // actor to use. The selected credential can be used for multi-step login
   // within the same task.
+  // `permission_duration` can be one-time or permanent. Permanent permission
+  // means the `credential` can be used in future calls to the tool.
   virtual void SetUserSelectedCredential(
-      const actor_login::Credential& credential) = 0;
-  virtual const std::optional<actor_login::Credential>
+      const CredentialWithPermission& credential) = 0;
+  virtual const std::optional<CredentialWithPermission>
   GetUserSelectedCredential(const url::Origin& request_origin) const = 0;
 };
 
