@@ -3223,14 +3223,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // roots have disabled untrusted network access.
   bool CanReadFromSharedStorage();
 
-  // Returns true if this RFH's compositor should be reused by a speculative
-  // RFH with the `speculative_site_instance`.
-  // Returns false if the speculative RFH should initialize a new compositor.
-  bool ShouldReuseCompositing(
-      SiteInstanceImpl& speculative_site_instance) const;
-
-  void NotifyWillCreateRenderWidgetOnCommit();
-
   // If this RenderFrameHost is a local root (i.e., either the main frame or a
   // subframe in a different process than its parent), this returns the
   // RenderWidgetHost corresponding to this frame. Otherwise this returns null.
@@ -5531,10 +5523,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Listens for changes to DeviceBoundSessions on this page.
   std::unique_ptr<DeviceBoundSessionObserver> device_bound_session_observer_;
-
-  // If true, the renderer side widget is created after the navigation is
-  // committed.
-  bool waiting_for_renderer_widget_creation_after_commit_ = false;
 
   // Deferred shared storage operations to run after navigation commit in the
   // event of a race between navigation and subresource request(s).

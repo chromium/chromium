@@ -20941,9 +20941,6 @@
                         "DelayLayerTreeViewDeletionOnLocalSwap",
                         "QueueNavigationsWhileWaitingForCommit",
                         "RenderDocument"
-                    ],
-                    "disable_features": [
-                        "RenderDocumentCompositorReuse"
                     ]
                 }
             ]

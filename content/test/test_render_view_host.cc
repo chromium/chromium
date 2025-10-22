@@ -446,10 +446,6 @@ bool TestRenderViewHost::CreateRenderView(
                                               proxy_route_id);
   }
 
-  if (!GetWidget()->view_is_frame_sink_id_owner()) {
-    main_frame->NotifyWillCreateRenderWidgetOnCommit();
-  }
-
   DCHECK_EQ(!!main_frame, is_active());
   if (main_frame) {
     // Pretend that we started a renderer process and created the renderer Frame

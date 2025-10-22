@@ -1217,12 +1217,8 @@ bool ShouldNotifySubresourceResponseStarted(
 
 // Initialize the WebFrameWidget with compositing. Only local root frames
 // create a widget.
-// `previous_widget` indicates whether the compositor for the frame which
-// is being replaced by this frame should be used instead of creating a new
-// compositor instance.
 void InitializeFrameWidgetForFrame(
     WebLocalFrame& frame,
-    blink::WebFrameWidget* previous_widget,
     mojom::CreateFrameWidgetParamsPtr widget_params,
     const bool is_for_nested_main_frame) {
   CHECK(widget_params);
@@ -1233,10 +1229,8 @@ void InitializeFrameWidgetForFrame(
   const bool is_for_scalable_page =
       is_main_frame && !frame.View()->IsFencedFrameRoot();
 
-  const auto frame_sink_id =
-      previous_widget ? previous_widget->GetFrameSinkId()
-                      : viz::FrameSinkId(RenderThread::Get()->GetClientId(),
-                                         widget_params->routing_id);
+  const auto frame_sink_id = viz::FrameSinkId(
+      RenderThread::Get()->GetClientId(), widget_params->routing_id);
   auto* web_frame_widget = frame.InitializeFrameWidget(
       std::move(widget_params->frame_widget_host),
       std::move(widget_params->frame_widget),
@@ -1244,15 +1238,9 @@ void InitializeFrameWidgetForFrame(
       frame_sink_id, is_for_nested_main_frame, is_for_scalable_page,
       /*hidden=*/true);
 
-  if (previous_widget) {
-    web_frame_widget->InitializeCompositingFromPreviousWidget(
-        widget_params->visual_properties.screen_infos,
-        /*settings=*/nullptr, *previous_widget);
-  } else {
-    web_frame_widget->InitializeCompositing(
-        widget_params->visual_properties.screen_infos,
-        /*settings=*/nullptr);
-  }
+  web_frame_widget->InitializeCompositing(
+      widget_params->visual_properties.screen_infos,
+      /*settings=*/nullptr);
 
   // The WebFrameWidget should start with valid VisualProperties, including a
   // non-zero size. While WebFrameWidget would not normally receive IPCs and
@@ -1585,8 +1573,6 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
-  CHECK(!params->widget_params->reuse_compositor);
-
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
   // WebFrameWidget, which is now attached here.
@@ -1798,7 +1784,8 @@ void RenderFrameImpl::CreateFrame(
     DCHECK(widget_params);
     DCHECK_NE(widget_params->routing_id, IPC::mojom::kRoutingIdNone);
 
-    render_frame->MaybeInitializeWidget(std::move(widget_params));
+    InitializeFrameWidgetForFrame(*web_frame, std::move(widget_params),
+                                  is_for_nested_main_frame);
 
     // Note that we do *not* call WebView's DidAttachLocalMainFrame() here yet
     // because this frame is provisional and not attached to the Page yet. We
@@ -1818,7 +1805,8 @@ void RenderFrameImpl::CreateFrame(
     // root, it implies there is some remote frame ancestor between this frame
     // and the main frame, thus its coordinate space etc is not known relative
     // to the main frame.
-    render_frame->MaybeInitializeWidget(std::move(widget_params));
+    InitializeFrameWidgetForFrame(*web_frame, std::move(widget_params),
+                                  is_for_nested_main_frame);
   }
 
   if (!is_on_initial_empty_document) {
@@ -1912,8 +1900,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
           this,
           base::BindRepeating(&RenderFrameImpl::RequestOverlayRoutingToken,
                               base::Unretained(this))),
-      devtools_frame_token_(params.devtools_frame_token),
-      is_for_nested_main_frame_(params.is_for_nested_main_frame) {
+      devtools_frame_token_(params.devtools_frame_token) {
   TRACE_EVENT_WITH_FLOW0("navigation", "RenderFrameImpl::RenderFrameImpl",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(RenderThread::IsMainThread());
@@ -3690,62 +3677,11 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
                                                    name.Utf8());
 }
 
-void RenderFrameImpl::MaybeInitializeWidget(
-    mojom::CreateFrameWidgetParamsPtr widget_params) {
-  if (widget_params->reuse_compositor) {
-    // Initializing the widget is deferred until commit if this RenderFrame
-    // will be replacing a previous RenderFrame. This enables reuse of the
-    // compositing setup which is expensive.
-    // This step must be deferred until commit since this RenderFrame could be
-    // speculative and the previous RenderFrame will continue to be visible
-    // and animating until commit.
-    //
-    // TODO(khushalsagar): Ideal would be to move the widget initialization to
-    // the commit stage for all cases. This shouldn't have any perf impact
-    // since the expensive parts of compositing (setting up a connection to
-    // the GPU process) is not done until the frame is made visible, which
-    // happens at commit.
-    widget_params_for_lazy_widget_creation_ = std::move(widget_params);
-    return;
-  }
-
-  InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
-                                std::move(widget_params),
-                                is_for_nested_main_frame_);
-}
-
-void RenderFrameImpl::InitializeWidgetAtSwap(
-    blink::WebLocalFrame& frame_for_compositor_reuse) {
-  CHECK(widget_params_for_lazy_widget_creation_);
-  DCHECK(widget_params_for_lazy_widget_creation_->reuse_compositor);
-
-  InitializeFrameWidgetForFrame(
-      *frame_, frame_for_compositor_reuse.FrameWidget(),
-      std::move(widget_params_for_lazy_widget_creation_),
-      is_for_nested_main_frame_);
-}
-
 void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
   if (detach_reason == blink::DetachReason::kNavigation) {
     if (navigation_client_impl_ &&
         ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
       navigation_client_impl_->ResetWithoutCancelling();
-    }
-
-    // If `provisional_frame_for_local_root_swap_` is set by `Swap()`, the
-    // widget for the frame being swapped in needs to be initialized now. At
-    // this point, the compositor can be passed off safely since the `Document`
-    // has already been torn down.
-    //
-    // TODO(dcheng): This mechanism could probably be used for passing off the
-    // unique name as well...
-    if (provisional_frame_for_local_root_swap_) {
-      CHECK_EQ(
-          provisional_frame_for_local_root_swap_->is_for_nested_main_frame_,
-          is_for_nested_main_frame_);
-      provisional_frame_for_local_root_swap_->InitializeWidgetAtSwap(
-          CHECK_DEREF(GetWebFrame()));
-      provisional_frame_for_local_root_swap_ = nullptr;
     }
   }
 
@@ -5365,18 +5301,6 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
   // Swapping out a frame can dispatch JS event handlers, causing `this` to be
   // deleted.
   bool is_main_frame = is_main_frame_;
-  if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame);
-      render_frame && widget_params_for_lazy_widget_creation_) {
-    // For local -> local swaps that lazily initialize the widget, tell the
-    // previous RenderFrame (i.e. the frame being swapped out) about `this`
-    // (i.e. the frame being swapped in), so `WillDetach()` on the previous
-    // RenderFrame can pass off its compositor to `this` for reuse.
-    //
-    // TODO(dcheng): Blink should already know the provisional frame internally;
-    // consider exposing that through the public API to avoid having to plumb
-    // state at a distance like this.
-    render_frame->provisional_frame_for_local_root_swap_ = GetWeakPtr();
-  }
   if (!previous_web_frame->Swap(frame_)) {
     // Main frames should always swap successfully because there is no parent
     // frame to cause them to become detached.
@@ -6927,7 +6851,6 @@ WebView* RenderFrameImpl::CreateNewWindow(
   auto widget_params = mojom::CreateFrameWidgetParams::New();
   widget_params->routing_id = reply->widget_routing_id;
   widget_params->visual_properties = reply->visual_properties;
-  widget_params->reuse_compositor = false;
   widget_params->widget_host = std::move(widget_host);
   widget_params->widget = std::move(widget);
   widget_params->frame_widget_host = std::move(frame_widget_host);

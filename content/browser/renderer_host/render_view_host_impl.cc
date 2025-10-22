@@ -544,12 +544,6 @@ bool RenderViewHostImpl::CreateRenderView(
         frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
         frame_tree_node->current_frame_host()->GetSiteInstance()->group() ==
             site_instance_group_.get()) {
-      local_frame_params->widget_params->reuse_compositor =
-          frame_tree_node->current_frame_host()->ShouldReuseCompositing(
-              *main_rfh->GetSiteInstance());
-      if (local_frame_params->widget_params->reuse_compositor) {
-        main_rfh->NotifyWillCreateRenderWidgetOnCommit();
-      }
 
       params->main_frame =
           mojom::CreateMainFrameUnion::NewProvisionalLocalParams(

@@ -948,20 +948,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void InitializeMediaStreamDeviceObserver();
 
-  // Called when the RenderFrameImpl is created. This either:
-  // - creates and initializes the WebFrameWidget with a new compositor, i.e.
-  //   the "typical" case or
-  // - stashes the creation params for later use. Experimental mode used only
-  //   for local -> local RenderFrame swaps. Widget creation will be deferred
-  //   until commit; when created, the widget will reuse the previous
-  //   RenderFrame's compositor.
-  void MaybeInitializeWidget(mojom::CreateFrameWidgetParamsPtr widget_params);
-
-  // Called during a LocalFrame<->LocalFrame swap. This creates and initializes
-  // the WebFrameWidget if it was deferred when the RenderFrameImpl was created,
-  // see `MaybeInitializeWidget()` above.
-  void InitializeWidgetAtSwap(blink::WebLocalFrame& previous_frame);
-
   // Sends a `BeginNavigation()` mojo IPC via the mojom::FrameHost interface to
   // the browser.
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
@@ -1592,29 +1578,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // contents) should be sent to the browser immediately. This is normally
   // false, but set to true by some tests.
   bool send_content_state_immediately_ = false;
-
-  // The RenderFrameImpl can be created in 2 modes.
-  //
-  // 1. The associated WebFrameWidget and its compositor is initialized at
-  //    creation time. This is default mode.
-  //
-  // 2. The associated WebFrameWidget and its compositor is initialized at
-  //    commit time. This is done for local RF->local RF navigations to reuse
-  //    the compositor from the previous RFH. This is purely a performance
-  //    optimization.
-  //
-  // When in mode 2, the parameters to create the WebFrameWidget (which are
-  // part of the IPC that created this frame) are cached until commit to lazily
-  // create the WebFrameWidget.
-  mojom::CreateFrameWidgetParamsPtr widget_params_for_lazy_widget_creation_;
-
-  // Set when this RenderFrame is being swapped for
-  // `provisional_frame_for_local_root_swap_`.
-  base::WeakPtr<RenderFrameImpl> provisional_frame_for_local_root_swap_ =
-      nullptr;
-
-  // Set if this RenderFrameImpl is for a main frame which is not top-level.
-  const bool is_for_nested_main_frame_;
 
   // Used by DevTools to defer async client navigations for the duration of
   // handling a CDP command.

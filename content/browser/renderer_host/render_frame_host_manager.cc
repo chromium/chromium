@@ -4157,9 +4157,6 @@ RenderFrameHostManager::CreateRenderFrameHost(
   // RenderViewHost.
   if (create_rvh_case == CreateRenderViewHostCase::kDefault) {
     render_view_host = frame_tree.GetRenderViewHost(site_instance->group());
-  } else if (current_frame_host()->ShouldReuseCompositing(*site_instance)) {
-    frame_sink_id =
-        current_frame_host()->GetRenderWidgetHost()->GetFrameSinkId();
   }
 
   switch (create_frame_case) {

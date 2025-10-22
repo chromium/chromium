@@ -815,9 +815,6 @@ BASE_FEATURE(kSetHistoryInfoOnViewCreation, base::FEATURE_ENABLED_BY_DEFAULT);
 // parameters in ContentFeatureList.java.
 BASE_FEATURE(kSpareRendererProcessPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Reuse compositor instances with RenderDocument
-BASE_FEATURE(kRenderDocumentCompositorReuse, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, set a soft limit on the number of renderer processes on
 // Android, after which Chrome will reuse existing processes when possible.
 // This diverges from current Clank behavior, where we do not set any upper

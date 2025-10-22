@@ -340,12 +340,6 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
           params->main_frame->get_provisional_local_params();
       auto& local_params = provisional_local_params->local_params;
 
-      // It does not make swense to reuse the compositor if there is no previous
-      // RenderFrame to take it from.
-      if (local_params->widget_params->reuse_compositor) {
-        DCHECK(provisional_local_params->previous_frame_token);
-      }
-
       // Create the provisional main LocalFrame.
       // TODO(dcheng): RenderFrameImpl::CreateFrame() should probably be split
       // for clarity, but this is left as an exercise for another day.
