@@ -49,7 +49,8 @@ class MockSystemInfoProvider : public SystemInfoProvider {
 
 class InstallerDownloaderModelTest : public testing::Test {
  protected:
-  InstallerDownloaderModelTest() {
+  InstallerDownloaderModelTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     auto mock_system_info_provider_ptr =
         std::make_unique<StrictMock<MockSystemInfoProvider>>();
     mock_system_info_provider_ = mock_system_info_provider_ptr.get();
@@ -382,6 +383,30 @@ TEST_F(InstallerDownloaderModelTest, DestinationMatchMetricFalse) {
   histograms.ExpectUniqueSample(
       "Windows.InstallerDownloader.DestinationMatches",
       /*sample=*/false, /*expected_bucket_count=*/1);
+}
+
+TEST_F(InstallerDownloaderModelTest, IncrementShowCountUpdatesLastShownTime) {
+  EXPECT_TRUE(GetLocalState()
+                  .GetTime(prefs::kInstallerDownloaderInfobarLastShowTime)
+                  .is_null());
+
+  // First increment should record the current time.
+  model_->IncrementShowCount();
+  const base::Time time1 =
+      GetLocalState().GetTime(prefs::kInstallerDownloaderInfobarLastShowTime);
+  EXPECT_FALSE(time1.is_null());
+  EXPECT_EQ(time1, base::Time::Now());
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  // Second increment should record the new, later time.
+  model_->IncrementShowCount();
+  const base::Time time2 =
+      GetLocalState().GetTime(prefs::kInstallerDownloaderInfobarLastShowTime);
+  EXPECT_FALSE(time2.is_null());
+
+  EXPECT_GT(time2, time1);
+  EXPECT_EQ(time2, time1 + base::Seconds(30));
 }
 
 }  // namespace

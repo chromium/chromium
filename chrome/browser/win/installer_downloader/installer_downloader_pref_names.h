@@ -12,6 +12,9 @@ namespace installer_downloader::prefs {
 inline constexpr char kInstallerDownloaderInfobarShowCount[] =
     "installer_downloader.infobar_show_count";
 
+inline constexpr char kInstallerDownloaderInfobarLastShowTime[] =
+    "installer_downloader.infobar_last_shown_time";
+
 // Bool browser local state that indicates any future infobar display should be
 // prevented even if the max show count is not reached.
 inline constexpr char kInstallerDownloaderPreventFutureDisplay[] =

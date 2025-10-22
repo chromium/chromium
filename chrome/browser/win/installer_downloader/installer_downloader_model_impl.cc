@@ -206,6 +206,8 @@ void InstallerDownloaderModelImpl::IncrementShowCount() {
   local_state->SetInteger(
       prefs::kInstallerDownloaderInfobarShowCount,
       local_state->GetInteger(prefs::kInstallerDownloaderInfobarShowCount) + 1);
+  local_state->SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                       base::Time::Now());
 }
 
 void InstallerDownloaderModelImpl::PreventFutureDisplay() {
