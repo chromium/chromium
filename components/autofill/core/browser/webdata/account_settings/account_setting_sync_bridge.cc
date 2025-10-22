@@ -52,6 +52,16 @@ AccountSettingSyncBridge::AccountSettingSyncBridge(
 
 AccountSettingSyncBridge::~AccountSettingSyncBridge() = default;
 
+void AccountSettingSyncBridge::AddObserver(
+    AccountSettingSyncBridge::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AccountSettingSyncBridge::RemoveObserver(
+    AccountSettingSyncBridge::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 std::optional<bool> AccountSettingSyncBridge::GetBoolSetting(
     std::string_view name) const {
   auto it = settings_.find(name);
@@ -196,6 +206,7 @@ void AccountSettingSyncBridge::StartSyncingWithDataAndMetadata(
   settings_ = base::flat_map<std::string, sync_pb::AccountSettingSpecifics>(
       std::move(processed_entries));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+  observers_.Notify(&Observer::OnDataLoadedFromDisk);
 }
 
 void AccountSettingSyncBridge::ReportErrorIfSet(

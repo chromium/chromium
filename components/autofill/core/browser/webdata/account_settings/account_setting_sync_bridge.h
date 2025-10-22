@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
@@ -14,10 +16,20 @@ namespace autofill {
 // `AccountSettingService`.
 class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the bridge finishes loading the initial data from `store_`
+    // and into `settings_`.
+    virtual void OnDataLoadedFromDisk() = 0;
+  };
+
   explicit AccountSettingSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceDataTypeStoreFactory store_factory);
   ~AccountSettingSyncBridge() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns the value for the setting of the given `name` if the bridge
   // is aware of any such setting, and the setting has the expected type.
@@ -66,6 +78,8 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
   // A copy of the settings from the `store_`, used for synchronous access.
   // Keyed by `AccountSettingSpecifics::name`.
   base::flat_map<std::string, sync_pb::AccountSettingSpecifics> settings_;
+
+  base::ObserverList<AccountSettingSyncBridge::Observer> observers_;
 
   // Sequence checker ensuring that callbacks from the `store_` happen on the
   // bridge's thread.

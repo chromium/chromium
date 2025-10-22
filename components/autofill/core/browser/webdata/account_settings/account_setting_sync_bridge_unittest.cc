@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
@@ -52,11 +53,31 @@ std::vector<SettingSpecifics> ExtractSpecificsFromBatch(
   return specifics;
 }
 
+class MockObserver : public AccountSettingSyncBridge::Observer {
+ public:
+  explicit MockObserver(AccountSettingSyncBridge* bridge) {
+    scoped_observation_.Observe(bridge);
+  }
+
+  MOCK_METHOD(void, OnDataLoadedFromDisk, (), (override));
+
+ private:
+  base::ScopedObservation<AccountSettingSyncBridge,
+                          AccountSettingSyncBridge::Observer>
+      scoped_observation_{this};
+};
+
 class AccountSettingSyncBridgeTest : public testing::Test {
  public:
   AccountSettingSyncBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     RecreateBridgeAndWaitForModelToSync();
+  }
+
+  void RecreateBridge() {
+    bridge_ = std::make_unique<AccountSettingSyncBridge>(
+        mock_processor_.CreateForwardingProcessor(),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
   }
 
   template <typename... Args>
@@ -67,10 +88,7 @@ class AccountSettingSyncBridgeTest : public testing::Test {
     EXPECT_CALL(mock_processor(), ModelReadyToSync(std::forward<Args>(args)...))
         .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
 
-    bridge_ = std::make_unique<AccountSettingSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(),
-        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
-
+    RecreateBridge();
     run_loop.Run();
   }
   void RecreateBridgeAndWaitForModelToSync() {
@@ -115,7 +133,16 @@ TEST_F(AccountSettingSyncBridgeTest, GetStorageKey) {
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_InitialSync) {
-  RecreateBridgeAndWaitForModelToSync();
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_processor(), ModelReadyToSync)
+      .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
+
+  RecreateBridge();
+
+  MockObserver o(&bridge());
+  EXPECT_CALL(o, OnDataLoadedFromDisk);
+
+  run_loop.Run();
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {

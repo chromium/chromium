@@ -1590,6 +1590,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.WalletContextualSurfacingEnabled" enum="Boolean"
+    expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, at browser startup, whether a user has the Wallet setting regarding
+    contextual surfacing enabled or not.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.{PromptType}.AllEntities"
     enum="AutofillAiBubbleClosedReason" expires_after="2026-02-22">
   <owner>brunobraga@google.com</owner>

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -32,7 +33,14 @@ constexpr char kEnableAutofillWalletPrivacyContextualSurfacingForTesting[] =
 
 AccountSettingService::AccountSettingService(
     std::unique_ptr<AccountSettingSyncBridge> sync_bridge)
-    : sync_bridge_(std::move(sync_bridge)) {}
+    : sync_bridge_(std::move(sync_bridge)) {
+  // TODO(crbug.com/436547684): Remove this check once `sync_bridge` is
+  // guaranteed not to be null. This will happen when the bridge construction
+  // isn't gated by the sync feature flag anymore.
+  if (sync_bridge_) {
+    scoped_observation_.Observe(sync_bridge_.get());
+  }
+}
 
 AccountSettingService::~AccountSettingService() = default;
 
@@ -54,6 +62,11 @@ AccountSettingService::GetSyncControllerDelegate() {
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncAccountSettings));
   return std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
+}
+
+void AccountSettingService::OnDataLoadedFromDisk() {
+  base::UmaHistogramBoolean("Autofill.Ai.WalletContextualSurfacingEnabled",
+                            IsWalletPrivacyContextualSurfacingEnabled());
 }
 
 }  // namespace autofill
