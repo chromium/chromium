@@ -17,7 +17,10 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
@@ -43,24 +46,32 @@ namespace update_client {
 Unpacker::Result::Result() = default;
 
 Unpacker::Unpacker(const std::string& app_id,
+                   const std::string& prod_id,
                    const base::FilePath& path,
                    std::unique_ptr<Unzipper> unzipper,
                    base::OnceCallback<void(const Result& result)> callback)
     : app_id_(app_id),
+#if BUILDFLAG(IS_WIN)
+      prod_id_(base::UTF8ToWide(prod_id)),
+#else   // BUILDFLAG(IS_WIN)
+      prod_id_(prod_id),
+#endif  // BUILDFLAG(IS_WIN)
       path_(path),
       unzipper_(std::move(unzipper)),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+}
 
 Unpacker::~Unpacker() = default;
 
 void Unpacker::Unpack(const std::string& app_id,
+                      const std::string& prod_id,
                       const std::vector<uint8_t>& pk_hash,
                       const base::FilePath& path,
                       std::unique_ptr<Unzipper> unzipper,
                       crx_file::VerifierFormat crx_format,
                       base::OnceCallback<void(const Result& result)> callback) {
-  base::WrapRefCounted(
-      new Unpacker(app_id, path, std::move(unzipper), std::move(callback)))
+  base::WrapRefCounted(new Unpacker(app_id, prod_id, path, std::move(unzipper),
+                                    std::move(callback)))
       ->Verify(pk_hash, crx_format);
 }
 
@@ -89,9 +100,12 @@ void Unpacker::Verify(const std::vector<uint8_t>& pk_hash,
 
 void Unpacker::BeginUnzipping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   unzip_begin_time_ = base::TimeTicks::Now();
-  if (!CreateTempDirectory(FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"),
-                           &unpack_path_)) {
+  if (!CreateTempDirectory(
+          base::StrCat(
+              {prod_id_, FILE_PATH_LITERAL("_chrome_Unpacker_BeginUnzipping")}),
+          &unpack_path_)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     EndUnpacking(UnpackerError::kUnzipPathError,
                  ::logging::GetLastSystemErrorCode());

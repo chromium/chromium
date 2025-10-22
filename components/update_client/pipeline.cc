@@ -318,7 +318,8 @@ std::queue<Operation> MakeOperations(
       }
       ops.push(base::BindOnce(
           &InstallOperation, crx_cache, config->GetUnzipperFactory()->Create(),
-          crx_format, id, operation.sha256_in, pk_hash, installer,
+          crx_format, id, config->GetProdId(), operation.sha256_in, pk_hash,
+          installer,
           operation.path.empty()
               ? nullptr
               : std::make_unique<CrxInstaller::InstallParams>(

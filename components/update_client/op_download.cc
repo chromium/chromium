@@ -166,6 +166,7 @@ void HandleAvailableSpace(
   }
   scoped_refptr<CrxDownloader> crx_downloader =
       config->GetCrxDownloaderFactory()->MakeCrxDownloader(
+          config->GetProdId(),
           CanDoBackgroundDownload(is_foreground,
                                   config->EnabledBackgroundDownloader(), size));
   crx_downloader->set_progress_callback(progress_callback);

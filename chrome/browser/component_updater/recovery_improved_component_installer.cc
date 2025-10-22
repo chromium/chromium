@@ -87,8 +87,8 @@ void RecoveryComponentActionHandler::Unpack() {
                       base::BindRepeating(&unzip::LaunchUnzipper))
                       ->Create();
   update_client::Unpacker::Unpack(
-      kRecoveryImprovedComponentId, key_hash_, crx_path_, std::move(unzipper),
-      verifier_format_,
+      kRecoveryImprovedComponentId, "RecoveryComponentActionHandler", key_hash_,
+      crx_path_, std::move(unzipper), verifier_format_,
       base::BindOnce(&RecoveryComponentActionHandler::UnpackComplete, this));
 }
 

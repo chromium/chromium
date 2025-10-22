@@ -71,6 +71,7 @@ class FakeFactory : public CrxDownloaderFactory {
       : dest_(dest), result_(result), metrics_(metrics) {}
 
   scoped_refptr<CrxDownloader> MakeCrxDownloader(
+      const std::string& prod_id,
       bool background_download_enabled) const override {
     return base::MakeRefCounted<FakeDownloader>(dest_, result_, metrics_);
   }

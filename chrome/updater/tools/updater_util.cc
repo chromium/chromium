@@ -692,7 +692,8 @@ void UpdaterUtilApp::UnpackCRX() {
           FROM_HERE,
           base::BindOnce(
               &update_client::Unpacker::Unpack,
-              /*app_id=*/"", std::vector<uint8_t>(),
+              /*app_id=*/"",
+              /*prod_id=*/"UpdaterUtil", std::vector<uint8_t>(),
               base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
                   kUnpackSwitch),
               base::MakeRefCounted<update_client::InProcessUnzipperFactory>(

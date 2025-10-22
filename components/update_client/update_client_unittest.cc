@@ -174,7 +174,8 @@ class MockCrxDownloaderFactory : public CrxDownloaderFactory {
 
   // Overrides for CrxDownloaderFactory.
   scoped_refptr<CrxDownloader> MakeCrxDownloader(
-      bool /* background_download_enabled */) const override {
+      const std::string& /*prod_id*/,
+      bool /*background_download_enabled*/) const override {
     return crx_downloader_;
   }
 
@@ -4772,7 +4773,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     base::OnceClosure quit_closure = runloop.QuitClosure();
 
     Unpacker::Unpack(
-        "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+        "gjpmebpgbhcamgdgjcmnjfhggjpgcimm", "UpdateClientTest",
         std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
         GetTestFilePath("runaction_test_win.crx3"),
         base::MakeRefCounted<UnzipChromiumFactory>(

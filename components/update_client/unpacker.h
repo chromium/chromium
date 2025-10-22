@@ -71,6 +71,7 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
 
   // Begins the actual unpacking of the files. Calls `callback` with the result.
   static void Unpack(const std::string& app_id,
+                     const std::string& prod_id,
                      const std::vector<uint8_t>& pk_hash,
                      const base::FilePath& path,
                      std::unique_ptr<Unzipper> unzipper,
@@ -85,6 +86,7 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
   // the unpacker accepts any developer key. `path` is the current location
   // of the CRX.
   Unpacker(const std::string& app_id,
+           const std::string& prod_id,
            const base::FilePath& path,
            std::unique_ptr<Unzipper> unzipper,
            base::OnceCallback<void(const Result& result)> callback);
@@ -116,6 +118,7 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
   void EndUnpacking(UnpackerError error, int extended_error = 0);
 
   const std::string app_id_;
+  const base::FilePath::StringType prod_id_;
   base::FilePath path_;
   std::unique_ptr<Unzipper> unzipper_;
   base::OnceCallback<void(const Result& result)> callback_;
