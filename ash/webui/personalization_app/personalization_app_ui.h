@@ -12,6 +12,7 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"

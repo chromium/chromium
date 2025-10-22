@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_TOKEN_HANDLE_STORE_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
