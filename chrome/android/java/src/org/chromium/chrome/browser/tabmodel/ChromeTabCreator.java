@@ -60,6 +60,12 @@ import java.util.function.Supplier;
 @NullMarked
 public class ChromeTabCreator extends TabCreator
         implements NeedsTabModel, NeedsTabModelOrderController {
+    /**
+     * The application ID used for tabs opened from an application that does not specify an app ID
+     * in its VIEW intent extras.
+     */
+    private static final String UNKNOWN_APP_ID = "com.google.android.apps.chrome.unknown_app";
+
     protected final Activity mActivity;
     private final WindowAndroid mNativeWindow;
     private final Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
@@ -611,7 +617,7 @@ public class ChromeTabCreator extends TabCreator
         if (appId == null) {
             // If we have no application ID, we use a made-up one so that these tabs can be
             // reused.
-            appId = TabModelImpl.UNKNOWN_APP_ID;
+            appId = UNKNOWN_APP_ID;
         }
         // Let's try to find an existing tab that was started by that app.
         int i = 0;

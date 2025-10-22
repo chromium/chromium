@@ -52,12 +52,6 @@ import java.util.Set;
 @NullMarked
 public class TabModelImpl extends TabModelJniBridge {
     /**
-     * The application ID used for tabs opened from an application that does not specify an app ID
-     * in its VIEW intent extras.
-     */
-    public static final String UNKNOWN_APP_ID = "com.google.android.apps.chrome.unknown_app";
-
-    /**
      * The main list of tabs. Note that when this changes, all pending closures must be committed
      * via {@link #commitAllTabClosures()} as the indices are no longer valid. Also {@link
      * PendingTabClosureManager#resetState()} must be called so that the full model will be up to
