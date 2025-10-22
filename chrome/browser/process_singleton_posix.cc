@@ -1055,7 +1055,7 @@ bool ProcessSingleton::Create() {
   // Create the socket file somewhere in /tmp which is usually mounted as a
   // normal filesystem. Some network filesystems (notably AFS) are screwy and
   // do not support Unix domain sockets.
-  if (!socket_dir_.CreateUniqueTempDir()) {
+  if (!socket_dir_.CreateUniqueTempDir(/*prefix=*/FILE_PATH_LITERAL(""))) {
     LOG(ERROR) << "Failed to create socket directory.";
     return false;
   }
