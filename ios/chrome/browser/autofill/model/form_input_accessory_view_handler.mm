@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
@@ -198,6 +199,8 @@ NSArray* FindDescendantToolbarItemsForActionName(
 #pragma mark - FormInputNavigator
 
 - (void)closeKeyboardWithButtonPress {
+  base::RecordAction(
+      base::UserMetricsAction("KeyboardAccessory_CloseButtonPressed"));
   [self closeKeyboardLoggingButtonPressed];
 }
 

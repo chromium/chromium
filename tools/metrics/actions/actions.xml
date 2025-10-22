@@ -18026,6 +18026,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="KeyboardAccessory_CloseButtonPressed">
+  <owner>tmartino@chromium.org</owner>
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <owner>leozhao@google.com</owner>
+  <description>
+    The user tapped on the close button on the Keyboard Accessory to dismiss it.
+    iOS only.
+  </description>
+</action>
+
 <action name="KeyboardAccessory_SuggestionAccepted">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
