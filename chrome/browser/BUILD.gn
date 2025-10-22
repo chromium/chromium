@@ -4330,6 +4330,7 @@ static_library("browser") {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/device_notifications",
       "//chrome/browser/device_notifications:impl",
       "//chrome/browser/error_reporting",

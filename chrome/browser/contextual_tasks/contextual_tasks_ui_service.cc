@@ -7,8 +7,13 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace contextual_tasks {
 
@@ -37,7 +42,22 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
-    content::WebContents* source_contents) {}
+    content::WebContents* source_contents) {
+  CHECK(source_contents);
+
+  auto* profile =
+      Profile::FromBrowserContext(source_contents->GetBrowserContext());
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.opener = source_contents->GetPrimaryMainFrame();
+  params.source_contents = source_contents;
+  params.tabstrip_add_types = AddTabTypes::ADD_INHERIT_OPENER;
+
+  // TODO(crbug.com/453025914): Consider moving the newly created tab next to
+  //    the tab that is responsible for creating it if the AI page is in tab
+  //    mode.
+  Navigate(&params);
+}
 
 bool ContextualTasksUiService::HandleNavigation(
     const GURL& navigation_url,

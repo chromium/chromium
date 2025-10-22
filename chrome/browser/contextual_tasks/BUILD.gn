@@ -88,48 +88,54 @@ source_set("impl") {
 if (!is_android) {
   source_set("ui") {
     sources = [
-      "contextual_tasks_composebox_handler.cc",
       "contextual_tasks_composebox_handler.h",
-      "contextual_tasks_navigation_throttle.cc",
       "contextual_tasks_navigation_throttle.h",
-      "contextual_tasks_page_handler.cc",
       "contextual_tasks_page_handler.h",
-      "contextual_tasks_side_panel_coordinator.cc",
       "contextual_tasks_side_panel_coordinator.h",
-      "contextual_tasks_ui.cc",
       "contextual_tasks_ui.h",
-      "contextual_tasks_ui_service.cc",
       "contextual_tasks_ui_service.h",
-      "contextual_tasks_ui_service_factory.cc",
       "contextual_tasks_ui_service_factory.h",
     ]
 
     public_deps = [
       ":contextual_tasks",
       ":mojo_bindings",
-      "//components/contextual_tasks/public:feature_list",
-      "//content/public/browser",
-      "//content/public/common",
-      "//ui/webui",
-      "//url",
-    ]
-
-    deps = [
-      ":contextual_tasks",
-      "//base",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/resources/contextual_tasks:resources",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/new_tab_page/composebox",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/contextual_tasks/public:feature_list",
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/webui",
+      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+      "//url",
+    ]
+  }
+
+  source_set("ui_impl") {
+    sources = [
+      "contextual_tasks_composebox_handler.cc",
+      "contextual_tasks_navigation_throttle.cc",
+      "contextual_tasks_page_handler.cc",
+      "contextual_tasks_side_panel_coordinator.cc",
+      "contextual_tasks_ui.cc",
+      "contextual_tasks_ui_service.cc",
+      "contextual_tasks_ui_service_factory.cc",
+    ]
+
+    deps = [
+      ":ui",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/contextual_tasks:resources",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/webui",
+      "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
       "//components/omnibox/browser:mojo_bindings",
-      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",
     ]
   }
