@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "components/input/cursor_manager.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -95,7 +96,12 @@ void GuestFrameImpl::SynchronizeVisualProperties(
 }
 
 void GuestFrameImpl::UpdateCursor(const ui::Cursor& cursor) {
-  NOTIMPLEMENTED();
+  RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
+  // UpdateCursor messages are ignored if the root view does not support
+  // cursors.
+  if (root_view && root_view->GetCursorManager()) {
+    root_view->GetCursorManager()->UpdateCursor(view_, cursor);
+  }
 }
 
 CrossProcessFrameConnectorBase::RootViewFocusState GuestFrameImpl::HasFocus() {
