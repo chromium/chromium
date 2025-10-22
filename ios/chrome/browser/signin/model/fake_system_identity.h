@@ -44,7 +44,7 @@
 // Returns a SystemIdentity based on `email` with `name@example.com`.
 // For simplicity, both `userGivenName` and `userFullName` properties use
 // `name` from the email address.
-+ (instancetype)identityWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID;
++ (instancetype)identityWithEmail:(NSString*)email gaiaID:(const GaiaId&)gaiaID;
 
 - (instancetype)init NS_UNAVAILABLE;
 

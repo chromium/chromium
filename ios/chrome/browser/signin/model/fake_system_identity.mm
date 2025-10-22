@@ -17,7 +17,7 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
 }  // namespace
 
 @implementation FakeSystemIdentity {
-  NSString* _gaiaID;
+  GaiaId _gaiaID;
 }
 
 + (std::string)encodeIdentitiesToBase64:
@@ -70,18 +70,19 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
   // GaiaID cannot look like an email address.
   NSString* withoutAtSign = [email stringByReplacingOccurrencesOfString:@"@"
                                                              withString:@"_"];
-  NSString* gaiaID = [NSString stringWithFormat:@"%@_GAIAID", withoutAtSign];
+  GaiaId gaiaID =
+      GaiaId([NSString stringWithFormat:@"%@_GAIAID", withoutAtSign]);
   return [[FakeSystemIdentity alloc] initWithEmail:email gaiaID:gaiaID];
 }
 
-+ (instancetype)identityWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID {
++ (instancetype)identityWithEmail:(NSString*)email
+                           gaiaID:(const GaiaId&)gaiaID {
   return [[FakeSystemIdentity alloc] initWithEmail:email gaiaID:gaiaID];
 }
 
-- (instancetype)initWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID {
+- (instancetype)initWithEmail:(NSString*)email gaiaID:(const GaiaId&)gaiaID {
   if ((self = [super init])) {
-    CHECK(gaiaID);
-    CHECK(gaiaID.length);
+    CHECK(!gaiaID.empty());
     _gaiaID = gaiaID;
     _userEmail = [email copy];
     NSArray* split = [email componentsSeparatedByString:@"@"];
@@ -112,35 +113,35 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
   }
 
   return [_userEmail isEqualToString:other.userEmail] &&
-         [_gaiaID isEqualToString:other.gaiaID] &&
+         _gaiaID == other.gaiaId &&
          [_userFullName isEqualToString:other.userFullName] &&
          [_userGivenName isEqualToString:other.userGivenName] &&
          _hasValidAuth == other.hasValidAuth;
 }
 
 - (NSUInteger)hash {
-  return _gaiaID.hash;
+  return std::hash<std::string>()(_gaiaID.ToString());
 }
 
 #pragma mark - Properties
 
 - (NSString*)gaiaID {
-  return _gaiaID;
+  return _gaiaID.ToNSString();
 }
 
-- (GaiaId)gaiaId {
+- (const GaiaId)gaiaId {
   return GaiaId(_gaiaID);
 }
 
 - (NSString*)hashedGaiaID {
-  return [NSString stringWithFormat:@"%@_hash", _gaiaID];
+  return [NSString stringWithFormat:@"%@_hash", _gaiaID.ToNSString()];
 }
 
 #pragma mark - NSSecureCoding
 
 - (void)encodeWithCoder:(NSCoder*)coder {
   [coder encodeObject:_userEmail forKey:kCoderUserEmailKey];
-  [coder encodeObject:_gaiaID forKey:kCoderGaiaIDKey];
+  [coder encodeObject:_gaiaID.ToNSString() forKey:kCoderGaiaIDKey];
   [coder encodeObject:_userFullName forKey:kCoderUserFullNameKey];
   [coder encodeObject:_userGivenName forKey:kCoderUserGivenNameKey];
   [coder encodeBool:_hasValidAuth forKey:kCoderHasValidAuthKey];
@@ -150,8 +151,8 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
   if ((self = [super init])) {
     _userEmail = [coder decodeObjectOfClass:[NSString class]
                                      forKey:kCoderUserEmailKey];
-    _gaiaID = [coder decodeObjectOfClass:[NSString class]
-                                  forKey:kCoderGaiaIDKey];
+    _gaiaID = GaiaId([coder decodeObjectOfClass:[NSString class]
+                                         forKey:kCoderGaiaIDKey]);
     _userFullName = [coder decodeObjectOfClass:[NSString class]
                                         forKey:kCoderUserFullNameKey];
     _userGivenName = [coder decodeObjectOfClass:[NSString class]
@@ -170,8 +171,9 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
 - (NSString*)description {
   return [NSString stringWithFormat:@"<%@: %p, GaiaID: \"%@\", name: \"%@\", "
                                     @"email: \"%@\">",
-                                    self.class.description, self, self.gaiaID,
-                                    self.userFullName, self.userEmail];
+                                    self.class.description, self,
+                                    self.gaiaId.ToNSString(), self.userFullName,
+                                    self.userEmail];
 }
 
 @end

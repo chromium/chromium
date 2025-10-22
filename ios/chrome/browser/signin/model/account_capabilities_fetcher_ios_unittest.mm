@@ -66,7 +66,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     // Register a fake identity and set the expected capabilities.
     id<SystemIdentity> identity = [FakeSystemIdentity
         identityWithEmail:base::SysUTF8ToNSString(account_info.email)
-                   gaiaID:account_info.gaia.ToNSString()];
+                   gaiaID:account_info.gaia];
     system_identity_manager->AddIdentity(identity);
 
     if (capability_fetched.has_value() &&
