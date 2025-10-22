@@ -11,6 +11,7 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
     <dimen name="keyboard_accessory_height">48dp</dimen>
     <dimen name="keyboard_accessory_height_redesign">64dp</dimen>
+    <dimen name="keyboard_accessory_height_with_shadow_redesign">72dp</dimen>
     <dimen name="keyboard_accessory_chip_min_height_redesign">64dp</dimen>
     <dimen name="keyboard_accessory_chip_vertical_insets">8dp</dimen>
     <dimen name="keyboard_accessory_chip_vertical_insets_large_font">2dp</dimen>
