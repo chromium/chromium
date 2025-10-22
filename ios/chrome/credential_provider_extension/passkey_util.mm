@@ -116,15 +116,12 @@ void SaveToIdentityStore(id<Credential> credential,
     if (state.enabled) {
       // Update ASCredentialIdentityStore to make the passkey immediately
       // available locally.
-      NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
-          [NSMutableArray arrayWithCapacity:1];
-      [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
-                                     cr_initWithCredential:credential]];
       [ASCredentialIdentityStore.sharedStore
-          replaceCredentialIdentityEntries:storeIdentities
-                                completion:^(BOOL success, NSError* error) {
-                                  completion();
-                                }];
+          saveCredentialIdentityEntries:@[ [[ASPasskeyCredentialIdentity alloc]
+                                            cr_initWithCredential:credential] ]
+                             completion:^(BOOL success, NSError* error) {
+                               completion();
+                             }];
     } else {
       completion();
     }
