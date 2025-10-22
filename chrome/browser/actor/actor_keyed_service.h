@@ -221,7 +221,11 @@ class ActorKeyedService : public KeyedService {
       TaskId request_task_id,
       webui::mojom::NavigationConfirmationResponsePtr response);
 
-  void OnActuationCapabilityChanged(bool has_actuation_capability);
+  void OnActOnWebCapabilityChanged(bool can_act_on_web);
+
+  using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
+  base::CallbackListSubscription AddActOnWebCapabilityChangedCallback(
+      ActOnWebCapabilityChangedCallback callback);
 
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
@@ -269,6 +273,9 @@ class ActorKeyedService : public KeyedService {
   base::RepeatingCallbackList<
       RequestToConfirmNavigationSubscriberCallback::RunType>
       request_to_confirm_navigation_callback_list_;
+
+  base::RepeatingCallbackList<ActOnWebCapabilityChangedCallback::RunType>
+      act_on_web_capability_changed_callback_list_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

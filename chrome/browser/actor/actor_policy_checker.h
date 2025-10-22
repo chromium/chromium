@@ -46,7 +46,7 @@ class ActorPolicyChecker {
                    TaskId task_id,
                    DecisionCallback callback);
 
-  bool has_actuation_capability() const { return has_actuation_capability_; }
+  bool can_act_on_web() const { return can_act_on_web_; }
 
  private:
   void OnPrefChanged();
@@ -56,7 +56,7 @@ class ActorPolicyChecker {
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  bool has_actuation_capability_ = true;
+  bool can_act_on_web_ = true;
 
   base::WeakPtrFactory<ActorPolicyChecker> weak_ptr_factory_{this};
 };

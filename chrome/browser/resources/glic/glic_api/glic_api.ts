@@ -833,6 +833,9 @@ export declare interface GlicBrowserHost {
    * Returns an observable that emits when additional context is available.
    */
   getAdditionalContext?(): Observable<AdditionalContext>;
+
+  /** Returns the host's capability to act on web pages. */
+  getActOnWebCapability?(): ObservableValue<boolean>;
 }
 
 /** Information about a conversation. */

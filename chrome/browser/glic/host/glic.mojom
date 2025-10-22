@@ -311,6 +311,8 @@ struct WebClientInitialState {
   bool enable_web_actuation_setting_feature;
   // Whether the user enabled actuation setting is enabled.
   bool actuation_on_web_setting_enabled;
+  // Whether the host has the capability to act on web.
+  bool can_act_on_web;
 };
 
 // Options for getting tab context.
@@ -1141,6 +1143,9 @@ interface WebClient {
 
   // Notify that the user enabled web actuation setting has changed.
   NotifyActuationOnWebSettingChanged(bool enabled);
+
+  // Informs the client that the capability to act on web pages has changed.
+  NotifyActOnWebCapabilityChanged(bool can_act_on_web);
 };
 
 // Information extracted from a tab.

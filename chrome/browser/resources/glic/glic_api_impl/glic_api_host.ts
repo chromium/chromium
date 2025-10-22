@@ -420,6 +420,11 @@ class WebClientImpl implements WebClientInterface {
         'glicWebClientNotifyAdditionalContext', {context: clientContext},
         extras.transfers);
   }
+
+  notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyActOnWebCapabilityChanged', {canActOnWeb});
+  }
 }
 
 class CaptureRegionObserverImpl implements CaptureRegionObserver {

@@ -256,13 +256,17 @@ void ActorKeyedService::OnNavigationConfirmationDecision(
   }
 }
 
-void ActorKeyedService::OnActuationCapabilityChanged(
-    bool has_actuation_capability) {
-  if (!has_actuation_capability) {
+void ActorKeyedService::OnActOnWebCapabilityChanged(bool can_act_on_web) {
+  if (!can_act_on_web) {
     FailAllTasks();
   }
-  // TODO(crbug.com/450525715, crbug.com/452416162): The web client needs to be
-  // notified when the capability changes.
+  act_on_web_capability_changed_callback_list_.Notify(can_act_on_web);
+}
+
+base::CallbackListSubscription
+ActorKeyedService::AddActOnWebCapabilityChangedCallback(
+    ActOnWebCapabilityChangedCallback callback) {
+  return act_on_web_capability_changed_callback_list_.Add(std::move(callback));
 }
 
 void ActorKeyedService::RequestTabObservation(

@@ -2175,6 +2175,17 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testNotifyActOnWebCapabilityChanged() {
+    assertDefined(this.host.getActOnWebCapability);
+    const actOnWebCapabilitySequence =
+        observeSequence(this.host.getActOnWebCapability());
+    let actOnWebCapability = await actOnWebCapabilitySequence.next();
+    assertEquals(actOnWebCapability, true);
+    await this.advanceToNextStep();
+    actOnWebCapability = await actOnWebCapabilitySequence.next();
+    assertEquals(actOnWebCapability, false);
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertDefined(this.host.closePanel);
     await this.host.closePanel();

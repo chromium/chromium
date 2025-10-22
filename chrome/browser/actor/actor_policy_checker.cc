@@ -80,16 +80,13 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
     : service_(service) {
   InitActionBlocklist(service.GetProfile());
 
-  has_actuation_capability_ = HasActuationCapability(service.GetProfile());
+  can_act_on_web_ = HasActuationCapability(service.GetProfile());
 
   pref_change_registrar_.Init(service.GetProfile()->GetPrefs());
   pref_change_registrar_.Add(
       glic::prefs::kGlicActuationOnWeb,
       base::BindRepeating(&ActorPolicyChecker::OnPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(crbug.com/450525715, crbug.com/452416162): The web client needs to be
-  // informed of the initial capability value.
 }
 
 ActorPolicyChecker::~ActorPolicyChecker() = default;
@@ -98,7 +95,7 @@ void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
                                      AggregatedJournal& journal,
                                      TaskId task_id,
                                      DecisionCallback callback) {
-  if (!has_actuation_capability_) {
+  if (!can_act_on_web_) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
                 "MayActOnTab",
                 JournalDetailsBuilder()
@@ -117,7 +114,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      AggregatedJournal& journal,
                                      TaskId task_id,
                                      DecisionCallback callback) {
-  if (!has_actuation_capability_) {
+  if (!can_act_on_web_) {
     journal.Log(url, task_id, "MayActOnUrl",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")
@@ -131,8 +128,8 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
 }
 
 void ActorPolicyChecker::OnPrefChanged() {
-  has_actuation_capability_ = HasActuationCapability(service_->GetProfile());
-  service_->OnActuationCapabilityChanged(has_actuation_capability_);
+  can_act_on_web_ = HasActuationCapability(service_->GetProfile());
+  service_->OnActOnWebCapabilityChanged(can_act_on_web_);
 }
 
 }  // namespace actor

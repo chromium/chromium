@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
@@ -702,6 +703,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                 base::BindRepeating(
                     &GlicWebClientHandler::RequestToConfirmNavigation,
                     base::Unretained(this)));
+        act_on_web_capability_changed_subscription_ =
+            actor_service->AddActOnWebCapabilityChangedCallback(
+                base::BindRepeating(
+                    &GlicWebClientHandler::NotifyActOnWebCapabilityChanged,
+                    base::Unretained(this)));
       }
     }
 
@@ -789,6 +795,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     state->enable_capture_region =
         base::FeatureList::IsEnabled(features::kGlicCaptureRegion);
+    state->can_act_on_web = false;
+    if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+      if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+        state->can_act_on_web =
+            actor_service->GetPolicyChecker().can_act_on_web();
+      }
+    }
 
     std::move(callback).Run(std::move(state));
   }
@@ -1520,6 +1533,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                                                    std::move(options));
   }
 
+  void NotifyActOnWebCapabilityChanged(bool can_act_on_web) {
+    web_client_->NotifyActOnWebCapabilityChanged(can_act_on_web);
+  }
+
  private:
   void Uninstall() {
     page_metadata_manager_.reset();
@@ -1708,6 +1725,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription
       request_to_show_user_confirmation_dialog_subscription_;
   base::CallbackListSubscription request_to_confirm_navigation_subscription_;
+  base::CallbackListSubscription act_on_web_capability_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;

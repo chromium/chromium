@@ -683,6 +683,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
       reason?: CaptureRegionErrorReason, observationId: number,
     },
   },
+  glicWebClientNotifyActOnWebCapabilityChanged: {
+    request: {
+      canActOnWeb: boolean,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 

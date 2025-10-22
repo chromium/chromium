@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, NavigateOnTab) {
   const bool has_actuation_capability = GetParam();
   ASSERT_EQ(ActorKeyedService::Get(browser()->profile())
                 ->GetPolicyChecker()
-                .has_actuation_capability(),
+                .can_act_on_web(),
             has_actuation_capability);
 
   // Redirect to a cross-origin URL.
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, ActOnTab) {
   const bool has_actuation_capability = GetParam();
   ASSERT_EQ(ActorKeyedService::Get(browser()->profile())
                 ->GetPolicyChecker()
-                .has_actuation_capability(),
+                .can_act_on_web(),
             has_actuation_capability);
 
   const GURL url =

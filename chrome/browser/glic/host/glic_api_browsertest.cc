@@ -39,6 +39,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -145,6 +146,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestRuntimeFeatureOff",
       "GlicApiTestWithWebActuationSettingDisabled",
       "GlicApiTestWithWebActuationSettingEnabled",
+      "GlicApiTestWithActorEnabled",
   };
 }
 
@@ -498,6 +500,17 @@ class GlicApiTestWithFastTimeout : public GlicApiTest {
 
  private:
   base::test::ScopedFeatureList features2_;
+};
+
+class GlicApiTestWithActorEnabled : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithActorEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
+  }
+  ~GlicApiTestWithActorEnabled() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Note: Test names must match test function names in api_test.ts.
@@ -2789,6 +2802,30 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithActorEnabled,
+                       testNotifyActOnWebCapabilityChanged) {
+  // Ensure that the profile is not managed. This allows us to turn on/off the
+  // act on web capability via the pref.
+  auto* management_service_factory =
+      policy::ManagementServiceFactory::GetInstance();
+  auto* browser_management_service =
+      management_service_factory->GetForProfile(GetProfile());
+  ASSERT_TRUE(!browser_management_service ||
+              !browser_management_service->IsManaged());
+  // Defaults to enabled.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
+            base::to_underlying(
+                glic::prefs::GlicActuationOnWebPolicyState::kEnabled));
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+  // Disable the capability.
+  prefs->SetInteger(glic::prefs::kGlicActuationOnWeb,
+                    base::to_underlying(
+                        glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+  ContinueJsTest();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicGetHostCapabilityApiTest,
@@ -2866,6 +2903,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithWebActuationSettingEnabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithActorEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

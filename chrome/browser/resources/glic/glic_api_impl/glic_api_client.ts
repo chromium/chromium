@@ -369,6 +369,12 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       observable.processError(payload.reason);
     }
   }
+
+  glicWebClientNotifyActOnWebCapabilityChanged(payload: {
+    canActOnWeb: boolean,
+  }): void {
+    this.host.actOnWebCapabilityValue.assignAndSignal(payload.canActOnWeb);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -421,6 +427,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       new Subject<UserConfirmationDialogRequest>();
   readonly navigationConfirmationRequestSubject =
       new Subject<NavigationConfirmationRequest>();
+  actOnWebCapabilityValue = ObservableValueImpl.withNoValue<boolean>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -482,6 +489,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     for (const capability of state.hostCapabilities) {
       this.hostCapabilities.add(capability);
     }
+    this.actOnWebCapabilityValue.assignAndSignal(state.canActOnWeb);
 
     // Set the method to undefined since it's gated behind a mojo
     // RuntimeFeature. Calling a such a method when the feature is disabled
@@ -503,6 +511,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.stopActorTask = undefined;
       this.pauseActorTask = undefined;
       this.resumeActorTask = undefined;
+      this.getActOnWebCapability = undefined;
     }
 
     if (state.alwaysDetachedMode) {
@@ -1057,6 +1066,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   selectNavigationConfirmationRequestHandler():
       Observable<NavigationConfirmationRequest> {
     return this.navigationConfirmationRequestSubject;
+  }
+
+  getActOnWebCapability?(): ObservableValue<boolean> {
+    return this.actOnWebCapabilityValue;
   }
 }
 
