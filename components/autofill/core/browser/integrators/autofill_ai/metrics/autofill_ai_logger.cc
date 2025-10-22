@@ -120,10 +120,17 @@ void AutofillAiLogger::OnSuggestionsShown(
     const AutofillField& field,
     base::span<const EntityInstance* const> entities_suggested,
     ukm::SourceId ukm_source_id) {
-  for (const EntityInstance* const entity : entities_suggested) {
-    form_states_[form.global_id()][entity->type()][entity->record_type()]
-        .suggestions_shown = true;
-    ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity->type(),
+  auto suggested_entity_types =
+      base::MakeFlatSet<std::pair<EntityType, EntityInstance::RecordType>>(
+          entities_suggested, /*comp=*/{},
+          [](const EntityInstance* const entity) {
+            return std::pair(entity->type(), entity->record_type());
+          });
+  for (const auto& [entity_type, record_type] : suggested_entity_types) {
+    form_states_[form.global_id()][entity_type][record_type].suggestions_shown =
+        true;
+    ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_type,
+                              record_type,
                               AutofillAiUkmLogger::EventType::kSuggestionShown);
   }
 }
@@ -136,6 +143,7 @@ void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
               [entity_filled.record_type()]
                   .did_fill_suggestions = true;
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_filled.type(),
+                            entity_filled.record_type(),
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
 }
 
@@ -151,7 +159,7 @@ void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
   form_states_[form.global_id()][entity_type][entity_record_type]
       .edited_autofilled_field = true;
   ukm_logger_.LogFieldEvent(
-      ukm_source_id, form, field, entity_type,
+      ukm_source_id, form, field, entity_type, entity_record_type,
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
 }
 
@@ -163,6 +171,7 @@ void AutofillAiLogger::OnDidFillField(const FormStructure& form,
       field.global_id(),
       std::pair(entity_filled.type(), entity_filled.record_type()));
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_filled.type(),
+                            entity_filled.record_type(),
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }
 

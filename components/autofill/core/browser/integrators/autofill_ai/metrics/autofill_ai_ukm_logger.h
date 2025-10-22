@@ -59,6 +59,7 @@ class AutofillAiUkmLogger {
                      const FormStructure& form,
                      const AutofillField& field,
                      EntityType entity_type,
+                     EntityInstance::RecordType record_type,
                      EventType event_type);
 
  private:

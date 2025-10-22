@@ -835,6 +835,7 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
               base::to_underlying(event_type))
         << event;
     EXPECT_EQ(base::to_underlying(mqls_field_event.entity_type()), 1) << event;
+    EXPECT_EQ(base::to_underlying(mqls_field_event.storage_type()), 2) << event;
   }
 
  private:

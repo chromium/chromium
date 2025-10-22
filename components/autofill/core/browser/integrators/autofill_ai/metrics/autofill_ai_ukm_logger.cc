@@ -308,6 +308,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
                                         const FormStructure& form,
                                         const AutofillField& field,
                                         EntityType entity_type,
+                                        EntityInstance::RecordType record_type,
                                         EventType event_type) {
   const FormSignature form_signature = form.form_signature();
   const uint64_t form_session_identifier =
@@ -363,6 +364,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
         GetFormControlType(field.form_control_type()));
     mqls_field_event->set_event_type(GetFieldEventType(event_type));
     mqls_field_event->set_entity_type(GetEntityType(entity_type));
+    mqls_field_event->set_storage_type(GetStorageType(record_type));
   }
 
   if (!CanLogUkm(ukm_source_id)) {
