@@ -16,7 +16,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../common/icons.html.js';
 
 import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
-import {isImageDataUrl, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyFilePath, isUrl} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -113,7 +113,8 @@ export class LocalImagesElement extends WithPersonalizationStore {
     this.imagesToDisplay_ = (images || []).filter(image => {
       const key = getPathOrSymbol(image);
       if (this.imageDataLoading_[key] === false) {
-        return isImageDataUrl(this.imageData_[key]);
+        const data = this.imageData_[key];
+        return isUrl(data) && isImageDataUrl(data);
       }
       return true;
     });
@@ -134,8 +135,9 @@ export class LocalImagesElement extends WithPersonalizationStore {
     for (let i = this.imagesToDisplay_.length - 1; i >= 0; i--) {
       const image = this.imagesToDisplay_[i];
       const key = getPathOrSymbol(image);
-      const failed =
-          imageDataLoading[key] === false && !isImageDataUrl(imageData[key]);
+      const doneLoading = imageDataLoading[key] === false;
+      const failed = doneLoading &&
+          (!isUrl(imageData[key]) || !isImageDataUrl(imageData[key]));
       if (failed) {
         this.splice('imagesToDisplay_', i, 1);
       }
@@ -200,7 +202,7 @@ export class LocalImagesElement extends WithPersonalizationStore {
     }
     const data = imageData[getPathOrSymbol(image)];
     // Return a "fail" url that will not load.
-    if (!isImageDataUrl(data)) {
+    if (!isUrl(data) || !isImageDataUrl(data)) {
       return {url: ''};
     }
     return data;

@@ -29,7 +29,7 @@ import {logRecentImageActionMenuItemClick, RecentImageActionMenuItem} from './se
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 import {SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {getUserVisibleQuery, isActiveSeaPenQuery, isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
+import {getUserVisibleQuery, isActiveSeaPenQuery, isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId, isUrl} from './sea_pen_utils.js';
 
 export class SeaPenRecentImageDeleteEvent extends CustomEvent<null> {
   static readonly EVENT_NAME = 'sea-pen-recent-image-delete';
@@ -130,7 +130,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private onRecentImagesChanged_(recentImages: SeaPenImageId[]|null) {
     this.recentImagesToDisplay_ = (recentImages || []).filter(id => {
       if (this.recentImageDataLoading_[id] === false) {
-        return isImageDataUrl(this.recentImageData_[id]?.url);
+        const dataUrl = this.recentImageData_[id]?.url;
+        return isUrl(dataUrl) && isImageDataUrl(dataUrl);
       }
       return true;
     });
@@ -152,7 +153,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     for (let i = this.recentImagesToDisplay_.length - 1; i >= 0; i--) {
       const id = this.recentImagesToDisplay_[i];
       const data = recentImageData[id];
-      const validData = isImageDataUrl(data?.url);
+      const validData = isUrl(data?.url) && isImageDataUrl(data.url);
       const failed = recentImageDataLoading[id] === false && !validData;
       if (failed) {
         this.splice('recentImagesToDisplay_', i, 1);
@@ -181,7 +182,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return null;
     }
     const data = recentImageData[recentImage];
-    if (!isImageDataUrl(data?.url)) {
+    if (!isUrl(data?.url) || !isImageDataUrl(data.url)) {
       return {url: ''};
     }
     return data.url;
