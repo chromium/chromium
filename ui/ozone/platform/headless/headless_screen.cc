@@ -210,6 +210,16 @@ display::Display HeadlessScreen::GetDisplayMatching(
   return GetPrimaryDisplay();
 }
 
+bool HeadlessScreen::IsScreenSaverActive() const {
+  // Headless has no screen saver.
+  return false;
+}
+
+base::TimeDelta HeadlessScreen::CalculateIdleTime() const {
+  // Headless never gets idle.
+  return base::Seconds(0);
+}
+
 void HeadlessScreen::AddObserver(display::DisplayObserver* observer) {
   display_list_.AddObserver(observer);
 }
