@@ -6,10 +6,8 @@ static_library("test_support") {
   output_name = "mojo_public_test_support"
 
   sources = [
-    "test_support.h",
-
-    # TODO(vtl): Convert this to thunks http://crbug.com/386799
     "../../tests/test_support_private.cc",
     "../../tests/test_support_private.h",
+    "test_support.h",
   ]
 }
