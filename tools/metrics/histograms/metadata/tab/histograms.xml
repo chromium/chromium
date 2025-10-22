@@ -309,6 +309,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Android.DiscardLatency.{DiscardReason}" units="ms"
+    expires_after="2026-04-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    [Android] Records the latency for a tab discarded for {DiscardReason}.
+    Emitted after the tab discard callback is run. Note that discard might not
+    run the callback or might not have happened in the event the tab is not
+    discardable.
+  </summary>
+  <token key="DiscardReason">
+    <variant name="AppendNavigation"
+        summary="Tab discarded for appending a navigation."/>
+    <variant name="OnDemand" summary="Tab discarded on demand."/>
+  </token>
+</histogram>
+
+<histogram name="Tab.Android.DiscardStarted" enum="DiscardReason"
+    expires_after="2026-04-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    [Android] Records the reason for starting a tab discard. Emitted when a Tab
+    discard is started.
+  </summary>
+</histogram>
+
 <histogram name="Tab.AndroidCrashUpload{AndroidCrashUploadTypes}"
     enum="BooleanSuccess" expires_after="M85">
   <owner>wnwen@chromium.org</owner>

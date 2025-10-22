@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -30,7 +31,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -111,8 +111,10 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -143,6 +145,19 @@ class TabImpl implements Tab {
             "autofill.using_virtual_view_structure";
 
     private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
+
+    // LINT.IfChange(DiscardReason)
+
+    @IntDef({DiscardReason.ON_DEMAND, DiscardReason.APPEND_NAVIGATION, DiscardReason.COUNT})
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface DiscardReason {
+        int ON_DEMAND = 0;
+        int APPEND_NAVIGATION = 1;
+        int COUNT = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:DiscardReason)
 
     private long mNativeTabAndroid;
 
@@ -811,9 +826,21 @@ class TabImpl implements Tab {
     @Override
     public void freeze() {
         if (useDiscardForFreeze()) {
-            discard();
+            discardInternal(DiscardReason.ON_DEMAND);
         } else {
             freezeInternal();
+        }
+    }
+
+    private String getMetricsTag(@DiscardReason int discardReason) {
+        switch (discardReason) {
+            case DiscardReason.ON_DEMAND:
+                return "OnDemand";
+            case DiscardReason.APPEND_NAVIGATION:
+                return "AppendNavigation";
+            default:
+                assert false : "Unknown discard reason: " + discardReason;
+                return "Unknown";
         }
     }
 
@@ -822,12 +849,21 @@ class TabImpl implements Tab {
                 && ContentFeatureMap.isEnabled(ContentFeatures.WEB_CONTENTS_DISCARD);
     }
 
-    private void discard() {
+    private void discardInternal(@DiscardReason int discardReason) {
         assert isHidden() || isClosing() : "Should only discard a closing or hidden tab.";
 
         if (mWebContents == null) return;
 
-        mWebContents.discard(CallbackUtils.emptyRunnable());
+        long start = SystemClock.uptimeMillis();
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tab.Android.DiscardStarted", discardReason, DiscardReason.COUNT);
+        mWebContents.discard(
+                () -> {
+                    RecordHistogram.recordTimesHistogram(
+                            "Tab.Android.DiscardLatency." + getMetricsTag(discardReason),
+                            SystemClock.uptimeMillis() - start);
+                });
         // TODO(crbug.com/449784092): Check if the tab gets stuck in a loading state when using
         // discard.
     }
@@ -911,7 +947,7 @@ class TabImpl implements Tab {
             // Case 3: The tab has a live WebContents and maybe a pending load params. Clobber
             // the previous pending load params (if one existed) and discard the WebContents.
             assert mWebContents != null;
-            discard();
+            discardInternal(DiscardReason.APPEND_NAVIGATION);
             mPendingLoadParams = params;
             mUrl = new GURL(params.getUrl());
         }
@@ -921,8 +957,6 @@ class TabImpl implements Tab {
     private void freezeAndAppendPendingNavigationInternal(
             LoadUrlParams params, @Nullable String title) {
         assert isHidden() : "Should only freeze and append a navigation to a tab that is hidden.";
-        // TODO(crbug.com/449784092): This should use `discard()` instead of `freezeInternal()`
-        // once pending navigations with a WebContents are supported.
         freezeInternal();
         assumeNonNull(mWebContentsState);
         // The only reason this should still be null is if we failed to allocate a byte buffer,

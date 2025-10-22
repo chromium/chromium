@@ -101,6 +101,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/performance_manager/mechanisms/page_discarder.cc:DiscardPageOnUIThreadOutcome) -->
 
+<!-- LINT.IfChange(DiscardReason) -->
+
+<enum name="DiscardReason">
+  <int value="0" label="OnDemand"/>
+  <int value="1" label="AppendNavigation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.java:DiscardReason) -->
+
 <!-- LINT.IfChange(DiscardTabOutcome) -->
 
 <enum name="DiscardTabOutcome">
