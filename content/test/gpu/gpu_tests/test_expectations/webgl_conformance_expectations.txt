@@ -483,8 +483,6 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
 
-# Win11 / NVIDIA RTX 4070 Super
-crbug.com/450326413 [ win11 nvidia-0x2783 ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
 
 ####################
 # Mac failures     #
