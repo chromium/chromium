@@ -24826,6 +24826,21 @@
             ]
         }
     ],
+    "TabFreezingUsesDiscard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabFreezingUsesDiscard"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGridEmptyThumbnail": [
         {
             "platforms": [

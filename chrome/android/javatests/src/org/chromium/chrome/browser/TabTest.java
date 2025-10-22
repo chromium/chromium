@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -281,6 +282,7 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
     public void testFreezeAndAppendPendingNavigation_AlreadyFrozen() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
@@ -293,6 +295,7 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
     public void testFreezeAndAppendPendingNavigation_LazyBackground() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
@@ -305,6 +308,7 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
     public void testFreezeAndAppendPendingNavigation_LiveBackground() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
@@ -329,6 +333,7 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
     public void testFreezeAndAppendPendingNavigation_LiveBackground_NativePage() {
         String firstUrl = UrlConstants.NTP_URL;
         String secondUrl =

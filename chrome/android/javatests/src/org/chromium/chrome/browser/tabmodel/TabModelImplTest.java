@@ -250,10 +250,10 @@ public class TabModelImplTest {
                     assertEquals(url, tab.getUrl());
                     assertEquals(2, mTabModelJni.getCount());
 
-                    Tab found_tab = mTabModelJni.getTabAt(0);
-                    assertNotNull(found_tab);
-                    assertEquals(tab, found_tab);
-                    assertEquals(url, found_tab.getUrl());
+                    Tab foundTab = mTabModelJni.getTabAt(0);
+                    assertNotNull(foundTab);
+                    assertEquals(tab, foundTab);
+                    assertEquals(url, foundTab.getUrl());
                     assertEquals(
                             TabLaunchType.FROM_TAB_LIST_INTERFACE,
                             tab.getTabLaunchTypeAtCreation());
@@ -1037,6 +1037,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
     public void testFreezeTabOnCloseIfCapturingForMedia() {
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(
                 mMediaCaptureDevicesDispatcherAndroidJni);
