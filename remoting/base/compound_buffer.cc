@@ -81,15 +81,18 @@ void CompoundBuffer::Prepend(const CompoundBuffer& buffer) {
     Prepend(it->buffer, it->start, it->size);
   }
 }
-void CompoundBuffer::AppendCopyOf(const char* data, int size) {
+
+void CompoundBuffer::AppendCopyOf(base::span<const uint8_t> data) {
+  const size_t size = data.size();
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
-  UNSAFE_TODO(memcpy(buffer->data(), data, size));
+  buffer->span().copy_from(data);
   Append(std::move(buffer), size);
 }
 
-void CompoundBuffer::PrependCopyOf(const char* data, int size) {
+void CompoundBuffer::PrependCopyOf(base::span<const uint8_t> data) {
+  const size_t size = data.size();
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
-  UNSAFE_TODO(memcpy(buffer->data(), data, size));
+  buffer->span().copy_from(data);
   Prepend(std::move(buffer), size);
 }
 

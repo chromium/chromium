@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -70,7 +71,7 @@ void FakeMessagePipe::ReceiveProtobufMessage(
     const google::protobuf::MessageLite& message) {
   auto buffer = std::make_unique<CompoundBuffer>();
   std::string data = message.SerializeAsString();
-  buffer->AppendCopyOf(data.data(), data.size());
+  buffer->AppendCopyOf(base::as_byte_span(data));
   Receive(std::move(buffer));
 }
 

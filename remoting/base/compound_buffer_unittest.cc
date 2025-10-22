@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,7 +47,8 @@ class CompoundBufferTest : public testing::Test {
   }
 
   void AppendCopyOf(int pos, int size) {
-    target_.AppendCopyOf(UNSAFE_TODO(data_->data() + pos), size);
+    target_.AppendCopyOf(data_->span().subspan(
+        base::checked_cast<size_t>(pos), base::checked_cast<size_t>(size)));
   }
 
   void Prepend(int pos, int size) {
@@ -55,8 +57,9 @@ class CompoundBufferTest : public testing::Test {
   }
 
   void PrependCopyOf(int pos, int size) {
-    target_.PrependCopyOf(UNSAFE_TODO(data_->data() + (kDataSize - pos - size)),
-                          size);
+    target_.PrependCopyOf(data_->span().subspan(
+        base::checked_cast<size_t>(kDataSize - pos - size),
+        base::checked_cast<size_t>(size)));
   }
 
   void TestCopyFrom(int pos, int size) {

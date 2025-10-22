@@ -150,8 +150,7 @@ void WebrtcDataStreamAdapter::OnStateChange() {
 
 void WebrtcDataStreamAdapter::OnMessage(const webrtc::DataBuffer& rtc_buffer) {
   auto buffer = std::make_unique<CompoundBuffer>();
-  buffer->AppendCopyOf(reinterpret_cast<const char*>(rtc_buffer.data.data()),
-                       rtc_buffer.data.size());
+  buffer->AppendCopyOf(rtc_buffer.data);
   buffer->Lock();
   pending_incoming_messages_.emplace(std::move(buffer));
   HandleIncomingMessages();

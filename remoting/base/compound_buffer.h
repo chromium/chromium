@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "google/protobuf/io/zero_copy_stream.h"
@@ -57,8 +58,8 @@ class CompoundBuffer {
   void Prepend(const CompoundBuffer& buffer);
 
   // Same as above, but creates an IOBuffer and copies the data.
-  void AppendCopyOf(const char* data, int data_size);
-  void PrependCopyOf(const char* data, int data_size);
+  void AppendCopyOf(base::span<const uint8_t> data);
+  void PrependCopyOf(base::span<const uint8_t> data);
 
   // Drop |bytes| bytes from the beginning or the end of the buffer.
   void CropFront(int bytes);
