@@ -542,8 +542,8 @@ bool CheckVulkanCompatibilities(
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
   if (device_properties.vendor_id == kVendorImagination) {
-    // Only PowerVR D series allowed in V1.
-    if (base::StartsWith(device_properties.device_name, "PowerVR D")) {
+    // Only PowerVR D series and newer allowed in V1.
+    if (base::MatchPattern(device_properties.device_name, "PowerVR ?-Series")) {
       return true;
     }
     return IsVulkanV2EnabledForImagination(gpu_info);
