@@ -238,8 +238,6 @@ template("define_autorolled_targets") {
 
         # https://crbug.com/989505
         jar_excluded_patterns += [ "META-INF/proguard/*" ]
-        input_jars_paths =
-            [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
       }
     }
 

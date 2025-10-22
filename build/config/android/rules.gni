@@ -4017,9 +4017,11 @@ if (!is_robolectric && enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
       sources = invoker.sources
 
+      # Use public SDK to ensure LGPL-licensed code can be built without the
+      # internal SDK.
+      _aidl_path = "${public_android_sdk_build_tools}/aidl"
+      _framework_aidl = "$public_android_sdk_platform_root/framework.aidl"
       _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
-      _aidl_path = "${android_sdk_build_tools}/aidl"
-      _framework_aidl = "$android_sdk/framework.aidl"
       _imports = [ _framework_aidl ]
       if (defined(invoker.interface_file)) {
         assert(invoker.interface_file != "")

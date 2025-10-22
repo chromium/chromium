@@ -4375,8 +4375,8 @@ if (enable_java_templates) {
           # the sandbox), and to enumerate test methods.
           extra_classpath_jars = [
             android_sdk_jar,
-            "$android_sdk/optional/android.test.base.jar",
-            "$android_sdk/optional/android.test.runner.jar",
+            "$android_sdk_platform_root/optional/android.test.base.jar",
+            "$android_sdk_platform_root/optional/android.test.runner.jar",
           ]
         }
       }

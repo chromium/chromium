@@ -395,7 +395,9 @@ template("generate_jni_impl") {
           if (defined(invoker.jar_file)) {
             _jar_file = invoker.jar_file
           } else {
-            _jar_file = android_sdk_jar
+            # Use public SDK to ensure LGPL-licensed code can be built
+            # without the internal SDK.
+            _jar_file = public_android_sdk_jar
           }
           inputs += [
             _jar_file,

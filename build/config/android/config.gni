@@ -170,13 +170,12 @@ if (is_android) {
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
-  public_android_sdk_build_tools =
-      "${public_android_sdk_root}/build-tools/36.0.0"
   public_android_sdk_platform_version = "36"
+  public_android_sdk_build_tools_version = "36.0.0"
   if (android_sdk_release == "b") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_platform_version = public_android_sdk_platform_version
-    default_android_sdk_build_tools_version = "36.0.0"
+    default_android_sdk_build_tools_version = public_android_sdk_build_tools_version
     public_android_sdk = true
   }
 
@@ -402,13 +401,17 @@ if (is_android) {
   # than just the current one) since these are needed by the Android toolchain
   # file to define toolchains for all possible targets in one pass.
 
-  android_sdk =
+  android_sdk_platform_root =
       "${android_sdk_root}/platforms/android-${android_sdk_platform_version}"
+  public_android_sdk_platform_root = "${public_android_sdk_root}/platforms/android-${public_android_sdk_platform_version}"
   android_sdk_build_tools =
       "${android_sdk_root}/build-tools/$android_sdk_build_tools_version"
+  public_android_sdk_build_tools =
+      "${public_android_sdk_root}/build-tools/$public_android_sdk_build_tools_version"
 
   # Path to the SDK's android.jar
-  android_sdk_jar = "$android_sdk/android.jar"
+  android_sdk_jar = "$android_sdk_platform_root/android.jar"
+  public_android_sdk_jar = "$public_android_sdk_platform_root/android.jar"
 
   # Location of libgcc. This is only needed for the current GN toolchain, so we
   # only need to define the current one, rather than one for every platform
