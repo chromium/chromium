@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -26,6 +27,7 @@ namespace actor::ui {
 namespace {
 
 using enum actor::ui::HandoffButtonState::ControlOwnership;
+using base::test::TestFuture;
 using ::testing::_;
 using ::ui::EventTimeForNow;
 using ::ui::EventType;
@@ -155,21 +157,29 @@ TEST_F(HandoffButtonControllerTest,
   state.is_active = true;
   bool should_show = true;
 
-  controller_->UpdateState(state, /*is_visible=*/true);
+  TestFuture<void> future1;
+  controller_->UpdateState(state, /*is_visible=*/true, future1.GetCallback());
+  EXPECT_TRUE(future1.Wait());
   controller_->TestShouldShowButton(should_show);
   EXPECT_TRUE(should_show);
 
-  controller_->UpdateState(state, /*is_visible=*/false);
+  TestFuture<void> future2;
+  controller_->UpdateState(state, /*is_visible=*/false, future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
   controller_->TestShouldShowButton(should_show);
   EXPECT_FALSE(should_show);
 
   state.is_active = false;
-  controller_->UpdateState(state, /*is_visible=*/true);
+  TestFuture<void> future3;
+  controller_->UpdateState(state, /*is_visible=*/true, future3.GetCallback());
+  EXPECT_TRUE(future3.Wait());
   controller_->TestShouldShowButton(should_show);
   EXPECT_FALSE(should_show);
   EXPECT_EQ(1, controller_->close_button_call_count());
 
-  controller_->UpdateState(state, /*is_visible=*/false);
+  TestFuture<void> future4;
+  controller_->UpdateState(state, /*is_visible=*/false, future4.GetCallback());
+  EXPECT_TRUE(future4.Wait());
   controller_->TestShouldShowButton(should_show);
   EXPECT_FALSE(should_show);
   EXPECT_EQ(2, controller_->close_button_call_count());
@@ -179,13 +189,17 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   HandoffButtonState state;
   state.is_active = true;
   state.controller = kActor;
-  controller_->UpdateState(state, /*is_visible=*/true);
+  TestFuture<void> future1;
+  controller_->UpdateState(state, /*is_visible=*/true, future1.GetCallback());
+  EXPECT_TRUE(future1.Wait());
   EXPECT_EQ(button_->GetText(), actor::ui::TAKE_OVER_TASK_TEXT);
   EXPECT_EQ(1, controller_->update_bounds_call_count());
   EXPECT_EQ(1, controller_->update_visibility_call_count());
 
   state.controller = kClient;
-  controller_->UpdateState(state, /*is_visible=*/true);
+  TestFuture<void> future2;
+  controller_->UpdateState(state, /*is_visible=*/true, future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
   EXPECT_EQ(button_->GetText(), actor::ui::GIVE_TASK_BACK_TEXT);
   EXPECT_EQ(2, controller_->update_bounds_call_count());
   EXPECT_EQ(2, controller_->update_visibility_call_count());
@@ -196,7 +210,10 @@ TEST_F(HandoffButtonControllerTest,
   HandoffButtonState actor_state;
   actor_state.is_active = true;
   actor_state.controller = kActor;
-  controller_->UpdateState(actor_state, /*is_visible=*/true);
+  TestFuture<void> future1;
+  controller_->UpdateState(actor_state, /*is_visible=*/true,
+                           future1.GetCallback());
+  EXPECT_TRUE(future1.Wait());
 
   EXPECT_CALL(*mock_actor_ui_tab_controller(), SetActorTaskPaused());
 
@@ -214,7 +231,10 @@ TEST_F(HandoffButtonControllerTest,
   HandoffButtonState client_state;
   client_state.is_active = true;
   client_state.controller = kClient;
-  controller_->UpdateState(client_state, /*is_visible=*/true);
+  TestFuture<void> future1;
+  controller_->UpdateState(client_state, /*is_visible=*/true,
+                           future1.GetCallback());
+  EXPECT_TRUE(future1.Wait());
 
   EXPECT_CALL(*mock_actor_ui_tab_controller(), SetActorTaskResume());
 
@@ -268,7 +288,10 @@ TEST_F(HandoffButtonControllerTest, HandlesNullTabControllerOnPress) {
   HandoffButtonState actor_state;
   actor_state.is_active = true;
   actor_state.controller = kActor;
-  controller_->UpdateState(actor_state, /*is_visible=*/true);
+  TestFuture<void> future;
+  controller_->UpdateState(actor_state, /*is_visible=*/true,
+                           future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   mock_actor_ui_tab_controller_.reset();
   // Verify that pressing the button does not crash even with a null tab
   // controller.

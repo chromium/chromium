@@ -92,10 +92,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void OnUpdateFinished();
 
   // Sets the Tab Indicator visibility.
-  void SetActorTabIndicatorVisibility(bool should_show_tab_indicator);
+  void SetActorTabIndicatorVisibility(bool should_show_tab_indicator,
+                                      base::OnceClosure callback);
 
   // Sets the Border Glow visibility.
-  void SetBorderGlowVisibility();
+  void SetBorderGlowVisibility(base::OnceClosure callback);
 
   // Initialize and start observing ImmersiveModeController.
   void InitializeImmersiveModeObserver();

@@ -18,7 +18,9 @@ class MockHandoffButtonController : public HandoffButtonController {
 
   MOCK_METHOD(void,
               UpdateState,
-              (const HandoffButtonState& state, bool is_visible),
+              (const HandoffButtonState& state,
+               bool is_visible,
+               base::OnceClosure callback),
               (override));
   MOCK_METHOD(bool, IsHovering, (), (override));
 };

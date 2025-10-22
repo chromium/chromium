@@ -152,14 +152,17 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, WebViewLifecycleAndVisibility) {
   EXPECT_FALSE(IsActorOverlayWebContentsAttached(browser()));
 
   // Make the scrim visible.
-  contents_controller->UpdateOverlayState(/*is_visible=*/true,
-                                          ActorOverlayState());
-
+  TestFuture<void> future1;
+  contents_controller->UpdateOverlayState(
+      /*is_visible=*/true, ActorOverlayState(), future1.GetCallback());
+  EXPECT_TRUE(future1.Wait());
   // Actor Overlay WebView should now be visible.
   EXPECT_TRUE(IsActorOverlayVisible(browser()));
-  contents_controller->UpdateOverlayState(/*is_visible=*/false,
-                                          ActorOverlayState());
 
+  TestFuture<void> future2;
+  contents_controller->UpdateOverlayState(
+      /*is_visible=*/false, ActorOverlayState(), future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
   // Confirm Actor Overlay WebView is hidden.
   EXPECT_FALSE(IsActorOverlayVisible(browser()));
 }
@@ -468,6 +471,28 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kUrl);
   EXPECT_FALSE(web_contents->IsCrashed());
   EXPECT_NE(web_contents->GetTitle(), u"Actor Overlay");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
+                       UpdateOverlayStateRunsCallbackWhenOverlayIsNull) {
+  ActorUiWindowController* window_controller =
+      ActorUiWindowController::From(browser());
+  // The window controller should still exist when the GlicActorUi feature is
+  // on, even if the overlay feature is disabled.
+  ASSERT_NE(window_controller, nullptr);
+
+  ActorUiContentsContainerController* contents_controller =
+      window_controller->GetControllerForWebContents(
+          browser()->GetActiveTabInterface()->GetContents());
+  ASSERT_NE(contents_controller, nullptr);
+
+  // In this test setup, the ActorOverlayWebView member of contents_controller
+  // is null because the GlicActorUiOverlay feature is disabled. This verifies
+  // that the callback passed in is still run when the webview is null.
+  base::test::TestFuture<void> future;
+  contents_controller->UpdateOverlayState(
+      /*is_visible=*/true, ActorOverlayState(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
 
 class GlicActorDisabledTest : public InProcessBrowserTest {
