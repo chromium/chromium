@@ -46,6 +46,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -86,10 +87,21 @@ public class HierarchicalMenuControllerUnitTest {
     public void setUp() {
         Context context = ContextUtils.getApplicationContext();
 
+        HierarchicalMenuKeyProvider keyProvider = HierarchicalMenuTestUtils.createKeyProvider();
+        SubmenuHeaderFactory headerFactory =
+                (clickedItem, backRunnable) -> {
+                    PropertyModel.Builder builder =
+                            new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS);
+                    HierarchicalMenuController.populateDefaultHeaderProperties(
+                            builder, keyProvider, clickedItem.model.get(TITLE), backRunnable);
+                    return new ListItem(MENU_ITEM_SUBMENU_HEADER, builder.build());
+                };
+
         mController =
                 new HierarchicalMenuController(
                         context,
-                        HierarchicalMenuTestUtils.createKeyProvider(),
+                        keyProvider,
+                        headerFactory,
                         /* flyoutHandler= */ null,
                         /* drillDownOverrideValue= */ true);
 

@@ -281,12 +281,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
         assert collaborationService != null;
         mCollaborationService = collaborationService;
         mContext = context;
+
+        // TODO(crbug.com/433410990): Implement flyoutHandler.
         mHierarchicalMenuController =
-                new HierarchicalMenuController(
-                        context,
-                        new ListMenuUtils.ListMenuKeyProvider(),
-                        /* flyoutHandler= */ null,
-                        /* drillDownOverrideValue= */ true);
+                ListMenuUtils.createHierarchicalMenuController(
+                        context, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true);
     }
 
     /**

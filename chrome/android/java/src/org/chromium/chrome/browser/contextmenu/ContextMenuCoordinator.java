@@ -328,9 +328,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         mActivity, mHeaderCoordinator, onItemClicked, this::dismiss);
 
         HierarchicalMenuController hierarchicalMenuController =
-                new HierarchicalMenuController(
+                ListMenuUtils.createHierarchicalMenuController(
                         mActivity,
-                        new ListMenuUtils.ListMenuKeyProvider(),
                         /* flyoutHandler= */ this,
                         /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
 

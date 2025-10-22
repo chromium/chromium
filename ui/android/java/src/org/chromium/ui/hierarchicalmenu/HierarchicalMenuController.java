@@ -50,6 +50,20 @@ import java.util.List;
  */
 @NullMarked
 public class HierarchicalMenuController<T> {
+
+    /** An interface for creating the ListItem for drilldown's header. */
+    public interface SubmenuHeaderFactory {
+        /**
+         * Creates the ListItem for drilldown's header.
+         *
+         * @param clickedItem The item that was clicked to open this submenu.
+         * @param backRunnable The runnable to execute when the header is clicked or a "back" key
+         *     event is received, allowing navigation back to the parent menu.
+         * @return The {@link ListItem} to be used as the submenu's header.
+         */
+        ListItem createHeaderItem(ListItem clickedItem, Runnable backRunnable);
+    }
+
     private final Context mContext;
 
     private final @Nullable FlyoutController<T> mFlyoutController;
@@ -60,11 +74,13 @@ public class HierarchicalMenuController<T> {
     private @Nullable Runnable mPendingHoverExitRunnable;
 
     private final @Nullable Boolean mDrillDownOverrideValue;
+    private final SubmenuHeaderFactory mSubmenuHeaderFactory;
 
     /**
      * Creates an instance of the controller.
      *
      * @param context The application's {@link Context} to retrieve resources.
+     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use.
      * @param keyProvider The {@link HierarchicalMenuKeyProvider} for the controller to use.
      * @param flyoutHandler The {@link FlyoutHandler} for the controller to use for displaying
      *     flyout popups.
@@ -74,9 +90,11 @@ public class HierarchicalMenuController<T> {
     public HierarchicalMenuController(
             Context context,
             HierarchicalMenuKeyProvider keyProvider,
+            SubmenuHeaderFactory submenuHeaderFactory,
             @Nullable FlyoutHandler<T> flyoutHandler,
             @Nullable Boolean drillDownOverrideValue) {
         mContext = context;
+        mSubmenuHeaderFactory = submenuHeaderFactory;
         mFlyoutController =
                 flyoutHandler != null
                         ? new FlyoutController<T>(flyoutHandler, keyProvider, this)
@@ -305,27 +323,8 @@ public class HierarchicalMenuController<T> {
                     }
                     setModelListContent(contentModelList, parentModelList);
                 };
-        final PropertyModel model =
-                new PropertyModel.Builder(mKeyProvider.getAllHeaderItemKeys())
-                        .with(
-                                mKeyProvider.getTitleKey(),
-                                item.model.get(mKeyProvider.getTitleKey()))
-                        .with(mKeyProvider.getEnabledKey(), true)
-                        .with(
-                                mKeyProvider.getClickListenerKey(),
-                                (unusedView) -> headerBackClick.run())
-                        .with(
-                                mKeyProvider.getKeyListenerKey(),
-                                (view, keyCode, keyEvent) -> {
-                                    if (isGoBackward(keyEvent)) {
-                                        headerBackClick.run();
-                                        return true;
-                                    }
-                                    // Return false because the listener has not consumed the event.
-                                    return false;
-                                })
-                        .build();
-        ListItem headerItem = new ListItem(mKeyProvider.getSubmenuHeaderType(), model);
+
+        ListItem headerItem = mSubmenuHeaderFactory.createHeaderItem(item, headerBackClick);
         List<ListItem> newContentList = new ArrayList<>();
         if (headerModelList == null) {
             newContentList.add(headerItem);
@@ -526,6 +525,37 @@ public class HierarchicalMenuController<T> {
             contentView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             contentView.clearFocus();
         }
+    }
+
+    /**
+     * Populates a PropertyModel.Builder with the default properties for a submenu header.
+     *
+     * <p>This helper is for use by {@link SubmenuHeaderFactory} implementers to easily set up the
+     * required header behavior while allowing them to add their own custom properties.
+     *
+     * @param builder The builder to populate.
+     * @param keyProvider The key provider to use for setting properties.
+     * @param title The title of the parent menu item with submenu.
+     * @param backRunnable The runnable to execute for back navigation.
+     */
+    public static void populateDefaultHeaderProperties(
+            PropertyModel.Builder builder,
+            HierarchicalMenuKeyProvider keyProvider,
+            CharSequence title,
+            Runnable backRunnable) {
+        builder.with(keyProvider.getTitleKey(), title)
+                .with(keyProvider.getEnabledKey(), true)
+                .with(keyProvider.getClickListenerKey(), (unusedView) -> backRunnable.run())
+                .with(
+                        keyProvider.getKeyListenerKey(),
+                        (view, keyCode, keyEvent) -> {
+                            if (isGoBackward(keyEvent)) {
+                                backRunnable.run();
+                                return true;
+                            }
+                            // Return false because the listener has not consumed the event.
+                            return false;
+                        });
     }
 
     /** Watches a ModelList and updates the accessibility pane title of the View accordingly. */

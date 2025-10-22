@@ -26,8 +26,6 @@ import java.util.List;
  */
 @NullMarked
 public interface HierarchicalMenuKeyProvider {
-    PropertyKey[] getAllHeaderItemKeys();
-
     WritableObjectPropertyKey<View.@Nullable OnClickListener> getClickListenerKey();
 
     WritableBooleanPropertyKey getEnabledKey();
@@ -43,6 +41,4 @@ public interface HierarchicalMenuKeyProvider {
     WritableObjectPropertyKey<List<ListItem>> getSubmenuItemsKey();
 
     WritableBooleanPropertyKey getIsHighlightedKey();
-
-    int getSubmenuHeaderType();
 }

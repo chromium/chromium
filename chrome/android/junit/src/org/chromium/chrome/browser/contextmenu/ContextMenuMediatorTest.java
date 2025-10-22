@@ -139,11 +139,8 @@ public class ContextMenuMediatorTest {
                                 .build());
 
         mHierarchicalMenuController =
-                new HierarchicalMenuController(
-                        mActivity,
-                        new ListMenuUtils.ListMenuKeyProvider(),
-                        /* flyoutHandler= */ null,
-                        /* drillDownOverrideValue= */ true);
+                ListMenuUtils.createHierarchicalMenuController(
+                        mActivity, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true);
     }
 
     @Test

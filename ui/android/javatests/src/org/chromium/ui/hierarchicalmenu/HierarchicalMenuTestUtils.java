@@ -59,11 +59,6 @@ public class HierarchicalMenuTestUtils {
     public static HierarchicalMenuKeyProvider createKeyProvider() {
         return new HierarchicalMenuKeyProvider() {
             @Override
-            public PropertyKey[] getAllHeaderItemKeys() {
-                return ALL_SUBMENU_ITEM_KEYS;
-            }
-
-            @Override
             public WritableObjectPropertyKey<View.OnClickListener> getClickListenerKey() {
                 return CLICK_LISTENER;
             }
@@ -101,11 +96,6 @@ public class HierarchicalMenuTestUtils {
             @Override
             public WritableBooleanPropertyKey getIsHighlightedKey() {
                 return IS_HIGHLIGHTED;
-            }
-
-            @Override
-            public int getSubmenuHeaderType() {
-                return MENU_ITEM_SUBMENU_HEADER;
             }
         };
     }

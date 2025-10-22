@@ -13,6 +13,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import android.widget.ListView;
@@ -20,12 +21,15 @@ import android.widget.ListView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuKeyProvider;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
-import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -140,12 +144,35 @@ public class ListMenuUtils {
         return new Rect(left, top, left + view.getWidth(), top + view.getHeight());
     }
 
-    public static class ListMenuKeyProvider implements HierarchicalMenuKeyProvider {
-        @Override
-        public PropertyKey[] getAllHeaderItemKeys() {
-            return ListMenuSubmenuItemProperties.ALL_KEYS;
-        }
+    /**
+     * Creates an instance of {@link HierarchicalMenuController} for {@link ListMenu}.
+     *
+     * @param context The {@link Context} for the controller to use.
+     * @param flyoutHandler The {@link FlyoutHandler} for the controller to use.
+     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
+     *     true}) or flyout ({@code false}), overriding the default.
+     */
+    public static HierarchicalMenuController createHierarchicalMenuController(
+            Context context,
+            @Nullable FlyoutHandler flyoutHandler,
+            @Nullable Boolean drillDownOverrideValue) {
+        HierarchicalMenuKeyProvider keyProvider = new ListMenuUtils.ListMenuKeyProvider();
+        SubmenuHeaderFactory headerFactory =
+                (clickedItem, backRunnable) -> {
+                    PropertyModel.Builder builder =
+                            new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS);
+                    HierarchicalMenuController.populateDefaultHeaderProperties(
+                            builder,
+                            keyProvider,
+                            clickedItem.model.get(ListMenuItemProperties.TITLE),
+                            backRunnable);
+                    return new ListItem(ListItemType.SUBMENU_HEADER, builder.build());
+                };
+        return new HierarchicalMenuController(
+                context, keyProvider, headerFactory, flyoutHandler, drillDownOverrideValue);
+    }
 
+    public static class ListMenuKeyProvider implements HierarchicalMenuKeyProvider {
         @Override
         public WritableObjectPropertyKey<View.@Nullable OnClickListener> getClickListenerKey() {
             return CLICK_LISTENER;
@@ -184,11 +211,6 @@ public class ListMenuUtils {
         @Override
         public WritableBooleanPropertyKey getIsHighlightedKey() {
             return IS_HIGHLIGHTED;
-        }
-
-        @Override
-        public int getSubmenuHeaderType() {
-            return ListItemType.SUBMENU_HEADER;
         }
     }
 }

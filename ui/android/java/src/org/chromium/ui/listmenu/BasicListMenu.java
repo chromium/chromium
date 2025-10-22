@@ -250,11 +250,8 @@ public class BasicListMenu implements ListMenu {
             @Nullable Boolean drillDownOverrideValue,
             @Nullable FlyoutHandler flyoutHandler) {
         HierarchicalMenuController hierarchicalMenuController =
-                new HierarchicalMenuController(
-                        mListMenuLayout.getContext(),
-                        new ListMenuUtils.ListMenuKeyProvider(),
-                        flyoutHandler,
-                        drillDownOverrideValue);
+                ListMenuUtils.createHierarchicalMenuController(
+                        mListMenuLayout.getContext(), flyoutHandler, drillDownOverrideValue);
 
         AccessibilityListObserver observer =
                 hierarchicalMenuController

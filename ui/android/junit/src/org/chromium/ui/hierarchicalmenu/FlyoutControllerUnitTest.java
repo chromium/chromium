@@ -18,6 +18,7 @@ import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ENABLED
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.IS_HIGHLIGHTED;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_ID;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_SUBMENU_HEADER;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_ITEMS;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
@@ -41,6 +42,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -78,10 +80,22 @@ public class FlyoutControllerUnitTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
+
+        HierarchicalMenuKeyProvider keyProvider = HierarchicalMenuTestUtils.createKeyProvider();
+        SubmenuHeaderFactory headerFactory =
+                (clickedItem, backRunnable) -> {
+                    PropertyModel.Builder builder =
+                            new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS);
+                    HierarchicalMenuController.populateDefaultHeaderProperties(
+                            builder, keyProvider, clickedItem.model.get(TITLE), backRunnable);
+                    return new ListItem(MENU_ITEM_SUBMENU_HEADER, builder.build());
+                };
+
         mHierarchicalMenuController =
                 new HierarchicalMenuController(
                         mContext,
-                        HierarchicalMenuTestUtils.createKeyProvider(),
+                        keyProvider,
+                        headerFactory,
                         /* flyoutHandler= */ null,
                         /* drillDownOverrideValue= */ false);
 

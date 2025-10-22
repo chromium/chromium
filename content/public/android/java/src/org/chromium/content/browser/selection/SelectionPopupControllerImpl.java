@@ -76,7 +76,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
@@ -90,7 +89,6 @@ import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -369,33 +367,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mCustomActionMenuItemClickListeners = new HashMap<>();
         getPopupController().registerPopup(this);
 
+        // TODO(crbug.com/433410990): Implement flyouts for selected text context menu.
         assumeNonNull(mContext);
         mHierarchicalMenuController =
-                new HierarchicalMenuController<SelectionPopupController>(
-                        mContext,
-                        new ListMenuUtils.ListMenuKeyProvider(),
-                        // TODO(crbug.com/433410990): Implement flyouts for selected text context
-                        // menu.
-                        new FlyoutController.FlyoutHandler<SelectionPopupController>() {
-                            @Override
-                            public List<FlyoutController.FlyoutPopupEntry<SelectionPopupController>>
-                                    getFlyoutWindows() {
-                                return Collections.emptyList();
-                            }
-
-                            @Override
-                            public Rect getPopupRect(SelectionPopupController popupWindow) {
-                                return new Rect();
-                            }
-
-                            @Override
-                            public void addFlyoutWindow(
-                                    ListItem item, View view, int levelOfHoveredItem) {}
-
-                            @Override
-                            public void removeFlyoutWindows(int removeFromIndex) {}
-                        },
-                        /* drillDownOverrideValue= */ true);
+                ListMenuUtils.createHierarchicalMenuController(
+                        mContext, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true);
     }
 
     private void reset() {
