@@ -99,8 +99,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnActiveWindowChanged(bool active) override;
   void OnWidgetInitDone() override;
-  void OnWidgetThemeChanged(ui::ColorProviderKey::ColorMode color_mode,
-                            std::optional<SkColor> background_color) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
@@ -154,6 +152,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void SetFullscreen(bool fullscreen, int64_t target_display_id) override;
   bool IsFullscreen() const override;
   void SetOpacity(float opacity) override;
+  void SetBackgroundColor(SkColor background_color) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio,
                       const gfx::Size& excluded_margin) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,

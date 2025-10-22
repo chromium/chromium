@@ -597,10 +597,8 @@ void Widget::Init(InitParams params) {
     parent_->OnChildAdded(this);
   }
 
-  native_widget_->OnWidgetThemeChanged(
-      GetColorMode(), background_color_ ? GetColorProvider()->GetColor(
-                                              background_color_.value())
-                                        : std::optional<SkColor>());
+  native_widget_->SetBackgroundColor(
+      GetColorProvider()->GetColor(GetBackgroundColorId()));
 
   UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
@@ -1474,10 +1472,8 @@ void Widget::ThemeChanged() {
   NotifyColorProviderChanged();
 
   if (native_widget_) {
-    native_widget_->OnWidgetThemeChanged(
-        GetColorMode(), background_color_ ? GetColorProvider()->GetColor(
-                                                background_color_.value())
-                                          : std::optional<SkColor>());
+    native_widget_->SetBackgroundColor(
+        GetColorProvider()->GetColor(GetBackgroundColorId()));
   }
 }
 
@@ -2437,7 +2433,10 @@ void Widget::SetColorModeOverride(
 void Widget::SetBackgroundColor(std::optional<ui::ColorId> background_color) {
   if (background_color != background_color_) {
     background_color_ = background_color;
-    ThemeChanged();
+    if (native_widget_) {
+      native_widget_->SetBackgroundColor(
+          GetColorProvider()->GetColor(GetBackgroundColorId()));
+    }
   }
 }
 
@@ -2841,6 +2840,10 @@ void Widget::SetClientContentsViewInternal(std::unique_ptr<View> view) {
     SetContentsView(view.release());
   }
   root_view_->LayoutImmediately();
+}
+
+ui::ColorId Widget::GetBackgroundColorId() const {
+  return background_color_.value_or(ui::kColorWindowBackground);
 }
 
 BEGIN_METADATA_BASE(Widget)

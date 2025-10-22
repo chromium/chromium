@@ -6061,6 +6061,7 @@ void BrowserView::FrameColorsChanged() {
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
   }
+  GetWidget()->SetBackgroundColor(kColorToolbar);
 }
 
 void BrowserView::UpdateAccessibleNameForRootView() {

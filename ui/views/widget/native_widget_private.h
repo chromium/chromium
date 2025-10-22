@@ -184,10 +184,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // initially parented.
   virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
-  // Notifies the NativeWidget that the widget theme has changed.
-  virtual void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode,
-      std::optional<SkColor> background_color) = 0;
+  // Sets the color used to fill the native widget. The native widget may use
+  // this color to determine the border color and caption button colors.
+  virtual void SetBackgroundColor(SkColor background_color) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;

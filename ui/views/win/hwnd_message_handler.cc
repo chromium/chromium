@@ -2682,7 +2682,10 @@ void HWNDMessageHandler::OnPaint(HDC dc) {
 
   if (!IsRectEmpty(&ps.rcPaint)) {
     HBRUSH brush = delegate_->GetBackgroundPaintBrush();
-    if (!brush) {
+    // Translucent windows on Win10 + ANGLE D3D11 have a blending issue with
+    // non-black brush. Fallback to black brush to work around the issue. See
+    // crbug.com/445485657.
+    if (!brush || is_translucent_) {
       brush = reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
     }
 
