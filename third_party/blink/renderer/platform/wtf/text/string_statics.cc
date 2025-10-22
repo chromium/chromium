@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
-#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -97,7 +96,14 @@ bool NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
 }
 
 WTF_EXPORT unsigned ComputeHashForWideString(base::span<const UChar> str) {
-  if (ContainsOnlyLatin1(str)) {
+  bool is_all_latin1 = true;
+  for (UChar ch : str) {
+    if (ch & 0xff00) {
+      is_all_latin1 = false;
+      break;
+    }
+  }
+  if (is_all_latin1) {
     return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
         reinterpret_cast<const char*>(str.data()), str.size());
   } else {

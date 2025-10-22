@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
 
@@ -59,10 +58,6 @@ UChar32 CodePointAtAndPrevious(base::span<const UChar> text,
   U16_PREV(text, start_offset, offset, code_point);
   return code_point;
 }
-
-// True if `text` only contains Latin1 characters [0,255].
-WTF_EXPORT
-bool ContainsOnlyLatin1(base::span<const UChar> text);
 
 }  // namespace blink
 
