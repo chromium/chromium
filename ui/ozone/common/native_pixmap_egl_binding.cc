@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
@@ -40,46 +41,6 @@ namespace {
 /* Reserve 0 for the invalid format specifier */
 #define DRM_FORMAT_INVALID 0
 
-EGLint FourCC(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return DRM_FORMAT_R8;
-    case gfx::BufferFormat::R_16:
-      return DRM_FORMAT_R16;
-    case gfx::BufferFormat::RG_88:
-      return DRM_FORMAT_GR88;
-    case gfx::BufferFormat::RG_1616:
-      return DRM_FORMAT_GR1616;
-    case gfx::BufferFormat::BGR_565:
-      return DRM_FORMAT_RGB565;
-    case gfx::BufferFormat::RGBA_8888:
-      return DRM_FORMAT_ABGR8888;
-    case gfx::BufferFormat::RGBX_8888:
-      return DRM_FORMAT_XBGR8888;
-    case gfx::BufferFormat::BGRA_8888:
-      return DRM_FORMAT_ARGB8888;
-    case gfx::BufferFormat::BGRX_8888:
-      return DRM_FORMAT_XRGB8888;
-    case gfx::BufferFormat::RGBA_1010102:
-      return DRM_FORMAT_ABGR2101010;
-    case gfx::BufferFormat::BGRA_1010102:
-      return DRM_FORMAT_ARGB2101010;
-    case gfx::BufferFormat::YVU_420:
-      return DRM_FORMAT_YVU420;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return DRM_FORMAT_NV12;
-    case gfx::BufferFormat::P010:
-      return DRM_FORMAT_P010;
-    case gfx::BufferFormat::RGBA_F16:
-      return DRM_FORMAT_ABGR16161616F;
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return DRM_FORMAT_INVALID;
-  }
-
-  NOTREACHED();
-}
-
 }  // namespace
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(const gfx::Size& size,
@@ -92,7 +53,7 @@ NativePixmapEGLBinding::~NativePixmapEGLBinding() {
 }
 
 bool NativePixmapEGLBinding::IsBufferFormatSupported(gfx::BufferFormat format) {
-  return FourCC(format) != DRM_FORMAT_INVALID;
+  return GetFourCCFormatFromBufferFormat(format) != DRM_FORMAT_INVALID;
 }
 
 // static
@@ -123,7 +84,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     GLenum target,
     GLuint texture_id) {
   DCHECK(!pixmap_);
-  if (FourCC(format_) == DRM_FORMAT_INVALID) {
+  if (GetFourCCFormatFromBufferFormat(format_) == DRM_FORMAT_INVALID) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
     return false;
   }
@@ -141,7 +102,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   attrs.push_back(EGL_HEIGHT);
   attrs.push_back(size_.height());
   attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
-  attrs.push_back(FourCC(format_));
+  attrs.push_back(GetFourCCFormatFromBufferFormat(format_));
 
   if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
       format_ == gfx::BufferFormat::YVU_420 ||
