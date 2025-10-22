@@ -525,7 +525,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
 
   if (inferenceUtil.isAutofillableInputElement(element) ||
       inferenceUtil.isTextAreaElement(element) ||
-      gCrWebLegacy.fill.isSelectElement(element)) {
+      inferenceUtil.isSelectElement(element)) {
     field.is_autofilled = (element as any).isAutofilled;
     field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
     field.should_autocomplete = fillUtil.shouldAutocomplete(element);

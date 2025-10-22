@@ -5,7 +5,7 @@
 import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {findChildText, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -552,7 +552,7 @@ gCrWebLegacy.fill.getOptionStringsFromElement = function(
 function valueForElement(
     element: fillConstants.FormControlElement|HTMLOptionElement): string {
   let value = element.value;
-  if (gCrWebLegacy.fill.isSelectElement(element)) {
+  if (isSelectElement(element)) {
     const selectElement = element as HTMLSelectElement;
     if (selectElement.options.length > 0 && selectElement.selectedIndex === 0 &&
         selectElement.options[0]!.disabled &&

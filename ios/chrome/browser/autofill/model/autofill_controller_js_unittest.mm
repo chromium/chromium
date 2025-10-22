@@ -1358,9 +1358,10 @@ TEST_F(AutofillControllerJsTest, IsSelectElement) {
       {"course", 0, -1},
   };
 
-  TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isSelectElement(%@)",
-                                          elements_expecting_true,
-                                          std::size(elements_expecting_true));
+  TestExecutingBooleanJavaScriptOnElement(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isSelectElement')(%@)",
+      elements_expecting_true, std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsCheckableElement) {

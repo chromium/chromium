@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {isAutofillableElement, isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -271,7 +271,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
   for (const [fieldId, fieldData] of Object.entries(data.fields)) {
     const element = __gCrWeb.fill.getElementByUniqueID(Number(fieldId));
 
-    if (!isAutofillableElement(element)) {
+    if (!inferenceUtil.isAutofillableElement(element)) {
       continue;
     }
 
@@ -289,7 +289,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
     const shouldBeForceFilled = fieldId === forceFillFieldID.toString();
     if (element.value && __gCrWeb.form.fieldWasEditedByUser(element) &&
         !__gCrWeb.autofill.sanitizedFieldIsEmpty(element.value) &&
-        !shouldBeForceFilled && !__gCrWeb.fill.isSelectElement(element) &&
+        !shouldBeForceFilled && !inferenceUtil.isSelectElement(element) &&
         !((element.hasAttribute('value') &&
            element.getAttribute('value') === element.value) ||
           (element.hasAttribute('placeholder') &&
@@ -411,9 +411,9 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     }
 
     let value = null;
-    if (isTextField(element) || isTextAreaElement(element)) {
+    if (isTextField(element) || inferenceUtil.isTextAreaElement(element)) {
       value = '';
-    } else if (__gCrWeb.fill.isSelectElement(element)) {
+    } else if (inferenceUtil.isSelectElement(element)) {
       // Reset to the first index.
       // TODO(bondd): Store initial values and reset to the correct one here.
       value = element.options[0].value;
@@ -567,7 +567,7 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
   }
 
   let filled = false;
-  if (isTextField(field) || isTextAreaElement(field)) {
+  if (isTextField(field) || inferenceUtil.isTextAreaElement(field)) {
     let sanitizedValue = data['value'];
 
     if (isTextField(field)) {
@@ -582,7 +582,7 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
 
     filled = __gCrWeb.fill.setInputElementValue(sanitizedValue, field);
     field.isAutofilled = true;
-  } else if (__gCrWeb.fill.isSelectElement(field)) {
+  } else if (inferenceUtil.isSelectElement(field)) {
     filled = __gCrWeb.fill.setInputElementValue(data['value'], field);
   } else if (__gCrWeb.fill.isCheckableElement(field)) {
     filled = __gCrWeb.fill.setInputElementValue(data['is_checked'], field);
@@ -607,7 +607,7 @@ __gCrWeb.autofill.extractAutofillableElementsFromSet = function(
   const autofillableElements = [];
   for (let i = 0; i < controlElements.length; ++i) {
     const element = controlElements[i];
-    if (!isAutofillableElement(element)) {
+    if (!inferenceUtil.isAutofillableElement(element)) {
       continue;
     }
     autofillableElements.push(element);
@@ -645,7 +645,7 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
     const controlElements = __gCrWeb.form.getFormControlElements(form);
     for (let i = 0; i < controlElements.length; ++i) {
       const element = controlElements[i];
-      if (!isAutofillableElement(element)) {
+      if (!inferenceUtil.isAutofillableElement(element)) {
         continue;
       }
       const elementID = fillUtil.getUniqueID(element);

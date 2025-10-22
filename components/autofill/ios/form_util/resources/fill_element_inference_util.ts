@@ -38,8 +38,8 @@ gCrWebLegacy.fill.hasTagName = function(node: Element, tag: string): boolean {
  *     autofilled.
  */
 export function isAutofillableElement(element: Element): boolean {
-  return isAutofillableInputElement(element) ||
-      gCrWebLegacy.fill.isSelectElement(element) || isTextAreaElement(element);
+  return isAutofillableInputElement(element) || isSelectElement(element) ||
+      isTextAreaElement(element);
 }
 
 /**
@@ -279,12 +279,12 @@ export function ancestorTagNames(element: any): string[] {
  * @return Whether element is a 'select' element.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-gCrWebLegacy.fill.isSelectElement = function(element: any): boolean {
+export function isSelectElement(element: any): boolean {
   if (!element) {
     return false;
   }
   return element.type === 'select-one';
-};
+}
 
 /**
  * Returns true if `element` is a 'textarea' element.
