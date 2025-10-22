@@ -4,6 +4,36 @@
 
 import("//testing/test.gni")
 
+_default_allowed_violations = [
+  # Public-branding counterpart defines the same resources.
+  "../../chrome/app/theme/google_chrome/*",
+
+  # Defines public counterpart with same entries.
+  "../../components/metrics/internal/server_urls.grd",
+
+  # TODO(b/452971335): Audit entries below.
+  "../../chrome/browser/internal/resources/additional_modules_list.input",
+  "../../chrome/browser/internal/transform_additional_modules_list.py",
+  "../../components/autofill/core/browser/form_parsing/internal_resources/0_default_regex_patterns.json",
+  "../../components/plus_addresses/core/browser/resources/internal/*",
+  "../../components/vector_icons/google_chrome/*",
+  "../../google_apis/internal/generate_metrics_key.py",
+  "../../third_party/search_engines_data/resources_internal/search_engines_scaled_resources.grd",
+]
+
+if (!is_android) {
+  _default_allowed_violations += [
+    "../../chrome/browser/actor/resources/internal/browser_resources.grd",
+    "../../chrome/browser/glic/resources/internal/browser_resources.grd",
+    "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd",
+    "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd",
+    "../../chrome/browser/resources/downloads/internal/icons.html",
+    "../../chrome/browser/resources/settings/internal/icons.html",
+    "../../third_party/search_engines_data/resources_internal/search_engine_descriptions_strings.grd",
+    "../../third_party/widevine/cdm/linux/x64/manifest.json",
+  ]
+}
+
 template("private_code_test") {
   testonly = true
   assert(!is_component_build, "Guard your test behind if (!is_component_build)")
@@ -77,13 +107,15 @@ template("private_code_test") {
       rebase_path(get_label_info(_linker_inputs_dep, "root_out_dir"),
                   root_build_dir),
     ]
+    _globs = _default_allowed_violations
     if (defined(invoker.allowed_violations)) {
-      foreach(_glob, invoker.allowed_violations) {
-        args += [
-          "--allow-violation",
-          _glob,
-        ]
-      }
+      _globs += invoker.allowed_violations
+    }
+    foreach(_glob, _globs) {
+      args += [
+        "--allow-violation",
+        _glob,
+      ]
     }
     if (defined(invoker.expect_failure) && invoker.expect_failure) {
       args += [ "--expect-failure" ]

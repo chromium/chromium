@@ -127,17 +127,17 @@ def main():
   if args.allow_violation:
     found, ignored_paths = _apply_allowlist(found, args.allow_violation)
     if ignored_paths:
-      print('Ignoring {len(ignored_paths)} allowlisted private paths:')
-      _print_paths(sorted(ignored_paths), 10)
+      print(f'Ignoring {len(ignored_paths)} allowlisted private paths:')
+      _print_paths(sorted(ignored_paths), 100)
 
   if found:
     limit = 10 if args.expect_failure else 1000
-    print(f'Found {len(found)} private paths being linked into public code:')
+    print(f'Found {len(found)} non-allowlisted private paths:')
     _print_paths(found, limit)
   elif args.expect_failure:
     print('Expected to find a private path, but none were found.')
   else:
-    print('No private paths found 👍.')
+    print('No non-allowlisted private paths found 👍.')
 
   sys.exit(0 if bool(found) == args.expect_failure else 1)
 
