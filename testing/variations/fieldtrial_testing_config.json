@@ -15514,7 +15514,7 @@
             ]
         }
     ],
-    "MemoryCacheIntelligentPruning": [
+    "MemoryCacheCombined": [
         {
             "platforms": [
                 "chromeos",
@@ -15524,65 +15524,27 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MemoryCacheIntelligentPruning"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheStrongReferenceExtensions"
-                    ]
-                },
-                {
-                    "name": "Enabled_StrongRefImage",
-                    "params": {
-                        "image": "true"
-                    },
+                    "name": "IP_Enabled",
                     "enable_features": [
                         "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MemoryCacheStrongRefPruningTuneUp": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DefaultsX2",
-                    "params": {
-                        "memory_cache_strong_ref_resource_size_threshold": "6291456",
-                        "memory_cache_strong_ref_total_size_threshold": "31457280",
-                        "strong_reference_prune_delay": "10m"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference"
-                    ],
-                    "disable_features": [
+                        "MemoryCacheStrongReference",
                         "ReleaseResourceDecodedDataOnMemoryPressure",
                         "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheStrongReferenceExtensions"
                     ]
                 },
                 {
-                    "name": "DefaultsX3",
-                    "params": {
-                        "memory_cache_strong_ref_resource_size_threshold": "9437184",
-                        "memory_cache_strong_ref_total_size_threshold": "47185920",
-                        "strong_reference_prune_delay": "15m"
-                    },
+                    "name": "IP_Enabled_NoPressureRelease",
                     "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheIntelligentPruning",
                         "MemoryCacheStrongReference"
                     ],
                     "disable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheStrongReferenceExtensions",
                         "ReleaseResourceDecodedDataOnMemoryPressure",
                         "ReleaseResourceStrongReferencesOnMemoryPressure"
                     ]
@@ -15599,6 +15561,145 @@
                         "MemoryCacheStrongReference"
                     ],
                     "disable_features": [
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReferenceExtensions",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "MaxLimits1HourDelay_HM",
+                    "params": {
+                        "image": "true",
+                        "manifest": "true",
+                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
+                        "memory_cache_strong_ref_total_size_threshold": "209715200",
+                        "raw": "true",
+                        "strong_reference_prune_delay": "60m",
+                        "svg_document": "true",
+                        "xsl_stylesheet": "true"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceExtensions"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheIntelligentPruning",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "Combination_HM_MaxLimits",
+                    "params": {
+                        "image": "true",
+                        "manifest": "true",
+                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
+                        "memory_cache_strong_ref_total_size_threshold": "209715200",
+                        "raw": "true",
+                        "strong_reference_prune_delay": "60m",
+                        "svg_document": "true",
+                        "xsl_stylesheet": "true"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceExtensions"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "Combination_Image_MaxLimits",
+                    "params": {
+                        "image": "true",
+                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
+                        "memory_cache_strong_ref_total_size_threshold": "209715200",
+                        "strong_reference_prune_delay": "60m"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceExtensions"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "Combination_HM_MaxLimits_Balanced",
+                    "params": {
+                        "cost_weight": "0.0005",
+                        "freq_weight": "75.0",
+                        "image": "true",
+                        "manifest": "true",
+                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
+                        "memory_cache_strong_ref_total_size_threshold": "209715200",
+                        "raw": "true",
+                        "strong_reference_prune_delay": "60m",
+                        "svg_document": "true",
+                        "type_weight": "75.0",
+                        "xsl_stylesheet": "true"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceExtensions"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "Combination_HM_MaxLimits_SizeAware",
+                    "params": {
+                        "cost_weight": "0.005",
+                        "freq_weight": "60.0",
+                        "image": "true",
+                        "manifest": "true",
+                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
+                        "memory_cache_strong_ref_total_size_threshold": "209715200",
+                        "raw": "true",
+                        "strong_reference_prune_delay": "60m",
+                        "svg_document": "true",
+                        "type_weight": "80.0",
+                        "xsl_stylesheet": "true"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceExtensions"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "IntelligentPruning_HM_DefaultLimits",
+                    "params": {
+                        "image": "true",
+                        "manifest": "true",
+                        "raw": "true",
+                        "svg_document": "true",
+                        "xsl_stylesheet": "true"
+                    },
+                    "enable_features": [
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceExtensions"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
                         "ReleaseResourceDecodedDataOnMemoryPressure",
                         "ReleaseResourceStrongReferencesOnMemoryPressure"
                     ]
