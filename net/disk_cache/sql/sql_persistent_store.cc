@@ -2373,7 +2373,11 @@ ResIdListOrErrorAndEvictionRequested Backend::RunEviction(
         base::StrCat({kHistogramPrefix, kMethodName, ".EntryCount"}),
         result->size());
   }
-
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.RunEviction", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
   return ResIdListOrErrorAndEvictionRequested(std::move(result),
                                               GetEvictionUrgency());
 }
