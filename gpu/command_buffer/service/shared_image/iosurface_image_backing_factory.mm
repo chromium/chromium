@@ -145,11 +145,10 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
       gr_context_type_(gr_context_type),
       max_texture_size_(max_texture_size),
       angle_texture_usage_(feature_info->feature_flags().angle_texture_usage),
-      gpu_memory_buffer_formats_(
-          feature_info->feature_flags().gpu_memory_buffer_formats),
       progress_reporter_(progress_reporter),
       texture_target_(texture_target) {
-  for (gfx::BufferFormat buffer_format : gpu_memory_buffer_formats_) {
+  for (gfx::BufferFormat buffer_format :
+       feature_info->feature_flags().gpu_memory_buffer_formats) {
     viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     // Add supported single-plane formats.
     if (format.is_single_plane() && IsFormatSupported(format)) {
