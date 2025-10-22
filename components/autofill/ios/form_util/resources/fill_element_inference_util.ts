@@ -37,10 +37,10 @@ gCrWebLegacy.fill.hasTagName = function(node: Element, tag: string): boolean {
  * @return Whether element is one of the element types that can be
  *     autofilled.
  */
-gCrWebLegacy.fill.isAutofillableElement = function(element: Element): boolean {
+export function isAutofillableElement(element: Element): boolean {
   return gCrWebLegacy.fill.isAutofillableInputElement(element) ||
       gCrWebLegacy.fill.isSelectElement(element) || isTextAreaElement(element);
-};
+}
 
 /**
  * Trims whitespace from the start of the input string.
@@ -136,7 +136,7 @@ function findChildTextInner(
     }
     if (gCrWebLegacy.form.isFormControlElement(/** @type {Element} */ (node))) {
       const input = /** @type {FormControlElement} */ (node);
-      if (gCrWebLegacy.fill.isAutofillableElement(input)) {
+      if (isAutofillableElement(input)) {
         return '';
       }
     }
@@ -198,7 +198,8 @@ function findChildTextInner(
  * @param divsToSkip List of <div> tags to ignore if encountered.
  * @return The child text.
  */
-function findChildTextWithIgnoreList(node: Node, divsToSkip: Node[]): string {
+export function findChildTextWithIgnoreList(
+    node: Node, divsToSkip: Node[]): string {
   if (node.nodeType === Node.TEXT_NODE) {
     return nodeValue(node);
   }
@@ -222,7 +223,7 @@ function findChildTextWithIgnoreList(node: Node, divsToSkip: Node[]): string {
  * @param node A node of which the child text will be return.
  * @return The child text.
  */
-function findChildText(node: Node): string {
+export function findChildText(node: Node): string {
   return findChildTextWithIgnoreList(node, []);
 }
 
@@ -237,7 +238,7 @@ function findChildText(node: Node): string {
  * @return Whether it can be traversed.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-function isTraversableContainerElement(node: any): boolean {
+export function isTraversableContainerElement(node: any): boolean {
   if (node.nodeType !== Node.ELEMENT_NODE) {
     return false;
   }
@@ -256,7 +257,7 @@ function isTraversableContainerElement(node: any): boolean {
  * @return The element types for all ancestors.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-function ancestorTagNames(element: any): string[] {
+export function ancestorTagNames(element: any): string[] {
   const tagNames: string[] = [];
   let parentNode = element.parentNode;
   while (parentNode) {
@@ -295,7 +296,7 @@ gCrWebLegacy.fill.isSelectElement = function(element: any): boolean {
  * @return Whether element is a 'textarea' element.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-function isTextAreaElement(element: any): boolean {
+export function isTextAreaElement(element: any): boolean {
   if (!element) {
     return false;
   }
@@ -344,7 +345,7 @@ gCrWebLegacy.fill.isAutofillableInputElement = function(element: Element):
  * It is based on `InferredLabel` in
  * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  */
-interface InferredLabel {
+export interface InferredLabel {
   /** A non-empty string. */
   label: string;
   // TODO(crbug.com/337179781): Add label source to match C++.
@@ -357,7 +358,7 @@ interface InferredLabel {
  * @param label A label to example.
  * @return An inferred label or null.
  */
-function buildInferredLabelIfValid(label: string): InferredLabel | null {
+export function buildInferredLabelIfValid(label: string): InferredLabel|null {
   // LINT.IfChange(InvalidLabelCriteria)
   const isValid = autofillFormFeaturesApi
                       .getFunction(
@@ -382,13 +383,3 @@ function buildInferredLabelIfValid(label: string): InferredLabel | null {
 function nodeValue(node: Node): string {
   return (node.nodeValue || '').replace(/[\n\t]/gm, '');
 }
-
-export {
-  findChildTextWithIgnoreList,
-  findChildText,
-  isTraversableContainerElement,
-  ancestorTagNames,
-  isTextAreaElement,
-  InferredLabel,
-  buildInferredLabelIfValid,
-};

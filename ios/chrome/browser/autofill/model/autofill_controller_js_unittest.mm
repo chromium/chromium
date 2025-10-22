@@ -24,6 +24,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -802,7 +803,7 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
 }
 
 // Test fixture to test autofill controller.
-class AutofillControllerJsTest : public PlatformTest {
+class AutofillControllerJsTest : public web::JavascriptTest {
  public:
   AutofillControllerJsTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
@@ -817,6 +818,20 @@ class AutofillControllerJsTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebState* web_state() { return web_state_.get(); }
+
+  void SetUp() override {
+    JavascriptTest::SetUp();
+
+    AddGCrWebScript();
+    AddUserScript(@"fill");
+    AddUserScript(@"form");
+    AddUserScript(@"autofill_form_features");
+    AddUserScript(@"fill_util_test");
+
+    ASSERT_TRUE(
+        web::test::LoadHtml(web_view(), @"<html></html>",
+                            [NSURL URLWithString:@"https://chromium.test/"]));
+  }
 
   web::WebFrame* WaitForMainFrame() {
     __block web::WebFrame* main_frame = nullptr;
@@ -936,7 +951,9 @@ void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
       {"submit", 0, -1},
   };
 
-  web::test::LoadHtml(kHTMLForTestingElements, web_state());
+  ASSERT_TRUE(
+      web::test::LoadHtml(web_view(), kHTMLForTestingElements,
+                          [NSURL URLWithString:@"https://chromium.test/"]));
   ExecuteBooleanJavaScriptOnElementsAndCheck(
       javascript,
       GetElementsByNameJavaScripts(elementsByName, std::size(elementsByName)),
@@ -953,7 +970,8 @@ void AutofillControllerJsTest::ExecuteBooleanJavaScriptOnElementsAndCheck(
         [NSString stringWithFormat:java_script, get_element_java_script];
     BOOL expected = [get_element_java_scripts_expecting_true
         containsObject:get_element_java_script];
-    EXPECT_NSEQ(@(expected), ExecuteJavaScript(js_to_execute))
+    EXPECT_NSEQ(@(expected),
+                web::test::ExecuteJavaScript(web_view(), js_to_execute))
         << [NSString stringWithFormat:@"%@ on %@ should return %d", java_script,
                                       get_element_java_script, expected];
   }
@@ -1231,8 +1249,9 @@ TEST_F(AutofillControllerJsTest, IsAutofillableElement) {
   };
 
   TestExecutingBooleanJavaScriptOnElement(
-      @"__gCrWeb.fill.isAutofillableElement(%@)", elements_expecting_true,
-      std::size(elements_expecting_true));
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isAutofillableElement')(%@)",
+      elements_expecting_true, std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {

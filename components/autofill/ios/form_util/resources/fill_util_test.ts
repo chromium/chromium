@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getAriaDescription, getAriaLabel, getCanonicalActionForForm, getUniqueID, shouldAutocomplete} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
 * @fileoverview Registers a testing-only `CrWebApi` to expose fill utils
@@ -17,5 +18,6 @@ fillApi.addFunction('shouldAutocomplete', shouldAutocomplete);
 fillApi.addFunction('getAriaLabel', getAriaLabel);
 fillApi.addFunction('getAriaDescription', getAriaDescription);
 fillApi.addFunction('getCanonicalActionForForm', getCanonicalActionForForm);
+fillApi.addFunction('isAutofillableElement', isAutofillableElement);
 
 gCrWeb.registerApi('fill_test_api', fillApi);

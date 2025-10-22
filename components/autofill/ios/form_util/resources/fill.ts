@@ -70,8 +70,9 @@ function extractFieldsFromControlElements(
     fieldsExtracted[i] = false;
     elementArray[i] = null;
 
-    const controlElement = controlElements[i];
-    if (!gCrWebLegacy.fill.isAutofillableElement(controlElement)) {
+    const controlElement =
+        controlElements[i] as fillConstants.FormControlElement;
+    if (!inferenceUtil.isAutofillableElement(controlElement)) {
       continue;
     }
 
@@ -518,7 +519,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
   field.aria_label = fillUtil.getAriaLabel(element);
   field.aria_description = fillUtil.getAriaDescription(element);
 
-  if (!gCrWebLegacy.fill.isAutofillableElement(element)) {
+  if (!inferenceUtil.isAutofillableElement(element)) {
     return;
   }
 
@@ -736,7 +737,7 @@ function extractAutofillableElementsFromSet(
   const autofillableElements
       : fillConstants.FormControlElement[] = [];
   for (const element of controlElements) {
-    if (!gCrWebLegacy.fill.isAutofillableElement(element)) {
+    if (!inferenceUtil.isAutofillableElement(element)) {
       continue;
     }
     autofillableElements.push(element);

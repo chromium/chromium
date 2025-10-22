@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {isAutofillableElement, isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
 
 
 /**
@@ -270,7 +271,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
   for (const [fieldId, fieldData] of Object.entries(data.fields)) {
     const element = __gCrWeb.fill.getElementByUniqueID(Number(fieldId));
 
-    if (!__gCrWeb.fill.isAutofillableElement(element)) {
+    if (!isAutofillableElement(element)) {
       continue;
     }
 
@@ -606,7 +607,7 @@ __gCrWeb.autofill.extractAutofillableElementsFromSet = function(
   const autofillableElements = [];
   for (let i = 0; i < controlElements.length; ++i) {
     const element = controlElements[i];
-    if (!__gCrWeb.fill.isAutofillableElement(element)) {
+    if (!isAutofillableElement(element)) {
       continue;
     }
     autofillableElements.push(element);
@@ -644,7 +645,7 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
     const controlElements = __gCrWeb.form.getFormControlElements(form);
     for (let i = 0; i < controlElements.length; ++i) {
       const element = controlElements[i];
-      if (!__gCrWeb.fill.isAutofillableElement(element)) {
+      if (!isAutofillableElement(element)) {
         continue;
       }
       const elementID = fillUtil.getUniqueID(element);

@@ -11,6 +11,7 @@
 // Requires functions from fill.ts, form.ts, autofill_form_features.ts and
 // child_frame_registration_lib.ts.
 
+import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -377,7 +378,7 @@ function findAllFormElementsInNodes(nodeList: NodeList): Element[] {
 function findFormlessFieldsIds(elements: Element[]): string[] {
   return elements
       .filter(
-          e => gCrWebLegacy.fill.isAutofillableElement(e) &&
+          e => isAutofillableElement(e) &&
               !(e as HTMLInputElement).form)
       .map(fillUtil.getUniqueID);
 }
