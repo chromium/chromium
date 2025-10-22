@@ -1100,7 +1100,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   // TODO(crbug.com/328411251): Investigate whether this is needed for readonly
   // access.
   if (metal_end_access_state.commandsScheduledFuture.id != 0) {
-    iosurface_backing->wgpu_commands_scheduled_futures_.emplace(
+    iosurface_backing->wgpu_commands_scheduled_futures_.insert_or_assign(
         device_, metal_end_access_state.commandsScheduledFuture);
   }
 
@@ -2054,7 +2054,8 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
     auto fence = gl::GLFenceEGL::Create(EGL_SYNC_METAL_COMMANDS_SCHEDULED_ANGLE,
                                         nullptr);
     if (fence) {
-      egl_commands_scheduled_fences_.emplace(egl_display, std::move(fence));
+      egl_commands_scheduled_fences_.insert_or_assign(egl_display,
+                                                      std::move(fence));
     } else {
       LOG(ERROR)
           << "Failed to create EGL_SYNC_METAL_COMMANDS_SCHEDULED_ANGLE fence";
