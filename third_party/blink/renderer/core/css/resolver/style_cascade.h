@@ -624,6 +624,36 @@ class CORE_EXPORT StyleCascade {
                            FunctionContext* function_context,
                            TokenSequence& out);
 
+  // Resolve a single function parameter (e.g., resolving var() in the right
+  // context, doing type checking, etc.) to get its canonical value on function
+  // entry. Normally inserts the result into function_arguments, but if
+  // default_value was used (because substitution failed), will insert into
+  // unresolved_defaults instead (see ResolveUnresolvedFunctionDefaults()).
+  void ResolveFunctionParameter(
+      const String& name,
+      CSSVariableData* argument_data,
+      CSSVariableData* default_value,
+      const CSSSyntaxDefinition& type,
+      const TreeScope* tree_scope,
+      CascadeResolver& resolver,
+      const CSSParserContext& context,
+      FunctionContext* function_context,
+      HeapHashMap<String, Member<CSSVariableData>>& function_arguments,
+      HeapHashMap<String, Member<CSSVariableData>>& unresolved_defaults);
+
+  // Resolve default values after all other parameters have been resolved
+  // (as they can refer to other parameters). Returns false if a cycle
+  // has been detected.
+  bool ResolveUnresolvedFunctionDefaults(
+      const HeapHashMap<String, Member<CSSVariableData>>& unresolved_defaults,
+      const HashMap<String, const CSSSyntaxDefinition*>& local_types,
+      StyleRuleFunction* function,
+      const TreeScope* tree_scope,
+      FunctionContext* function_context,
+      CascadeResolver& resolver,
+      const CSSParserContext* context,
+      HeapHashMap<String, Member<CSSVariableData>>& function_arguments);
+
   // If `data` is non-nullptr, append that to `out`. Otherwise, consume
   // a fallback from the stream (starting with a kCommaToken),
   // resolve it, and (if successful) append that to `out` instead.

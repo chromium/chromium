@@ -1756,34 +1756,10 @@ bool StyleCascade::ResolveFunctionInto(
           /*is_animation_tainted=*/false, /*is_attr_tainted=*/false,
           /*needs_variable_resolution=*/true);
 
-      // We need to resolve the argument in the context of this function,
-      // so that we can do type coercion on the resolved value before the call.
-      // In particular, we want any var() within the argument to be resolved
-      // in our context; e.g., --foo(var(--a)) should be our a, not foo's a
-      // (if that even exists).
-      //
-      // Note that if this expression comes from directly a function call,
-      // as in the example above (and if the return and argument types are the
-      // same), we will effectively do type parsing of exactly the same data
-      // twice. This is wasteful, and it's possible that we should do something
-      // about it if it proves to be a common case.
-      argument_data = ResolveTypedExpression(
-          *argument_data, tree_scope, mixin_parameter_bindings, &parameter.type,
-          resolver, context, function_context);
-
-      // An argument generally "captures" a failed resolution, without
-      // propagation to the outer declaration; if e.g. a var() reference fails,
-      // we should instead use the default value.
-      if (argument_data) {
-        function_arguments.insert(parameter.name, argument_data);
-      } else if (parameter.default_value) {
-        unresolved_defaults.insert(parameter.name, parameter.default_value);
-      } else {
-        // An explicit nullptr is needed for shadowing; even if an argument
-        // did not resolve successfully, we should not be able to reach
-        // a variable with the same name defined in an outer scope.
-        function_arguments.insert(parameter.name, nullptr);
-      }
+      ResolveFunctionParameter(parameter.name, argument_data,
+                               parameter.default_value, parameter.type,
+                               tree_scope, resolver, context, function_context,
+                               function_arguments, unresolved_defaults);
     } else if (parameter.default_value) {
       unresolved_defaults.insert(parameter.name, parameter.default_value);
     } else {
@@ -1793,40 +1769,10 @@ bool StyleCascade::ResolveFunctionInto(
     ++parameter_idx;
   }
 
-  // Defaulted arguments essentially resolve as typed locals in their
-  // own "private" stack frame. We pretend that `unresolved_defaults`
-  // are unresolved local variables, and apply those local variables
-  // as normal. (This also means cycles between defaulted arguments
-  // are handled correctly.)
-  //
-  // This roughly corresponds to the first invocation of "resolve function
-  // styles" in "evaluate a custom function".
-  // https://drafts.csswg.org/css-mixins-1/#evaluate-a-custom-function
-  if (!unresolved_defaults.empty()) {
-    FunctionContext default_context{
-        .function = *function,
-        .tree_scope = function_tree_scope,
-        .arguments = function_arguments,
-        .locals = {},  // Populated by ApplyLocalVariables.
-        .unresolved_locals = unresolved_defaults,
-        .local_types = local_types,
-        .parent = function_context};
-
-    ApplyLocalVariables(resolver, context, default_context);
-
-    // Resolving a default may place this function in a cycle,
-    // e.g. @function --f(--x:--f()).
-    if (resolver.InCycle()) {
-      return false;
-    }
-
-    // All the resolved locals (i.e. resolved defaults) now exist
-    // in `default_context.locals`. We merge all the newly resolved defaulted
-    // arguments into `function_arguments`, to make the full set of arguments
-    // visible to the "real" stack frame (`local_function_context`).
-    for (const auto& [name, value] : default_context.locals) {
-      function_arguments.insert(name, value);
-    }
+  if (!ResolveUnresolvedFunctionDefaults(
+          unresolved_defaults, local_types, function, function_tree_scope,
+          function_context, resolver, &context, function_arguments)) {
+    return false;
   }
 
   CSSVariableData* unresolved_result = nullptr;
@@ -1873,6 +1819,94 @@ bool StyleCascade::ResolveFunctionInto(
   DCHECK(!ret_data->NeedsVariableResolution());
   return out.Append(ret_data, ret_data->IsAttrTainted(),
                     CSSVariableData::kMaxVariableBytes);
+}
+
+void StyleCascade::ResolveFunctionParameter(
+    const String& name,
+    CSSVariableData* argument_data,
+    CSSVariableData* default_value,
+    const CSSSyntaxDefinition& type,
+    const TreeScope* tree_scope,
+    CascadeResolver& resolver,
+    const CSSParserContext& context,
+    FunctionContext* function_context,
+    HeapHashMap<String, Member<CSSVariableData>>& function_arguments,
+    HeapHashMap<String, Member<CSSVariableData>>& unresolved_defaults) {
+  // We need to resolve the argument in the context of this function,
+  // so that we can do type coercion on the resolved value before the
+  // call. In particular, we want any var() within the argument to be
+  // resolved in our context; e.g., --foo(var(--a)) should be our a,
+  // not foo's a (if that even exists).
+  //
+  // Note that if this expression comes from directly a function call,
+  // as in the example above (and if the return and argument types are
+  // the same), we will effectively do type parsing of exactly the
+  // same data twice. This is wasteful, and it's possible that we
+  // should do something about it if it proves to be a common case.
+  argument_data = ResolveTypedExpression(
+      *argument_data, tree_scope, /*mixin_parameter_bindings=*/nullptr, &type,
+      resolver, context, function_context);
+
+  // An argument generally "captures" a failed resolution, without
+  // propagation to the outer declaration; if e.g. a var() reference
+  // fails, we should instead use the default value.
+  if (argument_data) {
+    function_arguments.insert(name, argument_data);
+  } else if (default_value) {
+    unresolved_defaults.insert(name, default_value);
+  } else {
+    // An explicit nullptr is needed for shadowing; even if an
+    // argument did not resolve successfully, we should not be able to
+    // reach a variable with the same name defined in an outer scope.
+    function_arguments.insert(name, nullptr);
+  }
+}
+
+// Defaulted arguments essentially resolve as typed locals in their
+// own "private" stack frame. We pretend that `unresolved_defaults`
+// are unresolved local variables, and apply those local variables
+// as normal. (This also means cycles between defaulted arguments
+// are handled correctly.)
+//
+// This roughly corresponds to the first invocation of "resolve function
+// styles" in "evaluate a custom function".
+// https://drafts.csswg.org/css-mixins-1/#evaluate-a-custom-function
+bool StyleCascade::ResolveUnresolvedFunctionDefaults(
+    const HeapHashMap<String, Member<CSSVariableData>>& unresolved_defaults,
+    const HashMap<String, const CSSSyntaxDefinition*>& local_types,
+    StyleRuleFunction* function,
+    const TreeScope* tree_scope,
+    FunctionContext* function_context,
+    CascadeResolver& resolver,
+    const CSSParserContext* context,
+    HeapHashMap<String, Member<CSSVariableData>>& function_arguments) {
+  if (!unresolved_defaults.empty()) {
+    FunctionContext default_context{
+        .function = *function,
+        .tree_scope = tree_scope,
+        .arguments = function_arguments,
+        .locals = {},  // Populated by ApplyLocalVariables.
+        .unresolved_locals = unresolved_defaults,
+        .local_types = local_types,
+        .parent = function_context};
+
+    ApplyLocalVariables(resolver, *context, default_context);
+
+    // Resolving a default may place this function in a cycle,
+    // e.g. @function --f(--x:--f()).
+    if (resolver.InCycle()) {
+      return false;
+    }
+
+    // All the resolved locals (i.e. resolved defaults) now exist
+    // in `default_context.locals`. We merge all the newly resolved
+    // defaulted arguments into `function_arguments`, to make the full set
+    // of arguments visible to the "real" stack frame.
+    for (const auto& [name, val] : default_context.locals) {
+      function_arguments.insert(name, val);
+    }
+  }
+  return true;
 }
 
 bool StyleCascade::AppendDataWithFallback(
