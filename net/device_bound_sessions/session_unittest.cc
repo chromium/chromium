@@ -261,7 +261,7 @@ TEST_F(SessionTest, CreateOriginScopedWithSessionRules) {
       {SessionParams::Scope::Specification::Type::kExclude,
        "subdomain.example.test", "/index.html"});
   EXPECT_EQ(Session::CreateIfValid(params).error().type,
-            SessionError::kInvalidScopeRule);
+            SessionError::kScopeRuleOriginScopedHostPatternMismatch);
 }
 
 TEST_F(SessionTest, CreateWithInvalidCredential) {

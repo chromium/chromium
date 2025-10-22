@@ -36,7 +36,7 @@ struct NET_EXPORT SessionError {
     // Deprecated: kInvalidScopeOrigin = 17,
     kMismatchedSessionId = 18,
     // Deprecated: kInvalidRefreshInitiators = 19,
-    kInvalidScopeRule = 20,
+    // Deprecated: kInvalidScopeRule = 20,
     kMissingScope = 21,
     kNoCredentials = 22,
     // Deprecated: kInvalidScopeIncludeSite = 23,
@@ -89,7 +89,11 @@ struct NET_EXPORT SessionError {
     kInvalidCredentialsCookieUnpermittedAttribute = 70,
     kInvalidCredentialsCookieInvalidDomain = 71,
     kInvalidCredentialsCookiePrefix = 72,
-    kMaxValue = kInvalidCredentialsCookiePrefix,
+    kInvalidScopeRulePath = 73,
+    kInvalidScopeRuleHostPattern = 74,
+    kScopeRuleOriginScopedHostPatternMismatch = 75,
+    kScopeRuleSiteScopedHostPatternMismatch = 76,
+    kMaxValue = kScopeRuleSiteScopedHostPatternMismatch,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

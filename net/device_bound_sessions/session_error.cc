@@ -48,7 +48,10 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kMismatchedSessionId:
     case kRefreshInitiatorNotString:
     case kRefreshInitiatorInvalidHostPattern:
-    case kInvalidScopeRule:
+    case kInvalidScopeRulePath:
+    case kInvalidScopeRuleHostPattern:
+    case kScopeRuleOriginScopedHostPatternMismatch:
+    case kScopeRuleSiteScopedHostPatternMismatch:
     case kInvalidScopeSpecification:
     case kMissingScopeSpecificationType:
     case kEmptyScopeSpecificationDomain:
@@ -122,7 +125,10 @@ bool SessionError::IsServerError() const {
     case kMismatchedSessionId:
     case kRefreshInitiatorNotString:
     case kRefreshInitiatorInvalidHostPattern:
-    case kInvalidScopeRule:
+    case kInvalidScopeRulePath:
+    case kInvalidScopeRuleHostPattern:
+    case kScopeRuleOriginScopedHostPatternMismatch:
+    case kScopeRuleSiteScopedHostPatternMismatch:
     case kInvalidScopeSpecification:
     case kMissingScopeSpecificationType:
     case kEmptyScopeSpecificationDomain:

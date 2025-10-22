@@ -15,6 +15,7 @@
 #include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_error.h"
 
 namespace net::device_bound_sessions {
 
@@ -107,8 +108,10 @@ SessionInclusionRules::Create(const url::Origin& origin,
         spec.type == SessionParams::Scope::Specification::Type::kExclude
             ? SessionInclusionRules::InclusionResult::kExclude
             : SessionInclusionRules::InclusionResult::kInclude;
-    if (!rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path)) {
-      return base::unexpected(SessionError{SessionError::kInvalidScopeRule});
+    SessionError::ErrorType add_url_rule_result =
+        rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path);
+    if (add_url_rule_result != SessionError::kSuccess) {
+      return base::unexpected(SessionError{add_url_rule_result});
     }
   }
 
@@ -148,21 +151,22 @@ void SessionInclusionRules::SetIncludeSite(bool include_site) {
   include_site_ = SchemefulSite(origin_);
 }
 
-bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
-                                              const std::string& host_pattern,
-                                              const std::string& path_prefix) {
+SessionError::ErrorType SessionInclusionRules::AddUrlRuleIfValid(
+    InclusionResult rule_type,
+    const std::string& host_pattern,
+    const std::string& path_prefix) {
   if (path_prefix.empty() || path_prefix.front() != '/') {
-    return false;
+    return SessionError::kInvalidScopeRulePath;
   }
 
   if (!IsValidHostPattern(host_pattern)) {
-    return false;
+    return SessionError::kInvalidScopeRuleHostPattern;
   }
 
   // Return early if the rule can't match anything. For origin-scoped
   // sessions, the origin must match the host pattern.
   if (!include_site_ && !MatchesHostPattern(host_pattern, origin_.host())) {
-    return false;
+    return SessionError::kScopeRuleOriginScopedHostPatternMismatch;
   }
 
   // For site-scoped sessions, either the site itself matches the
@@ -184,12 +188,12 @@ bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
             origin_, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
     if (hostlike_part_domain != domain_and_registry) {
-      return false;
+      return SessionError::kScopeRuleSiteScopedHostPatternMismatch;
     }
   }
 
   url_rules_.emplace_back(rule_type, host_pattern, path_prefix);
-  return true;
+  return SessionError::kSuccess;
 }
 
 SessionInclusionRules::InclusionResult

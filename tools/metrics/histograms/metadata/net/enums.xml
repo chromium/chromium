@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Invalid scope origin (DEPRECATED)"/>
   <int value="18" label="Mismatched session id"/>
   <int value="19" label="Invalid refresh initiators (DEPRECATED)"/>
-  <int value="20" label="Invalid scope rule"/>
+  <int value="20" label="Invalid scope rule (DEPRECATED)"/>
   <int value="21" label="Missing scope"/>
   <int value="22" label="No credentials"/>
   <int value="23" label="Invalid include_site in scope (DEPRECATED)"/>
@@ -311,6 +311,13 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="Invalid credentials - cookie attribute not permitted"/>
   <int value="71" label="Invalid credentials - cookie invalid domain"/>
   <int value="72" label="Invalid credentials - cookie invalid prefix"/>
+  <int value="73" label="Invalid scope rule path"/>
+  <int value="74" label="Invalid scope rule host pattern"/>
+  <int value="75"
+      label="Origin-scoped session has mismatch between host pattern and
+             origin"/>
+  <int value="76"
+      label="Site-scoped session has mismatch between host pattern and site"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

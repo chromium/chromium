@@ -498,7 +498,10 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kMismatchedSessionId:
     case kRefreshInitiatorNotString:
     case kRefreshInitiatorInvalidHostPattern:
-    case kInvalidScopeRule:
+    case kInvalidScopeRulePath:
+    case kInvalidScopeRuleHostPattern:
+    case kScopeRuleOriginScopedHostPatternMismatch:
+    case kScopeRuleSiteScopedHostPatternMismatch:
     case kInvalidScopeSpecification:
     case kMissingScopeSpecificationType:
     case kEmptyScopeSpecificationDomain:
