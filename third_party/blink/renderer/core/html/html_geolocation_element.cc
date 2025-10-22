@@ -49,29 +49,16 @@ void HTMLGeolocationElement::Trace(Visitor* visitor) const {
   HTMLPermissionElement::Trace(visitor);
 }
 
-bool HTMLGeolocationElement::ShouldShowSpinningIcon() {
-  return is_geolocation_request_in_progress_ ||
-         (base::TimeTicks::Now() - spinning_started_time_ <
-          kMinimumSpinningIconTime);
-}
-
 void HTMLGeolocationElement::UpdateAppearance() {
-  uint16_t message_id;
-  if (ShouldShowSpinningIcon()) {
-    UpdateIcon(mojom::blink::PermissionName::GEOLOCATION,
-               HTMLPermissionIconElement::VisualState::kWaiting);
-    message_id =
-        GetTranslatedMessageID(IDS_PERMISSION_REQUEST_USING_LOCATION,
-                               ComputeInheritedLanguage().LowerASCII());
-  } else {
-    UpdateIcon(mojom::blink::PermissionName::GEOLOCATION);
-    message_id = GetTranslatedMessageID(
-        is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
-                              : IDS_PERMISSION_REQUEST_GEOLOCATION,
-        ComputeInheritedLanguage().LowerASCII());
-  }
-  CHECK(message_id);
-  permission_text_span()->setInnerText(GetLocale().QueryString(message_id));
+  UpdateIcon(mojom::blink::PermissionName::GEOLOCATION,
+             ShouldShowSpinningIcon()
+                 ? HTMLPermissionIconElement::VisualState::kWaiting
+                 : HTMLPermissionIconElement::VisualState::kIdle);
+  // We need `PostTask` here because setInnerText hits a DCHECK.
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE, BindOnce(&HTMLGeolocationElement::UpdateText,
+                                     WrapWeakPersistent(this)));
 }
 
 void HTMLGeolocationElement::UpdatePermissionStatusAndAppearance() {
@@ -89,14 +76,6 @@ HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
       mojom::blink::GeolocationEmbeddedPermissionRequestDescriptor::New();
   descriptor->geolocation->autolocate = autolocate();
   return descriptor;
-}
-
-Geolocation* HTMLGeolocationElement::GetGeolocation() {
-  auto* dom_window = GetDocument().domWindow();
-  if (!dom_window) {
-    return nullptr;
-  }
-  return Geolocation::geolocation(*dom_window->navigator());
 }
 
 void HTMLGeolocationElement::AttributeChanged(
@@ -130,22 +109,6 @@ void HTMLGeolocationElement::AttributeChanged(
   HTMLPermissionElement::AttributeChanged(params);
 }
 
-void HTMLGeolocationElement::DidFinishLifecycleUpdate(
-    const LocalFrameView& view) {
-  HTMLPermissionElement::DidFinishLifecycleUpdate(view);
-  if (FastHasAttribute(html_names::kAutolocateAttr)) {
-    MaybeTriggerAutolocate(ForceAutolocate::kNo);
-  }
-}
-
-void HTMLGeolocationElement::OnActivated() {
-  if (FastHasAttribute(html_names::kAutolocateAttr)) {
-    MaybeTriggerAutolocate(ForceAutolocate::kYes);
-  } else {
-    RequestGeolocation();
-  }
-}
-
 void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
   // We consume the click event here if the permission is already granted
   // and propagate any other events to the parent HTMLPermissionElement.
@@ -177,30 +140,18 @@ void HTMLGeolocationElement::OnPermissionStatusChange(
   }
 }
 
-void HTMLGeolocationElement::RequestGeolocation() {
-  if (FastHasAttribute(html_names::kWatchAttr)) {
-    WatchPosition();
+void HTMLGeolocationElement::DidFinishLifecycleUpdate(
+    const LocalFrameView& view) {
+  HTMLPermissionElement::DidFinishLifecycleUpdate(view);
+  if (FastHasAttribute(html_names::kAutolocateAttr)) {
+    MaybeTriggerAutolocate(ForceAutolocate::kNo);
+  }
+}
+
+void HTMLGeolocationElement::OnActivated() {
+  if (FastHasAttribute(html_names::kAutolocateAttr)) {
+    MaybeTriggerAutolocate(ForceAutolocate::kYes);
   } else {
-    GetCurrentPosition();
-  }
-}
-
-void HTMLGeolocationElement::ClearWatch() {
-  if (!watch_id_) {
-    return;
-  }
-  if (auto* geolocation = GetGeolocation()) {
-    geolocation->clearWatch(watch_id_);
-    watch_id_ = 0;
-  }
-}
-
-void HTMLGeolocationElement::MaybeTriggerAutolocate(ForceAutolocate force) {
-  CHECK(FastHasAttribute(html_names::kAutolocateAttr));
-  if (force == ForceAutolocate::kYes ||
-      (!did_autolocate_trigger_request && IsRenderered() &&
-       PermissionsGranted())) {
-    did_autolocate_trigger_request = true;
     RequestGeolocation();
   }
 }
@@ -245,6 +196,7 @@ void HTMLGeolocationElement::WatchPosition() {
     watch_id_ = 1;
   }
 }
+
 void HTMLGeolocationElement::CurrentPositionCallback(
     base::expected<Geoposition*, GeolocationPositionError*> position) {
   is_geolocation_request_in_progress_ = false;
@@ -262,6 +214,14 @@ void HTMLGeolocationElement::CurrentPositionCallback(
   if (watch_id_ != 0) {
     StartSpinning(RequestInProgress::kNo);
   }
+}
+
+Geolocation* HTMLGeolocationElement::GetGeolocation() {
+  auto* dom_window = GetDocument().domWindow();
+  if (!dom_window) {
+    return nullptr;
+  }
+  return Geolocation::geolocation(*dom_window->navigator());
 }
 
 void HTMLGeolocationElement::SpinningIconTimerFired(TimerBase*) {
@@ -283,6 +243,56 @@ void HTMLGeolocationElement::StartSpinning(
   spinning_started_time_ = base::TimeTicks::Now();
   spinning_icon_timer_.StartOneShot(kMinimumSpinningIconTime, FROM_HERE);
   UpdateAppearance();
+}
+
+bool HTMLGeolocationElement::ShouldShowSpinningIcon() {
+  return is_geolocation_request_in_progress_ ||
+         (base::TimeTicks::Now() - spinning_started_time_ <
+          kMinimumSpinningIconTime);
+}
+
+void HTMLGeolocationElement::RequestGeolocation() {
+  if (FastHasAttribute(html_names::kWatchAttr)) {
+    WatchPosition();
+  } else {
+    GetCurrentPosition();
+  }
+}
+
+void HTMLGeolocationElement::ClearWatch() {
+  if (!watch_id_) {
+    return;
+  }
+  if (auto* geolocation = GetGeolocation()) {
+    geolocation->clearWatch(watch_id_);
+    watch_id_ = 0;
+  }
+}
+
+void HTMLGeolocationElement::MaybeTriggerAutolocate(ForceAutolocate force) {
+  CHECK(FastHasAttribute(html_names::kAutolocateAttr));
+  if (force == ForceAutolocate::kYes ||
+      (!did_autolocate_trigger_request && IsRenderered() &&
+       PermissionsGranted())) {
+    did_autolocate_trigger_request = true;
+    RequestGeolocation();
+  }
+}
+
+void HTMLGeolocationElement::UpdateText() {
+  uint16_t message_id;
+  if (ShouldShowSpinningIcon()) {
+    message_id =
+        GetTranslatedMessageID(IDS_PERMISSION_REQUEST_USING_LOCATION,
+                               ComputeInheritedLanguage().LowerASCII());
+  } else {
+    message_id = GetTranslatedMessageID(
+        is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
+                              : IDS_PERMISSION_REQUEST_GEOLOCATION,
+        ComputeInheritedLanguage().LowerASCII());
+  }
+  CHECK(message_id);
+  permission_text_span()->setInnerText(GetLocale().QueryString(message_id));
 }
 
 }  // namespace blink

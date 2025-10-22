@@ -257,9 +257,30 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
                        bool is_spinning) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-    EXPECT_EQ(expected_text,
-              element->permission_text_span_for_testing()->innerText());
+    CheckInnerText(element, expected_text);
     EXPECT_EQ(is_spinning, element->SpinningIconTimerForTesting().IsActive());
+  }
+
+  void CheckInnerText(HTMLGeolocationElement* element,
+                      const String& expected_text) {
+    base::RunLoop run_loop;
+    // `UpdateText` is called via `PostTask`, so `innerText` is checked within a
+    // `PostTask` to ensure it's updated.
+    GetDocument()
+        .GetTaskRunner(TaskType::kInternalDefault)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](HTMLGeolocationElement* element, const String& expected_text,
+                   base::RepeatingClosure quit_closure) {
+                  EXPECT_EQ(
+                      expected_text,
+                      element->permission_text_span_for_testing()->innerText());
+                  quit_closure.Run();
+                },
+                WeakPersistent(element), expected_text,
+                run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
  private:
@@ -334,9 +355,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationSetInnerTextAfterRegistration) {
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return geolocation_element->is_registered_in_browser_process();
     }));
-    EXPECT_EQ(
-        data.expected_text,
-        geolocation_element->permission_text_span_for_testing()->innerText());
+    CheckInnerText(geolocation_element, data.expected_text);
   }
 }
 
@@ -348,11 +367,10 @@ TEST_F(HTMLGeolocationElementTest,
   }));
   String initial_text =
       geolocation_element->permission_text_span_for_testing()->innerText();
+  CheckInnerText(geolocation_element, initial_text);
   geolocation_element->setAttribute(html_names::kPreciselocationAttr,
                                     AtomicString(""));
-  EXPECT_EQ(
-      initial_text,
-      geolocation_element->permission_text_span_for_testing()->innerText());
+  CheckInnerText(geolocation_element, initial_text);
 }
 
 TEST_F(HTMLGeolocationElementTest,
@@ -363,11 +381,10 @@ TEST_F(HTMLGeolocationElementTest,
   }));
   String initial_text =
       geolocation_element->permission_text_span_for_testing()->innerText();
+  CheckInnerText(geolocation_element, initial_text);
   geolocation_element->setAttribute(AtomicString("pReCiSeLoCaTiOn"),
                                     AtomicString(""));
-  EXPECT_EQ(
-      initial_text,
-      geolocation_element->permission_text_span_for_testing()->innerText());
+  CheckInnerText(geolocation_element, initial_text);
 }
 
 TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyMode) {
@@ -377,9 +394,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyMode) {
   }));
   geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
                                     AtomicString("precise"));
-  EXPECT_EQ(
-      kPreciseGeolocationString,
-      geolocation_element->permission_text_span_for_testing()->innerText());
+  CheckInnerText(geolocation_element, kPreciseGeolocationString);
 }
 
 TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyModeCaseInsensitive) {
@@ -389,9 +404,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyModeCaseInsensitive) {
   }));
   geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
                                     AtomicString("PrEcIsE"));
-  EXPECT_EQ(
-      kPreciseGeolocationString,
-      geolocation_element->permission_text_span_for_testing()->innerText());
+  CheckInnerText(geolocation_element, kPreciseGeolocationString);
 }
 
 TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
@@ -414,9 +427,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
     }));
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::GEOLOCATION, data.status);
-    EXPECT_EQ(
-        data.expected_text,
-        geolocation_element->permission_text_span_for_testing()->innerText());
+    CheckInnerText(geolocation_element, data.expected_text);
     GetDocument().body()->RemoveChild(geolocation_element);
   }
 }
@@ -740,9 +751,10 @@ TEST_F(HTMLGeolocationElementSimTest, GeolocationInitializeGrantedText) {
                                     AtomicString("width: auto; height: auto"));
   GetDocument().body()->AppendChild(geolocation_element);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  EXPECT_EQ(
-      kGeolocationString,
-      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return kGeolocationString ==
+           geolocation_element->permission_text_span_for_testing()->innerText();
+  }));
   DOMRect* rect = geolocation_element->GetBoundingClientRect();
   EXPECT_NE(0, rect->width());
   EXPECT_NE(0, rect->height());
