@@ -54,6 +54,7 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGet
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo_base.mojom.String16;
+import org.chromium.url.mojom.Url;
 
 import java.nio.ByteBuffer;
 
@@ -430,6 +431,7 @@ public class CredManHelper {
                                         WebauthnBrowserBridge.stringToMojoString16(
                                                 data.getString(
                                                         CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
+                                passwordCredential.icon = new Url();
                                 assumeNonNull(getCallback);
                                 getCallback.onCredentialResponse(
                                         /* assertionResponse= */ null, passwordCredential);
