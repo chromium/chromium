@@ -84,7 +84,7 @@ int SidePanelUIBase::GetCurrentEntryDefaultContentWidth() const {
   return entry->GetDefaultContentWidth();
 }
 
-bool SidePanelUIBase::IsSidePanelShowing() const {
+bool SidePanelUIBase::IsSidePanelShowing(SidePanelEntry::PanelType type) const {
   return current_key().has_value();
 }
 
@@ -170,7 +170,9 @@ SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(
 std::optional<SidePanelUIBase::UniqueKey>
 SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
   // This function should only be called when the side panel view is shown.
-  CHECK(IsSidePanelShowing());
+  // TODO(crbug.com/445442616): update IsSidePanelShowing to use a passed in
+  // PanelType param once it is added.
+  CHECK(IsSidePanelShowing(SidePanelEntry::PanelType::kContent));
 
   // Attempt to return an entry in the following fallback order:
   //  - the new tab's registry's active entry

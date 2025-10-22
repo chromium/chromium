@@ -28,12 +28,13 @@ class CustomCursorSuppressorBrowsertest
     CHECK(extension);
     SidePanelEntry::Key extension_key =
         SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id());
-    CHECK(global_registry()->GetEntryForKey(extension_key));
+    SidePanelEntry* entry = global_registry()->GetEntryForKey(extension_key);
+    CHECK(entry);
 
     ExtensionTestMessageListener default_path_listener("default_path");
     side_panel_coordinator()->Show(extension_key);
     CHECK(default_path_listener.WaitUntilSatisfied());
-    CHECK(side_panel_coordinator()->IsSidePanelShowing());
+    CHECK(side_panel_coordinator()->IsSidePanelShowing(entry->type()));
     return extension;
   }
 
