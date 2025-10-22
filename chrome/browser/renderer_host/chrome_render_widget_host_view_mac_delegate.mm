@@ -69,6 +69,9 @@
     _widgetProcessId = renderWidgetHost->GetProcess()->GetDeprecatedID();
     _widgetRoutingId = renderWidgetHost->GetRoutingID();
     _historySwiper = [[HistorySwiper alloc] initWithDelegate:self];
+    // Clip bounds so history swiper navigation layer doesn't overflow the
+    // bounds when in Split View or with a Side Panel open.
+    [self viewThatWantsHistoryOverlay].clipsToBounds = YES;
   }
   return self;
 }
