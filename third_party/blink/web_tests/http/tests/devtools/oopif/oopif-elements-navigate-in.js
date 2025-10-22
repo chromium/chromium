@@ -20,7 +20,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     targetAdded: async function(target) {
       if (!target.name().startsWith('inner'))
         return;
-      target.pageAgent().setLifecycleEventsEnabled(true);
+      target.pageAgent().invoke_setLifecycleEventsEnabled({enabled: true});
       target.model(SDK.ResourceTreeModel.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
         if (event.data.name !== 'load')
           return;
