@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -32,17 +31,17 @@ class XRProjectionLayer : public XRCompositionLayer {
 
   void Trace(Visitor*) const override;
 
+ protected:
+  void UpdateLayerBackend() override;
+  device::mojom::blink::XRReferenceSpaceType GetReferenceSpaceType()
+      const override;
+  device::mojom::blink::XRLayerSpecificDataPtr CreateLayerSpecificData()
+      const override;
+
  private:
   bool ignore_depth_values_{true};
   std::optional<float> fixed_foveation_{std::nullopt};
   Member<XRRigidTransform> delta_pose_{nullptr};
-};
-
-template <>
-struct DowncastTraits<XRProjectionLayer> {
-  static bool AllowFrom(const XRCompositionLayer& layer) {
-    return layer.LayerType() == XRLayerType::kProjectionLayer;
-  }
 };
 
 }  // namespace blink

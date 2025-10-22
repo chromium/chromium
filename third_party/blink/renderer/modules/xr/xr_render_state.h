@@ -42,11 +42,17 @@ class XRRenderState : public ScriptWrappable {
 
   HTMLCanvasElement* output_canvas() const;
 
+  // Returns whether the layer composition sequence was modified by the last
+  // call to Update().
+  bool should_update_layers_backend() const { return needs_layers_update_; }
+
   void Update(const XRRenderStateInit* init);
 
   // Returns true if any layer was updated since the last status read.
   bool NeedLayersUpdate();
   void OnLayersUpdated();
+  // Updates the mojom backend with the new layer composition sequence.
+  void UpdateLayersBackend(device::mojom::blink::XRLayerManager*);
 
   // Calls OnFrameStart for each active layer.
   void OnFrameStart();

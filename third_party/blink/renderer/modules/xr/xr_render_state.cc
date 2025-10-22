@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
+#include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 
 namespace blink {
@@ -140,6 +141,31 @@ bool XRRenderState::NeedLayersUpdate() {
 
 void XRRenderState::OnLayersUpdated() {
   needs_layers_update_ = false;
+}
+
+void XRRenderState::UpdateLayersBackend(
+    device::mojom::blink::XRLayerManager* layer_manager) {
+  if (!needs_layers_update_) {
+    return;
+  }
+
+  needs_layers_update_ = false;
+  if (!layer_manager) {
+    return;
+  }
+
+  blink::Vector<device::LayerId> ids;
+  if (base_layer_) {
+    ids.push_back(base_layer_->layer_id());
+  }
+
+  if (layers_) {
+    ids.reserve(layers_->size());
+    for (XRLayer* layer : *layers_) {
+      ids.push_back(layer->layer_id());
+    }
+  }
+  layer_manager->SetEnabledCompositionLayers(std::move(ids));
 }
 
 void XRRenderState::Trace(Visitor* visitor) const {

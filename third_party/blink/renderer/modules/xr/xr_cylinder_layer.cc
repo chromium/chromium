@@ -22,6 +22,8 @@ XRCylinderLayer::XRCylinderLayer(const XRCylinderLayerInit* init,
   } else {
     transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
   }
+
+  CreateLayerBackend();
 }
 
 XRLayerType XRCylinderLayer::LayerType() const {
@@ -48,6 +50,17 @@ void XRCylinderLayer::setTransform(XRRigidTransform* value) {
     transform_ = value;
     SetModified(true);
   }
+}
+
+device::mojom::blink::XRLayerSpecificDataPtr
+XRCylinderLayer::CreateLayerSpecificData() const {
+  auto cylinder_layer_data = device::mojom::blink::XRCylinderLayerData::New();
+  cylinder_layer_data->radius = radius();
+  cylinder_layer_data->central_angle = centralAngle();
+  cylinder_layer_data->aspect_ratio = aspectRatio();
+  cylinder_layer_data->transform = transform()->TransformMatrix();
+  return device::mojom::blink::XRLayerSpecificData::NewCylinder(
+      std::move(cylinder_layer_data));
 }
 
 void XRCylinderLayer::Trace(Visitor* visitor) const {

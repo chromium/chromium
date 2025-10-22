@@ -26,7 +26,7 @@ XRCompositionLayer::XRCompositionLayer(XRGraphicsBinding* binding,
 }
 
 V8XRLayerLayout XRCompositionLayer::layout() const {
-  return V8XRLayerLayout(V8XRLayerLayout::Enum::kDefault);
+  return V8XRLayerLayout(layout_);
 }
 
 bool XRCompositionLayer::blendTextureSourceAlpha() const {
@@ -105,21 +105,39 @@ void XRCompositionLayer::OnFrameStart() {
 void XRCompositionLayer::OnFrameEnd() {
   drawing_context_->OnFrameEnd();
 
-  XRFrameProvider* frame_provider = session()->xr()->frameProvider();
-
   if (IsModified()) {
-    if (XRProjectionLayer* layer = DynamicTo<XRProjectionLayer>(this); layer) {
-      frame_provider->UpdateLayerViewports(layer);
-      SetModified(false);
-    }
+    UpdateLayerBackend();
+    SetModified(false);
   }
 
+  XRFrameProvider* frame_provider = session()->xr()->frameProvider();
   frame_provider->SubmitLayer(layer_id(), drawing_context_,
                               drawing_context_->TextureWasQueried());
 }
 
 XrLayerClient* XRCompositionLayer::LayerClient() {
   return drawing_context();
+}
+
+device::mojom::blink::XRCompositionLayerDataPtr
+XRCompositionLayer::CreateLayerData() const {
+  auto layer_data = device::mojom::blink::XRCompositionLayerData::New();
+  // Readonly data.
+  layer_data->read_only_data = device::mojom::blink::XRLayerReadOnlyData::New();
+  layer_data->read_only_data->layer_id = layer_id();
+  layer_data->read_only_data->texture_width = textureWidth();
+  layer_data->read_only_data->texture_height = textureHeight();
+  // Mutable data.
+  layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
+  layer_data->mutable_data->blend_texture_source_alpha =
+      blendTextureSourceAlpha();
+  layer_data->mutable_data->opacity = opacity();
+  layer_data->mutable_data->reference_space_type = GetReferenceSpaceType();
+
+  // Layer Specific data.
+  layer_data->mutable_data->layer_data = CreateLayerSpecificData();
+
+  return layer_data;
 }
 
 void XRCompositionLayer::Trace(Visitor* visitor) const {

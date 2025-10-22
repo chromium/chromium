@@ -231,10 +231,14 @@ XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
     return nullptr;
   }
 
-  // TODO(crbug.com/444020394): create layer instance.
-  exception_state.ThrowTypeError(
-      "XRQuadLayer was not implemented for the platform.");
-  return nullptr;
+  XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
+      init->colorFormat(),
+      gfx::Size(init->viewPixelWidth(), init->viewPixelHeight()));
+
+  auto* drawing_context =
+      MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
+
+  return MakeGarbageCollected<XRQuadLayer>(init, this, drawing_context);
 }
 
 XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
@@ -245,10 +249,14 @@ XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
     return nullptr;
   }
 
-  // TODO(crbug.com/444020394): create layer instance.
-  exception_state.ThrowTypeError(
-      "XRCylinderLayer was not implemented for the platform.");
-  return nullptr;
+  XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
+      init->colorFormat(),
+      gfx::Size(init->viewPixelWidth(), init->viewPixelHeight()));
+
+  auto* drawing_context =
+      MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
+
+  return MakeGarbageCollected<XRCylinderLayer>(init, this, drawing_context);
 }
 
 XREquirectLayer* XRWebGLBinding::createEquirectLayer(
@@ -273,10 +281,14 @@ XREquirectLayer* XRWebGLBinding::createEquirectLayer(
     return nullptr;
   }
 
-  // TODO(crbug.com/444020394): create layer instance.
-  exception_state.ThrowTypeError(
-      "XREquirectLayer was not implemented for the platform.");
-  return nullptr;
+  XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
+      init->colorFormat(),
+      gfx::Size(init->viewPixelWidth(), init->viewPixelHeight()));
+
+  auto* drawing_context =
+      MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
+
+  return MakeGarbageCollected<XREquirectLayer>(init, this, drawing_context);
 }
 
 XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
@@ -299,6 +311,15 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     return nullptr;
   }
 
+  // Method could be called for the layer which is not in an active render
+  // state.
+  if (!layer->HasSharedImage()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid frame state. There is no shared buffer for layer.");
+    return nullptr;
+  }
+
   XRViewData* viewData = view->ViewData();
   if (viewData->ApplyViewportScaleForFrame()) {
     layer->SetModified(true);
@@ -313,7 +334,8 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
 
   return MakeGarbageCollected<XRWebGLSubImage>(
       viewport, viewData->index(), drawing_context->color_swap_chain(),
-      drawing_context->depth_stencil_swap_chain(), nullptr);
+      drawing_context->depth_stencil_swap_chain(),
+      /*motion_vector_swap_chain=*/nullptr);
 }
 
 XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
@@ -348,8 +370,10 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     return nullptr;
   }
 
-  // TODO(crbug.com/444018463): check that layer is not XRProjectionLayer and
-  // has shared image.
+  if (layer->LayerType() == XRLayerType::kProjectionLayer) {
+    exception_state.ThrowTypeError("Invalid layer type.");
+    return nullptr;
+  }
 
   if (layer->layout() == V8XRLayerLayout::Enum::kDefault) {
     exception_state.ThrowTypeError("Invalid layer's layout type.");
@@ -364,10 +388,25 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     }
   }
 
-  // TODO(crbug.com/444020394): create XRWebGLSubImage.
-  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "Invalid frame state.");
-  return nullptr;
+  // There is no shared image instance if the layer is not in an active render
+  // state list.
+  if (!layer->HasSharedImage()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid frame state. There is no shared buffer for layer.");
+    return nullptr;
+  }
+
+  // The layer passed the OwnsLayer check, confirming it can only contain
+  // a WebGL drawing context. This makes the static_cast safe.
+  auto* drawing_context =
+      static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
+
+  gfx::Rect viewport{0, 0, layer->textureWidth(), layer->textureHeight()};
+  return MakeGarbageCollected<XRWebGLSubImage>(
+      viewport, 0, drawing_context->color_swap_chain(),
+      drawing_context->depth_stencil_swap_chain(),
+      /*motion_vector_swap_chain=*/nullptr);
 }
 
 WebGLTexture* XRWebGLBinding::getReflectionCubeMap(

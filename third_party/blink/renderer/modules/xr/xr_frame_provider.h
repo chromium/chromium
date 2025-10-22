@@ -84,6 +84,14 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
     return immersive_data_provider_.get();
   }
 
+  device::mojom::blink::XRLayerManager* layer_manager() {
+    // Layer manager is optional mojom api.
+    if (!layer_manager_) {
+      return nullptr;
+    }
+    return layer_manager_.get();
+  }
+
   // Adds an ImmersiveSessionObserver. Observers will be automatically removed
   // by Oilpan when they are destroyed, and their WeakMember becomes null.
   void AddImmersiveSessionObserver(ImmersiveSessionObserver*);

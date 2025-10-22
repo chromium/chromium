@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"

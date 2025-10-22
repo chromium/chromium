@@ -193,6 +193,7 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     immersive_presentation_provider_.reset();
     immersive_data_provider_.reset();
     layer_manager_.reset();
+    shared_images_.clear();
 
     first_immersive_frame_time_ = std::nullopt;
     first_immersive_frame_time_delta_ = std::nullopt;

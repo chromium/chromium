@@ -25,6 +25,7 @@ XRQuadLayer::XRQuadLayer(const XRQuadLayerInit* init,
   } else {
     transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
   }
+  CreateLayerBackend();
 }
 
 XRLayerType XRQuadLayer::LayerType() const {
@@ -46,6 +47,17 @@ void XRQuadLayer::setTransform(XRRigidTransform* value) {
     transform_ = value;
     SetModified(true);
   }
+}
+
+device::mojom::blink::XRLayerSpecificDataPtr
+XRQuadLayer::CreateLayerSpecificData() const {
+  auto quad_layer_data = device::mojom::blink::XRQuadLayerData::New();
+  quad_layer_data->width = width();
+  quad_layer_data->height = height();
+  quad_layer_data->transform = transform()->TransformMatrix();
+
+  return device::mojom::blink::XRLayerSpecificData::NewQuad(
+      std::move(quad_layer_data));
 }
 
 void XRQuadLayer::Trace(Visitor* visitor) const {

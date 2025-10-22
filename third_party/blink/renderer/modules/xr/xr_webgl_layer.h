@@ -85,6 +85,10 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
 
   void Trace(Visitor*) const override;
 
+ protected:
+  device::mojom::blink::XRCompositionLayerDataPtr CreateLayerData()
+      const override;
+
  private:
   const XRSharedImageData& CameraSharedImage() const;
 

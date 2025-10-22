@@ -2097,11 +2097,15 @@ void XRSession::OnFrame(double timestamp,
         DVLOG(2)
             << __func__
             << ": prev_transport_delegate is valid, submitting frame with it";
-        // TODO(crbug.com/450856064): Update state for mojom backend.
+
         if (should_update_layers_backend_) {
           should_update_layers_backend_ = false;
+          // Hides all layers on the backend if the 'layers' feature is enabled.
+          render_state_->UpdateLayersBackend(LayerManager());
           render_state_->OnLayersUpdated();
         }
+        // Submits the current frame without running the animation frame
+        // callback.
         xr_->frameProvider()->ClearCachedLayersData();
         xr_->frameProvider()->SubmitFrame(prev_transport_delegate_);
         prev_transport_delegate_ = nullptr;
@@ -2133,8 +2137,6 @@ void XRSession::OnFrame(double timestamp,
     if (should_update_layers_backend_) {
       should_update_layers_backend_ = false;
       if (layers_enabled_) {
-        // TODO(crbug.com/450856064): Update backend and request frame again.
-
         // This means that the page has updated the layers since it last
         // received a new frame, but we haven't updated the backend yet, so the
         // page won't be able to use those layers just yet as they expect. For
@@ -2143,7 +2145,11 @@ void XRSession::OnFrame(double timestamp,
         // TODO(crbug.com/452604976): Refactor the frame submission flow to
         // allow the layer sequence to be updated by the backend compositor
         // without dropping the current frame.
+        render_state_->UpdateLayersBackend(LayerManager());
         render_state_->OnLayersUpdated();
+
+        // Submit this animation frame without changes and request a new one
+        // immediately.
         xr_->frameProvider()->SubmitFrame(transport_delegate);
         MaybeRequestFrame();
         return;
@@ -2581,6 +2587,13 @@ XRViewData* XRSession::ViewDataForEye(device::mojom::blink::XREye eye) {
 bool XRSession::HasPendingActivity() const {
   return (!callback_collection_->IsEmpty() || !vfc_execution_queue_.empty()) &&
          !ended_;
+}
+
+device::mojom::blink::XRLayerManager* XRSession::LayerManager() {
+  if (ended_ || !immersive()) {
+    return nullptr;
+  }
+  return xr()->frameProvider()->layer_manager();
 }
 
 void XRSession::Trace(Visitor* visitor) const {

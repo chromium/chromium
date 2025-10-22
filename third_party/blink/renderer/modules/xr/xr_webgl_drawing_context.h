@@ -18,7 +18,7 @@ class XRWebGLDrawingContext final : public XRLayerDrawingContext {
  public:
   XRWebGLDrawingContext(XRWebGLBinding*,
                         XRWebGLSwapChain* color_swap_chain,
-                        XRWebGLSwapChain* depth_stencil_swap_chain);
+                        XRWebGLSwapChain* depth_stencil_swap_chain = nullptr);
   ~XRWebGLDrawingContext() override = default;
 
   XRSession* session() const override;

@@ -37,6 +37,10 @@ class XRCylinderLayer : public XRShapedLayer {
 
   void Trace(Visitor*) const override;
 
+ protected:
+  device::mojom::blink::XRLayerSpecificDataPtr CreateLayerSpecificData()
+      const override;
+
  private:
   Member<XRRigidTransform> transform_{nullptr};
 

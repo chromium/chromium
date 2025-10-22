@@ -431,6 +431,8 @@ class XRSession final : public EventTarget,
     return layer_id_generator_.GenerateNextId();
   }
 
+  device::mojom::blink::XRLayerManager* LayerManager();
+
  private:
   class XRSessionResizeObserverDelegate;
 

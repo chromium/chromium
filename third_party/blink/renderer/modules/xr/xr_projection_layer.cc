@@ -3,15 +3,19 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_projection_layer_init.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_system.h"
 
 namespace blink {
 
 XRProjectionLayer::XRProjectionLayer(XRGraphicsBinding* binding,
                                      XRLayerDrawingContext* drawing_context)
     : XRCompositionLayer(binding, drawing_context) {
+  CreateLayerBackend();
   // Ensure correct viewports are sent to the runtime on the first frame.
   SetModified(true);
 }
@@ -38,6 +42,21 @@ XRRigidTransform* XRProjectionLayer::deltaPose() const {
 
 void XRProjectionLayer::setDeltaPose(XRRigidTransform* value) {
   delta_pose_ = value;
+}
+
+void XRProjectionLayer::UpdateLayerBackend() {
+  session()->xr()->frameProvider()->UpdateLayerViewports(this);
+}
+
+device::mojom::blink::XRReferenceSpaceType
+XRProjectionLayer::GetReferenceSpaceType() const {
+  return device::mojom::blink::XRReferenceSpaceType::kLocal;
+}
+
+device::mojom::blink::XRLayerSpecificDataPtr
+XRProjectionLayer::CreateLayerSpecificData() const {
+  return device::mojom::blink::XRLayerSpecificData::NewProjection(
+      device::mojom::blink::XRProjectionLayerData::New());
 }
 
 void XRProjectionLayer::Trace(Visitor* visitor) const {

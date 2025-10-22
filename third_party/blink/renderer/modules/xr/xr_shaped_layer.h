@@ -9,9 +9,9 @@
 
 namespace blink {
 
-class XRSpace;
-class XRLayerInit;
 class XRGraphicsBinding;
+class XRLayerInit;
+class XRSpace;
 
 class XRShapedLayer : public XRCompositionLayer {
  public:
@@ -31,12 +31,12 @@ class XRShapedLayer : public XRCompositionLayer {
   bool isStatic() const { return is_static_; }
   bool clearOnAccess() const { return clear_on_access_; }
 
-  // TODO(crbug.com/443963000): Initialize mojom backend.
-  bool InitializeLayer() const;
-  // TODO(crbug.com/443963000): Send data the mojom backend.
-  void OnUpdateLayerData() const {}
-
   void Trace(Visitor*) const override;
+
+ protected:
+  void UpdateLayerBackend() override;
+  device::mojom::blink::XRReferenceSpaceType GetReferenceSpaceType()
+      const override;
 
  private:
   Member<XRSpace> xr_space_;

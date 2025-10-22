@@ -23,6 +23,7 @@ XREquirectLayer::XREquirectLayer(const XREquirectLayerInit* init,
   } else {
     transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
   }
+  CreateLayerBackend();
 }
 
 XRLayerType XREquirectLayer::LayerType() const {
@@ -54,6 +55,18 @@ void XREquirectLayer::setTransform(XRRigidTransform* value) {
     transform_ = value;
     SetModified(true);
   }
+}
+
+device::mojom::blink::XRLayerSpecificDataPtr
+XREquirectLayer::CreateLayerSpecificData() const {
+  auto equirect_layer_data = device::mojom::blink::XREquirectLayerData::New();
+  equirect_layer_data->radius = radius();
+  equirect_layer_data->central_horizontal_angle = centralHorizontalAngle();
+  equirect_layer_data->upper_vertical_angle = upperVerticalAngle();
+  equirect_layer_data->lower_vertical_angle = lowerVerticalAngle();
+  equirect_layer_data->transform = transform()->TransformMatrix();
+  return device::mojom::blink::XRLayerSpecificData::NewEquirect(
+      std::move(equirect_layer_data));
 }
 
 void XREquirectLayer::Trace(Visitor* visitor) const {

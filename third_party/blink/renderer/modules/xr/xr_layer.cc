@@ -37,6 +37,30 @@ bool XRLayer::IsModified() const {
   return is_modified_;
 }
 
+void XRLayer::CreateLayerBackend() {
+  if (auto* layer_manager = session()->LayerManager(); layer_manager) {
+    layer_manager->CreateCompositionLayer(
+        CreateLayerData(),
+        BindOnce(&XRLayer::OnBackendLayerCreated, WrapWeakPersistent(this)));
+  }
+}
+
+void XRLayer::OnBackendLayerCreated(
+    device::mojom::blink::CreateCompositionLayerResult result) {
+  is_backend_active_ =
+      result == device::mojom::blink::CreateCompositionLayerResult::SUCCESS;
+}
+
+bool XRLayer::IsBackendActive() const {
+  return is_backend_active_;
+}
+
+void XRLayer::DestroyBackend() {
+  if (auto* layer_manager = session()->LayerManager(); layer_manager) {
+    layer_manager->DestroyCompositionLayer(layer_id_);
+  }
+}
+
 void XRLayer::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   EventTarget::Trace(visitor);
