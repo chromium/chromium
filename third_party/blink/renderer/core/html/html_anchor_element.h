@@ -87,8 +87,6 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
   LinkHash PartitionedVisitedLinkFingerprint() const;
   void InvalidateCachedVisitedLinkHash() { cached_visited_link_hash_ = 0; }
 
-  void SendPings(const KURL& destination_url) const;
-
   bool IsValidInterestInvoker(Element& target) const override;
 
   void Trace(Visitor*) const override;

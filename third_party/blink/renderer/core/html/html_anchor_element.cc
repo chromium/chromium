@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
-#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -63,7 +62,6 @@
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
-#include "third_party/blink/renderer/core/loader/ping_loader.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -73,12 +71,10 @@
 #include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -413,35 +409,6 @@ bool HTMLAnchorElementBase::IsLiveLink() const {
   return IsLink() && !IsEditable(*this);
 }
 
-void HTMLAnchorElementBase::SendPings(const KURL& destination_url) const {
-  const AtomicString& ping_value = FastGetAttribute(html_names::kPingAttr);
-  if (ping_value.IsNull() || !GetDocument().GetSettings() ||
-      !GetDocument().GetSettings()->GetHyperlinkAuditingEnabled()) {
-    return;
-  }
-
-  // Pings should not be sent if MHTML page is loaded.
-  if (GetDocument().Fetcher()->Archive())
-    return;
-
-  if ((ping_value.Contains('\n') || ping_value.Contains('\r') ||
-       ping_value.Contains('\t')) &&
-      ping_value.Contains('<')) {
-    Deprecation::CountDeprecation(
-        GetExecutionContext(), WebFeature::kCanRequestURLHTTPContainingNewline);
-    return;
-  }
-
-  UseCounter::Count(GetDocument(), WebFeature::kHTMLAnchorElementPingAttribute);
-
-  SpaceSplitString ping_urls(ping_value);
-  for (unsigned i = 0; i < ping_urls.size(); i++) {
-    PingLoader::SendLinkAuditPing(GetDocument().GetFrame(),
-                                  GetDocument().CompleteURL(ping_urls[i]),
-                                  destination_url);
-  }
-}
-
 void HTMLAnchorElementBase::NavigateToHyperlink(
     ResourceRequest request,
     NavigationPolicy navigation_policy,
@@ -588,20 +555,14 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
 
   // Schedule the ping before the frame load. Prerender in Chrome may kill the
   // renderer as soon as the navigation is sent out.
-  SendPings(completed_url);
+  AnchorElementUtils::SendPings(completed_url, GetDocument(),
+                                FastGetAttribute(html_names::kPingAttr));
 
   ResourceRequest request(completed_url);
 
-  network::mojom::ReferrerPolicy policy;
-  if (FastHasAttribute(html_names::kReferrerpolicyAttr) &&
-      SecurityPolicy::ReferrerPolicyFromString(
-          FastGetAttribute(html_names::kReferrerpolicyAttr),
-          kSupportReferrerPolicyLegacyKeywords, &policy) &&
-      !AnchorElementUtils::HasRel(link_relations_, kRelationNoReferrer)) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kHTMLAnchorElementReferrerPolicyAttribute);
-    request.SetReferrerPolicy(policy);
-  }
+  AnchorElementUtils::HandleReferrerPolicyAttribute(
+      request, FastGetAttribute(html_names::kReferrerpolicyAttr),
+      link_relations_, GetDocument());
 
   LocalFrame* frame = window->GetFrame();
   request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));

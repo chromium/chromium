@@ -8,14 +8,17 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
+#include "third_party/blink/renderer/core/loader/ping_loader.h"
 #include "third_party/blink/renderer/core/navigation_api/navigate_event_dispatch_params.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -190,6 +193,53 @@ uint32_t AnchorElementUtils::ParseRelAttribute(const AtomicString& value,
   // RelList::SupportedTokensAnchorAndAreaAndForm().
 
   return link_relations;
+}
+
+void AnchorElementUtils::SendPings(const KURL& destination_url,
+                                   Document& document,
+                                   const AtomicString& ping_value) {
+  if (ping_value.IsNull() || !document.GetSettings() ||
+      !document.GetSettings()->GetHyperlinkAuditingEnabled()) {
+    return;
+  }
+
+  // Pings should not be sent if MHTML page is loaded.
+  if (document.Fetcher()->Archive()) {
+    return;
+  }
+
+  if ((ping_value.Contains('\n') || ping_value.Contains('\r') ||
+       ping_value.Contains('\t')) &&
+      ping_value.Contains('<')) {
+    Deprecation::CountDeprecation(
+        document.GetExecutionContext(),
+        WebFeature::kCanRequestURLHTTPContainingNewline);
+    return;
+  }
+
+  UseCounter::Count(document, WebFeature::kHTMLAnchorElementPingAttribute);
+
+  SpaceSplitString ping_urls(ping_value);
+  for (const auto& url : ping_urls) {
+    PingLoader::SendLinkAuditPing(document.GetFrame(),
+                                  document.CompleteURL(url), destination_url);
+  }
+}
+
+void AnchorElementUtils::HandleReferrerPolicyAttribute(
+    ResourceRequest& request,
+    const AtomicString& referrer_policy,
+    uint32_t link_relations,
+    Document& document) {
+  network::mojom::ReferrerPolicy policy;
+  if (!referrer_policy.empty() &&
+      !HasRel(link_relations, kRelationNoReferrer) &&
+      SecurityPolicy::ReferrerPolicyFromString(
+          referrer_policy, kSupportReferrerPolicyLegacyKeywords, &policy)) {
+    UseCounter::Count(document,
+                      WebFeature::kHTMLAnchorElementReferrerPolicyAttribute);
+    request.SetReferrerPolicy(policy);
+  }
 }
 
 }  // namespace blink

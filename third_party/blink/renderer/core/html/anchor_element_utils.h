@@ -69,6 +69,15 @@ class CORE_EXPORT AnchorElementUtils {
   static bool HasRel(uint32_t link_relations, uint32_t relation);
   static uint32_t ParseRelAttribute(const AtomicString& value,
                                     Document& document);
+
+  static void SendPings(const KURL& destination_url,
+                        Document& document,
+                        const AtomicString& ping_value);
+
+  static void HandleReferrerPolicyAttribute(ResourceRequest& request,
+                                            const AtomicString& referrer_policy,
+                                            uint32_t link_relations,
+                                            Document& document);
 };
 
 }  // namespace blink

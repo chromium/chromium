@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 147 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 139 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGElement interface: attribute correspondingElement
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
@@ -192,14 +192,6 @@ Found 147 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.script must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGAElement interface: attribute ping
-  assert_true: The prototype object must have a property "ping" expected true got false
-[FAIL] SVGAElement interface: attribute hreflang
-  assert_true: The prototype object must have a property "hreflang" expected true got false
-[FAIL] SVGAElement interface: attribute type
-  assert_true: The prototype object must have a property "type" expected true got false
-[FAIL] SVGAElement interface: attribute referrerPolicy
-  assert_true: The prototype object must have a property "referrerPolicy" expected true got false
 [FAIL] SVGAElement interface: attribute origin
   assert_true: The prototype object must have a property "origin" expected true got false
 [FAIL] SVGAElement interface: attribute protocol
@@ -220,14 +212,6 @@ Found 147 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "search" expected true got false
 [FAIL] SVGAElement interface: attribute hash
   assert_true: The prototype object must have a property "hash" expected true got false
-[FAIL] SVGAElement interface: objects.a must inherit property "ping" with the proper type
-  assert_inherits: property "ping" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "hreflang" with the proper type
-  assert_inherits: property "hreflang" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "type" with the proper type
-  assert_inherits: property "type" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "referrerPolicy" with the proper type
-  assert_inherits: property "referrerPolicy" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "origin" with the proper type
   assert_inherits: property "origin" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "protocol" with the proper type

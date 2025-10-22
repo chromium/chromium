@@ -68,6 +68,15 @@ void SVGAElement::Trace(Visitor* visitor) const {
   SVGURIReference::Trace(visitor);
 }
 
+#if DCHECK_IS_ON()
+bool SVGAElement::IsAnimatableAttribute(const QualifiedName& name) const {
+  if (name == svg_names::kTypeAttr) {
+    return false;
+  }
+  return SVGElement::IsAnimatableAttribute(name);
+}
+#endif
+
 String SVGAElement::title() const {
   // If the xlink:title is set (non-empty string), use it.
   const AtomicString& title = FastGetAttribute(xlink_names::kTitleAttr);
@@ -141,6 +150,18 @@ void SVGAElement::DefaultEventHandler(Event& event) {
 
       const KURL& resolved_url = GetDocument().CompleteURL(url);
       ResourceRequest request(resolved_url);
+
+      if (RuntimeEnabledFeatures::SvgAnchorElementAttributesEnabled()) {
+        // Schedule the ping before the frame load. Prerender in Chrome may kill
+        // the renderer as soon as the navigation is sent out.
+        AnchorElementUtils::SendPings(resolved_url, GetDocument(),
+                                      FastGetAttribute(svg_names::kPingAttr));
+
+        AnchorElementUtils::HandleReferrerPolicyAttribute(
+            request, FastGetAttribute(svg_names::kReferrerpolicyAttr),
+            link_relations_, GetDocument());
+      }
+
       request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
 
       // Respect the download attribute only if we can read the content, and the

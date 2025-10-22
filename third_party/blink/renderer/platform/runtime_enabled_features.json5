@@ -4845,6 +4845,10 @@
       name: "Svg2Cascade",
     },
     {
+      name: "SvgAnchorElementAttributes",
+      status: "experimental",
+    },
+    {
       name: "SvgAnchorElementDownloadAttribute",
       status: "stable",
     },
