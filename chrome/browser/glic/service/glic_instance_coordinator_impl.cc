@@ -167,9 +167,15 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
 }
 
 void GlicInstanceCoordinatorImpl::Close() {
-  // TODO(crbug.com/450286204): This is likely needed, or needed to be
-  // refactored.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/450286204): Determine whether there are cases where this
+  // should be able to close a side panel UI instead.
+  CloseFloaty();
+}
+
+void GlicInstanceCoordinatorImpl::CloseFloaty() {
+  if (auto* floaty_instance = GetInstanceWithFloaty()) {
+    floaty_instance->Close(FloatingEmbedderKey{});
+  }
 }
 
 mojom::PanelState GlicInstanceCoordinatorImpl::GetGlobalPanelState() {
@@ -429,8 +435,6 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() const {
 
 void GlicInstanceCoordinatorImpl::OnDetachRequested(GlicInstance* instance,
                                                     tabs::TabInterface* tab) {
-  if (auto* floaty_instance = GetInstanceWithFloaty()) {
-    floaty_instance->Close(FloatingEmbedderKey{});
-  }
+  CloseFloaty();
 }
 }  // namespace glic

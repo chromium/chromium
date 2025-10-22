@@ -126,6 +126,8 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
 void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
   if (last_active_glic_ && last_active_glic_.get() != glic &&
       last_active_glic_->IsWindowShowing()) {
+    // This is only relevant to single-instance glic, as IsWindowShowing remains
+    // unimplemented in multi-instance.
     last_active_glic_->window_controller().Close();
   }
   Profile* last_active_glic_profile = nullptr;
@@ -143,6 +145,9 @@ void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
   if (!profile) {
     current_detached_glic_.reset();
     return;
+  }
+  if (current_detached_glic_ && current_detached_glic_->profile() != profile) {
+    current_detached_glic_->window_controller().Close();
   }
   current_detached_glic_ = GlicKeyedService::Get(profile)->GetWeakPtr();
 }

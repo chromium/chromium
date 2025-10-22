@@ -138,6 +138,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void ToggleFloaty(bool prevent_close);
   void ToggleSidePanel(BrowserWindowInterface* browser, bool prevent_close);
 
+  void CloseFloaty();
+
   void RemoveInstance(GlicInstance* instance) override;
 
   void NotifyActiveInstanceChanged();
