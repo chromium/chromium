@@ -45,12 +45,21 @@ import org.chromium.ui.interpolators.Interpolators;
 public class NewForegroundTabAnimationHostView extends FrameLayout implements RunOnNextLayout {
     /** Interface for listening to events during the new foreground tab animation. */
     public interface Listener {
-        /** Called when the expand animation is finished and the new tab is ready to be selected. */
+        /**
+         * Called only on the successful completion of {@link #mExpandAnimatorSet}. This is
+         * responsible for performing the tab selection (updating the tab ID and model in {@link
+         * NewTabAnimationLayout}) and signaling the compositor to show the new tab.
+         *
+         * <p>Note: This method is intentionally not called if {@link #mExpandAnimatorSet} is
+         * cancelled. This prevents race conditions in tab selection that can be observed when
+         * multiple foreground tab creations are interrupted before the animation finishes.
+         */
         void onExpandAnimationFinished();
 
         /**
-         * Called when the fade animation is finished or when the expand animation got cancelled,
-         * which indicates the animation is finished and the view can be removed.
+         * Called when {@link #mFadeAnimator} is finished to indicate that the animation is done and
+         * the view can be removed. If the animation is cancelled, then {@link
+         * NewTabAnimationLayout#forceAnimationToFinish} removes the view instead.
          */
         void onForegroundAnimationFinished();
     }
@@ -258,6 +267,8 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
 
                     @Override
                     public void onCancel(Animator animation) {
+                        // Intentionally skip {@link mListener.onExpandAnimationFinished()} to
+                        // prevent race conditions during tab selection (see Javadoc).
                         expandChecker.onAnimationCancel();
                         if (mLogsEnabled) Log.i(TAG, "mExpandAnimatorSet#onCancel");
                         clearAnimators();
