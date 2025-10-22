@@ -60,7 +60,6 @@ BASE_DECLARE_FEATURE(kRtVcpuDualCore);
 BASE_DECLARE_FEATURE(kRtVcpuQuadCore);
 BASE_DECLARE_FEATURE(kSaveRawFilesOnTracing);
 BASE_DECLARE_FEATURE(kSkipDropCaches);
-BASE_DECLARE_FEATURE(kSwitchToKeyMintOnTOverride);
 BASE_DECLARE_FEATURE(kSyncInstallPriority);
 BASE_DECLARE_FEATURE(kUnthrottleOnActiveAudioV2);
 BASE_DECLARE_FEATURE(kVideoDecoder);

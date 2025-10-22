@@ -6626,11 +6626,6 @@ inline constexpr char kArcSwitchToKeyMintDaemonDesc[] =
     "Switch from Keymaster Daemon to KeyMint Daemon. Must be switched on/off "
     "at the same time with \"Switch To KeyMint on ARC-T\"";
 
-inline constexpr char kArcSwitchToKeyMintOnTOverrideName[] =
-    "Override switch to KeyMint on ARC-T.";
-inline constexpr char kArcSwitchToKeyMintOnTOverrideDesc[] =
-    "Override the block on certain boards to switch from Keymaster to KeyMint";
-
 inline constexpr char kArcSyncInstallPriorityName[] =
     "Enable supporting install priority for synced ARC apps.";
 inline constexpr char kArcSyncInstallPriorityDescription[] =

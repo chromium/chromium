@@ -284,12 +284,6 @@ BASE_FEATURE(kSkipDropCaches,
              "ArcSkipDropPageCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// On boards that blocks KeyMint at launch, enable this feature to force enable
-// KeyMint.
-BASE_FEATURE(kSwitchToKeyMintOnTOverride,
-             "ArcSwitchToKeyMintOnTOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, ARC will pass install priority to Play in sync install
 // requests.
 BASE_FEATURE(kSyncInstallPriority,

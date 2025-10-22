@@ -16465,7 +16465,6 @@ from previous Chrome versions.
   <int value="768468500" label="FedCmAddAccount:disabled"/>
   <int value="768675159" label="FastPairDebugMetadata:enabled"/>
   <int value="768855962" label="PaymentRequestBasicCard:enabled"/>
-  <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="771216808" label="EnableAutomaticSharedImageManagement:enabled"/>
   <int value="771793247" label="LocalNetworkAccessChecks:disabled"/>
@@ -19359,7 +19358,6 @@ from previous Chrome versions.
   <int value="1789944387" label="ShowFeaturedEnterpriseSiteSearchIPH:disabled"/>
   <int value="1790111294" label="CustomizeChromeColorExtraction:enabled"/>
   <int value="1790384966" label="StylusRichGestures:enabled"/>
-  <int value="1790721876" label="ArcSwitchToKeyMintOnTOverride:enabled"/>
   <int value="1791693211" label="sparky-feature-key:disabled"/>
   <int value="1792252889" label="kNtpTabGroupsModuleZeroState:enabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
