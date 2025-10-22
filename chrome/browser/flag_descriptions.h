@@ -2719,11 +2719,12 @@ inline constexpr char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 inline constexpr char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";
 
-inline constexpr char kMojoLinuxChannelSharedMemName[] =
-    "Enable Mojo Shared Memory Channel";
-inline constexpr char kMojoLinuxChannelSharedMemDescription[] =
-    "If enabled Mojo on Linux based platforms can use shared memory as an "
-    "alternate channel for most messages.";
+inline constexpr char kMojoUseEventFdName[] =
+    "Notify about new Mojo Channel messages using eventfd";
+inline constexpr char kMojoUseEventFdDescription[] =
+    "When enabled, prefers to use eventfd for mojo Channel over socket. "
+    "Falls back to socket communication when writing to shared memory is "
+    "not possible";
 
 inline constexpr char kMostVisitedTilesCustomizationName[] =
     "Customize Most Visiteid Tiles";

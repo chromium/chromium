@@ -15958,21 +15958,6 @@
             ]
         }
     ],
-    "MojoLinuxChannelSharedMem": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoLinuxChannelSharedMem"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoPredictiveAllocation": [
         {
             "platforms": [
@@ -15987,6 +15972,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MojoPredictiveAllocation"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MojoUseEventFd": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoUseEventFd"
                     ]
                 }
             ]

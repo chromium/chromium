@@ -80,9 +80,8 @@ void InitFeatures() {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  bool shared_mem_enabled =
-      base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);
-  int num_pages = kMojoLinuxChannelSharedMemPages.Get();
+  bool shared_mem_enabled = base::FeatureList::IsEnabled(kMojoUseEventFd);
+  int num_pages = kMojoUseEventFdPages.Get();
   if (num_pages < 0) {
     num_pages = 4;
   } else if (num_pages > 128) {

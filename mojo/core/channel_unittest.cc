@@ -844,8 +844,7 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
   if (Channel::SupportsMultipleNotifiers()) {
     // The test constructs messages as if the feature is enabled. Enable the
     // feature to match behavior on the receiving side.
-    scoped_feature_list.InitAndEnableFeature(
-        mojo::core::kMojoLinuxChannelSharedMem);
+    scoped_feature_list.InitAndEnableFeature(mojo::core::kMojoUseEventFd);
   }
 #endif
 

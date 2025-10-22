@@ -909,7 +909,7 @@ bool ChannelLinux::UpgradesEnabled() {
   if (!g_params_set.load()) {
     return g_use_shared_mem.load();
   }
-  return base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);
+  return base::FeatureList::IsEnabled(kMojoUseEventFd);
 }
 
 // static

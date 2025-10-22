@@ -6952,9 +6952,9 @@
     "expiry_milestone": 145
   },
   {
-    "name": "mojo-linux-sharedmem",
-    "owners": ["bgeffon@chromium.org", "rockot@chromium.org"],
-    "expiry_milestone": 99
+    "name": "mojo-use-eventfd",
+    "owners": ["bgeffon@chromium.org", "pasko@chromium.org"],
+    "expiry_milestone": 150
   },
   {
     "name": "most-visited-tiles-customization",
