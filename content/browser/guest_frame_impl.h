@@ -5,13 +5,11 @@
 #ifndef CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
 #define CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
 
-#include "content/public/browser/cross_process_frame_connector_base.h"
+#include "content/browser/renderer_host/cross_process_frame_connector_base.h"
 #include "content/public/browser/guest_frame.h"
 
 namespace content {
 
-// TODO(secure-embed): CrossProcessFrameConnectorBase can be moved to //content
-// private.
 class GuestFrameImpl : public GuestFrame,
                        public CrossProcessFrameConnectorBase {
  public:

@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_CROSS_PROCESS_FRAME_CONNECTOR_BASE_H_
-#define CONTENT_PUBLIC_BROWSER_CROSS_PROCESS_FRAME_CONNECTOR_BASE_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_CROSS_PROCESS_FRAME_CONNECTOR_BASE_H_
+#define CONTENT_BROWSER_RENDERER_HOST_CROSS_PROCESS_FRAME_CONNECTOR_BASE_H_
 
 #include <stdint.h>
 
 #include "cc/input/touch_action.h"
 #include "components/input/child_frame_input_helper.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
@@ -80,7 +79,7 @@ class RenderWidgetHostViewChildFrame;
 // SiteInstance, A2 in the picture above. When a child frame navigates in a new
 // process, SetView() is called to update to the new view.
 //
-class CONTENT_EXPORT CrossProcessFrameConnectorBase
+class CrossProcessFrameConnectorBase
     : public input::ChildFrameInputHelper::Delegate {
  public:
   ~CrossProcessFrameConnectorBase() override = default;
@@ -254,4 +253,4 @@ class CONTENT_EXPORT CrossProcessFrameConnectorBase
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_CROSS_PROCESS_FRAME_CONNECTOR_BASE_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_CROSS_PROCESS_FRAME_CONNECTOR_BASE_H_
