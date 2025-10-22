@@ -4,7 +4,12 @@
 
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 
+#include "base/task/current_thread.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +23,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
+namespace {
+
+GlicInstanceCoordinatorImpl& GetInstanceCoordinator(GlicKeyedService& service) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+  return static_cast<GlicInstanceCoordinatorImpl&>(service.window_controller());
+}
+
+}  // namespace
 
 BrowserActivator::BrowserActivator() {
   BrowserList::AddObserver(this);
@@ -79,6 +92,117 @@ void BrowserActivator::SetActivePrivate(
     active_lock_ = browser_view->GetWidget()->LockPaintAsActive();
     active_browser_ = browser_window_interface->GetWeakPtr();
   }
+}
+
+GlicInstanceTracker::GlicInstanceTracker(Profile* profile)
+    : profile_(profile) {}
+GlicInstanceTracker::~GlicInstanceTracker() = default;
+void GlicInstanceTracker::SetProfile(Profile* profile) {
+  profile_ = profile;
+}
+
+Host* GlicInstanceTracker::GetHost() {
+  auto* instance = GetGlicInstance();
+  if (!instance) {
+    return nullptr;
+  }
+  return &instance->host();
+}
+
+GlicInstance* GlicInstanceTracker::GetGlicInstance() {
+  if (!profile_) {
+    return nullptr;
+  }
+  auto* service = GlicKeyedService::Get(profile_);
+  if (!service) {
+    return nullptr;
+  }
+  if (tracked_instance_id_) {
+    for (GlicInstance* instance : service->window_controller().GetInstances()) {
+      if (instance->id() == *tracked_instance_id_) {
+        return instance;
+      }
+    }
+    return nullptr;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (track_floating_glic_instance_) {
+      return GetInstanceCoordinator(*service).GetInstanceWithFloaty();
+    }
+    if (glic_instance_tab_handle_) {
+      if (glic_instance_tab_handle_->Get()) {
+        return service->GetInstanceForTab(glic_instance_tab_handle_->Get());
+      }
+      return nullptr;
+    }
+    if (glic_instance_tab_index_ != std::nullopt) {
+      return service->GetInstanceForTab(
+          GetBrowser()->GetTabStripModel()->GetTabAtIndex(
+              *glic_instance_tab_index_));
+    }
+    return service->GetInstanceForTab(
+        GetBrowser()->GetTabStripModel()->GetTabAtIndex(0));
+  }
+  return service->GetInstanceForActiveTab(GetBrowser());
+}
+
+Browser* GlicInstanceTracker::GetBrowser() {
+  for (auto& browser : *BrowserList::GetInstance()) {
+    if (browser->profile() == profile_) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
+
+std::string GlicInstanceTracker::DescribeGlicTracking() {
+  if (tracked_instance_id_) {
+    return base::StrCat({"Tracking glic instance with id ",
+                         tracked_instance_id_->AsLowercaseString()});
+  } else if (glic_instance_tab_index_) {
+    return base::StrCat({"Tracking glic instance at tab index ",
+                         base::NumberToString(*glic_instance_tab_index_)});
+
+  } else if (glic_instance_tab_handle_) {
+    if (!glic_instance_tab_handle_->Get()) {
+      return "Tracking glic instance with INVALID tab handle";
+    }
+    return "Tracking glic instance with tab handle";
+  } else if (track_floating_glic_instance_) {
+    return "Tracking floating glic instance";
+  }
+  NOTREACHED();
+}
+
+void GlicInstanceTracker::Clear() {
+  tracked_instance_id_ = std::nullopt;
+  glic_instance_tab_index_ = std::nullopt;
+  glic_instance_tab_handle_ = std::nullopt;
+  track_floating_glic_instance_ = false;
+}
+
+[[nodiscard]] bool GlicInstanceTracker::WaitForPanelState(
+    mojom::PanelStateKind state) {
+  // TODO(harringtond): Use observers instead of polling.
+  return base::test::RunUntil([&]() {
+    auto* instance = GetGlicInstance();
+    if (!instance) {
+      return false;
+    }
+    return instance->GetPanelState().kind == state;
+  });
+}
+
+[[nodiscard]] bool GlicInstanceTracker::WaitForShow() {
+  // TODO(harringtond): Use observers instead of polling.
+  return base::test::RunUntil([&]() {
+    auto* instance = GetGlicInstance();
+    if (!instance) {
+      return false;
+    }
+    return instance->IsShowing();
+  });
 }
 
 void ForceSigninAndModelExecutionCapability(Profile* profile) {
