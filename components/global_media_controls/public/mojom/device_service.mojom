@@ -13,9 +13,8 @@ import "ui/gfx/image/mojom/image.mojom";
 // this file runs in the browser process.
 
 // Corresponds to icons shown in the device picker UI.
-[Stable, Extensible]
 enum IconType {
-  [Default] kUnknown = 0,
+  kUnknown = 0,
   kThrobber = 1,
   kInfo = 2,
   kTv = 3,
@@ -30,7 +29,6 @@ enum IconType {
 //
 // Next version: 1
 // Next id: 4
-[Stable]
 struct Device {
   string id@0;
   string name@1;
@@ -43,7 +41,6 @@ struct Device {
 //
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="e34cfef5-7dc9-40f1-9fd8-e4e0f70b1beb"]
 interface DeviceListHost {
   // Selecting a device may cause media to be played, stopped, etc. on that
   // device depending on the current state.
@@ -56,7 +53,6 @@ interface DeviceListHost {
 //
 // Next version: 2
 // Next method id: 2
-[Stable, Uuid="ba4ece9a-0557-471a-a3bf-888b71bcde5f"]
 interface DeviceListClient {
   // Receives devices available for playback of the media session that this
   // object is associated with.
@@ -72,7 +68,6 @@ interface DeviceListClient {
 //
 // Next version: 2
 // Next method id: 3
-[Stable, Uuid="a0822b52-40d9-444b-abfa-d35f0d30d69f"]
 interface DeviceService {
   // Lets DeviceListClient start observing the DeviceListHost associated with
   // the local media session specified by `session_id` obtained via
@@ -115,7 +110,6 @@ interface DeviceService {
 //
 // Next version: 1
 // Next method id: 9
-[Stable, Uuid="48835cb0-d095-4ddc-bbe0-6102a7764e79"]
 interface DevicePickerProvider {
   // Creates but doesn't show an item.
   // Is a no-op if an item has already been created.
@@ -156,7 +150,6 @@ interface DevicePickerProvider {
 //
 // Next version: 1
 // Next method id: 4
-[Stable, Uuid="a673ddaa-ffb5-4baa-bb8f-07e079c42e5c"]
 interface DevicePickerObserver {
   // Called when the media UI containing the picker is opened.
   OnMediaUIOpened@0();
