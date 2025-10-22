@@ -16,12 +16,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Class that holds business logic to track and manage actions requested on a {@code State.PENDING}
- * {@link ChromeAndroidTask}.
+ * Class that holds business logic to track and manage actions requested on a {@code
+ * State.PENDING_CREATE} or a {@code State.PENDING_UPDATE} {@link ChromeAndroidTask}.
  */
 @NullMarked
 final class PendingActionManager {
-    /** Enumerates actions that can be requested on a {@code State.PENDING} browser window. */
+    /**
+     * Enumerates actions that can be requested on a {@code State.PENDING_CREATE or a {@code
+     * State.PENDING_UPDATE} browser window.
+     */
     @IntDef({
         PendingAction.NONE,
         PendingAction.SET_BOUNDS,

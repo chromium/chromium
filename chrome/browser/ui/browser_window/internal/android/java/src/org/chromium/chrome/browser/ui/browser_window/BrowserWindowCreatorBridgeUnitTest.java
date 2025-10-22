@@ -71,7 +71,7 @@ public class BrowserWindowCreatorBridgeUnitTest {
         var pendingTasks = tracker.getPendingTasksForTesting();
         assertEquals(1, pendingTasks.size());
         var pendingTask = (ChromeAndroidTaskImpl) pendingTasks.values().iterator().next();
-        assertEquals(ChromeAndroidTaskImpl.State.PENDING, pendingTask.getState());
+        assertEquals(ChromeAndroidTaskImpl.State.PENDING_CREATE, pendingTask.getState());
         assertNull(pendingTask.getId());
         assertNotNull(pendingTask.getPendingId());
 

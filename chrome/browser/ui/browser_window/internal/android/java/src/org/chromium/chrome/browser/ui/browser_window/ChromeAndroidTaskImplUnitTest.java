@@ -163,7 +163,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
         assertEquals(mockParams.getProfile(), task.getProfile());
-        assertEquals(State.PENDING, task.getState());
+        assertEquals(State.PENDING_CREATE, task.getState());
         assertEquals(1, (int) task.getPendingId());
         assertNull(task.getId());
         assertNull(task.getActivityWindowAndroidForTesting());
