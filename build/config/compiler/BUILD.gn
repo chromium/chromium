@@ -1210,36 +1210,6 @@ config("disallow_unstable_features") {
   rustflags = [ "-Zallow-features=" ]
 }
 
-config("libcxx_hardening") {
-  # Normally, this would be defined in the `runtime_library` config but NaCl
-  # saigo libc++ does not use the custom hermetic libc++. Unfortunately, there
-  # isn't really a better config to add this define for the define to
-  # consistently apply in both Chromium and non-Chromium code *and* non-NaCl and
-  # NaCl code.
-  #
-  # TODO(crbug.com/40511454): Move this back to the `runtime_library` config
-  # when NaCl is removed.
-  if (use_safe_libcxx) {
-    defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
-  } else {
-    defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
-  }
-
-  # Enable libstdc++ hardening lightweight assertions. Those have a low
-  # performance penalty but are considered a bare minimum for security.
-  if (use_safe_libstdcxx) {
-    defines += [ "_GLIBCXX_ASSERTIONS=1" ]
-  }
-
-  # Propagate all definitions for hardening to the swift compiler.
-  if (is_ios) {
-    swiftflags = []
-    foreach(_define, defines) {
-      swiftflags += [ "-Xcc=-D$_define" ]
-    }
-  }
-}
-
 # The BUILDCONFIG file sets this config on targets by default, which means when
 # building with ThinLTO, no optimization is performed in the link step.
 config("thinlto_optimize_default") {
@@ -1952,6 +1922,7 @@ config("libcxx_module") {
 
 config("runtime_library") {
   configs = []
+  defines = []
 
   # The order of this config is important: it must appear before
   # android:runtime_library.  This is to ensure libc++ appears before
@@ -2002,7 +1973,27 @@ config("runtime_library") {
   }
 
   if (is_component_build) {
-    defines = [ "COMPONENT_BUILD" ]
+    defines += [ "COMPONENT_BUILD" ]
+  }
+
+  if (use_safe_libcxx) {
+    defines += [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
+  } else {
+    defines += [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
+  }
+
+  # Enable libstdc++ hardening lightweight assertions. Those have a low
+  # performance penalty but are considered a bare minimum for security.
+  if (use_safe_libstdcxx) {
+    defines += [ "_GLIBCXX_ASSERTIONS=1" ]
+  }
+
+  # Propagate all definitions for hardening to the swift compiler.
+  if (is_ios) {
+    swiftflags = []
+    foreach(_define, defines) {
+      swiftflags += [ "-Xcc=-D$_define" ]
+    }
   }
 }
 

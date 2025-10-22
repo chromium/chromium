@@ -56,21 +56,4 @@ executable("gcapi_example") {
   # link our hermetic libc++, so set no_default_deps to not link to our hermetic
   # libc++.
   no_default_deps = true
-
-  # libcxx_hardening used with libc++ in the macOS 15 SDK defines a
-  # _LIBCPP_ASSERTION_HANDLER that expands to a 1-argument form of
-  # __builtin_verbose_trap. This is the form understood by Apple clang 16, which
-  # is part of Xcode 16 that embeds the macOS 15 SDK, but not the form
-  # implemented by open-source clang, which has a 2-argument
-  # __builtin_verbose_trap. Because this target uses the system’s libc++ but
-  # Chrome’s compiler, this incompatibilty makes it impossible to use the
-  # “extensive” libc++ hardening mode.
-  #
-  # TODO: Remove this in the future, when the OS SDK’s libc++ contemplates the
-  # 2-argument form of __builtin_verbose_trap.
-  mac_sdk_version_pieces = string_split(mac_sdk_version, ".")
-  mac_sdk_version_major = mac_sdk_version_pieces[0]
-  if (mac_sdk_version_major == "15") {
-    configs -= [ "//build/config/compiler:libcxx_hardening" ]
-  }
 }
