@@ -15,7 +15,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -139,7 +141,10 @@ public class LocationProviderTest {
     }
 
     private void setLocationProviderAndroid() {
-        LocationProviderAndroid locationProviderAndroid = new LocationProviderAndroid();
+        Context context = Mockito.mock(Context.class);
+        when(context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION))
+                .thenReturn(PackageManager.PERMISSION_GRANTED);
+        LocationProviderAndroid locationProviderAndroid = new LocationProviderAndroid(context);
         mLocationManager = Mockito.mock(LocationManager.class);
         locationProviderAndroid.setLocationManagerForTesting(mLocationManager);
         LocationProviderFactory.setLocationProviderImpl(locationProviderAndroid);

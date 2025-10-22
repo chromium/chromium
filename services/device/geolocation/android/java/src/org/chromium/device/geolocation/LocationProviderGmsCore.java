@@ -41,7 +41,8 @@ public class LocationProviderGmsCore implements LocationProvider {
 
     private final Context mContext;
     private final FusedLocationProviderClient mClient;
-    private boolean mEnableHighAccuracy;
+    private boolean mEffectiveHighAccuracy;
+    private boolean mRequestedHighAccuracy;
 
     private @Nullable LocationCallback mLocationCallback;
 
@@ -65,22 +66,23 @@ public class LocationProviderGmsCore implements LocationProvider {
     @Override
     public void start(boolean enableHighAccuracy) {
         ThreadUtils.assertOnUiThread();
-
+        mRequestedHighAccuracy = enableHighAccuracy;
+        mEffectiveHighAccuracy = mRequestedHighAccuracy;
         if (mContext.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Workaround for a bug in Google Play Services where, if an app only has
             // ACCESS_COARSE_LOCATION, trying to request PRIORITY_HIGH_ACCURACY will throw a
             // SecurityException even on Android S. See: b/184924939.
-            enableHighAccuracy = false;
+            mEffectiveHighAccuracy = false;
         }
-        mEnableHighAccuracy = enableHighAccuracy;
         LocationRequest locationRequest;
-        final long interval = mEnableHighAccuracy ? UPDATE_INTERVAL_FAST_MS : UPDATE_INTERVAL_MS;
+        final long interval = mEffectiveHighAccuracy ? UPDATE_INTERVAL_FAST_MS : UPDATE_INTERVAL_MS;
         final int priority =
-                mEnableHighAccuracy
+                mEffectiveHighAccuracy
                         ? LocationRequest.PRIORITY_HIGH_ACCURACY
                         : LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-        // When the `APPROXIMATE_GEOLOCATION_PERMISSION` feature is enabled, `mEnableHighAccuracy`
+        // When the `APPROXIMATE_GEOLOCATION_PERMISSION` feature is enabled,
+        // `mEffectiveHighAccuracy`
         // explicitly controls the location granularity. Otherwise, it only acts as a hint for the
         // location provider.
         if (PermissionsAndroidFeatureMap.isEnabled(
@@ -88,7 +90,7 @@ public class LocationProviderGmsCore implements LocationProvider {
             LocationRequest.Builder builder =
                     new LocationRequest.Builder(
                             /* priority= */ priority, /* intervalMillis= */ interval);
-            if (mEnableHighAccuracy) {
+            if (mEffectiveHighAccuracy) {
                 builder.setGranularity(Granularity.GRANULARITY_FINE);
             } else {
                 builder.setGranularity(Granularity.GRANULARITY_COARSE);
@@ -112,7 +114,6 @@ public class LocationProviderGmsCore implements LocationProvider {
         }
 
         stop();
-
         mLocationCallback =
                 new LocationCallback() {
                     @Override
@@ -125,14 +126,18 @@ public class LocationProviderGmsCore implements LocationProvider {
                             if (location.hasAccuracy()) {
                                 final String histogramName =
                                         "Geolocation.GMSCoreLocationProvider"
-                                                + (mEnableHighAccuracy
+                                                + (mEffectiveHighAccuracy
                                                         ? ".HighAccuracyHint"
                                                         : ".LowAccuracyHint")
                                                 + ".Accuracy";
                                 RecordHistogram.recordCount100000Histogram(
                                         histogramName, (int) location.getAccuracy());
                             }
-                            LocationProviderAdapter.onNewLocationAvailable(location);
+                            // Using `mRequestedHighAccuracy` for location update cause
+                            // `mEffectiveHighAccuracy` can be override by app-level permission
+                            // check.
+                            LocationProviderAdapter.onNewLocationAvailable(
+                                    location, mRequestedHighAccuracy);
                         }
                     }
                 };

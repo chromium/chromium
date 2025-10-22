@@ -168,6 +168,7 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/common",
     "//components/system_cpu:test_support",
     "//components/variations",
     "//device/base/synchronization",

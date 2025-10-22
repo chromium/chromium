@@ -53,7 +53,8 @@ class LocationApiAdapterAndroid {
                                      bool has_heading,
                                      double heading,
                                      bool has_speed,
-                                     double speed);
+                                     double speed,
+                                     bool is_precise);
   static void OnNewErrorAvailable(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& message);

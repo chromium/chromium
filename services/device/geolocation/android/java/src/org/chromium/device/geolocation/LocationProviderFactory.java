@@ -67,7 +67,7 @@ public class LocationProviderFactory {
                     LocationProviderType.COUNT);
 
         } else {
-            sProviderImpl = new LocationProviderAndroid();
+            sProviderImpl = new LocationProviderAndroid(ContextUtils.getApplicationContext());
             RecordHistogram.recordEnumeratedHistogram(
                     "Geolocation.AndroidLocationProvider.ProviderType",
                     LocationProviderType.ANDROID,

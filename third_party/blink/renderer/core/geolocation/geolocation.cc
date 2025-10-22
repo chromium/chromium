@@ -548,8 +548,13 @@ void Geolocation::PositionChanged() {
 
 void Geolocation::UpdateGeolocationState() {
   if (!EnsureGeolocationConnection() || permission_request_in_progress_) {
-    // Return early while waiting for asynchronous setup to complete. This
-    // function will be called again by OnGeolocationPermissionStatusUpdated.
+    // Return early while waiting for asynchronous setup to complete; this
+    // function will be recalled by `OnGeolocationPermissionStatusUpdated`. The
+    // accuracy is updated here to ensure the SetHighAccuracyHint Mojo call is
+    // handled promptly after `GeolocationImpl`'s construction. This prevents
+    // reporting positions with incorrect accuracy, as location request can
+    // occur immediately after construction.
+    UpdateAccuracyHint();
     return;
   }
 

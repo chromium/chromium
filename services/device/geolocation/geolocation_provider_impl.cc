@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/location_provider_manager.h"
@@ -121,10 +122,18 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   }
 
   OnClientsChanged();
-  if (result_) {
-    callback.Run(*result_);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    if (enable_high_accuracy && high_accuracy_result_) {
+      callback.Run(*high_accuracy_result_);
+    } else if (!enable_high_accuracy && low_accuracy_result_) {
+      callback.Run(*low_accuracy_result_);
+    }
+  } else {
+    if (result_) {
+      callback.Run(*result_);
+    }
   }
-
   return subscription;
 }
 
@@ -227,6 +236,8 @@ void GeolocationProviderImpl::OnClientsChanged() {
       // We have no more observers, so we clear the cached geoposition so that
       // when the next observer is added we will not provide a stale position.
       result_.reset();
+      low_accuracy_result_.reset();
+      high_accuracy_result_.reset();
     }
     task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&GeolocationProviderImpl::StopProviders,
@@ -252,6 +263,17 @@ void GeolocationProviderImpl::OnClientsChanged() {
       return;
     }
 #endif
+    // When the `kApproximateGeolocationPermission` feature is enabled, we
+    // prioritize approximate location requests. This is because returning a
+    // precise location to an approximate location client is not acceptable,
+    // whereas returning an approximate location to a precise location client
+    // is permissible (e.g., in concurrent mode).
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission)) {
+      is_running_precise_ = low_accuracy_callbacks_.empty();
+    } else {
+      is_running_precise_ = !high_accuracy_callbacks_.empty();
+    }
     DoStartProvidersOnGeolocationThread();
   }
 }
@@ -349,12 +371,42 @@ void GeolocationProviderImpl::NotifyClients(
     mojom::GeopositionResultPtr result) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(result);
-  if (result->is_position() && !ValidateGeoposition(*result->get_position())) {
-    return;
+  if (result->is_position()) {
+    if (!ValidateGeoposition(*result->get_position())) {
+      return;
+    }
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission)) {
+      // When the `kApproximateGeolocationPermission` feature is enabled,
+      // location updates are dispatched to the appropriate callbacks based on
+      // the `is_precise` flag.
+      if (result->get_position()->is_precise) {
+        high_accuracy_result_ = std::move(result);
+        high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+      } else {
+        low_accuracy_result_ = std::move(result);
+        low_accuracy_callbacks_.Notify(*low_accuracy_result_);
+        // When in concurrent mode, we also forward approximate location to
+        // precise request client.
+        if (!high_accuracy_callbacks_.empty()) {
+          high_accuracy_result_ = low_accuracy_result_.Clone();
+          high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+        }
+      }
+    } else {
+      result_ = std::move(result);
+      high_accuracy_callbacks_.Notify(*result_);
+      low_accuracy_callbacks_.Notify(*result_);
+    }
+  } else {
+    // Errors are broadcast to all clients, regardless of their accuracy
+    // requirement.
+    result_ = result.Clone();
+    high_accuracy_result_ = result.Clone();
+    low_accuracy_result_ = std::move(result);
+    high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+    low_accuracy_callbacks_.Notify(*low_accuracy_result_);
   }
-  result_ = std::move(result);
-  high_accuracy_callbacks_.Notify(*result_);
-  low_accuracy_callbacks_.Notify(*result_);
 }
 
 void GeolocationProviderImpl::NotifyInternalsUpdated(
@@ -521,10 +573,9 @@ void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {
 void GeolocationProviderImpl::DoStartProvidersOnGeolocationThread() {
   CHECK(main_task_runner_->BelongsToCurrentThread());
   task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GeolocationProviderImpl::StartProviders,
-                     base::Unretained(this), !high_accuracy_callbacks_.empty(),
-                     !internals_observers_.empty()));
+      FROM_HERE, base::BindOnce(&GeolocationProviderImpl::StartProviders,
+                                base::Unretained(this), is_running_precise_,
+                                !internals_observers_.empty()));
 }
 
 }  // namespace device

@@ -47,6 +47,10 @@ struct Geoposition {
   // (1601-01-01 00:00:00 UTC). This is taken from the host computer's system
   // clock (i.e. from Time::Now(), not the source device's clock).
   mojo_base.mojom.Time timestamp;
+  // Indicates whether the location is precise or approximate. The default
+  // value is true because all created position are considered precise
+  // before the feature of `kApproximateGeolocationPermission`.
+  bool is_precise = true;
 };
 
 // Error codes shared between W3C geolocation specification and platform
