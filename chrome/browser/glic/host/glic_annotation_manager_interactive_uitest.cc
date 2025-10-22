@@ -1141,7 +1141,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
-      Do([&]() { glic_service()->CloseUI(); }), WaitForHide(kGlicViewElementId),
+      Do([&]() { glic_service()->window_controller().Close(); }),
+      WaitForHide(kGlicViewElementId),
       Check([&]() { return !fake_service()->HighlightIsActive(); },
             "Annotations should be dropped"));
 }

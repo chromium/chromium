@@ -222,7 +222,13 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
-  CloseUI();
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    window_controller().Shutdown();
+    fre_controller_->Shutdown();
+  } else {
+    CloseAndShutdown();
+  }
+
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   if (glic_profile_manager) {
     glic_profile_manager->OnServiceShutdown(this);
@@ -276,13 +282,14 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
   fre_controller().OpenFreDialogInNewTab(bwi, source);
 }
 
-void GlicKeyedService::CloseUI() {
+void GlicKeyedService::CloseAndShutdown() {
+  CHECK(!base::FeatureList::IsEnabled(features::kGlicMultiInstance));
   window_controller().Shutdown();
   host_manager().Shutdown();
   fre_controller_->Shutdown();
 }
 
-void GlicKeyedService::ClosePanel() {
+void GlicKeyedService::CloseFloatingPanel() {
   window_controller().Close();
 }
 
@@ -595,8 +602,10 @@ void GlicKeyedService::OnMemoryPressure(base::MemoryPressureLevel level) {
       (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
     return;
   }
-
-  CloseUI();
+  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    CloseAndShutdown();
+  }
+  // TODO(crbug.com/453747043): Handle Multi Instance.
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
@@ -674,6 +683,15 @@ void GlicKeyedService::SendAdditionalContext(
   auto* tab = tab_handle.Get();
   auto* host = &window_controller().GetInstanceForTab(tab)->host();
   host->NotifyAdditionalContext(std::move(context));
+}
+
+void GlicKeyedService::Close(
+    content::RenderFrameHost* outermost_render_frame_host) {
+  for (auto* instance : window_controller().GetInstances()) {
+    if (instance) {
+      instance->host().Close(outermost_render_frame_host);
+    }
+  }
 }
 
 }  // namespace glic

@@ -877,9 +877,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void ClosePanel() override { host().ClosePanel(page_handler_); }
 
   void ClosePanelAndShutdown() override {
-    // Despite the name, CloseUI here tears down the web client in addition to
-    // closing the window.
-    glic_service_->CloseUI();
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      ClosePanel();
+    } else {
+      // This call will tear down the web client after closing the window.
+      glic_service_->CloseAndShutdown();
+    }
   }
 
   void AttachPanel() override {

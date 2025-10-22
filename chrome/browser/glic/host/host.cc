@@ -81,22 +81,31 @@ void Host::Shutdown() {
   contents_.reset();
 }
 
-void Host::Reload(content::RenderFrameHost* render_frame_host) {
-  content::RenderFrameHost* outer_frame =
-      render_frame_host->GetOutermostMainFrame();
-
-  // Reload if the outer frame matches either the WebUI frame or the guest
-  // frame.
+bool Host::IsWebContentPresentAndMatches(
+    content::RenderFrameHost* outermost_rfh) {
   auto* contents = webui_contents();
-  if (contents && contents->GetOuterWebContentsFrame() == outer_frame) {
-    Reload();
-    return;
+  if (contents && contents->GetOuterWebContentsFrame() == outermost_rfh) {
+    return true;
   }
   auto* handler = page_handler();
   if (handler) {
-    if (handler->GetGuestMainFrame() == outer_frame) {
-      Reload();
+    if (handler->GetGuestMainFrame() == outermost_rfh) {
+      return true;
     }
+  }
+  return false;
+}
+
+void Host::Close(content::RenderFrameHost* outermost_render_frame_host) {
+  if (IsWebContentPresentAndMatches(outermost_render_frame_host)) {
+    delegate_->ClosePanel();
+  }
+}
+
+void Host::Reload(content::RenderFrameHost* render_frame_host) {
+  if (IsWebContentPresentAndMatches(
+          render_frame_host->GetOutermostMainFrame())) {
+    Reload();
   }
 }
 

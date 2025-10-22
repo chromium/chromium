@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/common/chrome_features.h"
 
 namespace glic {
 
@@ -27,7 +28,12 @@ void GlicController::Close() {
   if (!glic_keyed_service) {
     return;
   }
-  glic_keyed_service->CloseUI();
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    glic_keyed_service->ToggleUI(nullptr, /*prevent_close=*/false,
+                                 mojom::InvocationSource::kOsButton);
+  } else {
+    glic_keyed_service->CloseAndShutdown();
+  }
 }
 
 bool GlicController::IsShowing() const {

@@ -73,7 +73,12 @@ void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
   }
   auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       web_contents_->GetBrowserContext());
-  keyed_service->CloseUI();
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(crbug.com/454120908): swap for a reloaded host in case of a crash.
+    keyed_service->Close(web_contents_.get()->GetOuterWebContentsFrame());
+  } else {
+    keyed_service->CloseAndShutdown();
+  }
   // WARNING: Do not do any more work, as `this` may have been destroyed.
 }
 

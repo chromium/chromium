@@ -56,7 +56,7 @@ class MockGlicKeyedService : public GlicKeyedService {
                          glic_profile_manager,
                          contextual_cueing_service,
                          actor_keyed_service) {}
-  MOCK_METHOD(void, ClosePanel, (), (override));
+  MOCK_METHOD(void, CloseFloatingPanel, (), (override));
 
   bool IsWindowDetached() const override { return detached_; }
   void SetWindowDetached() { detached_ = true; }
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   auto* service0 = GetMockGlicKeyedService(browser()->profile());
   GlicProfileManager::GetInstance()->SetActiveGlic(service0);
   // Opening glic twice for the same profile shouldn't cause it to close.
-  EXPECT_CALL(*service0, ClosePanel()).Times(0);
+  EXPECT_CALL(*service0, CloseFloatingPanel()).Times(0);
   GlicProfileManager::GetInstance()->SetActiveGlic(service0);
 }
 
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
   // Opening glic from a second profile should make the profile manager close
   // the first one.
-  EXPECT_CALL(*service0, ClosePanel());
+  EXPECT_CALL(*service0, CloseFloatingPanel());
   profile_manager->SetActiveGlic(service1);
 }
 

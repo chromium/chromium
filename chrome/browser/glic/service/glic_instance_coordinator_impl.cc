@@ -163,9 +163,7 @@ void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
-  // TODO(crbug.com/450286204): This is likely needed, or needed to be
-  // refactored.
-  NOTIMPLEMENTED();
+  host_manager().Shutdown();
 }
 
 void GlicInstanceCoordinatorImpl::Close() {

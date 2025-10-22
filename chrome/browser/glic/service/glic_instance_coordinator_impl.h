@@ -92,6 +92,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
               bool prevent_close,
               mojom::InvocationSource source) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
+  // Shuts down all hosts. Only call it before destruction of the instance
+  // coordinator.
   void Shutdown() override;
   void Close() override;
 

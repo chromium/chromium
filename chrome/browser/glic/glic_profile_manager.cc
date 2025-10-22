@@ -167,8 +167,9 @@ void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
     return;
   }
 
-  if (last_loaded_glic_ && last_loaded_glic_.get() != glic) {
-    last_loaded_glic_->CloseUI();
+  if (last_loaded_glic_ && last_loaded_glic_.get() != glic &&
+      !base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    last_loaded_glic_->CloseAndShutdown();
   }
 
   if (glic) {
