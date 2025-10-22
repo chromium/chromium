@@ -79,7 +79,7 @@ final class ChromeAndroidTaskImpl
         PENDING_UPDATE,
 
         /* The Task is alive without any pending state change. */
-        ALIVE,
+        IDLE,
 
         /** The Task is being destroyed, but the destruction hasn't been completed. */
         DESTROYING,
@@ -223,7 +223,7 @@ final class ChromeAndroidTaskImpl
         assert tabModel.getProfile() != null
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = tabModel.getProfile();
-        mState.set(State.ALIVE);
+        mState.set(State.IDLE);
         setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
     }
 
@@ -289,7 +289,7 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public long getOrCreateNativeBrowserWindowPtr() {
-        assert getState() == State.PENDING_CREATE || getState() == State.ALIVE
+        assert getState() == State.PENDING_CREATE || getState() == State.IDLE
                 : "This Task is not pending or alive.";
         return mAndroidBrowserWindow.getOrCreateNativePtr();
     }
@@ -306,7 +306,7 @@ final class ChromeAndroidTaskImpl
         // become "DESTROYED" until after Feature#onTaskRemoved(), we need the "DESTROYING" state to
         // prevent the Feature from accessing the Task's APIs that should only be called when mState
         // is "ALIVE".
-        if (!mState.compareAndSet(State.ALIVE, State.DESTROYING)) {
+        if (!mState.compareAndSet(State.IDLE, State.DESTROYING)) {
             return;
         }
 
@@ -702,7 +702,7 @@ final class ChromeAndroidTaskImpl
                     assert mId == null;
                     assert mPendingId != null;
                     break;
-                case ALIVE:
+                case IDLE:
                     assert mPendingId == null;
                     assert mId != null;
                     assert mId == getActivity(activityWindowAndroid).getTaskId()
@@ -731,7 +731,7 @@ final class ChromeAndroidTaskImpl
             if (mState.get() == State.PENDING_CREATE) {
                 mId = getActivity(activityWindowAndroid).getTaskId();
                 mPendingId = null;
-                mState.set(State.ALIVE);
+                mState.set(State.IDLE);
                 dispatchPendingActionsLocked(activityWindowAndroid);
                 if (mCreationCallbackForNative != null) {
                     mCreationCallbackForNative.onResult(getOrCreateNativeBrowserWindowPtr());
@@ -863,7 +863,8 @@ final class ChromeAndroidTaskImpl
     }
 
     private void assertAlive() {
-        assert mState.get() == State.ALIVE : "This Task is not alive.";
+        assert mState.get() == State.IDLE || mState.get() == State.PENDING_UPDATE
+                : "This Task is not alive.";
     }
 
     @GuardedBy("mActivityWindowAndroidLock")

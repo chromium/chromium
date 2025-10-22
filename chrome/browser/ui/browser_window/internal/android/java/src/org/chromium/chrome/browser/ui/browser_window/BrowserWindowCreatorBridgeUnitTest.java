@@ -84,7 +84,7 @@ public class BrowserWindowCreatorBridgeUnitTest {
         pendingTask.setActivityWindowAndroid(activityWindowAndroid, tabModel);
 
         // Assert final state.
-        assertEquals(ChromeAndroidTaskImpl.State.ALIVE, pendingTask.getState());
+        assertEquals(ChromeAndroidTaskImpl.State.IDLE, pendingTask.getState());
         assertEquals(taskId, pendingTask.getId().intValue());
         assertNull(pendingTask.getPendingId());
         verify(tabModel).addObserver(pendingTask);
