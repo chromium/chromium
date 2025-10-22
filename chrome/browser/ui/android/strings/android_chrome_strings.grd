@@ -5530,6 +5530,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_TOGGLE_MULTISELECT" desc="A text label that appears above a list of shortcuts that are related to the tab strip. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Toggle tab selection
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_TOGGLE_CARET_BROWSING" desc="A text label that appears next to the keyboard shortcut that will toggle caret browsing. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Toggle caret browsing
+      </message>
 
       <if expr="enable_arcore">
         <!-- AR module -->
@@ -7139,6 +7142,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip main page promo.">
         Switch the position of your address bar to the top or bottom for a customized browsing experience
+      </message>
+
+      <!-- Caret Browsing -->
+      <message name="IDS_CARET_BROWSING_DIALOG_TITLE" desc="Title of the caret browsing confirmation dialog" formatter_data="android_java">
+        Turn on caret browsing?
+      </message>
+      <message name="IDS_CARET_BROWSING_DIALOG_MESSAGE" desc="Message of the caret browsing confirmation dialog" formatter_data="android_java">
+        You can navigate pages with a text cursor. Press F7 to turn off.
       </message>
     </messages>
   </release>

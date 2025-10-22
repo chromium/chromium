@@ -44,10 +44,40 @@ public class AccessibilitySettingsBridge {
         AccessibilitySettingsBridgeJni.get().setCaretBrowsingEnabled(profile, enabled);
     }
 
+    /**
+     * Sets the preference for showing the caret browsing dialog. This is shown when F7 keyboard
+     * shortcut is used.
+     *
+     * @param profile The user profile for which to set the preference.
+     * @param show True to show the dialog in the future, false to hide it.
+     */
+    public static void setShowCaretBrowsingDialogPreference(
+            @Nullable Profile profile, boolean show) {
+        if (profile == null) {
+            return;
+        }
+        AccessibilitySettingsBridgeJni.get().setShowCaretBrowsingDialogPreference(profile, show);
+    }
+
+    /**
+     * @param profile The user profile.
+     * @return true if the caret browsing dialog should be shown.
+     */
+    public static boolean isShowCaretBrowsingDialogPreference(@Nullable Profile profile) {
+        if (profile == null) {
+            return false;
+        }
+        return AccessibilitySettingsBridgeJni.get().isShowCaretBrowsingDialogPreference(profile);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isCaretBrowsingEnabled(Profile profile);
 
         void setCaretBrowsingEnabled(Profile profile, boolean enabled);
+
+        void setShowCaretBrowsingDialogPreference(Profile profile, boolean enabled);
+
+        boolean isShowCaretBrowsingDialogPreference(Profile profile);
     }
 }

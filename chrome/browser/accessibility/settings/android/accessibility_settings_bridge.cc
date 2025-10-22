@@ -27,3 +27,20 @@ void JNI_AccessibilitySettingsBridge_SetCaretBrowsingEnabled(
   Profile* profile = Profile::FromJavaObject(j_profile);
   profile->GetPrefs()->SetBoolean(prefs::kCaretBrowsingEnabled, enabled);
 }
+
+// static
+void JNI_AccessibilitySettingsBridge_SetShowCaretBrowsingDialogPreference(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jboolean enabled) {
+  Profile* profile = Profile::FromJavaObject(j_profile);
+  profile->GetPrefs()->SetBoolean(prefs::kShowCaretBrowsingDialog, enabled);
+}
+
+// static
+jboolean JNI_AccessibilitySettingsBridge_IsShowCaretBrowsingDialogPreference(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  Profile* profile = Profile::FromJavaObject(j_profile);
+  return profile->GetPrefs()->GetBoolean(prefs::kShowCaretBrowsingDialog);
+}

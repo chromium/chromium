@@ -204,5 +204,5 @@ found in the LICENSE file.
     <item type="id" name="custom_tabs_app_menu_item_id_6" />
     <item type="id" name="open_in_browser_id" />
     <item type="id" name="price_insights_menu_id" />
-
+    <item type="id" name="toggle_caret_browsing" />
 </resources>

@@ -94,7 +94,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING,
+        KeyboardShortcutsSemanticMeaning.TOGGLE_CARET_BROWSING,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS,
         KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS,
         KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE,
@@ -174,7 +174,7 @@ public class KeyboardShortcuts {
         int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT = 28;
 
         // Accessibility.
-        int NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING = 29;
+        int TOGGLE_CARET_BROWSING = 29;
         int NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS = 30;
 
         // Bookmarks.
@@ -565,6 +565,11 @@ public class KeyboardShortcuts {
                 new KeyCombo(KeyEvent.KEYCODE_J, KeyEvent.META_CTRL_ON),
                 R.string.keyboard_shortcut_show_downloads,
                 R.string.keyboard_shortcut_chrome_feature_group_header);
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.TOGGLE_CARET_BROWSING,
+                new KeyCombo(KeyEvent.KEYCODE_F7, NO_MODIFIER),
+                R.string.keyboard_shortcut_toggle_caret_browsing,
+                R.string.keyboard_shortcut_chrome_feature_group_header);
 
         // History shortcuts
         new KeyboardShortcutDefinition(
@@ -721,9 +726,6 @@ public class KeyboardShortcuts {
                 new KeyCombo(
                         KeyEvent.KEYCODE_PAGE_DOWN,
                         KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING,
-                new KeyCombo(KeyEvent.KEYCODE_F7, KeyEvent.META_CTRL_ON));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS,
                 new KeyCombo(KeyEvent.KEYCODE_A, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
@@ -966,6 +968,7 @@ public class KeyboardShortcuts {
                 && keyCode != KeyEvent.KEYCODE_F3
                 && keyCode != KeyEvent.KEYCODE_F5
                 && keyCode != KeyEvent.KEYCODE_F6
+                && keyCode != KeyEvent.KEYCODE_F7
                 && keyCode != KeyEvent.KEYCODE_F10
                 && keyCode != KeyEvent.KEYCODE_FORWARD
                 && keyCode != KeyEvent.KEYCODE_REFRESH) {
@@ -1162,6 +1165,13 @@ public class KeyboardShortcuts {
                         currentTab.goForward();
                     }
                     return true;
+                case KeyboardShortcutsSemanticMeaning.TOGGLE_CARET_BROWSING:
+                    if (ContentFeatureList.sAndroidCaretBrowsing.isEnabled()) {
+                        menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.toggle_caret_browsing, false);
+                        return true;
+                    }
+                    return false;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;

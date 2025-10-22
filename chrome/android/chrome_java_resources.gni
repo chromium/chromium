@@ -473,6 +473,7 @@ chrome_java_resources = [
   "java/res/layout/bookmark_widget_preview_layout.xml",
   "java/res/layout/bookmark_widget_section_header.xml",
   "java/res/layout/bottom_sheet_container.xml",
+  "java/res/layout/caret_browsing_ask_again_view.xml",
   "java/res/layout/chrome_item_picker_activity.xml",
   "java/res/layout/clear_browsing_data_button.xml",
   "java/res/layout/clear_browsing_important_dialog_listview.xml",
