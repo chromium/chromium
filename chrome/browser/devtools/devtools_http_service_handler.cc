@@ -35,6 +35,12 @@ void DevToolsHttpServiceHandler::Request(
                                 profile, params));
 }
 
+void DevToolsHttpServiceHandler::CanMakeRequest(
+    Profile* profile,
+    base::OnceCallback<void(bool success)> callback) {
+  std::move(callback).Run(profile && !profile->IsOffTheRecord());
+}
+
 void DevToolsHttpServiceHandler::OnValidationDone(
     Callback callback,
     Profile* profile,

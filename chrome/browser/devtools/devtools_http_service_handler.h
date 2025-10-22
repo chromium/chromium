@@ -60,12 +60,12 @@ class DevToolsHttpServiceHandler {
                const DevToolsDispatchHttpRequestParams& params,
                Callback callback);
 
- private:
+ protected:
   // Performs service-specific pre-request validation. Can be asynchronous.
-  virtual void CanMakeRequest(
-      Profile* profile,
-      base::OnceCallback<void(bool success)> callback) = 0;
+  virtual void CanMakeRequest(Profile* profile,
+                              base::OnceCallback<void(bool success)> callback);
 
+ private:
   // Returns the base URL for the service's API.
   virtual GURL BaseURL() const = 0;
 

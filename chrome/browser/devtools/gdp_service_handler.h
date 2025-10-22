@@ -14,8 +14,6 @@ class GdpServiceHandler : public DevToolsHttpServiceHandler {
 
  private:
   // DevToolsHttpServiceHandler overrides:
-  void CanMakeRequest(Profile* profile,
-                      base::OnceCallback<void(bool success)> callback) override;
   GURL BaseURL() const override;
   signin::ScopeSet OAuthScopes() const override;
   net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag() const override;

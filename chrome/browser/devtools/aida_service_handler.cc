@@ -62,7 +62,13 @@ void AidaServiceHandler::CanMakeRequest(
     Profile* profile,
     base::OnceCallback<void(bool success)> callback) {
   AidaClient::Availability availability = AidaClient::CanUseAida(profile);
-  std::move(callback).Run(!availability.blocked);
+
+  if (availability.blocked) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  DevToolsHttpServiceHandler::CanMakeRequest(profile, std::move(callback));
 }
 
 GURL AidaServiceHandler::BaseURL() const {

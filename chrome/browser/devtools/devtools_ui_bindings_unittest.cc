@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_http_service_registry.h"
@@ -184,6 +185,68 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
 
   EXPECT_EQ(*info.FindString("accountEmail"), "sync@devtools.dev");
   EXPECT_NE(info.FindString("accountImage"), nullptr);
+}
+
+// This class uses the actual implementation of the CanMakeRequest
+class TestServiceHandler : public DevToolsHttpServiceHandler {
+ public:
+  TestServiceHandler() = default;
+  ~TestServiceHandler() override = default;
+
+  GURL BaseURL() const override { return GURL("http://localhost:8000"); }
+  signin::ScopeSet OAuthScopes() const override { return {}; }
+  net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()
+      const override {
+    return TRAFFIC_ANNOTATION_FOR_TESTS;
+  }
+};
+
+class DevToolsHttpServiceHandlerTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    TestingProfile::Builder builder;
+    profile_ = builder.Build();
+    mock_handler_ = base::WrapUnique(new TestServiceHandler());
+
+    params_.service = "unknownService";
+    params_.path = "/path";
+    params_.method = "GET";
+  }
+
+  DevToolsDispatchHttpRequestParams params_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestServiceHandler> mock_handler_;
+};
+
+TEST_F(DevToolsHttpServiceHandlerTest, RequestWithNullProfileFails) {
+  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
+      result_future;
+
+  mock_handler_->Request(nullptr, params_, result_future.GetCallback());
+
+  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
+      result_future.Take();
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->error,
+            DevToolsHttpServiceHandler::Result::Error::kValidationFailed);
+}
+
+TEST_F(DevToolsHttpServiceHandlerTest, RequestWithOTRProfileFails) {
+  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
+      result_future;
+
+  auto* incognito_profile = profile_->GetPrimaryOTRProfile(true);
+  mock_handler_->Request(incognito_profile, params_,
+                         result_future.GetCallback());
+
+  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
+      result_future.Take();
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->error,
+            DevToolsHttpServiceHandler::Result::Error::kValidationFailed);
 }
 
 class MockServiceHandler : public DevToolsHttpServiceHandler {

@@ -46,12 +46,6 @@ constexpr net::NetworkTrafficAnnotationTag kGdpTrafficAnnotation =
 GdpServiceHandler::GdpServiceHandler() = default;
 GdpServiceHandler::~GdpServiceHandler() = default;
 
-void GdpServiceHandler::CanMakeRequest(
-    Profile* profile,
-    base::OnceCallback<void(bool success)> callback) {
-  std::move(callback).Run(true);
-}
-
 GURL GdpServiceHandler::BaseURL() const {
   return GURL("https://developers.googleapis.com");
 }
