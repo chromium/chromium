@@ -102,7 +102,6 @@ _custom_r8_path = "//third_party/r8/custom_r8.jar"
 _d8_path = "//third_party/r8/d8/cipd/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
-_custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"
 
@@ -1107,7 +1106,6 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
       inputs = java_paths_for_inputs + [
                  _lint_jar_path,
-                 _custom_lint_jar_path,
                  _backported_methods,
                ]
 
@@ -1118,8 +1116,6 @@ if (enable_java_templates) {
         rebase_path(depfile, root_build_dir),
         "--lint-jar-path",
         rebase_path(_lint_jar_path, root_build_dir),
-        "--custom-lint-jar-path",
-        rebase_path(_custom_lint_jar_path, root_build_dir),
         "--lint-gen-dir",
         rebase_path(_lint_gen_dir, root_build_dir),
         "--android-sdk-version=${lint_android_sdk_version}",

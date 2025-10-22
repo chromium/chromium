@@ -192,8 +192,7 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  '))
 
 
-def _RunLint(custom_lint_jar_path,
-             lint_jar_path,
+def _RunLint(lint_jar_path,
              backported_methods_path,
              config_path,
              manifest_paths,
@@ -245,8 +244,8 @@ def _RunLint(custom_lint_jar_path,
 
   cmd = build_utils.JavaCmd(xmx=lint_xmx) + [
       '-cp',
-      '{}:{}'.format(lint_jar_path, custom_lint_jar_path),
-      'org.chromium.build.CustomLint',
+      lint_jar_path,
+      'com.android.tools.lint.Main',
       '--sdk-home',
       android_sdk_root,
       '--jdk-home',
@@ -399,9 +398,6 @@ def _ParseArgs(argv):
   parser.add_argument('--lint-jar-path',
                       required=True,
                       help='Path to the lint jar.')
-  parser.add_argument('--custom-lint-jar-path',
-                      required=True,
-                      help='Path to our custom lint jar.')
   parser.add_argument('--backported-methods',
                       help='Path to backported methods file created by R8.')
   parser.add_argument('--cache-dir',
@@ -501,8 +497,7 @@ def main():
                                        use_build_server=args.use_build_server)):
     return
 
-  _RunLint(args.custom_lint_jar_path,
-           args.lint_jar_path,
+  _RunLint(args.lint_jar_path,
            args.backported_methods,
            args.config_path,
            args.manifest_paths,
