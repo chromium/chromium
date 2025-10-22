@@ -75,6 +75,21 @@ namespace ui {
 class ThemeProvider;
 }  // namespace ui
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NTPCustomizeChromePromoEligibility)
+enum class NTPCustomizeChromePromoEligibility {
+  kCanShowPromo = 0,
+  kReachedTotalMaxCountAlready = 1,
+  kReachedSessionMaxCountAlready = 2,
+  kChromeCustomizedAlready = 3,
+  kCustomizeChromeClosedExplicitlyByUser = 4,
+  kCustomizeChromeOpenedByUser = 5,
+  kMaxValue = kCustomizeChromeOpenedByUser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPCustomizeChromePromoEligibility)
+
 class NewTabPageHandler
     : public new_tab_page::mojom::PageHandler,
       public ui::NativeThemeObserver,
@@ -193,7 +208,7 @@ class NewTabPageHandler
   // Called when the embedding BrowserWindowInterface has changed.
   void OnBrowserWindowInterfaceChanged();
 
-  bool CanShowCustomizeChromePromo();
+  NTPCustomizeChromePromoEligibility CanShowCustomizeChromePromo();
 
   void LogEvent(NTPLoggingEventType event);
 

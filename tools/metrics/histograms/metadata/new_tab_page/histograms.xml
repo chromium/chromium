@@ -784,6 +784,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.CustomizeChromePromoEligibility"
+    enum="NTPCustomizeChromePromoEligibility" expires_after="2026-03-10">
+  <owner>kbajkiewicz@google.com</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Captures the eligibility for Customize Chrome Promo. Recorded every time the
+    1P NTP opens.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.CustomizeChromeSidePanelAction"
     enum="NTPCustomizeChromeSidePanelAction" expires_after="2026-02-22">
   <owner>pauladedeji@google.com</owner>

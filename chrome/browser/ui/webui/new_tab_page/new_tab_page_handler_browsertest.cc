@@ -145,6 +145,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
             1);
 
   histogram_tester_.ExpectUniqueSample(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::kCanShowPromo, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
 }
@@ -160,6 +163,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectUniqueSample(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::kChromeCustomizedAlready, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
 }
@@ -172,6 +178,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
   OpenNewTabPageInForeground();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
+  histogram_tester_.ExpectUniqueSample(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::kCustomizeChromeOpenedByUser, 1);
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
@@ -188,7 +197,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
   OpenNewTabPageInForeground();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::kReachedTotalMaxCountAlready, 1);
+  histogram_tester_.ExpectBucketCount(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome,
       ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get());
@@ -210,6 +222,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
 
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::
+          kCustomizeChromeClosedExplicitlyByUser,
+      1);
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
@@ -255,6 +272,9 @@ IN_PROC_BROWSER_TEST_F(
   OpenNewTabPageInForeground();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::kReachedSessionMaxCountAlready, 1);
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);

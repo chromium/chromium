@@ -1193,7 +1193,10 @@ void NewTabPageHandler::OnBrowserWindowInterfaceChanged() {
 }
 
 void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
-  if (!CanShowCustomizeChromePromo() ||
+  auto promo_eligibility = CanShowCustomizeChromePromo();
+  base::UmaHistogramEnumeration("NewTabPage.CustomizeChromePromoEligibility",
+                                promo_eligibility);
+  if (promo_eligibility != NTPCustomizeChromePromoEligibility::kCanShowPromo ||
       !base::FeatureList::IsEnabled(
           ntp_features::kNtpCustomizeChromeAutoOpen)) {
     return;
@@ -1219,35 +1222,40 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
               .Build());
 }
 
-// TODO(crbug.com/452223973): Make this return an enum and record metrics.
-bool NewTabPageHandler::CanShowCustomizeChromePromo() {
+NTPCustomizeChromePromoEligibility
+NewTabPageHandler::CanShowCustomizeChromePromo() {
   auto* background_service =
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   if (background_service->GetCustomBackground() ||
       theme_service->GetThemeID() != ThemeHelper::kDefaultThemeID) {
-    return false;
+    return NTPCustomizeChromePromoEligibility::kChromeCustomizedAlready;
   }
 
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kNtpCustomizeChromeExplicitlyClosed)) {
-    return false;
+    return NTPCustomizeChromePromoEligibility::
+        kCustomizeChromeClosedExplicitlyByUser;
   }
 
   if (profile_->GetPrefs()->GetInteger(
           prefs::kNtpCustomizeChromeButtonOpenCount) > 0) {
-    return false;
+    return NTPCustomizeChromePromoEligibility::kCustomizeChromeOpenedByUser;
   }
 
   if (profile_->GetPrefs()->GetInteger(
           prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount) >=
       ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get()) {
-    return false;
+    return NTPCustomizeChromePromoEligibility::kReachedTotalMaxCountAlready;
   }
 
-  return CustomizeChromeAutoOpenedUserData::GetOrCreateForProfile(profile_)
-             ->times_opened() <
-         ntp_features::kNtpCustomizeChromeAutoShownSessionMaxCount.Get();
+  if (CustomizeChromeAutoOpenedUserData::GetOrCreateForProfile(profile_)
+          ->times_opened() >=
+      ntp_features::kNtpCustomizeChromeAutoShownSessionMaxCount.Get()) {
+    return NTPCustomizeChromePromoEligibility::kReachedSessionMaxCountAlready;
+  }
+
+  return NTPCustomizeChromePromoEligibility::kCanShowPromo;
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {

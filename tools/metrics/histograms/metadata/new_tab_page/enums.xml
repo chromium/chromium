@@ -369,6 +369,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Wallpaper search button clicked."/>
 </enum>
 
+<!-- LINT.IfChange(NTPCustomizeChromePromoEligibility) -->
+
+<enum name="NTPCustomizeChromePromoEligibility">
+  <int value="0" label="Promo can be shown."/>
+  <int value="1" label="Promo auto-opened maximum number of times."/>
+  <int value="2"
+      label="Promo auto-opened maximum number of times per session."/>
+  <int value="3" label="Chrome customized already."/>
+  <int value="4" label="Customize Chrome closed explicitly by the user."/>
+  <int value="5" label="Customize Chrome opened via button before."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h:NTPCustomizeChromePromoEligibility) -->
+
 <enum name="NTPCustomizeChromeSidePanelAction">
   <int value="0" label="Button to edit theme selected."/>
   <int value="1" label="Default chrome selected in categories."/>
