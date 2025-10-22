@@ -64,6 +64,8 @@ class AggregatedJournal {
     const std::string& event_name() const { return event_name_; }
     base::TimeTicks begin_time() const { return begin_time_; }
 
+    void mark_as_terminated() { terminated_ = true; }
+
    private:
     base::PassKey<AggregatedJournal> pass_key_;
     bool terminated_ = false;
@@ -123,7 +125,7 @@ class AggregatedJournal {
                                base::span<const uint8_t> data);
 
   void EnsureJournalBound(content::RenderFrameHost& rfh);
-  void AppendJournalEntries(content::RenderFrameHost* rfh,
+  void AppendJournalEntries(content::RenderFrameHost& rfh,
                             std::vector<mojom::JournalEntryPtr> entries);
   EntryBuffer::Iterator Items() { return entries_.Begin(); }
   base::SafeRef<AggregatedJournal> GetSafeRef();

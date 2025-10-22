@@ -10,6 +10,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -20,6 +21,52 @@
 namespace actor {
 
 namespace {
+
+class NonTerminatedJournalEntries
+    : public content::DocumentUserData<NonTerminatedJournalEntries> {
+ public:
+  ~NonTerminatedJournalEntries() override {
+    // Terminate any entries that have not been terminated indicating
+    // they were ended because of disconnection.
+    for (auto& pending_entry : entries_) {
+      pending_entry.second->EndEntry(
+          JournalDetailsBuilder()
+              .Add("end_reason", "Connection Disconnected")
+              .Build());
+    }
+  }
+
+  void TrackEntries(base::PassKey<AggregatedJournal> pass_key,
+                    base::SafeRef<AggregatedJournal> journal,
+                    const std::vector<mojom::JournalEntryPtr>& entries) {
+    for (auto& renderer_entry : entries) {
+      if (renderer_entry->type == mojom::JournalEntryType::kBegin) {
+        entries_[renderer_entry->event] =
+            std::make_unique<AggregatedJournal::PendingAsyncEntry>(
+                pass_key, journal, renderer_entry->task_id,
+                renderer_entry->event, renderer_entry->track_uuid);
+      } else if (renderer_entry->type == mojom::JournalEntryType::kEnd) {
+        auto it = entries_.find(renderer_entry->event);
+        if (it != entries_.end()) {
+          it->second->mark_as_terminated();
+          entries_.erase(it);
+        }
+      }
+    }
+  }
+
+ private:
+  explicit NonTerminatedJournalEntries(content::RenderFrameHost* rfh)
+      : DocumentUserData(rfh) {}
+
+  friend DocumentUserData;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
+  std::map<std::string, std::unique_ptr<AggregatedJournal::PendingAsyncEntry>>
+      entries_;
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(NonTerminatedJournalEntries);
 
 class JournalObserver : public mojom::JournalClient,
                         public content::WebContentsUserData<JournalObserver> {
@@ -45,21 +92,27 @@ class JournalObserver : public mojom::JournalClient,
   friend class content::WebContentsUserData<JournalObserver>;
 
   explicit JournalObserver(content::WebContents* web_contents,
+                           base::PassKey<AggregatedJournal> pass_key,
                            base::SafeRef<AggregatedJournal> journal)
       : content::WebContentsUserData<JournalObserver>(*web_contents),
         journal_host_receivers_(web_contents, this),
+        pass_key_(pass_key),
         journal_(journal) {}
 
   // actor::mojom::JournalClient methods.
   void AddEntriesToJournal(
       std::vector<mojom::JournalEntryPtr> entries) override {
+    NonTerminatedJournalEntries::GetOrCreateForCurrentDocument(
+        journal_host_receivers_.GetCurrentTargetFrame())
+        ->TrackEntries(pass_key_, journal_, entries);
     journal_->AppendJournalEntries(
-        journal_host_receivers_.GetCurrentTargetFrame(), std::move(entries));
+        *journal_host_receivers_.GetCurrentTargetFrame(), std::move(entries));
   }
 
   content::RenderFrameHostReceiverSet<mojom::JournalClient>
       journal_host_receivers_;
 
+  base::PassKey<AggregatedJournal> pass_key_;
   base::SafeRef<AggregatedJournal> journal_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -168,6 +221,7 @@ void AggregatedJournal::EnsureJournalBound(content::RenderFrameHost& rfh) {
   auto* journal_observer = JournalObserver::FromWebContents(web_contents);
   if (!journal_observer) {
     JournalObserver::CreateForWebContents(web_contents,
+                                          base::PassKey<AggregatedJournal>(),
                                           weak_ptr_factory_.GetSafeRef());
     journal_observer = JournalObserver::FromWebContents(web_contents);
   }
@@ -184,9 +238,9 @@ void AggregatedJournal::RemoveObserver(Observer* observer) {
 }
 
 void AggregatedJournal::AppendJournalEntries(
-    content::RenderFrameHost* rfh,
+    content::RenderFrameHost& rfh,
     std::vector<mojom::JournalEntryPtr> entries) {
-  std::string location = rfh->GetLastCommittedURL().possibly_invalid_spec();
+  std::string location = rfh.GetLastCommittedURL().possibly_invalid_spec();
   for (auto& renderer_entry : entries) {
     AddEntry(std::make_unique<Entry>(location, std::move(renderer_entry)));
   }
