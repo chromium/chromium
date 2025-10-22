@@ -531,11 +531,16 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
       kSmallButtonPadding, 0, kSmallButtonPadding, 0);
 
   // Set the font and text color as attributes.
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
   NSMutableDictionary* titleAttributes = [[NSMutableDictionary alloc] init];
   [titleAttributes
       setObject:PreferredFontForTextStyle(UIFontTextStyleSubheadline,
                                           UIFontWeightRegular)
          forKey:NSFontAttributeName];
+  [titleAttributes setObject:paragraphStyle
+                      forKey:NSParagraphStyleAttributeName];
   NSMutableAttributedString* string =
       [[NSMutableAttributedString alloc] initWithString:title];
   NSRange titleRange = NSMakeRange(0, string.length);
