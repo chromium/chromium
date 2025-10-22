@@ -164,6 +164,7 @@ source_set("eg_app_support+eg2") {
     ":common",
     "//base",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//ios/chrome/test/app:test_support",
   ]
 }

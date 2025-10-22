@@ -7,10 +7,10 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/mock_credential_response_handler.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 

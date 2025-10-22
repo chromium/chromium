@@ -26,7 +26,7 @@ source_set("unit_tests") {
     "//base/test:test_proto",
     "//base/test:test_support",
     "//ios/chrome/browser/device_reauth/model",
-    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//testing/gtest",
   ]
 }
