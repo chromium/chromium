@@ -2575,6 +2575,21 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCalledTwice) {
   }));
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+  RunTestSequence(
+      InstrumentTab(kFirstTab),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  Host::PanelWillOpenOptions options;
+  options.conversation_id = "test_conversation_id";
+  ASSERT_FALSE(GetHost()->IsReady());
+  GetHost()->PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
+                           std::move(options));
+  ExecuteJsTest();
+}
+
 class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
   GlicGetHostCapabilityApiTest() {

@@ -140,6 +140,8 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.
             base::Unretained(this), handler_info_->web_client.get()));
+  } else {
+    pending_panel_open_options_ = std::move(options);
   }
 }
 

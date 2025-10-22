@@ -2186,6 +2186,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(actOnWebCapability, false);
   }
 
+  async testPanelWillOpenBeforeClientReady() {
+    const openData = await observeSequence(this.client.panelOpenData).next();
+    assertEquals('test_conversation_id', openData.conversationId);
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertDefined(this.host.closePanel);
     await this.host.closePanel();
