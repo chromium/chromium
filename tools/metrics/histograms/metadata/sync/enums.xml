@@ -158,29 +158,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:CrossDevicePrefTrackerAvailabilityAtQuery) -->
 
-<!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
-
-<enum name="CrossUserSharingKeyPairState">
-  <int value="0" label="Key pair valid"/>
-  <int value="1" label="Public key not initialized"/>
-  <int value="2" label="Public key version invalid"/>
-  <int value="3" label="Corrupted public-private key pair"/>
-  <int value="4" label="Pending keys are non-empty"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/nigori/nigori_state.cc:CrossUserSharingKeyPairState) -->
-
-<!-- LINT.IfChange(CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
-
-<enum name="CrossUserSharingKeyPairStateOnDecryptPendingKeys">
-  <int value="0" label="Valid key pair"/>
-  <int value="1" label="Missing private key"/>
-  <int value="2" label="Empty key pair"/>
-  <int value="3" label="Missing public key"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
-
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
 <enum name="InvalidBookmarkSpecificsError">

@@ -48,45 +48,6 @@ enum class KeyDerivationMethodStateForMetrics {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncCustomPassphraseKeyDerivationMethodState)
 
-// The state of the cross user sharing key pair after pending keys are
-// successfully decrypted. These values are persisted to logs. Entries should
-// not be renumbered and numeric values should never be reused.
-// LINT.IfChange(CrossUserSharingKeyPairStateOnDecryptPendingKeys)
-enum class CrossUserSharingKeyPairStateOnDecryptPendingKeys {
-  // The key pair exists and is in valid state.
-  kValid = 0,
-
-  // The private key is missing for the current public key version.
-  kMissingPrivateKey = 1,
-
-  // Both public and private keys are empty.
-  kEmptyKeyPair = 2,
-
-  // The private key is non-empty but the public key version is not set.
-  kMissingPublicKey = 3,
-
-  kMaxValue = kMissingPublicKey,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossUserSharingKeyPairStateOnDecryptPendingKeys)
-
-CrossUserSharingKeyPairStateOnDecryptPendingKeys
-GetKeyPairStateOnDecryptPendingKeys(const CrossUserSharingKeys& new_key_pair,
-                                    std::optional<uint32_t> key_pair_version) {
-  if (new_key_pair.size() == 0 && !key_pair_version.has_value()) {
-    return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kEmptyKeyPair;
-  }
-
-  if (!key_pair_version.has_value()) {
-    return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kMissingPublicKey;
-  }
-
-  if (!new_key_pair.HasKeyPair(key_pair_version.value())) {
-    return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kMissingPrivateKey;
-  }
-
-  return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kValid;
-}
-
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
     const std::optional<KeyDerivationParams>& key_derivation_params) {
   if (!key_derivation_params.has_value()) {
@@ -920,11 +881,6 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
   }
 
-  base::UmaHistogramEnumeration(
-      "Sync.CrossUserSharingKeyPairState.DecryptPendingKeys",
-      GetKeyPairStateOnDecryptPendingKeys(
-          new_cross_user_sharing_keys,
-          state_.cross_user_sharing_key_pair_version));
   if (state_.cross_user_sharing_key_pair_version.has_value() &&
       !new_cross_user_sharing_keys.HasKeyPair(
           state_.cross_user_sharing_key_pair_version.value())) {

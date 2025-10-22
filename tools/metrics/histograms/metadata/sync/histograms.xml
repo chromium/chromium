@@ -684,28 +684,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.CrossUserSharingKeyPairState"
-    enum="CrossUserSharingKeyPairState" expires_after="2025-11-28">
-  <owner>rushans@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Records the state of cross user sharing key pair on browser startup (or
-    profile load) when Nigori local data is valid.
-  </summary>
-</histogram>
-
-<histogram name="Sync.CrossUserSharingKeyPairState.DecryptPendingKeys"
-    enum="CrossUserSharingKeyPairStateOnDecryptPendingKeys"
-    expires_after="2026-04-05">
-  <owner>rushans@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Records the state of the key pair whenever pendings keys are successfully
-    decrypted (e.g. on remote update, or custom passphrase or trusted vault
-    become available).
-  </summary>
-</histogram>
-
 <histogram
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption"
     enum="SyncCustomPassphraseKeyDerivationMethodState"

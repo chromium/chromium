@@ -1138,11 +1138,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
-  // Verify that the key pair was corrupted on browser startup.
-  histogram_tester.ExpectUniqueSample("Sync.CrossUserSharingKeyPairState",
-                                      /*kCorruptedKeyPair*/ 3,
-                                      /*expected_bucket_count=*/1);
-
   EXPECT_TRUE(
       ServerCrossUserSharingPublicKeyChangedChecker(old_public_key).Wait());
 
