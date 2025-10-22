@@ -5264,6 +5264,7 @@ if (is_android) {
     android_library("ui_java") {
       sources = [ "android/java/src/org/chromium/base/ui/KeyboardUtils.java" ]
       deps = [
+        ":build_info_java",
         ":log_java",
         ":tasks_java",
         "//third_party/androidx:androidx_annotation_annotation_java",

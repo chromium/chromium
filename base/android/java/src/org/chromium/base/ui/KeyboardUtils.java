@@ -125,16 +125,6 @@ public final class KeyboardUtils {
         return rootView != null && calculateKeyboardHeightFromWindowInsets(rootView) > 0;
     }
 
-    /**
-     * Detects whether the soft keyboard is expected to show when keyboard input is required.
-     *
-     * <p>When there is a physical keyboard and show_ime_with_hard_keyboard is off, the soft
-     * keyboard is not shown.
-     */
-    public static boolean isSoftKeyboardEnabled(Context context) {
-        return !isHardKeyboardConnected(context) || shouldShowImeWithHardwareKeyboard(context);
-    }
-
     /** Detects whether there is a hardware keyboard connected. */
     public static boolean isHardKeyboardConnected(Context context) {
         return context.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY;
@@ -145,7 +135,10 @@ public final class KeyboardUtils {
      * This helps with cases where the Hardware keyboard is unconventional (e.g. Yubikey), and the
      * User explicitly requests the System to show up the Software keyboard when interacting with
      * input fields. NOTE: This is the default behavior on emulated devices.
+     *
+     * @deprecated Does not work in Android 16+ since show_ime_with_hard_keyboard was removed.
      */
+    @Deprecated
     public static boolean shouldShowImeWithHardwareKeyboard(Context context) {
         return Settings.Secure.getInt(
                         context.getContentResolver(), "show_ime_with_hard_keyboard", 0)
