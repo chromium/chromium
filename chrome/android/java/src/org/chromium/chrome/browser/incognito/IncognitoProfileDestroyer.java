@@ -41,7 +41,7 @@ public class IncognitoProfileDestroyer implements IncognitoTabModelObserver {
             // Only delete the incognito profile if there are no incognito tabs open in any tab
             // model selector as the profile is shared between them.
             Profile profile = mTabModelSelector.getModel(true).getProfile();
-            if (profile != null) {
+            if (profile != null && !profile.shutdownStarted()) {
                 ProfileManager.destroyWhenAppropriate(profile);
             }
         }
