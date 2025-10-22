@@ -153,7 +153,12 @@ NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
   } else if (feature_param == kNTPMIAEntrypointParamAIMInQuickActions) {
     return NTPMIAEntrypointVariation::kAIMInQuickAction;
   } else {
-    return NTPMIAEntrypointVariation::kDisabled;
+    // Disabled on iPad.
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      return NTPMIAEntrypointVariation::kDisabled;
+    }
+    // Default value.
+    return NTPMIAEntrypointVariation::kAIMInQuickAction;
   }
 }
 

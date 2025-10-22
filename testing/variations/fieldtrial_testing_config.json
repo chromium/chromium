@@ -12765,60 +12765,6 @@
             ]
         }
     ],
-    "IOSAIModeNTPEntryPoint": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithOmniboxContainedSingleButton",
-                    "params": {
-                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamOmniboxContainedSingleButton"
-                    },
-                    "enable_features": [
-                        "kNTPMIAEntrypoint"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOmniboxContainedInline",
-                    "params": {
-                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamOmniboxContainedInline"
-                    },
-                    "enable_features": [
-                        "kNTPMIAEntrypoint"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOmniboxContainedEnlargedFakebox",
-                    "params": {
-                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox"
-                    },
-                    "enable_features": [
-                        "kNTPMIAEntrypoint"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEnlargedFakeboxNoIncognito",
-                    "params": {
-                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito"
-                    },
-                    "enable_features": [
-                        "kNTPMIAEntrypoint"
-                    ]
-                },
-                {
-                    "name": "EnabledWithAIMInQuickActions",
-                    "params": {
-                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamAIMInQuickActions"
-                    },
-                    "enable_features": [
-                        "kNTPMIAEntrypoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillAcrossIframesV2": [
         {
             "platforms": [

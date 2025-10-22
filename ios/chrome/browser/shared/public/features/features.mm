@@ -200,7 +200,7 @@ const char kNTPMIAEntrypointParamAIMInQuickActions[] =
 // Feature flag to change the MIA entrypoint in NTP.
 BASE_FEATURE(kNTPMIAEntrypoint,
              "kNTPMIAEntrypoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNTPMIAEntrypointAllLocales,
              "kNTPMIAEntrypointAllLocales",
              base::FEATURE_DISABLED_BY_DEFAULT);
