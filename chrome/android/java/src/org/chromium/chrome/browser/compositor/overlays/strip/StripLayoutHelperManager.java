@@ -1378,6 +1378,10 @@ public class StripLayoutHelperManager
         mIncognitoHelper.setTabGroupModelFilter(
                 assumeNonNull(provider.getTabGroupModelFilter(true)));
         tabModelSwitched(mTabModelSelector.isIncognitoSelected());
+        // Manually called on initialization, since the logic in #tabModelSwitched only runs if the
+        // Incognito state actually changes. Since mIncognito defaults to false, it may not actually
+        // change on initialization.
+        getActiveStripLayoutHelper().setSelected(/* selected= */ true);
 
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(modelSelector) {

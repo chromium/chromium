@@ -1592,6 +1592,11 @@ public class StripLayoutHelper
         }
     }
 
+    /** Marks the helper as selected. */
+    public void setSelected(boolean selected) {
+        mSelected = selected;
+    }
+
     /** Updates the current selected tab. */
     private void updateSelectedTab(int newFocusedTabId, int previouslyFocusedTabId) {
         StripLayoutTab previouslyFocusedTab = findTabById(previouslyFocusedTabId);
