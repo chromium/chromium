@@ -127,6 +127,12 @@ class AppListMetricsTest : public AshTestBase {
         GetPrimaryShelf()->GetShelfViewForTesting());
   }
 
+  void TearDown() override {
+    search_model_ = nullptr;
+    shelf_test_api_.reset();
+    AshTestBase::TearDown();
+  }
+
  protected:
   void CreateShelfItem(bool wait_for_tablet_mode = false) {
     // Add shelf item to be launched. Waits for the shelf view's bounds
@@ -174,7 +180,7 @@ class AppListMetricsTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SearchModel, DanglingUntriaged> search_model_ = nullptr;
+  raw_ptr<SearchModel> search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 
