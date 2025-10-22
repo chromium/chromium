@@ -133,7 +133,6 @@ class ChromeAccountManagerService : public KeyedService,
   // opposed to that (and most other methods in this service), this also handles
   // accounts that are assigned to other profiles.
   id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(const GaiaId& gaia_id) const;
-  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(NSString* gaia_id) const;
   // Converts a vector of AccountInfos, as returned by
   // IdentityManager::GetAccountsOnDevice(), to `SystemIdentities (by looking
   // them up via their Gaia IDs). Note that, as opposed to most other methods in

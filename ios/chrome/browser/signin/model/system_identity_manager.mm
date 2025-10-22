@@ -107,15 +107,6 @@ SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
 }
 
-// The two methods below do not actually cause infinite recursive calls as
-// subclass override one of those methods.
-bool SystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
-  return IdentityRemovedByUser(GaiaId(gaia_id));
-}
-bool SystemIdentityManager::IdentityRemovedByUser(const GaiaId& gaia_id) {
-  return IdentityRemovedByUser(gaia_id.ToNSString());
-}
-
 void SystemIdentityManager::FireIdentityListChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {

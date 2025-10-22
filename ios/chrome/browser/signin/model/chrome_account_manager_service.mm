@@ -297,11 +297,6 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
-    NSString* gaia_id) const {
-  return GetIdentityOnDeviceWithGaiaID(GaiaId(gaia_id));
-}
-
-id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
     const GaiaId& gaia_id) const {
   // Do not iterate if the gaia ID is invalid (since `KeepGaiaId` requires a
   // non-empty ID).

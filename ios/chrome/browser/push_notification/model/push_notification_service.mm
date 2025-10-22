@@ -70,18 +70,6 @@ void PushNotificationService::UnregisterAccount(
   }
 }
 
-// TODO(crbug.com/343495515): remove after downstream implementation is added.
-// The two definitions below is not actually infinitely recursive, as the
-// subclasses must implement one of the two methods.
-std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
-    const GaiaId& gaia_id) {
-  return GetRepresentativeTargetIdForGaiaId(gaia_id.ToNSString());
-}
-std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
-    NSString* gaia_id) {
-  return GetRepresentativeTargetIdForGaiaId(GaiaId(gaia_id));
-}
-
 void PushNotificationService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
@@ -99,18 +87,3 @@ void PushNotificationService::RegisterLocalStatePrefs(
   registry->RegisterDictionaryPref(prefs::kHandledDeliveredNotificationIds);
 }
 
-// The two definitions below is not actually infinitely recursive, as the
-// subclasses must implement one of the two methods.
-void PushNotificationService::SetPreferences(
-    const GaiaId& account_id,
-    PreferenceMap preference_map,
-    CompletionHandler completion_handler) {
-  return SetPreferences(account_id.ToNSString(), preference_map,
-                        completion_handler);
-}
-void PushNotificationService::SetPreferences(
-    NSString* account_id,
-    PreferenceMap preference_map,
-    CompletionHandler completion_handler) {
-  return SetPreferences(GaiaId(account_id), preference_map, completion_handler);
-}

@@ -195,10 +195,7 @@ class SystemIdentityManager {
   // Returns true if the identity was removed by calling `ForgetIdentity()`.
   // Returns false If the identity was not removed or disappeared without
   // calling `ForgetIdentity()`.
-  // TODO(crbug.com/449195064): Remove the function taking NSString as input
-  // when ios_internal is updated.
-  virtual bool IdentityRemovedByUser(NSString* gaia_id);
-  virtual bool IdentityRemovedByUser(const GaiaId& gaia_id);
+  virtual bool IdentityRemovedByUser(const GaiaId& gaia_id) = 0;
 
   // Asynchronously retrieves access tokens for `identity` with `scopes`. The
   // callback is invoked on the calling sequence when the operation completes.

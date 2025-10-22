@@ -49,10 +49,8 @@ class PushNotificationService {
   // Returns the representative target ID for the given Gaia ID. Returns null if
   // the user with the associated gaia_id is not registered for push
   // notifications.
-  // TODO(crbug.com/449195064): Remove the function taking NSString as input
-  // when ios_internal is updated.
-  virtual std::string GetRepresentativeTargetIdForGaiaId(const GaiaId& gaia_id);
-  virtual std::string GetRepresentativeTargetIdForGaiaId(NSString* gaia_id);
+  virtual std::string GetRepresentativeTargetIdForGaiaId(
+      const GaiaId& gaia_id) = 0;
 
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();
@@ -102,14 +100,9 @@ class PushNotificationService {
 
   // Updates the current user's push notification preferences with the push
   // notification server.
-  // TODO(crbug.com/449195064): Remove the function taking NSString as input
-  // when ios_internal is updated.
   virtual void SetPreferences(const GaiaId& account_id,
                               PreferenceMap preference_map,
-                              CompletionHandler completion_handler);
-  virtual void SetPreferences(NSString* account_id,
-                              PreferenceMap preference_map,
-                              CompletionHandler completion_handler);
+                              CompletionHandler completion_handler) = 0;
 
  private:
   // The PushNotificationClientManager manages all interactions between the
