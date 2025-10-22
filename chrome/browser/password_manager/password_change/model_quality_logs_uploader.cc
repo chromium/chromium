@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -188,6 +189,9 @@ LoginPasswordType GetLoginAttemptPasswordType(
   }
 }
 
+bool ReachedAttemptsLimit(int state_checks_count) {
+  return state_checks_count >= LoginStateChecker::kMaxLoginChecks;
+}
 }  // namespace
 
 ModelQualityLogsUploader::ModelQualityLogsUploader(
@@ -207,18 +211,37 @@ ModelQualityLogsUploader::~ModelQualityLogsUploader() = default;
 
 void ModelQualityLogsUploader::SetLoggedInCheckQuality(
     int state_checks_count,
-    QualityStatus quality_status) {
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->mutable_logged_in_check()
-      ->set_status(quality_status);
+    std::unique_ptr<LoggingData> logging_data) {
+  if (!logging_data) {
+    return;
+  }
+
+  optimization_guide::proto::PasswordChangeQuality_StepQuality*
+      logged_in_check_quality =
+          final_log_data_.mutable_password_change_submission()
+              ->mutable_quality()
+              ->mutable_logged_in_check();
+
+  logged_in_check_quality->mutable_request()->CopyFrom(logging_data->request());
+  logged_in_check_quality->mutable_response()->CopyFrom(
+      logging_data->response());
+
+  QualityStatus quality_status;
+  if (logging_data->response().is_logged_in_data().is_logged_in()) {
+    quality_status = QualityStatus::
+        PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+  } else if (ReachedAttemptsLimit(state_checks_count)) {
+    quality_status = QualityStatus::
+        PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS;
+  } else {
+    quality_status = QualityStatus::
+        PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
+  }
+  logged_in_check_quality->set_status(quality_status);
   // If the initial login check wasn't performed because the page content failed
   // to be requested, the state_checks_count can be 0.
   const int retry_count = std::max(0, state_checks_count - 1);
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->mutable_logged_in_check()
-      ->set_retry_count(retry_count);
+  logged_in_check_quality->set_retry_count(retry_count);
 }
 
 void ModelQualityLogsUploader::SetOpenFormQuality(

@@ -87,31 +87,15 @@ void LoginStateChecker::DidFinishNavigation(
 }
 
 void LoginStateChecker::TerminateLoginChecks() {
-  SetLoginCheckQuality(IsLoggedIn(false));
+  std::unique_ptr<ModelQualityLogsUploader::LoggingData> logging_data =
+      std::make_unique<ModelQualityLogsUploader::LoggingData>();
+  logging_data->mutable_response()
+      ->mutable_is_logged_in_data()
+      ->set_is_logged_in(false);
+  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
+                                          std::move(logging_data));
   state_checks_count_ = kMaxLoginChecks;
   result_check_callback_.Run(false);
-}
-
-void LoginStateChecker::SetLoginCheckQuality(IsLoggedIn is_logged_in) {
-  if (is_logged_in.value()) {
-    logs_uploader_->SetLoggedInCheckQuality(
-        state_checks_count_,
-        QualityStatus::
-            PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-    return;
-  }
-
-  QualityStatus quality_status;
-  if (ReachedAttemptsLimit()) {
-    quality_status = QualityStatus::
-        PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS;
-  } else {
-    // If the login check terminated before the maximum attempts were reached,
-    // it indicates an unexpected state and a lack of a model response.
-    quality_status = QualityStatus::
-        PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
-  }
-  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_, quality_status);
 }
 
 void LoginStateChecker::CheckLoginState() {
@@ -199,7 +183,8 @@ void LoginStateChecker::OnExecutionResponseCallback(
   bool is_logged_in = response->is_logged_in_data().is_logged_in();
   // If the login state is false, a subsequent retry will override the
   // quality state with either an unexpected or failure status.
-  SetLoginCheckQuality(IsLoggedIn(true));
+  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
+                                          std::move(logging_data));
 
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,

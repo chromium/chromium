@@ -40,7 +40,8 @@ class ModelQualityLogsUploader {
   void UploadFinalLog();
 
   // Sets quality data for Step=LOGGED_IN_CHECK.
-  void SetLoggedInCheckQuality(int retry_count, QualityStatus quality_status);
+  void SetLoggedInCheckQuality(int retry_count,
+                               std::unique_ptr<LoggingData> logging_data);
 
   // Sets quality data for Step=OPEN_FORM_STEP.
   void SetOpenFormQuality(

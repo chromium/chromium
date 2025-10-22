@@ -64,6 +64,12 @@ void VerifyLoginCheckStep(
                 .logged_in_check()
                 .retry_count(),
             expected_retry_count);
+  if (!was_skipped) {
+    EXPECT_TRUE(log.password_change_submission()
+                    .quality()
+                    .logged_in_check()
+                    .has_request());
+  }
 }
 
 void CheckOpenFormStatus(
@@ -132,6 +138,16 @@ CreateLoggingData(
   auto logging_data = std::make_unique<
       optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
   logging_data->mutable_request()->CopyFrom(request);
+  return logging_data;
+}
+
+std::unique_ptr<optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+CreateLoggingDataForLoginCheck(bool is_logged_in) {
+  auto logging_data = std::make_unique<
+      optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
+  logging_data->mutable_response()
+      ->mutable_is_logged_in_data()
+      ->set_is_logged_in(is_logged_in);
   return logging_data;
 }
 }  // namespace
@@ -480,7 +496,9 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckRetryCountSet) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   QualityStatus quality_status = QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-  logs_uploader.SetLoggedInCheckQuality(login_state_checks, quality_status);
+  logs_uploader.SetLoggedInCheckQuality(
+      login_state_checks,
+      CreateLoggingDataForLoginCheck(/*is_logged_in=*/true));
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();
   VerifyLoginCheckStep(logs_uploader.GetFinalLog(), quality_status,
@@ -493,7 +511,9 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckReachedMaxAttempts) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   QualityStatus quality_status = QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS;
-  logs_uploader.SetLoggedInCheckQuality(login_state_checks, quality_status);
+  logs_uploader.SetLoggedInCheckQuality(
+      login_state_checks,
+      CreateLoggingDataForLoginCheck(/*is_logged_in=*/false));
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();
   VerifyLoginCheckStep(logs_uploader.GetFinalLog(), quality_status,
@@ -501,12 +521,15 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckReachedMaxAttempts) {
                        /*was_skipped=*/false);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, LastLoginCheckHadUnexpectedState) {
-  const int login_state_checks = 5;
+TEST_F(ModelQualityLogsUploaderTest,
+       HasUnexpectedStateUntilMaxAttemptsReached) {
+  const int login_state_checks = 4;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   QualityStatus unexpected_status = QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
-  logs_uploader.SetLoggedInCheckQuality(login_state_checks, unexpected_status);
+  logs_uploader.SetLoggedInCheckQuality(
+      login_state_checks,
+      CreateLoggingDataForLoginCheck(/*is_logged_in=*/false));
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();
   VerifyLoginCheckStep(logs_uploader.GetFinalLog(), unexpected_status,
@@ -519,7 +542,9 @@ TEST_F(ModelQualityLogsUploaderTest, FlowInterruptedAfterLoginCheck) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   const QualityStatus success_status = QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-  logs_uploader.SetLoggedInCheckQuality(login_state_checks, success_status);
+  logs_uploader.SetLoggedInCheckQuality(
+      login_state_checks,
+      CreateLoggingDataForLoginCheck(/*is_logged_in=*/true));
   logs_uploader.SetFlowInterrupted();
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();
@@ -539,7 +564,9 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckStepOtpDetected) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   QualityStatus quality_status = QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-  logs_uploader.SetLoggedInCheckQuality(login_state_checks, quality_status);
+  logs_uploader.SetLoggedInCheckQuality(
+      login_state_checks,
+      CreateLoggingDataForLoginCheck(/*is_logged_in=*/true));
   logs_uploader.SetOtpDetected();
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();

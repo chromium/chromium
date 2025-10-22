@@ -51,7 +51,15 @@ class LoginStateChecker : public content::WebContentsObserver {
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
   void RespondWithLoginStatus(IsLoggedIn is_logged_in) {
-    SetLoginCheckQuality(is_logged_in);
+    std::unique_ptr<
+        optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+        logging_data = std::make_unique<
+            optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
+    logging_data->mutable_response()
+        ->mutable_is_logged_in_data()
+        ->set_is_logged_in(is_logged_in.value());
+    logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
+                                            std::move(logging_data));
     state_checks_count_++;
     result_check_callback_.Run(is_logged_in.value());
   }
@@ -63,7 +71,10 @@ class LoginStateChecker : public content::WebContentsObserver {
   void TerminateLoginChecks();
 
   // Sets the quality log state based on the last check performed.
-  void SetLoginCheckQuality(IsLoggedIn is_logged_in);
+  void SetLoginCheckQuality(
+      std::unique_ptr<
+          optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+          logging_data);
 
   OptimizationGuideKeyedService* GetOptimizationService();
 
