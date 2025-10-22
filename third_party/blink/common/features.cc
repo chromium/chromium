@@ -909,6 +909,12 @@ const base::FeatureParam<ForceDarkImageBehavior>::Option
     forcedark_image_behavior_options[] = {
         {ForceDarkImageBehavior::kUseBlinkSettings,
          "use_blink_settings_for_images"},
+        // 'none' is no longer supported, but is still being passed via
+        // command line by some early-adopters of the overall feature. To
+        // avoid this being detected as invalid (resulting in a DwC, some
+        // telemetry, and falling back to the default value), we map it to the
+        // default value (from below).
+        {ForceDarkImageBehavior::kUseBlinkSettings, "none"},
         {ForceDarkImageBehavior::kInvertSelectively, "selective"}};
 
 BASE_FEATURE_ENUM_PARAM(ForceDarkImageBehavior,
