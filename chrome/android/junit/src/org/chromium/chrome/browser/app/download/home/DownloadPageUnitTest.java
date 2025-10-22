@@ -30,11 +30,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -110,7 +108,6 @@ public class DownloadPageUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testEdgeToEdge() {
         assertTrue("Download page should support E2E.", mDownloadPage.supportsEdgeToEdge());
 

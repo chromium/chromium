@@ -31,11 +31,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
@@ -53,7 +51,6 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for credit card accessory views. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 public class CreditCardAccessoryIntegrationTest {
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =

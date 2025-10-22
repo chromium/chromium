@@ -69,7 +69,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -1577,7 +1576,6 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
