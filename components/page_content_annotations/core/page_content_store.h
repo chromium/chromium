@@ -68,6 +68,9 @@ class PageContentStore {
  private:
   bool InitializeDb();
 
+  // The error callback for the database.
+  void OnDatabaseError(int extended_error, sql::Statement* stmt);
+
   std::optional<proto::PageContext> GetPageContentFromStatement(
       sql::Statement* statement);
 

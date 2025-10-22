@@ -4,12 +4,16 @@
 
 #include "components/page_content_annotations/core/page_content_store.h"
 
+#include <functional>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "components/database_utils/url_converter.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "sql/error_delegate_util.h"
 #include "sql/init_status.h"
+#include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -22,17 +26,42 @@ PageContentStore::PageContentStore(const base::FilePath& db_path)
 
 PageContentStore::~PageContentStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.reset_error_callback();
+}
+
+void PageContentStore::OnDatabaseError(int extended_error,
+                                       sql::Statement* stmt) {
+  VLOG(1) << "PageContentStore database operation failed: " << extended_error
+          << ", " << stmt->GetSQLStatement();
+
+  // Attempt to recover a corrupt database, if it is eligible to be recovered.
+  if (sql::IsErrorCatastrophic(extended_error) &&
+      sql::Recovery::RecoverIfPossible(
+          &db_, extended_error, sql::Recovery::Strategy::kRecoverOrRaze)) {
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
+
+    // Signal the test-expectation framework that the error was handled.
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
+
+    db_initialized_ = InitializeDb();
+    return;
+  }
+
+  if (!sql::Database::IsExpectedSqliteError(extended_error)) {
+    VLOG(1) << db_.GetErrorMessage();
+  }
+
+  // Close the db.
+  db_.Close();
+  db_initialized_ = false;
 }
 
 bool PageContentStore::InitializeDb() {
   CHECK(!db_initialized_);
 
-  db_.set_error_callback(base::BindRepeating([](int extended_error,
-                                                sql::Statement* stmt) {
-    // TODO(ssid): Add error handling.
-    VLOG(1) << "PageContentStore database operation failed: " << extended_error
-            << ", " << stmt->GetSQLStatement();
-  }));
+  db_.set_error_callback(base::BindRepeating(&PageContentStore::OnDatabaseError,
+                                             base::Unretained(this)));
 
   if (!db_.Open(db_path_)) {
     return false;
