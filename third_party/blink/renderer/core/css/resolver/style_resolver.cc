@@ -3638,6 +3638,12 @@ StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
 }
 
 void StyleResolver::ApplyTriggerData(StyleResolverState& state) {
+  if (state.GetPseudoId() != PseudoId::kPseudoIdNone) {
+    // TODO(crbug.com/451477493): Applying trigger data here would clobber the
+    // style of the pseudo's originating element. We should investigate a
+    // cleaner solution to this than making an exception here.
+    return;
+  }
   CSSAnimations::UpdateNamedTriggers(
       state.StyleBuilder(), state.AnimationUpdate(), state.GetElement());
 }
