@@ -11,8 +11,16 @@ import android.animation.ObjectAnimator;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuKeyProvider;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.util.List;
 
 /** This is a helper class for app menu. */
 @NullMarked
@@ -106,5 +114,47 @@ public class AppMenuUtil {
                     }
                 });
         return animation;
+    }
+
+    public static class AppMenuKeyProvider implements HierarchicalMenuKeyProvider {
+        @Override
+        public WritableObjectPropertyKey<View.@Nullable OnClickListener> getClickListenerKey() {
+            return AppMenuItemWithSubmenuProperties.CLICK_LISTENER;
+        }
+
+        @Override
+        public WritableBooleanPropertyKey getEnabledKey() {
+            return AppMenuItemProperties.ENABLED;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<View.@Nullable OnHoverListener> getHoverListenerKey() {
+            return AppMenuItemProperties.HOVER_LISTENER;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<CharSequence> getTitleKey() {
+            return AppMenuItemProperties.TITLE;
+        }
+
+        @Override
+        public WritableIntPropertyKey getTitleIdKey() {
+            return AppMenuItemProperties.TITLE_ID;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<View.OnKeyListener> getKeyListenerKey() {
+            return AppMenuItemProperties.KEY_LISTENER;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<List<ListItem>> getSubmenuItemsKey() {
+            return AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS;
+        }
+
+        @Override
+        public WritableBooleanPropertyKey getIsHighlightedKey() {
+            return AppMenuItemProperties.HAS_HOVER_BACKGROUND;
+        }
     }
 }

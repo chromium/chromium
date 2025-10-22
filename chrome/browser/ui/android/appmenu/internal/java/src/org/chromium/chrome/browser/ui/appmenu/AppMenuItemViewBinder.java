@@ -112,6 +112,12 @@ class AppMenuItemViewBinder {
                                             .onItemClick(model, triggeringMotion)));
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
+        } else if (key == AppMenuItemProperties.HOVER_LISTENER) {
+            view.setOnHoverListener(model.get(AppMenuItemProperties.HOVER_LISTENER));
+        } else if (key == AppMenuItemProperties.HAS_HOVER_BACKGROUND) {
+            view.setHovered(model.get(AppMenuItemProperties.HAS_HOVER_BACKGROUND));
+        } else if (key == AppMenuItemProperties.KEY_LISTENER) {
+            view.setOnKeyListener(model.get(AppMenuItemProperties.KEY_LISTENER));
         }
     }
 
