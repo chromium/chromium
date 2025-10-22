@@ -20,7 +20,7 @@ namespace {
 // We use the URLComponentSource for the outer URL, as it can have replacements,
 // whereas the inner_url can't, so it uses spec.
 template <typename CHAR>
-bool DoCanonicalizeFileSystemURL(const CHAR* spec,
+bool DoCanonicalizeFileSystemUrl(std::basic_string_view<CHAR> spec,
                                  const URLComponentSource<CHAR>& source,
                                  const Parsed& parsed,
                                  CharsetConverter* charset_converter,
@@ -50,17 +50,18 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
     new_inner_parsed.scheme.begin = output->length();
     output->Append("file://");
     new_inner_parsed.scheme.len = 4;
-    success &=
-        CanonicalizePath(inner_parsed->path.maybe_as_string_view_on(spec),
-                         output, &new_inner_parsed.path);
-  } else if (GetStandardSchemeType(inner_parsed->scheme.as_string_view_on(spec),
-                                   &inner_scheme_type)) {
+    success &= CanonicalizePath(
+        inner_parsed->path.maybe_as_string_view_on(spec.data()), output,
+        &new_inner_parsed.path);
+  } else if (GetStandardSchemeType(
+                 inner_parsed->scheme.as_string_view_on(spec.data()),
+                 &inner_scheme_type)) {
     if (inner_scheme_type == SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION) {
       // Strip out the user information from the inner URL, if any.
       inner_scheme_type = SCHEME_WITH_HOST_AND_PORT;
     }
     success =
-        CanonicalizeStandardURL(spec, *inner_parsed, inner_scheme_type,
+        CanonicalizeStandardURL(spec.data(), *inner_parsed, inner_scheme_type,
                                 charset_converter, output, &new_inner_parsed);
   } else {
     // TODO(ericu): The URL is wrong, but should we try to output more of what
@@ -87,48 +88,51 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
 
 }  // namespace
 
-bool CanonicalizeFileSystemURL(const char* spec,
+bool CanonicalizeFileSystemUrl(std::string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* charset_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
-  return DoCanonicalizeFileSystemURL(spec, URLComponentSource(spec), parsed,
-                                     charset_converter, output, new_parsed);
+  return DoCanonicalizeFileSystemUrl(spec, URLComponentSource(spec.data()),
+                                     parsed, charset_converter, output,
+                                     new_parsed);
 }
 
-bool CanonicalizeFileSystemURL(const char16_t* spec,
+bool CanonicalizeFileSystemUrl(std::u16string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* charset_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
-  return DoCanonicalizeFileSystemURL(spec, URLComponentSource(spec), parsed,
-                                     charset_converter, output, new_parsed);
+  return DoCanonicalizeFileSystemUrl(spec, URLComponentSource(spec.data()),
+                                     parsed, charset_converter, output,
+                                     new_parsed);
 }
 
-bool ReplaceFileSystemURL(const char* base,
+bool ReplaceFileSystemUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char>& replacements,
                           CharsetConverter* charset_converter,
                           CanonOutput* output,
                           Parsed* new_parsed) {
-  URLComponentSource<char> source(base);
+  URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupOverrideComponents(base, replacements, &source, &parsed);
-  return DoCanonicalizeFileSystemURL(base, source, parsed, charset_converter,
+  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
+  return DoCanonicalizeFileSystemUrl(base, source, parsed, charset_converter,
                                      output, new_parsed);
 }
 
-bool ReplaceFileSystemURL(const char* base,
+bool ReplaceFileSystemUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char16_t>& replacements,
                           CharsetConverter* charset_converter,
                           CanonOutput* output,
                           Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base);
+  URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base, replacements, &utf8, &source, &parsed);
-  return DoCanonicalizeFileSystemURL(base, source, parsed, charset_converter,
+  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
+                               &parsed);
+  return DoCanonicalizeFileSystemUrl(base, source, parsed, charset_converter,
                                      output, new_parsed);
 }
 

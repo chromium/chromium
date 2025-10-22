@@ -204,7 +204,7 @@ bool DoIsRelativeUrl(std::string_view base,
 
   // If it's a filesystem URL, the only valid way to make it relative is not to
   // supply a scheme. There's no equivalent to e.g. http:index.html.
-  if (CompareSchemeComponent(url.data(), scheme, kFileSystemScheme)) {
+  if (CompareSchemeComponent(url, scheme, kFileSystemScheme)) {
     return true;
   }
 

@@ -171,15 +171,14 @@ enum WhitespaceRemovalPolicy {
 
 // Given a string and a range inside the string, compares it to the given
 // lower-case |compare_to| buffer.
-template<typename CHAR>
-inline bool DoCompareSchemeComponent(const CHAR* spec,
+template <typename CHAR>
+inline bool DoCompareSchemeComponent(std::basic_string_view<CHAR> spec,
                                      const Component& component,
                                      const char* compare_to) {
   if (component.is_empty())
     return compare_to[0] == 0;  // When component is empty, match empty scheme.
   return base::EqualsCaseInsensitiveASCII(
-      std::basic_string_view(&spec[component.begin], component.len),
-      compare_to);
+      component.as_string_view_on(spec.data()), compare_to);
 }
 
 // Returns true and sets |type| to the SchemeType of the given scheme
@@ -243,7 +242,7 @@ bool DoFindAndCompareScheme(std::basic_string_view<CHAR> str,
   }
   if (found_scheme)
     *found_scheme = our_scheme;
-  return DoCompareSchemeComponent(spec.data(), our_scheme, compare);
+  return DoCompareSchemeComponent(spec, our_scheme, compare);
 }
 
 template <typename CHAR>
@@ -293,16 +292,15 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   // before storing it in our object.
   bool success;
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  if (DoCompareSchemeComponent(spec.data(), scheme, url::kFileScheme)) {
+  if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
     // File URLs are special.
     success =
         CanonicalizeFileURL(spec.data(), spec.length(), ParseFileURL(spec),
                             charset_converter, output, output_parsed);
-  } else if (DoCompareSchemeComponent(spec.data(), scheme,
-                                      url::kFileSystemScheme)) {
+  } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
     // Filesystem URLs are special.
     success =
-        CanonicalizeFileSystemURL(spec.data(), ParseFileSystemURL(spec),
+        CanonicalizeFileSystemUrl(spec, ParseFileSystemURL(spec),
                                   charset_converter, output, output_parsed);
 
   } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec.data())),
@@ -387,12 +385,9 @@ bool DoResolveRelative(std::string_view base_spec,
     }
   } else if (is_relative) {
     // Relative, resolve and canonicalize.
-    // TODO(crbug.com/350788890): DoCompareSchemeComponent() should accept
-    // string_views.
     bool file_base_scheme =
         base_parsed.scheme.is_nonempty() &&
-        DoCompareSchemeComponent(base_spec.data(), base_parsed.scheme,
-                                 kFileScheme);
+        DoCompareSchemeComponent(base_spec, base_parsed.scheme, kFileScheme);
     // TODO(crbug.com/350788890): ResolveRelativeURL() should accept
     // string_views.
     return ResolveRelativeURL(base_spec.data(), base_parsed, file_base_scheme,
@@ -488,14 +483,13 @@ bool DoReplaceComponents(std::string_view spec,
   const char* spec_ptr = spec.data();
   // If we get here, then we know the scheme doesn't need to be replaced, so can
   // just key off the scheme in the spec to know how to do the replacements.
-  if (DoCompareSchemeComponent(spec_ptr, parsed.scheme, url::kFileScheme)) {
+  if (DoCompareSchemeComponent(spec, parsed.scheme, url::kFileScheme)) {
     return ReplaceFileURL(spec_ptr, parsed, replacements, charset_converter,
                           output, out_parsed);
   }
-  if (DoCompareSchemeComponent(spec_ptr, parsed.scheme,
-                               url::kFileSystemScheme)) {
-    return ReplaceFileSystemURL(spec_ptr, parsed, replacements,
-                                charset_converter, output, out_parsed);
+  if (DoCompareSchemeComponent(spec, parsed.scheme, url::kFileSystemScheme)) {
+    return ReplaceFileSystemUrl(spec, parsed, replacements, charset_converter,
+                                output, out_parsed);
   }
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec_ptr),
@@ -935,13 +929,13 @@ bool IsURIComponentChar(char c) {
   return IsComponentChar(c);
 }
 
-bool CompareSchemeComponent(const char* spec,
+bool CompareSchemeComponent(std::string_view spec,
                             const Component& component,
                             const char* compare_to) {
   return DoCompareSchemeComponent(spec, component, compare_to);
 }
 
-bool CompareSchemeComponent(const char16_t* spec,
+bool CompareSchemeComponent(std::u16string_view spec,
                             const Component& component,
                             const char* compare_to) {
   return DoCompareSchemeComponent(spec, component, compare_to);

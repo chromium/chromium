@@ -540,12 +540,11 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
   }
 
   Parsed inner_parsed;
-  if (CompareSchemeComponent(url.data(), inner_scheme, kFileScheme)) {
+  if (CompareSchemeComponent(url, inner_scheme, kFileScheme)) {
     // File URLs are special. The static cast is safe because we calculated the
     // size above as the difference of two ints.
     inner_parsed = ParseFileURL(inner_url);
-  } else if (CompareSchemeComponent(url.data(), inner_scheme,
-                                    kFileSystemScheme)) {
+  } else if (CompareSchemeComponent(url, inner_scheme, kFileSystemScheme)) {
     // Filesystem URLs don't nest.
     return parsed;
   } else if (IsStandard(inner_scheme.as_string_view_on(url.data()))) {

@@ -2063,7 +2063,7 @@ TEST_F(URLCanonTest, ReplaceFileURL) {
   }
 }
 
-TEST_F(URLCanonTest, ReplaceFileSystemURL) {
+TEST_F(URLCanonTest, ReplaceFileSystemUrl) {
   ReplaceCase replace_cases[] = {
       // Replace everything in the outer URL.
       {"filesystem:file:///temporary/gaba?query#ref", nullptr, nullptr, nullptr,
@@ -2122,7 +2122,7 @@ TEST_F(URLCanonTest, ReplaceFileSystemURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceFileSystemURL(cur.base, parsed, r, nullptr, &output, &out_parsed);
+    ReplaceFileSystemUrl(cur.base, parsed, r, nullptr, &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(replace_case.expected, out_str);
@@ -2343,7 +2343,7 @@ TEST_F(URLCanonTest, CanonicalizeFileURL) {
   }
 }
 
-TEST_F(URLCanonTest, CanonicalizeFileSystemURL) {
+TEST_F(URLCanonTest, CanonicalizeFileSystemUrl) {
   struct URLCase {
     const char* input;
     const char* expected;
@@ -2370,7 +2370,7 @@ TEST_F(URLCanonTest, CanonicalizeFileSystemURL) {
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeFileSystemURL(i.input, parsed, nullptr, &output,
+    bool success = CanonicalizeFileSystemUrl(i.input, parsed, nullptr, &output,
                                              &out_parsed);
     output.Complete();
 
