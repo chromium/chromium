@@ -455,6 +455,8 @@ void HttpStreamPool::AttemptManager::SetInitialAttemptState() {
       });
   base::UmaHistogramEnumeration("Net.HttpStreamPool.InitialAttemptState2",
                                 *initial_attempt_state_);
+  base::UmaHistogramTimes("Net.HttpStreamPool.InitialAttemptStartTime",
+                          base::TimeTicks::Now() - created_time_);
 }
 
 SSLConfig HttpStreamPool::AttemptManager::GetBaseSSLConfig() {
@@ -1354,8 +1356,8 @@ void HttpStreamPool::AttemptManager::CreateAndStartTcpBasedAttempt(
 
   CHECK(!preconnect_jobs_.empty() || group_->IdleStreamSocketCount() == 0);
 
-  auto attempt = std::make_unique<TcpBasedAttempt>(this, slot, using_tls,
-                                                   std::move(ip_endpoint));
+  auto attempt =
+      std::make_unique<TcpBasedAttempt>(this, slot, std::move(ip_endpoint));
   TcpBasedAttempt* raw_attempt = attempt.get();
   slot->AllocateAttempt(std::move(attempt));
   raw_attempt->Start();

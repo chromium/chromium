@@ -10,6 +10,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -77,7 +78,6 @@ std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
 
 HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
                                                  TcpBasedAttemptSlot* slot,
-                                                 bool using_tls,
                                                  IPEndPoint ip_endpoint)
     : manager_(manager),
       track_(base::trace_event::GetNextGlobalTraceId()),
@@ -88,7 +88,7 @@ HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
                       flow_);
   TRACE_EVENT_BEGIN("net.stream", "TcpBasedAttempt::TcpBasedAttempt", track_,
                     flow_, "ip_endpoint", ip_endpoint.ToString());
-  if (using_tls) {
+  if (manager_->using_tls()) {
     attempt_ = std::make_unique<TlsStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
         track_,
@@ -108,6 +108,43 @@ HttpStreamPool::TcpBasedAttempt::~TcpBasedAttempt() {
       base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTime2.",
                     GetResultHistogramSuffix(result_)}),
       elapsed);
+
+  if (result_.has_value() && *result_ == OK) {
+    std::string_view suffix = manager_->using_tls() ? ".Tls" : ".Tcp";
+
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptSuccessTime", suffix}),
+        elapsed);
+    base::UmaHistogramMediumTimes(
+        "Net.HttpStreamPool.TcpBasedAttemptStartDelay",
+        start_time_ - manager_->created_time());
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.TcpBasedAttemptServiceEndpointWaitTime",
+        service_endpoint_wait_end_time_ - service_endpoint_wait_start_time_);
+
+    // Record time taken by TCP/TLS handshakes. `ConnectTiming.connect_end`
+    // corresponds to `connectEnd` in ResourceTiming API and indicates:
+    //  - TCP handshake completion time for TCP attempt.
+    //  - TLS handshake completion time for TLS attempt.
+    // See https://www.w3.org/TR/resource-timing/#attribute-descriptions.
+    constexpr std::string_view kTcpHandshakeTimeHistogramName =
+        "Net.HttpStreamPool.TcpHandshakeTime";
+    const LoadTimingInfo::ConnectTiming& connect_timing =
+        attempt_->connect_timing();
+    if (manager_->using_tls()) {
+      CHECK(!tcp_handshake_complete_time_for_tls_.is_null());
+      base::UmaHistogramMediumTimes(
+          base::StrCat({kTcpHandshakeTimeHistogramName, suffix}),
+          tcp_handshake_complete_time_for_tls_ - connect_timing.connect_start);
+      base::UmaHistogramMediumTimes(
+          "Net.HttpStreamPool.TlsHandshakeTime",
+          connect_timing.connect_end - tcp_handshake_complete_time_for_tls_);
+    } else {
+      base::UmaHistogramMediumTimes(
+          base::StrCat({kTcpHandshakeTimeHistogramName, suffix}),
+          connect_timing.connect_end - connect_timing.connect_start);
+    }
+  }
 
   if (cancel_reason_.has_value()) {
     base::UmaHistogramEnumeration(
@@ -205,9 +242,6 @@ HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
   }
 
   CHECK(!service_endpoint_wait_start_time_.is_null());
-  base::UmaHistogramMediumTimes(
-      "Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime2",
-      base::TimeTicks::Now() - service_endpoint_wait_start_time_);
 
   if (!is_slow_ && !slow_timer_.IsRunning()) {
     // Resume the slow timer as `attempt_` will start a TLS handshake.
@@ -219,6 +253,7 @@ HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
                                      base::Unretained(this)));
   }
 
+  service_endpoint_wait_end_time_ = base::TimeTicks::Now();
   return std::move(service_endpoint_waiting_callback_);
 }
 
@@ -249,6 +284,7 @@ base::Value::Dict HttpStreamPool::TcpBasedAttempt::GetInfoAsValue() const {
 }
 
 void HttpStreamPool::TcpBasedAttempt::OnTcpHandshakeComplete() {
+  tcp_handshake_complete_time_for_tls_ = base::TimeTicks::Now();
   // Pause the slow timer until `attempt_` starts a TLS handshake to exclude the
   // time spent waiting for SSLConfig from the time `this` is considered slow.
   slow_timer_.Stop();

@@ -3535,6 +3535,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.InitialAttemptStartTime" units="ms"
+    expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time taken from an HttpStreamPool::AttemptManager creation to the time
+    the AttemptManager attempting the initial TCP based attempt. Recorded when
+    an AttemptManager attempts TCP for the first time.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.InitialAttemptState2"
     enum="HttpStreamPoolInitialAttemptState" expires_after="2026-04-05">
   <owner>bashi@chromium.org</owner>
@@ -3680,6 +3691,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptServiceEndpointWaitTime"
+    units="ms" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a TCP based attempt started waiting for service endpoint
+    resolution to when the attempt gets the resolution. Recorded for each TCP
+    based attempt upon destruction of the attempt if the attempt completed
+    successfully.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.TcpBasedAttemptSlotCancelCount.{Reason}"
     units="attempts" expires_after="2025-12-02">
   <owner>bashi@chromium.org</owner>
@@ -3692,14 +3715,31 @@ chromium-metrics-reviews@google.com.
   <token key="Reason" variants="StreamSocketCloseReason"/>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime2"
-    units="ms" expires_after="2025-12-02">
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptStartDelay" units="ms"
+    expires_after="2025-12-01">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
-    Record the time that a TcpBasedAttempt is waiting for an SSLConfig. Recorded
-    when a TcpBasedAttempt got an SSLConfig after waiting for the config.
+    Time from when an HttpStreamPool::AttemptManager is started to when a TCP
+    based attempt is started, measuring the delay of the TCP based attempt.
+    Recorded for each TCP based attempt upon destruction of the attempt if the
+    attempt completed successfully.
   </summary>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptSuccessTime.{Protocol}"
+    units="ms" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a {Protocol} attempt is created to when the attempt is
+    completed successfully. Recorded for each TCP based attempt upon destruction
+    of the attempt if the attempt completed successfully.
+  </summary>
+  <token key="Protocol">
+    <variant name="TCP"/>
+    <variant name="TLS"/>
+  </token>
 </histogram>
 
 <histogram name="Net.HttpStreamPool.TcpBasedAttemptTime2.{Result}" units="ms"
@@ -3730,6 +3770,32 @@ chromium-metrics-reviews@google.com.
     TcpBasedAttempts in TcpBasedAttemptSlots.
   </summary>
   <token key="Reason" variants="StreamSocketCloseReason"/>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.TcpHandshakeTime.{Protocol}" units="ms"
+    expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a {Protocol} attempt starts a TCP handshake to when the TCP
+    handshake completes. Recorded for each {Protocol} attempt upon destruction
+    of the attempt if the attempt completed successfully.
+  </summary>
+  <token key="Protocol">
+    <variant name="TCP"/>
+    <variant name="TLS"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.TlsHandshakeTime" units="ms"
+    expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a TLS attempt starts a TLS handshake to when the TLS
+    handshake completes. Recorded for each TLS attempt upon destruction of the
+    attempt if the attempt completed successfully.
+  </summary>
 </histogram>
 
 <histogram name="Net.HttpStreamPool.{JobType}JobCancelCount.{Reason}"

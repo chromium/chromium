@@ -27,7 +27,6 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
  public:
   TcpBasedAttempt(AttemptManager* manager,
                   TcpBasedAttemptSlot* slot,
-                  bool using_tls,
                   IPEndPoint ip_endpoint);
 
   TcpBasedAttempt(const TcpBasedAttempt&) = delete;
@@ -46,9 +45,6 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   StreamAttempt* attempt() { return attempt_.get(); }
 
   base::TimeTicks start_time() const { return start_time_; }
-  base::TimeTicks ssl_config_wait_start_time() const {
-    return service_endpoint_wait_start_time_;
-  }
 
   const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
 
@@ -94,7 +90,13 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   // Set to true when `this` and `attempt_` should abort. Currently used to
   // handle ECH failure.
   bool is_aborted_ = false;
+
+  // Set to the time `attempt_` completes the TCP handshake. Only set when the
+  // underlying attempt is TLS. Used for histogram recording.
+  base::TimeTicks tcp_handshake_complete_time_for_tls_;
+
   base::TimeTicks service_endpoint_wait_start_time_;
+  base::TimeTicks service_endpoint_wait_end_time_;
   CompletionOnceCallback service_endpoint_waiting_callback_;
 
   base::WeakPtrFactory<TcpBasedAttempt> weak_ptr_factory_{this};

@@ -127,6 +127,10 @@ class HttpStreamPool::AttemptManager
 
   const perfetto::Track& track() const { return track_; }
 
+  base::TimeTicks created_time() const { return created_time_; }
+
+  bool using_tls() const { return is_using_tls_; }
+
   std::optional<InitialAttemptState> initial_attempt_state() const {
     return initial_attempt_state_;
   }
