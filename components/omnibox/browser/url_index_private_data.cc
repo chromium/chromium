@@ -18,6 +18,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/stack.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -787,8 +788,16 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   String16Set title_words = String16SetFromString16(
       title, word_starts ? &word_starts->title_word_starts_ : nullptr);
   for (const auto& word :
-       base::STLSetUnion<String16Set>(url_words, title_words))
+       base::STLSetUnion<String16Set>(url_words, title_words)) {
+    // Speculative fix for crbug.com/348617573.
+    if (word.empty()) {
+      continue;
+    }
+    // Some crash keys if the fix doesn't work.
+    SCOPED_CRASH_KEY_STRING256("Bug348617573", "url", gurl.spec());
+    SCOPED_CRASH_KEY_STRING32("Bug348617573", "word", base::UTF16ToUTF8(word));
     AddWordToIndex(word, history_id);
+  }
 
   search_term_cache_.clear();  // Invalidate the term cache.
 }
