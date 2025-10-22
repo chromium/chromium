@@ -49,8 +49,6 @@ namespace sync_bookmarks {
 
 namespace {
 
-constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 100000;
-
 class ScopedRemoteUpdateBookmarks {
  public:
   // `bookmark_model` and `observer` must not be null and must outlive this
@@ -130,7 +128,8 @@ BookmarkDataTypeProcessor::BookmarkDataTypeProcessor(
         wipe_model_upon_sync_disabled_behavior)
     : wipe_model_upon_sync_disabled_behavior_(
           wipe_model_upon_sync_disabled_behavior),
-      max_bookmarks_till_sync_enabled_(kDefaultMaxBookmarksTillSyncEnabled) {}
+      max_bookmarks_till_sync_enabled_(syncer::kSyncBookmarksLimitValue.Get()) {
+}
 
 BookmarkDataTypeProcessor::~BookmarkDataTypeProcessor() {
   if (bookmark_model_ && bookmark_model_observer_) {
