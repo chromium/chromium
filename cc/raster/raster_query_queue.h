@@ -28,9 +28,6 @@ struct CC_EXPORT RasterQuery {
 
   // The duration for executing the work on the raster worker thread.
   base::TimeDelta worker_raster_duration;
-
-  // The time at which the raster buffer was created.
-  base::TimeTicks raster_buffer_creation_time;
 };
 
 class CC_EXPORT RasterQueryQueue {
