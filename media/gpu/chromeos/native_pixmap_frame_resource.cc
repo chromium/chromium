@@ -109,13 +109,11 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  // This converts |layout|'s VideoPixelFormat to a gfx::BufferFormat, which is
-  // needed by the NativePixmapFrameResource constructor.
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(layout.format());
-  if (!buffer_format) {
+  auto si_format = VideoPixelFormatToSharedImageFormat(layout.format());
+  if (!si_format) {
     DLOGF(ERROR) << " Unable to convert pixel format "
                  << VideoPixelFormatToString(layout.format())
-                 << " to BufferFormat";
+                 << " to SharedImageFormat";
     return nullptr;
   }
 
@@ -137,7 +135,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   // STORAGE_GPU_MEMORY_BUFFER VideoFrame.
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout, visible_rect,
-      natural_size, timestamp, *buffer_format, base::UnguessableToken::Create(),
+      natural_size, timestamp, *si_format, base::UnguessableToken::Create(),
       /*buffer_usage=*/std::nullopt, std::move(handle));
 }
 
@@ -203,7 +201,7 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat si_format,
     const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     gfx::NativePixmapHandle handle)
@@ -216,7 +214,7 @@ NativePixmapFrameResource::NativePixmapFrameResource(
           tracking_token,
           buffer_usage,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(layout.coded_size(),
-                                                        buffer_format,
+                                                        si_format,
                                                         std::move(handle))) {}
 
 NativePixmapFrameResource::NativePixmapFrameResource(
