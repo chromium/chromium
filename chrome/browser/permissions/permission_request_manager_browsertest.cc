@@ -30,6 +30,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/content_setting_permission_context_base.h"

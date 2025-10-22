@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

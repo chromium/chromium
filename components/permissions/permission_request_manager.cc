@@ -27,6 +27,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
