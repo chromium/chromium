@@ -56,6 +56,8 @@ class SaveFile {
   }
   const SaveFileCreateInfo& create_info() const { return *info_; }
 
+  void RunQuarantineCallback();
+
  private:
   download::BaseFile file_;
   std::unique_ptr<SaveFileCreateInfo> info_;

@@ -91,4 +91,10 @@ std::string SaveFile::DebugString() const {
   return file_.DebugString();
 }
 
+void SaveFile::RunQuarantineCallback() {
+  if (!info_->quarantine_callback.is_null()) {
+    std::move(info_->quarantine_callback).Run();
+  }
+}
+
 }  // namespace content
