@@ -11,7 +11,6 @@
 #import <vector>
 
 #import "base/barrier_closure.h"
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -47,7 +46,6 @@
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
-#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -219,25 +217,34 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
                                ->GetBrowserPolicyConnector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
-  if (base::FeatureList::IsEnabled(
-          enterprise_reporting::kCloudProfileReporting)) {
-    auto* profile_report_scheduler =
-        enterprise_reporting::CloudProfileReportingServiceFactoryIOS::
-            GetForProfile(ProfileIOS::FromWebUIIOS(web_ui()))
-                ->report_scheduler();
-    if (report_scheduler && profile_report_scheduler) {
-      const auto on_report_uploaded = base::BarrierClosure(
-          2, base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                            weak_factory_.GetWeakPtr(), callback_id));
-      report_scheduler->UploadFullReport(on_report_uploaded);
-      profile_report_scheduler->UploadFullReport(on_report_uploaded);
-    }
-  } else if (report_scheduler) {
-    report_scheduler->UploadFullReport(
-        base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                       weak_factory_.GetWeakPtr(), callback_id));
-  } else {
+  auto* profile_report_scheduler =
+      enterprise_reporting::CloudProfileReportingServiceFactoryIOS::
+          GetForProfile(ProfileIOS::FromWebUIIOS(web_ui()))
+              ->report_scheduler();
+
+  int report_count = 0;
+  if (report_scheduler) {
+    report_count++;
+  }
+  if (profile_report_scheduler) {
+    report_count++;
+  }
+
+  if (report_count == 0) {
+    // Nothing to upload, return immediately.
     OnReportUploaded(callback_id);
+    return;
+  }
+
+  // Upload 1 or 2 reports depending on which type(s) of reporting are enabled.
+  const auto on_report_uploaded = base::BarrierClosure(
+      report_count, base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                                   weak_factory_.GetWeakPtr(), callback_id));
+  if (report_scheduler) {
+    report_scheduler->UploadFullReport(on_report_uploaded);
+  }
+  if (profile_report_scheduler) {
+    profile_report_scheduler->UploadFullReport(on_report_uploaded);
   }
 }
 

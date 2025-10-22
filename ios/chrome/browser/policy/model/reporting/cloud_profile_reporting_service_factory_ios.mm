@@ -7,8 +7,10 @@
 #import <memory>
 #import <utility>
 
+#import "base/feature_list.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_reporting {
@@ -30,6 +32,9 @@ CloudProfileReportingServiceFactoryIOS::GetForProfile(ProfileIOS* profile) {
 std::unique_ptr<KeyedService>
 CloudProfileReportingServiceFactoryIOS::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  if (!base::FeatureList::IsEnabled(kCloudProfileReporting)) {
+    return nullptr;
+  }
   return std::make_unique<CloudProfileReportingServiceIOS>(profile);
 }
 
