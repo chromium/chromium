@@ -20,7 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -110,40 +109,38 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     // Private methods.
 
     private void initBookmarkBarPref() {
+        // isDeviceBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
         if (!BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
             removePreference(PREF_BOOKMARK_BAR);
             return;
         }
 
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-            // Find the switch preference and attach our policy logic to it.
-            ChromeSwitchPreference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
-            assert bookmarkBarSwitch != null;
-            bookmarkBarSwitch.setManagedPreferenceDelegate(
-                    new ChromeManagedPreferenceDelegate(getProfile()) {
-                        // If true, the helper methods in ManagedPreferencesUtils will disable the
-                        // switch and show the "managed by your organization"
-                        // text with the business icon.
-                        @Override
-                        public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            return BookmarkBarUtils.isBookmarkBarManagedByPolicy(getProfile());
+        // Find the switch preference and attach our policy logic to it.
+        ChromeSwitchPreference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
+        assert bookmarkBarSwitch != null;
+        bookmarkBarSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    // If true, the helper methods in ManagedPreferencesUtils will disable the
+                    // switch and show the "managed by your organization"
+                    // text with the business icon.
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return BookmarkBarUtils.isBookmarkBarManagedByPolicy(getProfile());
+                    }
+
+                    @Override
+                    public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
+                        if (!BookmarkBarUtils.isBookmarkBarRecommended(getProfile())) {
+                            // No recommendation exists.
+                            return null;
                         }
 
-                        @Override
-                        public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
-                            if (!BookmarkBarUtils.isBookmarkBarRecommended(getProfile())) {
-                                // No recommendation exists.
-                                return null;
-                            }
-
-                            // Return true if the user's setting matches the recommendation, which
-                            // shows the icon & text. Return false if it doesn't match, which hides
-                            // the icon & text.
-                            return BookmarkBarUtils.isFollowingBookmarkBarRecommendation(
-                                    getProfile());
-                        }
-                    });
-        }
+                        // Return true if the user's setting matches the recommendation, which
+                        // shows the icon & text. Return false if it doesn't match, which hides
+                        // the icon & text.
+                        return BookmarkBarUtils.isFollowingBookmarkBarRecommendation(getProfile());
+                    }
+                });
 
         if (mUseProfileUserPrefs) {
             initBookmarkBarPrefForUserPrefs();
@@ -157,7 +154,6 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         mPrefObserver =
                 () -> {
                     updateBookmarkBarPref();
-                    if (!ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) return;
                     Preference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
                     if (bookmarkBarSwitch != null) {
                         // This is the trigger to showing/hiding the
@@ -197,7 +193,6 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                     if (key != null
                             && key.equals(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR)) {
                         updateBookmarkBarPref();
-                        if (!ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) return;
                         Preference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
                         if (bookmarkBarSwitch != null) {
                             // Forces a redraw, and methods in our setManagedPreferenceDelegate are
@@ -214,15 +209,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                 .setOnPreferenceChangeListener(
                         (pref, newValue) -> {
-                            if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-                                BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                        getProfile(),
-                                        (boolean) newValue,
-                                        /* fromKeyboardShortcut= */ false);
-                            } else {
-                                BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                        (boolean) newValue, /* fromKeyboardShortcut= */ false);
-                            }
+                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                    getProfile(),
+                                    (boolean) newValue,
+                                    /* fromKeyboardShortcut= */ false);
                             return true;
                         });
     }
@@ -257,6 +247,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void updateBookmarkBarPref() {
+        // isDeviceBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
         if (!BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
             return;
         }
@@ -265,14 +256,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
             ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                     .setChecked(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(getProfile()));
         } else {
-            if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-                ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
-                        .setChecked(
-                                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(getProfile()));
-            } else {
-                ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
-                        .setChecked(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
-            }
+            ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
+                    .setChecked(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(getProfile()));
         }
     }
 

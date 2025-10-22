@@ -29,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommand;
@@ -37,6 +38,9 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +61,8 @@ public class BookmarkBarIphControllerTest {
     @Mock private BookmarkId mChildBookmarkId;
     @Mock private BookmarkItem mDesktopFolderItem;
     @Mock private BookmarkItem mChildBookmarkItem;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -66,6 +72,18 @@ public class BookmarkBarIphControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        // Set the default behavior for policy checks (no policy active).
+        when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
+        when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
+        when(mPrefService.isRecommendedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
+
+        // Set the default behavior for reading the pref value.
+        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
 
         // Mock the .post() call to run immediately.
         when(mToolbarMenuButton.post(mRunnableCaptor.capture()))

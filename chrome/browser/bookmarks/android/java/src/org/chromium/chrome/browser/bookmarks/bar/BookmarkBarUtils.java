@@ -206,16 +206,12 @@ public class BookmarkBarUtils {
         if (!isActivityStateBookmarkBarCompatible(context)) {
             return false;
         }
-        // Always use the Profile during fast follow, even on tablets, because a user's organization
-        // can override the local device preference.
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-            return isUserPrefsShowBookmarksBarEnabled(profile);
-        }
-
-        // On Desktop, we sync with the UserPrefs, but on tablets we use a local device preference.
+        // On Desktop, we sync with the UserPrefs.
+        // On tablets we use the device preference logic (policy (pref service)  > local pref
+        // (shared pref) > FeatureParam).
         return DeviceInfo.isDesktop()
                 ? isUserPrefsShowBookmarksBarEnabled(profile)
-                : isDevicePrefShowBookmarksBarEnabled();
+                : isDevicePrefShowBookmarksBarEnabled(profile);
     }
 
     /**
@@ -328,26 +324,6 @@ public class BookmarkBarUtils {
 
     /**
      * Returns whether or not the bookmark bar should be shown based on the local device
-     * preferences. This is only used on tablets, where bookmarks bar does not sync with the user's
-     * desktop preference, but is instead stored locally on device.
-     *
-     * <p>Note: When a user has not previously set the device preference, the default return value
-     * is currently controlled by a FeatureParam for testing.
-     *
-     * @return Whether or not the bookmarks bar should be shown based on device preference.
-     */
-    public static boolean isDevicePrefShowBookmarksBarEnabled() {
-        // If a user has set the show bookmarks bar setting explicitly, then we will use that value.
-        // If the user has never set the preference, then we will return a default, which is
-        // currently controlled with a FeatureParam.
-        return hasUserSetDevicePrefShowBookmarksBar()
-                ? ContextUtils.getAppSharedPreferences()
-                        .getBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, false)
-                : ChromeFeatureList.sAndroidBookmarkBarShowBookmarkBar.getValue();
-    }
-
-    /**
-     * Returns whether or not the bookmark bar should be shown based on the local device
      * preferences, while respecting enterprise policies. This is only used on tablets, where
      * bookmarks bar does not sync with the user's desktop preference, but is instead stored locally
      * on device.
@@ -386,24 +362,10 @@ public class BookmarkBarUtils {
         // If a user has set the show bookmarks bar setting explicitly, then we will use that value.
         // If the user has never set the preference, then we will return a default, which is
         // currently controlled with a FeatureParam.
-        return isDevicePrefShowBookmarksBarEnabled();
-    }
-
-    /**
-     * Set whether the bookmark bar should be shown at a device preferences level. This is only used
-     * on tablets, where bookmarks bar does not sync with the user's desktop preference, but is
-     * instead stored locally on the device.
-     *
-     * @param enabled The new device preference for enabling the bookmark bar.
-     */
-    public static void setDevicePrefShowBookmarksBar(
-            boolean enabled, boolean fromKeyboardShortcut) {
-        RecordHistogram.recordBooleanHistogram(
-                fromKeyboardShortcut ? TOGGLED_BY_KEYBOARD_SHORTCUT : TOGGLED_IN_SETTINGS, enabled);
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, enabled)
-                .apply();
+        return hasUserSetDevicePrefShowBookmarksBar()
+                ? ContextUtils.getAppSharedPreferences()
+                        .getBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, false)
+                : ChromeFeatureList.sAndroidBookmarkBarShowBookmarkBar.getValue();
     }
 
     /**
@@ -421,10 +383,6 @@ public class BookmarkBarUtils {
      */
     public static void setDevicePrefShowBookmarksBar(
             Profile profile, boolean enabled, boolean fromKeyboardShortcut) {
-        assert ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled();
-
-        RecordHistogram.recordBooleanHistogram(
-                fromKeyboardShortcut ? TOGGLED_BY_KEYBOARD_SHORTCUT : TOGGLED_IN_SETTINGS, enabled);
 
         // Write to SharedPreferences to save the user's local choice.
         ContextUtils.getAppSharedPreferences()
@@ -450,22 +408,10 @@ public class BookmarkBarUtils {
 
     /**
      * Toggles the value of the show bookmarks bar device preference, this is stored locally and
-     * only used on tablets.
-     */
-    public static void toggleDevicePrefShowBookmarksBar(boolean fromKeyboardShortcut) {
-        setDevicePrefShowBookmarksBar(!isDevicePrefShowBookmarksBarEnabled(), fromKeyboardShortcut);
-    }
-
-    /**
-     * Toggles the value of the show bookmarks bar device preference, this is stored locally and
      * only used on tablets, correctly interacting with enterprise policies.
-     *
-     * <p>This is only called when the sAndroidBookmarkBarFastFollow flag is enabled.
      */
     public static void toggleDevicePrefShowBookmarksBar(
             Profile profile, boolean fromKeyboardShortcut) {
-        assert ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled();
-
         setDevicePrefShowBookmarksBar(
                 profile, !isDevicePrefShowBookmarksBarEnabled(profile), fromKeyboardShortcut);
     }

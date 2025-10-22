@@ -1898,16 +1898,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
+            // isActivityStateBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
                 if (DeviceInfo.isDesktop()) {
+                    // Desktop uses the synced UserPref.
                     BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(
                             mProfileSupplier.get(), /* fromKeyboardShortcut= */ true);
-                } else if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+                } else {
+                    // Tablet uses the local shared pref (but interacts with policy via Profile).
                     BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
                             mProfileSupplier.get(), /* fromKeyboardShortcut= */ true);
-                } else {
-                    BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
-                            /* fromKeyboardShortcut= */ true);
                 }
                 return true;
             }

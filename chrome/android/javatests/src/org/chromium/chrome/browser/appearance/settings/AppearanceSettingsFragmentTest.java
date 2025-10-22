@@ -112,7 +112,10 @@ public class AppearanceSettingsFragmentTest {
         mBookmarkBarSettingSupplier.addObserver(
                 enabled -> {
                     BookmarkBarUtils.setSettingEnabledForTesting(enabled);
+                    // Safely call onPreferenceChange only on non-null observers (since tablets
+                    // don't call #initBookmarkBarPrefForUserPrefs).
                     mBookmarkBarSettingObserverCache.stream()
+                            .filter(observer -> observer != null)
                             .forEach(PrefObserver::onPreferenceChange);
                 });
 
@@ -203,12 +206,12 @@ public class AppearanceSettingsFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
         Assert.assertFalse(bookmarkBarPref.isChecked());
-        Assert.assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        Assert.assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
         Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
         ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
         Assert.assertTrue(bookmarkBarPref.isChecked());
-        Assert.assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        Assert.assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
         Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
     }
 
@@ -226,13 +229,13 @@ public class AppearanceSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                false, /* fromKeyboardShortcut= */ true));
+                                mProfile, false, /* fromKeyboardShortcut= */ true));
         Assert.assertFalse(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                true, /* fromKeyboardShortcut= */ false));
+                                mProfile, true, /* fromKeyboardShortcut= */ false));
         Assert.assertTrue(bookmarkBarPref.isChecked());
     }
 
