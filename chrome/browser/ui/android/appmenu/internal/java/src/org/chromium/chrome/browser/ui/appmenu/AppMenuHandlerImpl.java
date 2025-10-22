@@ -45,6 +45,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -534,6 +535,14 @@ class AppMenuHandlerImpl
                 AppMenuItemType.BUTTON_ROW,
                 new LayoutViewBuilder(R.layout.icon_row_menu_item),
                 AppMenuItemViewBinder::bindIconRowItem);
+        adapter.registerType(
+                AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                new LayoutViewBuilder(R.layout.menu_item_with_submenu),
+                AppMenuItemViewBinder::bindItemWithSubmenu);
+        adapter.registerType(
+                AppMenuItemType.SUBMENU_HEADER,
+                new LayoutViewBuilder(R.layout.submenu_header),
+                AppMenuItemViewBinder::bindSubmenuHeader);
         adapter.registerType(
                 AppMenuItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.divider_line_menu_item),

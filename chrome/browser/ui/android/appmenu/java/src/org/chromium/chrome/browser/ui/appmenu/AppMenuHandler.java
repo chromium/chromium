@@ -23,6 +23,8 @@ public interface AppMenuHandler {
         AppMenuItemType.STANDARD,
         AppMenuItemType.TITLE_BUTTON,
         AppMenuItemType.BUTTON_ROW,
+        AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+        AppMenuItemType.SUBMENU_HEADER,
         AppMenuItemType.DIVIDER
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -42,14 +44,20 @@ public interface AppMenuHandler {
          */
         int BUTTON_ROW = 2;
 
+        /** Menu item that when contains submenus. */
+        int MENU_ITEM_WITH_SUBMENU = 3;
+
+        /** The header for submenus when submenus are displayed in drilldown. */
+        int SUBMENU_HEADER = 4;
+
         /** A divider item to distinguish between menu item groupings. */
-        int DIVIDER = 3;
+        int DIVIDER = 5;
 
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 6;
     }
 
     /**
