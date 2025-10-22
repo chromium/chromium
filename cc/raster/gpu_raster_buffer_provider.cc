@@ -66,16 +66,6 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     // raster.
     backing_->can_access_shared_image_on_compositor_thread = false;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Only do this in ChromeOS because:
-  //   1) We will use this timestamp to measure raster scheduling delay and we
-  //      only need to collect that data to assess the impact of hardware
-  //      acceleration of image decodes which works only on ChromeOS.
-  //   2) We use CLOCK_MONOTONIC in that OS to get timestamps, so we can assert
-  //      certain assumptions.
-  creation_time_ = base::TimeTicks::Now();
-#endif
 }
 
 GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {

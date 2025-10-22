@@ -120,7 +120,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
     // These fields are for use on the worker thread.
     const bool resource_has_previous_content_;
-    base::TimeTicks creation_time_;
   };
 
   const scoped_refptr<gpu::SharedImageInterface> sii_;
