@@ -65,6 +65,8 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {
       /*search_engines=*/{SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
                           SEARCH_ENGINE_GOOGLE},
       /*country_id=*/kFranceCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false,
       /*selected_engine_index=*/1);
 
   base::Value::Dict dict = display_state.ToDict();
@@ -82,7 +84,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
   ChoiceScreenDisplayState display_state(
       /*search_engines=*/{SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
                           SEARCH_ENGINE_GOOGLE},
-      /*country_id=*/kFranceCountryId);
+      /*country_id=*/kFranceCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false);
 
   base::Value::Dict dict = display_state.ToDict();
   EXPECT_THAT(

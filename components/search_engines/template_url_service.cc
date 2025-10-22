@@ -972,7 +972,7 @@ TemplateURLService::TemplateURLVector TemplateURLService::GetTemplateURLs() {
 std::unique_ptr<search_engines::ChoiceScreenData>
 TemplateURLService::GetChoiceScreenData() {
   return search_engine_choice_service_->GetChoiceScreenData(
-      search_terms_data());
+      search_terms_data(), GetDefaultSearchProvider());
 }
 
 TemplateURL* TemplateURLService::GetEnterpriseSearchAggregatorEngine() const {

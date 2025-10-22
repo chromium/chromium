@@ -148,9 +148,11 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Returns key information needed to show a search engine choice screen, like
   // the template URLs for the engines to show. See
-  // `search_engines::ChoiceScreenData` for more details.
+  // `search_engines::ChoiceScreenData` for more details. `nullptr` values for
+  // `default_search_provider` are accepted as default search might be disabled.
   std::unique_ptr<search_engines::ChoiceScreenData> GetChoiceScreenData(
-      const SearchTermsData& search_terms_data);
+      const SearchTermsData& search_terms_data,
+      const TemplateURL* default_search_provider);
 
   // Records that the choice was made by settings the timestamp if applicable.
   // Records the location from which the choice was made and the search engine

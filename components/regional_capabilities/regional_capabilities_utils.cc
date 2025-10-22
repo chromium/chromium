@@ -121,6 +121,10 @@ std::vector<const PrepopulatedEngine*> GetPrepopulatedEngines(
     }
   }
 
+  CHECK(!engines.empty()) << "Unexpected PrepopulatedEngines to be empty. "
+                             "SearchEngineListType might be invalid: "
+                          << static_cast<int>(search_engine_list_type);
+
   return engines;
 }
 

@@ -32,6 +32,7 @@ constexpr ProgramSettings kWaffleSettings{
             .should_preserve_non_google_dse = true,
             .restrict_to_associated_countries = false,
             .restrict_surfaces_to_fre_only = false,
+            .highlight_current_default = false,
         },
 };
 
@@ -49,6 +50,7 @@ constexpr ProgramSettings kTaiyakiSettings{
             .should_preserve_non_google_dse = false,
             .restrict_to_associated_countries = true,
             .restrict_surfaces_to_fre_only = false,
+            .highlight_current_default = true,
         },
 };
 

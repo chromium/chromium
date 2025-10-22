@@ -418,7 +418,8 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
           {&TemplateURLPrepopulateData::google,
            &TemplateURLPrepopulateData::bing,
            &TemplateURLPrepopulateData::yahoo}),
-      kBelgiumCountryId, SearchTermsData());
+      /*current_default_to_highlight=*/nullptr, kBelgiumCountryId,
+      SearchTermsData());
   ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
   display_state.selected_engine_index = 2;
 
@@ -467,7 +468,8 @@ TEST_F(SearchEngineChoiceServiceTest,
           {&TemplateURLPrepopulateData::google,
            &TemplateURLPrepopulateData::bing,
            &TemplateURLPrepopulateData::yahoo}),
-      kBelgiumCountryId, SearchTermsData());
+      /*current_default_to_highlight=*/nullptr, kBelgiumCountryId,
+      SearchTermsData());
   ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
   display_state.selected_engine_index = 2;
 
@@ -515,7 +517,8 @@ TEST_F(SearchEngineChoiceServiceTest,
     // Unknown country.
     InitService({.force_reset = true});
     ChoiceScreenData choice_screen_data(
-        OwnedTemplateURLVectorFromPrepopulatedEngines(engines), CountryId(),
+        OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
+        /*current_default_to_highlight=*/nullptr, CountryId(),
         SearchTermsData());
     ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
     display_state.selected_engine_index = 0;
@@ -538,7 +541,8 @@ TEST_F(SearchEngineChoiceServiceTest,
     // Non-EEA variations country.
     InitService({.variation_country_id = kUsaCountryId, .force_reset = true});
     ChoiceScreenData choice_screen_data(
-        OwnedTemplateURLVectorFromPrepopulatedEngines(engines), kUsaCountryId,
+        OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
+        /*current_default_to_highlight=*/nullptr, kUsaCountryId,
         SearchTermsData());
     ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
     display_state.selected_engine_index = 0;
@@ -568,7 +572,8 @@ TEST_F(SearchEngineChoiceServiceTest,
   InitService({.variation_country_id = country_codes::CountryId("DE"),
                .force_reset = true});
   ChoiceScreenData choice_screen_data(
-      OwnedTemplateURLVectorFromPrepopulatedEngines(engines), kBelgiumCountryId,
+      OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
+      /*current_default_to_highlight=*/nullptr, kBelgiumCountryId,
       SearchTermsData());
   ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
   display_state.selected_engine_index = 0;
@@ -617,6 +622,8 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -657,6 +664,8 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -697,6 +706,8 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -735,6 +746,8 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -978,6 +991,126 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingTimestamp) {
       search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+}
+
+class SearchEngineChoiceServiceChoiceScreenDataTest
+    : public SearchEngineChoiceServiceTest {
+ public:
+  void SetUp() override {
+    SearchEngineChoiceServiceTest::SetUp();
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kSearchEngineChoiceCountry);
+  }
+
+  void OverrideProgramAndSetHighlightSettingTo(bool enabled) {
+    test_program_settings_.choice_screen_eligibility_config
+        ->highlight_current_default = enabled;
+    regional_capabilities_service().SetCacheForTesting(CountryId("FR"),
+                                                       test_program_settings_);
+  }
+
+  void SetDefaultSearchProvider(
+      const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
+    std::unique_ptr<TemplateURLData> data =
+        TemplateURLDataFromPrepopulatedEngine(engine);
+    auto template_url = std::make_unique<TemplateURL>(*data);
+    template_url_service().SetUserSelectedDefaultSearchProvider(
+        template_url.get());
+  }
+
+ private:
+  // Cached in the instance because as we override the program settings by
+  // reference, the reference would otherwise become invalid. We initialize it
+  // from a copy of the Waffle settings.
+  regional_capabilities::ProgramSettings test_program_settings_ =
+      regional_capabilities::GetSettingsForProgram(
+          regional_capabilities::Program::kWaffle);
+};
+
+TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest, DseHighlight) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kCurrentDseHighlightOnChoiceScreenSupport};
+
+  OverrideProgramAndSetHighlightSettingTo(true);
+
+  auto& test_dse = TemplateURLPrepopulateData::google;
+  SetDefaultSearchProvider(test_dse);
+
+  // Calling `SearchEngineChoiceService::GetChoiceScreenData()` through the
+  // associated method from `template_url_service` which sets up the right
+  // arguments.
+  auto choice_screen_data = template_url_service().GetChoiceScreenData();
+
+  // The current default to highlight should be available, and point to an entry
+  // in the list owned by the `choice_screen_data`.
+  EXPECT_EQ(
+      choice_screen_data->current_default_to_highlight()->prepopulate_id(),
+      test_dse.id);
+  bool found_current_dse = false;
+  for (const auto& engine : choice_screen_data->search_engines()) {
+    if (engine->prepopulate_id() == test_dse.id) {
+      EXPECT_EQ(engine.get(),
+                choice_screen_data->current_default_to_highlight());
+      found_current_dse = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(found_current_dse);
+}
+
+TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
+       DseHighlight_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kCurrentDseHighlightOnChoiceScreenSupport);
+  OverrideProgramAndSetHighlightSettingTo(true);
+
+  auto& test_dse = TemplateURLPrepopulateData::google;
+  SetDefaultSearchProvider(test_dse);
+
+  // Calling `SearchEngineChoiceService::GetChoiceScreenData()` through the
+  // associated method from `template_url_service` which sets up the right
+  // arguments.
+  auto choice_screen_data = template_url_service().GetChoiceScreenData();
+
+  // No engine should be provided for highlighting.
+  EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
+}
+
+TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
+       DseHighlight_DisabledInProgram) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kCurrentDseHighlightOnChoiceScreenSupport};
+  OverrideProgramAndSetHighlightSettingTo(false);
+
+  auto& test_dse = TemplateURLPrepopulateData::google;
+  SetDefaultSearchProvider(test_dse);
+
+  // Calling `SearchEngineChoiceService::GetChoiceScreenData()` through the
+  // associated method from `template_url_service` which sets up the right
+  // arguments.
+  auto choice_screen_data = template_url_service().GetChoiceScreenData();
+
+  // No engine should be provided for highlighting.
+  EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
+}
+
+TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
+       DseHighlight_OffRegionDefault) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kCurrentDseHighlightOnChoiceScreenSupport};
+  OverrideProgramAndSetHighlightSettingTo(true);
+
+  auto& test_dse = TemplateURLPrepopulateData::naver;
+  SetDefaultSearchProvider(test_dse);
+
+  // Calling `SearchEngineChoiceService::GetChoiceScreenData()` through the
+  // associated method from `template_url_service` which sets up the right
+  // arguments.
+  auto choice_screen_data = template_url_service().GetChoiceScreenData();
+
+  // No engine should be provided for highlighting.
+  EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
 }
 
 class SearchEngineChoiceServiceWipeOnMissingDSETest

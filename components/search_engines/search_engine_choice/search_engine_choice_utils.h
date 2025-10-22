@@ -155,6 +155,8 @@ struct ChoiceScreenDisplayState {
   ChoiceScreenDisplayState(
       std::vector<SearchEngineType> search_engines,
       country_codes::CountryId country_id,
+      bool is_current_default_search_presented,
+      bool includes_non_regional_set_engine,
       std::optional<int> selected_engine_index = std::nullopt);
   ChoiceScreenDisplayState(const ChoiceScreenDisplayState& other);
   ~ChoiceScreenDisplayState();
@@ -179,6 +181,15 @@ struct ChoiceScreenDisplayState {
   // used to determine the set of search engines to show for the current
   // profile.
   const country_codes::CountryId country_id;
+
+  // Whether the choice screen indicated which search provider was set as
+  // default at the time it was shown.
+  const bool is_current_default_search_presented;
+
+  // Whether the choice screen included another engine that is not normally part
+  // of the standard set for this region. This is expected to be used to include
+  // the current default.
+  const bool includes_non_regional_set_engine;
 };
 
 // Contains basic information about the search engine choice screen, notably
@@ -187,6 +198,7 @@ struct ChoiceScreenDisplayState {
 class ChoiceScreenData {
  public:
   ChoiceScreenData(TemplateURL::OwnedTemplateURLVector owned_template_urls,
+                   const TemplateURL* current_default_to_highlight,
                    country_codes::CountryId country_id,
                    const SearchTermsData& search_terms_data);
 
@@ -203,10 +215,20 @@ class ChoiceScreenData {
     return display_state_;
   }
 
+  // When non-nullptr, designates the search engine to highlight on the choice
+  // screen. Null values might indicate that the highlight feature is disabled
+  // or that there is nothing to highlight because of an issue identifying the
+  // right entry.
+  const TemplateURL* current_default_to_highlight() const {
+    return current_default_to_highlight_;
+  }
+
  private:
   const TemplateURL::OwnedTemplateURLVector search_engines_;
 
   const ChoiceScreenDisplayState display_state_;
+
+  const raw_ptr<const TemplateURL> current_default_to_highlight_;
 };
 
 // Records the type of the default search engine that was chosen by the user

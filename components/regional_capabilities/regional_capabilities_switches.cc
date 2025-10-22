@@ -60,4 +60,7 @@ BASE_FEATURE(kDynamicProfileCountry,
 #endif
 );
 
+BASE_FEATURE(kCurrentDseHighlightOnChoiceScreenSupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches

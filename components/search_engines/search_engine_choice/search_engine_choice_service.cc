@@ -37,6 +37,7 @@
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_choice/buildflags.h"
@@ -376,6 +377,47 @@ bool AccountCanMakeChoiceScreenChoice(
 #endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 }
 
+// Returns a pointer to a `TemplateURL` to highlight on the choice screen, if
+// this is requested by the client and program configs.
+//
+// - `regional_capabilities_service` is used to check whether highlighting the
+// current default is requested.
+// - `builtin_choice_screen_engines` are the entries that will be shown on the
+// choice screen. The returned value will be a pointer to one of these.
+// - `default_search_provider` is the current default search engine, if
+// available.
+const TemplateURL* MaybeGetCurrentDefaultToHighlight(
+    regional_capabilities::RegionalCapabilitiesService&
+        regional_capabilities_service,
+    const TemplateURLService::OwnedTemplateURLVector&
+        builtin_choice_screen_engines,
+    const TemplateURL* default_search_provider) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kCurrentDseHighlightOnChoiceScreenSupport)) {
+    return nullptr;
+  }
+
+  if (!regional_capabilities_service.GetChoiceScreenEligibilityConfig()
+           ->highlight_current_default) {
+    return nullptr;
+  }
+
+  if (!default_search_provider) {
+    return nullptr;
+  }
+
+  auto iter = std::ranges::find(builtin_choice_screen_engines,
+                                default_search_provider->prepopulate_id(),
+                                &TemplateURL::prepopulate_id);
+  if (iter == builtin_choice_screen_engines.end()) {
+    // TODO(crbug.com/454023518): Handle off-region default behind feature
+    // param.
+    return nullptr;
+  }
+
+  return iter->get();
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -612,7 +654,8 @@ void SearchEngineChoiceService::RecordChoiceScreenEvent(
 
 std::unique_ptr<search_engines::ChoiceScreenData>
 SearchEngineChoiceService::GetChoiceScreenData(
-    const SearchTermsData& search_terms_data) {
+    const SearchTermsData& search_terms_data,
+    const TemplateURL* default_search_provider) {
   TemplateURLService::OwnedTemplateURLVector owned_template_urls;
 
   // We call `GetPrepopulatedEngines` instead of
@@ -627,8 +670,13 @@ SearchEngineChoiceService::GetChoiceScreenData(
     owned_template_urls.push_back(std::make_unique<TemplateURL>(*engine));
   }
 
+  const TemplateURL* current_default_to_highlight =
+      MaybeGetCurrentDefaultToHighlight(regional_capabilities_service_.get(),
+                                        owned_template_urls,
+                                        default_search_provider);
+
   return std::make_unique<search_engines::ChoiceScreenData>(
-      std::move(owned_template_urls),
+      std::move(owned_template_urls), current_default_to_highlight,
       regional_capabilities_service_->GetCountryId().GetRestricted(
           regional_capabilities::CountryAccessKey(
               regional_capabilities::CountryAccessReason::
@@ -701,6 +749,11 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   if (!regional_capabilities::IsEeaCountry(display_state.country_id)) {
     // Tests or command line can force this, but we want to avoid polluting the
     // histograms with unwanted country data.
+    return;
+  }
+
+  if (display_state.includes_non_regional_set_engine) {
+    // TODO(crbug.com/454023518): Figure out metrics impact of this status.
     return;
   }
 

@@ -61,6 +61,14 @@ struct ChoiceScreenEligibilityConfig {
   bool restrict_to_associated_countries;
   // If true, the choice screen is only eligible to be shown in FRE.
   bool restrict_surfaces_to_fre_only;
+
+  // If true, the current default will be highlighted on the choice screen.
+  //
+  // Note: Not technically an eligibility-related attribute, but doesn't
+  // make sense to be specified for non-choice screen programs. It
+  // can be moved out in the future if we need more choice screen display config
+  // attributes later.
+  bool highlight_current_default;
 };
 
 // Describes how features should adjust themselves based on the program.

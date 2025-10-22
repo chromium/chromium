@@ -83,6 +83,11 @@ extern const base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>
 // dynamically when the current country does not match the stored value.
 BASE_DECLARE_FEATURE(kDynamicProfileCountry);
 
+// Whether support for showing the current default in the choice screen should
+// be enabled. When enabled, the associated program settings will be read to
+// determine whether to actually show it.
+BASE_DECLARE_FEATURE(kCurrentDseHighlightOnChoiceScreenSupport);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SWITCHES_H_
