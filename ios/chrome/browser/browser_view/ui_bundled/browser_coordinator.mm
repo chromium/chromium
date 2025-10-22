@@ -4188,36 +4188,8 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - NewTabPageCommands
 
-- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  // TODO(crbug.com/448683013): remove.
-}
-
-- (void)handleFeedModelOfType:(FeedType)feedType
-                didEndUpdates:(FeedLayoutUpdateType)updateType {
-  // TODO(crbug.com/448683013): remove.
-  [self handleFeedModelDidEndUpdates:updateType];
-}
-
 - (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType {
   [_NTPCoordinator handleFeedModelDidEndUpdates:updateType];
-}
-
-- (void)scrollToNTPAfterPresentedStateCleared:(FeedType)feedType {
-  web::WebState* activeWebState = self.activeWebState;
-
-  // Configure next NTP to be scrolled into the feed.
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(activeWebState);
-  if (NTPHelper) {
-    NewTabPageState* ntpState = NTPHelper->GetNTPState();
-    ntpState.shouldScrollToTopOfFeed = YES;
-    NTPHelper->SetNTPState(ntpState);
-  }
-
-  // Navigate to NTP in same tab.
-  UrlLoadParams urlLoadParams =
-      UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
-  _urlLoadingBrowserAgent->Load(urlLoadParams);
 }
 
 - (void)presentLensIconBubble {

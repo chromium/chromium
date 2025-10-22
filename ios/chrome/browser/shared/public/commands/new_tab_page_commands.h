@@ -14,14 +14,6 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // Commands related to the new tab page.
 @protocol NewTabPageCommands
 
-// Notifies the new tab page if there is new unseen content in the Following
-// feed.
-- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
-
-// Deprecated. Use `handleFeedModelDidEndUpdates:` instead.
-- (void)handleFeedModelOfType:(FeedType)feedType
-                didEndUpdates:(FeedLayoutUpdateType)updateType;
-
 // Notifies the feed model on the new tab page has completed updates.
 // This can include, initial loading of cards, pagination, card removal, and
 // refreshes.

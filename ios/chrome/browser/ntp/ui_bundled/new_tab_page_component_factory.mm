@@ -147,9 +147,7 @@
   // Get the feed factory from the `browser` and create the feed model.
   DiscoverFeedService* feedService =
       DiscoverFeedServiceFactory::GetForProfile(browser->GetProfile());
-  FeedModelConfiguration* discoverFeedConfiguration =
-      [FeedModelConfiguration discoverFeedModelConfiguration];
-  feedService->CreateFeedModel(discoverFeedConfiguration);
+  feedService->CreateFeedModel();
 
   // Return Discover feed VC created with `viewControllerConfiguration`.
   return feedService->NewDiscoverFeedViewControllerWithConfiguration(

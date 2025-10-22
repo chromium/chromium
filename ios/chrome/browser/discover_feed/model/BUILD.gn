@@ -18,8 +18,6 @@ source_set("model") {
     "discover_feed_visibility_observer.h",
     "discover_feed_visibility_provider_configuration.h",
     "discover_feed_visibility_provider_configuration.mm",
-    "feed_model_configuration.h",
-    "feed_model_configuration.mm",
   ]
   deps = [
     "//components/feed/core/v2/public/ios:feed_ios_public",

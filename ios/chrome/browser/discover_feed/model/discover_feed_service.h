@@ -12,10 +12,10 @@
 #include "ios/chrome/browser/discover_feed/model/discover_feed_refresher.h"
 #include "ios/chrome/browser/discover_feed/model/discover_feed_view_controller_configuration.h"
 #include "ios/chrome/browser/discover_feed/model/feed_constants.h"
-#include "ios/chrome/browser/discover_feed/model/feed_model_configuration.h"
 
 enum class BrowserViewVisibilityState;
 @class FeedMetricsRecorder;
+@class FeedModelConfiguration;
 
 // A browser-context keyed service that is used to keep the Discover Feed data
 // up to date.
@@ -25,9 +25,7 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   ~DiscoverFeedService() override;
 
   // Creates a single feed model.
-  // TODO(crbug.com/425685705): Make fully virtual once downstream
-  // implementation is implemented.
-  virtual void CreateFeedModel();
+  virtual void CreateFeedModel() = 0;
 
   // Sets whether the feed is currently being shown on the Start Surface.
   virtual void SetIsShownOnStartSurface(bool shown_on_start_surface) = 0;
@@ -64,14 +62,7 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
 
   // TODO(crbug.com/448683013): Remove after downstream implementation is
   // removed.
-  virtual void SetFollowingFeedSortType(FollowingFeedSortType sort_type);
-  virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
-      DiscoverFeedViewControllerConfiguration* configuration);
-  virtual BOOL GetFollowingFeedHasUnseenContent();
-  virtual void SetFollowingFeedContentSeen();
-  virtual void CreateFeedModels();
   virtual void CreateFeedModel(FeedModelConfiguration* feed_model_config);
-  virtual void ClearFeedModels();
 
  protected:
   void NotifyDiscoverFeedModelRecreated();
