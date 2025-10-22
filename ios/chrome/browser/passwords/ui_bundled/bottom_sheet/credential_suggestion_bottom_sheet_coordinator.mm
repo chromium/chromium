@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_mediator.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -51,7 +51,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 // This view controller is used to display the bottom sheet.
 @property(nonatomic, strong)
-    PasswordSuggestionBottomSheetViewController* viewController;
+    CredentialSuggestionBottomSheetViewController* viewController;
 
 // Module handling reauthentication before accessing sensitive data.
 @property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
@@ -72,7 +72,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
     WebStateList* webStateList = browser->GetWebStateList();
     const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
-    self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
+    self.viewController = [[CredentialSuggestionBottomSheetViewController alloc]
         initWithHandler:self
                     URL:URL];
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
@@ -72,7 +72,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 }  // namespace
 
-@interface PasswordSuggestionBottomSheetViewController () <
+@interface CredentialSuggestionBottomSheetViewController () <
     ConfirmationAlertActionHandler,
     UITableViewDataSource,
     UITableViewDelegate> {
@@ -102,7 +102,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 @end
 
-@implementation PasswordSuggestionBottomSheetViewController
+@implementation CredentialSuggestionBottomSheetViewController
 
 - (instancetype)initWithHandler:
                     (id<PasswordSuggestionBottomSheetHandler>)handler
@@ -209,7 +209,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
     NSMutableArray<UIMenu*>* menuElements =
         [[NSMutableArray alloc] initWithArray:suggestedActions];
 
-    PasswordSuggestionBottomSheetViewController* strongSelf = weakSelf;
+    __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
       [menuElements
           addObject:[UIMenu menuWithTitle:@""
@@ -413,8 +413,8 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
                                  base::NumberToString16([self rowCount]));
 }
 
-// Layouts the cell for the table view with the password form suggestion at the
-// specific index path.
+// Lays out the cell for the table view with the credential form suggestion at
+// the specific index path.
 - (TableViewURLCell*)layoutCell:(TableViewURLCell*)cell
               forTableViewWidth:(CGFloat)tableViewWidth
                     atIndexPath:(NSIndexPath*)indexPath {
