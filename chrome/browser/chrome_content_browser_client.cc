@@ -4764,12 +4764,6 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       base::FeatureList::IsEnabled(::features::kContextMenuEmptySpace);
 #endif
 
-  web_prefs->api_based_fingerprinting_interventions_enabled =
-      base::FeatureList::IsEnabled(
-          features::kIncognitoFingerprintingInterventions) &&
-      Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->IsIncognitoProfile();
-
   web_prefs->content_based_fingerprinting_protection_enabled =
       fingerprinting_protection_filter::features::
           IsFingerprintingProtectionEnabledForIncognitoState(

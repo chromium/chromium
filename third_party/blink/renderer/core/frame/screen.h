@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -48,7 +47,6 @@ class LocalDOMWindow;
 
 class CORE_EXPORT Screen : public EventTarget,
                            public ExecutionContextClient,
-                           public CachedPermissionStatus::Client,
                            public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -74,10 +72,6 @@ class CORE_EXPORT Screen : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  // True if information about the device's screen size should be reduced in
-  // this context.
-  bool ShouldReduceScreenSize() const;
-
   // Whether the device’s visual output extends over multiple screens.
   // https://w3c.github.io/window-management/
   bool isExtended() const;
@@ -95,18 +89,8 @@ class CORE_EXPORT Screen : public EventTarget,
   gfx::Rect GetRect(bool available) const;
   const display::ScreenInfo& GetScreenInfo() const;
 
-  // CachedPermissionStatus::Client overrides:
-  void OnPermissionStatusChange(mojom::blink::PermissionName,
-                                mojom::blink::PermissionStatus) override;
-
-  void OnPermissionStatusInitialized(
-      CachedPermissionStatus::PermissionStatusMap) override;
-
   // The internal id of the underlying display, to support multi-screen devices.
   int64_t display_id_;
-
- private:
-  bool window_management_permission_granted_ = false;
 };
 
 }  // namespace blink

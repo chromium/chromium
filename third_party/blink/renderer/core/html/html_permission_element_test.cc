@@ -320,7 +320,7 @@ class TestPermissionService : public PermissionService {
       PermissionDescriptorPtr permission,
       MojoPermissionStatus last_known_status,
       mojo::PendingRemote<PermissionObserver> observer) override {}
-  void AddCombinedPermissionObserver(
+  void AddPageEmbeddedPermissionObserver(
       PermissionDescriptorPtr permission,
       MojoPermissionStatus last_known_status,
       mojo::PendingRemote<PermissionObserver> observer) override {

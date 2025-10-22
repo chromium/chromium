@@ -506,8 +506,6 @@ struct WebPreferences {
   // WebView and by `kWebPayments` feature flag everywhere.
   bool payment_request_enabled = false;
 
-  bool api_based_fingerprinting_interventions_enabled = false;
-
   bool content_based_fingerprinting_protection_enabled = false;
 
   bool ai_prompt_api_enabled = false;

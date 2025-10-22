@@ -71,7 +71,6 @@ class CORE_EXPORT CachedPermissionStatus final
 
  private:
   friend class HTMLPermissionElement;
-  friend class Screen;
   friend class DocumentLoader;
   friend class CachedPermissionStatusTest;
 

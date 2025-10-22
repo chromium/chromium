@@ -19120,9 +19120,7 @@ RenderFrameHostImpl::GetCachedPermissionStatuses() {
       std::to_array<std::pair<PermissionName, PermissionType>>(
           {{PermissionName::VIDEO_CAPTURE, PermissionType::VIDEO_CAPTURE},
            {PermissionName::AUDIO_CAPTURE, PermissionType::AUDIO_CAPTURE},
-           {PermissionName::GEOLOCATION, PermissionType::GEOLOCATION},
-           {PermissionName::WINDOW_MANAGEMENT,
-            PermissionType::WINDOW_MANAGEMENT}});
+           {PermissionName::GEOLOCATION, PermissionType::GEOLOCATION}});
 
   base::flat_map<PermissionName, PermissionStatus> permission_map;
   for (const auto& permission : kPermissions) {

@@ -1079,11 +1079,6 @@ BASE_FEATURE(kImmersiveFullscreen, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kImmersiveFullscreenPWAs, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
-// If enabled, enables API-specific interventions for web content rendered in
-// Incognito profiles.
-BASE_FEATURE(kIncognitoFingerprintingInterventions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.
 BASE_FEATURE(kInstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);

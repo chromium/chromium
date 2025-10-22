@@ -379,7 +379,7 @@ void PermissionServiceImpl::AddPermissionObserver(
       /*should_include_device_status*/ false, std::move(observer));
 }
 
-void PermissionServiceImpl::AddCombinedPermissionObserver(
+void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(
     PermissionDescriptorPtr permission,
     PermissionStatus last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
@@ -388,15 +388,11 @@ void PermissionServiceImpl::AddCombinedPermissionObserver(
     ReceivedBadMessage();
     return;
   }
-  bool should_include_device_status =
-      PermissionUtil::IsDevicePermission(permission);
   PermissionResult current_result =
-      should_include_device_status
-          ? GetCombinedPermissionAndDeviceResult(permission)
-          : GetPermissionResultForCurrentContext(permission);
+      GetCombinedPermissionAndDeviceResult(permission);
   context_->CreateSubscription(
       permission, origin_, current_result, PermissionResult(last_known_status),
-      should_include_device_status, std::move(observer));
+      /*should_include_device_status=*/true, std::move(observer));
 }
 
 void PermissionServiceImpl::NotifyEventListener(

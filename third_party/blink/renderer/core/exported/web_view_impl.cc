@@ -1932,10 +1932,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   RuntimeEnabledFeatures::SetPaymentRequestEnabled(
       prefs.payment_request_enabled);
 
-  if (prefs.api_based_fingerprinting_interventions_enabled) {
-    RuntimeEnabledFeatures::SetReduceScreenSizeEnabled(true);
-  }
-
   if (prefs.ai_prompt_api_enabled) {
     RuntimeEnabledFeatures::SetAIPromptAPIEnabled(true);
   }
