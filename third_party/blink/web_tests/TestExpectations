@@ -1355,9 +1355,10 @@ crbug.com/329106317 external/wpt/css/css-color/oklch-009.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-010.html [ Failure ]
 crbug.com/358210825 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
 
-# @supports
+# css-conditional
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-002.html [ Failure ]
+crbug.com/431095012 external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
 
 # Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
 crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
@@ -9688,13 +9689,8 @@ crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken
 # Gardener 2025-07-11
 crbug.com/431038525 [ Mac12 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure Pass ]
 crbug.com/431036874 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure Pass ]
-crbug.com/431033198 [ Win ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
-crbug.com/431033198 [ Linux ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure ]
 
 crbug.com/414631999 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
-
-# Gardener 2025-07-14
-crbug.com/431095012 [ Mac ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
 
 # Gardener 2025-07-15
 crbug.com/426429658 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Failure Pass Timeout ]
