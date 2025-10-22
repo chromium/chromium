@@ -231,6 +231,9 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 
 // Creates the current step coordinator according to `_currentStep`.
 - (void)createAndPresentStepChildCoordinator {
+  CHECK(!_fullscreenSigninCoordinator, base::NotFatalUntil::M148);
+  CHECK(!_signinCoordinator, base::NotFatalUntil::M148);
+  CHECK(!_historySyncPopupCoordinator, base::NotFatalUntil::M148);
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
       _fullscreenSigninCoordinator = [[FullscreenSigninCoordinator alloc]
