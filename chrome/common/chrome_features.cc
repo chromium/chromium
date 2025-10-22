@@ -826,6 +826,14 @@ const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge{
 
 BASE_FEATURE(kGlicShareImage, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicActorAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kActorFormFillingServiceEnableAddress,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kActorFormFillingServiceEnableCreditCard,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

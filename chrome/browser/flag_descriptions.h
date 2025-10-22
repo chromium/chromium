@@ -1336,6 +1336,19 @@ inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";
 inline constexpr char kGlicActorName[] = "Glic actor";
 inline constexpr char kGlicActorDescription[] = "Enables the Glic actor.";
+inline constexpr char kGlicActorAutofillName[] = "Glic actor autofill";
+inline constexpr char kGlicActorAutofillDescription[] =
+    "Enables autofill actions for the Glic actor. Specific fillable types may "
+    "also need to be enabled.";
+inline constexpr char kActorFormFillingServiceEnableAddressName[] =
+    "Actor Form Filling Service Enable Address";
+inline constexpr char kActorFormFillingServiceEnableAddressDescription[] =
+    "Enables the address type to be filled by Actor Form Filling Service.";
+inline constexpr char kActorFormFillingServiceEnableCreditCardName[] =
+    "Actor Form Filling Service Enable Credit Card";
+inline constexpr char kActorFormFillingServiceEnableCreditCardDescription[] =
+    "Enables the credit card type to be filled by the Actor Form Filling "
+    "Service.";
 inline constexpr char kGlicDetachedName[] = "Glic detached-only mode";
 inline constexpr char kGlicDetachedDescription[] =
     "Detach only mode forces the Glic UI to always be floating";

@@ -54,6 +54,22 @@
     "expiry_milestone": 145
   },
   {
+    "name": "actor-form-filling-service-enable-address",
+    "owners": [
+      "battre@chromium.org",
+      "//components/autofill/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "actor-form-filling-service-enable-credit-card",
+    "owners": [
+      "slobodan@chromium.org",
+      "chrome-payments-eng@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "adaptive-button-in-top-toolbar-page-summary",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 140
@@ -5528,6 +5544,15 @@
     "owners": [
       "mfoltz@chromium.org",
       "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "glic-actor-autofill",
+    "owners": [
+      "battre@chromium.org",
+      "slobodan@chromium.org",
+      "//components/autofill/OWNERS"
     ],
     "expiry_milestone": 150
   },
