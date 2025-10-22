@@ -106,6 +106,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
  private:
+  void ClearWebContentsDelegate();
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
   void CreateAndSetupWidget(gfx::Rect initial_bounds);

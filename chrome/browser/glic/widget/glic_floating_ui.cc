@@ -53,6 +53,7 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
 
 GlicFloatingUi::~GlicFloatingUi() {
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(nullptr);
+  ClearWebContentsDelegate();
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->RemovePictureInPictureWidget(glic_widget_.get());
@@ -243,11 +244,8 @@ void GlicFloatingUi::Close() {
   if (IsShowing()) {
     modal_dialog_host_observers_.Notify(
         &web_modal::ModalDialogHostObserver::OnHostDestroying);
-    if (auto* web_contents = delegate_->host().webui_contents()) {
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
-          ->SetDelegate(nullptr);
-    }
   }
+  ClearWebContentsDelegate();
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
@@ -258,6 +256,16 @@ void GlicFloatingUi::Close() {
   user_resizable_ = false;
   // NOTE: `this` will be destroyed after this call.
   delegate_->WillCloseFor(FloatingEmbedderKey{});
+}
+
+void GlicFloatingUi::ClearWebContentsDelegate() {
+  if (auto* web_contents = delegate_->host().webui_contents()) {
+    auto* dialog_manager =
+        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+    if (dialog_manager->delegate() == this) {
+      dialog_manager->SetDelegate(nullptr);
+    }
+  }
 }
 
 void GlicFloatingUi::ClosePanel() {
