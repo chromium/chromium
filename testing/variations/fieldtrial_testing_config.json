@@ -19,6 +19,30 @@
             ]
         }
     ],
+    "AIMHintText": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ThreePerDayFifteenTotal",
+                    "params": {
+                        "AimHintImpressionLimitDaily": "3",
+                        "AimHintImpressionLimitTotal": "15",
+                        "EnableHintImpressionLimits": "true",
+                        "HideAimHintTextOnNtpOpen": "false"
+                    },
+                    "enable_features": [
+                        "AiModeOmniboxEntryPoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "ANGLEPerContextBlobCache": [
         {
             "platforms": [
