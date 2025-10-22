@@ -155,4 +155,38 @@ public class WebViewCachedFlagsTest {
             new WebViewCachedFlags(emptySharedPrefs, Map.of());
         }
     }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @Features.EnableFeatures({"Baz"})
+    @Features.DisableFeatures({"Foo"})
+    public void flagsAreNotSetIfNotOverridden() {
+        InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
+        WebViewCachedFlags cachedFlags =
+                new WebViewCachedFlags(
+                        sharedPrefs,
+                        Map.of(
+                                "Foo", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Bar", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Baz", WebViewCachedFlags.DefaultState.ENABLED));
+
+        cachedFlags.onStartupCompleted(sharedPrefs);
+        Assert.assertEquals(
+                Set.of("Baz"), sharedPrefs.getStringSet(CACHED_ENABLED_FLAGS_PREF, Set.of()));
+        Assert.assertEquals(
+                Set.of("Foo"), sharedPrefs.getStringSet(CACHED_DISABLED_FLAGS_PREF, Set.of()));
+
+        // Simulate another startup
+        WebViewCachedFlags newCachedFlags =
+                new WebViewCachedFlags(
+                        sharedPrefs,
+                        Map.of(
+                                "Foo", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Bar", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Baz", WebViewCachedFlags.DefaultState.ENABLED));
+        Assert.assertTrue(newCachedFlags.isCachedFeatureOverridden("Baz"));
+        Assert.assertTrue(newCachedFlags.isCachedFeatureOverridden("Foo"));
+        Assert.assertFalse(newCachedFlags.isCachedFeatureOverridden("Bar"));
+    }
 }

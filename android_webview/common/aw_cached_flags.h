@@ -10,6 +10,7 @@
 namespace android_webview::CachedFlags {
 
 bool IsEnabled(const base::Feature& feature);
+bool IsCachedFeatureOverridden(const base::Feature& feature);
 
 }  // namespace android_webview::CachedFlags
 
