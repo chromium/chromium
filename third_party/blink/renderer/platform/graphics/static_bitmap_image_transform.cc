@@ -87,6 +87,28 @@ gfx::Size GetSourceSize(scoped_refptr<StaticBitmapImage> source,
              : source_size;
 }
 
+void BlitToCanvas(cc::PaintCanvas& canvas,
+                  cc::PaintImage& source_paint_image,
+                  ImageOrientation source_orientation,
+                  SkRect source_rect,
+                  SkISize dest_size,
+                  const StaticBitmapImageTransform::Params& options) {
+  cc::PaintFlags paint;
+  paint.setBlendMode(SkBlendMode::kSrc);
+  if (options.flip_y) {
+    if (source_orientation.UsesWidthAsHeight()) {
+      canvas.translate(dest_size.width(), 0);
+      canvas.scale(-1, 1);
+    } else {
+      canvas.translate(0, dest_size.height());
+      canvas.scale(1, -1);
+    }
+  }
+  canvas.drawImageRect(source_paint_image, source_rect, SkRect::Make(dest_size),
+                       options.sampling, &paint,
+                       SkCanvas::kStrict_SrcRectConstraint);
+}
+
 void ComputeSubsetParameters(scoped_refptr<StaticBitmapImage> source,
                              const StaticBitmapImageTransform::Params& params,
                              SkIRect& source_skrect,
@@ -276,21 +298,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   }
 
   // Perform the blit and return the drawn resource.
-  cc::PaintFlags paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  cc::PaintCanvas& canvas = resource_provider->Canvas();
-  if (options.flip_y) {
-    if (source_orientation.UsesWidthAsHeight()) {
-      canvas.translate(dest_size.width(), 0);
-      canvas.scale(-1, 1);
-    } else {
-      canvas.translate(0, dest_size.height());
-      canvas.scale(1, -1);
-    }
-  }
-  canvas.drawImageRect(source_paint_image, SkRect::Make(source_rect),
-                       SkRect::Make(dest_size), options.sampling, &paint,
-                       SkCanvas::kStrict_SrcRectConstraint);
+  BlitToCanvas(resource_provider->Canvas(), source_paint_image,
+               source_orientation, SkRect::Make(source_rect), dest_size,
+               options);
   return resource_provider->Snapshot(flush_reason, source_orientation);
 }
 
