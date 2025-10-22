@@ -153,6 +153,12 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
                                           profile_prefix.c_str()));
   }
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDisableCpuFallback)) {
+    CHECK_STATUS(ort_api->AddSessionConfigEntry(
+        session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
+  }
+
   // Enable strict shape type inference check. All inconsistencies encountered
   // will expose errors during session creation. For example, if the graph
   // output shape set by WebNN is different from ONNX shape inference result,

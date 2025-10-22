@@ -68,6 +68,17 @@ inline constexpr char kWebNNOrtGraphOptimizationLevel[] =
 // "WebNNOrtProfile" as default.
 // Usage: --no-sandbox --webnn-ort-enable-profiling="WebNNOrtOvCpuProfile"
 inline constexpr char kWebNNOrtEnableProfiling[] = "webnn-ort-enable-profiling";
+
+// This switch allows us to disable the fallback to default ORT CPU EP which is
+// enabled by default.
+// When this switch is set:
+// 1. ORT session creation fails if non-CPU EPs cannot fully support all graph
+// nodes.
+// 2. Disables OpenVINO EP internal CPU fallback if NPU model compilation fails
+// (for debugging).
+// Usage: --webnn-ort-disable-cpu-fallback
+inline constexpr char kWebNNOrtDisableCpuFallback[] =
+    "webnn-ort-disable-cpu-fallback";
 #endif  // BUILDFLAG(IS_WIN)
 
 extern base::span<const char* const> GetWebNNSwitchesCopiedFromGpuProcessHost();
