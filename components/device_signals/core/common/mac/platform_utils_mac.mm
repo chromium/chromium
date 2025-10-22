@@ -10,6 +10,7 @@
 #include "components/device_signals/core/common/platform_utils.h"
 
 #import <Foundation/Foundation.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
@@ -40,6 +41,40 @@ std::optional<std::string> TryGetStringFromDictionary(NSDictionary* dictionary,
   }
 
   return base::SysNSStringToUTF8(value);
+}
+
+std::string GetHardwareMACAddress() {
+  NSString* const wifiInterfaceName = @"en0";
+  base::apple::ScopedCFTypeRef<CFArrayRef> interfaces(
+      SCNetworkInterfaceCopyAll());
+  if (!interfaces) {
+    return std::string();
+  }
+
+  NSString* macAddress = nil;
+  CFIndex count = CFArrayGetCount(interfaces.get());
+  for (CFIndex i = 0; i < count; i++) {
+    SCNetworkInterfaceRef interface =
+        (SCNetworkInterfaceRef)CFArrayGetValueAtIndex(interfaces.get(), i);
+    NSString* bsdName =
+        (__bridge NSString*)SCNetworkInterfaceGetBSDName(interface);
+
+    if ([bsdName caseInsensitiveCompare:wifiInterfaceName] != NSOrderedSame) {
+      continue;
+    }
+
+    CFStringRef hardwareAddressRef =
+        SCNetworkInterfaceGetHardwareAddressString(interface);
+    if (hardwareAddressRef) {
+      macAddress = (__bridge NSString*)hardwareAddressRef;
+    }
+
+    // Only one network interface can have the name "en0". No need to check
+    // further.
+    break;
+  }
+
+  return base::SysNSStringToUTF8(macAddress);
 }
 
 }  // namespace
@@ -116,6 +151,12 @@ std::vector<std::string> internal::GetMacAddressesImpl() {
         link_address[4] & 0xff, link_address[5] & 0xff));
   }
   freeifaddrs(ifa);
+
+  auto hardware_mac = GetHardwareMACAddress();
+  if (!hardware_mac.empty()) {
+    result.push_back(hardware_mac);
+  }
+
   return result;
 }
 
