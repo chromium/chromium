@@ -127,6 +127,10 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   void OnUnderflow();
   void OnUnderflowComplete(base::TimeDelta elapsed);
 
+  // This method is used to ensure that watch time is reported relative to
+  // whether the media is the dominant content on screen or not.
+  void OnDominantVisibleContentChanged(bool is_dominant);
+
   // These methods are used to ensure that the watch time is reported relative
   // to whether the media is using native controls.
   void OnNativeControlsEnabled();
@@ -203,6 +207,8 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   std::unique_ptr<WatchTimeComponent<bool>> CreateBaseComponent();
   std::unique_ptr<WatchTimeComponent<bool>> CreatePowerComponent();
   Vector<media::WatchTimeKey> GetPowerKeys(bool is_on_battery_power);
+  std::unique_ptr<WatchTimeComponent<bool>> CreateDominantComponent();
+  Vector<media::WatchTimeKey> GetDominantKey(bool is_dominant);
   std::unique_ptr<WatchTimeComponent<bool>> CreateControlsComponent();
   Vector<media::WatchTimeKey> GetControlsKeys(bool has_native_controls);
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
@@ -261,6 +267,7 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // to add a new template class definition or you will get linking errors.
   std::unique_ptr<WatchTimeComponent<bool>> base_component_;
   std::unique_ptr<WatchTimeComponent<bool>> power_component_;
+  std::unique_ptr<WatchTimeComponent<bool>> dominant_component_;
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
       display_type_component_;
   std::unique_ptr<WatchTimeComponent<bool>> controls_component_;

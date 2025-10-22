@@ -7839,6 +7839,9 @@ chromium-metrics-reviews@google.com.
         summary="Watch time for all media with both an audio and video track
                  on a window opened due to auto picture in picture for media
                  playback."/>
+    <variant name=".AudioVideo.AuxiliaryVisibleContent"
+        summary="Watch time for all media with both an audio and video track
+                 displayed as a smaller element on screen."/>
     <variant name=".AudioVideo.Background.AC"
         summary="Background watch time for all media with both an audio and
                  video track on AC power."/>
@@ -7887,6 +7890,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".AudioVideo.DisplayPictureInPicture"
         summary="Watch time for all media with both an audio and video track
                  displayed in picture-in-picture."/>
+    <variant name=".AudioVideo.DominantVisibleContent"
+        summary="Watch time for all media with both an audio and video track
+                 displayed as the dominant visible content on screen."/>
     <variant name=".AudioVideo.EmbeddedExperience"
         summary="Watch time for downloaded media on Android with both an
                  audio and video track."/>
@@ -7911,6 +7917,12 @@ chromium-metrics-reviews@google.com.
     <variant name=".AudioVideo.Muted.All"
         summary="Muted watch time for all media with both an audio and video
                  track."/>
+    <variant name=".AudioVideo.Muted.AuxiliaryVisibleContent"
+        summary="Muted watch time for all media with both an audio and video
+                 track displayed as a smaller element on screen."/>
+    <variant name=".AudioVideo.Muted.DominantVisibleContent"
+        summary="Muted watch time for all media with both an audio and video
+                 track displayed as the dominant visible content on screen."/>
     <variant name=".AudioVideo.Muted.EME"
         summary="Muted watch time for EME media with both an audio and video
                  track."/>

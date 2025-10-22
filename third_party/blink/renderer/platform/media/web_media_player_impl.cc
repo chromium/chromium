@@ -808,6 +808,10 @@ void WebMediaPlayerImpl::BecameDominantVisibleContent(bool is_dominant) {
   is_dominant_visible_content_ = is_dominant;
   if (observer_)
     observer_->OnBecameDominantVisibleContent(is_dominant);
+  if (!watch_time_reporter_) {
+    return;
+  }
+  watch_time_reporter_->OnDominantVisibleContentChanged(is_dominant);
 }
 
 void WebMediaPlayerImpl::SetIsEffectivelyFullscreen(
@@ -3498,6 +3502,8 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
   watch_time_reporter_->OnHdrChanged(
       pipeline_metadata_.video_decoder_config.color_space_info().IsHDR());
+  watch_time_reporter_->OnDominantVisibleContentChanged(
+      is_dominant_visible_content_);
 
   if (delegate_->IsPageHidden()) {
     watch_time_reporter_->OnHidden();

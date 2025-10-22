@@ -312,6 +312,12 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
       case WatchTimeKey::kAudioVideoHdrEme:
       case WatchTimeKey::kAudioVideoSdrAll:
       case WatchTimeKey::kAudioVideoSdrEme:
+      case WatchTimeKey::kAudioVideoDominantVisibleContent:
+      case WatchTimeKey::kAudioVideoAuxiliaryVisibleContent:
+      case WatchTimeKey::kAudioVideoMutedDominantVisibleContent:
+      case WatchTimeKey::kAudioVideoMutedAuxiliaryVisibleContent:
+      case WatchTimeKey::kVideoDominantVisibleContent:
+      case WatchTimeKey::kVideoAuxiliaryVisibleContent:
         ExpectUkmWatchTime({}, base::TimeDelta());
         break;
 
@@ -484,6 +490,12 @@ TEST_F(WatchTimeRecorderTest, TestBasicReportingMediaStream) {
       case WatchTimeKey::kAudioVideoHdrEme:
       case WatchTimeKey::kAudioVideoSdrAll:
       case WatchTimeKey::kAudioVideoSdrEme:
+      case WatchTimeKey::kAudioVideoDominantVisibleContent:
+      case WatchTimeKey::kAudioVideoAuxiliaryVisibleContent:
+      case WatchTimeKey::kAudioVideoMutedDominantVisibleContent:
+      case WatchTimeKey::kAudioVideoMutedAuxiliaryVisibleContent:
+      case WatchTimeKey::kVideoDominantVisibleContent:
+      case WatchTimeKey::kVideoAuxiliaryVisibleContent:
         ExpectUkmWatchTime({}, base::TimeDelta());
         break;
 
