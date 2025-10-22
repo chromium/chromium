@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 /** A set of utility methods used for calling across the support library boundary. */
 @NullMarked
+@SuppressWarnings("PatternVariableCanBeUsed") // Not valid in androidx.
 public class BoundaryInterfaceReflectionUtil {
 
     private static @Nullable LruCache<Pair<Method, @Nullable ClassLoader>, @Nullable Method>
@@ -211,6 +212,26 @@ public class BoundaryInterfaceReflectionUtil {
         /** Gets the delegate object (which is never {@code null}). */
         public Object getDelegate() {
             return mDelegate;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            // Identity is based on the delegate object.
+            if (obj instanceof InvocationHandlerWithDelegateGetter) {
+                InvocationHandlerWithDelegateGetter other =
+                        (InvocationHandlerWithDelegateGetter) obj;
+                return mDelegate.equals(other.mDelegate);
+            }
+            return mDelegate.equals(obj);
+        }
+
+        @Override
+        public int hashCode() {
+            // Identity is based on the delegate object.
+            return mDelegate.hashCode();
         }
     }
 
