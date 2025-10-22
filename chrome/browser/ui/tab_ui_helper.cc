@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tab_ui_helper.h"
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -92,6 +93,15 @@ void TabUIHelper::SetWasActiveAtLeastOnce() {
   if (!base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible)) {
     was_active_at_least_once_ = true;
   }
+}
+
+base::CallbackListSubscription TabUIHelper::AddTitleUpdatedCallback(
+    TitleUpdatedCallbackList::CallbackType callback) {
+  return title_change_callbacks_.Add(std::move(callback));
+}
+
+void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
+  title_change_callbacks_.Notify(GetTitle());
 }
 
 void TabUIHelper::DidStopLoading() {

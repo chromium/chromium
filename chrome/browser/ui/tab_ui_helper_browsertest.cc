@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/tab_ui_helper.h"
 
+#include <memory>
+#include <string>
+
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -14,8 +19,57 @@
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/models/image_model.h"
+
+namespace {
+class MockTabUiHelperSubscriber {
+ public:
+  explicit MockTabUiHelperSubscriber(TabUIHelper* tab_ui_helper) {
+    title_change_subscription_ = tab_ui_helper->AddTitleUpdatedCallback(
+        base::BindRepeating(&::MockTabUiHelperSubscriber::OnTitleChange,
+                            base::Unretained(this)));
+  }
+  ~MockTabUiHelperSubscriber() = default;
+
+  MOCK_METHOD(void, OnTitleChange, (std::u16string updated_title));
+
+ private:
+  base::CallbackListSubscription title_change_subscription_;
+};
+}  // namespace
+
+class TabUIHelperBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TitleChangeIsNotified) {
+  ASSERT_NE(ui_test_utils::NavigateToURL(
+                browser(), embedded_test_server()->GetURL("/title2.html")),
+            nullptr);
+  tabs::TabInterface* const tab_interface =
+      browser()->tab_strip_model()->GetActiveTab();
+  TabUIHelper* const tab_ui_helper =
+      tab_interface->GetTabFeatures()->tab_ui_helper();
+  EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
+  auto title_change_waiter =
+      std::make_unique<MockTabUiHelperSubscriber>(tab_ui_helper);
+  EXPECT_CALL(*title_change_waiter,
+              OnTitleChange(std::u16string(u"Title Of More Awesomeness")));
+  ASSERT_NE(ui_test_utils::NavigateToURL(
+                browser(), embedded_test_server()->GetURL("/title3.html")),
+            nullptr);
+}
 
 class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {
  public:
