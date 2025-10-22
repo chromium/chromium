@@ -2843,7 +2843,7 @@ targets.bundle(
         "android_browsertests_no_fieldtrial": targets.mixin(
             ci_only = True,
             swarming = targets.swarming(
-                shards = 3,
+                shards = 6,
             ),
         ),
     },
