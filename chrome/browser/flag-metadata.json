@@ -8408,6 +8408,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "profile-picker-text-variations",
+    "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "profile-signals-reporting-enabled",
     "owners": [
       "seblalancette@google.com",

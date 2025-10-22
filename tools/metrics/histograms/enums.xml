@@ -10044,6 +10044,7 @@ from previous Chrome versions.
   <int value="-1503164996"
       label="EnablePixDetectionOnDomContentLoaded:enabled"/>
   <int value="-1502625008" label="FlexFirmwareUpdate:enabled"/>
+  <int value="-1502515694" label="ProfilePickerTextVariations:disabled"/>
   <int value="-1501764956" label="AccessibilitySnapshotStressTests:enabled"/>
   <int value="-1501658124" label="IsolatedWebAppAutomaticUpdates:enabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
@@ -14868,6 +14869,7 @@ from previous Chrome versions.
       label="AutofillEnableNewStreetLevelFieldTypes:disabled"/>
   <int value="215328738" label="ImprovedGeoLanguageData:disabled"/>
   <int value="215528151" label="NearbySharingWebRtc:enabled"/>
+  <int value="217262564" label="ProfilePickerTextVariations:enabled"/>
   <int value="217284084" label="IPH_AutofillCreditCardBenefit:enabled"/>
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>
   <int value="217833978" label="GMSCoreEmoji:enabled"/>

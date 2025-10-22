@@ -34,8 +34,8 @@ extern const char kForceFreDefaultBrowserStep[];
 
 // Feature declarations, sorted by the name of the BASE_DECLARE_FEATURE in each
 // block. Please keep all FeatureParam declarations, enum class definitions, and
-// helper function declarations for a given feature in the same block as the
-// feature declaration.
+// helper function declarations for a given feature in the same
+// newline-separated block as the feature declaration.
 //
 // clang-format off
 // keep-sorted start allow_yaml_lists=yes case=no group_prefixes=["#if", "#else", "#endif", "extern const", "enum class", "};", "//", "bool", "base::", "BASE_DECLARE_FEATURE", "BASE_DECLARE_FEATURE_PARAM", "COMPONENT_EXPORT(SIGNIN_SWITCHES)"] by_regex=["BASE_DECLARE_FEATURE\\(.*\\);"] skip_lines=2
@@ -291,6 +291,21 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // creation.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
+
+// Enables variations of the profile picker text.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kProfilePickerTextVariations);
+enum class ProfilePickerVariation {
+  kDefault = 0,
+  kKeepWorkAndLifeSeparate = 1,
+  kGotAnotherGoogleAccount = 2,
+  kKeepTasksSeparate = 3,
+  kSharingAComputer = 4,
+  kKeepEverythingInChrome = 5,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<ProfilePickerVariation>
+    kProfilePickerTextVariation;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
