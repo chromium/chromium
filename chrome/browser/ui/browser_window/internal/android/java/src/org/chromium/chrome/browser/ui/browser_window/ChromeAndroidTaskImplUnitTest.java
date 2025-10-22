@@ -34,6 +34,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.view.WindowMetrics;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1028,7 +1029,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void show_whenPending_enqueuesPendingAction() {
+    public void show_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1044,7 +1045,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void showInactive_whenPending_enqueuesPendingAction() {
+    public void showInactive_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1060,7 +1061,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void close_whenPending_enqueuesPendingAction() {
+    public void close_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1076,7 +1077,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void activate_whenPending_enqueuesPendingAction() {
+    public void activate_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1092,7 +1093,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void deactivate_whenPending_enqueuesPendingAction() {
+    public void deactivate_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1108,7 +1109,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void maximize_whenPending_enqueuesPendingAction() {
+    public void maximize_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1124,7 +1125,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void minimize_whenPending_enqueuesPendingAction() {
+    public void minimize_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1141,7 +1142,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
-    public void restore_whenPending_enqueuesPendingAction() {
+    public void restore_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1157,7 +1158,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void setBounds_whenPending_nonEmptyBounds_enqueuesPendingAction() {
+    public void setBounds_whenPendingCreate_nonEmptyBounds_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1175,7 +1176,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void setBounds_whenPending_emptyBounds_ignoresPendingAction() {
+    public void setBounds_whenPendingCreate_emptyBounds_ignoresPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1191,7 +1192,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isActive_whenPending_withNoPendingShowOrActivate_returnsFalse() {
+    public void isActive_whenPendingCreate_withNoPendingShowOrActivate_returnsFalse() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1202,7 +1203,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isActive_whenPending_withPendingShow_returnsTrue() {
+    public void isActive_whenPendingCreate_withPendingShow_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1215,7 +1216,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isActive_whenPending_withPendingActivate_returnsTrue() {
+    public void isActive_whenPendingCreate_withPendingActivate_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1228,7 +1229,36 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isMaximized_whenPending_withPendingMaximize_returnsTrue() {
+    public void isActive_whenPendingUpdate_withPendingActivate_returnsTrue() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+
+        // Act.
+        chromeAndroidTask.activate();
+        Assert.assertTrue(
+                "Activate should be pending after #activate is triggered",
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
+        assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
+
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
+
+        // Assert
+        Assert.assertNull(
+                "Activate should be pending after #activate is triggered",
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
+        assertTrue(chromeAndroidTask.isActive());
+    }
+
+    @Test
+    public void isMaximized_whenPendingCreate_withPendingMaximize_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1241,7 +1271,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isMaximized_whenPending_withMaximizedStateInCreateParams_returnsTrue() {
+    public void isMaximized_whenPendingCreate_withMaximizedStateInCreateParams_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
@@ -1254,7 +1284,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            isMaximized_whenPending_withDefaultStateInCreateParams_withoutPendingMaximize_returnsFalse() {
+            isMaximized_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingMaximize_returnsFalse() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1265,7 +1295,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isMinimized_whenPending_withPendingMinimize_returnsTrue() {
+    public void isMinimized_whenPendingCreate_withPendingMinimize_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1278,7 +1308,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isMinimized_whenPending_withMinimizedStateInCreateParams_returnsTrue() {
+    public void isMinimized_whenPendingCreate_withMinimizedStateInCreateParams_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
@@ -1291,7 +1321,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            isMinimized_whenPending_withDefaultStateInCreateParams_withoutPendingMinimize_returnsFalse() {
+            isMinimized_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingMinimize_returnsFalse() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1302,7 +1332,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isFullscreen_whenPending_returnsFalse() {
+    public void isFullscreen_whenPendingCreate_returnsFalse() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1313,7 +1343,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void getRestoredBoundsInDp_whenPending_withNonEmptyBounds_returnsPendingBounds() {
+    public void getRestoredBoundsInDp_whenPendingCreate_withNonEmptyBounds_returnsPendingBounds() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1328,7 +1358,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            getRestoredBoundsInDp_whenPending_withNonEmptyRestoredBounds_returnsPendingRestoredBounds() {
+            getRestoredBoundsInDp_whenPendingCreate_withNonEmptyRestoredBounds_returnsPendingRestoredBounds() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1345,7 +1375,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            getRestoredBoundsInDp_whenPending_withoutPendingRestoredBounds_returnsInitialBounds() {
+            getRestoredBoundsInDp_whenPendingCreate_withoutPendingRestoredBounds_returnsInitialBounds() {
         // Arrange.
         var bounds = new Rect(100, 100, 600, 800);
         var mockParams =
@@ -1361,7 +1391,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            getRestoredBoundsInDp_whenPending_withNonEmptyInitialBoundsInCreateParams_returnsInitialBounds() {
+            getRestoredBoundsInDp_whenPendingCreate_withNonEmptyInitialBoundsInCreateParams_returnsInitialBounds() {
         // Arrange.
         var bounds = new Rect(100, 100, 600, 800);
         var mockParams =
@@ -1375,7 +1405,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            getRestoredBoundsInDp_whenPending_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
+            getRestoredBoundsInDp_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1386,7 +1416,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void getBoundsInDp_whenPending_withPendingSetBounds_returnsPendingBounds() {
+    public void getBoundsInDp_whenPendingCreate_withPendingSetBounds_returnsPendingBounds() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1401,7 +1431,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            getBoundsInDp_whenPending_withNonEmptyInitialBoundsInCreateParams_returnsInitialBounds() {
+            getBoundsInDp_whenPendingCreate_withNonEmptyInitialBoundsInCreateParams_returnsInitialBounds() {
         // Arrange.
         var bounds = new Rect(100, 100, 600, 800);
         var mockParams =
@@ -1415,7 +1445,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            getBoundsInDp_whenPending_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
+            getBoundsInDp_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1426,7 +1456,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isVisible_whenPending_withMinimizedStateInCreateParams_returnsFalse() {
+    public void isVisible_whenPendingCreate_withMinimizedStateInCreateParams_returnsFalse() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
@@ -1438,7 +1468,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isVisible_whenPending_withNonMinimizedStateInCreateParams_returnsTrue() {
+    public void isVisible_whenPendingCreate_withNonMinimizedStateInCreateParams_returnsTrue() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1446,6 +1476,27 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act and Assert.
         assertTrue(task.isVisible());
+    }
+
+    @Test
+    public void isVisible_whenPendingUpdate_withPendingShow_returnsTrue() {
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Act.
+        chromeAndroidTask.show();
+        Assert.assertTrue(
+                "Show should be pending after #show is triggered",
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
+
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+
+        // Assert.
+        Assert.assertNull(
+                "Show should not be pending after Activity is resumed",
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
+        assertTrue(chromeAndroidTask.isVisible());
     }
 
     @Test

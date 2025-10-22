@@ -96,6 +96,20 @@ final class PendingActionManager {
     private @Nullable Rect mPendingRestoredBoundsInDp;
 
     /**
+     * Tracking the future active state of the window. Null if there is no in-progress action which
+     * can affect the isActive value.
+     */
+    @GuardedBy("mPendingActionsLock")
+    private @Nullable Boolean mIsActiveFuture;
+
+    /**
+     * Tracking the future visible state of the window. Null if there is no in-progress action which
+     * can affect the isVisible.
+     */
+    @GuardedBy("mPendingActionsLock")
+    private @Nullable Boolean mIsVisibleFuture;
+
+    /**
      * Requests an action to be performed on the pending task. Use this for actions that do not
      * require an input.
      *
@@ -172,6 +186,18 @@ final class PendingActionManager {
         }
     }
 
+    @Nullable Boolean isActiveFuture() {
+        synchronized (mPendingActionsLock) {
+            return mIsActiveFuture;
+        }
+    }
+
+    @Nullable Boolean isVisibleFuture() {
+        synchronized (mPendingActionsLock) {
+            return mIsVisibleFuture;
+        }
+    }
+
     @PendingAction
     int[] getAndClearPendingActions() {
         synchronized (mPendingActionsLock) {
@@ -179,6 +205,24 @@ final class PendingActionManager {
             mPendingActions = new int[] {PendingAction.NONE, PendingAction.NONE};
             mPendingBoundsInDp = null;
             mPendingRestoredBoundsInDp = null;
+            mIsVisibleFuture = null;
+            mIsActiveFuture = null;
+            return actions;
+        }
+    }
+
+    @PendingAction
+    int[] getAndClearTargetPendingActions(int... targets) {
+        synchronized (mPendingActionsLock) {
+            var actions = mPendingActions;
+            for (int target : targets) {
+                for (int j = 0; j < mPendingActions.length; j++) {
+                    if (target == mPendingActions[j]) {
+                        mPendingActions[j] = PendingAction.NONE;
+                    }
+                }
+            }
+            updateFutureStatesLocked();
             return actions;
         }
     }
@@ -198,6 +242,7 @@ final class PendingActionManager {
 
             // Override lower precedence primary action.
             mPendingActions[0] = PendingAction.SHOW;
+            updateFutureStatesLocked();
         }
     }
 
@@ -219,6 +264,7 @@ final class PendingActionManager {
 
             // Run SHOW_INACTIVE along with one of the other higher precedence primary actions.
             mPendingActions[1] = PendingAction.SHOW_INACTIVE;
+            updateFutureStatesLocked();
         }
     }
 
@@ -238,6 +284,7 @@ final class PendingActionManager {
 
             // Override lower precedence primary action.
             mPendingActions[0] = PendingAction.ACTIVATE;
+            updateFutureStatesLocked();
         }
     }
 
@@ -259,6 +306,7 @@ final class PendingActionManager {
 
             // Run DEACTIVATE along with one of the other higher precedence primary actions.
             mPendingActions[1] = PendingAction.DEACTIVATE;
+            updateFutureStatesLocked();
         }
     }
 
@@ -275,6 +323,48 @@ final class PendingActionManager {
 
             // Clear pending bounds.
             mPendingBoundsInDp = null;
+            updateFutureStatesLocked();
+        }
+    }
+
+    @GuardedBy("mPendingActionsLock")
+    private void updateFutureStatesLocked() {
+        mIsActiveFuture = null;
+        mIsVisibleFuture = null;
+        for (int action : mPendingActions) {
+            switch (action) {
+                case PendingAction.SHOW:
+                case PendingAction.ACTIVATE:
+                case PendingAction.MAXIMIZE:
+                case PendingAction.RESTORE:
+                    mIsActiveFuture = true;
+                    break;
+                case PendingAction.SHOW_INACTIVE:
+                case PendingAction.MINIMIZE:
+                case PendingAction.DEACTIVATE:
+                case PendingAction.CLOSE:
+                    mIsActiveFuture = false;
+                    break;
+                default:
+                    break;
+            }
+
+            switch (action) {
+                case PendingAction.SHOW:
+                case PendingAction.ACTIVATE:
+                case PendingAction.MAXIMIZE:
+                case PendingAction.SHOW_INACTIVE:
+                case PendingAction.RESTORE:
+                    mIsVisibleFuture = true;
+                    break;
+                case PendingAction.MINIMIZE:
+                case PendingAction.DEACTIVATE:
+                case PendingAction.CLOSE:
+                    mIsVisibleFuture = false;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

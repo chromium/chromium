@@ -330,8 +330,10 @@ final class ChromeAndroidTaskImpl
     @Override
     public boolean isActive() {
         if (mState.get() == State.PENDING_CREATE) {
-            return mPendingActionManager.isActionRequested(PendingAction.SHOW)
-                    || mPendingActionManager.isActionRequested(PendingAction.ACTIVATE);
+            return Boolean.TRUE.equals(mPendingActionManager.isActiveFuture());
+        } else if (mState.get() == State.PENDING_UPDATE) {
+            Boolean isActive = mPendingActionManager.isActiveFuture();
+            if (isActive != null) return isActive;
         }
 
         synchronized (mActivityWindowAndroidLock) {
@@ -472,6 +474,9 @@ final class ChromeAndroidTaskImpl
     public boolean isVisible() {
         if (mState.get() == State.PENDING_CREATE) {
             return assumeNonNull(mCreateParams).getInitialShowState() != WindowShowState.MINIMIZED;
+        } else if (mState.get() == State.PENDING_UPDATE) {
+            Boolean isVisible = mPendingActionManager.isVisibleFuture();
+            if (isVisible != null) return isVisible;
         }
 
         synchronized (mActivityWindowAndroidLock) {
@@ -633,6 +638,12 @@ final class ChromeAndroidTaskImpl
             if (mShouldDispatchPendingDeactivate) {
                 ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
                 mShouldDispatchPendingDeactivate = false;
+            }
+            if (mState.get() == State.PENDING_UPDATE) {
+                var actions =
+                        mPendingActionManager.getAndClearTargetPendingActions(
+                                PendingAction.ACTIVATE, PendingAction.SHOW);
+                maybeSetStateIdle(actions);
             }
         }
 
@@ -962,6 +973,8 @@ final class ChromeAndroidTaskImpl
         if (isVisibleInternalLocked(activity)) {
             ActivityManager activityManager =
                     (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            mPendingActionManager.requestAction(PendingAction.SHOW);
+            mState.set(State.PENDING_UPDATE);
             activityManager.moveTaskToFront(activity.getTaskId(), 0);
         }
     }
@@ -984,6 +997,8 @@ final class ChromeAndroidTaskImpl
 
         ActivityManager activityManager =
                 (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+        mPendingActionManager.requestAction(PendingAction.ACTIVATE);
+        mState.set(State.PENDING_UPDATE);
         activityManager.moveTaskToFront(activity.getTaskId(), 0);
     }
 
@@ -1048,6 +1063,15 @@ final class ChromeAndroidTaskImpl
                         activityWindowAndroid.getDisplay(),
                         activity.getWindowManager());
         setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), adjustedBoundsInPx);
+    }
+
+    private void maybeSetStateIdle(int[] actions) {
+        for (int action : actions) {
+            if (action != PendingAction.NONE) {
+                return;
+            }
+        }
+        mState.set(State.IDLE);
     }
 
     @Nullable Rect getRestoredBoundsInPxForTesting() {

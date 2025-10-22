@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -19,6 +21,7 @@ import android.os.Build;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -290,7 +293,14 @@ public class ChromeAndroidTaskIntegrationTest {
         CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
 
         firstChromeAndroidTask.activate();
-        CriteriaHelper.pollUiThread(firstChromeAndroidTask::isActive);
+        Assert.assertTrue(
+                "Activate should make isActive true immediately",
+                firstChromeAndroidTask.isActive());
+        CriteriaHelper.pollUiThread(
+                assumeNonNull(webPageStation.getActivity().getWindowAndroid())
+                        ::isTopResumedActivity);
+        Assert.assertTrue(
+                "Activate should make isActive true eventually", firstChromeAndroidTask.isActive());
 
         // Assert.
         assertEquals(2, testFeature.mTaskFocusChangedParams.size());
@@ -377,7 +387,13 @@ public class ChromeAndroidTaskIntegrationTest {
         chromeAndroidTask.activate();
 
         // Assert
-        CriteriaHelper.pollUiThread(chromeAndroidTask::isActive);
+        Assert.assertTrue(
+                "Activate should make isActive true immediately", chromeAndroidTask.isActive());
+        CriteriaHelper.pollUiThread(
+                assumeNonNull(webPageStation.getActivity().getWindowAndroid())
+                        ::isTopResumedActivity);
+        Assert.assertTrue(
+                "Activate should make isActive true eventually", chromeAndroidTask.isActive());
         assertFalse(secondChromeAndroidTask.isActive());
         // Cleanup
         ntpStation.getActivity().finish();
@@ -406,7 +422,13 @@ public class ChromeAndroidTaskIntegrationTest {
         chromeAndroidTask.show();
 
         // Assert
-        CriteriaHelper.pollUiThread(chromeAndroidTask::isActive);
+        Assert.assertTrue(
+                "Show should make isActive true immediately", chromeAndroidTask.isActive());
+        CriteriaHelper.pollUiThread(
+                assumeNonNull(webPageStation.getActivity().getWindowAndroid())
+                        ::isTopResumedActivity);
+        Assert.assertTrue(
+                "Show should make isActive true eventually", chromeAndroidTask.isActive());
         assertFalse(secondChromeAndroidTask.isActive());
         // Cleanup
         ntpStation.getActivity().finish();
@@ -435,8 +457,14 @@ public class ChromeAndroidTaskIntegrationTest {
         secondChromeAndroidTask.showInactive();
 
         // Assert
-        CriteriaHelper.pollUiThread(chromeAndroidTask::isActive);
-        assertFalse(secondChromeAndroidTask.isActive());
+        Assert.assertTrue(
+                "showInactive should make isActive true immediately", chromeAndroidTask.isActive());
+        CriteriaHelper.pollUiThread(
+                assumeNonNull(webPageStation.getActivity().getWindowAndroid())
+                        ::isTopResumedActivity);
+        Assert.assertTrue(
+                "showInactive should make isActive true eventually", chromeAndroidTask.isActive());
+        CriteriaHelper.pollUiThread(() -> !secondChromeAndroidTask.isActive());
         // Cleanup
         ntpStation.getActivity().finish();
     }
@@ -463,7 +491,13 @@ public class ChromeAndroidTaskIntegrationTest {
         secondChromeAndroidTask.deactivate();
 
         // Assert
-        CriteriaHelper.pollUiThread(chromeAndroidTask::isActive);
+        Assert.assertTrue(
+                "Deactivate should make isActive true immediately", chromeAndroidTask.isActive());
+        CriteriaHelper.pollUiThread(
+                assumeNonNull(webPageStation.getActivity().getWindowAndroid())
+                        ::isTopResumedActivity);
+        Assert.assertTrue(
+                "Deactivate should make isActive true eventually", chromeAndroidTask.isActive());
         assertFalse(secondChromeAndroidTask.isActive());
         // Cleanup
         ntpStation.getActivity().finish();

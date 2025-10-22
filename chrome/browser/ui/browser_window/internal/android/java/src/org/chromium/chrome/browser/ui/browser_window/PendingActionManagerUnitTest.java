@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 
 import android.graphics.Rect;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -427,6 +428,35 @@ public class PendingActionManagerUnitTest {
         }
     }
 
+    @Test
+    public void testIsActiveFuture_afterRequestActivate_returnsTrue() {
+        // Arrange.
+        mManager.requestAction(PendingAction.ACTIVATE);
+
+        // Assert.
+        Assert.assertTrue(mManager.isActiveFuture());
+    }
+
+    @Test
+    public void testIsVisibleFuture_afterRequestShow_returnsTrue() {
+        // Arrange.
+        mManager.requestAction(PendingAction.SHOW);
+
+        // Assert.
+        Assert.assertTrue(mManager.isVisibleFuture());
+    }
+
+    @Test
+    public void testGetAndClearTargetPendingActions_afterClear_stateReturnsNull() {
+        // Arrange.
+        mManager.requestAction(PendingAction.ACTIVATE);
+        Assert.assertTrue(mManager.isActiveFuture());
+
+        mManager.getAndClearTargetPendingActions(PendingAction.ACTIVATE);
+        Assert.assertNull(
+                "No pending action affecting isActive's future state", mManager.isActiveFuture());
+    }
+
     private void doTestActionOverridesLowerPrecedenceAction(
             @PendingAction int action, @PendingAction int[] lowerPrecedenceActions) {
         doTestActionOverridesLowerPrecedenceAction(
@@ -436,7 +466,9 @@ public class PendingActionManagerUnitTest {
     private void doTestActionOverridesLowerPrecedenceAction(
             @PendingAction int action, @PendingAction int[] lowerPrecedenceActions, Rect bounds) {
         for (@PendingAction int lowerPrecedenceAction : lowerPrecedenceActions) {
-            if (lowerPrecedenceAction == action) continue;
+            if (lowerPrecedenceAction == action) {
+                continue;
+            }
 
             // Arrange.
             mManager.clearPendingActionsForTesting();
