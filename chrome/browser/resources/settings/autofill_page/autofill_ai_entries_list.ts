@@ -30,10 +30,12 @@ import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -54,8 +56,8 @@ export interface SettingsAutofillAiEntriesListElement {
   };
 }
 
-const SettingsAutofillAiEntriesListElementBase =
-    SettingsViewMixin(I18nMixin(PrefsMixin(PolymerElement)));
+const SettingsAutofillAiEntriesListElementBase = SettingsViewMixin(
+    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsAutofillAiEntriesListElement extends
     SettingsAutofillAiEntriesListElementBase {
@@ -180,6 +182,9 @@ export class SettingsAutofillAiEntriesListElement extends
           this.entityInstances_ =
               entityInstances.sort(this.entityInstancesWithLabelsComparator_);
         });
+
+    this.addWebUiListener(
+        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -323,6 +328,19 @@ export class SettingsAutofillAiEntriesListElement extends
   private async onOptInStatusChanged_(): Promise<void> {
     const optedIn = await this.entityDataManager_.getOptInStatus();
     this.allowEditing_ = !this.ineligibleUser && optedIn;
+  }
+
+  // Refreshes the entity types list when the sync status changes.
+  //
+  // Updates the list to reflect whether the user is signed in (allowing the
+  // creation of entity instances for types stored on the server) or signed
+  // out (disallowing it).
+  private onSyncStatusChanged_(_: SyncStatus) {
+    this.entityDataManager_.getWritableEntityTypes().then(
+        (entityTypes: EntityType[]) => {
+          this.completeEntityTypesList_ =
+              entityTypes.sort(this.entityTypesComparator_);
+        });
   }
 }
 

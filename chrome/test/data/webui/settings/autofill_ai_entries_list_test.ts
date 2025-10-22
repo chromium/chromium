@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertGE, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue, loadTimeData} from 'chrome://settings/settings.js';
@@ -593,6 +594,34 @@ suite('AutofillAiEntriesListUiTest', function() {
     assertTrue(
         isVisible(entriesList.shadowRoot!.querySelector('#entries')),
         'With false opt-in status, the entries should be visible');
+  });
+
+  test('EntityTypesAreRefreshedOnPersonalDataChangeCallback', async function() {
+    await createPage();
+    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+
+    addButton.click();
+    await flushTasks();
+    const initialAddEntityButtons =
+        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+    assertEquals(testEntityTypes.length, initialAddEntityButtons.length);
+
+    const newTestEntityTypes = [
+      testEntityTypes[0]!,
+    ];
+    entityDataManager.setGetWritableEntityTypesResponse(newTestEntityTypes);
+    webUIListenerCallback('sync-status-changed');
+    await flushTasks();
+
+    addButton.click();
+    await flushTasks();
+    const updatedAddEntityButtons =
+        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+    assertEquals(newTestEntityTypes.length, updatedAddEntityButtons.length);
   });
 });
 
