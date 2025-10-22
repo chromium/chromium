@@ -471,8 +471,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kDeviceBoundSessionRegistered,
           WebFeature::kDeviceBoundSessionRequestInScope,
           WebFeature::kDeviceBoundSessionRequestDeferral,
-          // NOTE: before adding new use counters here, verify in UMA that their
-          // emissions are very rare, e.g. <1% of page loads.
+          WebFeature::kFedCmErrorCodeAttribute,
+          WebFeature::kFedCmErrorErrorAttribute,
+          // NOTE: before adding new use counters here, verify in UMA that
+          // their emissions are very rare, e.g. <1% of page loads.
       }));
   return *opt_in_features;
 }
