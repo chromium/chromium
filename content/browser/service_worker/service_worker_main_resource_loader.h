@@ -336,7 +336,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
   const std::string fetch_event_client_id_;
 
-  bool has_fetch_event_finished_ = false;
+  bool did_dispatch_event_ = false;
 
   bool is_synthetic_response_used_ = false;
 
