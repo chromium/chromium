@@ -155,5 +155,15 @@ void BrowserFrameViewLinux::LayoutWebAppWindowTitle(
   window_title_label.SetBoundsRect(bounds);
 }
 
+bool BrowserFrameViewLinux::CaptionButtonsOnLeadingEdge() const {
+  // TODO(https://crbug.com/453919397): Switch to doing the entire layout
+  // computation understanding that these buttons could theoretically be split
+  // between both sides of the window.
+  if (auto* const provider = views::WindowButtonOrderProvider::GetInstance()) {
+    return !provider->leading_buttons().empty();
+  }
+  return false;
+}
+
 BEGIN_METADATA(BrowserFrameViewLinux)
 END_METADATA

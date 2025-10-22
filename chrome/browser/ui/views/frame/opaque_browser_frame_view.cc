@@ -248,15 +248,32 @@ void OpaqueBrowserFrameView::InitViews() {
 
 BrowserLayoutParams OpaqueBrowserFrameView::GetBrowserLayoutParams() const {
   BrowserLayoutParams params = BrowserFrameView::GetBrowserLayoutParams();
-  if (ShouldShowWindowIcon() && !CaptionButtonsOnLeadingEdge()) {
+  if (ShouldShowWindowIcon()) {
+    // Icon is always on the leading edge of the window, after any caption
+    // buttons. Adjust the leading exclusion to account for it.
     const auto icon_bounds = GetIconBounds();
-    params.leading_exclusion.content =
-        gfx::SizeF(icon_bounds.right() - params.visual_client_area.x(),
-                   icon_bounds.bottom() - params.visual_client_area.y());
-    params.leading_exclusion.vertical_padding =
-        std::max(0, icon_bounds.y() - params.visual_client_area.y());
+    const float icon_right =
+        icon_bounds.right() - params.visual_client_area.x();
+    const float icon_bottom =
+        icon_bounds.bottom() - params.visual_client_area.y();
+    const float old_bottom = params.leading_exclusion.content.height();
+
+    // The icon may extend the size of the exclusion area.
+    params.leading_exclusion.content.set_width(
+        std::max(params.leading_exclusion.content.width(), icon_right));
+    params.leading_exclusion.content.set_height(
+        std::max(params.leading_exclusion.content.height(), icon_bottom));
+
     // There is (for historical reasons) no horizontal padding on the window
-    // icon.
+    // icon. Maybe this should be changed?
+    params.leading_exclusion.horizontal_padding = 0.f;
+
+    // Update the bottom of the vertical padding as well to the max of that
+    // previously required and what the icon would prefer.
+    const float extra_padding = icon_bounds.y() - params.visual_client_area.y();
+    const float new_bottom = std::max(old_bottom, icon_bottom + extra_padding);
+    params.leading_exclusion.vertical_padding =
+        std::max(0.f, new_bottom - params.leading_exclusion.content.height());
   }
   return params;
 }
