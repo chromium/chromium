@@ -344,7 +344,6 @@ def _RunLint(custom_lint_jar_path,
     return build_utils.FilterLines(output, 'Manifest merger failed')
 
   start = time.time()
-  logging.debug('Lint command %s', ' '.join(cmd))
   failed = False
 
   if creating_baseline and not warnings_as_errors:
