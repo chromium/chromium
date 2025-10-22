@@ -20,6 +20,7 @@ namespace password_manager::features {
 BASE_DECLARE_FEATURE(kActorLogin);
 BASE_DECLARE_FEATURE(kActorLoginFillingHeuristics);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
+BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
 // Enables finding and filling forms in same-site iframes for actor login.
 BASE_DECLARE_FEATURE(kActorLoginSameSiteIframeSupport);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

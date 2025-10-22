@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/strings/to_string.h"
@@ -173,7 +174,9 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   if (client_->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH);
-    if (!tab.IsActivated()) {
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kActorLoginReauthTaskRefocus) &&
+        !tab.IsActivated()) {
       std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthRequired);
     } else {
       ReauthenticateAndFill(std::move(fill_cb));
