@@ -73,7 +73,7 @@ using HandleMDMNotificationCallback =
 namespace {
 
 CoreAccountId GetAccountId(id<SystemIdentity> identity) {
-  return CoreAccountId::FromGaiaId(GaiaId([identity gaiaID]));
+  return CoreAccountId::FromGaiaId(identity.gaiaId);
 }
 
 }  // namespace
@@ -167,10 +167,9 @@ class AuthenticationServiceTestBase : public PlatformTest {
   void MarkSignedinUserMigratedFromSyncing() {
     profile_->GetPrefs()->SetString(
         prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
-        base::SysNSStringToUTF8(
-            authentication_service()
-                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                .gaiaID));
+        authentication_service()
+            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+            .gaiaId.ToString());
     profile_->GetPrefs()->SetString(
         prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
         base::SysNSStringToUTF8(
@@ -333,7 +332,7 @@ TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   AccountInfo account_info =
       identity_manager()->FindExtendedAccountInfoByEmailAddress(user_email);
   EXPECT_EQ(user_email, account_info.email);
-  EXPECT_EQ(GaiaId([identity(0) gaiaID]), account_info.gaia);
+  EXPECT_EQ(identity(0).gaiaId, account_info.gaia);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
@@ -479,7 +478,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
     FireApplicationWillEnterForeground();
     EXPECT_TRUE(notification_received);
     EXPECT_EQ(
-        GaiaId([identity(0) gaiaID]),
+        identity(0).gaiaId,
         observer.AccountFromErrorStateOfRefreshTokenUpdatedCallback().gaia);
   }
 
