@@ -18,8 +18,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn3GbDevices);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalMetricsOnly);
-
 // Helper functions for UserLevelMemoryPressureSignal features.
 CONTENT_EXPORT bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices();
 CONTENT_EXPORT bool IsUserLevelMemoryPressureSignalEnabledOn4GbDevices();

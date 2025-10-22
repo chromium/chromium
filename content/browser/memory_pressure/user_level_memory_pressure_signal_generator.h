@@ -12,24 +12,19 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "content/public/browser/user_level_memory_pressure_metrics.h"
 
 namespace base {
 class Process;
 class TimeDelta;
 }  // namespace base
 
-namespace content {
+namespace memory_pressure {
 
 // Generates extra memory pressure signals (on top of the OS generated ones)
 // when the memory usage exceeds a threshold.
 class UserLevelMemoryPressureSignalGenerator {
  public:
   static void Initialize();
-
-  // Returns the latest memory metrics if the metrics collection is enabled.
-  static std::optional<content::UserLevelMemoryPressureMetrics>
-  GetLatestMemoryMetrics();
 
  private:
   friend class base::NoDestructor<UserLevelMemoryPressureSignalGenerator>;
@@ -49,9 +44,6 @@ class UserLevelMemoryPressureSignalGenerator {
   void StartPeriodicTimer(base::TimeDelta interval);
   void StartReportingTimer();
 
-  void StartMetricsCollection();
-  void CollectMemoryMetrics();
-
   static base::ByteCount
   GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
@@ -69,10 +61,8 @@ class UserLevelMemoryPressureSignalGenerator {
   base::TimeDelta minimum_interval_;
   base::OneShotTimer periodic_measuring_timer_;
   base::OneShotTimer delayed_report_timer_;
-
-  std::optional<UserLevelMemoryPressureMetrics> latest_metrics_;
 };
 
-}  // namespace content
+}  // namespace memory_pressure
 
 #endif  // CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_

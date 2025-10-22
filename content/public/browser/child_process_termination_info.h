@@ -15,7 +15,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
-#include "content/public/browser/user_level_memory_pressure_metrics.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -71,10 +70,6 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // This is populated when a renderer or GPU process terminates.
   std::optional<LastSpareRendererCreationInfo>
       last_spare_renderer_creation_info;
-
-  // Information about memory pressure metrics collected
-  // by the user-level memory pressure generator.
-  std::optional<UserLevelMemoryPressureMetrics> memory_pressure_metrics;
 #endif
 
 #if BUILDFLAG(IS_WIN)
