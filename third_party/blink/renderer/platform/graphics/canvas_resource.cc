@@ -470,13 +470,14 @@ void CanvasResourceSharedImage::EndExternalWrite(
   // complete.
   WaitSyncToken(external_write_sync_token);
 
-  WaitSyncToken();
+  std::unique_ptr<gpu::RasterScopedAccess> access =
+      BeginAccess(/*readonly=*/true);
   // Additionally ensure that the next compositor read waits for the external
   // write to complete by ensuring that a new sync token is generated on the
   // internal interface as part of generating the TransferableResource. This new
   // sync token will be chained after `external_write_sync_token` thanks to the
   // wait above.
-  GetSyncToken();
+  EndAccess(std::move(access));
 }
 
 void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
@@ -523,10 +524,9 @@ void CanvasResourceSharedImage::WaitSyncToken(
   }
 }
 
-void CanvasResourceSharedImage::WaitSyncToken() {
-  InterfaceBase()->WaitSyncTokenCHROMIUM(acquire_sync_token_.GetConstData());
-}
-
+// TODO(crbug.com/40286368): This GetSyncToken() implementation is now only used
+// in tests. We should refactor all tests in favor of scoped access objects and
+// remove this implementation altogether.
 void CanvasResourceSharedImage::GetSyncToken() {
   CHECK(!GetClientSharedImage()->is_software());
   DCHECK(!is_cross_thread());
@@ -536,6 +536,21 @@ void CanvasResourceSharedImage::GetSyncToken() {
 
   raster_interface->GenUnverifiedSyncTokenCHROMIUM(
       owning_thread_data().sync_token.GetData());
+}
+
+std::unique_ptr<gpu::RasterScopedAccess> CanvasResourceSharedImage::BeginAccess(
+    bool readonly) {
+  return GetClientSharedImage()->BeginRasterAccess(
+      RasterInterface(), acquire_sync_token_, readonly);
+}
+
+void CanvasResourceSharedImage::EndAccess(
+    std::unique_ptr<gpu::RasterScopedAccess> access) {
+  CHECK(!GetClientSharedImage()->is_software());
+  DCHECK(!is_cross_thread());
+
+  owning_thread_data().sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(access));
 }
 
 void CanvasResourceSharedImage::VerifySyncToken() {

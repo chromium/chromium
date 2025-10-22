@@ -598,7 +598,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   void EnsureWriteAccess();
   void EndWriteAccess();
-  void WillDrawInternal();
+  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
