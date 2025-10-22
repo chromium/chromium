@@ -33,11 +33,21 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     private List<SiteSuggestion> mSites = new ArrayList<>();
     private @Nullable Observer mObserver;
 
-    // CustomLinkOperations -> MostVisitedSites implementation.
+    private final List<SiteSuggestion> mCustomLinks = new ArrayList<>();
+
+    // CustomLinkOperations implementation.
     @Override
     public boolean addCustomLink(String name, @Nullable GURL url, @Nullable Integer pos) {
-        // TODO (crbug.com/397421764): Implement when needed by tests.
-        return false;
+        if (GURL.isEmptyOrInvalid(url)) return false;
+
+        SiteSuggestion newLink = createCustomLinkSiteSuggestion(name, url.getSpec());
+        if (pos != null && pos >= 0 && pos <= mCustomLinks.size()) {
+            mCustomLinks.add(pos, newLink);
+        } else {
+            mCustomLinks.add(newLink);
+        }
+        notifyTileSuggestionsAvailable(true);
+        return true;
     }
 
     @Override
@@ -48,13 +58,20 @@ public class FakeMostVisitedSites implements MostVisitedSites {
 
     @Override
     public boolean deleteCustomLink(GURL keyUrl) {
-        // TODO (crbug.com/397421764): Implement when needed by tests.
-        return false;
+        boolean removed = mCustomLinks.removeIf(site -> site.url.equals(keyUrl));
+        if (removed) {
+            notifyTileSuggestionsAvailable(true);
+        }
+        return removed;
     }
 
     @Override
     public boolean hasCustomLink(GURL keyUrl) {
-        // TODO (crbug.com/397421764): Implement when needed by tests.
+        for (SiteSuggestion site : mCustomLinks) {
+            if (site.url.equals(keyUrl)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -164,22 +181,67 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         return Collections.unmodifiableList(mSites);
     }
 
+    public List<SiteSuggestion> getCombinedSuggestions() {
+        List<SiteSuggestion> combinedSuggestions = new ArrayList<>(mCustomLinks);
+        for (SiteSuggestion site : mSites) {
+            if (!hasCustomLink(site.url)) {
+                combinedSuggestions.add(site);
+            }
+        }
+        return combinedSuggestions;
+    }
+
+    /**
+     * Creates a list of {@link SiteSuggestion}s with the given URLs.
+     *
+     * @param urls The URLs to create site suggestions for.
+     * @return A list of site suggestions.
+     */
     public static List<SiteSuggestion> createSiteSuggestions(String... urls) {
         List<SiteSuggestion> suggestions = new ArrayList<>(urls.length);
         for (String url : urls) suggestions.add(createSiteSuggestion(url));
         return suggestions;
     }
 
+    /**
+     * Creates a {@link SiteSuggestion} with the given URL. The title will be the same as the URL.
+     *
+     * @param url The URL for the site suggestion.
+     * @return A site suggestion.
+     */
     public static SiteSuggestion createSiteSuggestion(String url) {
         return createSiteSuggestion(url, url);
     }
 
+    /**
+     * Creates a {@link SiteSuggestion} with the given title and URL.
+     *
+     * @param title The title of the site suggestion.
+     * @param url The URL of the site suggestion.
+     * @return A site suggestion.
+     */
     public static SiteSuggestion createSiteSuggestion(String title, String url) {
         return new SiteSuggestion(
                 title,
                 new GURL(url),
                 TileTitleSource.TITLE_TAG,
                 TileSource.TOP_SITES,
+                TileSectionType.PERSONALIZED);
+    }
+
+    /**
+     * Creates a custom link {@link SiteSuggestion} with the given title and URL.
+     *
+     * @param title The title of the site suggestion.
+     * @param url The URL of the site suggestion.
+     * @return A site suggestion.
+     */
+    public static SiteSuggestion createCustomLinkSiteSuggestion(String title, String url) {
+        return new SiteSuggestion(
+                title,
+                new GURL(url),
+                TileTitleSource.TITLE_TAG,
+                TileSource.CUSTOM_LINKS,
                 TileSectionType.PERSONALIZED);
     }
 
@@ -193,6 +255,6 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         // a signal that the test started and this is not the setup anymore.
         ThreadUtils.assertOnUiThread();
 
-        mObserver.onSiteSuggestionsAvailable(isUserTriggered, mSites);
+        mObserver.onSiteSuggestionsAvailable(isUserTriggered, getCombinedSuggestions());
     }
 }

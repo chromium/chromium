@@ -117,6 +117,14 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         return mSiteSuggestions;
     }
 
+    Set<Integer> getSeparatorIndices() {
+        Set<Integer> separators = new HashSet<>(mNonTileIndices);
+        if (mAddNewButtonIndex != null) {
+            separators.remove(mAddNewButtonIndex);
+        }
+        return separators;
+    }
+
     /** Ensure tile with index |i| is visible, maybe scrolling to it. */
     public MvtsTileFacility ensureTileIsDisplayedAndGet(int i) {
         assert 0 <= i && i < tileItems.size()

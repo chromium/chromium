@@ -210,7 +210,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         }
         Snackbar snackbar =
                 Snackbar.make(
-                                mContext.getString(R.string.most_visited_item_removed),
+                                mContext.getString(R.string.custom_tile_unpinned),
                                 mTileUnpinnedSnackbarController,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_NTP_MOST_VISITED_UNPIN_UNDO)

@@ -8,33 +8,32 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.test.transit.ui.SnackbarFacility;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 
-/** Facility for the Undo Snackbar displayed when a Top Sites Tile is removed. */
-public class MvtRemovedSnackbarFacility extends SnackbarFacility<RegularNewTabPageStation> {
-    private final MvtsFacility mMvtsBeforeRemoval;
-    private final MvtsFacility mMvtsAfterRemoval;
+/** Facility for the Undo Snackbar displayed when a Custom Link Tile is unpinned. */
+public class MvtUnpinnedSnackbarFacility extends SnackbarFacility<RegularNewTabPageStation> {
+    private final MvtsFacility mMvtsBeforeUnpin;
+    private final MvtsFacility mMvtsAfterUnpin;
 
-    public MvtRemovedSnackbarFacility(
-            MvtsFacility mvtsBeforeRemoval, MvtsFacility mvtsAfterRemoval) {
-        super("This site won't be shown again", "Undo");
-        mMvtsBeforeRemoval = mvtsBeforeRemoval;
-        mMvtsAfterRemoval = mvtsAfterRemoval;
+    public MvtUnpinnedSnackbarFacility(MvtsFacility mvtsBeforeUnpin, MvtsFacility mvtsAfterUnpin) {
+        super("Shortcut unpinned", "Undo");
+        mMvtsBeforeUnpin = mvtsBeforeUnpin;
+        mMvtsAfterUnpin = mvtsAfterUnpin;
     }
 
-    /** Click Undo to undo the tile removal. */
+    /** Click Undo to undo the tile unpin. */
     public MvtsFacility undo(FakeMostVisitedSites fakeMostVisitedSites) {
         var mvtsAfterUndo =
                 new MvtsFacility(
-                        mMvtsBeforeRemoval.getSiteSuggestions(),
-                        mMvtsBeforeRemoval.getSeparatorIndices());
+                        mMvtsBeforeUnpin.getSiteSuggestions(),
+                        mMvtsBeforeUnpin.getSeparatorIndices());
         return runTo(
                         () -> {
                             buttonElement.clickTo().executeTriggerWithoutTransition();
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             fakeMostVisitedSites.setTileSuggestions(
-                                                    mMvtsBeforeRemoval.getSiteSuggestions()));
+                                                    mMvtsBeforeUnpin.getSiteSuggestions()));
                         })
-                .exitFacilitiesAnd(mMvtsAfterRemoval, this)
+                .exitFacilitiesAnd(mMvtsAfterUnpin, this)
                 .enterFacility(mvtsAfterUndo);
     }
 }
