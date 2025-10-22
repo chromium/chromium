@@ -1551,15 +1551,17 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kSwitch:
     case ax::mojom::Role::kTable:
     case ax::mojom::Role::kTextField:
+    case ax::mojom::Role::kTime:
     case ax::mojom::Role::kToggleButton:
     case ax::mojom::Role::kTreeGrid:
-    case ax::mojom::Role::kTime:
       // No role description on Android.
       break;
 
     // Roles not used on Android.
     case ax::mojom::Role::kListGrid:
     case ax::mojom::Role::kMenuItemSeparator:
+    case ax::mojom::Role::kPdfActionableHighlight:
+    case ax::mojom::Role::kPdfRoot:
       NOTREACHED();
 
     case ax::mojom::Role::kFigure:
