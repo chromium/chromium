@@ -16170,7 +16170,7 @@
             ]
         }
     ],
-    "NetworkServiceTaskScheduler": [
+    "NetworkServiceTaskScheduler2": [
         {
             "platforms": [
                 "android",
@@ -16182,14 +16182,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled2",
+                    "name": "Enabled",
                     "params": {
                         "http_cache": "true",
                         "http_cache_transaction": "true"
                     },
                     "enable_features": [
-                        "NetTaskScheduler",
-                        "NetworkServiceTaskScheduler"
+                        "NetTaskScheduler2"
                     ]
                 }
             ]

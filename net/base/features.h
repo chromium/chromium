@@ -900,9 +900,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // These parameters control whether the Network Service Task Scheduler is used
 // for specific classes.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerHttpCache);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                      kNetTaskSchedulerHttpCacheTransaction);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kNetTaskSchedulerHttpProxyConnectJob);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
@@ -916,6 +913,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerURLRequestHttpJob);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerURLRequestJob);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kNetTaskSchedulerURLRequestRedirectJob);
+
+NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler2);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerHttpCache);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpCacheTransaction);
 
 // If enabled, we will add an additional delay to the main job in
 // HttpStreamFactoryJobController.

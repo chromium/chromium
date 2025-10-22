@@ -774,16 +774,6 @@ BASE_FEATURE_PARAM(bool,
                    "http_proxy_connect_job",
                    true);
 BASE_FEATURE_PARAM(bool,
-                   kNetTaskSchedulerHttpCache,
-                   &kNetTaskScheduler,
-                   "http_cache",
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kNetTaskSchedulerHttpCacheTransaction,
-                   &kNetTaskScheduler,
-                   "http_cache_transaction",
-                   false);
-BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpStreamFactoryJob,
                    &kNetTaskScheduler,
                    "http_stream_factory_job",
@@ -813,6 +803,18 @@ BASE_FEATURE_PARAM(bool,
                    &kNetTaskScheduler,
                    "url_request_redirect_job",
                    true);
+
+BASE_FEATURE(kNetTaskScheduler2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kNetTaskSchedulerHttpCache,
+                   &kNetTaskScheduler2,
+                   "http_cache",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kNetTaskSchedulerHttpCacheTransaction,
+                   &kNetTaskScheduler2,
+                   "http_cache_transaction",
+                   false);
 
 BASE_FEATURE(kAdditionalDelayMainJob, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
