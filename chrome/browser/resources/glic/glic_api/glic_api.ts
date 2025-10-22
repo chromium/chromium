@@ -2159,6 +2159,8 @@ export enum InvocationSource {
   ACTOR_TASK_ICON = 12,
   // User shared an image via the context menu.
   SHARED_IMAGE = 13,
+  // From the handoff button.
+  HANDOFF_BUTTON = 14,
 }
 
 ///////////////////////////////////////////////

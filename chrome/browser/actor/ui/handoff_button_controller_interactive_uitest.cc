@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -27,6 +28,9 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/widget/glic_view.h"
+#endif
 
 namespace actor::ui {
 namespace {
@@ -44,9 +48,24 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ButtonTextObserver, kButtonTextState);
 class ActorUiHandoffButtonControllerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(ENABLE_GLIC)
+    command_line->AppendSwitch(switches::kGlicDev);
+    // Skips FRE experience.
+    command_line->AppendSwitch(switches::kGlicAutomation);
+#endif
+  }
+
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
+        // Use a dummy URL so we don't make a network request.
         {
+#if BUILDFLAG(ENABLE_GLIC)
+            {features::kGlicURLConfig,
+             {{features::kGlicGuestURL.name, "about:blank"}}},
+            {features::kGlic, {}},
+#endif
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiHandoffButtonName, "true"}}},
@@ -54,7 +73,11 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
             {features::kImmersiveFullscreen, {}},
 #endif  // BUILDFLAG(IS_MAC)
         },
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+#if BUILDFLAG(ENABLE_GLIC)
+            features::kGlicMultiInstance, features::kGlicDetached
+#endif
+        });
     InteractiveBrowserTest::SetUp();
   }
 
@@ -236,5 +259,28 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
+                       GlicSidePanelTogglesOnWhenButtonClicked) {
+  StartActingOnTab();
+  RunTestSequence(
+      ClearOmniboxFocus(), EnsureNotPresent(kSidePanelElementId),
+      EnsureNotPresent(kGlicViewElementId),
+      InAnyContext(
+          WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
+      InAnyContext(
+          CheckViewProperty(HandoffButtonController::kHandoffButtonElementId,
+                            &views::LabelButton::GetText, TAKE_OVER_TASK_TEXT)),
+      InAnyContext(PollViewProperty(
+          kButtonTextState, HandoffButtonController::kHandoffButtonElementId,
+          &views::LabelButton::GetText)),
+      InAnyContext(
+          PressButton(HandoffButtonController::kHandoffButtonElementId)),
+      WaitForState(kButtonTextState, GIVE_TASK_BACK_TEXT),
+      InAnyContext(WaitForShow(kSidePanelElementId)),
+      InAnyContext(WaitForShow(kGlicViewElementId)));
+}
+#endif
 }  // namespace
 }  // namespace actor::ui

@@ -174,7 +174,11 @@ enum class ResponseSegmentation {
   kActorTaskIconAttachedAudio = 50,
   kActorTaskIconDetachedText = 51,
   kActorTaskIconDetachedAudio = 52,
-  kMaxValue = kActorTaskIconDetachedAudio,
+  kHandoffButtonAttachedText = 53,
+  kHandoffButtonAttachedAudio = 54,
+  kHandoffButtonDetachedText = 55,
+  kHandoffButtonDetachedAudio = 56,
+  kMaxValue = kHandoffButtonDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

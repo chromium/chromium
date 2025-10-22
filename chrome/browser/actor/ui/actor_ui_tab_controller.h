@@ -42,6 +42,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
                           UiResultCallback callback) override;
   void OnWebContentsAttached() override;
+  void OnViewBoundsChanged() override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
   void OnOverlayHoverStatusChanged(bool is_hovering) override;

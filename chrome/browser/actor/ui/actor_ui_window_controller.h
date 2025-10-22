@@ -9,9 +9,12 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 class ActorOverlayWebView;
 
@@ -29,7 +32,8 @@ namespace actor::ui {
 // Manages the actor ui components for a single contents container (e.g., a
 // single tab's content area). In split-view mode, there will be multiple
 // instances of this class, one for each content area.
-class ActorUiContentsContainerController : public content::WebContentsObserver {
+class ActorUiContentsContainerController : public content::WebContentsObserver,
+                                           public views::ViewObserver {
  public:
   explicit ActorUiContentsContainerController(
       views::WebView* contents_container_view,
@@ -51,6 +55,9 @@ class ActorUiContentsContainerController : public content::WebContentsObserver {
   // Updates the overlay_ state.
   void UpdateOverlayState(bool is_visible, ActorOverlayState state);
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
  private:
   // Notifies the respective tab controller that a new web contents has been
   // attached.
@@ -64,6 +71,10 @@ class ActorUiContentsContainerController : public content::WebContentsObserver {
       actor_ui_tab_controller_callback_subscriptions_;
   raw_ptr<views::WebView> contents_container_view_ = nullptr;
   raw_ptr<ActorOverlayWebView> overlay_ = nullptr;
+
+  // Observer to get notifications when the view changes.
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 
   base::WeakPtrFactory<ActorUiContentsContainerController> weak_ptr_factory_{
       this};

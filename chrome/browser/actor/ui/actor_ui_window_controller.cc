@@ -40,6 +40,16 @@ ActorUiContentsContainerController::ActorUiContentsContainerController(
 ActorUiContentsContainerController::~ActorUiContentsContainerController() =
     default;
 
+void ActorUiContentsContainerController::OnViewBoundsChanged(
+    views::View* observed_view) {
+  if (auto* tab = tabs::TabInterface::GetFromContents(
+          contents_container_view_->web_contents())) {
+    if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
+      tab_controller->OnViewBoundsChanged();
+    }
+  }
+}
+
 void ActorUiContentsContainerController::OnWebContentsAttached(
     views::WebView* web_view) {
   if (!web_view->web_contents()) {
@@ -48,6 +58,7 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
 
   // Start observing on the new web contents.
   Observe(web_view->web_contents());
+  view_observation_.Observe(web_view);
 
   // Start observing on tab scoped actor ui state changes.
   if (auto* tab =
@@ -116,6 +127,7 @@ void ActorUiContentsContainerController::OnWebContentsDetached(
   // Stop observing on web contents and clear all subscriptions related to a
   // tab.
   Observe(nullptr);
+  view_observation_.Reset();
   actor_ui_tab_controller_callback_subscriptions_.clear();
 
   if (overlay_) {

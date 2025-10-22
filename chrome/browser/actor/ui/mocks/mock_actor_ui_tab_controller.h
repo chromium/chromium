@@ -32,6 +32,7 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (override));
 
   MOCK_METHOD(void, OnWebContentsAttached, (), (override));
+  MOCK_METHOD(void, OnViewBoundsChanged, (), (override));
 
   MOCK_METHOD(base::WeakPtr<ActorUiTabControllerInterface>,
               GetWeakPtr,

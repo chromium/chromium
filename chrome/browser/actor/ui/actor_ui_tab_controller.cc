@@ -163,6 +163,13 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
   return;
 }
 
+void ActorUiTabController::OnViewBoundsChanged() {
+  if (!actor_keyed_service_->GetTaskFromTab(*tab_)) {
+    return;
+  }
+  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError, "OnViewBoundsChanged"));
+}
+
 void ActorUiTabController::UpdateUi(UiResultCallback callback) {
   // TODO(crbug.com/447593256): Propagate errors when component update fails.
   // TODO(crbug.com/428216197): Only notify relevant UI components on change and

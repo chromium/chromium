@@ -11,13 +11,14 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
-#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -75,7 +76,7 @@ class TestHandoffButtonController : public HandoffButtonController {
   int update_visibility_call_count_ = 0;
 };
 
-class HandoffButtonControllerTest : public views::ViewsTestBase {
+class HandoffButtonControllerTest : public ChromeViewsTestBase {
  public:
   HandoffButtonControllerTest() {
     MockActorUiTabController::SetupDefaultBrowserWindow(
@@ -84,8 +85,11 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
   }
 
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
+    ChromeViewsTestBase::SetUp();
     controller_ = std::make_unique<TestHandoffButtonController>(mock_tab_);
+    profile_ = TestingProfile::Builder().Build();
+    ON_CALL(mock_browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
 
     parent_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -116,12 +120,15 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
                             base::Unretained(&mock_callback)));
   }
 
+  Profile* profile() { return profile_.get(); }
+
   void TearDown() override {
     button_ = nullptr;
     widget_ = nullptr;
     controller_.reset();
     parent_widget_.reset();
-    views::ViewsTestBase::TearDown();
+    profile_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
   MockActorUiTabController* mock_actor_ui_tab_controller() {
@@ -129,6 +136,7 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
   }
 
  protected:
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<views::Widget> parent_widget_;
   raw_ptr<HandoffButtonWidget> widget_;
   raw_ptr<views::LabelButton> button_ = nullptr;

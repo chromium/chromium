@@ -36,6 +36,10 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#endif
 
 namespace {
 
@@ -350,6 +354,15 @@ void HandoffButtonController::OnButtonPressed() {
   if (auto* tab_controller = GetTabController()) {
     if (ownership_ == kActor) {
       tab_controller->SetActorTaskPaused();
+#if BUILDFLAG(ENABLE_GLIC)
+      BrowserWindowInterface* bwi = tab_interface_->GetBrowserWindowInterface();
+      auto* glic_service =
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(bwi->GetProfile());
+      if (glic_service) {
+        glic_service->ToggleUI(bwi, /*prevent_close=*/true,
+                               glic::mojom::InvocationSource::kHandoffButton);
+      }
+#endif
     } else {
       tab_controller->SetActorTaskResume();
     }

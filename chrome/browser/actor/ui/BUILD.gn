@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android)
@@ -71,6 +72,9 @@ source_set("ui") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
 
 source_set("states") {
@@ -279,4 +283,8 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/base/interaction",
   ]
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }

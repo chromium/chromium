@@ -74,6 +74,10 @@ class ActorUiTabControllerInterface {
   // Called whenever web contents are attached to this tab.
   virtual void OnWebContentsAttached() = 0;
 
+  // Called whenever the view bounds of the web view attached to this tab
+  // change.
+  virtual void OnViewBoundsChanged() = 0;
+
   // Sets the last active task id's state to paused. If there is no task
   // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskPaused() = 0;
