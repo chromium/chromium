@@ -67,12 +67,13 @@ proto::InstallState GetExpectedInstallState() {
 
 class SingleClientWebAppsSyncTest
     : public WebAppsSyncTestBase,
-      public testing::WithParamInterface<SyncTestMode> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientWebAppsSyncTest() : WebAppsSyncTestBase(SINGLE_CLIENT) {
-    scoped_feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos,
-        GetParam() != SyncTestMode::kSyncTheFeature_WithoutSyncToSignin);
+    if (GetParam() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
   }
   ~SingleClientWebAppsSyncTest() override = default;
 
@@ -137,8 +138,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
                        DisablingSelectedTypeDisablesDataType) {
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
@@ -169,8 +169,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   const std::string app_id =
       GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
   InjectWebAppEntityToFakeServer(app_id, url);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
@@ -210,8 +209,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
           /*non_unique_name=*/"", app_id, entity_specifics, kDefaultTime,
           kDefaultTime));
 
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   // Installed app should store sync data.
@@ -274,8 +272,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   apps::IconInfo icon(GURL("https://example.com/icon.png"), /*size=*/32);
@@ -376,8 +373,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   std::string manifest_id_path = "manifest-id";
   const std::string app_id = GenerateAppId(manifest_id_path, start_url);
   InjectWebAppEntityToFakeServer(app_id, start_url, manifest_id_path);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   // start_url should have been set in the app and sync proto.
@@ -424,8 +420,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   const std::string app_id = "invalid_id";
   GURL url("https://example.com/");
   InjectWebAppEntityToFakeServer(app_id, url);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
@@ -438,8 +433,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   const std::string app_id = GenerateAppId(relative_manifest_id, url);
 
   InjectWebAppEntityToFakeServer(app_id, url, relative_manifest_id);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
@@ -466,8 +460,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   const std::string app_id = GenerateAppId(relative_manifest_id, url);
 
   InjectWebAppEntityToFakeServer(app_id, url, relative_manifest_id);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
@@ -497,8 +490,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   EXPECT_EQ(app_id, GenerateAppId(stripped_manifest_id, url));
 
   InjectWebAppEntityToFakeServer(app_id, url, relative_manifest_id);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
@@ -523,8 +515,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
       GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
 
   InjectWebAppEntityToFakeServer(app_id, url);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   mojom::UserDisplayMode user_display_mode =
@@ -549,8 +540,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, InvalidStartUrl) {
   InjectWebAppEntityToFakeServer(app_id, GURL());
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
@@ -579,8 +569,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, NoStartUrl) {
           kDefaultTime));
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
@@ -614,8 +603,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, InvalidManifestId) {
           kDefaultTime));
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
   EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
@@ -639,8 +627,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   const std::string app_id = test::InstallDummyWebApp(
       GetProfile(0), "app name", GURL("https://example.com/"),
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  ASSERT_TRUE(
-      SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetSetupSyncMode(GetParam())));
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, GetParam()));
   AwaitWebAppQuiescence();
 
 #if BUILDFLAG(IS_CHROMEOS)

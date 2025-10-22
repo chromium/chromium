@@ -84,28 +84,6 @@ namespace syncer {
 class SyncServiceImpl;
 }  // namespace syncer
 
-enum class SyncTestMode {
-  kSignInOnly,
-  kSyncTheFeature_WithSyncToSignin,
-  kSyncTheFeature_WithoutSyncToSignin,
-};
-
-// Enables user-readable output from gtest (instead of binary streams).
-std::ostream& operator<<(std::ostream& stream, SyncTestMode sync_test_mode);
-std::string SyncTestModeAsString(SyncTestMode sync_test_mode);
-
-inline auto GetSyncTestModes() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return testing::Values(SyncTestMode::kSyncTheFeature_WithoutSyncToSignin);
-#elif BUILDFLAG(IS_ANDROID)
-  return testing::Values(SyncTestMode::kSignInOnly);
-#else
-  return testing::Values(SyncTestMode::kSignInOnly,
-                         SyncTestMode::kSyncTheFeature_WithSyncToSignin,
-                         SyncTestMode::kSyncTheFeature_WithoutSyncToSignin);
-#endif
-}
-
 // This is the base class for integration tests for all sync data types. Derived
 // classes must be defined for each sync data type. Individual tests are defined
 // using the IN_PROC_BROWSER_TEST_F macro.
@@ -158,9 +136,6 @@ class SyncTest : public PlatformBrowserTest,
     kSyncTransportOnly,
     kSyncTheFeature,
   };
-
-  // Maps SyncTestMode to SetupSyncMode.
-  static SyncTest::SetupSyncMode GetSetupSyncMode(SyncTestMode sync_test_mode);
 
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
@@ -465,6 +440,22 @@ class SyncTest : public PlatformBrowserTest,
       profile_manager_observation_{this};
   base::WeakPtrFactory<SyncTest> weak_ptr_factory_{this};
 };
+
+inline auto GetSyncTestModes() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return testing::Values(SyncTest::SetupSyncMode::kSyncTheFeature);
+#elif BUILDFLAG(IS_ANDROID)
+  return testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly);
+#else
+  return testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly,
+                         SyncTest::SetupSyncMode::kSyncTheFeature);
+#endif
+}
+
+// Enables user-readable output from gtest (instead of binary streams).
+std::ostream& operator<<(std::ostream& stream,
+                         SyncTest::SetupSyncMode sync_test_mode);
+std::string SetupSyncModeAsString(SyncTest::SetupSyncMode sync_test_mode);
 
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode();
 

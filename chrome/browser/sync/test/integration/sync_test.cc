@@ -160,23 +160,6 @@ int GetNumClients(SyncTest::TestType test_type) {
 
 }  // namespace
 
-std::ostream& operator<<(std::ostream& stream, SyncTestMode sync_test_mode) {
-  stream << SyncTestModeAsString(sync_test_mode);
-  return stream;
-}
-
-std::string SyncTestModeAsString(SyncTestMode sync_test_mode) {
-  switch (sync_test_mode) {
-    case SyncTestMode::kSignInOnly:
-      return "SignInOnly";
-    case SyncTestMode::kSyncTheFeature_WithSyncToSignin:
-      return "SyncTheFeature_WithSyncToSignin";
-    case SyncTestMode::kSyncTheFeature_WithoutSyncToSignin:
-      return "SyncTheFeature_WithoutSyncToSignin";
-  }
-  NOTREACHED();
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
  public:
@@ -199,14 +182,6 @@ class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
   OnBrowserRemovedCallback browser_remove_callback_;
 };
 #endif
-
-// static
-SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode(
-    SyncTestMode sync_test_mode) {
-  return sync_test_mode == SyncTestMode::kSignInOnly
-             ? SyncTest::kSyncTransportOnly
-             : SyncTest::kSyncTheFeature;
-}
 
 SyncTest::SyncTest(TestType test_type)
     : test_type_(test_type),
@@ -1141,6 +1116,22 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
     syncer::DataTypeSet types) {
   excluded_types_from_check_for_data_type_failures_ = types;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         SyncTest::SetupSyncMode sync_test_mode) {
+  stream << SetupSyncModeAsString(sync_test_mode);
+  return stream;
+}
+
+std::string SetupSyncModeAsString(SyncTest::SetupSyncMode sync_test_mode) {
+  switch (sync_test_mode) {
+    case SyncTest::SetupSyncMode::kSyncTransportOnly:
+      return "kSyncTransportOnly";
+    case SyncTest::SetupSyncMode::kSyncTheFeature:
+      return "kSyncTheFeature";
+  }
+  NOTREACHED();
 }
 
 // The set of types that *can* run in transport mode. Doesn't mean they are all
