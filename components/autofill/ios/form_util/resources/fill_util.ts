@@ -181,7 +181,7 @@ function setInputElementAngularValue(
  *     element's value is changed.
  * @return Whether the value has been set successfully.
  */
-gCrWebLegacy.fill.setInputElementValue = function(
+export function setInputElementValue(
     value: string, input: HTMLInputElement|null,
     callback: Function|undefined = undefined): boolean {
   if (!input) {
@@ -194,7 +194,7 @@ gCrWebLegacy.fill.setInputElementValue = function(
     createAndDispatchHTMLEvent(input, 'focus', true, false);
   }
 
-  const filled = setInputElementValue(value, input);
+  const filled = setInputElementValueInternal(value, input);
   if (callback) {
     callback();
   }
@@ -204,7 +204,7 @@ gCrWebLegacy.fill.setInputElementValue = function(
     createAndDispatchHTMLEvent(activeElement, 'focus', true, false);
   }
   return filled;
-};
+}
 
 declare interface PropertyDescriptor {
     get(): string;
@@ -219,7 +219,8 @@ declare interface PropertyDescriptor {
  * @param input The input element of which the value is set.
  * @return Whether the value has been set successfully.
  */
-function setInputElementValue(value: string, input: HTMLInputElement): boolean {
+function setInputElementValueInternal(
+    value: string, input: HTMLInputElement): boolean {
   const propertyName = (input.type === 'checkbox' || input.type === 'radio') ?
       'checked' :
       'value';

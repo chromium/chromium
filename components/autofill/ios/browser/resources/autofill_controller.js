@@ -302,7 +302,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
 
     (function(_element, _value, _section, _delay) {
       window.setTimeout(function() {
-        __gCrWeb.fill.setInputElementValue(_value, _element, function() {
+        fillUtil.setInputElementValue(_value, _element, function() {
           _element.setAttribute('chrome-autofilled', '');
           _element.isAutofilled = true;
           _element.autofillSection = _section;
@@ -423,13 +423,11 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     if (value !== null) {
       (function(_element, _value, _delay) {
         window.setTimeout(function() {
-          __gCrWeb.fill.setInputElementValue(
-              _value, _element, function(changed) {
-                _element.removeAttribute('chrome-autofilled');
-                _element.isAutofilled = false;
-                _element.removeEventListener(
-                    'input', controlElementInputListener_);
-              });
+          fillUtil.setInputElementValue(_value, _element, function(changed) {
+            _element.removeAttribute('chrome-autofilled');
+            _element.isAutofilled = false;
+            _element.removeEventListener('input', controlElementInputListener_);
+          });
         }, _delay);
       })(element, value, delay);
       delay += __gCrWeb.autofill.delayBetweenFieldFillingMs;
@@ -580,12 +578,12 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
       sanitizedValue = data['value'].substr(0, maxLength);
     }
 
-    filled = __gCrWeb.fill.setInputElementValue(sanitizedValue, field);
+    filled = fillUtil.setInputElementValue(sanitizedValue, field);
     field.isAutofilled = true;
   } else if (inferenceUtil.isSelectElement(field)) {
-    filled = __gCrWeb.fill.setInputElementValue(data['value'], field);
+    filled = fillUtil.setInputElementValue(data['value'], field);
   } else if (__gCrWeb.fill.isCheckableElement(field)) {
-    filled = __gCrWeb.fill.setInputElementValue(data['is_checked'], field);
+    filled = fillUtil.setInputElementValue(data['is_checked'], field);
   }
   return filled;
 };

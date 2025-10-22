@@ -226,12 +226,12 @@ function fillGeneratedPassword(
   }
   // Avoid resetting if same value, as it moves cursor to the end.
   if (newPasswordField.value !== password) {
-    gCrWebLegacy.fill.setInputElementValue(password, newPasswordField);
+    fillUtil.setInputElementValue(password, newPasswordField);
   }
   const confirmPasswordField =
       findInputByFieldRendererID(inputs, confirmPasswordIdentifier);
   if (confirmPasswordField && confirmPasswordField.value !== password) {
-    gCrWebLegacy.fill.setInputElementValue(password, confirmPasswordField);
+    fillUtil.setInputElementValue(password, confirmPasswordField);
   }
   return true;
 }
@@ -290,11 +290,12 @@ function getPasswordInputElementForFill(
  * @param password The password to fill.
  * @return {FillResult} The result of filling the password fields.
  */
+// TODO(crbug.com/454044167): Cleanup type casting of `usernameInput`.
 function fillUsernameAndPassword(
     inputs: HTMLInputElement[], formData: fillUtil.AutofillFormData, username: string,
     password: string): FillResult {
   const usernameRendererId: number = Number(formData.fields[0]!.renderer_id);
-  let usernameInput;
+  let usernameInput = null;
   if (usernameRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     usernameInput = getUsernameInputElementForFill(inputs, usernameRendererId);
     if (!usernameInput) {
@@ -322,13 +323,14 @@ function fillUsernameAndPassword(
   // pre-filled by the website.
   const didFillUsername: boolean =
       (isUsernameEditable &&
-       gCrWebLegacy.fill.setInputElementValue(username, usernameInput)) as boolean;
+       fillUtil.setInputElementValue(
+           username, usernameInput as HTMLInputElement | null)) as boolean;
 
   // Fill the password if needed.
   const didFillPassword: boolean =
       Boolean(
           !!passwordInput &&
-              gCrWebLegacy.fill.setInputElementValue(password, passwordInput)) as boolean;
+          fillUtil.setInputElementValue(password, passwordInput)) as boolean;
 
   return {
     didFillUsername,
