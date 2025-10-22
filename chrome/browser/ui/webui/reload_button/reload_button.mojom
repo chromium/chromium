@@ -21,7 +21,9 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Reloads the current page. If the page is already in a loading state,
   // it will trigger another reload, and abort the previous one.
-  Reload();
+  // If `ignore_cache` is set to true, the page will be reloaded while
+  // ignoring the HTTP cache.
+  Reload(bool ignore_cache);
   // Stops the current page from reloading. If the page is not in a loading
   // state, it is a no-op.
   StopReload();

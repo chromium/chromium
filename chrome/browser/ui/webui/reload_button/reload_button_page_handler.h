@@ -26,7 +26,7 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   void SetLoadingState(bool is_loading, bool force);
 
   // reload_button::mojom::PageHandler:
-  void Reload() override;
+  void Reload(bool ignore_cache) override;
   void StopReload() override;
 
  private:

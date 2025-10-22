@@ -25,8 +25,9 @@ ReloadButtonPageHandler::ReloadButtonPageHandler(
 
 ReloadButtonPageHandler::~ReloadButtonPageHandler() = default;
 
-void ReloadButtonPageHandler::Reload() {
-  command_updater_->ExecuteCommand(IDC_RELOAD);
+void ReloadButtonPageHandler::Reload(bool ignore_cache) {
+  command_updater_->ExecuteCommand(ignore_cache ? IDC_RELOAD_BYPASSING_CACHE
+                                                : IDC_RELOAD);
 }
 
 void ReloadButtonPageHandler::StopReload() {

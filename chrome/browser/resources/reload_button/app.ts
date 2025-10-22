@@ -42,11 +42,13 @@ export class ReloadButtonAppElement extends CrLitElement {
   protected accessor isLoading_: boolean = false;
 
   // TODO(crbug.com/444358999): implement the reload logic
-  protected onReloadOrStopClick_(_: Event) {
+  protected onReloadOrStopClick_(e: MouseEvent) {
     if (this.isLoading_) {
       BrowserProxyImpl.getInstance().handler.stopReload();
     } else {
-      BrowserProxyImpl.getInstance().handler.reload();
+      // If the shift or ctrl key is pressed, we should reload with cache
+      // ignored.
+      BrowserProxyImpl.getInstance().handler.reload(e.shiftKey || e.ctrlKey);
     }
     // Update the renderer in advance to avoid the delay.
     this.isLoading_ = !this.isLoading_;
