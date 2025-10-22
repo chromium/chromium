@@ -152,6 +152,8 @@ class NtpPromoUiTest
           return "simple";
         case NtpBrowserPromoType::kSetupList:
           return "setuplist";
+        case NtpBrowserPromoType::kNone:
+          return "none";
         default:
           NOTREACHED();
       }
@@ -535,8 +537,8 @@ class NtpPromoVisualUiTest : public NtpPromoUiTest {
     return os_settings_provider_;
   }
 
-  // TODO(453086432): Remove this override and fix the test to work with
-  // Compose enabled.
+  // TODO(crbug.com/453086432): Remove this override and fix the test to work
+  // with Compose enabled.
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     auto result = NtpPromoUiTest::GetDisabledFeatures();
     result.push_back(ntp_composebox::kNtpComposebox);
@@ -643,4 +645,21 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
       ScreenshotWebUi(kNtpElementId, GetPromosPath(),
                       /*screenshot_name=*/std::string(),
                       /*baseline_cl=*/"6998053"));
+}
+
+class NtpPromosDisabledUiTest : public NtpPromoUiTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NtpPromosDisabledUiTest,
+    ValuesIn(std::vector<NtpPromoUiTestParams>{
+        {.promo_type = NtpBrowserPromoType::kNone}}),
+    [](const testing::TestParamInfo<NtpPromoUiTestParams>& info) {
+      return info.param.ToString();
+    });
+
+IN_PROC_BROWSER_TEST_P(NtpPromosDisabledUiTest, NotShownMetric) {
+  RunTestSequence(InstrumentTab(kNtpElementId),
+                  NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
+                  CheckShowMetrics(ShowNtpPromosResult::kNotShownDueToPolicy));
 }

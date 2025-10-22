@@ -1142,6 +1142,9 @@ export class AppElement extends AppElementBase {
     }
 
     switch (this.browserPromoType_) {
+      case 'disabled':
+        recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
+        break;
       case 'empty':
         recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
         break;

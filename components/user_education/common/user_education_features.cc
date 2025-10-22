@@ -61,8 +61,9 @@ inline constexpr base::TimeDelta kDefaultPollingInterval =
     base::Milliseconds(500);
 
 inline constexpr char kNtpBrowserPromoTypeOptionName[] = "promo-type";
-inline constexpr std::array<base::FeatureParam<NtpBrowserPromoType>::Option, 2U>
-    kNtpBrowserPromoTypeOptions({{NtpBrowserPromoType::kSimple, "simple"},
+inline constexpr std::array<base::FeatureParam<NtpBrowserPromoType>::Option, 3U>
+    kNtpBrowserPromoTypeOptions({{NtpBrowserPromoType::kNone, "none"},
+                                 {NtpBrowserPromoType::kSimple, "simple"},
                                  {NtpBrowserPromoType::kSetupList,
                                   "setuplist"}});
 
