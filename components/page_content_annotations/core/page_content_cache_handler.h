@@ -40,6 +40,9 @@ class PageContentCacheHandler {
   // Called when a tab is closed.
   void OnTabClosed(int64_t tab_id);
 
+  // Called when a closed tab is undone.
+  void OnTabCloseUndone(int64_t tab_id);
+
   // Called when the visibility of a WebContents changes.
   void OnVisibilityChanged(
       std::optional<int64_t> tab_id,
@@ -60,7 +63,13 @@ class PageContentCacheHandler {
   PageContentCache* page_content_cache() { return page_content_cache_.get(); }
 
  private:
+  // Returns whether the tab with `tab_id` is currently considered closed.
+  bool IsTabClosed(int64_t tab_id) const;
+
   const std::unique_ptr<PageContentCache> page_content_cache_;
+
+  // The set of tab IDs that are currently considered closed.
+  std::set<int64_t> closed_tabs_;
 };
 
 }  // namespace page_content_annotations

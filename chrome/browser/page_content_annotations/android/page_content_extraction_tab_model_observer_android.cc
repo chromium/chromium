@@ -58,10 +58,17 @@ void PageContentExtractionTabModelObserverAndroid::OnTabModelRemoved(
   tab_model_observations_.RemoveObservation(tab_model);
 }
 
-void PageContentExtractionTabModelObserverAndroid::OnFinishingTabClosure(
-    TabAndroid* tab,
-    TabModel::TabClosingSource source) {
+void PageContentExtractionTabModelObserverAndroid::WillCloseTab(
+    TabAndroid* tab) {
+  // Observe WillCloseTab instead of OnFinishingTabClosure since we might never
+  // receive this observation if the app quit before the undo timeout. It is
+  // more reliable to observe this and undo closure.
   service_->OnTabClosed(tab->GetAndroidId());
+}
+
+void PageContentExtractionTabModelObserverAndroid::TabClosureUndone(
+    TabAndroid* tab) {
+  service_->OnTabCloseUndone(tab->GetAndroidId());
 }
 
 void PageContentExtractionTabModelObserverAndroid::

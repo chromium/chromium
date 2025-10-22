@@ -110,6 +110,12 @@ void PageContentExtractionService::OnTabClosed(int64_t tab_id) {
   }
 }
 
+void PageContentExtractionService::OnTabCloseUndone(int64_t tab_id) {
+  if (is_page_content_cache_enabled_) {
+    page_content_cache_handler_->OnTabCloseUndone(tab_id);
+  }
+}
+
 void PageContentExtractionService::OnVisibilityChanged(
     std::optional<int64_t> tab_id,
     content::WebContents* web_contents,

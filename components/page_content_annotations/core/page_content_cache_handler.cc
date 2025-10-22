@@ -48,9 +48,16 @@ PageContentCacheHandler::PageContentCacheHandler(
 PageContentCacheHandler::~PageContentCacheHandler() = default;
 
 void PageContentCacheHandler::OnTabClosed(int64_t tab_id) {
+  closed_tabs_.insert(tab_id);
   RecordExtractionAndCachingStatus(
       PageContentExtractionAndCachingStatus::kContentsDeletedOnTabClose);
   page_content_cache_->RemovePageContentForTab(tab_id);
+}
+
+void PageContentCacheHandler::OnTabCloseUndone(int64_t tab_id) {
+  // TODO(haileywang): It would be nice to also restore the deleted page
+  // contents.
+  closed_tabs_.erase(tab_id);
 }
 
 void PageContentCacheHandler::OnVisibilityChanged(
@@ -58,7 +65,7 @@ void PageContentCacheHandler::OnVisibilityChanged(
     const WebStateWrapper& web_state,
     std::optional<optimization_guide::proto::PageContext> page_context,
     const base::Time& extraction_time) {
-  if (!tab_id || web_state.is_off_the_record) {
+  if (!tab_id || web_state.is_off_the_record || IsTabClosed(tab_id.value())) {
     return;
   }
   if (web_state.visibility != PageContentVisibility::kHidden) {
@@ -98,7 +105,7 @@ void PageContentCacheHandler::ProcessPageContentExtraction(
     const WebStateWrapper& web_state,
     const optimization_guide::proto::PageContext& page_context,
     const base::Time& extraction_time) {
-  if (!tab_id || web_state.is_off_the_record) {
+  if (!tab_id || web_state.is_off_the_record || IsTabClosed(tab_id.value())) {
     return;
   }
 
@@ -115,6 +122,10 @@ void PageContentCacheHandler::ProcessPageContentExtraction(
     RecordExtractionAndCachingStatus(
         PageContentExtractionAndCachingStatus::kExtractionObservedInForeground);
   }
+}
+
+bool PageContentCacheHandler::IsTabClosed(int64_t tab_id) const {
+  return closed_tabs_.count(tab_id) > 0;
 }
 
 }  // namespace page_content_annotations

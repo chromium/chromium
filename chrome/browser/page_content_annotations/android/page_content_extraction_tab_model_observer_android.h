@@ -44,8 +44,8 @@ class PageContentExtractionTabModelObserverAndroid
   void OnTabModelRemoved(TabModel* tab_model) override;
 
   // TabModelObserver:
-  void OnFinishingTabClosure(TabAndroid* tab,
-                             TabModel::TabClosingSource source) override;
+  void WillCloseTab(TabAndroid* tab) override;
+  void TabClosureUndone(TabAndroid* tab) override;
 
  private:
   void RunStartupMetricsComputation();
