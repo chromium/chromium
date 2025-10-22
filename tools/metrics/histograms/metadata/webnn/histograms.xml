@@ -46,6 +46,13 @@ chromium-metrics-reviews@google.com.
       summary="time to record graph execution on the main thread."/>
 </variants>
 
+<variants name="WebNNOrtActions">
+  <variant name="Compilation" summary="time to compile the graph."/>
+  <variant name="CreateEnvironment"
+      summary="time to create the ORT environment."/>
+  <variant name="Inference" summary="time to inference."/>
+</variants>
+
 <histogram name="WebNN.ConstantDataSizeInKB" units="KB"
     expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
@@ -108,6 +115,17 @@ chromium-metrics-reviews@google.com.
     MLGraph, so to see the prevalence of a given operator, you need to divide
     its count by GraphBuilt count.
   </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.TimingMs.{WebNNOrtActions}" units="ms"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The time taken to perform a WebNN ORT action. This includes
+    {WebNNOrtActions}
+  </summary>
+  <token key="WebNNOrtActions" variants="WebNNOrtActions"/>
 </histogram>
 
 </histograms>

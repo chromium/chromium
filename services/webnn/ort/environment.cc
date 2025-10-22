@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -535,6 +536,8 @@ Environment::GetInstance(const gpu::GPUInfo& gpu_info) {
 // static
 base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     const gpu::GPUInfo& gpu_info) {
+  SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.CreateEnvironment");
+
   auto* platform_functions = PlatformFunctions::GetInstance();
   if (!platform_functions) {
     return base::unexpected("Failed to get ONNX Runtime platform functions.");
