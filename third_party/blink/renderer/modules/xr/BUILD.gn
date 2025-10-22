@@ -25,6 +25,8 @@ blink_modules_sources("xr") {
     "xr_composition_layer.h",
     "xr_cpu_depth_information.cc",
     "xr_cpu_depth_information.h",
+    "xr_cube_layer.cc",
+    "xr_cube_layer.h",
     "xr_cube_map.cc",
     "xr_cube_map.h",
     "xr_cylinder_layer.cc",

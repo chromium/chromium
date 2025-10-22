@@ -49,3 +49,8 @@ dictionary XREquirectLayerInit : XRLayerInit {
   float upperVerticalAngle = 1.570795;
   float lowerVerticalAngle = -1.570795;
 };
+
+// https://www.w3.org/TR/webxrlayers-1/#xrcubelayerinit
+dictionary XRCubeLayerInit : XRLayerInit {
+  DOMPointReadOnly? orientation;
+};

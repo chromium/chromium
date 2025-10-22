@@ -20,6 +20,8 @@ class WebGLRenderingContextBase;
 class WebGLTexture;
 class XRCamera;
 class XRCompositionLayer;
+class XRCubeLayer;
+class XRCubeLayerInit;
 class XRCylinderLayer;
 class XRCylinderLayerInit;
 class XREquirectLayer;
@@ -51,17 +53,18 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
   bool usesDepthValues() const;
 
-  XRProjectionLayer* createProjectionLayer(const XRProjectionLayerInit* init,
-                                           ExceptionState& exception_state);
+  XRProjectionLayer* createProjectionLayer(const XRProjectionLayerInit*,
+                                           ExceptionState&);
 
-  XRQuadLayer* createQuadLayer(const XRQuadLayerInit* init,
-                               ExceptionState& exception_state);
+  XRQuadLayer* createQuadLayer(const XRQuadLayerInit*, ExceptionState&);
 
-  XREquirectLayer* createEquirectLayer(const XREquirectLayerInit* init,
-                                       ExceptionState& exception_state);
+  XREquirectLayer* createEquirectLayer(const XREquirectLayerInit*,
+                                       ExceptionState&);
 
-  XRCylinderLayer* createCylinderLayer(const XRCylinderLayerInit* init,
-                                       ExceptionState& exception_state);
+  XRCylinderLayer* createCylinderLayer(const XRCylinderLayerInit*,
+                                       ExceptionState&);
+
+  XRCubeLayer* createCubeLayer(const XRCubeLayerInit*, ExceptionState&);
 
   XRWebGLSubImage* getViewSubImage(XRProjectionLayer* layer,
                                    XRView* view,

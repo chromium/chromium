@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_cube_layer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_cylinder_layer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_equirect_layer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
@@ -289,6 +290,18 @@ XREquirectLayer* XRWebGLBinding::createEquirectLayer(
       MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
 
   return MakeGarbageCollected<XREquirectLayer>(init, this, drawing_context);
+}
+
+XRCubeLayer* XRWebGLBinding::createCubeLayer(const XRCubeLayerInit* init,
+                                             ExceptionState& exception_state) {
+  if (!CanCreateShapedLayer(init, exception_state)) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/445772683): create cube layer instance.
+  exception_state.ThrowTypeError(
+      "XRCubeLayer was not implemented for the platform.");
+  return nullptr;
 }
 
 XRWebGLSubImage* XRWebGLBinding::getViewSubImage(

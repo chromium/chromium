@@ -33,6 +33,9 @@ enum XRTextureType {
   XREquirectLayer createEquirectLayer(XREquirectLayerInit init);
 
   [RuntimeEnabled=WebXRLayers, RaisesException]
+  XRCubeLayer createCubeLayer(XRCubeLayerInit init);
+
+  [RuntimeEnabled=WebXRLayers, RaisesException]
   XRWebGLSubImage getViewSubImage(XRProjectionLayer layer, XRView view);
 
   [RuntimeEnabled=WebXRLayers, RaisesException]

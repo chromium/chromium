@@ -1,25 +1,7 @@
 This is a testharness.js-based test.
-Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] XRCompositionLayer interface: attribute quality
   assert_true: The prototype object must have a property "quality" expected true got false
-[FAIL] XRCubeLayer interface: existence and properties of interface object
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface object length
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface object name
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface: attribute space
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface: attribute orientation
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
-[FAIL] XRCubeLayer interface: attribute onredraw
-  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
 [FAIL] XRWebGLBinding interface: operation createQuadLayer(optional XRQuadLayerInit)
   assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] XRWebGLBinding interface: operation createCylinderLayer(optional XRCylinderLayerInit)
@@ -27,7 +9,7 @@ Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] XRWebGLBinding interface: operation createEquirectLayer(optional XREquirectLayerInit)
   assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] XRWebGLBinding interface: operation createCubeLayer(optional XRCubeLayerInit)
-  assert_own_property: interface prototype object missing non-static operation expected property "createCubeLayer" missing
+  assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] XRWebGLBinding interface: operation foveateBoundTexture(GLenum, float)
   assert_own_property: interface prototype object missing non-static operation expected property "foveateBoundTexture" missing
 [FAIL] XRMediaBinding interface: existence and properties of interface object

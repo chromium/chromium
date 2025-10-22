@@ -22,7 +22,8 @@ enum class XRLayerType {
   kProjectionLayer,
   kQuadLayer,
   kCylinderLayer,
-  kEquirectLayer
+  kEquirectLayer,
+  kCubeLayer
 };
 
 class XRLayer : public EventTarget {

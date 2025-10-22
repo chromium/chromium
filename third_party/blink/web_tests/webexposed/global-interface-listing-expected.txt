@@ -12589,6 +12589,15 @@ interface XRCompositionLayer : XRLayer
     setter chromaticAberrationCorrection
     setter forceMonoPresentation
     setter opacity
+interface XRCubeLayer : XRCompositionLayer
+    attribute @@toStringTag
+    getter onredraw
+    getter orientation
+    getter space
+    method constructor
+    setter onredraw
+    setter orientation
+    setter space
 interface XRCylinderLayer : XRCompositionLayer
     attribute @@toStringTag
     getter aspectRatio
@@ -12931,6 +12940,7 @@ interface XRWebGLBinding
     getter nativeProjectionScaleFactor
     getter usesDepthValues
     method constructor
+    method createCubeLayer
     method createCylinderLayer
     method createEquirectLayer
     method createProjectionLayer
