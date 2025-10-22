@@ -504,3 +504,8 @@
 # https://crrev.com/c/6966639.
 -FileSystemChooserBrowserTest.DontShowWhileHidden
 -FileSystemChooserBrowserTest.ShowThenHide
+
+# TODO(crbug.com/454067890): The test has been failing since
+# https://crrev.com/c/6734221.
+-All/AudioServiceBrowserTest.GetUserMediaEcRemoteOnly/SystemAecAvailable
+-All/AudioServiceBrowserTest.GetUserMediaEcRemoteOnly/SystemAecNotAvailable
