@@ -54,6 +54,10 @@ namespace content {
 std::string Md5OfPixelsAsHexForWebTests(base::span<const uint8_t> pixels);
 }
 
+namespace devtools {
+std::string Md5OfUrlAsHexForDevTools(std::string_view url);
+}
+
 namespace drive {
 crypto::obsolete::Md5 MakeMd5HasherForDriveFsAccount();
 }
@@ -167,6 +171,9 @@ class CRYPTO_EXPORT Md5 {
   // TODO(https://crbug.com/450285252): get rid of this.
   friend std::array<uint8_t, Md5::kSize> base::Md5ForWinInspectionResultsCache(
       base::span<const uint8_t> payload);
+
+  // TODO(crbug.com/454363517): get rid of this.
+  friend std::string devtools::Md5OfUrlAsHexForDevTools(std::string_view url);
 
   // TODO(https://crbug.com/428022614): get rid of this.
   friend Md5 media::test::MakeMd5HasherForVideoFrameValidation();

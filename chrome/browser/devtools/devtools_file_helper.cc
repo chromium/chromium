@@ -12,9 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,6 +33,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/common/content_client.h"
+#include "crypto/obsolete/md5.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -40,6 +41,12 @@
 
 using content::BrowserThread;
 using std::set;
+
+namespace devtools {
+std::string Md5OfUrlAsHexForDevTools(std::string_view url) {
+  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(url)));
+}
+}  // namespace devtools
 
 namespace {
 
@@ -148,7 +155,8 @@ void DevToolsFileHelper::Save(const std::string& url,
       profile_->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles);
   base::FilePath initial_path;
 
-  if (const base::Value* path_value = file_map.Find(base::MD5String(url))) {
+  if (const base::Value* path_value =
+          file_map.Find(devtools::Md5OfUrlAsHexForDevTools(url))) {
     std::optional<base::FilePath> path = base::ValueToFilePath(*path_value);
     if (path) {
       initial_path = std::move(*path);
@@ -229,7 +237,8 @@ void DevToolsFileHelper::SaveToFileSelected(
 #else
   base::FilePath path_in_prefs = file_info.path();
 #endif  // BUILDFLAG(IS_ANDROID)
-  files_map.Set(base::MD5String(url), base::FilePathToValue(path_in_prefs));
+  files_map.Set(devtools::Md5OfUrlAsHexForDevTools(url),
+                base::FilePathToValue(path_in_prefs));
 
   std::string file_system_path = file_info.path().AsUTF8Unsafe();
   // Run 'SaveCallback' only once we have actually written the file, but
