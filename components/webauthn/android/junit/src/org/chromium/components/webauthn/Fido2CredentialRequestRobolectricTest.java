@@ -324,6 +324,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* barrier= */ any(),
+                        /* stopImmediateTimer= */ any(),
                         /* ignoreGpm= */ eq(true));
         verify(mBrowserBridgeMock)
                 .onCredentialsDetailsListReceived(
@@ -514,6 +515,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* barrier= */ any(),
+                        /* stopImmediateTimer= */ any(),
                         /* ignoreGpm= */ eq(false));
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
     }
@@ -544,6 +546,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* barrier= */ any(),
+                        /* stopImmediateTimer= */ any(),
                         /* ignoreGpm= */ eq(true));
         verify(mBrowserBridgeMock, times(1))
                 .onCredentialsDetailsListReceived(
@@ -577,7 +580,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         // CredManHelper class is responsible to return the status.
         assertThat(mCallback.getStatus()).isEqualTo(null);
-        verify(mCredManHelperMock).cancelGetAssertion();
+        verify(mCredManHelperMock).cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
         verify(mBrowserBridgeMock, never()).cleanupRequest(any());
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
     }
@@ -602,7 +605,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.cancelGetAssertion();
 
         verify(mBarrierMock).onFido2ApiCancelled();
-        verify(mCredManHelperMock).cancelGetAssertion();
+        verify(mCredManHelperMock).cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
         verify(mBrowserBridgeMock).cleanupRequest(any());
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
     }
@@ -658,7 +661,7 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mCallback.getStatus()).isNull();
         verify(mCredManHelperMock, times(1))
                 .startPrefetchRequest(
-                        any(), any(), any(), any(), any(), any(), any(), anyBoolean());
+                        any(), any(), any(), any(), any(), any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -687,13 +690,15 @@ public class Fido2CredentialRequestRobolectricTest {
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock)
-                .startGetRequest(
+                .startPrefetchRequest(
                         eq(mRequestOptions),
                         eq(originString),
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
-                        /* clientDataHash= */ notNull(),
+                        /* clientDataHash= */ any(),
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
+                        /* barrier= */ any(),
+                        /* stopImmediateTimer= */ notNull(),
                         /* ignoreGpm= */ eq(false));
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
     }

@@ -26,6 +26,7 @@ import android.credentials.GetCredentialException;
 import android.credentials.GetCredentialRequest;
 import android.credentials.GetCredentialResponse;
 import android.credentials.PrepareGetCredentialResponse;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
@@ -469,6 +470,7 @@ public class CredManHelperRobolectricTest {
                 mCallback::onSignResponse,
                 mErrorCallback,
                 mBarrier,
+                /* stopImmediateTimer= */ null,
                 /* ignoreGpm= */ false);
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
@@ -512,6 +514,7 @@ public class CredManHelperRobolectricTest {
                 mCallback::onSignResponse,
                 mErrorCallback,
                 mBarrier,
+                /* stopImmediateTimer= */ null,
                 /* ignoreGpm= */ false);
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
@@ -543,6 +546,7 @@ public class CredManHelperRobolectricTest {
                 mCallback::onSignResponse,
                 mErrorCallback,
                 mBarrier,
+                /* stopImmediateTimer= */ null,
                 /* ignoreGpm= */ false);
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
@@ -557,9 +561,9 @@ public class CredManHelperRobolectricTest {
         verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
         credManCallSuccessfulRunback.getValue().run();
 
-        mCredManHelper.cancelGetAssertion();
+        mCredManHelper.cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
 
-        verify(mBarrier, times(1)).onCredManCancelled();
+        verify(mBarrier, times(1)).onCredManCancelled(AuthenticatorStatus.ABORT_ERROR);
         verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
@@ -580,6 +584,7 @@ public class CredManHelperRobolectricTest {
                 mCallback::onSignResponse,
                 mErrorCallback,
                 mBarrier,
+                /* stopImmediateTimer= */ null,
                 /* ignoreGpm= */ false);
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
@@ -633,6 +638,7 @@ public class CredManHelperRobolectricTest {
                 mCallback::onSignResponse,
                 mErrorCallback,
                 mBarrier,
+                /* stopImmediateTimer= */ null,
                 /* ignoreGpm= */ false);
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
@@ -691,6 +697,74 @@ public class CredManHelperRobolectricTest {
 
     @Test
     @SmallTest
+    public void testImmediateGetCredential_credManOnly_success() {
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+                /* overrideForcesGpm= */ true);
+
+        Runnable stopImmediateTimer = Mockito.mock(Runnable.class);
+
+        mCredManHelper.startPrefetchRequest(
+                mRequestOptions,
+                mOriginString,
+                /* clientDataJson= */ null,
+                mClientDataHash,
+                mCallback::onSignResponse,
+                mErrorCallback,
+                mBarrier,
+                stopImmediateTimer,
+                /* ignoreGpm= */ false);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+        GetCredentialRequest credManPrepareRequest =
+                shadowCredentialManager.getGetCredentialRequest();
+        assertThat(credManPrepareRequest).isEqualTo(mGetCredentialRequest);
+
+        PrepareGetCredentialResponse prepareGetCredentialResponse =
+                Shadow.newInstanceOf(PrepareGetCredentialResponse.class);
+        shadowCredentialManager
+                .getPrepareGetCredentialCallback()
+                .onResult(prepareGetCredentialResponse);
+
+        verify(mBarrier, never()).onCredManFailed(anyInt());
+        ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
+                ArgumentCaptor.forClass(Runnable.class);
+        verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
+
+        credManCallSuccessfulRunback.getValue().run();
+
+        verify(stopImmediateTimer, times(1)).run();
+        assertThat(mCallback.getStatus()).isNull();
+        verify(mBrowserBridge, never())
+                .onCredManConditionalRequestPending(any(), anyBoolean(), any());
+        verify(mMetricsHelper, times(1))
+                .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.SENT_REQUEST));
+        verify(mMetricsHelper, times(1))
+                .recordCredmanPrepareRequestHistogram(
+                        eq(CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS));
+
+        // The callback in `preparePrefetchRequest` should have triggered a call to
+        // `startGetRequest`.
+        verify(mCredManGetCredentialRequestHelper, times(2))
+                .getGetCredentialRequest(eq(mRequestDecorator));
+        GetCredentialRequest credManGetRequest = shadowCredentialManager.getGetCredentialRequest();
+        assertThat(credManGetRequest).isEqualTo(mGetCredentialRequest);
+
+        GetCredentialResponse response = new GetCredentialResponse(createPasskeyCredential());
+        shadowCredentialManager.getGetCredentialCallback().onResult(response);
+
+        assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), any());
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), any());
+    }
+
+    @Test
+    @SmallTest
     public void testImmediateMediation_userSelectsPassword_canHavePasswordResponse() {
         mRequestOptions.mediation = Mediation.IMMEDIATE;
 
@@ -724,6 +798,43 @@ public class CredManHelperRobolectricTest {
                 .isEqualTo(username);
         assertThat(mojoStringToJavaString(mCallback.getGetAssertionPasswordCredential().password))
                 .isEqualTo(password);
+    }
+
+    @Test
+    @SmallTest
+    public void testImmediateGetCredential_timeout_notAllowed() {
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+
+        mCredManHelper.startPrefetchRequest(
+                mRequestOptions,
+                mOriginString,
+                /* clientDataJson= */ null,
+                mClientDataHash,
+                mCallback::onSignResponse,
+                mErrorCallback,
+                mBarrier,
+                /* stopImmediateTimer= */ null,
+                /* ignoreGpm= */ false);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+        PrepareGetCredentialResponse prepareGetCredentialResponse =
+                Shadow.newInstanceOf(PrepareGetCredentialResponse.class);
+        shadowCredentialManager
+                .getPrepareGetCredentialCallback()
+                .onResult(prepareGetCredentialResponse);
+
+        ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
+                ArgumentCaptor.forClass(Runnable.class);
+        verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
+        credManCallSuccessfulRunback.getValue().run();
+
+        // Simulate timer expiring.
+        mCredManHelper.cancelGetAssertion(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+
+        verify(mBarrier, times(1)).onCredManCancelled(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());
+        verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
+        verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
     }
 
     private Credential createPasskeyCredential() {

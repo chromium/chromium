@@ -40,6 +40,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
+import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.components.webauthn.Fido2CredentialRequest.CancellableUiState;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionOutcome;
@@ -203,6 +204,7 @@ public class CredManHelper {
             @Nullable GetCredentialResponseCallback getCallback,
             ErrorCallback errorCallback,
             Barrier barrier,
+            @Nullable Runnable stopImmediateTimer,
             boolean ignoreGpm) {
         log(TAG, "startPrefetchRequest");
         long startTimeMs = SystemClock.elapsedRealtime();
@@ -241,7 +243,6 @@ public class CredManHelper {
                             // The request was completed synchronously when the cancellation was
                             // received.
                             mCancellableUiState = CancellableUiState.NONE;
-                            localBridge.cleanupCredManRequest(frameHost);
                             return;
                         }
                         if (mCancellableUiState != CancellableUiState.WAITING_FOR_CREDENTIAL_LIST) {
@@ -267,23 +268,67 @@ public class CredManHelper {
 
                         mCancellableUiState = CancellableUiState.WAITING_FOR_SELECTION;
 
-                        localBarrier.onCredManSuccessful(
-                                () -> {
-                                    localBridge.onCredManConditionalRequestPending(
-                                            frameHost,
-                                            hasPublicKeyCredentials || hasAuthenticationResults,
-                                            (requestPasswords) -> {
-                                                setRequestPasswords(requestPasswords);
-                                                startGetRequest(
-                                                        options,
-                                                        originString,
-                                                        clientDataJson,
-                                                        clientDataHash,
-                                                        getCallback,
-                                                        localErrorCallback,
-                                                        ignoreGpm);
-                                            });
-                                });
+                        Runnable barrierCallback;
+                        if (options.mediation == Mediation.IMMEDIATE
+                                && CredManSupportProvider.getCredManSupport()
+                                        == CredManSupport.FULL_UNLESS_INAPPLICABLE) {
+                            // For an Immediate Mediation request that is being sent only to
+                            // CredMan, the prefetch only happens because we need to cancel
+                            // if the request is taking more than a certain amount of time to
+                            // resolve. If credentials were found then it is followed by a call
+                            // to `startGetRequest`.
+                            assumeNonNull(stopImmediateTimer).run();
+
+                            setRequestPasswords(options.password && hasAuthenticationResults);
+
+                            if (!hasPublicKeyCredentials && !mRequestPasswords) {
+                                // TODO(https://crbug.com/408002783): This should have a distinct
+                                // GetAssertionOutcome for logging.
+                                localErrorCallback.onResult(
+                                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                        GetAssertionOutcome.OTHER_FAILURE);
+                                return;
+                            }
+                            // This fallback should not be used because the prefetch identified
+                            // usable credentials, but there is raciness here if the credential is
+                            // getting deleted by other means. Setting a fallback avoids UI being
+                            // shown when it should not be.
+                            setNoCredentialsFallback(
+                                    () ->
+                                            localErrorCallback.onResult(
+                                                    AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                                    GetAssertionOutcome.OTHER_FAILURE));
+                            barrierCallback =
+                                    () ->
+                                            startGetRequest(
+                                                    options,
+                                                    originString,
+                                                    clientDataJson,
+                                                    clientDataHash,
+                                                    getCallback,
+                                                    localErrorCallback,
+                                                    ignoreGpm);
+                        } else {
+                            barrierCallback =
+                                    () -> {
+                                        localBridge.onCredManConditionalRequestPending(
+                                                frameHost,
+                                                hasPublicKeyCredentials || hasAuthenticationResults,
+                                                (requestPasswords) -> {
+                                                    setRequestPasswords(requestPasswords);
+                                                    startGetRequest(
+                                                            options,
+                                                            originString,
+                                                            clientDataJson,
+                                                            clientDataHash,
+                                                            getCallback,
+                                                            localErrorCallback,
+                                                            ignoreGpm);
+                                                });
+                                    };
+                        }
+
+                        localBarrier.onCredManSuccessful(barrierCallback);
                         mMetricsHelper.recordCredmanPrepareRequestHistogram(
                                 hasPublicKeyCredentials
                                         ? CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS
@@ -338,7 +383,6 @@ public class CredManHelper {
         mClientDataJson = clientDataJson;
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         final ErrorCallback localErrorCallback = errorCallback;
-        final Barrier localBarrier = assumeNonNull(mBarrier);
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
         assumeNonNull(options.publicKey);
 
@@ -359,8 +403,6 @@ public class CredManHelper {
                         notifyBrowserOnCredManClosed(false);
                         if (mCancellableUiState == CancellableUiState.CANCEL_PENDING) {
                             mCancellableUiState = CancellableUiState.NONE;
-                            localBridge.cleanupCredManRequest(frameHost);
-                            localBarrier.onCredManCancelled();
                             return;
                         }
                         if (errorType.equals(GetCredentialException.TYPE_USER_CANCELED)) {
@@ -412,7 +454,6 @@ public class CredManHelper {
                             notifyBrowserOnCredManClosed(false);
                             mCancellableUiState = CancellableUiState.NONE;
                             localBridge.cleanupCredManRequest(frameHost);
-                            localBarrier.onCredManCancelled();
                             return;
                         }
                         Bundle data = getCredentialResponse.getCredential().getData();
@@ -550,13 +591,13 @@ public class CredManHelper {
         return AuthenticatorStatus.SUCCESS;
     }
 
-    public void cancelGetAssertion() {
+    public void cancelGetAssertion(int error) {
         log(TAG, "cancelGetAssertion");
         switch (mCancellableUiState) {
             case WAITING_FOR_CREDENTIAL_LIST:
                 mCancellableUiState = CancellableUiState.CANCEL_PENDING;
                 assumeNonNull(mBarrier);
-                mBarrier.onCredManCancelled();
+                mBarrier.onCredManCancelled(error);
                 break;
             case WAITING_FOR_SELECTION:
                 assumeNonNull(mBridgeProvider.getBridge());
@@ -565,7 +606,7 @@ public class CredManHelper {
                         .cleanupCredManRequest(mAuthenticationContextProvider.getRenderFrameHost());
                 mCancellableUiState = CancellableUiState.NONE;
                 assumeNonNull(mBarrier);
-                mBarrier.onCredManCancelled();
+                mBarrier.onCredManCancelled(error);
                 break;
             default:
                 // No action

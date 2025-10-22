@@ -128,9 +128,9 @@ public class Barrier {
         }
     }
 
-    public void onCredManCancelled() {
+    public void onCredManCancelled(int error) {
         if (mFido2ApiStatus == Status.NONE || mFido2ApiCancelled) {
-            mErrorCallback.onResult(AuthenticatorStatus.ABORT_ERROR);
+            mErrorCallback.onResult(error);
             mFido2ApiCancelled = false;
             return;
         }
