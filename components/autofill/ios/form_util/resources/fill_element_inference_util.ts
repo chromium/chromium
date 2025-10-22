@@ -22,10 +22,10 @@ const autofillFormFeaturesApi =
  * @param tag Tag name.
  * @return Whether the tag of node is tag.
  */
-gCrWebLegacy.fill.hasTagName = function(node: Element, tag: string): boolean {
+export function hasTagName(node: Element, tag: string): boolean {
   return node.nodeType === Node.ELEMENT_NODE &&
       (node).tagName === tag.toUpperCase();
-};
+}
 
 /**
  * Checks if an element is autofillable.

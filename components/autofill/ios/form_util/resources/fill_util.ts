@@ -5,11 +5,11 @@
 import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {findChildText, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {findChildText, hasTagName, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-declare interface AutofillFormFieldData {
+export declare interface AutofillFormFieldData {
   name: string;
   value: string;
   renderer_id: string;
@@ -34,7 +34,7 @@ declare interface AutofillFormFieldData {
   pattern_attribute?: string;
 }
 
-declare interface AutofillFormData {
+export declare interface AutofillFormData {
   name: string;
   renderer_id: string;
   origin: string;
@@ -46,7 +46,7 @@ declare interface AutofillFormData {
   id_attribute?: string;
 }
 
-declare interface FrameTokenWithPredecessor {
+export declare interface FrameTokenWithPredecessor {
   token: string;
   predecessor: number;
 }
@@ -107,7 +107,7 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
  * @param element An element to check if it can be autocompleted.
  * @return true if autocomplete dropdown should be suggested.
  */
-function shouldAutocomplete(
+export function shouldAutocomplete(
     element: fillConstants.FormControlElement|null): boolean {
   if (!autoComplete(element)) {
     return false;
@@ -490,8 +490,8 @@ function absoluteURL(doc: Document, relativeURL: string): string {
  * function GetCanonicalActionForForm.
  * @return Canonical action.
  */
-function getCanonicalActionForForm(
-    formElement: HTMLFormElement): string {
+export function getCanonicalActionForForm(formElement: HTMLFormElement):
+    string {
   const rawAction = formElement.getAttribute('action') || '';
   const absoluteUrl = absoluteURL(formElement.ownerDocument, rawAction);
   return removeQueryAndReferenceFromURL(absoluteUrl);
@@ -549,7 +549,7 @@ gCrWebLegacy.fill.getOptionStringsFromElement = function(
  * @param element An element to examine.
  * @return The value for `element`.
  */
-function valueForElement(
+export function valueForElement(
     element: fillConstants.FormControlElement|HTMLOptionElement): string {
   let value = element.value;
   if (isSelectElement(element)) {
@@ -622,7 +622,7 @@ function coalesceTextByIdList(
  * or the value of the aria-label attribute, with priority given to the
  * aria-labelledby text.
  */
-function getAriaLabel(element: Element): string {
+export function getAriaLabel(element: Element): string {
   let label = coalesceTextByIdList(element, 'aria-labelledby');
   if (!label) {
     label = element.getAttribute('aria-label') || '';
@@ -633,7 +633,7 @@ function getAriaLabel(element: Element): string {
 /**
  * Returns the coalesced text referenced by the aria-describedby attribute.
  */
-function getAriaDescription(element: Element): string {
+export function getAriaDescription(element: Element): string {
   return coalesceTextByIdList(element, 'aria-describedby');
 }
 
@@ -648,13 +648,14 @@ function getAriaDescription(element: Element): string {
  * @param element An element to examine.
  * @return Whether the element is inside a <form> or <fieldset>.
  */
-function isElementInsideFormOrFieldSet(
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+export function isElementInsideFormOrFieldSet(
     element: fillConstants.FormControlElement): boolean {
   let parentNode = element.parentNode;
   while (parentNode) {
     if ((parentNode.nodeType === Node.ELEMENT_NODE) &&
-        (gCrWebLegacy.fill.hasTagName(parentNode, 'form') ||
-         gCrWebLegacy.fill.hasTagName(parentNode, 'fieldset'))) {
+        (hasTagName(parentNode as Element, 'form') ||
+         hasTagName(parentNode as Element, 'fieldset'))) {
       return true;
     }
     parentNode = parentNode.parentNode;
@@ -704,7 +705,7 @@ gCrWebLegacy.fill.getUniqueID = function(element: any): string {
  * @param node The node to be processed.
  * @return Whether the node is visible or not.
  */
-function isVisibleNode(node: Node): boolean {
+export function isVisibleNode(node: Node): boolean {
   if (!node) {
     return false;
   }
@@ -724,7 +725,7 @@ function isVisibleNode(node: Node): boolean {
  * @param element Form or form input element.
  * @return Unique stable ID converted to string..
  */
-function getUniqueID(element: any): string {
+export function getUniqueID(element: any): string {
   // `setUniqueIDIfNeeded` is only available in the isolated content world.
   // Check before invoking it as this script is injected into the page content
   // world as well.
@@ -756,26 +757,10 @@ function getUniqueID(element: any): string {
   }
 }
 
-function setRemoteFrameToken(token: string) {
+export function setRemoteFrameToken(token: string) {
   document.documentElement.setAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE, token);
 }
 
-function getRemoteFrameToken(): string|null {
+export function getRemoteFrameToken(): string|null {
   return document.documentElement.getAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE);
 }
-
-export {
-  AutofillFormFieldData,
-  AutofillFormData,
-  FrameTokenWithPredecessor,
-  setRemoteFrameToken,
-  getRemoteFrameToken,
-  valueForElement,
-  isElementInsideFormOrFieldSet,
-  isVisibleNode,
-  getUniqueID,
-  shouldAutocomplete,
-  getAriaLabel,
-  getAriaDescription,
-  getCanonicalActionForForm,
-};

@@ -606,7 +606,7 @@ gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements = function(
       }
     }
 
-    if (gCrWebLegacy.fill.hasTagName(element, 'fieldset') &&
+    if (inferenceUtil.hasTagName(element, 'fieldset') &&
         !fillUtil.isElementInsideFormOrFieldSet(element)) {
       fieldsets.push(element);
     }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isAutofillableElement, isAutofillableInputElement, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {hasTagName, isAutofillableElement, isAutofillableInputElement, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getAriaDescription, getAriaLabel, getCanonicalActionForForm, getUniqueID, shouldAutocomplete} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
@@ -18,6 +18,7 @@ fillApi.addFunction('getAriaDescription', getAriaDescription);
 fillApi.addFunction('getAriaLabel', getAriaLabel);
 fillApi.addFunction('getCanonicalActionForForm', getCanonicalActionForForm);
 fillApi.addFunction('getUniqueID', getUniqueID);
+fillApi.addFunction('hasTagName', hasTagName);
 fillApi.addFunction('isAutofillableElement', isAutofillableElement);
 fillApi.addFunction('isAutofillableInputElement', isAutofillableInputElement);
 fillApi.addFunction('isSelectElement', isSelectElement);
