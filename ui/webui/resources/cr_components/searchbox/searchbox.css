@@ -127,7 +127,7 @@ input {
 }
 
 :host([compose-button-enabled][dropdown-is-visible]) input,
-:host([realbox-layout-mode='Tall']) input {
+:host([realbox-layout-mode^='Tall']) input {
   --cr-searchbox-input-trailing-padding: calc(12px
       + var(--cr-compose-button-width)
       + var(--cr-searchbox-icon-spacing));
@@ -424,6 +424,10 @@ cr-searchbox-icon {
   padding-top: var(--cr-searchbox-dropdown-padding-top);
 }
 
+:host([ntp-realbox-next-enabled][dropdown-is-visible]) {
+  --cr-searchbox-border-radius: 24px;
+}
+
 :host([ntp-realbox-next-enabled][dropdown-is-visible]),
 :host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) {
   box-shadow: none;
@@ -507,6 +511,7 @@ cr-searchbox-icon {
 }
 
 :host([realbox-layout-mode='Compact']) {
+  --cr-searchbox-border-radius: 30px;
   --cr-searchbox-dropdown-padding-top: 12px;
   --cr-searchbox-height: 56px;
 }

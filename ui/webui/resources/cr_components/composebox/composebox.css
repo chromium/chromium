@@ -116,7 +116,13 @@
 }
 
 :host([ntp-realbox-next-enabled]) {
+  --cr-composebox-font-size: 16px;
   --input-bottom-spacing: 12px;
+}
+
+:host([ntp-realbox-next-enabled]) #input::placeholder {
+  font-size: 18px;
+  font-weight: 400;
 }
 
 :host([expanded_]) {
@@ -612,6 +618,14 @@
   margin-inline-start: var(--text-input-inline-start-spacing);
   margin-top: 8px;
   margin-bottom: 10px;
+}
+
+:host([ntp-realbox-next-enabled][realbox-layout-mode^="Tall"][show-dropdown_]) {
+  --expanded-border-radius: 24px;
+}
+
+:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) {
+  --expanded-border-radius: 30px;
 }
 
 :host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #iconContainer {
