@@ -43,6 +43,9 @@ BASE_DECLARE_FEATURE(kExtensionsCollapseMainMenu);
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Controls whether the refreshed infobar is enabled.
+BASE_DECLARE_FEATURE(kInfobarRefresh);
+
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarInFirstRunExperience);

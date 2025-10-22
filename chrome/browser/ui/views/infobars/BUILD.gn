@@ -29,6 +29,7 @@ source_set("impl") {
     ":infobars",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/omnibox",
     "//components/infobars/core",
     "//components/strings:components_strings_grit",

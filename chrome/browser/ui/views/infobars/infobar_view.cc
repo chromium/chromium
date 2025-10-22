@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -202,7 +203,12 @@ void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* cp = GetColorProvider();
   const SkColor background_color = cp->GetColor(kColorInfoBarBackground);
-  SetBackground(views::CreateSolidBackground(background_color));
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    const SkColor background_theme_color = cp->GetColor(ui::kColorFrameActive);
+    SetBackground(views::CreateSolidBackground(background_theme_color));
+  } else {
+    SetBackground(views::CreateSolidBackground(background_color));
+  }
 
   const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
   const SkColor icon_color = cp->GetColor(kColorInfoBarButtonIcon);
