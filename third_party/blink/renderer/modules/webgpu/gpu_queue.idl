@@ -40,5 +40,9 @@
         GPUImageCopyExternalImage source,
         GPUImageCopyTextureTagged destination,
         GPUExtent3D copySize);
+
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] void copyElementImageToTexture(
+        Element source,
+        GPUImageCopyTextureTagged destination);
 };
 GPUQueue includes GPUObjectBase;

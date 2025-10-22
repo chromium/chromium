@@ -829,7 +829,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
   }
 
   std::optional<cc::PaintRecord> paint_record =
-      GetElementImage(element, "drawElementImage()", exception_state);
+      GetElementPaintRecord(element, "drawElementImage()", exception_state);
   if (!paint_record) {
     return;
   }

@@ -169,6 +169,11 @@ class CORE_EXPORT CanvasRenderingContext
   // This is only used in WebGL
   void RecordUKMCanvasDrawnToRenderingAPI();
 
+  static CanvasRenderingContext* GetEnclosingContextForDrawElement(
+      Element* element,
+      const String& func_name,
+      ExceptionState& exception_state);
+
   static CanvasRenderingAPI RenderingAPIFromId(const String& id);
 
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
@@ -298,6 +303,9 @@ class CORE_EXPORT CanvasRenderingContext
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
   virtual void Reshape(int width, int height) {}
+  scoped_refptr<StaticBitmapImage> GetElementImage(Element*,
+                                                   const String& func_name,
+                                                   ExceptionState&);
 
   intptr_t AllocatedBufferSize() const;
   virtual int AllocatedBufferCountPerPixel() const { return 1; }
@@ -358,9 +366,9 @@ class CORE_EXPORT CanvasRenderingContext
                                   const String& func_name,
                                   ExceptionState& exception_state);
 
-  std::optional<cc::PaintRecord> GetElementImage(Element*,
-                                                 const String& func_name,
-                                                 ExceptionState&);
+  std::optional<cc::PaintRecord> GetElementPaintRecord(Element*,
+                                                       const String& func_name,
+                                                       ExceptionState&);
 
   bool ConvertHitTestRegionsToHTMLCanvasRegions(
       const HeapVector<Member<CanvasElementHitTestRegion>>& hit_test_regions,

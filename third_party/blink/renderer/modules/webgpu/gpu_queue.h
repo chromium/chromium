@@ -84,9 +84,15 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                   GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
+  void copyElementImageToTexture(Element* element,
+                                 GPUImageCopyTextureTagged* destination,
+                                 ExceptionState& exception_state);
   // }}} End of WebIDL binding implementation.
 
  private:
+  bool IsValidDestinationTexture(GPUImageCopyTextureTagged* destination,
+                                 wgpu::TexelCopyTextureInfo& dawn_destination,
+                                 ExceptionState& exception_state);
   void CopyFromVideoElement(const ExternalTextureSource source,
                             const wgpu::Extent2D& video_frame_natural_size,
                             const wgpu::Origin2D& origin,

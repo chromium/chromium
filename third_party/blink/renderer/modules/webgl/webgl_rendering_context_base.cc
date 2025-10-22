@@ -6846,27 +6846,11 @@ void WebGLRenderingContextBase::texElementImage2D(
     return;
   }
 
-  std::optional<cc::PaintRecord> paint_record =
-      GetElementImage(element, "texElementImage2D()", exception_state);
-  if (!paint_record) {
-    return;
-  }
-
-  SkSurfaceProps surface_props;
-  auto box_rect =
-      gfx::Rect(ToCeiledSize(element->GetLayoutBox()->StitchedSize()));
-  sk_sp<SkSurface> surface = SkSurfaces::Raster(
-      SkImageInfo::MakeN32Premul(box_rect.width(), box_rect.height()),
-      &surface_props);
-  if (!surface) {
-    return;
-  }
-
-  SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  skia_paint_canvas.drawPicture(paint_record.value());
-
   scoped_refptr<Image> image_for_render =
-      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+      GetElementImage(element, "texElementImage2D()", exception_state);
+  if (!image_for_render) {
+    return;
+  }
 
   TexImageParams params = {
       .source_type = kSourceImageBitmap,
