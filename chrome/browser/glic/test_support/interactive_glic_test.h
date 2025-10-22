@@ -604,10 +604,9 @@ class InteractiveGlicTestMixin : public T {
     }
   }
 
-  // Same as `Api::AddInstrumentedTabWithOpener()`, but sets the `opener` to
-  // the current glic instance web contents. This is useful to bind the glic
-  // instance from the active tab to the newly created tab.
-  InteractiveBrowserTestApi::MultiStep AddInstrumentedTabWithOpener(
+  // Same as `Api::AddInstrumentedTab()`, but also opens a side panel from the
+  // currently tracked instance if the Multi-Instance flag is enabled.
+  InteractiveBrowserTestApi::MultiStep AddInstrumentedTabAndOpenSidePanel(
       ui::ElementIdentifier id,
       GURL url,
       std::optional<int> at_index = std::nullopt) {
@@ -629,7 +628,21 @@ class InteractiveGlicTestMixin : public T {
                   GetHost()->webui_contents()->GetPrimaryMainFrame();
               CHECK(Navigate(&navigate_params));
             })),
-        Api::WaitForWebContentsReady(id));
+        Api::WaitForWebContentsReady(id),
+        Api::WithElement(
+            id, base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+              auto* const web_el = el->AsA<TrackedElementWebContents>();
+              CHECK(web_el);
+              content::WebContents* contents = web_el->owner()->web_contents();
+              tabs::TabInterface* tab =
+                  tabs::TabModel::MaybeGetFromContents(contents);
+              CHECK(tab) << "Could not find a tab for the new WebContents.";
+
+              if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+                // Show the Glic side panel in the newly created tab.
+                GetGlicInstanceImpl()->Show(ShowOptions::ForSidePanel(*tab));
+              }
+            })));
     Api::AddDescriptionPrefix(
         steps, base::StringPrintf("AddInstrumentedTabWithOpener( %s, %s, %d, )",
                                   id.GetName().c_str(), url.spec().c_str(),

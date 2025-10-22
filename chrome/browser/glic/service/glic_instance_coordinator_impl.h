@@ -119,13 +119,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) override;
 
-  void FindInstanceFromGlicContentsAndBindToTab(
-      content::WebContents* source_glic_web_contents,
-      tabs::TabInterface* tab_to_bind) override;
-
-  bool FindInstanceFromIdAndBindToTab(const InstanceId& instance_id,
-                                      tabs::TabInterface* tab_to_bind) override;
-
   // Returns a pointer to an instance with a Floaty embedder or nullptr.
   GlicInstanceImpl* GetInstanceWithFloaty() const;
 

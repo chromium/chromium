@@ -40,7 +40,6 @@
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/host/context/glic_tab_source_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -205,11 +204,6 @@ GlicKeyedService::GlicKeyedService(
         static_cast<int>(prefs::FreStatus::kCompleted));
   }
 
-  if (!UseDefaultWindowController()) {
-    glic_tab_source_observer_ = std::make_unique<GlicTabSourceObserver>(
-        window_controller_.get(), profile_);
-  }
-
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();
 }
@@ -229,11 +223,6 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   CloseUI();
-
-  if (!UseDefaultWindowController()) {
-    glic_tab_source_observer_.reset();
-  }
-
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   if (glic_profile_manager) {
     glic_profile_manager->OnServiceShutdown(this);

@@ -66,12 +66,6 @@ class GlicWindowController {
   virtual HostManager& host_manager() = 0;
   virtual std::vector<GlicInstance*> GetInstances() = 0;
   virtual GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) = 0;
-  virtual void FindInstanceFromGlicContentsAndBindToTab(
-      content::WebContents* source_glic_web_contents,
-      tabs::TabInterface* tab_to_bind) = 0;
-  virtual bool FindInstanceFromIdAndBindToTab(
-      const InstanceId& instance_id,
-      tabs::TabInterface* tab_to_bind) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.

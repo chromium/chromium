@@ -140,42 +140,6 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   return GetInstanceImplForTab(tab);
 }
 
-void GlicInstanceCoordinatorImpl::FindInstanceFromGlicContentsAndBindToTab(
-    content::WebContents* source_glic_web_contents,
-    tabs::TabInterface* tab_to_bind) {
-  // Find the instance for the given web contents
-  for (auto const& [instance_id, instance] : instances_) {
-    if (instance->host().webui_contents() == source_glic_web_contents) {
-      // Show the instance in the new tab
-      auto show_options = ShowOptions::ForSidePanel(*tab_to_bind);
-      show_options.focus_on_show = tab_to_bind->IsActivated();
-      instance->Show(show_options);
-      return;
-    }
-  }
-}
-
-// TODO (crbug.com/451718132): Add test coverage for daisy chaining
-// functionality
-bool GlicInstanceCoordinatorImpl::FindInstanceFromIdAndBindToTab(
-    const InstanceId& instance_id,
-    tabs::TabInterface* tab_to_bind) {
-  GlicInstanceImpl* instance = GetInstanceImplFor(instance_id);
-  if (!instance || !tab_to_bind) {
-    return false;
-  }
-
-  // Early return if an instance is already bound to the target tab.
-  if (GetInstanceImplForTab(tab_to_bind)) {
-    return false;
-  }
-
-  auto show_options = ShowOptions::ForSidePanel(*tab_to_bind);
-  show_options.focus_on_show = tab_to_bind->IsActivated();
-  instance->Show(show_options);
-  return true;
-}
-
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                          bool prevent_close,
                                          mojom::InvocationSource source) {

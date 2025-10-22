@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 
   // Open a new tab and navigate to a another page.
-  RunTestSequence(AddInstrumentedTabWithOpener(
+  RunTestSequence(AddInstrumentedTabAndOpenSidePanel(
       kSecondTab, InProcessBrowserTest::embedded_test_server()->GetURL(
                       "/glic/browser_tests/test.html")));
 

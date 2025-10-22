@@ -59,7 +59,6 @@ class GlicProfileManager;
 class GlicRegionCaptureController;
 class GlicScreenshotCapturer;
 class GlicShareImageHandler;
-class GlicTabSourceObserver;
 class GlicWindowController;
 class HostManager;
 class GlicActorTaskManager;
@@ -323,7 +322,6 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;
-  std::unique_ptr<GlicTabSourceObserver> glic_tab_source_observer_;
   base::OnceCallback<void()> preload_callback_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
 
