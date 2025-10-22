@@ -312,6 +312,7 @@ void TestResponseProvider::GetLanguageResponse(
   config.features_enabled.push_back(kEnableReaderModeTranslationWithInfobar);
 
   if ([self isRunningTest:@selector(testTranslateInReaderMode)] ||
+      [self isRunningTest:@selector(testTranslateAfterReaderMode)] ||
       [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderMode);
@@ -1294,7 +1295,7 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that triggering translate after opening and closing reader mode works.
 // TODO(crbug.com/430489596): `kTranslateInfobarModalTranslateButtonAXId` cannot
 // be found occasionally. This test should be reenabled.
-- (void)DISABLED_testTranslateAfterReaderMode {
+- (void)testTranslateAfterReaderMode {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
@@ -1328,18 +1329,24 @@ void TestResponseProvider::GetLanguageResponse(
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
-  // Open modal.
+  // Modal infobar is not shown.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kBadgeButtonTranslateAccessibilityIdentifier)]
-      performAction:grey_tap()];
+      assertWithMatcher:grey_nil()];
 
   // Translate.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kTranslateInfobarModalTranslateButtonAXId),
-                            grey_accessibilityTrait(UIAccessibilityTraitButton),
-                            nil)] performAction:grey_tap()];
+  [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuTranslateId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
 
   // Verify page is translated.
   GREYAssertTrue([self isAfterTranslateBannerVisible],

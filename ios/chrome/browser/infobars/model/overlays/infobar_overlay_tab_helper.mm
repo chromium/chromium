@@ -23,6 +23,14 @@ InfobarOverlayTabHelper::InfobarOverlayTabHelper(web::WebState* web_state)
 
 InfobarOverlayTabHelper::~InfobarOverlayTabHelper() = default;
 
+void InfobarOverlayTabHelper::PauseOverlayRequests() {
+  request_scheduler_.set_is_accepting_requests(false);
+}
+
+void InfobarOverlayTabHelper::ContinueOverlayRequests() {
+  request_scheduler_.set_is_accepting_requests(true);
+}
+
 #pragma mark - InfobarOverlayTabHelper::OverlayRequestScheduler
 
 InfobarOverlayTabHelper::OverlayRequestScheduler::OverlayRequestScheduler(
@@ -40,6 +48,9 @@ InfobarOverlayTabHelper::OverlayRequestScheduler::~OverlayRequestScheduler() =
 
 void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
     InfoBar* infobar) {
+  if (!is_accepting_requests_) {
+    return;
+  }
   InfoBarIOS* ios_infobar = static_cast<InfoBarIOS*>(infobar);
   // Skip showing banner if it was requested. Badge and modals will keep
   // showing.
