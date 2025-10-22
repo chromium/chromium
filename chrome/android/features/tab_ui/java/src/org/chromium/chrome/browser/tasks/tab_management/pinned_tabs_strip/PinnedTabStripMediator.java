@@ -139,6 +139,21 @@ public class PinnedTabStripMediator {
                             mPinnedTabsModelList.get(newIndex).model.set(IS_SELECTED, true);
                         }
                     }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        updatePinnedTabsBar();
+                    }
+
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        updatePinnedTabsBar();
+                    }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        updatePinnedTabsBar();
+                    }
                 };
         mTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(mOnTabGroupModelFilterChanged);
     }

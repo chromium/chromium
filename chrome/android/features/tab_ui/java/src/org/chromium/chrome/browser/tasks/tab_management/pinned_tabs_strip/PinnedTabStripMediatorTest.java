@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -426,6 +427,30 @@ public class PinnedTabStripMediatorTest {
         Assert.assertFalse(model1.get(TabProperties.IS_SELECTED));
         PropertyModel model2 = mPinnedTabsModelList.get(1).model;
         Assert.assertFalse(model2.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testTabPinned_updatePinnedBar() {
+        mMediator.onScrolled(); // Initial state.
+        mTabModelObserverCaptor.getValue().didChangePinState(mTab1);
+        // Should be called twice, once for the initial scroll and once for the pin event.
+        verify(mLayoutManager, times(2)).findFirstVisibleItemPosition();
+    }
+
+    @Test
+    public void testTabClosureCommitted_updatePinnedBar() {
+        mMediator.onScrolled(); // Initial state.
+        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
+        // Should be called twice, once for the initial scroll and once for the closure event.
+        verify(mLayoutManager, times(2)).findFirstVisibleItemPosition();
+    }
+
+    @Test
+    public void testTabClosureUndone_updatePinnedBar() {
+        mMediator.onScrolled(); // Initial state.
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
+        // Should be called twice, once for the initial scroll and once for the closure event.
+        verify(mLayoutManager, times(2)).findFirstVisibleItemPosition();
     }
 
     @Test
