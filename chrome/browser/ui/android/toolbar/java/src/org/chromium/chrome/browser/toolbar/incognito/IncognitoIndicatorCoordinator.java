@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.toolbar.incognito;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewStub;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,15 +24,25 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu.Delegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.ViewRectProvider;
 
 @NullMarked
-public class IncognitoIndicatorCoordinator extends ToolbarChild {
+public class IncognitoIndicatorCoordinator extends ToolbarChild
+        implements View.OnClickListener, View.OnLongClickListener, View.OnContextClickListener {
     private final ToolbarLayout mParentToolbar;
     private @Nullable Boolean mIsIncognitoBranded;
     private boolean mVisible;
     private @Nullable View mIncognitoIndicator;
     private final int mDefaultFallbackWidth;
     private int mCachedWidth;
+    private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
      * Creates an IncognitoIndicatorCoordinator for managing the incognito indicator on the top
@@ -90,6 +105,9 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild {
         if (mIncognitoIndicator == null && mIsIncognitoBranded) {
             ViewStub stub = mParentToolbar.findViewById(R.id.incognito_indicator_stub);
             mIncognitoIndicator = stub.inflate();
+            mIncognitoIndicator.setOnClickListener(this);
+            mIncognitoIndicator.setOnLongClickListener(this);
+            mIncognitoIndicator.setOnContextClickListener(this);
         }
 
         if (mIncognitoIndicator != null) {
@@ -141,5 +159,102 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild {
 
     public @Nullable View getIncognitoIndicatorView() {
         return mIncognitoIndicator;
+    }
+
+    public @Nullable AnchoredPopupWindow getMenuWindowForTesting() {
+        return mMenuWindow;
+    }
+
+    /**
+     * Create and display the close Incognito windows menu anchored to the Incognito indicator.
+     *
+     * @param context The context of the Close Incognito windows menu.
+     * @param listItems The menu item models.
+     */
+    protected void createAndShowMenu(Context context, ModelList listItems) {
+        if (mIncognitoIndicator == null) return;
+
+        Delegate delegate =
+                (model, view) -> {
+                    int menuId = model.get(ListMenuItemProperties.MENU_ITEM_ID);
+                    if (menuId == R.id.close_all_incognito_windows_menu_id) {
+                        // TODO(crbug.com/435491652): Add functionality to close all Incognito
+                        // windows.
+                    }
+                    if (mMenuWindow != null) {
+                        mMenuWindow.dismiss();
+                    }
+                };
+
+        BasicListMenu menu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        context,
+                        listItems,
+                        delegate,
+                        R.color.toolbar_text_box_background_incognito,
+                        null);
+
+        mMenuWindow =
+                new AnchoredPopupWindow(
+                        context,
+                        mIncognitoIndicator,
+                        new ColorDrawable(Color.TRANSPARENT),
+                        menu.getContentView(),
+                        new ViewRectProvider(mIncognitoIndicator));
+        mMenuWindow.setFocusable(true);
+        mMenuWindow.setHorizontalOverlapAnchor(true);
+        mMenuWindow.setVerticalOverlapAnchor(false);
+        mMenuWindow.setPreferredHorizontalOrientation(
+                AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE);
+        mMenuWindow.setMaxWidth(
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.incognito_indicator_menu_max_width));
+
+        mMenuWindow.show();
+    }
+
+    @VisibleForTesting
+    ModelList buildMenuItems(Context context) {
+        // TODO(crbug.com/435491652): Add functionality to get number of Incognito windows.
+        int incognitoWindowCount = 10;
+        String title =
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.menu_close_all_incognito_windows,
+                                incognitoWindowCount,
+                                incognitoWindowCount);
+        ModelList itemList = new ModelList();
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitle(title)
+                        .withMenuId(R.id.close_all_incognito_windows_menu_id)
+                        .withIsIncognito(true)
+                        .build());
+        return itemList;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (mIncognitoIndicator == null || mIncognitoIndicator.getVisibility() != View.VISIBLE) {
+            return;
+        }
+        if (mMenuWindow != null && mMenuWindow.isShowing()) {
+            mMenuWindow.dismiss();
+            return;
+        }
+        Context context = mIncognitoIndicator.getContext();
+        createAndShowMenu(context, buildMenuItems(context));
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        onClick(view);
+        return true;
+    }
+
+    @Override
+    public boolean onContextClick(View view) {
+        onClick(view);
+        return true;
     }
 }

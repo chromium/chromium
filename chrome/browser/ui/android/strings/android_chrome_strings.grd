@@ -4259,6 +4259,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_CLOSE_ALL_INCOGNITO_TABS" desc="Menu item for closing all open Incognito tabs. [CHAR_LIMIT=27]">
         Close all Incognito tabs
       </message>
+      <message name="IDS_MENU_CLOSE_ALL_INCOGNITO_WINDOWS" desc="Menu item to close all incognito windows. [ICU Syntax]">
+        {NUM_WINDOWS, plural,
+          =1 {Close 1 Incognito window}
+          other {Close # Incognito windows}}
+      </message>
       <message name="IDS_MENU_SELECT_TABS" desc="Menu item for bulk editing tabs. [CHAR_LIMIT=27]">
         Select tabs
       </message>

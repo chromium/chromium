@@ -13,13 +13,19 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +44,9 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /** Unit tests for {@link IncognitoIndicatorCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,6 +57,10 @@ public class IncognitoIndicatorCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenario =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private ToolbarLayout mParentToolbar;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
@@ -55,16 +68,23 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     @Mock private View mIncognitoIndicatorView;
     @Mock private Context mContext;
     @Mock private Resources mResources;
+    @Mock private ViewTreeObserver mViewTreeObserver;
 
+    private Activity mActivity;
     private IncognitoIndicatorCoordinator mCoordinator;
 
     @Before
     public void setUp() {
+        mActivityScenario.getScenario().onActivity(activity -> mActivity = spy(activity));
         when(mParentToolbar.findViewById(eq(R.id.incognito_indicator_stub)))
                 .thenReturn(mIncognitoIndicatorStub);
         when(mIncognitoIndicatorStub.inflate()).thenReturn(mIncognitoIndicatorView);
+        when(mIncognitoIndicatorView.getRootView()).thenReturn(mIncognitoIndicatorView);
+        when(mIncognitoIndicatorView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
+        when(mIncognitoIndicatorView.getResources()).thenReturn(mResources);
         when(mParentToolbar.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
+        when(mResources.getDisplayMetrics()).thenReturn(new DisplayMetrics());
         when(mResources.getDimensionPixelSize(anyInt())).thenReturn(BUTTON_WIDTH);
 
         mCoordinator =
@@ -177,5 +197,24 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         verify(mIncognitoIndicatorView).setVisibility(View.GONE);
         assertFalse(mCoordinator.needsUpdateBeforeShowing());
         clearInvocations(mIncognitoIndicatorView);
+    }
+
+    @Test
+    public void testCreateAndShowMenu() {
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
+        ModelList modelList = new ModelList();
+        mCoordinator.createAndShowMenu(mActivity, modelList);
+        assertNotNull(mCoordinator.getMenuWindowForTesting());
+        assertTrue(mCoordinator.getMenuWindowForTesting().isShowing());
+    }
+
+    @Test
+    public void testBuildMenuItems() {
+        ModelList items = mCoordinator.buildMenuItems(mActivity);
+        assertEquals(1, items.size());
+        assertEquals(
+                R.id.close_all_incognito_windows_menu_id,
+                items.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 }

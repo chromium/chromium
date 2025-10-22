@@ -38,6 +38,7 @@ found in the LICENSE file.
     <item type="id" name="incognito_tab_menu_id" />
     <item type="id" name="new_tab_menu_id" />
     <item type="id" name="new_incognito_tab_menu_id" />
+    <item type="id" name="close_all_incognito_windows_menu_id" />
     <item type="id" name="close_all_incognito_tabs_menu_id" />
     <item type="id" name="switch_to_incognito_menu_id" />
     <item type="id" name="switch_out_of_incognito_menu_id" />
