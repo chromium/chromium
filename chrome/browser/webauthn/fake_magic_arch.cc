@@ -16,6 +16,7 @@
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/securebox.h"
+#include "crypto/hmac.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
@@ -172,15 +173,10 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
                     base::as_byte_span(shared_member_key.wrapped_key()))
           .value();
 
-  std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_proof;
-  unsigned expected_proof_len;
-  HMAC(EVP_sha256(), security_domain_secret.data(),
-       security_domain_secret.size(),
-       reinterpret_cast<const uint8_t*>(public_key.data()), public_key.size(),
-       expected_proof.data(), &expected_proof_len);
-  CHECK_EQ(expected_proof_len, expected_proof.size());
-  CHECK(base::span<const uint8_t>(expected_proof) ==
-        base::as_byte_span(shared_member_key.member_proof()));
+  const auto proof = base::span<const uint8_t, crypto::hash::kSha256Size>(
+      base::as_byte_span(shared_member_key.member_proof()));
+  CHECK(crypto::hmac::VerifySha256(security_domain_secret,
+                                   base::as_byte_span(public_key), proof));
 
   return security_domain_secret;
 }

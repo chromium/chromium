@@ -57,6 +57,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
+#include "crypto/hmac.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/user_verifying_key.h"
@@ -1840,16 +1841,11 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   ASSERT_TRUE(security_domain_secret);
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
 
-  std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_proof;
-  unsigned expected_proof_len;
-  HMAC(EVP_sha256(), security_domain_secret->data(),
-       security_domain_secret->size(),
-       reinterpret_cast<const uint8_t*>(icloud_member->public_key().data()),
-       icloud_member->public_key().size(), expected_proof.data(),
-       &expected_proof_len);
-  ASSERT_EQ(expected_proof_len, expected_proof.size());
-  EXPECT_EQ(base::span<const uint8_t>(expected_proof),
-            base::as_byte_span(shared_member_key.member_proof()));
+  const auto proof = base::span<const uint8_t, crypto::hash::kSha256Size>(
+      base::as_byte_span(shared_member_key.member_proof()));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(
+      *security_domain_secret, base::as_byte_span(icloud_member->public_key()),
+      proof));
 }
 #endif  // BUILDFLAG(IS_MAC)
 
