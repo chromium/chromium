@@ -923,6 +923,12 @@ void SearchboxHandler::ActivateKeyword(
   // Generic searchbox should not show keywords.
   NOTREACHED();
 }
+
+void SearchboxHandler::ShowContextMenu(const gfx::Point& point) {
+  // Generic searchbox should not have a context menu.
+  NOTREACHED();
+}
+
 void SearchboxHandler::ExecuteAction(uint8_t line,
                                      uint8_t action_index,
                                      const GURL& url,

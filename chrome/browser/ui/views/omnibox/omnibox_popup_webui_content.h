@@ -22,6 +22,14 @@ class LocationBarView;
 class OmniboxController;
 class OmniboxPopupPresenter;
 
+namespace views {
+class MenuRunner;
+}  // namespace views
+
+namespace ui {
+class MenuModel;
+}  // namespace ui
+
 // The content WebView for the popup of a WebUI Omnibox.
 class OmniboxPopupWebUIContent : public views::WebView,
                                  public WebUIContentsWrapper::Host {
@@ -46,6 +54,9 @@ class OmniboxPopupWebUIContent : public views::WebView,
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
+  void ShowCustomContextMenu(
+      gfx::Point point,
+      std::unique_ptr<ui::MenuModel> menu_model) override;
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
   bool HandleKeyboardEvent(content::WebContents* source,
@@ -61,6 +72,8 @@ class OmniboxPopupWebUIContent : public views::WebView,
   bool include_location_bar_cutout_ = true;
 
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents_wrapper_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<ui::MenuModel> context_menu_model_;
 
   base::WeakPtrFactory<OmniboxPopupWebUIContent> weak_factory_{this};
 };
