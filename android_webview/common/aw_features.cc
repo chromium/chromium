@@ -12,6 +12,9 @@ namespace android_webview::features {
 
 // Alphabetical:
 
+// Kill switch for Profile.addQuicHints.
+BASE_FEATURE(kWebViewAddQuicHints, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable auto granting storage access API requests. This will be done
 // if a relationship is detected between the app and the website.
 BASE_FEATURE(kWebViewAutoSAA, base::FEATURE_DISABLED_BY_DEFAULT);

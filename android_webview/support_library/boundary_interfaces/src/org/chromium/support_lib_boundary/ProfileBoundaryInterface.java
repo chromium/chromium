@@ -82,4 +82,6 @@ public interface ProfileBoundaryInterface {
     void clearAllOriginMatchedHeaders();
 
     void preconnect(String url);
+
+    void addQuicHints(Set<String> origins);
 }

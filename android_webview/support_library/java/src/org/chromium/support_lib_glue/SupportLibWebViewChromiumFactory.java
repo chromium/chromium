@@ -125,6 +125,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
+                Features.ADD_QUIC_HINTS_V1 + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -304,6 +305,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE,
         ApiCall.ADD_NAVIGATION_LISTENER,
         ApiCall.REMOVE_NAVIGATION_LISTENER,
+        ApiCall.ADD_QUIC_HINTS,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -482,8 +484,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE = 167;
         int ADD_NAVIGATION_LISTENER = 168;
         int REMOVE_NAVIGATION_LISTENER = 169;
+        int ADD_QUIC_HINTS = 170;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 170;
+        int COUNT = 171;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

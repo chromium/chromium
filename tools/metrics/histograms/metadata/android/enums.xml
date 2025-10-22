@@ -706,6 +706,7 @@ chromium-metrics-reviews@google.com.
   <int value="167" label="BackForwardCacheSettings.setMaxPagesInCache"/>
   <int value="168" label="WebSettingsCompat.addWebNavigationListener"/>
   <int value="169" label="WebSettingsCompat.removeWebNavigationListener"/>
+  <int value="170" label="Profile.addQuicHints"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

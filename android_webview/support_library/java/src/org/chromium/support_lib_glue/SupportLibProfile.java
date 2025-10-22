@@ -323,4 +323,12 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             mProfileImpl.preconnect(url);
         }
     }
+
+    @Override
+    public void addQuicHints(Set<String> origins) {
+        recordApiCall(ApiCall.ADD_QUIC_HINTS);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.ADD_QUIC_HINTS")) {
+            mProfileImpl.addQuicHints(origins);
+        }
+    }
 }

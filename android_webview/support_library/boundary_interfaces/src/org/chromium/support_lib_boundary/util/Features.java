@@ -422,4 +422,7 @@ public class Features {
     // WebViewCompat#setRendererLibraryPrefetchMode
     // WebViewCompat#getRendererLibraryPrefetchMode
     public static final String RENDERER_LIBRARY_PREFETCH_MODE = "RENDERER_LIBRARY_PREFETCH_MODE";
+
+    // Profile.addQuicHints
+    public static final String ADD_QUIC_HINTS_V1 = "ADD_QUIC_HINTS_V1";
 }

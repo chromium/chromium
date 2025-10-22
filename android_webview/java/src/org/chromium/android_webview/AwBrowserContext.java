@@ -496,11 +496,16 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .isValidHttpHeaderName(headerName);
     }
 
-    // TODO(https://crbug.com/445339041): Plumb this through to a WebView API.
-    void addQuicHints(List<String> origins) {
+    public void addQuicHints(Set<String> origins) {
         GURL[] gurls = new GURL[origins.size()];
-        for (int i = 0; i < origins.size(); i++) {
-            gurls[i] = new GURL(origins.get(i));
+        int i = 0;
+        for (String origin : origins) {
+            GURL gurl = new GURL(origin);
+            if (GURL.isEmptyOrInvalid(gurl)) {
+                throw new IllegalArgumentException("Invalid origin: " + origin);
+            }
+
+            gurls[i++] = gurl;
         }
 
         AwBrowserContextJni.get().addQuicHints(mNativeAwBrowserContext, gurls);

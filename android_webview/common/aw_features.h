@@ -15,6 +15,7 @@ namespace android_webview::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
+BASE_DECLARE_FEATURE(kWebViewAddQuicHints);
 BASE_DECLARE_FEATURE(kWebViewAutoSAA);
 BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
 BASE_DECLARE_FEATURE(kWebViewConfigurableLibraryPrefetch);
