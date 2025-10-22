@@ -11,17 +11,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlConstantResolver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UrlConstantResolverUnitTest {
     private static final String OVERRIDE_URL = "OVERRIDE";
     private UrlConstantResolver mResolver;
+    private GURL mNtpGurl;
+    private GURL mNativeNtpGurl;
 
     @Before
     public void setUp() {
         mResolver = new UrlConstantResolver();
+        mNtpGurl = new GURL("example.com");
+        mNativeNtpGurl = new GURL("native_example.com");
     }
 
     @Test
@@ -73,5 +79,36 @@ public class UrlConstantResolverUnitTest {
     public void testGetHistoryPageUrl_WithOverrideDisabled() {
         mResolver.registerOverride(UrlConstants.NATIVE_HISTORY_URL, () -> null);
         assertEquals(UrlConstants.NATIVE_HISTORY_URL, mResolver.getHistoryPageUrl());
+    }
+
+    @Test
+    public void testGetNtpGurl_NoOverride() {
+        PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, mNtpGurl);
+        mResolver.registerPreNativeGurl(UrlConstants.NTP_URL, holder);
+
+        assertEquals(mNativeNtpGurl, mResolver.getNtpGurl());
+    }
+
+    @Test
+    public void testGetNtpGurl_WithOverride() {
+        PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, mNtpGurl);
+        mResolver.registerPreNativeGurl(UrlConstants.NTP_URL, holder);
+        mResolver.registerOverride(UrlConstants.NTP_URL, () -> "some_override");
+
+        assertEquals(mNtpGurl, mResolver.getNtpGurl());
+    }
+
+    @Test
+    public void testGetNtpGurl_NullGurlOverride() {
+        PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, null);
+        mResolver.registerPreNativeGurl(UrlConstants.NTP_URL, holder);
+        mResolver.registerOverride(UrlConstants.NTP_URL, () -> "some_override");
+
+        assertEquals(mNativeNtpGurl, mResolver.getNtpGurl());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testGetNtpGurl_NotRegistered() {
+        mResolver.getNtpGurl();
     }
 }

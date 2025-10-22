@@ -11,7 +11,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 /**
  * This factory creates and keeps a single ExtensionsUrlOverrideRegistryManager for incognito
@@ -19,6 +21,12 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  */
 @NullMarked
 public class UrlConstantResolverFactory {
+    private static final String SERIALIZED_NATIVE_NTP_URL =
+            "82,1,true,0,13,0,-1,0,-1,16,6,0,-1,22,1,0,-1,0,-1,false,false,chrome-native://newtab/";
+    private static final String SERIALIZED_NTP_URL =
+            "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
+
+    private static @Nullable PreNativeGurlHolder sPreNativeNtpGurl;
     private static @Nullable UrlConstantResolver sOriginalResolver;
     private static @Nullable UrlConstantResolver sIncognitoResolver;
     private static @Nullable UrlConstantResolver sResolverForTesting;
@@ -54,6 +62,7 @@ public class UrlConstantResolverFactory {
 
     private static UrlConstantResolver buildOriginalResolver() {
         UrlConstantResolver resolver = new UrlConstantResolver();
+        resolver.registerPreNativeGurl(UrlConstants.NTP_URL, getPreNativeNtpGurlHolder());
         if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) return resolver;
 
         resolver.registerOverride(
@@ -79,6 +88,7 @@ public class UrlConstantResolverFactory {
 
     private static UrlConstantResolver buildIncognitoResolver() {
         UrlConstantResolver resolver = new UrlConstantResolver();
+        resolver.registerPreNativeGurl(UrlConstants.NTP_URL, getPreNativeNtpGurlHolder());
         if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) return resolver;
 
         resolver.registerOverride(
@@ -105,5 +115,26 @@ public class UrlConstantResolverFactory {
     public static void resetResolvers() {
         sOriginalResolver = null;
         sIncognitoResolver = null;
+    }
+
+    private static PreNativeGurlHolder getPreNativeNtpGurlHolder() {
+        if (sPreNativeNtpGurl == null) {
+            sPreNativeNtpGurl = buildPreNativeNtpGurlHolder();
+        }
+        return sPreNativeNtpGurl;
+    }
+
+    private static PreNativeGurlHolder buildPreNativeNtpGurlHolder() {
+        GURL gurlOverride = null;
+        if (ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) {
+            gurlOverride = deserializeGurlString(SERIALIZED_NTP_URL);
+        }
+
+        return new PreNativeGurlHolder(
+                deserializeGurlString(SERIALIZED_NATIVE_NTP_URL), gurlOverride);
+    }
+
+    private static GURL deserializeGurlString(String serializedGurl) {
+        return GURL.deserializeLatestVersionOnly(serializedGurl.replace(',', '\0'));
     }
 }
