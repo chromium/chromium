@@ -1291,6 +1291,11 @@ bool VideoFrame::HasMappableGpuBuffer() const {
   return storage_type_ == STORAGE_GPU_MEMORY_BUFFER;
 }
 
+bool VideoFrame::IsMappableSharedImageEnabled() const {
+  return wrapped_frame_ ? wrapped_frame_->IsMappableSharedImageEnabled()
+                        : is_mappable_si_enabled_;
+}
+
 bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeGpuMemoryBuffer();

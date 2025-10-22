@@ -199,9 +199,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBuffer(const PendingInput& input,
                                     scoped_refptr<VideoFrame> frame);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame,
-                                       ComMFSample& input_sample);
+                                       const PendingInput& input);
   HRESULT CopyInputSampleBufferFromGpu(scoped_refptr<VideoFrame> frame,
-                                       ComMFSample& input_sample);
+                                       const PendingInput& input);
 
   bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 

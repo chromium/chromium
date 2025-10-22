@@ -154,6 +154,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   bool impl_initialized_;
   bool frame_size_change_supported_{false};
+  bool vea_supports_shared_images_{false};
 
   // |weak_this_| is bound to |webrtc_sequence_checker_|.
   base::WeakPtr<RTCVideoEncoder> weak_this_;

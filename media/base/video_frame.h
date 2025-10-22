@@ -523,6 +523,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
+  // Returns true if |is_mappable_si_enabled_| is true, means MappableSI is
+  // enabled for this frame.
+  bool IsMappableSharedImageEnabled() const;
+
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the gpu buffer backing this
   // VideoFrame(via GpuMemoryBuffer or MappableSI).

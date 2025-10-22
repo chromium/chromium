@@ -819,6 +819,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   void SetSimulcastToSvcConverter(std::optional<webrtc::SimulcastToSvcConverter>
                                       simulcast_to_svc_converter);
+  void UpdateSharedImageSupport(bool supports_shared_images);
 
  private:
   enum {
@@ -905,8 +906,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // Asynchronously converts the RGBA texture frame to NV12 GMB frame if
   // possible. Returns true if the conversion has started. The result will be
   // passed to `DoNativeEncodeWithNativeInput` in the callback.
-  bool ConvertRGBAToNV12AndEncode(FrameChunk frame_chunk,
-                                  scoped_refptr<media::VideoFrame> frame);
+  bool MaybeConvertRGBAToNV12AndEncode(FrameChunk frame_chunk,
+                                       scoped_refptr<media::VideoFrame> frame);
 
   // Creates a MappableSI frame filled with black pixels. Returns true if
   // the frame is successfully created; false otherwise.
@@ -1026,6 +1027,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // The content type, as reported to WebRTC (screenshare vs realtime video).
   const webrtc::VideoContentType video_content_type_;
+
+  bool vea_supports_shared_images_ = false;
 
   // This has the same information as |encoder_info_.preferred_pixel_formats|
   // but can be used on |sequence_checker_| without acquiring the lock.
@@ -1328,6 +1331,11 @@ void RTCVideoEncoder::Impl::DrainCompleted(bool success) {
 void RTCVideoEncoder::Impl::SetSimulcastToSvcConverter(
     std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter) {
   simulcast_to_svc_converter_ = std::move(simulcast_to_svc_converter);
+}
+
+void RTCVideoEncoder::Impl::UpdateSharedImageSupport(
+    bool vea_supports_shared_image) {
+  vea_supports_shared_images_ = vea_supports_shared_image;
 }
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
@@ -2322,7 +2330,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
 }
 
-bool RTCVideoEncoder::Impl::ConvertRGBAToNV12AndEncode(
+bool RTCVideoEncoder::Impl::MaybeConvertRGBAToNV12AndEncode(
     FrameChunk frame_chunk,
     scoped_refptr<media::VideoFrame> frame) {
   TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::ConvertRGBAToNV12");
@@ -2390,11 +2398,29 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   } else {
     frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                 ->getMediaVideoFrame();
-    if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      // TODO(crbug.com/443107135): remove this call once MFVEA can process
-      // frames created by CreateNV12SharedImageFrame() without readback and
-      // reupload.
-      if (ConvertRGBAToNV12AndEncode(frame_chunk, frame)) {
+
+    // A SI-backed video frame can be sent to the VEA encoder directly if VEA
+    // reports it as supported, we just need to verify the sync token.
+    bool shared_image_encoding =
+        vea_supports_shared_images_ && !frame->HasNativeGpuMemoryBuffer() &&
+        !frame->IsMappableSharedImageEnabled() && frame->HasSharedImage();
+    if (shared_image_encoding) {
+      TRACE_EVENT0("webrtc",
+                   "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput::"
+                   "VerifySyncToken");
+      auto wrapper = SharedGpuContext::ContextProviderWrapper();
+      if (wrapper) {
+        gpu::SyncToken token = frame->acquire_sync_token();
+        wrapper->ContextProvider().SharedImageInterface()->VerifySyncToken(
+            token);
+        frame->UpdateAcquireSyncToken(token);
+      }
+    } else if (frame->storage_type() !=
+               media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      // If the frame is not backed by a GPU memory buffer and the VEA does not
+      // support SI encoding, we need to guarantee the frame must be converted
+      // to a mappable frame.
+      if (MaybeConvertRGBAToNV12AndEncode(frame_chunk, frame)) {
         return;
       }
 
@@ -2402,6 +2428,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
       if (!frame) {
         return;
       }
+      CHECK_EQ(frame->storage_type(),
+               media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
     }
   }
   DoNativeEncodeWithNativeInput(frame_chunk, frame);
@@ -2411,7 +2439,6 @@ void RTCVideoEncoder::Impl::DoNativeEncodeWithNativeInput(
     FrameChunk frame_chunk,
     scoped_refptr<media::VideoFrame> frame) {
   frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
-  CHECK_EQ(frame->storage_type(), media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, frame->timestamp(),
@@ -3056,6 +3083,12 @@ void RTCVideoEncoder::UpdateEncoderInfo(
       encoder_info_.scaling_settings =
           VideoEncoder::ScalingSettings(kAV1QindexLow, kAV1QindexHigh);
     }
+  }
+
+  if (vea_supports_shared_images_ !=
+      media_enc_info.supports_gpu_shared_images) {
+    vea_supports_shared_images_ = media_enc_info.supports_gpu_shared_images;
+    impl_->UpdateSharedImageSupport(vea_supports_shared_images_);
   }
   encoder_info_.requested_resolution_alignment =
       media_enc_info.requested_resolution_alignment;

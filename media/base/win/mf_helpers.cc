@@ -22,12 +22,16 @@
 #include <wrl.h>
 
 #include "base/check_op.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
@@ -968,15 +972,117 @@ void GenerateSampleOnSyncTokenReleased(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d_device,
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     SampleAvailableCB sample_available_cb) {
+  TRACE_EVENT_BEGIN0("media", "GenerateInputTextureOnSyncTokenReleased");
+  Microsoft::WRL::ComPtr<ID3D11Device> shared_d3d11_device =
+      command_buffer_helper->GetSharedImageStub()
+          ->shared_context_state()
+          ->GetD3D11Device();
+  if (!shared_d3d11_device) {
+    std::move(sample_available_cb).Run(std::move(frame), nullptr, E_FAIL);
+    return;
+  }
   gpu::SharedImageManager* shared_image_manager =
       command_buffer_helper->GetSharedImageManager();
   std::unique_ptr<gpu::VideoImageRepresentation> image_representation =
       shared_image_manager->ProduceVideo(
-          d3d_device, frame->shared_image()->mailbox(),
+          shared_d3d11_device, frame->shared_image()->mailbox(),
           command_buffer_helper->GetMemoryTypeTracker());
   auto scoped_read_access = image_representation->BeginScopedReadAccess();
   Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
       scoped_read_access->GetD3D11Texture();
+
+  if (d3d_device.Get() != shared_d3d11_device.Get()) {
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    HRESULT hr = input_texture.As(&dxgi_resource);
+    CHECK(SUCCEEDED(hr));
+    HANDLE shared_handle;
+    hr = dxgi_resource->CreateSharedHandle(nullptr, DXGI_SHARED_RESOURCE_READ,
+                                           nullptr, &shared_handle);
+    if (FAILED(hr)) {
+      TRACE_EVENT0("media", "CopyTextureOnCreateSharedHandleFailed");
+      D3D11_TEXTURE2D_DESC texture_desc;
+      input_texture->GetDesc(&texture_desc);
+      texture_desc.Usage = D3D11_USAGE_DEFAULT;
+      texture_desc.BindFlags =
+          D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+      texture_desc.ArraySize = 1;
+      texture_desc.CPUAccessFlags = 0;
+      texture_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                               D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
+      hr = shared_d3d11_device->CreateTexture2D(&texture_desc, nullptr,
+                                                &shared_texture);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to create shared texture.";
+        std::move(sample_available_cb).Run(std::move(frame), nullptr, hr);
+        return;
+      }
+      Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+      std::unique_ptr<gpu::DXGIScopedReleaseKeyedMutex> scoped_keyed_mutex;
+      if (SUCCEEDED(shared_texture.As(&keyed_mutex))) {
+        hr = keyed_mutex->AcquireSync(0, INFINITE);
+        CHECK(SUCCEEDED(hr));
+        scoped_keyed_mutex =
+            std::make_unique<gpu::DXGIScopedReleaseKeyedMutex>(keyed_mutex, 0);
+      }
+      Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+      shared_d3d11_device->GetImmediateContext(&device_context);
+      D3D11_BOX src_box = {static_cast<UINT>(frame->visible_rect().x()),
+                           static_cast<UINT>(frame->visible_rect().y()),
+                           0,
+                           static_cast<UINT>(frame->visible_rect().right()),
+                           static_cast<UINT>(frame->visible_rect().bottom()),
+                           1};
+      device_context->CopySubresourceRegion(shared_texture.Get(), 0, 0, 0, 0,
+                                            input_texture.Get(), 0, &src_box);
+
+      Microsoft::WRL::ComPtr<IDXGIResource1> shared_dxgi_resource;
+      hr = shared_texture.As(&shared_dxgi_resource);
+      CHECK(SUCCEEDED(hr));
+      hr = shared_dxgi_resource->CreateSharedHandle(
+          nullptr, DXGI_SHARED_RESOURCE_READ, nullptr, &shared_handle);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to create shared handle from copied texture.";
+        std::move(sample_available_cb).Run(std::move(frame), nullptr, hr);
+        return;
+      }
+    }
+    base::win::ScopedHandle scoped_shared_handle(shared_handle);
+    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                              base::WaitableEvent::InitialState::NOT_SIGNALED);
+    Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
+    hr = shared_d3d11_device.As(&dxgi_device2);
+    if (FAILED(hr)) {
+      std::move(sample_available_cb).Run(std::move(frame), nullptr, hr);
+      return;
+    }
+    hr = dxgi_device2->EnqueueSetEvent(event.handle());
+    if (SUCCEEDED(hr)) {
+      event.Wait();
+    } else {
+      LOG(WARNING) << "Failed to set event: "
+                   << logging::SystemErrorCodeToString(hr);
+      Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
+      shared_d3d11_device->GetImmediateContext(&d3d11_context);
+      if (d3d11_context) {
+        d3d11_context->Flush();
+      }
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11Device1> d3d_device1;
+    hr = d3d_device.As(&d3d_device1);
+    CHECK(SUCCEEDED(hr));
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> opened_texture;
+    hr = d3d_device1->OpenSharedResource1(shared_handle,
+                                          IID_PPV_ARGS(&opened_texture));
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to open shared handle.";
+      std::move(sample_available_cb).Run(std::move(frame), nullptr, hr);
+      return;
+    }
+    input_texture = opened_texture;
+  }
+  TRACE_EVENT_END0("media", "GenerateInputTextureOnSyncTokenReleased");
 
   if (frame->format() == PIXEL_FORMAT_NV12) {
     // If this texture is going to be fed directly to the encoder (NV12), create
