@@ -6,7 +6,6 @@
 #define UI_ACCESSIBILITY_MOJOM_AX_TREE_DATA_MOJOM_TRAITS_H_
 
 #include "ui/accessibility/ax_tree_data.h"
-#include "ui/accessibility/mojom/ax_node_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_data.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_tree_id_mojom_traits.h"
 
@@ -35,14 +34,12 @@ struct StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData> {
   }
   static const std::string& title(const ui::AXTreeData& p) { return p.title; }
   static const std::string& url(const ui::AXTreeData& p) { return p.url; }
-  static ax::mojom::AXNodeIDPtr focus_id(const ui::AXTreeData& p) {
-    return ax::mojom::AXNodeID::New(p.focus_id);
-  }
+  static int32_t focus_id(const ui::AXTreeData& p) { return p.focus_id; }
   static bool sel_is_backward(const ui::AXTreeData& p) {
     return p.sel_is_backward;
   }
-  static ax::mojom::AXNodeIDPtr sel_anchor_object_id(const ui::AXTreeData& p) {
-    return ax::mojom::AXNodeID::New(p.sel_anchor_object_id);
+  static int32_t sel_anchor_object_id(const ui::AXTreeData& p) {
+    return p.sel_anchor_object_id;
   }
   static int32_t sel_anchor_offset(const ui::AXTreeData& p) {
     return p.sel_anchor_offset;
@@ -50,8 +47,8 @@ struct StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData> {
   static ax::mojom::TextAffinity sel_anchor_affinity(const ui::AXTreeData& p) {
     return p.sel_anchor_affinity;
   }
-  static ax::mojom::AXNodeIDPtr sel_focus_object_id(const ui::AXTreeData& p) {
-    return ax::mojom::AXNodeID::New(p.sel_focus_object_id);
+  static int32_t sel_focus_object_id(const ui::AXTreeData& p) {
+    return p.sel_focus_object_id;
   }
   static int32_t sel_focus_offset(const ui::AXTreeData& p) {
     return p.sel_focus_offset;
@@ -59,8 +56,8 @@ struct StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData> {
   static ax::mojom::TextAffinity sel_focus_affinity(const ui::AXTreeData& p) {
     return p.sel_focus_affinity;
   }
-  static ax::mojom::AXNodeIDPtr root_scroller_id(const ui::AXTreeData& p) {
-    return ax::mojom::AXNodeID::New(p.root_scroller_id);
+  static int32_t root_scroller_id(const ui::AXTreeData& p) {
+    return p.root_scroller_id;
   }
   static const std::optional<std::vector<std::string>>& metadata(
       const ui::AXTreeData& p) {

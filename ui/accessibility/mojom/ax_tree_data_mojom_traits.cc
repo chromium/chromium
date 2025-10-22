@@ -26,38 +26,15 @@ bool StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData>::Read(
     return false;
   if (!data.ReadUrl(&out->url))
     return false;
-  ax::mojom::AXNodeIDPtr focus_id_ptr;
-  if (!data.ReadFocusId(&focus_id_ptr)) {
-    return false;
-  }
-  out->focus_id = focus_id_ptr->value;
-
+  out->focus_id = data.focus_id();
   out->sel_is_backward = data.sel_is_backward();
-
-  ax::mojom::AXNodeIDPtr sel_anchor_object_id_ptr;
-  if (!data.ReadSelAnchorObjectId(&sel_anchor_object_id_ptr)) {
-    return false;
-  }
-  out->sel_anchor_object_id = sel_anchor_object_id_ptr->value;
-
+  out->sel_anchor_object_id = data.sel_anchor_object_id();
   out->sel_anchor_offset = data.sel_anchor_offset();
   out->sel_anchor_affinity = data.sel_anchor_affinity();
-
-  ax::mojom::AXNodeIDPtr sel_focus_object_id_ptr;
-  if (!data.ReadSelFocusObjectId(&sel_focus_object_id_ptr)) {
-    return false;
-  }
-  out->sel_focus_object_id = sel_focus_object_id_ptr->value;
-
+  out->sel_focus_object_id = data.sel_focus_object_id();
   out->sel_focus_offset = data.sel_focus_offset();
   out->sel_focus_affinity = data.sel_focus_affinity();
-
-  ax::mojom::AXNodeIDPtr root_scroller_id_ptr;
-  if (!data.ReadRootScrollerId(&root_scroller_id_ptr)) {
-    return false;
-  }
-  out->root_scroller_id = root_scroller_id_ptr->value;
-
+  out->root_scroller_id = data.root_scroller_id();
   if (!data.ReadMetadata(&out->metadata))
     return false;
   return true;

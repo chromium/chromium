@@ -1666,7 +1666,7 @@ void ReadAnythingAppController::RequestImageData(ui::AXNodeID node_id) const {
 
 void ReadAnythingAppController::OnImageDataDownloaded(
     const ui::AXTreeID& tree_id,
-    const ui::AXNodeID& node_id,
+    ui::AXNodeID node_id,
     const SkBitmap& image) {
   // If the tree has changed since the request, do nothing with the downloaded
   // image.

@@ -156,7 +156,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnReadAloudAudioStateChange(bool playing) override;
   void OnSpeechRateChange(double rate) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
-                            const ui::AXNodeID& target_node_id) override;
+                            ui::AXNodeID target_node_id) override;
   void OnLineSpaceChange(
       read_anything::mojom::LineSpacing line_spacing) override;
   void OnLetterSpaceChange(
@@ -191,7 +191,7 @@ class ReadAnythingUntrustedPageHandler :
 
  protected:
   void OnImageDataDownloaded(const ui::AXTreeID& target_tree_id,
-                             const ui::AXNodeID&,
+                             ui::AXNodeID,
                              int id,
                              int http_status_code,
                              const GURL& image_url,
@@ -236,13 +236,13 @@ class ReadAnythingUntrustedPageHandler :
   void OnCopy() override;
 
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
-                     const ui::AXNodeID& target_node_id) override;
+                     ui::AXNodeID target_node_id) override;
   void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,
-                          const ui::AXNodeID& target_node_id) override;
+                          ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
-                         const ui::AXNodeID& anchor_node_id,
+                         ui::AXNodeID anchor_node_id,
                          int anchor_offset,
-                         const ui::AXNodeID& focus_node_id,
+                         ui::AXNodeID focus_node_id,
                          int focus_offset) override;
   void OnCollapseSelection() override;
   void OnScreenshotRequested() override;

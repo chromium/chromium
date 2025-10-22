@@ -5,12 +5,9 @@
 #ifndef UI_ACCESSIBILITY_MOJOM_AX_NODE_DATA_MOJOM_TRAITS_H_
 #define UI_ACCESSIBILITY_MOJOM_AX_NODE_DATA_MOJOM_TRAITS_H_
 
-#include <cstdint>
-
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
-#include "ui/accessibility/mojom/ax_node_id.mojom.h"
 
 namespace mojo {
 
@@ -31,9 +28,7 @@ struct StructTraits<ax::mojom::AXBitsetDataDataView,
 
 template <>
 struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
-  static ax::mojom::AXNodeIDPtr id(const ui::AXNodeData& p) {
-    return ax::mojom::AXNodeID::New(p.id);
-  }
+  static int32_t id(const ui::AXNodeData& p) { return p.id; }
   static ax::mojom::Role role(const ui::AXNodeData& p) { return p.role; }
   static uint32_t state(const ui::AXNodeData& p) { return p.state.value(); }
   static uint64_t actions(const ui::AXNodeData& p) { return p.actions; }

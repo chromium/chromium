@@ -13,7 +13,6 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_action_data.mojom-shared.h"
-#include "ui/accessibility/mojom/ax_node_id.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -30,22 +29,22 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   static const std::string& source_extension_id(const ui::AXActionData& a) {
     return a.source_extension_id;
   }
-  static ax::mojom::AXNodeIDPtr target_node_id(const ui::AXActionData& a) {
-    return ax::mojom::AXNodeID::New(a.target_node_id);
+  static int32_t target_node_id(const ui::AXActionData& a) {
+    return a.target_node_id;
   }
   static ax::mojom::Role target_role(const ui::AXActionData& a) {
     return a.target_role;
   }
   static int32_t request_id(const ui::AXActionData& a) { return a.request_id; }
   static int32_t flags(const ui::AXActionData& a) { return a.flags; }
-  static ax::mojom::AXNodeIDPtr anchor_node_id(const ui::AXActionData& a) {
-    return ax::mojom::AXNodeID::New(a.anchor_node_id);
+  static int32_t anchor_node_id(const ui::AXActionData& a) {
+    return a.anchor_node_id;
   }
   static int32_t anchor_offset(const ui::AXActionData& a) {
     return a.anchor_offset;
   }
-  static ax::mojom::AXNodeIDPtr focus_node_id(const ui::AXActionData& a) {
-    return ax::mojom::AXNodeID::New(a.focus_node_id);
+  static int32_t focus_node_id(const ui::AXActionData& a) {
+    return a.focus_node_id;
   }
   static int32_t focus_offset(const ui::AXActionData& a) {
     return a.focus_offset;

@@ -5,7 +5,6 @@
 module ax.mojom;
 
 import "ui/accessibility/ax_enums.mojom";
-import "ui/accessibility/mojom/ax_node_id.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -17,12 +16,12 @@ struct AXActionData {
   string source_extension_id;
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
-  ax.mojom.AXNodeID target_node_id;
+  int32 target_node_id;
   int32 request_id;
   int32 flags;
-  ax.mojom.AXNodeID anchor_node_id;
+  int32 anchor_node_id;
   int32 anchor_offset;
-  ax.mojom.AXNodeID focus_node_id;
+  int32 focus_node_id;
   int32 focus_offset;
   int32 custom_action_id;
   gfx.mojom.Rect target_rect;

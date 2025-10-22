@@ -129,7 +129,7 @@ class ReadAnythingAppController
                                bool is_pdf) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
-                             const ui::AXNodeID& node_id,
+                             ui::AXNodeID node_id,
                              const SkBitmap& image) override;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,

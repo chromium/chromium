@@ -12,7 +12,6 @@ import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/ax_features.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom";
-import "ui/accessibility/mojom/ax_node_id.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -208,17 +207,11 @@ interface UntrustedPageHandler {
   // the target tree, which is in the main frame of the currently active web
   // contents. Target_tree_id is the AXTreeID that contains the link to be
   // clicked; target_node_id is the AXNodeID of the link node.
-  OnLinkClicked(
-    ax.mojom.AXTreeID target_tree_id,
-    ax.mojom.AXNodeID target_node_id
-  );
+  OnLinkClicked(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
 
   // Asks the browser provide the image data for the target node.
   // The data will be received in a tree update via AccessibilityEventReceived.
-  OnImageDataRequested(
-    ax.mojom.AXTreeID target_tree_id,
-    ax.mojom.AXNodeID target_node_id
-  );
+  OnImageDataRequested(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
 
   // Informs the browser controller that a selection was made in the WebUI. The
   // browser controller responds by making a matching selection in the target
@@ -229,9 +222,9 @@ interface UntrustedPageHandler {
   // integer offsets in the selection.
   OnSelectionChange(
     ax.mojom.AXTreeID target_tree_id,
-    ax.mojom.AXNodeID anchor_node_id,
+    int32 anchor_node_id,
     int32 anchor_offset,
-    ax.mojom.AXNodeID focus_node_id,
+    int32 focus_node_id,
     int32 focus_offset);
 
   // Informs the browser to collapse the selection made in the WebUI.
@@ -246,10 +239,7 @@ interface UntrustedPageHandler {
   // display node shown in the side page.
   // TODO (b/358169090): Create a cpp typemap to use the ui::AXNodeID type
   // instead of int32
-  ScrollToTargetNode(
-    ax.mojom.AXTreeID target_tree_id,
-    ax.mojom.AXNodeID target_node_id
-  );
+  ScrollToTargetNode(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
 };
 
 // Untrusted WebUI-side handler for requests from the browser.
@@ -335,7 +325,7 @@ interface UntrustedPage {
 
   // Notifies the WebUI that an image has been downloaded for a given node.
   OnImageDataDownloaded(ax.mojom.AXTreeID tree_id,
-    ax.mojom.AXNodeID node_id,
+    int32 node_id,
     skia.mojom.BitmapN32 image
   );
 };
