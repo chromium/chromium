@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">在开机时启动</translation>
 <translation id="1163931534039071049">查看框架的源代码(&amp;V)</translation>
 <translation id="1164015913575846413">alt + 点击</translation>
-<translation id="1164286072721995435">每次开始新对话时，都与 Gemini 分享当前标签页。您可以随时暂停分享当前标签页。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1166212789817575481">关闭右侧标签页</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">找不到 PPD。请确保您的 Chromebook 已连接到网络，然后重试。</translation>
 <translation id="1354045473509304750">继续允许 <ph name="HOST" /> 使用和移动您的摄像头</translation>
 <translation id="1354148503392558902">正在更改密码…</translation>
-<translation id="1354943694624358993">始终分享当前标签页</translation>
 <translation id="1355088139103479645">删除所有数据？</translation>
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1356376170199999104">已允许 - <ph name="PERMISSION_DETAILS" />。请使用实物开关开启麦克风。</translation>
@@ -5746,7 +5744,6 @@
 <translation id="4956593309300508411">要停止分享吗？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
-<translation id="4958916254663453555">打开 Chrome 中的 Gemini 时，系统会自动分享当前标签页。当前标签页的完整内容和网址都会发送给 Google。</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5858,7 +5855,6 @@
 <translation id="5045367873597907704">关于 HID 设备</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="504561833207953641">正在现有的浏览器会话中打开。</translation>
-<translation id="5047544190872578914">每次开始新对话时，都与 Gemini 分享当前标签页。您可以随时暂停分享当前标签页。</translation>
 <translation id="504953514574706691">已从建议的分组中排除标签页</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下载未经验证的文件</translation>
@@ -8712,6 +8708,7 @@
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>
 <translation id="7056418393177503237">{0,plural, =1{无痕模式}other{# 个已打开的无痕式窗口}}</translation>
 <translation id="7056526158851679338">检查设备(&amp;I)</translation>
+<translation id="7057567173736333354">描述您的图片</translation>
 <translation id="70577934383983846">在您的所有设备上使用此密码</translation>
 <translation id="7058024590501568315">隐藏的网络</translation>
 <translation id="7059858479264779982">设为自动启动</translation>
@@ -9913,6 +9910,7 @@
 <translation id="7899720074434636454">忽略“<ph name="EXTENSION_NAME" />”的请求</translation>
 <translation id="7900950034255258543">为确保您可以安全使用此设备，您的组织可以查看设备操作系统、浏览器和设置方面的信息，以及设备上安装了哪些软件</translation>
 <translation id="7901405293566323524">手机中心</translation>
+<translation id="7901728443188947649">生成图片</translation>
 <translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
 <translation id="7903481341948453971">填充密码时使用屏幕锁定</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
@@ -10691,6 +10689,7 @@
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8413956290606243087">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">研究任何内容</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>
 <translation id="8417065541337558100">相机画面预览</translation>
 <translation id="8417548266957501132">家长密码</translation>

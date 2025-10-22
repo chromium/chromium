@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">सुरू केल्यावर लाँच करा</translation>
 <translation id="1163931534039071049">फ्रेम स्रोत &amp;पहा</translation>
 <translation id="1164015913575846413">alt + click</translation>
-<translation id="1164286072721995435">प्रत्येक वेळी तुम्ही नवीन संभाषण सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर करते. तुम्ही तुमचा सद्य टॅब शेअर करणे कधीही थांबवू शकता. तुमचा डेटा जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी वापरला जात नाही.</translation>
 <translation id="1164891049599601209">फसव्या साइटवर एंटर केला</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1166212789817575481">उजवीकडील टॅब बंद करा</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि हलवण्याची अनुमती देणे सुरू ठेवा</translation>
 <translation id="1354148503392558902">पासवर्ड बदलत आहे...</translation>
-<translation id="1354943694624358993">सद्य टॅब नेहमी शेअर करा</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1355088659320425659">इतिहास आणि टॅब</translation>
 <translation id="1356376170199999104">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
@@ -5769,7 +5767,6 @@
 <translation id="4956593309300508411">शेअर करणे थांबवायचे आहे का?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">फक्त या डिव्हाइसवरील फोल्डरमध्ये सेव्ह करायचा आहे का?</translation>
-<translation id="4958916254663453555">तुम्ही Chrome मधील Gemini उघडाल, तेव्हा तुमचा सद्य टॅब आपोआप शेअर केला जाईल. सद्य टॅबचा संपूर्ण आशय आणि URL या गोष्टी Google ला पाठवल्या जातात.</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
 <translation id="4960020053211143927">काही ॲप्स सपोर्ट करत नाहीत</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5881,7 +5878,6 @@
 <translation id="5045367873597907704">HID डिव्हाइसबद्दल</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
-<translation id="5047544190872578914">प्रत्येक वेळी तुम्ही नवीन संभाषण सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर करते. तुम्ही तुमचा सद्य टॅब शेअर करणे कधीही थांबवू शकता.</translation>
 <translation id="504953514574706691">सुचवलेल्या गटामधून टॅब वगळण्यात आला आहे</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">पडताळणी न केलेली फाइल डाउनलोड करा</translation>
@@ -8742,6 +8738,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7055451306017383754">एक अ‍ॅप्लिकेशन हे फोल्डर वापरत असल्यामुळे ते अनशेअर करता आले नाही. पुढे Parallels Desktop बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>
 <translation id="7056418393177503237">{0,plural, =1{गुप्त}other{# गुप्त विंडो उघड्या आहेत}}</translation>
 <translation id="7056526158851679338">&amp;निरीक्षण डिव्हाइसेस</translation>
+<translation id="7057567173736333354">तुमच्या इमेजचे वर्णन करा</translation>
 <translation id="70577934383983846">हा पासवर्ड तुमच्या सर्व डिव्हाइसवर वापरा</translation>
 <translation id="7058024590501568315">लपवलेले नेटवर्क</translation>
 <translation id="7059858479264779982">स्वयं-लाँच करा वर सेट करा</translation>
@@ -9943,6 +9940,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" /> ची विनंती डिसमिस करा</translation>
 <translation id="7900950034255258543">हे डिव्हाइस सुरक्षितपणे वापरले जाऊ शकते याची खात्री करण्यासाठी, तुमची संस्था त्याची ऑपरेटिंग सिस्टीम, ब्राउझर आणि सेटिंग्ज या गोष्टींविषयीची माहिती व डिव्हाइसवर कोणते सॉफ्टवेअर इंस्टॉल केले आहे हे पाहू शकते</translation>
 <translation id="7901405293566323524">फोन हब</translation>
+<translation id="7901728443188947649">इमेज तयार करा</translation>
 <translation id="7903429136755645827">तुमची गेम नियंत्रणे कस्टमाइझ करण्यासाठी क्लिक करा</translation>
 <translation id="7903481341948453971">पासवर्ड भरताना तुमचे स्क्रीन लॉक वापरा</translation>
 <translation id="7903925330883316394">उयुक्तता: <ph name="UTILITY_TYPE" /></translation>
@@ -10721,6 +10719,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8413795581997394485">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण करते. तुम्ही साइटला भेट देता, तेव्हा Chrome तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे Google ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="8413956290606243087">तुम्हाला ChromeOS साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का?</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
+<translation id="8415120635186642416">कोणत्याही गोष्टीबाबत संशोधन करा</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (केस)</translation>
 <translation id="8417065541337558100">तुमच्या कॅमेराचे पूर्वावलोकन</translation>
 <translation id="8417548266957501132">पालकाचा पासवर्ड</translation>

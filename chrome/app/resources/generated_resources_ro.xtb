@@ -249,7 +249,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1162479191445552288">Lansează la pornire</translation>
 <translation id="1163931534039071049">&amp;Afișează sursa cadrului</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
-<translation id="1164286072721995435">Permite accesul serviciului Gemini la fila actuală de fiecare dată când începi o conversație nouă. Poți întrerupe oricând afișarea filei actuale. Datele tale nu sunt folosite pentru a îmbunătăți modelele de AI generativ.</translation>
 <translation id="1164891049599601209">A fost introdusă pe un site înșelător</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1166212789817575481">Închide filele de la dreapta</translation>
@@ -539,7 +538,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1353980523955420967">Nu se poate găsi fișierul PPD. Asigură-te că Chromebookul este online și încearcă din nou.</translation>
 <translation id="1354045473509304750">Permite în continuare ca <ph name="HOST" /> să folosească și să miște camera</translation>
 <translation id="1354148503392558902">Se schimbă parola...</translation>
-<translation id="1354943694624358993">Permite întotdeauna accesul la fila actuală</translation>
 <translation id="1355088139103479645">Ștergi toate datele?</translation>
 <translation id="1355088659320425659">Istoric și file</translation>
 <translation id="1356376170199999104">Se permite – <ph name="PERMISSION_DETAILS" />. Activează microfonul folosind comutatorul fizic.</translation>
@@ -5757,7 +5755,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4956593309300508411">Nu mai permiți accesul?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvezi într-un dosar numai pe acest dispozitiv?</translation>
-<translation id="4958916254663453555">Fila actuală va fi afișată automat când deschizi Gemini în Chrome. Tot conținutul și adresa URL ale filei actuale sunt trimise la Google.</translation>
 <translation id="4959262764292427323">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
 <translation id="4960020053211143927">Nu este acceptată de unele aplicații</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5869,7 +5866,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5045367873597907704">Despre dispozitivele HID</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="504561833207953641">Se deschide în sesiunea de browser existentă.</translation>
-<translation id="5047544190872578914">Permite accesul serviciului Gemini la fila actuală de fiecare dată când începi o conversație nouă. Poți întrerupe oricând afișarea filei actuale.</translation>
 <translation id="504953514574706691">Fila a fost exclusă din grupul sugerat</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Descarcă fișierul neconfirmat</translation>
@@ -8728,6 +8724,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7055451306017383754">Distribuirea nu s-a putut anula, deoarece o aplicație folosește acest dosar. Distribuirea dosarului va fi anulată la următoarea închidere a aplicației Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incognito}few{# ferestre incognito deschise}other{# de ferestre incognito deschise}}</translation>
 <translation id="7056526158851679338">&amp;Inspectați dispozitivele</translation>
+<translation id="7057567173736333354">Descrie imaginea</translation>
 <translation id="70577934383983846">Folosește această parolă pe toate dispozitivele</translation>
 <translation id="7058024590501568315">Rețea ascunsă</translation>
 <translation id="7059858479264779982">Setați pentru lansare automată</translation>
@@ -9929,6 +9926,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7899720074434636454">Închide solicitarea pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Pentru a se asigura că dispozitivul poate fi folosit în siguranță, organizația ta poate să vadă informații despre sistemul de operare, browser și setări, precum și despre software-ul instalat pe dispozitiv.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Creează imagini</translation>
 <translation id="7903429136755645827">Dă clic pentru a personaliza comenzile jocului</translation>
 <translation id="7903481341948453971">Folosește blocarea ecranului la completarea parolelor</translation>
 <translation id="7903925330883316394">Utilitar: <ph name="UTILITY_TYPE" /></translation>
@@ -10707,6 +10705,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8413795581997394485">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Când accesezi un site, Chrome trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>
 <translation id="8413956290606243087">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome?</translation>
 <translation id="8414396119627470038">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /> de pe <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Cercetează orice</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (carcasă)</translation>
 <translation id="8417065541337558100">Previzualizarea camerei foto</translation>
 <translation id="8417548266957501132">Parola părintelui</translation>

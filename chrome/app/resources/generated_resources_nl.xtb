@@ -249,7 +249,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1162479191445552288">Openen bij opstarten</translation>
 <translation id="1163931534039071049">&amp;Framebron bekijken</translation>
 <translation id="1164015913575846413">Alt + klikken</translation>
-<translation id="1164286072721995435">Deelt het huidige tabblad met Gemini elke keer als je een nieuw gesprek begint. Je kunt het delen van je huidige tabblad altijd onderbreken. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Tabbladen aan de rechterkant sluiten</translation>
@@ -538,7 +537,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1353980523955420967">PPD kan niet worden gevonden. Zorg dat je Chromebook online is en probeer het opnieuw.</translation>
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
 <translation id="1354148503392558902">Wachtwoord wijzigen...</translation>
-<translation id="1354943694624358993">Huidig tabblad altijd delen</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
 <translation id="1355088659320425659">Geschiedenis en tabbladen</translation>
 <translation id="1356376170199999104">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet de microfoon aan met de fysieke schakelaar.</translation>
@@ -5754,7 +5752,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4956593309300508411">Delen stoppen?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Alleen opslaan in een map op dit apparaat?</translation>
-<translation id="4958916254663453555">Je huidige tabblad wordt automatisch gedeeld als je Gemini opent in Chrome. De volledige content en URL van het huidige tabblad worden naar Google gestuurd.</translation>
 <translation id="4959262764292427323">Wachtwoorden worden in je Google-account opgeslagen, zodat je deze op elk apparaat kunt gebruiken</translation>
 <translation id="4960020053211143927">Niet ondersteund door bepaalde apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5866,7 +5863,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5045367873597907704">Over HID-apparaten</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="504561833207953641">Wordt geopend in een bestaande browsersessie.</translation>
-<translation id="5047544190872578914">Deelt het huidige tabblad met Gemini elke keer als je een nieuw gesprek begint. Je kunt het delen van je huidige tabblad altijd onderbreken.</translation>
 <translation id="504953514574706691">Tabblad uitgesloten van voorgestelde groep</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Niet-geverifieerd bestand downloaden</translation>
@@ -8720,6 +8716,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7055451306017383754">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Parallels Desktop weer wordt uitgezet.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# geopende incognitovensters}}</translation>
 <translation id="7056526158851679338">Apparaten &amp;inspecteren</translation>
+<translation id="7057567173736333354">Beschrijf je afbeelding</translation>
 <translation id="70577934383983846">Dit wachtwoord gebruiken op al je apparaten</translation>
 <translation id="7058024590501568315">Verborgen netwerk</translation>
 <translation id="7059858479264779982">Instellen op automatisch starten</translation>
@@ -9920,6 +9917,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7899720074434636454">Verzoek voor <ph name="EXTENSION_NAME" /> sluiten</translation>
 <translation id="7900950034255258543">Je organisatie kan informatie bekijken over het besturingssysteem, de browser, de instellingen en de geïnstalleerde software op het apparaat om te zorgen dat dit apparaat op een beter beveiligde manier kan worden gebruikt.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Afbeeldingen maken</translation>
 <translation id="7903429136755645827">Klik om je gamebediening aan te passen</translation>
 <translation id="7903481341948453971">Je schermvergrendeling gebruiken als je wachtwoorden invult</translation>
 <translation id="7903925330883316394">Hulpprogramma: <ph name="UTILITY_TYPE" /></translation>
@@ -10698,6 +10696,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8413795581997394485">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als je een site bezoekt, stuurt Chrome een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>
 <translation id="8413956290606243087">Wil je ChromeVox aanzetten, de ingebouwde schermlezer voor Chrome OS?</translation>
 <translation id="8414396119627470038">Log in bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Alles opzoeken</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
 <translation id="8417065541337558100">Voorbeeld van je camera</translation>
 <translation id="8417548266957501132">Wachtwoord van ouder</translation>

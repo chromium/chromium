@@ -249,7 +249,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1162479191445552288">Zaženi ob zagonu</translation>
 <translation id="1163931534039071049">&amp;Ogled vira okvirja</translation>
 <translation id="1164015913575846413">alt in klik</translation>
-<translation id="1164286072721995435">Deli trenutni zavihek z Geminijem vsakič, ko začnete nov pogovor. Deljenje trenutnega zavihka lahko kadar koli začasno zaustavite. Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1166212789817575481">Zapri zavihke na desni</translation>
@@ -541,7 +540,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1353980523955420967">Datoteke PPD ni mogoče najti. Preverite, ali je Chromebook povezan v splet, in poskusite znova.</translation>
 <translation id="1354045473509304750">Še naprej dovoli, da gostitelj <ph name="HOST" /> uporablja in premika kamero</translation>
 <translation id="1354148503392558902">Spreminjanje gesla …</translation>
-<translation id="1354943694624358993">Vedno deli trenutni zavihek</translation>
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
 <translation id="1355088659320425659">Zgodovina in zavihki</translation>
 <translation id="1356376170199999104">Dovoljeno – <ph name="PERMISSION_DETAILS" />. Vklopite mikrofon s fizičnim stikalom.</translation>
@@ -5774,7 +5772,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4956593309300508411">Želite ustaviti deljenje?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Želite shraniti v mapo samo v tej napravi?</translation>
-<translation id="4958916254663453555">Trenutni zavihek bo samodejno deljen, ko odprete Geminija v Chromu. Celotna vsebina in URL trenutnega zavihka se pošljeta Googlu.</translation>
 <translation id="4959262764292427323">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi</translation>
 <translation id="4960020053211143927">Nekatere aplikacije ne podpirajo tega</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5886,7 +5883,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5045367873597907704">O vnosnih napravah</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
 <translation id="504561833207953641">Odpiranje v obstoječi seji brskalnika.</translation>
-<translation id="5047544190872578914">Deli trenutni zavihek z Geminijem vsakič, ko začnete nov pogovor. Deljenje trenutnega zavihka lahko kadar koli začasno zaustavite.</translation>
 <translation id="504953514574706691">Zavihek je izključen iz predlagane skupine</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Prenesi nepreverjeno datoteko</translation>
@@ -8752,6 +8748,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7055451306017383754">Skupne rabe mape ni bilo mogoče preklicati, ker jo uporablja določena aplikacija. Skupna raba mape bo preklicana ob naslednji zaustavitvi programa Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Anonimni način}one{# odprto anonimno okno}two{# odprti anonimni okni}few{# odprta anonimna okna}other{# odprtih anonimnih oken}}</translation>
 <translation id="7056526158851679338">&amp;Pregled naprav</translation>
+<translation id="7057567173736333354">Opišite sliko</translation>
 <translation id="70577934383983846">Uporaba tega gesla v vseh napravah</translation>
 <translation id="7058024590501568315">Skrito omrežje</translation>
 <translation id="7059858479264779982">Nastavi za samodejni zagon</translation>
@@ -9953,6 +9950,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7899720074434636454">Opustitev zahteve za razširitev <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Zaradi zagotavljanja varne uporabe naprave si lahko organizacija ogleda podatke o operacijskem sistemu, brskalniku in nastavitvah ter podatke o tem, katera programska oprema je nameščena v napravi</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
+<translation id="7901728443188947649">Ustvarite slike</translation>
 <translation id="7903429136755645827">Kliknite, če želite prilagoditi kontrolnike za igro.</translation>
 <translation id="7903481341948453971">Uporaba zaklepanja zaslona pri izpolnjevanju gesel</translation>
 <translation id="7903925330883316394">Pripomoček: <ph name="UTILITY_TYPE" /></translation>
@@ -10731,6 +10729,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="8413956290606243087">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS?</translation>
 <translation id="8414396119627470038">Prijavite se v storitev <ph name="SITE_ETLD_PLUS_ONE" /> s podatki za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Raziščite kar koli</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (škatlica)</translation>
 <translation id="8417065541337558100">Predogled vaše kamere</translation>
 <translation id="8417548266957501132">Geslo starša</translation>

@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">開機時啟動</translation>
 <translation id="1163931534039071049">檢視框架原始碼(&amp;V)</translation>
 <translation id="1164015913575846413">Alt 鍵 + 滑鼠左鍵</translation>
-<translation id="1164286072721995435">每次展開新對話時，都會與 Gemini 分享目前的分頁。你隨時可以暫停分享。你的資料不會用於改良生成式 AI 模型。</translation>
 <translation id="1164891049599601209">已在詐騙網站上輸入</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連上網路，然後再試一次。</translation>
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用及調整攝影機</translation>
 <translation id="1354148503392558902">正在變更密碼...</translation>
-<translation id="1354943694624358993">一律分享目前分頁</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355088659320425659">歷史記錄和分頁</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。請使用實體開關開啟麥克風。</translation>
@@ -5750,7 +5748,6 @@
 <translation id="4956593309300508411">要停止共用嗎？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要儲存到這部裝置的資料夾嗎？</translation>
-<translation id="4958916254663453555">開啟 Chrome 內建 Gemini 時，都會自動分享目前的分頁。系統會將目前分頁的完整內容和網址傳送給 Google。</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
 <translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5862,7 +5859,6 @@
 <translation id="5045367873597907704">關於 HID 裝置</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
-<translation id="5047544190872578914">每次展開新對話時，都會與 Gemini 分享目前的分頁。你隨時可以暫停分享。</translation>
 <translation id="504953514574706691">已從建議群組中排除分頁</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下載未經驗證的檔案</translation>
@@ -8715,6 +8711,7 @@
 <translation id="7055451306017383754">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享這個資料夾。</translation>
 <translation id="7056418393177503237">{0,plural, =1{無痕視窗}other{已開啟 # 個無痕視窗}}</translation>
 <translation id="7056526158851679338">檢查裝置 (&amp;I)</translation>
+<translation id="7057567173736333354">描述圖像</translation>
 <translation id="70577934383983846">在所有裝置上使用這個密碼</translation>
 <translation id="7058024590501568315">隱藏的網路</translation>
 <translation id="7059858479264779982">設為自動啟動</translation>
@@ -9915,6 +9912,7 @@
 <translation id="7899720074434636454">關閉「<ph name="EXTENSION_NAME" />」的要求</translation>
 <translation id="7900950034255258543">貴機構可以查看這部裝置的作業系統、瀏覽器和設定的相關資訊，以及裝置上安裝的軟體，確保裝置能安全使用</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">生成圖像</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
 <translation id="7903481341948453971">填入密碼時使用螢幕鎖定功能驗證</translation>
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
@@ -10693,6 +10691,7 @@
 <translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">研究任何內容</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
 <translation id="8417065541337558100">攝影機畫面預覽</translation>
 <translation id="8417548266957501132">家長帳戶密碼</translation>

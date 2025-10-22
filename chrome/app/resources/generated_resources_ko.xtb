@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">시작할 때 실행</translation>
 <translation id="1163931534039071049">프레임 소스 보기(&amp;V)</translation>
 <translation id="1164015913575846413">Alt + 클릭</translation>
-<translation id="1164286072721995435">새 대화를 시작할 때마다 현재 탭이 Gemini와 공유됩니다. 언제든지 현재 탭 공유를 일시중지할 수 있습니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1354148503392558902">비밀번호 변경 중...</translation>
-<translation id="1354943694624358993">항상 현재 탭 공유</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
 <translation id="1356376170199999104">허용됨 – <ph name="PERMISSION_DETAILS" />. 물리적 스위치를 사용하여 마이크를 사용 설정하세요.</translation>
@@ -5772,7 +5770,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4956593309300508411">공유를 중지하시겠습니까?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
-<translation id="4958916254663453555">Chrome의 Gemini를 열면 현재 탭이 자동으로 공유됩니다. 현재 탭의 전체 콘텐츠와 URL이 Google로 전송됩니다.</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5884,7 +5881,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5045367873597907704">HID 기기 정보</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
-<translation id="5047544190872578914">새 대화를 시작할 때마다 현재 탭이 Gemini와 공유됩니다. 언제든지 현재 탭 공유를 일시중지할 수 있습니다.</translation>
 <translation id="504953514574706691">추천 그룹에서 탭이 제외됨</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">확인되지 않은 파일 다운로드</translation>
@@ -8742,6 +8738,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7055451306017383754">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Parallels Desktop이 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="7056418393177503237">{0,plural, =1{시크릿 모드}other{열려 있는 시크릿 창 #개}}</translation>
 <translation id="7056526158851679338">기기 검사(&amp;I)</translation>
+<translation id="7057567173736333354">이미지 설명 작성</translation>
 <translation id="70577934383983846">모든 기기에서 이 비밀번호 사용</translation>
 <translation id="7058024590501568315">숨겨진 네트워크</translation>
 <translation id="7059858479264779982">자동 실행 설정</translation>
@@ -9943,6 +9940,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" /> 요청 닫기</translation>
 <translation id="7900950034255258543">이 기기를 안전하게 사용하도록 하기 위해 조직에서 운영체제, 브라우저, 설정에 관한 정보와 기기에 설치된 소프트웨어를 확인할 수 있습니다.</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
+<translation id="7901728443188947649">이미지 만들기</translation>
 <translation id="7903429136755645827">클릭하여 게임 컨트롤 맞춤설정</translation>
 <translation id="7903481341948453971">비밀번호 입력 시 화면 잠금 사용</translation>
 <translation id="7903925330883316394">유틸리티: <ph name="UTILITY_TYPE" /></translation>
@@ -10721,6 +10719,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8413956290606243087">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
+<translation id="8415120635186642416">무엇이든 조사해 보세요</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
 <translation id="8417065541337558100">카메라 미리보기</translation>
 <translation id="8417548266957501132">부모 비밀번호</translation>

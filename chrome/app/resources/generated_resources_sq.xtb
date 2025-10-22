@@ -249,7 +249,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1162479191445552288">Hape në nisje</translation>
 <translation id="1163931534039071049">&amp;Shiko burimin e kornizës</translation>
 <translation id="1164015913575846413">alt + kliko</translation>
-<translation id="1164286072721995435">Ndan skedën aktuale me Gemini sa herë që nis një bisedë të re. Mund ta vendosësh në pauzë në çdo kohë ndarjen e skedës aktuale. Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="1164891049599601209">Ka hyrë në një sajt mashtrues</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1166212789817575481">Mbylli skedat në të djathtë</translation>
@@ -538,7 +537,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1353980523955420967">PPD-ja nuk mund të gjendet. Sigurohu që pajisja jote Chromebook është online dhe provo përsëri.</translation>
 <translation id="1354045473509304750">Vazhdo të lejosh që <ph name="HOST" /> të përdorë dhe të lëvizë kamerën tënde</translation>
 <translation id="1354148503392558902">Po ndryshohet fjalëkalimi...</translation>
-<translation id="1354943694624358993">Ndaj gjithmonë skedën aktuale</translation>
 <translation id="1355088139103479645">Të fshihen të gjitha të dhënat?</translation>
 <translation id="1355088659320425659">Historiku dhe skedat</translation>
 <translation id="1356376170199999104">Lejohet - <ph name="PERMISSION_DETAILS" />. Aktivizo mikrofonin duke përdorur çelësin fizik.</translation>
@@ -5753,7 +5751,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4956593309300508411">Të ndalohet ndarja?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Të ruhet te një dosje vetëm në këtë pajisje?</translation>
-<translation id="4958916254663453555">Skeda jote aktuale do të ndahet automatikisht kur ti hap Gemini në Chrome. URL-ja dhe përmbajtjet e plota të skedës aktuale dërgohen te Google.</translation>
 <translation id="4959262764292427323">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje</translation>
 <translation id="4960020053211143927">Nuk mbështetet nga disa aplikacione</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5865,7 +5862,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5045367873597907704">Rreth pajisjeve HID</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="504561833207953641">Po hapet në sesionin ekzistues të shfletuesit.</translation>
-<translation id="5047544190872578914">Ndan skedën aktuale me Gemini sa herë që nis një bisedë të re. Mund ta vendosësh në pauzë në çdo kohë ndarjen e skedës aktuale.</translation>
 <translation id="504953514574706691">Skeda u përjashtua nga grupi i sugjeruar</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Shkarko skedarin e paverifikuar</translation>
@@ -8721,6 +8717,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7055451306017383754">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Parallels Desktop të ndalojë punën më pas.</translation>
 <translation id="7056418393177503237">{0,plural, =1{E fshehtë}other{# dritare të hapura "të fshehta"}}</translation>
 <translation id="7056526158851679338">&amp;Inspekto pajisjet</translation>
+<translation id="7057567173736333354">Përshkruaj imazhin tënd</translation>
 <translation id="70577934383983846">Përdore këtë fjalëkalim në të gjitha pajisjet e tua</translation>
 <translation id="7058024590501568315">Rrjet i fshehur</translation>
 <translation id="7059858479264779982">Vendose në hapje automatike</translation>
@@ -9922,6 +9919,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7899720074434636454">Hiq kërkesën për <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Për t'u siguruar që kjo pajisje mund të përdoret në mënyrë të sigurt, organizata jote mund të shikojë informacione në lidhje me sistemin operativ, shfletuesin dhe cilësimet e saj, si dhe se çfarë softuerësh janë instaluar në pajisje</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Krijo imazhe</translation>
 <translation id="7903429136755645827">Kliko për të personalizuar kontrollet e lojës</translation>
 <translation id="7903481341948453971">Përdor kyçjen e ekranit kur plotëson fjalëkalimet</translation>
 <translation id="7903925330883316394">Softueri ndihmës: <ph name="UTILITY_TYPE" /></translation>
@@ -10699,6 +10697,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="8413956290606243087">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS?</translation>
 <translation id="8414396119627470038">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Kërko gjithçka</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (kasa)</translation>
 <translation id="8417065541337558100">Pamja paraprake e kamerës sate</translation>
 <translation id="8417548266957501132">Fjalëkalimi i prindit</translation>

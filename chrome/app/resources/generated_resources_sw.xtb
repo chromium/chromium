@@ -249,7 +249,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1162479191445552288">Iwake kifaa kinapowashwa</translation>
 <translation id="1163931534039071049">&amp;Tazama asili ya fremu</translation>
 <translation id="1164015913575846413">alt pamoja na bofya</translation>
-<translation id="1164286072721995435">Huruhusu Gemini ifikie kichupo unachotumia sasa kila unapoanzisha mazungumzo mapya. Unaweza kusitisha ufikiaji wa kichupo unachotumia sasa wakati wowote. Data yako haitumiwi kuboresha mifumo ya AI zalishi.</translation>
 <translation id="1164891049599601209">Limewekwa kwenye tovuti ya kulaghai</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1166212789817575481">Funga Vichupo vilivyo Upande wa Kulia</translation>
@@ -538,7 +537,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1353980523955420967">Imeshindwa kupata PPD. Hakikisha kuwa Chromebook yako iko mtandaoni kisha ujaribu tena.</translation>
 <translation id="1354045473509304750">Endelea kuruhusu <ph name="HOST" /> itumie na kusogeza kamera yako</translation>
 <translation id="1354148503392558902">Inabadilisha nenosiri...</translation>
-<translation id="1354943694624358993">Ruhusu kichupo unachotumia sasa kifikiwe kila wakati</translation>
 <translation id="1355088139103479645">Ungependa kufuta data yote?</translation>
 <translation id="1355088659320425659">Historia na vichupo</translation>
 <translation id="1356376170199999104">Umeruhusu – <ph name="PERMISSION_DETAILS" />. Washa maikrofoni ukitumia swichi halisi.</translation>
@@ -5766,7 +5764,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4956593309300508411">Ungependa Kuacha Kuruhusu Ufikiaji?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Ungependa kuhifadhi kwenye folda iliyo katika kifaa hiki pekee?</translation>
-<translation id="4958916254663453555">Kichupo unachotumia sasa kitafikiwa kiotomatiki unapofungua Gemini kwenye Chrome. URL na maudhui yote ya kichupo hicho hutumwa kwa Google.</translation>
 <translation id="4959262764292427323">Manenosiri yanahifadhiwa kwenye Akaunti yako ya Google ili uweze kuyatumia kwenye kifaa chochote</translation>
 <translation id="4960020053211143927">Haitumiki kwenye baadhi ya programu</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5878,7 +5875,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5045367873597907704">Kuhusu vifaa vya HID</translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
 <translation id="504561833207953641">Inafungua katika kipindi cha kuvinjari kilichopo.</translation>
-<translation id="5047544190872578914">Huruhusu Gemini ifikie kichupo unachotumia sasa kila unapoanzisha mazungumzo mapya. Unaweza kusitisha ufikiaji wa kichupo unachotumia sasa wakati wowote.</translation>
 <translation id="504953514574706691">Kichupo hakijajumuishwa kwenye kikundi kilichopendekezwa</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Pakua faili ambayo haijathibitishwa</translation>
@@ -8736,6 +8732,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7055451306017383754">Imeshindwa kughairi kushiriki kwa sababu kuna programu inayotumia folda hii. Itaghairi kushiriki folda wakati programu ya Parallels Desktop itafungwa tena.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Dirisha fiche}other{Umefungua madirisha # fiche}}</translation>
 <translation id="7056526158851679338">Na Ukague Vifaa</translation>
+<translation id="7057567173736333354">Elezea picha yako</translation>
 <translation id="70577934383983846">Tumia nenosiri hili kwenye vifaa vyako vyote</translation>
 <translation id="7058024590501568315">Mtandao uliofichwa</translation>
 <translation id="7059858479264779982">Weka kwenye uzinduzi otomatiki</translation>
@@ -9937,6 +9934,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7899720074434636454">Ondoa ombi la <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Ili kuhakikisha kuwa kifaa hiki kinaweza kutumika kwa njia salama, shirika lako linaweza kuona maelezo kuhusu mfumo wa uendeshaji, kivinjari, mipangilio na programu zilizowekwa kwenye kifaa</translation>
 <translation id="7901405293566323524">Kitovu cha Simu</translation>
+<translation id="7901728443188947649">Buni picha</translation>
 <translation id="7903429136755645827">Bofya ili kuweka mapendeleo ya vidhibiti vya mchezo wako</translation>
 <translation id="7903481341948453971">Tumia mbinu ya kufunga skrini yako kujaza manenosiri</translation>
 <translation id="7903925330883316394">Kitumizi: <ph name="UTILITY_TYPE" /></translation>
@@ -10715,6 +10713,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8413795581997394485">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari. Unapotembelea tovuti, Chrome hutuma kwenda Google msimbo uliofumbwa wa sehemu ya URL kupitia seva ya faragha inayoficha anwani yako ya IP. Iwapo tovuti itafanya kitu cha kutiliwa shaka, URL kamili na sehemu za maudhui ya ukurasa pia zitatumwa.</translation>
 <translation id="8413956290606243087">Ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome?</translation>
 <translation id="8414396119627470038">Ingia katika akaunti <ph name="SITE_ETLD_PLUS_ONE" /> kwa kutumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Tafiti chochote</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Kifuniko)</translation>
 <translation id="8417065541337558100">Toleo la kukagua la kamera yako</translation>
 <translation id="8417548266957501132">Nenosiri la mzazi</translation>

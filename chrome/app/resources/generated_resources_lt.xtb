@@ -249,7 +249,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1162479191445552288">Paleisti per paleistį</translation>
 <translation id="1163931534039071049">&amp;Rodyti rėmelio šaltinį</translation>
 <translation id="1164015913575846413">„alt“ + paspaudimas</translation>
-<translation id="1164286072721995435">Dabartinis skirtukas bendrinamas su „Gemini“ kiekvieną kartą, kai pradedate naują pokalbį. Galite bet kada pristabdyti dabartinio skirtuko bendrinimą. Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti.</translation>
 <translation id="1164891049599601209">Įvesta apgaulingoje svetainėje</translation>
 <translation id="1165039591588034296">Klaida</translation>
 <translation id="1166212789817575481">Uždaryti dešinėje esančius skirtukus</translation>
@@ -541,7 +540,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1353980523955420967">Nepavyko rasti PPD. Įsitikinkite, kad „Chromebook“ prijungtas, ir bandykite dar kartą.</translation>
 <translation id="1354045473509304750">Ir toliau leisti <ph name="HOST" /> naudoti ir judinti kamerą</translation>
 <translation id="1354148503392558902">Keičiamas slaptažodis...</translation>
-<translation id="1354943694624358993">Visada bendrinti dabartinį skirtuką</translation>
 <translation id="1355088139103479645">Ištrinti visus duomenis?</translation>
 <translation id="1355088659320425659">Istorija ir skirtukai</translation>
 <translation id="1356376170199999104">Leidžiama – <ph name="PERMISSION_DETAILS" />. Įjunkite mikrofoną naudodami fizinį jungiklį.</translation>
@@ -5774,7 +5772,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4956593309300508411">Nebebendrinti?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Išsaugoti aplanke tik šiame įrenginyje?</translation>
-<translation id="4958916254663453555">Atidarius „Gemini“ naršyklėje „Chrome“, dabartinis skirtukas bus bendrinamas automatiškai. Visas dabartinio skirtuko turinys ir URL siunčiami „Google“.</translation>
 <translation id="4959262764292427323">Slaptažodžiai išsaugoti „Google“ paskyroje, todėl galite juos naudoti bet kuriame įrenginyje</translation>
 <translation id="4960020053211143927">Nepalaikoma kai kuriose programose</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5886,7 +5883,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5045367873597907704">Apie ŽSĮ įrenginius</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
 <translation id="504561833207953641">Atidaroma esamoje naršyklės sesijoje.</translation>
-<translation id="5047544190872578914">Dabartinis skirtukas bendrinamas su „Gemini“ kiekvieną kartą, kai pradedate naują pokalbį. Galite bet kada pristabdyti dabartinio skirtuko bendrinimą.</translation>
 <translation id="504953514574706691">Skirtukas išskirtas iš siūlomos grupės</translation>
 <translation id="5050330054928994520">TĮK</translation>
 <translation id="5051461727068120271">Atsisiųsti nepatvirtintą failą</translation>
@@ -8751,6 +8747,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7055451306017383754">Nepavyko panaikinti bendrinimo, nes programa naudoja šį aplanką. Aplankas bus nebebendrinamas, kai kitą kartą išjungsite „Parallels Desktop“.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito režimas}one{# atidarytas inkognito langas}few{# atidaryti inkognito langai}many{# atidaryto inkognito lango}other{# atidarytų inkognito langų}}</translation>
 <translation id="7056526158851679338">&amp;Tikrinti įrenginius</translation>
+<translation id="7057567173736333354">Aprašykite vaizdą</translation>
 <translation id="70577934383983846">Naudokite šį slaptažodį visuose įrenginiuose</translation>
 <translation id="7058024590501568315">Paslėptas tinklas</translation>
 <translation id="7059858479264779982">Nustatyti automatinį paleidimą</translation>
@@ -9952,6 +9949,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7899720074434636454">Uždaryti užklausą dėl „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="7900950034255258543">Siekdama įsitikinti, kad šį įrenginį galima naudoti saugiai, jūsų organizacija gali peržiūrėti informaciją apie jo operacinę sistemą, naršyklę, nustatymus ir įrenginyje įdiegtą programinę įrangą</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Kurkite vaizdus</translation>
 <translation id="7903429136755645827">Spustelėkite, jei norite tinkinti žaidimų valdiklius</translation>
 <translation id="7903481341948453971">Naudoti ekrano užraktą, kai pildote slaptažodžius</translation>
 <translation id="7903925330883316394">Paslaugų programa: <ph name="UTILITY_TYPE" /></translation>
@@ -10730,6 +10728,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8413795581997394485">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="8413956290606243087">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą?</translation>
 <translation id="8414396119627470038">Prisijungimas prie <ph name="SITE_ETLD_PLUS_ONE" /> naudojant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Tyrinėkite bet ką</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (dėklas)</translation>
 <translation id="8417065541337558100">Fotoaparato peržiūra</translation>
 <translation id="8417548266957501132">Vieno iš tėvų slaptažodis</translation>

@@ -249,7 +249,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1162479191445552288">Lansio wrth gychwyn</translation>
 <translation id="1163931534039071049">&amp;Gweld ffynhonnell ffrâm</translation>
 <translation id="1164015913575846413">alt + clicio</translation>
-<translation id="1164286072721995435">Yn rhannu'r tab presennol gyda Gemini bob tro y byddwch yn dechrau sgwrs newydd. Gallwch seibio rhannu eich tab presennol unrhyw bryd. Ni ddefnyddir eich data i wella modelau AI cynhyrchiol.</translation>
 <translation id="1164891049599601209">Wedi'i roi ar wefan dwyllodrus</translation>
 <translation id="1165039591588034296">Gwall</translation>
 <translation id="1166212789817575481">Cau'r Tabiau i'r Dde</translation>
@@ -542,7 +541,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1353980523955420967">Methu â dod o hyd i PPD. Gwnewch yn siŵr bod eich Chromebook ar-lein a rhowch gynnig arall arni.</translation>
 <translation id="1354045473509304750">Parhewch i ganiatáu i <ph name="HOST" /> ddefnyddio a symud eich camera</translation>
 <translation id="1354148503392558902">Wrthi'n newid cyfrinair...</translation>
-<translation id="1354943694624358993">Rhannu'r tab presennol bob amser</translation>
 <translation id="1355088139103479645">Dileu'r holl ddata?</translation>
 <translation id="1355088659320425659">Hanes a thabiau</translation>
 <translation id="1356376170199999104">Caniatawyd – <ph name="PERMISSION_DETAILS" />. Trowch y meicroffon ymlaen gan ddefnyddio switsh ffisegol.</translation>
@@ -5774,7 +5772,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4956593309300508411">Stopio Rhannu?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Cadw i ffolder ar y ddyfais hon yn unig?</translation>
-<translation id="4958916254663453555">Bydd eich tab presennol yn cael ei rannu'n awtomatig pan fyddwch yn agor Gemini yn Chrome. Anfonir cynnwys llawn ac URL y tab presennol at Google.</translation>
 <translation id="4959262764292427323">Mae cyfrineiriau'n cael eu cadw i'ch Cyfrif Google fel y gallwch eu defnyddio ar unrhyw ddyfais</translation>
 <translation id="4960020053211143927">Ni chefnogir hyn gan rai apiau</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5886,7 +5883,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5045367873597907704">Ynglŷn â dyfeisiau HID</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="504561833207953641">Wrthi'n agor yn y sesiwn porwr bresennol.</translation>
-<translation id="5047544190872578914">Yn rhannu'r tab presennol gyda Gemini bob tro y byddwch yn dechrau sgwrs newydd. Gallwch seibio rhannu eich tab presennol unrhyw bryd.</translation>
 <translation id="504953514574706691">Tab wedi'i eithrio o'r grŵp a awgrymir</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Lawrlwythwch ffeil sydd heb ei chadarnhau</translation>
@@ -8751,6 +8747,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7055451306017383754">Methu â dadrannu oherwydd bod ap yn defnyddio'r ffolder hon. Bydd y ffolder yn cael ei dadrannu pan fydd Parallels Desktop yn cael ei gau nesaf.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Anhysbys}zero{Mae # ffenestr Anhysbys ar agor}two{Mae # ffenestr Anhysbys ar agor}few{Mae # ffenestr Anhysbys ar agor}many{Mae # ffenestr Anhysbys ar agor}other{Mae # ffenestr Anhysbys ar agor}}</translation>
 <translation id="7056526158851679338">&amp;Archwilio Dyfeisiau</translation>
+<translation id="7057567173736333354">Disgrifio'ch llun</translation>
 <translation id="70577934383983846">Defnyddiwch y cyfrinair hwn ar eich holl ddyfeisiau</translation>
 <translation id="7058024590501568315">Rhwydwaith cudd</translation>
 <translation id="7059858479264779982">Gosod i awto-lansio</translation>
@@ -9952,6 +9949,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7899720074434636454">Diystyru cais ar gyfer <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Er mwyn sicrhau y gellir defnyddio'r ddyfais hon yn ddiogel, gall eich sefydliad weld gwybodaeth am ei system weithredu, porwr, a gosodiadau, a pha feddalwedd sydd wedi'i gosod ar y ddyfais</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Creu lluniau</translation>
 <translation id="7903429136755645827">Cliciwch i addasu eich rheolyddion gêm</translation>
 <translation id="7903481341948453971">Defnyddio'ch clo sgrin wrth lenwi cyfrineiriau</translation>
 <translation id="7903925330883316394">Cyfleustod: <ph name="UTILITY_TYPE" /></translation>
@@ -10729,6 +10727,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8413795581997394485">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Pan fyddwch yn ymweld â gwefan, mae Chrome yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn gwneud rhywbeth amheus, bydd URL llawn a darnau o gynnwys tudalen hefyd yn cael eu hanfon.</translation>
 <translation id="8413956290606243087">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS?</translation>
 <translation id="8414396119627470038">Mewngofnodwch i <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Ymchwilio unrhyw beth</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Cas)</translation>
 <translation id="8417065541337558100">Rhagolwg o'ch camera</translation>
 <translation id="8417548266957501132">Cyfrinair rhiant</translation>

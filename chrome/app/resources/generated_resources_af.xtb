@@ -249,7 +249,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1162479191445552288">Begin met afskop</translation>
 <translation id="1163931534039071049">Bekyk raambron</translation>
 <translation id="1164015913575846413">alt + klik</translation>
-<translation id="1164286072721995435">Deel die huidige oortjie met Gemini elke keer as jy ’n nuwe gesprek begin. Jy kan enige tyd die deling van jou huidige oortjie onderbreek. Jou data word nie gebruik om generatiewe KI-modelle te verbeter nie.</translation>
 <translation id="1164891049599601209">Op misleidende werf ingevoer</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Maak oortjies aan die regterkant toe</translation>
@@ -538,7 +537,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1353980523955420967">Kan nie PPD kry nie. Maak seker dat jou Chromebook aanlyn is en probeer weer.</translation>
 <translation id="1354045473509304750">Hou aan om <ph name="HOST" /> toe te laat om jou kamera te gebruik en te beweeg</translation>
 <translation id="1354148503392558902">Verander tans wagwoord …</translation>
-<translation id="1354943694624358993">Deel altyd huidige oortjie</translation>
 <translation id="1355088139103479645">Vee alle data uit?</translation>
 <translation id="1355088659320425659">Geskiedenis en oortjies</translation>
 <translation id="1356376170199999104">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel mikrofoon met die fisieke skakelaar aan.</translation>
@@ -5771,7 +5769,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4956593309300508411">Hou op deel?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Stoor net in 'n vouer op hierdie toestel?</translation>
-<translation id="4958916254663453555">Jou huidige oortjie sal outomaties gedeel word wanneer jy Gemini in Chrome oopmaak. Die huidige oortjie se volle inhoud en URL word na Google toe gestuur.</translation>
 <translation id="4959262764292427323">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik</translation>
 <translation id="4960020053211143927">Word nie deur sommige apps gesteun nie</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5883,7 +5880,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5045367873597907704">Meer oor MKT-toestelle</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
 <translation id="504561833207953641">Maak tans in bestaande blaaiersessie oop.</translation>
-<translation id="5047544190872578914">Deel die huidige oortjie met Gemini elke keer as jy ’n nuwe gesprek begin. Jy kan enige tyd die deling van jou huidige oortjie onderbreek.</translation>
 <translation id="504953514574706691">Oortjie is van voorgestelde groep uitgesluit</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Laai ongeverifieerde lêer af</translation>
@@ -8741,6 +8737,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7055451306017383754">Kon nie ontdeel nie want 'n app gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Parallels Dekstop weer afgeskakel word.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# oop Incognito-vensters}}</translation>
 <translation id="7056526158851679338">Ondersoek toestelle</translation>
+<translation id="7057567173736333354">Beskryf jou prent</translation>
 <translation id="70577934383983846">Gebruik hierdie wagwoord op al jou toestelle</translation>
 <translation id="7058024590501568315">Versteekte netwerk</translation>
 <translation id="7059858479264779982">Stel na outo-begin</translation>
@@ -9942,6 +9939,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7899720074434636454">Maak versoek vir <ph name="EXTENSION_NAME" /> toe</translation>
 <translation id="7900950034255258543">Om te verseker dat hierdie toestel veilig gebruik kan word, kan jou organisasie inligting oor hul bedryfstelsel, blaaier en instellings sien, en watter sagteware op die toestel geïnstalleer is</translation>
 <translation id="7901405293566323524">Foonspil</translation>
+<translation id="7901728443188947649">Skep prente</translation>
 <translation id="7903429136755645827">Klik om jou speletjiekontroles te pasmaak</translation>
 <translation id="7903481341948453971">Gebruik jou skermslot vir die invul van wagwoorde</translation>
 <translation id="7903925330883316394">Nutsding: <ph name="UTILITY_TYPE" /></translation>
@@ -10719,6 +10717,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8413795581997394485">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. Wanneer jy ’n werf besoek, stuur Chrome ’n verdoeselde gedeelte van die URL na Google deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>
 <translation id="8413956290606243087">Wil jy ChromeVox, Chrome-bedryfstelsel se ingeboude skermleser, aktiveer?</translation>
 <translation id="8414396119627470038">Meld aan by <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Vors enigiets na</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (houer)</translation>
 <translation id="8417065541337558100">Voorskou van jou kamera</translation>
 <translation id="8417548266957501132">Ouerwagwoord</translation>

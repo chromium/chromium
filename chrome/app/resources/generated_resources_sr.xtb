@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">Покрени при покретању уређаја</translation>
 <translation id="1163931534039071049">&amp;Прикажи извор оквира</translation>
 <translation id="1164015913575846413">alt + клик</translation>
-<translation id="1164286072721995435">Дели актуелну картицу са Gemini-јем сваки пут када започнете нову конверзацију. У сваком тренутку можете да паузирате дељење актуелне картице. Подаци се не користе за побољшавање модела генеративне вештачке интелигенције.</translation>
 <translation id="1164891049599601209">Унето је на обмањујућем сајту</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1166212789817575481">Затвори картице са десне стране</translation>
@@ -540,7 +539,6 @@
 <translation id="1353980523955420967">Не можемо да пронађемо PPD. Проверите да ли је Chromebook онлајн и пробајте поново.</translation>
 <translation id="1354045473509304750">Наставите да дозвољавате сајту <ph name="HOST" /> да користи и помера камеру</translation>
 <translation id="1354148503392558902">Мења се лозинка…</translation>
-<translation id="1354943694624358993">Увек дели актуелну картицу</translation>
 <translation id="1355088139103479645">Желите ли да избришете све податке?</translation>
 <translation id="1355088659320425659">Историја и картице</translation>
 <translation id="1356376170199999104">Дозвољено је – <ph name="PERMISSION_DETAILS" />. Укључите микрофон помоћу физичког прекидача.</translation>
@@ -5756,7 +5754,6 @@
 <translation id="4956593309300508411">Заустављате дељење?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Желите да сачувате у фолдеру само на овом уређају?</translation>
-<translation id="4958916254663453555">Актуелна картица ће се аутоматски делити када отворите Gemini у Chrome-у. Цео садржај и URL актуелне картице се шаљу Google-у.</translation>
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
 <translation id="4960020053211143927">Неке апликације не подржавају ово</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5868,7 +5865,6 @@
 <translation id="5045367873597907704">О HID уређајима</translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
 <translation id="504561833207953641">Отвара се у постојећој сесији прегледача.</translation>
-<translation id="5047544190872578914">Дели актуелну картицу са Gemini-јем сваки пут када започнете нову конверзацију. У сваком тренутку можете да паузирате дељење актуелне картице.</translation>
 <translation id="504953514574706691">Картица је изузета из предложене групе</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Преузми неверификовани фајл</translation>
@@ -8729,6 +8725,7 @@
 <translation id="7055451306017383754">Опозивање дељења није успело јер нека апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се Parallels Desktop следећи пут затвори.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Без архивирања}one{# отворен прозор без архивирања}few{# отворена прозора без архивирања}other{# отворених прозора без архивирања}}</translation>
 <translation id="7056526158851679338">&amp;Испитај уређаје</translation>
+<translation id="7057567173736333354">Опишите слику</translation>
 <translation id="70577934383983846">Користите ову лозинку на свим уређајима</translation>
 <translation id="7058024590501568315">Скривена мрежа</translation>
 <translation id="7059858479264779982">Подеси на аутоматско покретање</translation>
@@ -9930,6 +9927,7 @@
 <translation id="7899720074434636454">Одбаци захтев за <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Да би се уверила да овај уређај може безбедно да се користи, организација може да види информације о оперативном систему, прегледачу и подешавањима, као и о софтверу који је инсталиран на уређају</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Прави слике</translation>
 <translation id="7903429136755645827">Кликните да бисте прилагодили контроле за игре</translation>
 <translation id="7903481341948453971">Користите откључавање екрана када попуњавате лозинке</translation>
 <translation id="7903925330883316394">Помоћни процес: <ph name="UTILITY_TYPE" /></translation>
@@ -10708,6 +10706,7 @@
 <translation id="8413795581997394485">Штити вас од сајтова, преузимања и додатака за које се зна да су штетни. Када посетите сајт, Chrome шаље маскирани део URL-а Google-у преко сервера за приватност који крије IP адресу. Ако сајт ради нешто сумњиво, шаљу се и цели URL-ови и делови садржаја странице.</translation>
 <translation id="8413956290606243087">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome ОС?</translation>
 <translation id="8414396119627470038">Пријавите се на <ph name="SITE_ETLD_PLUS_ONE" /> уз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Истражујте било шта</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (футрола)</translation>
 <translation id="8417065541337558100">Преглед камере</translation>
 <translation id="8417548266957501132">Лозинка родитеља</translation>

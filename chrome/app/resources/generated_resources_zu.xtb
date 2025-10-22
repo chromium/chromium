@@ -249,7 +249,6 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1162479191445552288">Qalisa ekuqaleni</translation>
 <translation id="1163931534039071049">&amp;Buka umthombo wozimele</translation>
 <translation id="1164015913575846413">alt + chofoza</translation>
-<translation id="1164286072721995435">Yabelana ngethebhu okuyo njengamanje neGemini njalo lapho uqala ingxoxo entsha. Ungakwazi ukumisa okwesikhashana ukwabelana ngethebhu okuyo njengamanje noma nini. Idatha yakho ayisetshenziselwa ukuthuthukisa izinhlelo ze-AI ekhiqizayo.</translation>
 <translation id="1164891049599601209">Kufakwe kwisayithi elikhohlisayo</translation>
 <translation id="1165039591588034296">Iphutha</translation>
 <translation id="1166212789817575481">Vala amathebhu ngakwesokudla</translation>
@@ -539,7 +538,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1353980523955420967">Ayikwazi ukuthola i-PPD. Yenza isiqiniseko sokuthi i-Chromebook iku-inthanethi uphinde uzame futhi.</translation>
 <translation id="1354045473509304750">Qhubeka uvumela u-<ph name="HOST" /> ukusebenzisa nokuhambisa ikhamera yakho</translation>
 <translation id="1354148503392558902">Iguqula iphasiwedi...</translation>
-<translation id="1354943694624358993">Yabelana njalo ngethebhu engikuyo njengamanje</translation>
 <translation id="1355088139103479645">Susa yonke idatha?</translation>
 <translation id="1355088659320425659">Umlando namathebhu</translation>
 <translation id="1356376170199999104">Kuvunyelwe – <ph name="PERMISSION_DETAILS" />. Vula imakrofoni usebenzisa iswishi ebonakalayo.</translation>
@@ -5771,7 +5769,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4956593309300508411">Misa Ukwabelana?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Londoloza kufolda ekule divayisi kuphela?</translation>
-<translation id="4958916254663453555">Ithebhu okuyo njengamanje kuzokwabelwana ngayo ngokuzenzakalelayo lapho uvula iGemini kuChrome. Ikhontenti egcwele yethebhu okuyo njengamanje nama-URL kuthunyelwa kuGoogle.</translation>
 <translation id="4959262764292427323">Amaphasiwedi alondolozwa ku-akhawunti yakho ye-Google ukuze ukwazi ukuwasebenzisa kunoma iyiphi idivayisi</translation>
 <translation id="4960020053211143927">Akusekelwa ngamanye ama-app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5883,7 +5880,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5045367873597907704">Mayelana namadivayisi we-HID</translation>
 <translation id="5045550434625856497">Iphasiwedi engalungile</translation>
 <translation id="504561833207953641">Ukuvula iseshini yesiphequluli esikhona.</translation>
-<translation id="5047544190872578914">Yabelana ngethebhu okuyo njengamanje neGemini njalo lapho uqala ingxoxo entsha. Ungakwazi ukumisa okwesikhashana ukwabelana ngethebhu okuyo njengamanje noma nini.</translation>
 <translation id="504953514574706691">Ithebhu ayifakiwe eqenjini eliphakanyisiwe</translation>
 <translation id="5050330054928994520">I-TTS</translation>
 <translation id="5051461727068120271">Dawuniloda ifayela elingaqinisekisiwe</translation>
@@ -8743,6 +8739,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7055451306017383754">Akukwazanga ukuyeka ukwabelana ngoba uhlelo lokusebenza lusebenzisa le folda. Ifolda izoyeka ukwabiwa uma i-Parallels Desktop ilandela ukucishwa.</translation>
 <translation id="7056418393177503237">{0,plural, =1{I-Incognito}one{Vula amawindi we-incognito angu-#}other{Vula amawindi we-incognito angu-#}}</translation>
 <translation id="7056526158851679338">&amp;Hlola amadivayisi</translation>
+<translation id="7057567173736333354">Chaza isithombe sakho</translation>
 <translation id="70577934383983846">Sebenzisa le phasiwedi kuwo wonke amadivayisi akho</translation>
 <translation id="7058024590501568315">Inethiwekhi efihliwe</translation>
 <translation id="7059858479264779982">Sethela ukuqalisa ngokuzenzakalela</translation>
@@ -9944,6 +9941,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7899720074434636454">Chitha isicelo se-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Ukuqinisekisa ukuthi le divayisi ingasetshenziswa ngokuphephile, inhlangano yakho ingabona ulwazi olumayelana nesistimu yayo yokusebenza, ibhrawuza, namasethingi, nokuthi iyiphi isofthiwe efakwe kudivayisi.</translation>
 <translation id="7901405293566323524">Ihabhu Yefoni</translation>
+<translation id="7901728443188947649">Sungula izithombe</translation>
 <translation id="7903429136755645827">Chofoza ukuze wenze ngendlela oyifisayo izilawuli zegeyimu yakho</translation>
 <translation id="7903481341948453971">Sebenzisa ukukhiya isikrini kwakho lapho ugcwalisa amaphasiwedi</translation>
 <translation id="7903925330883316394">Okusetshenziswayo: <ph name="UTILITY_TYPE" /></translation>
@@ -10721,6 +10719,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8413795581997394485">Ivikela kumasayithi, okudawunilodwayo, nezandiso ezaziwa njengeziyingozi. Uma uvakashela isayithi, i-Chrome ithumela ingxenye engaqondani ye-URL ku-Google isebenzisa iseva eyimfihlo efihla ikheli lakho lasesizindeni se-inthanethi. Uma isayithi ingakusekeli okuthile okusolisayo, kuzothunyelwa wonke ama-URL kanye nokuqukethwe okuncane kwekhasi.</translation>
 <translation id="8413956290606243087">Ingabe ufuna ukwenza i-ChromeVox isebenze, isifundi sesikrini esakhelwe phakathi se-ChromeOS?</translation>
 <translation id="8414396119627470038">Ngena ngemvume ku-<ph name="SITE_ETLD_PLUS_ONE" /> no-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Cwaninga noma yini</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Ikesi)</translation>
 <translation id="8417065541337558100">Buka kuqala ikhamera yakho</translation>
 <translation id="8417548266957501132">Iphasiwedi yomzali</translation>

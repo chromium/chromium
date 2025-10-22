@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">Käynnistä käynnistyksen yhteydessä</translation>
 <translation id="1163931534039071049">&amp;Näytä kehyksen lähdekoodi</translation>
 <translation id="1164015913575846413">alt + klikkaus</translation>
-<translation id="1164286072721995435">Jakaa nykyisen välilehden Geminille aina, kun aloitat uuden keskustelun. Voit keskeyttää nykyisen välilehden jakamisen milloin tahansa. Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="1164891049599601209">Käytetty petollisella sivustolla</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1166212789817575481">Sulje oikealla olevat välilehdet</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD:tä ei löydy. Varmista, että Chromebook on verkossa, ja yritä uudelleen.</translation>
 <translation id="1354045473509304750">Hyväksy edelleen, että <ph name="HOST" /> voi käyttää ja liikuttaa kameraasi</translation>
 <translation id="1354148503392558902">Vaihdetaan salasanaa…</translation>
-<translation id="1354943694624358993">Jaa aina nykyinen välilehti</translation>
 <translation id="1355088139103479645">Poistetaanko kaikki data?</translation>
 <translation id="1355088659320425659">Historia ja välilehdet</translation>
 <translation id="1356376170199999104">Sallittu – <ph name="PERMISSION_DETAILS" />. Laita mikrofoni päälle fyysisellä kytkimellä.</translation>
@@ -5767,7 +5765,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4956593309300508411">Lopetetaanko jakaminen?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Tallennetaanko kirjanmerkki kansioon vain tällä laitteella?</translation>
-<translation id="4958916254663453555">Nykyinen välilehti jaetaan automaattisesti, kun avaat Gemin in Chromen. Nykyisen välilehden koko sisältö ja URL-osoite lähetetään Googlelle.</translation>
 <translation id="4959262764292427323">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla</translation>
 <translation id="4960020053211143927">Kaikki sovellukset eivät tue tätä</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5879,7 +5876,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5045367873597907704">Tietoa HID-laitteista</translation>
 <translation id="5045550434625856497">Väärä salasana</translation>
 <translation id="504561833207953641">Avataan nykyisessä selainistunnossa</translation>
-<translation id="5047544190872578914">Jakaa nykyisen välilehden Geminille aina, kun aloitat uuden keskustelun. Voit keskeyttää nykyisen välilehden jakamisen milloin tahansa.</translation>
 <translation id="504953514574706691">Välilehti suljettu pois ehdotetusta ryhmästä</translation>
 <translation id="5050330054928994520">Tekstistä puheeksi</translation>
 <translation id="5051461727068120271">Lataa vahvistamaton tiedosto</translation>
@@ -8737,6 +8733,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7055451306017383754">Jakamista ei voitu peruuttaa, koska sovellus käyttää tätä kansiota. Kansion jakaminen perutaan seuraavan kerran, kun Parallels Desktop sammutetaan.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# avointa incognito-ikkunaa}}</translation>
 <translation id="7056526158851679338">Tark&amp;ista laitteet</translation>
+<translation id="7057567173736333354">Kuvaile kuvaa</translation>
 <translation id="70577934383983846">Käytä tätä salasanaa kaikilla laitteillasi</translation>
 <translation id="7058024590501568315">Piilotettu verkko</translation>
 <translation id="7059858479264779982">Aseta käynnistymään automaattisesti</translation>
@@ -9938,6 +9935,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7899720074434636454">Hylkää pyyntö: <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Organisaatiosi voi nähdä tietoa laitteen käyttöjärjestelmästä, selaimesta ja asetuksista sekä laitteelle asennetuista ohjelmistoista. Näin varmistetaan, että laitetta voi käyttää turvallisesti.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Luo kuvia</translation>
 <translation id="7903429136755645827">Yksilöi peliohjaimia klikkaamalla</translation>
 <translation id="7903481341948453971">Käytä näytön lukituksen avaustapaa salasanojen täyttämiseen</translation>
 <translation id="7903925330883316394">Apuohjelma: <ph name="UTILITY_TYPE" /></translation>
@@ -10716,6 +10714,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8413795581997394485">Suojaa vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan. Kun käyt sivustolla, Chrome lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto tekee jotakin epäilyttävää, koko URL-osoitteet ja osia sivun sisällöstä lähetetään.</translation>
 <translation id="8413956290606243087">Haluatko aktivoida ChromeVoxin, Chrome-käyttöjärjestelmän sisäänrakennetun näytönlukuohjelman?</translation>
 <translation id="8414396119627470038">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /> (<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)</translation>
+<translation id="8415120635186642416">Tutki mitä tahansa</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (kotelo)</translation>
 <translation id="8417065541337558100">Kameran esikatselu</translation>
 <translation id="8417548266957501132">Vanhemman salasana</translation>

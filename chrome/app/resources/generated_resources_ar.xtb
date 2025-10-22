@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">فتح التطبيق عند بدء التشغيل</translation>
 <translation id="1163931534039071049">عرض م&amp;صدر الإطار</translation>
 <translation id="1164015913575846413">‏‫Alt + النقر</translation>
-<translation id="1164286072721995435">‏تتم مشاركة علامة التبويب الحالية مع Gemini في كل مرة يتم فيها بدء محادثة جديدة. يمكنك متى شئت إيقاف مشاركتها مؤقتًا. ولن تُستخدَم بياناتك لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
 <translation id="1165039591588034296">الخطأ</translation>
 <translation id="1166212789817575481">إغلاق علامات التبويب على اليمين</translation>
@@ -542,7 +541,6 @@
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
 <translation id="1354045473509304750">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها</translation>
 <translation id="1354148503392558902">جارٍ تغيير كلمة المرور...</translation>
-<translation id="1354943694624358993">مشاركة علامة التبويب الحالية دائمًا</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1355088659320425659">السجلّ وعلامات التبويب</translation>
 <translation id="1356376170199999104">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. شغِّل الميكروفون باستخدام الزر اليدوي.</translation>
@@ -5761,7 +5759,6 @@
 <translation id="4956593309300508411">هل تريد إيقاف المشاركة؟</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">هل تريد حفظ الإشارة المرجعية في مجلد على هذا الجهاز فقط؟</translation>
-<translation id="4958916254663453555">‏ستتم تلقائيًا مشاركة علامة التبويب الحالية عند فتح "Gemini في Chrome"، وسيتم إرسال محتواها بالكامل وعنوان URL الخاص بها إلى Google.</translation>
 <translation id="4959262764292427323">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
 <translation id="4960020053211143927">هذا الخيار غير متاح في بعض التطبيقات.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5873,7 +5870,6 @@
 <translation id="5045367873597907704">‏لمحة عن أجهزة HID</translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
 <translation id="504561833207953641">جارٍ الفتح في جلسة المتصفِّح الحالي.</translation>
-<translation id="5047544190872578914">‏تتم مشاركة علامة التبويب الحالية مع Gemini في كل مرة يتم فيها بدء محادثة جديدة. يمكنك متى شئت إيقاف مشاركتها مؤقتًا.</translation>
 <translation id="504953514574706691">تم استبعاد علامة التبويب من المجموعة المقترَحة</translation>
 <translation id="5050330054928994520">‏تحويل النص إلى كلام (TTS)</translation>
 <translation id="5051461727068120271">تنزيل الملف الذي لم يتم التحقّق منه</translation>
@@ -8739,6 +8735,7 @@
 <translation id="7055451306017383754">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا المجلد. سيتم إلغاء مشاركة المجلد عند إيقاف تشغيل نظام Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{نافذة واحدة للتصفُّح المتخفي}zero{# نافذة مفتوحة للتصفُّح المتخفي}two{# نافذتان مفتوحتان للتصفُّح المتخفي}few{# نوافذ مفتوحة للتصفُّح المتخفي}many{# نافذةً مفتوحة للتصفُّح المتخفي}other{# نافذة مفتوحة للتصفُّح المتخفي}}</translation>
 <translation id="7056526158851679338">&amp;فحص الأجهزة</translation>
+<translation id="7057567173736333354">وصف الصورة</translation>
 <translation id="70577934383983846">استخدام كلمة المرور هذه على جميع أجهزتك</translation>
 <translation id="7058024590501568315">شبكة مخفية</translation>
 <translation id="7059858479264779982">ضبط على تشغيل تلقائي</translation>
@@ -9940,6 +9937,7 @@
 <translation id="7899720074434636454">رفض الطلب المقدَّم من <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">للتأكّد من إمكانية استخدام هذا الجهاز بأمان، يُمكن لمؤسستك الاطّلاع على معلومات حول نظام التشغيل والمتصفّح والإعدادات والبرامج المثبَّتة على الجهاز</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">إنشاء صور</translation>
 <translation id="7903429136755645827">انقر هنا لتخصيص عناصر التحكُّم في الألعاب.</translation>
 <translation id="7903481341948453971">استخدام ميزة "قفل الشاشة" عند ملء كلمات المرور</translation>
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
@@ -10719,6 +10717,7 @@
 <translation id="8413795581997394485">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيَّن أنها ضارة. عند زيارة موقع إلكتروني، يرسل متصفِّح Chrome جزءًا مشفّرًا من عنوان URL إلى Google من خلال خادم لحماية الخصوصية يخفي عنوان IP الخاص بجهازك. وفي حال رصد سلوك مريب على موقع إلكتروني، يتم أيضًا إرسال عناوين URL الكاملة وأجزاء من محتوى الصفحة.</translation>
 <translation id="8413956290606243087">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟</translation>
 <translation id="8414396119627470038">سجِّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">البحث عن أي موضوع</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
 <translation id="8417065541337558100">معاينة الكاميرا</translation>
 <translation id="8417548266957501132">كلمة مرور الوالدَين</translation>
@@ -11117,7 +11116,7 @@
 <translation id="869167754614449887">تم حذف <ph name="FILE_NAME" /> من سجلّ التنزيل.</translation>
 <translation id="8692107307702113268">عدد أحرف كلمة المرور يزيد عن 1,000 حرف.</translation>
 <translation id="8693862390730570097">عدم السماح بفتح ميزة "ساعدني في الكتابة" تلقائيًا</translation>
-<translation id="8694596275649352090">قفل الجهاز عند دخوله وضع السكون أو عند إغلاق غطاء الجهاز</translation>
+<translation id="8694596275649352090">قفل الجهاز عند دخوله وضع السكون أو عند إغلاق غطائه</translation>
 <translation id="8695139659682234808">إضافة أدوات رقابة الأهل بعد الانتهاء من الإعداد</translation>
 <translation id="8695825812785969222">فتح ال&amp;موقع...</translation>
 <translation id="8698269656364382265">للرجوع إلى الشاشة السابقة، مرِّر سريعًا من الجانب الأيمن.</translation>

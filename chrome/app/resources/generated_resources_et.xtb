@@ -249,7 +249,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1162479191445552288">Aktiveeri käivitamisel</translation>
 <translation id="1163931534039071049">&amp;Vaata paneeli allikat</translation>
 <translation id="1164015913575846413">alt + klõpsamine</translation>
-<translation id="1164286072721995435">Jagab praegust vahelehte Geminiga iga kord, kui alustate uut vestlust. Praeguse vahelehe jagamise võite igal ajal peatada. Teie andmeid ei kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="1164891049599601209">Sisestati petturlikul saidil</translation>
 <translation id="1165039591588034296">Viga</translation>
 <translation id="1166212789817575481">Sulge vahelehed paremale</translation>
@@ -538,7 +537,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1353980523955420967">PPD-d ei leita. Veenduge, et teie Chromebook oleks võrguga ühendatud, ja proovige uuesti.</translation>
 <translation id="1354045473509304750">Luba hostil <ph name="HOST" /> ka edaspidi minu kaamerat kasutada ja liigutada</translation>
 <translation id="1354148503392558902">Parooli muutmine...</translation>
-<translation id="1354943694624358993">Jaga alati praegust vahelehte</translation>
 <translation id="1355088139103479645">Kas kustutada kõik andmed?</translation>
 <translation id="1355088659320425659">Ajalugu ja vahelehed</translation>
 <translation id="1356376170199999104">Lubatud – <ph name="PERMISSION_DETAILS" />. Lülitage mikrofon füüsilise lüliti abil sisse.</translation>
@@ -5762,7 +5760,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4956593309300508411">Kas lõpetada jagamine?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Kas salvestada ainult selle seadme kausta?</translation>
-<translation id="4958916254663453555">Kui avate Gemini Chrome'is, jagatakse automaatselt teie praegust vahelehte. Praeguse vahelehe kogu sisu ja URL saadetakse Google’ile.</translation>
 <translation id="4959262764292427323">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes</translation>
 <translation id="4960020053211143927">Ei toetata osades rakendustes</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5874,7 +5871,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5045367873597907704">Teave HID-seadmete kohta</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
 <translation id="504561833207953641">Olemasolevas brauseriseansis avamine.</translation>
-<translation id="5047544190872578914">Jagab praegust vahelehte Geminiga iga kord, kui alustate uut vestlust. Praeguse vahelehe jagamise võite igal ajal peatada.</translation>
 <translation id="504953514574706691">Vaheleht välistati soovitatud grupist</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Laadi alla kontrollimata fail</translation>
@@ -8732,6 +8728,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7055451306017383754">Jagamist ei saanud lõpetada, kuna rakendus kasutab seda kausta. Kui Parallels Desktop välja lülitatakse, siis kausta jagamine lõpetatakse.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# avatud inkognito akent}}</translation>
 <translation id="7056526158851679338">&amp;Seadmete kontrollimine</translation>
+<translation id="7057567173736333354">Kirjeldage oma pilti</translation>
 <translation id="70577934383983846">Selle parooli kasutamine kõigis teie seadmetes</translation>
 <translation id="7058024590501568315">Peidetud võrk</translation>
 <translation id="7059858479264779982">Määra automaatsele käivitamisele</translation>
@@ -9933,6 +9930,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7899720074434636454">Laienduse <ph name="EXTENSION_NAME" /> taotlusest keeldumine</translation>
 <translation id="7900950034255258543">Seadme ohutu kasutamise tagamiseks saab teie organisatsioon vaadata teavet operatsioonisüsteemi, brauseri, seadete ja seadmesse installitud tarkvara kohta.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Piltide loomine</translation>
 <translation id="7903429136755645827">Klõpsake, et mängu juhtnuppe kohandada</translation>
 <translation id="7903481341948453971">Kasuta paroolide sisestamisel ekraanilukku</translation>
 <translation id="7903925330883316394">Utiliit: <ph name="UTILITY_TYPE" /></translation>
@@ -10711,6 +10709,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="8413956290606243087">Kas soovite aktiveerida Chrome OS-i sisseehitatud ekraanilugeja ChromeVox?</translation>
 <translation id="8414396119627470038">Logige saidile <ph name="SITE_ETLD_PLUS_ONE" /> sisse teenusega <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Otsige midagi</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ümbris)</translation>
 <translation id="8417065541337558100">Teie kaamera eelvaade</translation>
 <translation id="8417548266957501132">Vanema parool</translation>

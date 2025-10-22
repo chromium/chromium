@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">เปิดใช้เมื่อเริ่มต้นระบบ</translation>
 <translation id="1163931534039071049">&amp;ดูรหัสต้นฉบับของเฟรม</translation>
 <translation id="1164015913575846413">Alt + คลิก</translation>
-<translation id="1164286072721995435">แชร์แท็บปัจจุบันกับ Gemini ทุกครั้งที่คุณเริ่มการสนทนาใหม่ คุณหยุดแชร์แท็บปัจจุบันชั่วคราวได้ทุกเมื่อ ระบบไม่ได้ใช้ข้อมูลของคุณในการปรับปรุงโมเดล Generative AI</translation>
 <translation id="1164891049599601209">มีการป้อนในเว็บไซต์ที่มีการหลอกลวง</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1166212789817575481">ปิดแท็บทางด้านขวา</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">ไม่พบ PPD โปรดตรวจสอบว่า Chromebook ออนไลน์อยู่และลองอีกครั้ง</translation>
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
 <translation id="1354148503392558902">กำลังเปลี่ยนรหัสผ่าน...</translation>
-<translation id="1354943694624358993">แชร์แท็บปัจจุบันเสมอ</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1355088659320425659">ประวัติการเข้าชมและแท็บ</translation>
 <translation id="1356376170199999104">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิดไมโครโฟนโดยใช้สวิตช์จริง</translation>
@@ -5755,7 +5753,6 @@
 <translation id="4956593309300508411">หยุดการแชร์ใช่ไหม</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">บันทึกลงในโฟลเดอร์ในอุปกรณ์นี้เท่านั้นไหม</translation>
-<translation id="4958916254663453555">ระบบจะแชร์แท็บปัจจุบันโดยอัตโนมัติเมื่อคุณเปิด Gemini ใน Chrome โดยจะส่งเนื้อหาและ URL เต็มของแท็บปัจจุบันไปยัง Google</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5867,7 +5864,6 @@
 <translation id="5045367873597907704">เกี่ยวกับอุปกรณ์ HID</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="504561833207953641">กำลังเปิดในเซสชันเบราว์เซอร์ที่มีอยู่</translation>
-<translation id="5047544190872578914">แชร์แท็บปัจจุบันกับ Gemini ทุกครั้งที่คุณเริ่มการสนทนาใหม่ คุณหยุดแชร์แท็บปัจจุบันชั่วคราวได้ทุกเมื่อ</translation>
 <translation id="504953514574706691">ยกเว้นแท็บออกจากกลุ่มที่แนะนำแล้ว</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ดาวน์โหลดไฟล์ที่ไม่ได้รับการยืนยัน</translation>
@@ -8721,6 +8717,7 @@
 <translation id="7055451306017383754">เลิกแชร์ไม่ได้เนื่องจากมีแอปพลิเคชันใช้โฟลเดอร์นี้อยู่ โฟลเดอร์นี้จะเลิกแชร์เมื่อมีการปิด Parallels Desktop ครั้งต่อไป</translation>
 <translation id="7056418393177503237">{0,plural, =1{ไม่ระบุตัวตน}other{หน้าต่างที่ไม่ระบุตัวตนเปิดอยู่ # หน้า}}</translation>
 <translation id="7056526158851679338">&amp;ตรวจสอบอุปกรณ์</translation>
+<translation id="7057567173736333354">อธิบายรูปภาพของคุณ</translation>
 <translation id="70577934383983846">ใช้รหัสผ่านนี้ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7058024590501568315">เครือข่ายที่ซ่อนอยู่</translation>
 <translation id="7059858479264779982">ตั้งค่าเป็นเรียกใช้อัตโนมัติ</translation>
@@ -9921,6 +9918,7 @@
 <translation id="7899720074434636454">ปิดคำขอสำหรับ <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">องค์กรของคุณสามารถดูข้อมูลเกี่ยวกับระบบปฏิบัติการ เบราว์เซอร์ การตั้งค่า รวมทั้งซอฟต์แวร์ที่ติดตั้งในอุปกรณ์เพื่อให้ใช้อุปกรณ์นี้ได้อย่างปลอดภัย</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
+<translation id="7901728443188947649">สร้างรูปภาพ</translation>
 <translation id="7903429136755645827">คลิกเพื่อปรับแต่งการควบคุมเกม</translation>
 <translation id="7903481341948453971">ใช้การล็อกหน้าจอเมื่อป้อนรหัสผ่าน</translation>
 <translation id="7903925330883316394">ยูทิลิตี: <ph name="UTILITY_TYPE" /></translation>
@@ -10699,6 +10697,7 @@
 <translation id="8413795581997394485">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย เมื่อคุณเข้าชมเว็บไซต์ Chrome จะนำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ หากเว็บไซต์ทำสิ่งที่น่าสงสัย ระบบจะส่ง URL แบบเต็มและเนื้อหาของหน้าเว็บบางส่วนด้วย</translation>
 <translation id="8413956290606243087">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม</translation>
 <translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">ค้นคว้าข้อมูลอะไรก็ได้</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
 <translation id="8417065541337558100">ตัวอย่างจากกล้องของคุณ</translation>
 <translation id="8417548266957501132">รหัสผ่านสำหรับผู้ปกครอง</translation>

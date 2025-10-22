@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">ເປີດໃຊ້ຕອນສະຕາດອັບ</translation>
 <translation id="1163931534039071049">ເບິ່ງແຫຼ່ງທີ່ມາຂອບ</translation>
 <translation id="1164015913575846413">alt + ຄລິກ</translation>
-<translation id="1164286072721995435">ແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ທຸກເທື່ອທີ່ທ່ານເລີ່ມການສົນທະນາໃໝ່. ທ່ານສາມາດຢຸດການແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໄວ້ຊົ່ວຄາວໄດ້ທຸກເວລາ. ລະບົບບໍ່ໄດ້ໃຊ້ຂໍ້ມູນຂອງທ່ານໃນການປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="1164891049599601209">ມີການປ້ອນໃນເວັບໄຊຫຼອກລວງ</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1166212789817575481">ປິດແຖບໄປທາງຂວາ</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">ບໍ່ສາມາດຊອກເຫັນ PPD. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າ Chromebook ຂອງທ່ານອອນລາຍຢູ່ ແລະ ລອງອີກຄັ້ງ.</translation>
 <translation id="1354045473509304750">ສືບຕໍ່ອະນຸຍາດໃຫ້ <ph name="HOST" /> ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
 <translation id="1354148503392558902">ກຳລັງປ່ຽນລະຫັດຜ່ານ...</translation>
-<translation id="1354943694624358993">ແບ່ງປັນແຖບປັດຈຸບັນຕະຫຼອດເວລາ</translation>
 <translation id="1355088139103479645">ລຶບຂໍ້ມູນທັງໝົດບໍ?</translation>
 <translation id="1355088659320425659">ປະຫວັດ ແລະ ແຖບ</translation>
 <translation id="1356376170199999104">ອະນຸຍາດ – <ph name="PERMISSION_DETAILS" />. ເປີດໄມໂຄຣໂຟນໂດຍໃຊ້ສະວິດແທ້.</translation>
@@ -5770,7 +5768,6 @@
 <translation id="4956593309300508411">ຢຸດການແບ່ງປັນບໍ?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">ບັນທຶກໃສ່ໂຟນເດີຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນບໍ?</translation>
-<translation id="4958916254663453555">ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໂດຍອັດຕະໂນມັດເມື່ອທ່ານເປີດ Gemini ໃນ Chrome. ໂດຍລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ເຕັມຂອງແຖບປັດຈຸບັນໄປຫາ Google.</translation>
 <translation id="4959262764292427323">ລະຫັດຜ່ານຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ໃນອຸປະກອນຕ່າງໆ</translation>
 <translation id="4960020053211143927">ບາງແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5882,7 +5879,6 @@
 <translation id="5045367873597907704">ກ່ຽວກັບອຸປະກອນ HID</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
 <translation id="504561833207953641">ກຳລັງເປີດໃນເຊດຊັນໂປຣແກຣມທ່ອງເວັບທີ່ມີຢູ່ແລ້ວ.</translation>
-<translation id="5047544190872578914">ແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ທຸກເທື່ອທີ່ທ່ານເລີ່ມການສົນທະນາໃໝ່. ທ່ານສາມາດຢຸດການແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໄວ້ຊົ່ວຄາວໄດ້ທຸກເວລາ.</translation>
 <translation id="504953514574706691">ແຖບທີ່ຖືກຍົກເວັ້ນຈາກກຸ່ມທີ່ແນະນຳ</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ດາວໂຫຼດໄຟລ໌ທີ່ບໍ່ໄດ້ຮັບການຢັ້ງຢືນ</translation>
@@ -8738,6 +8734,7 @@
 <translation id="7055451306017383754">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເພາະວ່າແອັບພລິເຄຊັນກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອປິດ Parallels Desktop ໃນຄັ້ງຕໍ່ໄປ.</translation>
 <translation id="7056418393177503237">{0,plural, =1{ບໍ່ເປີດເຜີຍຕົວຕົນ}other{# ເປີດໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
 <translation id="7056526158851679338">​ກວດ​ກາ​ອຸ​ປະ​ກອນ</translation>
+<translation id="7057567173736333354">ອະທິບາຍຮູບຂອງທ່ານ</translation>
 <translation id="70577934383983846">ໃຊ້ລະຫັດຜ່ານນີ້ຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="7058024590501568315">ເຄືອຂ່າຍທີ່ຖືກເຊື່ອງໄວ້</translation>
 <translation id="7059858479264779982">ຕັ້ງເປັນເລີ່ມເປີດໃຊ້ອັດຕະໂນມັດ</translation>
@@ -9938,6 +9935,7 @@
 <translation id="7899720074434636454">ປ່ອຍຄຳຮ້ອງຂໍສຳລັບ <ph name="EXTENSION_NAME" /> ໄປ</translation>
 <translation id="7900950034255258543">ອົງກອນຂອງທ່ານສາມາດເບິ່ງຂໍ້ມູນກ່ຽວກັບລະບົບປະຕິບັດການ, ໂປຣແກຣມທ່ອງເວັບ ແລະ ການຕັ້ງຄ່າ, ຮວມທັງຊອບແວທີ່ຕິດຕັ້ງໃນອຸປະກອນເພື່ອໃຫ້ໃຊ້ອຸປະກອນນີ້ໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">ສ້າງຮູບ</translation>
 <translation id="7903429136755645827">ຄລິກເພື່ອປັບແຕ່ງການຄວບຄຸມເກມຂອງທ່ານ</translation>
 <translation id="7903481341948453971">ໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເມື່ອໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="7903925330883316394">ການ​ໃຊ້ປະ​ໂຫຍດ​: <ph name="UTILITY_TYPE" /></translation>
@@ -10715,6 +10713,7 @@
 <translation id="8413795581997394485">ປົກປ້ອງຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ຮູ້ແລ້ວວ່າເປັນອັນຕະລາຍ. ເມື່ອທ່ານເຂົ້າເບິ່ງເວັບໄຊ, Chrome ຈະເອົາສະເພາະບາງສ່ວນຂອງ URL ມາສ້າງຄວາມສັບສົນແລ້ວສົ່ງໄປໃຫ້ Google ຜ່ານເຊີບເວີຄວາມເປັນສ່ວນຕົວທີ່ເຊື່ອງທີ່ຢູ່ IP ຂອງທ່ານ. ຫາກເວັບໄຊເຮັດສິ່ງທີ່ໜ້າສົງໄສ, ລະບົບຈະສົ່ງ URL ແບບເຕັມ ແລະ ເນື້ອຫາຂອງໜ້າເວັບບາງສ່ວນນຳ.</translation>
 <translation id="8413956290606243087">ທ່ານຕ້ອງການເປີດນຳໃຊ້ ChromeVox, ໂປຣແກຣມອ່ານໜ້າຈໍໃນຕົວສຳລັບ ChromeOS ບໍ?</translation>
 <translation id="8414396119627470038">ເຂົ້າສູ່ລະບົບຫາ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">ຄົ້ນຄວ້າຫຍັງກໍໄດ້</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ເຄສ)</translation>
 <translation id="8417065541337558100">ຕົວຢ່າງຈາກກ້ອງຂອງທ່ານ</translation>
 <translation id="8417548266957501132">ລະຫັດຜ່ານຂອງພໍ່ແມ່</translation>

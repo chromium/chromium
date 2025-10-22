@@ -249,7 +249,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1162479191445552288">Lancer au démarrage</translation>
 <translation id="1163931534039071049">&amp;Afficher le code source du cadre</translation>
 <translation id="1164015913575846413">alt+clic</translation>
-<translation id="1164286072721995435">Partage l'onglet actuel avec Gemini chaque fois que vous démarrez une nouvelle conversation. Vous pouvez suspendre le partage de votre onglet actuel en tout temps. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="1164891049599601209">Entré sur un site trompeur</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1166212789817575481">Fermer les onglets à la droite</translation>
@@ -539,7 +538,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1353980523955420967">Impossible de trouver le PPD. Vérifiez que votre Chromebook est en ligne, puis réessayez.</translation>
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et à déplacer votre caméra</translation>
 <translation id="1354148503392558902">Modification du mot de passe en cours…</translation>
-<translation id="1354943694624358993">Toujours partager l'onglet actuel</translation>
 <translation id="1355088139103479645">Supprimer toutes les données?</translation>
 <translation id="1355088659320425659">Historique et onglets</translation>
 <translation id="1356376170199999104">Autorisé – <ph name="PERMISSION_DETAILS" />. Activez le microphone à l'aide d'un interrupteur physique.</translation>
@@ -5760,7 +5758,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4956593309300508411">Arrêter le partage?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Enregistrer dans un dossier uniquement sur cet appareil?</translation>
-<translation id="4958916254663453555">Votre onglet actuel sera automatiquement partagé lorsque vous ouvrirez Gemini dans Chrome. Le contenu complet et l'URL de l'onglet actuel sont envoyés à Google.</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
 <translation id="4960020053211143927">N'est pas pris en charge par certaines applications</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5872,7 +5869,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5045367873597907704">À propos des appareils HID</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="504561833207953641">Ouverture dans une session de navigateur existante.</translation>
-<translation id="5047544190872578914">Partage l'onglet actuel avec Gemini chaque fois que vous démarrez une nouvelle conversation. Vous pouvez suspendre le partage de votre onglet actuel en tout temps.</translation>
 <translation id="504953514574706691">Onglet exclu du groupe suggéré</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051461727068120271">Télécharger le fichier non vérifié</translation>
@@ -8730,6 +8726,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7055451306017383754">Impossible d'annuler le partage parce qu'une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Navigation privée}one{# fenêtre de navigation privée ouverte}other{# fenêtres de navigation privée ouvertes}}</translation>
 <translation id="7056526158851679338">&amp;Inspecter les appareils</translation>
+<translation id="7057567173736333354">Décrivez votre image</translation>
 <translation id="70577934383983846">Utiliser ce mot de passe sur tous vos appareils</translation>
 <translation id="7058024590501568315">Réseau masqué</translation>
 <translation id="7059858479264779982">Activer le lancement automatique</translation>
@@ -9931,6 +9928,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7899720074434636454">Fermer la demande pour l'extension <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Pour veiller à ce que cet appareil puisse être utilisé en toute sécurité, votre organisation peut consulter des renseignements sur son système d'exploitation, son navigateur et ses paramètres ainsi que sur les logiciels qui y sont installés</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Créer des images</translation>
 <translation id="7903429136755645827">Cliquez pour personnaliser vos commandes de jeu</translation>
 <translation id="7903481341948453971">Utiliser le verrouillage de l'écran lors du remplissage des mots de passe</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
@@ -10708,6 +10706,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8413795581997394485">Protège contre les sites, les extensions et les téléchargements qui sont réputés être dangereux. Lorsque vous visitez un site, Chrome envoie une partie brouillée de l'URL à Google au moyen d'un serveur confidentiel qui masque votre adresse IP. Si un site présente un comportement suspect, les URL complètes ainsi que des extraits du contenu des pages sont aussi envoyés.</translation>
 <translation id="8413956290606243087">Voulez-vous activer ChromeVox, le lecteur d'écran intégré de Chrome OS?</translation>
 <translation id="8414396119627470038">Connectez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Recherchez n'importe quoi</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
 <translation id="8417065541337558100">Aperçu de votre appareil photo</translation>
 <translation id="8417548266957501132">Mot de passe du parent</translation>

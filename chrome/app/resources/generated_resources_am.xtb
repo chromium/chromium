@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">ጅማሬ ላይ አስጀምር</translation>
 <translation id="1163931534039071049">የፍሬም መነሻ &amp;አሳይ</translation>
 <translation id="1164015913575846413">alt + ጠቀታ</translation>
-<translation id="1164286072721995435">አዲስ ውይይት በጀመሩ ቁጥር የአሁኑን ትር ለGemini ያጋራል። በማንኛውም ጊዜ የአሁን ትርዎን ማጋራት ማቆም ይችላሉ። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="1164891049599601209">በአታላይ ጣቢያ ላይ ገብቷል</translation>
 <translation id="1165039591588034296">ስህተት</translation>
 <translation id="1166212789817575481">በቀኝ በኩል ያሉ ትሮችን ዝጋ</translation>
@@ -539,7 +538,6 @@
 <translation id="1353980523955420967">PPDን ማግኘት አልተቻለም። የእርስዎ Chromebook መስመር ላይ መሆኑን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> የእርስዎን ካሜራ እንዲጠቀም እና እንዲያንቀሳቅስ መፍቀዱን ይቀጥሉ</translation>
 <translation id="1354148503392558902">የይለፍ ቃልን በመለወጥ ላይ...</translation>
-<translation id="1354943694624358993">የአሁን ትርን ሁልጊዜ አጋራ</translation>
 <translation id="1355088139103479645">ሁሉም ውሂብ ይሰረዝ?</translation>
 <translation id="1355088659320425659">ታሪክ እና ትሮች</translation>
 <translation id="1356376170199999104">ተፈቅዷል – <ph name="PERMISSION_DETAILS" />። አካላዊ መቀያየሪያን በመጠቀም ማይክሮፎንን ያብሩ።</translation>
@@ -5765,7 +5763,6 @@
 <translation id="4956593309300508411">ማጋራት ይቁም?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">በዚህ መሣሪያ ላይ ብቻ ወደ አቃፊ ይቀመጥ?</translation>
-<translation id="4958916254663453555">Gemini በChrome ውስጥ ሲከፍቱ የአሁኑ ትርዎ በራስ-ሰር ይጋራል። የአሁኑ ትርዎ ሙሉ ይዘት እና ዩአርኤል ወደ Google ይላካሉ።</translation>
 <translation id="4959262764292427323">በማናቸውም መሣሪያ ላይ እርስዎ ሊጠቀሙባቸው እንዲችሉ የይለፍ ቃላት በእርስዎ Google መለያ ውስጥ ይቀመጣሉ</translation>
 <translation id="4960020053211143927">በአንዳንድ መተግበሪያዎች አይደገፍም</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5877,7 +5874,6 @@
 <translation id="5045367873597907704">ስለ ኤችአይዲ መሣሪያዎች</translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
 <translation id="504561833207953641">በነባር የአሳሽ ክፍለ-ጊዜ ውስጥ በመክፈት ላይ።</translation>
-<translation id="5047544190872578914">አዲስ ውይይት በጀመሩ ቁጥር የአሁኑን ትር ለGemini ያጋራል። በማንኛውም ጊዜ የአሁን ትርዎን ማጋራት ማቆም ይችላሉ።</translation>
 <translation id="504953514574706691">ትር የተጠቆመ ቡድን ውስጥ አልተካተተም</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ያልተረጋገጠ ፋይል አውርድ</translation>
@@ -8737,6 +8733,7 @@
 <translation id="7055451306017383754">አንድ መተግበሪያ ይህን አቃፊ እየተጠቀመበት ስለሆነ አለማጋራት አልተቻለም። ትይዩዎች ዴስክቶፕ በሚዘጋበት ቀጣዩ ጊዜ ላይ አቃፊው እንዳይጋራ ይደረጋል።</translation>
 <translation id="7056418393177503237">{0,plural, =1{ማንነት የማያሳውቅ}one{# ክፍት ማንነት የማያሳውቁ መስኮቶች}other{# ክፍት ማንነት የማያሳውቁ መስኮቶች}}</translation>
 <translation id="7056526158851679338">&amp;መሣሪያዎችን መርምር</translation>
+<translation id="7057567173736333354">ምስልዎን ይግለጹ</translation>
 <translation id="70577934383983846">ይህን የይለፍ ቃል በሁሉም መሣሪያዎችዎ ላይ ይጠቀሙ</translation>
 <translation id="7058024590501568315">የተደበቀ አውታረ መረብ</translation>
 <translation id="7059858479264779982">ወደ ራስ-አስጀምር አዋቅር</translation>
@@ -9938,6 +9935,7 @@
 <translation id="7899720074434636454">የ<ph name="EXTENSION_NAME" /> ጥያቄን አሰናብት</translation>
 <translation id="7900950034255258543">ይህ መሣሪያ ደህንነቱ በተጠበቀ ሁኔታ ጥቅም ላይ መዋል መቻሉን ለማረጋገጥ ድርጅትዎ ስለ ሥርዓተ ክወናው፣ አሳሹ እና ቅንብሮቹ እና በመሣሪያው ላይ ምን ዓይነት ሶፍትዌር እንደተጫነ መረጃ ማየት ይችላል</translation>
 <translation id="7901405293566323524">የስልክ መገናኛ</translation>
+<translation id="7901728443188947649">ምስሎችን ይፍጠሩ</translation>
 <translation id="7903429136755645827">የእርስዎ የጨዋታ መቆጣጠሪያዎችን ለማበጀት ጠቅ ያድርጉ</translation>
 <translation id="7903481341948453971">የይለፍ ቃላትን በሚሞሉበት ጊዜ ማያ ገፅ መቆለፊያዎን ይጠቀሙ</translation>
 <translation id="7903925330883316394">ፍጆታ፦ <ph name="UTILITY_TYPE" /></translation>
@@ -10721,6 +10719,7 @@ nil</translation>
 <translation id="8413795581997394485">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። ጣቢያን ጉብኝት በሚያደርጉበት ጊዜ፣ Chrome የአይ ፒ አድራሻዎን በሚደብቅ የግላዊነት አገልጋይ በኩል የተደበቀውን የዩአርኤል ክፍል ወደ Google ይልካል። ጣቢያ አጠራጣሪ ነገር ካደረገ፣ እንዲሁም የገፅ ይዘት ሙሉ ዩአርኤሎች እና ቢቶች ይላካሉ</translation>
 <translation id="8413956290606243087">የChromeOS አብሮገነብ የማያ ገፅ አንባቢ የሆነውን ChromeVox ማግበር ይፈልጋሉ?</translation>
 <translation id="8414396119627470038">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> በመለያ ይግቡ</translation>
+<translation id="8415120635186642416">ማንኛውንም ነገር ይመርምሩ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (መያዣ)</translation>
 <translation id="8417065541337558100">የካሜራዎ ቅድመ ዕይታ</translation>
 <translation id="8417548266957501132">የወላጅ ይለፍ ቃል</translation>

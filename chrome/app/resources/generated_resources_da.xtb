@@ -249,7 +249,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1162479191445552288">Åbn ved opstart</translation>
 <translation id="1163931534039071049">&amp;Vis rammens kildetekst</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
-<translation id="1164286072721995435">Deler den aktuelle fane med Gemini, hver gang du starter en ny samtale. Du kan til enhver tid sætte delingen af din aktuelle fane på pause. Dine data anvendes ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="1164891049599601209">Angivet på vildledende website</translation>
 <translation id="1165039591588034296">Fejl</translation>
 <translation id="1166212789817575481">Luk fanerne til højre</translation>
@@ -539,7 +538,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1353980523955420967">PPD-filen kan ikke findes. Sørg for, at din Chromebook er online, og prøv igen.</translation>
 <translation id="1354045473509304750">Tillad fortsat, at <ph name="HOST" /> kan bruge og flytte dit kamera</translation>
 <translation id="1354148503392558902">Ændrer adgangskoden…</translation>
-<translation id="1354943694624358993">Del altid den aktuelle fane</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
 <translation id="1355088659320425659">Historik og faner</translation>
 <translation id="1356376170199999104">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér mikrofonen ved hjælp af den fysiske kontakt.</translation>
@@ -5773,7 +5771,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4956593309300508411">Vil du stoppe delingen?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vil du gemme det i en mappe, der kun er på denne enhed?</translation>
-<translation id="4958916254663453555">Din aktuelle fane deles automatisk, når du åbner Gemini i Chrome. Alt indholdet på den aktuelle fane og dens webadresse sendes til Google.</translation>
 <translation id="4959262764292427323">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed</translation>
 <translation id="4960020053211143927">Understøttes ikke af visse apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5885,7 +5882,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5045367873597907704">Om HID-enheder</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="504561833207953641">Åbner i eksisterende browsersession.</translation>
-<translation id="5047544190872578914">Deler den aktuelle fane med Gemini, hver gang du starter en ny samtale. Du kan til enhver tid sætte delingen af din aktuelle fane på pause.</translation>
 <translation id="504953514574706691">Fanen er ekskluderet fra den foreslåede gruppe</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Download uverificeret fil</translation>
@@ -8745,6 +8741,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7055451306017383754">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Parallels Desktop lukkes.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}one{# åbent inkognitovindue}other{# åbne inkognitovinduer}}</translation>
 <translation id="7056526158851679338">&amp;Inspicer enheder</translation>
+<translation id="7057567173736333354">Beskriv dit billede</translation>
 <translation id="70577934383983846">Brug denne adgangskode på alle dine enheder</translation>
 <translation id="7058024590501568315">Skjult netværk</translation>
 <translation id="7059858479264779982">Indstil til automatisk opstart</translation>
@@ -9946,6 +9943,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7899720074434636454">Afvis anmodningen om <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Da din organisation skal sikre, at denne enhed kan bruges sikkert, skal organisationen muligvis se oplysninger om dens operativsystem, browser og indstillinger, og hvilken software der er installeret på enheden</translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
+<translation id="7901728443188947649">Opret billeder</translation>
 <translation id="7903429136755645827">Klik for at tilpasse dine spilindstillinger</translation>
 <translation id="7903481341948453971">Brug din skærmlås, når du udfylder adgangskoder</translation>
 <translation id="7903925330883316394">Værktøj: <ph name="UTILITY_TYPE" /></translation>
@@ -10724,6 +10722,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="8413956290606243087">Vil du aktivere ChromeVox, der er den indbyggede skærmlæser til ChromeOS?</translation>
 <translation id="8414396119627470038">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Undersøg hvad som helst</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
 <translation id="8417065541337558100">Preview af dit kamera</translation>
 <translation id="8417548266957501132">Forælders adgangskode</translation>

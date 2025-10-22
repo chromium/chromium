@@ -249,7 +249,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1162479191445552288">Apri all'avvio</translation>
 <translation id="1163931534039071049">&amp;Visualizza sorgente frame</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
-<translation id="1164286072721995435">Condivide la scheda corrente con Gemini ogni volta che avvii una nuova conversazione. Puoi mettere in pausa la condivisione della scheda corrente in qualsiasi momento. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1166212789817575481">Chiudi schede a destra</translation>
@@ -538,7 +537,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1353980523955420967">Impossibile trovare il file PPD. Assicurati che il Chromebook sia online e riprova.</translation>
 <translation id="1354045473509304750">Continua a consentire a <ph name="HOST" /> di utilizzare e spostare la videocamera</translation>
 <translation id="1354148503392558902">Modifica della password in corso…</translation>
-<translation id="1354943694624358993">Condividi sempre la scheda corrente</translation>
 <translation id="1355088139103479645">Vuoi eliminare tutti i dati?</translation>
 <translation id="1355088659320425659">Cronologia e schede</translation>
 <translation id="1356376170199999104">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva il microfono usando l'interruttore fisico.</translation>
@@ -5757,7 +5755,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4956593309300508411">Interrompere la condivisione?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvare in una cartella solo su questo dispositivo?</translation>
-<translation id="4958916254663453555">La scheda corrente verrà condivisa automaticamente quando apri Gemini in Chrome. I contenuti completi e l'URL della scheda corrente vengono inviati a Google.</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
 <translation id="4960020053211143927">Non supportata da alcune app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5869,7 +5866,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5045367873597907704">Informazioni dispositivi HID</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="504561833207953641">Apertura nella sessione del browser esistente.</translation>
-<translation id="5047544190872578914">Condivide la scheda corrente con Gemini ogni volta che avvii una nuova conversazione. Puoi mettere in pausa la condivisione della scheda corrente in qualsiasi momento.</translation>
 <translation id="504953514574706691">Scheda esclusa dal gruppo suggerito</translation>
 <translation id="5050330054928994520">Sintesi vocale</translation>
 <translation id="5051461727068120271">Scarica file non verificato</translation>
@@ -8724,6 +8720,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7055451306017383754">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{In incognito}other{# finestre di navigazione in incognito aperte}}</translation>
 <translation id="7056526158851679338">&amp;Ispeziona dispositivi</translation>
+<translation id="7057567173736333354">Descrivi la tua immagine</translation>
 <translation id="70577934383983846">Utilizza questa password su tutti i tuoi dispositivi</translation>
 <translation id="7058024590501568315">Rete nascosta</translation>
 <translation id="7059858479264779982">Imposta avvio automatico</translation>
@@ -9925,6 +9922,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7899720074434636454">Ignora la richiesta per <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Per garantire che questo dispositivo possa essere usato in sicurezza, la tua organizzazione può accedere alle informazioni relative al sistema operativo, al browser, alle impostazioni e al software installato sul dispositivo</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Crea immagini</translation>
 <translation id="7903429136755645827">Fai clic per personalizzare i controlli del gioco</translation>
 <translation id="7903481341948453971">Usa il blocco schermo durante l'inserimento delle password</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
@@ -10703,6 +10701,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8413795581997394485">Protegge da siti, download ed estensioni noti per essere pericolosi. Quando visiti un sito, Chrome invia una parte offuscata dell'URL a Google tramite un server di tutela della privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>
 <translation id="8413956290606243087">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS?</translation>
 <translation id="8414396119627470038">Accedi a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Cerca qualsiasi cosa</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (custodia)</translation>
 <translation id="8417065541337558100">Anteprima della fotocamera</translation>
 <translation id="8417548266957501132">Password genitore</translation>

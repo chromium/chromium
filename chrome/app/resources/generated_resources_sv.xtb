@@ -249,7 +249,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1162479191445552288">Starta vid start</translation>
 <translation id="1163931534039071049">&amp;Visa ramkälla</translation>
 <translation id="1164015913575846413">Alt + Klicka</translation>
-<translation id="1164286072721995435">Delar den aktuella fliken med Gemini varje gång du startar en ny konversation. Du kan pausa delningen av den aktuella fliken när som helst. Din data används inte för att förbättra generativa AI-modeller.</translation>
 <translation id="1164891049599601209">Har angetts på en bedräglig webbplats</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1166212789817575481">Stäng flikar till höger</translation>
@@ -538,7 +537,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1353980523955420967">Det gick inte att hitta PPD-filen. Kontrollera att Chromebook är ansluten till internet och försök igen.</translation>
 <translation id="1354045473509304750">Tillåt <ph name="HOST" /> att använda och röra din kamera även i fortsättningen</translation>
 <translation id="1354148503392558902">Lösenordet ändras …</translation>
-<translation id="1354943694624358993">Dela alltid den aktuella fliken</translation>
 <translation id="1355088139103479645">Vill du radera all data?</translation>
 <translation id="1355088659320425659">Historik och flikar</translation>
 <translation id="1356376170199999104">Tillåts – <ph name="PERMISSION_DETAILS" />. Slå på mikrofonen med det fysiska reglaget.</translation>
@@ -3007,7 +3005,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du laddar ned en uppdatering i dag. Uppdateringen laddas ned automatiskt när du ansluter till internet.}other{<ph name="MANAGER" /> kräver att du laddar ned en uppdatering före deadline. Uppdateringen laddas ned automatiskt när du ansluter till internet.}}</translation>
 <translation id="3030772324014024606">Redigera</translation>
 <translation id="3030795534674718505">Tillåts att använda uppgifter som webbplatsen har sparat om dig</translation>
-<translation id="3030967311408872958">Soluppgång till solnedgång</translation>
+<translation id="3030967311408872958">Solnedgång till soluppgång</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Använd styrplattan och tangentbordet för att högerklicka</translation>
 <translation id="3031557471081358569">Välj objekt att importera:</translation>
@@ -5771,7 +5769,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4956593309300508411">Vill du sluta dela?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vill du spara i en mapp bara på den här enheten?</translation>
-<translation id="4958916254663453555">Den aktuella fliken delas automatiskt när du öppnar Gemini i Chrome. Den aktuella flikens fullständiga innehåll och webbadress skickas till Google.</translation>
 <translation id="4959262764292427323">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst</translation>
 <translation id="4960020053211143927">Stöds inte av vissa appar</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5883,7 +5880,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5045367873597907704">Om styrdon</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="504561833207953641">Öppnas i en befintlig webbläsarsession.</translation>
-<translation id="5047544190872578914">Delar den aktuella fliken med Gemini varje gång du startar en ny konversation. Du kan pausa delningen av den aktuella fliken när som helst.</translation>
 <translation id="504953514574706691">Fliken har uteslutits från föreslagen grupp</translation>
 <translation id="5050330054928994520">Text till tal</translation>
 <translation id="5051461727068120271">Ladda ned overifierad fil</translation>
@@ -8741,6 +8737,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7055451306017383754">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen slutar delas nästa gång Parallels Desktop stängs av.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# öppna inkognitofönster}}</translation>
 <translation id="7056526158851679338">&amp;Inspektera enheter</translation>
+<translation id="7057567173736333354">Beskriv din bild</translation>
 <translation id="70577934383983846">Använd det här lösenordet på alla enheter</translation>
 <translation id="7058024590501568315">Dolt nätverk</translation>
 <translation id="7059858479264779982">Inställd på att starta automatiskt</translation>
@@ -9942,6 +9939,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7899720074434636454">Avvisa begäran för <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Organisationen kan se information om operativsystem, webbläsare och inställningar samt vilken mjukvara som är installerad på enheten för att säkerställa att enheten kan användas på ett säkert sätt</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Skapa bilder</translation>
 <translation id="7903429136755645827">Klicka för att anpassa dina spelkontroller</translation>
 <translation id="7903481341948453971">Använd skärmlåset när du fyller i lösenord</translation>
 <translation id="7903925330883316394">Verktyg: <ph name="UTILITY_TYPE" /></translation>
@@ -10720,6 +10718,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8413795581997394485">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. När du besöker en webbplats skickas en obfuskerad del av webbadressen till Google via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>
 <translation id="8413956290606243087">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för ChromeOS?</translation>
 <translation id="8414396119627470038">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Gör research om vad som helst</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (fodral)</translation>
 <translation id="8417065541337558100">Förhandsgranskning av kameran</translation>
 <translation id="8417548266957501132">Förälderns lösenord</translation>

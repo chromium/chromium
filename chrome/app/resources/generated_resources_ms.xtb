@@ -249,7 +249,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1162479191445552288">Lancarkan pada permulaan</translation>
 <translation id="1163931534039071049">&amp;Lihat sumber bingkai</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
-<translation id="1164286072721995435">Berkongsi tab semasa dengan Gemini setiap kali anda memulakan perbualan baharu. Anda boleh menjeda perkongsian tab semasa anda pada bila-bila masa. Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="1164891049599601209">Dimasukkan pada tapak penipuan</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1166212789817575481">Tutup Tab di sebelah Kanan</translation>
@@ -538,7 +537,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1353980523955420967">Tidak menemui PPD. Pastikan Chromebook anda berada dalam talian dan cuba lagi.</translation>
 <translation id="1354045473509304750">Teruskan membenarkan <ph name="HOST" /> menggunakan dan mengalihkan kamera anda</translation>
 <translation id="1354148503392558902">Menukar kata laluan...</translation>
-<translation id="1354943694624358993">Sentiasa kongsi tab semasa</translation>
 <translation id="1355088139103479645">Padamkan semua data?</translation>
 <translation id="1355088659320425659">Sejarah dan tab</translation>
 <translation id="1356376170199999104">Dibenarkan – <ph name="PERMISSION_DETAILS" />. Hidupkan mikrofon menggunakan suis fizikal.</translation>
@@ -5771,7 +5769,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4956593309300508411">Hentikan Perkongsian?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Simpan dalam folder pada peranti ini sahaja?</translation>
-<translation id="4958916254663453555">Tab semasa anda akan dikongsi secara automatik apabila anda membuka Gemini dalam Chrome. Kandungan dan URL penuh tab semasa dihantar kepada Google.</translation>
 <translation id="4959262764292427323">Kata laluan disimpan dalam Google Account anda supaya anda dapat menggunakannya pada mana-mana peranti</translation>
 <translation id="4960020053211143927">Tidak disokong oleh sesetengah apl</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5883,7 +5880,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5045367873597907704">Perihal peranti HID</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="504561833207953641">Membuka sesi penyemak imbas yang sedia ada.</translation>
-<translation id="5047544190872578914">Berkongsi tab semasa dengan Gemini setiap kali anda memulakan perbualan baharu. Anda boleh menjeda perkongsian tab semasa anda pada bila-bila masa.</translation>
 <translation id="504953514574706691">Tab dikecualikan daripada kumpulan yang dicadangkan</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Muat turun fail yang tidak disahkan</translation>
@@ -8741,6 +8737,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7055451306017383754">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder ini akan dinyahkongsi apabila Parallels Desktop ditutup selepas ini.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# tetingkap Inkognito terbuka}}</translation>
 <translation id="7056526158851679338">&amp;Periksa Peranti</translation>
+<translation id="7057567173736333354">Perihalkan imej anda</translation>
 <translation id="70577934383983846">Gunakan kata laluan ini pada semua peranti anda</translation>
 <translation id="7058024590501568315">Rangkaian tersembunyi</translation>
 <translation id="7059858479264779982">Tetapkan kepada autolancar</translation>
@@ -9942,6 +9939,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7899720074434636454">Ketepikan permintaan untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Untuk memastikan peranti ini boleh digunakan dengan selamat, organisasi anda boleh melihat maklumat tentang sistem pengendalian, penyemak imbas dan tetapan serta perisian yang dipasang pada peranti tersebut</translation>
 <translation id="7901405293566323524">Hab Telefon</translation>
+<translation id="7901728443188947649">Buat imej</translation>
 <translation id="7903429136755645827">Klik untuk menyesuaikan kawalan permainan anda</translation>
 <translation id="7903481341948453971">Gunakan kunci skrin anda untuk mengisikan kata laluan</translation>
 <translation id="7903925330883316394">Utiliti: <ph name="UTILITY_TYPE" /></translation>
@@ -10721,6 +10719,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8413795581997394485">Melindungi daripada laman, muat turun dan sambungan yang diketahui berbahaya. Apabila anda melawat laman, Chrome menghantar bahagian pengeliruan URL kepada Google melalui pelayan privasi yang menyembunyikan alamat IP anda. Jika laman melakukan sesuatu yang mencurigakan, URL penuh dan sedikit kandungan halaman turut dihantar.</translation>
 <translation id="8413956290606243087">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS?</translation>
 <translation id="8414396119627470038">Log masuk ke <ph name="SITE_ETLD_PLUS_ONE" /> menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Buat penyelidikan tentang apa-apa sahaja</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Bekas)</translation>
 <translation id="8417065541337558100">Pratonton kamera anda</translation>
 <translation id="8417548266957501132">Kata laluan ibu bapa</translation>

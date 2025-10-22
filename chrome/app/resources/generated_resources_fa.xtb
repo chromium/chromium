@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">راه‌اندازی هنگام شروع به کار</translation>
 <translation id="1163931534039071049">&amp;نمای منبع قاب</translation>
 <translation id="1164015913575846413">دگرساز + کلیک</translation>
-<translation id="1164286072721995435">‏هربار که مکالمه‌ای جدید را شروع می‌کنید، زبانه فعلی را با Gemini هم‌رسانی می‌کند. هرزمان بخواهید می‌توانید هم‌رسانی زبانه فعلی را موقتاً متوقف کنید. از داده‌هایتان برای بهبود دادن مدل‌های هوش مصنوعی زایا استفاده نخواهند شد.</translation>
 <translation id="1164891049599601209">در سایت فریب‌دهنده وارد شده است</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1166212789817575481">بستن برگه‌های سمت راست</translation>
@@ -539,7 +538,6 @@
 <translation id="1353980523955420967">‏PPD پیدا نشد. مطمئن شوید Chromebook آنلاین باشد و دوباره امتحان کنید.</translation>
 <translation id="1354045473509304750">ادامه دهید و به <ph name="HOST" /> اجازه دهید از دوربین استفاده کند و آن را حرکت دهد</translation>
 <translation id="1354148503392558902">درحال تغییر گذرواژه…</translation>
-<translation id="1354943694624358993">همیشه زبانه فعلی هم‌رسانی شود</translation>
 <translation id="1355088139103479645">همه داده‌ها حذف شود؟</translation>
 <translation id="1355088659320425659">سابقه و زبانه‌ها</translation>
 <translation id="1356376170199999104">مجاز است – <ph name="PERMISSION_DETAILS" />. بااستفاده از کلید فیزیکی، میکروفون را روشن کنید.</translation>
@@ -5768,7 +5766,6 @@
 <translation id="4956593309300508411">هم‌رسانی متوقف شود؟</translation>
 <translation id="4956847150856741762">۱</translation>
 <translation id="4958009531430054995">در پوشه‌ای که فقط در این دستگاه است ذخیره شود؟</translation>
-<translation id="4958916254663453555">‏وقتی «Gemini در Chrome» را باز می‌کنید، زبانه فعلی شما به‌طور خودکار هم‌رسانی خواهد شد. محتوای کامل زبانه فعلی و نشانی وب آن به Google ارسال می‌شود.</translation>
 <translation id="4959262764292427323">‏گذرواژه‌ها در حساب Google شما ذخیره می‌شود تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید</translation>
 <translation id="4960020053211143927">برخی برنامه‌ها از آن پشتیبانی نمی‌کنند</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5880,7 +5877,6 @@
 <translation id="5045367873597907704">درباره دستگاه‌های میانای انسانی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
 <translation id="504561833207953641">درحال باز شدن در جلسه مرورگر کنونی.</translation>
-<translation id="5047544190872578914">‏هربار که مکالمه‌ای جدید را شروع می‌کنید، زبانه فعلی را با Gemini هم‌رسانی می‌کند. هرزمان بخواهید می‌توانید هم‌رسانی زبانه فعلی را موقتاً متوقف کنید.</translation>
 <translation id="504953514574706691">زبانه از گروه پیشنهادشده کنار گذاشته شد</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">بارگیری فایل تأییدنشده</translation>
@@ -8740,6 +8736,7 @@
 <translation id="7055451306017383754">‏لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعد که Parallels Desktop خاموش شود، پوشه لغو هم‌رسانی می‌شود.</translation>
 <translation id="7056418393177503237">{0,plural, =1{حالت ناشناس}one{# پنجره ناشناس باز}other{# پنجره ناشناس باز}}</translation>
 <translation id="7056526158851679338">&amp;بازرسی دستگاه‌ها</translation>
+<translation id="7057567173736333354">تصویرتان را توصیف کنید</translation>
 <translation id="70577934383983846">استفاده از این گذرواژه در همه دستگاه‌ها</translation>
 <translation id="7058024590501568315">شبکه پنهان</translation>
 <translation id="7059858479264779982">تنظیم روی اجرای خودکار</translation>
@@ -9941,6 +9938,7 @@
 <translation id="7899720074434636454">بستن درخواست <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">برای اطمینان از اینکه می‌توان به‌طور ایمن از این دستگاه استفاده کرد، سازمان شما می‌تواند اطلاعات مربوط به سیستم‌عامل، مرورگر، تنظیمات دستگاه، و نرم‌افزارهایی را که در دستگاه نصب شده است ببیند</translation>
 <translation id="7901405293566323524">مرکز تلفن</translation>
+<translation id="7901728443188947649">ساخت تصویر</translation>
 <translation id="7903429136755645827">برای سفارشی کردن کنترل‌های بازی، کلیک کنید</translation>
 <translation id="7903481341948453971">استفاده از قفل صفحه هنگام تکمیل گذرواژه‌ها</translation>
 <translation id="7903925330883316394">ابزار کمکی: <ph name="UTILITY_TYPE" /></translation>
@@ -10719,6 +10717,7 @@
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودن آن‌ها مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
 <translation id="8413956290606243087">‏مایلید ChromeVox (صفحه‌خوان داخلی ChromeOS) را فعال کنید؟</translation>
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">هر چیزی را پژوهش کنید</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />٪ (قاب)</translation>
 <translation id="8417065541337558100">پیش‌نمای دوربین</translation>
 <translation id="8417548266957501132">گذرواژه ولی</translation>

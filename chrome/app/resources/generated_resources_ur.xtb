@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">شروعات میں لانچ کریں</translation>
 <translation id="1163931534039071049">&amp;فریم کا ماخذ دیکھیں</translation>
 <translation id="1164015913575846413">‏alt + کلک</translation>
-<translation id="1164286072721995435">‏جب بھی آپ کوئی نئی گفتگو شروع کرتے ہیں تو موجودہ ٹیب کا Gemini کے ساتھ اشتراک کرتا ہے۔ آپ کسی بھی وقت اپنے موجودہ ٹیب کا اشتراک موقوف کر سکتے ہیں۔ تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کیلئے، آپ کے ڈیٹا کا استعمال نہیں کیا جاتا ہے۔</translation>
 <translation id="1164891049599601209">فریب والی سائٹ پر درج کیا گیا</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1166212789817575481">دائیں جانب والے ٹیبز بند کریں</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">‏PPD کو تلاش نہیں کر سکتا۔ یقینی بنائیں کہ آپ کا Chromebook آن لائن ہے اور دوبارہ کوشش کریں۔</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> کو اپنا کیمرا استعمال اور منتقل کرنے کی اجازت دینا جاری رکھیں</translation>
 <translation id="1354148503392558902">پاس ورڈ تبدیل ہو رہا ہے…</translation>
-<translation id="1354943694624358993">موجودہ ٹیب کا ہمیشہ اشتراک کریں</translation>
 <translation id="1355088139103479645">سبھی ڈیٹا حذف کریں؟</translation>
 <translation id="1355088659320425659">سرگزشت اور ٹیبز</translation>
 <translation id="1356376170199999104">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ فزیکل سوئچ کا استعمال کرتے ہوئے مائیکروفون آن کریں۔</translation>
@@ -5757,7 +5755,6 @@
 <translation id="4956593309300508411">اشتراک کرنا روکیں؟</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">صرف اس آلے پر کسی فولڈر میں محفوظ کریں؟</translation>
-<translation id="4958916254663453555">‏‫Chrome میں Gemini کھولنے پر آپ کے موجودہ ٹیب کا اشتراک خودکار طور پر ہو جائے گا۔ موجودہ ٹیب کا مکمل مواد اور URL‏ Google کو بھیجے گئے ہیں۔</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
 <translation id="4960020053211143927">کچھ ایپس کے ذریعے تعاون یافتہ نہیں ہے</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5869,7 +5866,6 @@
 <translation id="5045367873597907704">‏HID آلات کے بارے میں</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="504561833207953641">موجودہ براؤزر کے سیشن میں کھل رہا ہے۔</translation>
-<translation id="5047544190872578914">‏جب بھی آپ کوئی نئی گفتگو شروع کرتے ہیں تو موجودہ ٹیب کا Gemini کے ساتھ اشتراک کرتا ہے۔ آپ کسی بھی وقت اپنے موجودہ ٹیب کا اشتراک موقوف کر سکتے ہیں۔</translation>
 <translation id="504953514574706691">ٹیب کو تجویز کردہ گروپ سے خارج کر دیا گیا</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">غیر تصدیق شدہ فائل ڈاؤن لوڈ کریں</translation>
@@ -8724,6 +8720,7 @@
 <translation id="7055451306017383754">‏اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار Parallels Desktop بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>
 <translation id="7056418393177503237">{0,plural, =1{پوشیدگی}other{# کھلی ہوئی پوشیدگی ونڈوز}}</translation>
 <translation id="7056526158851679338">آلات کا &amp;معائنہ کریں</translation>
+<translation id="7057567173736333354">اپنی تصویر کی وضاحت کریں</translation>
 <translation id="70577934383983846">اپنے سبھی آلات پر اس پاس ورڈ کا استعمال کریں</translation>
 <translation id="7058024590501568315">پوشیدہ نیٹ ورک</translation>
 <translation id="7059858479264779982">خود کار طور پر شروع کریں پر سیٹ کریں</translation>
@@ -9925,6 +9922,7 @@
 <translation id="7899720074434636454">‫<ph name="EXTENSION_NAME" /> کی درخواست کو برخاست کریں</translation>
 <translation id="7900950034255258543">اس بات کو یقینی بنانے کے لیے کہ اس آلہ کو محفوظ طریقے سے استعمال کیا جا سکتا ہے، آپ کی تنظیم اس کے آپریٹنگ سسٹم، براؤزر اور ترتیبات اور آلہ پر کون سا سافٹ ویئر انسٹال ہے اس کے بارے میں معلومات دیکھ سکتی ہے</translation>
 <translation id="7901405293566323524">فون کا ہب</translation>
+<translation id="7901728443188947649">تصاویر تخلیق کریں</translation>
 <translation id="7903429136755645827">اپنے گیم کنٹرولز کو حسب ضرورت بنانے کے لیے کلک کریں</translation>
 <translation id="7903481341948453971">پاس ورڈز درج کرنے پر اپنا اسکرین لاک کا استعمال کریں</translation>
 <translation id="7903925330883316394">یوٹیلٹی: <ph name="UTILITY_TYPE" /></translation>
@@ -10702,6 +10700,7 @@
 <translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="8413956290606243087">‏کیا آپ ChromeOS کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
+<translation id="8415120635186642416">کسی بھی چیز کی تحقیق کریں</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (کیس)</translation>
 <translation id="8417065541337558100">آپ کے کیمرہ کا پیش منظر</translation>
 <translation id="8417548266957501132">والد/والدہ کا پاس ورڈ</translation>

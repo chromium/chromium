@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">起動時に開く</translation>
 <translation id="1163931534039071049">フレームのソースを表示(&amp;V)</translation>
 <translation id="1164015913575846413">Alt+クリック</translation>
-<translation id="1164286072721995435">新しい会話を開始するたびに、現在のタブを Gemini と共有します。現在のタブの共有はいつでも一時停止できます。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1166212789817575481">右側のタブを閉じる</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD が見つかりません。Chromebook がオンラインになっていることを確認して、もう一度お試しください。</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> によるカメラの使用と移動を引き続き許可する</translation>
 <translation id="1354148503392558902">パスワードを変更しています...</translation>
-<translation id="1354943694624358993">現在のタブを常に共有する</translation>
 <translation id="1355088139103479645">すべてのデータを削除しますか？</translation>
 <translation id="1355088659320425659">履歴とタブ</translation>
 <translation id="1356376170199999104">許可 – <ph name="PERMISSION_DETAILS" />。マイク本体のスイッチをオンにしてください。</translation>
@@ -5746,7 +5744,6 @@
 <translation id="4956593309300508411">共有を停止しますか？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">このデバイスのフォルダにのみ保存しますか？</translation>
-<translation id="4958916254663453555">Chrome で Gemini を開くと、現在のタブが自動的に共有されます。現在のタブのコンテンツ全体と URL が Google に送信されます。</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5858,7 +5855,6 @@
 <translation id="5045367873597907704">HID デバイスについて</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="504561833207953641">既存のブラウザ セッションで開いています。</translation>
-<translation id="5047544190872578914">新しい会話を開始するたびに、現在のタブを Gemini と共有します。現在のタブの共有はいつでも一時停止できます。</translation>
 <translation id="504953514574706691">候補グループからタブを除外しました</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">未確認のファイルをダウンロード</translation>
@@ -8710,6 +8706,7 @@
 <translation id="7055451306017383754">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Parallels Desktop をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7056418393177503237">{0,plural, =1{シークレット}other{開いているシークレット ウィンドウ # 個}}</translation>
 <translation id="7056526158851679338">デバイスを検証(&amp;I)</translation>
+<translation id="7057567173736333354">画像の説明を入力</translation>
 <translation id="70577934383983846">このパスワードをすべてのデバイスで使用する</translation>
 <translation id="7058024590501568315">非公開ネットワーク</translation>
 <translation id="7059858479264779982">自動起動に設定する</translation>
@@ -9910,6 +9907,7 @@
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" /> のリクエストを拒否する</translation>
 <translation id="7900950034255258543">デバイスを安全に使用できるようにするため、組織ではオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認することができます。</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
+<translation id="7901728443188947649">画像を作成</translation>
 <translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
 <translation id="7903481341948453971">パスワードの入力時に画面ロックを使用する</translation>
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
@@ -10688,6 +10686,7 @@
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>
+<translation id="8415120635186642416">さまざまなことを調べる</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8417065541337558100">カメラのプレビュー</translation>
 <translation id="8417548266957501132">保護者のパスワード</translation>

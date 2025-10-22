@@ -249,7 +249,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1162479191445552288">Iniciar no arranque</translation>
 <translation id="1163931534039071049">&amp;Ver fonte da moldura</translation>
 <translation id="1164015913575846413">alt + clique</translation>
-<translation id="1164286072721995435">Partilha o separador atual com o Gemini sempre que inicia uma nova conversa. Pode pausar a partilha do separador atual em qualquer altura. Os seus dados não são usados para melhorar os modelos de IA generativa.</translation>
 <translation id="1164891049599601209">Entrou num site fraudulento.</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Fechar Separadores à Direita</translation>
@@ -538,7 +537,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Certifique-se de que o Chromebook está online e tente novamente.</translation>
 <translation id="1354045473509304750">Continuar a permitir que <ph name="HOST" /> utilize e mova a câmara</translation>
 <translation id="1354148503392558902">A alterar a palavra-passe…</translation>
-<translation id="1354943694624358993">Partilhar sempre o separador atual</translation>
 <translation id="1355088139103479645">Apagar todos os dados?</translation>
 <translation id="1355088659320425659">Histórico e separadores</translation>
 <translation id="1356376170199999104">Permitido: <ph name="PERMISSION_DETAILS" />. Ative o microfone através do interrutor físico.</translation>
@@ -5759,7 +5757,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4956593309300508411">Parar a partilha?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Guardar numa pasta apenas neste dispositivo?</translation>
-<translation id="4958916254663453555">O separador atual é partilhado automaticamente quando abre o Gemini no Chrome. O conteúdo completo e o URL do separador atual são enviados para a Google.</translation>
 <translation id="4959262764292427323">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4960020053211143927">Não suportado por algumas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5871,7 +5868,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5045367873597907704">Acerca dos dispositivos HID</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="504561833207953641">A abrir numa sessão existente do navegador…</translation>
-<translation id="5047544190872578914">Partilha o separador atual com o Gemini sempre que inicia uma nova conversa. Pode pausar a partilha do separador atual em qualquer altura.</translation>
 <translation id="504953514574706691">Separador excluído do grupo sugerido</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Transferir ficheiro não validado</translation>
@@ -8730,6 +8726,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7055451306017383754">Não foi possível cancelar a partilha porque uma aplicação está a utilizar esta pasta. Será cancelada a partilha da pasta quando o Parallels Desktop for encerrado.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Navegação anónima}other{# janelas de navegação anónima abertas}}</translation>
 <translation id="7056526158851679338">&amp;Inspecionar dispositivos</translation>
+<translation id="7057567173736333354">Descreva a imagem</translation>
 <translation id="70577934383983846">Use esta palavra-passe em todos os seus dispositivos</translation>
 <translation id="7058024590501568315">Rede oculta</translation>
 <translation id="7059858479264779982">Definir para iniciação automática</translation>
@@ -9931,6 +9928,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7899720074434636454">Ignorar pedido da extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Para garantir que este dispositivo pode ser usado em segurança, a sua organização pode ver informações sobre o sistema operativo, o navegador e as definições, e que software está instalado no dispositivo</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Criar imagens</translation>
 <translation id="7903429136755645827">Clicar para personalizar os controlos de jogos</translation>
 <translation id="7903481341948453971">Usar o bloqueio de ecrã ao preencher palavras-passe</translation>
 <translation id="7903925330883316394">Utilitário: <ph name="UTILITY_TYPE" /></translation>
@@ -10709,6 +10707,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8413795581997394485">Protege contra sites, transferências e extensões identificados como perigosos. Quando visita um site, o Chrome envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>
 <translation id="8413956290606243087">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS?</translation>
 <translation id="8414396119627470038">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Pesquise o que quiser</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (caixa)</translation>
 <translation id="8417065541337558100">Pré-visualização da câmara</translation>
 <translation id="8417548266957501132">Palavra-passe do Pai ou Mãe</translation>

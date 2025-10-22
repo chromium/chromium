@@ -249,7 +249,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1162479191445552288">Executa a l'inici</translation>
 <translation id="1163931534039071049">&amp;Visualitza l'origen del marc</translation>
 <translation id="1164015913575846413">Alt+clic</translation>
-<translation id="1164286072721995435">Comparteix la pestanya actual amb Gemini cada vegada que iniciïs una conversa nova. Pots posar en pausa la compartició de la pestanya actual en qualsevol moment. Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="1164891049599601209">S'ha introduït en un lloc web enganyós</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Tanca les pestanyes de la dreta</translation>
@@ -538,7 +537,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1353980523955420967">No hem trobat el fitxer PPD. Comprova que Chromebook estigui en línia i torna-ho a provar.</translation>
 <translation id="1354045473509304750">Continua permetent que <ph name="HOST" /> utilitzi i mogui la càmera</translation>
 <translation id="1354148503392558902">S'està canviant la contrasenya...</translation>
-<translation id="1354943694624358993">Comparteix sempre la pestanya actual</translation>
 <translation id="1355088139103479645">Vols suprimir totes les dades?</translation>
 <translation id="1355088659320425659">Historial i pestanyes</translation>
 <translation id="1356376170199999104">Concedit: <ph name="PERMISSION_DETAILS" />. Activa el micròfon amb l'interruptor físic.</translation>
@@ -5754,7 +5752,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4956593309300508411">Vols deixar de compartir?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vols desar-la en una carpeta només en aquest dispositiu?</translation>
-<translation id="4958916254663453555">La pestanya actual es compartirà automàticament quan obris Gemini a Chrome. S'envien a Google l'URL i tot el contingut de la pestanya actual.</translation>
 <translation id="4959262764292427323">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius</translation>
 <translation id="4960020053211143927">No és compatible amb algunes aplicacions</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
@@ -5866,7 +5863,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5045367873597907704">Sobre els dispositius HID</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
 <translation id="504561833207953641">S'està obrint a la sessió actual del navegador.</translation>
-<translation id="5047544190872578914">Comparteix la pestanya actual amb Gemini cada vegada que iniciïs una conversa nova. Pots posar en pausa la compartició de la pestanya actual en qualsevol moment.</translation>
 <translation id="504953514574706691">La pestanya s'ha exclòs del grup suggerit</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Baixa el fitxer no verificat</translation>
@@ -8722,6 +8718,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7055451306017383754">No s'ha pogut deixar de compartir aquesta carpeta perquè una aplicació l'està utilitzant. Es deixarà de compartir la propera vegada que Parallels Desktop s'apagui.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incògnit}other{# finestres d'incògnit obertes}}</translation>
 <translation id="7056526158851679338">&amp;Inspecciona els dispositius</translation>
+<translation id="7057567173736333354">Descriu la imatge</translation>
 <translation id="70577934383983846">Utilitza aquesta contrasenya en tots els teus dispositius</translation>
 <translation id="7058024590501568315">Xarxa amagada</translation>
 <translation id="7059858479264779982">Defineix com a inici automàtic</translation>
@@ -9923,6 +9920,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7899720074434636454">Ignora la sol·licitud per a <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, la teva organització pot veure informació sobre el sistema operatiu, el navegador i la configuració, i sobre el programari que hi ha instal·lat al dispositiu</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Crea imatges</translation>
 <translation id="7903429136755645827">Fes clic per personalitzar els controls de joc</translation>
 <translation id="7903481341948453971">Utilitza el bloqueig de pantalla per emplenar contrasenyes</translation>
 <translation id="7903925330883316394">Utilitat: <ph name="UTILITY_TYPE" /></translation>
@@ -10702,6 +10700,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8413795581997394485">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa res sospitós, també s'envien URL complets i fragments de contingut de la pàgina.</translation>
 <translation id="8413956290606243087">Vols activar ChromeVox, el lector de pantalla integrat per a Chrome OS?</translation>
 <translation id="8414396119627470038">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Cerca informació sobre qualsevol cosa</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estoig)</translation>
 <translation id="8417065541337558100">Previsualització de la càmera</translation>
 <translation id="8417548266957501132">Contrasenya del pare o de la mare</translation>
