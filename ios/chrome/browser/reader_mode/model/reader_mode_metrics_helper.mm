@@ -108,12 +108,12 @@ ReaderModeMetricsHelper::ReaderModeMetricsHelper(
 }
 
 ReaderModeMetricsHelper::~ReaderModeMetricsHelper() {
-  Flush();
+  Flush(ReaderModeDeactivationReason::kHostTabDestructionDeactivated);
 }
 
 void ReaderModeMetricsHelper::RecordReaderHeuristicCanceled() {
   last_reader_mode_state_ = ReaderModeState::kHeuristicCanceled;
-  Flush();
+  Flush(ReaderModeDeactivationReason::kNavigationDeactivated);
 }
 
 void ReaderModeMetricsHelper::RecordReaderHeuristicTriggered() {
@@ -166,7 +166,7 @@ void ReaderModeMetricsHelper::RecordReaderDistillerTriggered(
 void ReaderModeMetricsHelper::RecordReaderDistillerTimedOut() {
   last_reader_mode_state_ = ReaderModeState::kDistillationTimedOut;
   RecordDistillationTime(std::nullopt);
-  Flush();
+  Flush(ReaderModeDeactivationReason::kDistillationFailureDeactivated);
 }
 
 void ReaderModeMetricsHelper::RecordReaderDistillerCompleted(
@@ -203,7 +203,8 @@ void ReaderModeMetricsHelper::RecordReaderShown() {
   reading_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
-void ReaderModeMetricsHelper::Flush() {
+void ReaderModeMetricsHelper::Flush(ReaderModeDeactivationReason reason) {
+  base::UmaHistogramEnumeration(kReaderModeDeactivationReasonHistogram, reason);
   if (last_reader_mode_state_.has_value()) {
     base::UmaHistogramEnumeration(kReaderModeStateHistogram,
                                   last_reader_mode_state_.value());

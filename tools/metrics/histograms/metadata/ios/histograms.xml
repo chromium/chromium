@@ -5252,6 +5252,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.DeactivationReason"
+    enum="ReaderModeDeactivationReason" expires_after="2026-02-22">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the reason that the Reading Mode UI has been dismissed ranging from
+    explicit user interaction via the UI entry points to general interactions
+    with the browser such as closing the tab or performing a new navigation.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReaderMode.Distiller.Latency" units="ms"
     expires_after="2026-03-29">
   <owner>fernandex@google.com</owner>

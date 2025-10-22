@@ -1785,6 +1785,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeCustomizationType) -->
 
+<!-- LINT.IfChange(ReaderModeDeactivationReason) -->
+
+<enum name="ReaderModeDeactivationReason">
+  <int value="0" label="Explicit UI action"/>
+  <int value="1" label="Navigation"/>
+  <int value="2" label="Distillation failure"/>
+  <int value="3" label="Host tab destroyed"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeDeactivationReason) -->
+
 <!-- LINT.IfChange(ReaderModeDistillerOutcome) -->
 
 <enum name="ReaderModeDistillerOutcome">

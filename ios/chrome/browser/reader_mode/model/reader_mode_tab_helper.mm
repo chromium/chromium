@@ -337,7 +337,7 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
   } else {
     // If there is no trigger in progress ensure any metrics related to a
     // past navigation have been recorded.
-    metrics_helper_.Flush();
+    metrics_helper_.Flush(ReaderModeDeactivationReason::kNavigationDeactivated);
   }
   eligibility_heuristic_url_.reset();
 
@@ -602,7 +602,7 @@ void ReaderModeTabHelper::CreateReaderModeContent(
 
 void ReaderModeTabHelper::DestroyReaderModeContent(
     ReaderModeDeactivationReason reason) {
-  metrics_helper_.Flush();
+  metrics_helper_.Flush(reason);
 
   WebViewProxyTabHelper* tab_helper =
       WebViewProxyTabHelper::FromWebState(web_state_);

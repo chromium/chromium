@@ -51,7 +51,7 @@ class ReaderModeMetricsHelper
   void RecordReaderShown();
 
   // Records the last state of Reading Mode events.
-  void Flush();
+  void Flush(ReaderModeDeactivationReason reason);
 
   // dom_distiller::DistilledPagePrefs::Observer implementation.
   void OnChangeFontFamily(dom_distiller::mojom::FontFamily font) override;

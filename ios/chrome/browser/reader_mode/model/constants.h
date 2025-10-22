@@ -134,16 +134,21 @@ enum class ReaderModeDistillerOutcome {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeDistillerOutcome)
 
 // Reasons for which Reader mode can be deactivated.
+// Recorded for IOS.ReaderMode.DeactivationReason. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeDeactivationReason)
 enum class ReaderModeDeactivationReason {
   // User deactivated Reader mode using the UI.
-  kUserDeactivated,
+  kUserDeactivated = 0,
   // Reader mode was deactivated because a navigation occurred.
-  kNavigationDeactivated,
+  kNavigationDeactivated = 1,
   // Reader mode was deactivated because distillation failed.
-  kDistillationFailureDeactivated,
+  kDistillationFailureDeactivated = 2,
   // Reader mode was deactivated because the host tab was destroyed.
-  kHostTabDestructionDeactivated,
+  kHostTabDestructionDeactivated = 3,
+  kMaxValue = kHostTabDestructionDeactivated,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeDeactivationReason)
 
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
@@ -157,6 +162,9 @@ inline constexpr base::TimeDelta kReaderModeDistillationTimeout =
 
 // Histogram name for Reader Mode state.
 extern const char kReaderModeStateHistogram[];
+
+// Histogram name for Reader Mode deactivation reason.
+extern const char kReaderModeDeactivationReasonHistogram[];
 
 // Histogram name for Reader Mode heuristic result.
 extern const char kReaderModeHeuristicResultHistogram[];

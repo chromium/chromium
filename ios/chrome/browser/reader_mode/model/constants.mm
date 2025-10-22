@@ -8,6 +8,9 @@
 
 const char kReaderModeStateHistogram[] = "IOS.ReaderMode.State";
 
+const char kReaderModeDeactivationReasonHistogram[] =
+    "IOS.ReaderMode.DeactivationReason";
+
 const char kReaderModeHeuristicResultHistogram[] =
     "IOS.ReaderMode.Heuristic.Result";
 
