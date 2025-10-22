@@ -124,22 +124,24 @@ class WorkerPool:
 
     def __init__(self, num_workers: int,
                  promptfoo: promptfoo_installation.PromptfooInstallation,
-                 worker_options: WorkerOptions, print_output_on_success: bool):
+                 worker_options: WorkerOptions,
+                 result_options: results.ResultOptions):
         """
         Args:
             num_workers: The number of workers to use to run tests.
             promptfoo: A PromptfooInstallation to use when running tests.
             worker_options: A WorkerOptions instance whose attributes will be
                 used when setting up workers.
-            print_output_on_success: If true, test logs will always be printed
-                to stdout instead of only for failed tests.
+            result_options: A ResultOptions instance whose attributes will be
+                used when handling test results.
         """
         assert num_workers > 0
         # Create a copy so that options cannot be externally modified.
         worker_options = copy.deepcopy(worker_options)
+        result_options = copy.deepcopy(result_options)
 
         self._result_thread = results.ResultThread(
-            print_output_on_success=print_output_on_success)
+            result_options=result_options)
         self._result_thread.start()
 
         self._total_tests_queued = 0

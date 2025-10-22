@@ -44,6 +44,17 @@ class TestResult:
         return self.test_file < other.test_file
 
 
+@dataclasses.dataclass
+class ResultOptions:
+    """Options for configuring result reporting."""
+    # Always print test logs to stdout instead of only for failed tests.
+    print_output_on_success: bool
+    # Upload metrics to the perf dashboard.
+    enable_perf_uploading: bool
+    # The git revision to report to the perf dashboard.
+    git_revision: str | None
+
+
 class AtomicCounter:
     """Thread-safe integer counter."""
 
@@ -86,17 +97,17 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
 class ResultThread(threading.Thread):
     """Class for reporting test results from a queue."""
 
-    def __init__(self, print_output_on_success: bool, **kwargs):
+    def __init__(self, result_options: ResultOptions, **kwargs):
         """
         Args:
-            print_output_on_success: If true, test logs will always be printed
-                to stdout instead of only for failed tests.
+            result_options: A ResultOptions instance whose attributes will be
+                used when configuring this object.
         """
         super().__init__(daemon=True, **kwargs)
         self.result_input_queue = queue.Queue()
         self.failed_result_output_queue = queue.Queue()
         self.total_results_reported = AtomicCounter()
-        self._print_output_on_success = print_output_on_success
+        self._result_options = result_options
         self._shutdown_event = threading.Event()
         self._result_sink_client = result_sink.TryInitClient()
         self._fatal_exception = None
@@ -120,7 +131,8 @@ class ResultThread(threading.Thread):
             # token usage and test scores.
             pp = pprint.PrettyPrinter(indent=2)
             logging.debug('Metrics: %s', pp.pformat(test_result.metrics))
-            if not test_result.success or self._print_output_on_success:
+            if (not test_result.success
+                    or self._result_options.print_output_on_success):
                 sys.stdout.write(test_result.test_log)
             if self._result_sink_client:
                 report_result(self._result_sink_client, test_result)

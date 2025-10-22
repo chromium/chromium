@@ -18,6 +18,7 @@ import yaml
 import checkout_helpers
 import constants
 import promptfoo_installation
+import results
 import workers
 
 sys.path.append(str(constants.CHROMIUM_SRC))
@@ -316,13 +317,17 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                                            force=args.force,
                                            sandbox=args.sandbox,
                                            gemini_cli_bin=args.gemini_cli_bin)
+    result_options = results.ResultOptions(
+        print_output_on_success=args.print_output_on_success,
+        enable_perf_uploading=args.enable_perf_uploading,
+        git_revision=args.git_revision)
 
     worker_pool = workers.WorkerPool(
         args.parallel_workers
         if args.parallel_workers != -1 else len(configs_to_run),
         promptfoo,
         worker_options,
-        args.print_output_on_success,
+        result_options,
     )
     configs_for_current_iteration = configs_to_run
     failed_test_results = []
@@ -366,6 +371,11 @@ def _validate_args(args: argparse.Namespace,
         args: The parsed arguments.
         parser: The parser that parsed |args|.
     """
+    # Perf Arguments group.
+    if args.enable_perf_uploading and not args.git_revision:
+        parser.error(
+            '--git-revision must be passed if --enable-perf-uploading is')
+
     # Test Selection Arguments group.
     if args.shard_index is not None and args.shard_index < 0:
         parser.error('--shard-index must be non-negative')
@@ -421,6 +431,16 @@ def _parse_args() -> argparse.Namespace:
     group.add_argument(
         '--isolated-script-test-perf-output',
         help='Currently unused, parsed to handle all isolated script args.')
+
+    group = parser.add_argument_group('Perf Arguments')
+    group.add_argument(
+        '--enable-perf-uploading',
+        action='store_true',
+        help=('Upload test metrics to the perf dashboard. This is only '
+              'expected to work on the CI builders due to permissions.'))
+    group.add_argument('--git-revision',
+                       help=('The git revision being tested. Must be set if '
+                             '--enable-perf-uploading is set.'))
 
     group = parser.add_argument_group('Test Selection Arguments')
     filter_group = group.add_mutually_exclusive_group()

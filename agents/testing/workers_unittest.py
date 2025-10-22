@@ -754,6 +754,11 @@ class WorkerPoolUnittest(unittest.TestCase):
             force=False,
             sandbox=False,
         )
+        self.result_options = results.ResultOptions(
+            print_output_on_success=False,
+            enable_perf_uploading=False,
+            git_revision=None,
+        )
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -802,7 +807,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=3,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         self.assertEqual(self.mock_worker_thread.call_count, 3)
         self.mock_result_thread.assert_called_once()
@@ -814,7 +819,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         test_paths = [
             pathlib.Path('/test/a.yaml'),
@@ -831,7 +836,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         test_paths = [
             pathlib.Path('/test/a.yaml'),
@@ -861,7 +866,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         pool.queue_tests([pathlib.Path('fail.yaml')])
         failed_tests = pool.wait_for_all_queued_tests()
@@ -875,7 +880,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=2,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         mock_workers = self.mock_worker_thread.return_value
         mock_result = self.mock_result_thread.return_value
@@ -893,7 +898,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         self.mock_worker_thread.return_value.join.side_effect = None
         self.mock_worker_thread.return_value.is_alive.return_value = True
@@ -909,7 +914,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=2,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         test_paths = [
             pathlib.Path('/test/a.yaml'),
@@ -930,7 +935,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         pool.queue_tests([pathlib.Path('/test/a.yaml')])
         with self.assertRaisesRegex(ValueError, 'Worker Error'):
@@ -945,7 +950,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         pool.queue_tests([pathlib.Path('/test/a.yaml')])
         with self.assertRaisesRegex(ValueError, 'Result Error'):
@@ -958,7 +963,7 @@ class WorkerPoolUnittest(unittest.TestCase):
             num_workers=1,
             promptfoo=self.mock_promptfoo,
             worker_options=self.worker_options,
-            print_output_on_success=False,
+            result_options=self.result_options,
         )
         shutdown_mock = mock.Mock()
         pool.shutdown_blocking = shutdown_mock

@@ -621,6 +621,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.gemini_cli_bin = None
         self.args.promptfoo_bin = None
         self.args.isolated_script_test_repeat = 0
+        self.args.enable_perf_uploading = False
+        self.args.git_revision = None
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -682,6 +684,15 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                                  build=True)
         self.mock_setup_promptfoo.assert_not_called()
         self.mock_worker_pool.assert_called_once()
+        (num_workers, promptfoo, worker_opts,
+         result_opts) = self.mock_worker_pool.call_args[0]
+        self.assertEqual(num_workers, 1)
+        self.assertEqual(promptfoo, self.mock_from_cipd.return_value)
+        self.assertEqual(worker_opts.verbose, False)
+        self.assertEqual(result_opts.print_output_on_success, False)
+        self.assertEqual(result_opts.enable_perf_uploading, False)
+        self.assertEqual(result_opts.git_revision, None)
+
         self.mock_worker_pool.return_value.queue_tests.assert_called_once_with(
             [pathlib.Path('/test/a.yaml')])
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
@@ -890,6 +901,21 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                  mock.ANY)
         self.assertEqual(returncode, 0)
 
+    def test_run_prompt_eval_tests_perf_args(self):
+        """Tests that perf arguments are passed to the worker pool."""
+        self.args.enable_perf_uploading = True
+        self.args.git_revision = 'test_revision'
+        self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
+            return_value = []
+
+        eval_prompts._run_prompt_eval_tests(self.args)
+
+        self.mock_worker_pool.assert_called_once()
+        result_opts = self.mock_worker_pool.call_args[0][3]
+        self.assertEqual(result_opts.enable_perf_uploading, True)
+        self.assertEqual(result_opts.git_revision, 'test_revision')
+
+
 
 class ParseArgsUnittest(unittest.TestCase):
     """Unit tests for the `_parse_args` function."""
@@ -911,6 +937,8 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertFalse(args.print_output_on_success)
         self.assertIsNone(args.isolated_script_test_output)
         self.assertIsNone(args.isolated_script_test_perf_output)
+        self.assertFalse(args.enable_perf_uploading)
+        self.assertIsNone(args.git_revision)
         self.assertIsNone(args.filter)
         self.assertIsNone(args.shard_index)
         self.assertIsNone(args.total_shards)
@@ -941,6 +969,17 @@ class ParseArgsUnittest(unittest.TestCase):
         args = eval_prompts._parse_args()
         self.assertTrue(args.verbose)
         self.assertTrue(args.print_output_on_success)
+
+    def test_parse_args_all_perf_args(self):
+        """Tests that all perf arguments are parsed correctly."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--enable-perf-uploading', '--git-revision',
+            'my-revision'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertTrue(args.enable_perf_uploading)
+        self.assertEqual(args.git_revision, 'my-revision')
+
 
     def test_parse_args_all_test_selection_args(self):
         """Tests that all test selection arguments are parsed correctly."""
@@ -1105,6 +1144,13 @@ class ParseArgsUnittest(unittest.TestCase):
         self.mock_argv[:] = [
             'eval_prompts.py', '--isolated-script-test-repeat', '-1'
         ]
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_enable_perf_uploading_no_git_revision(self):
+        """Tests that providing --enable-perf-uploading without
+        --git-revision raises an error."""
+        self.mock_argv[:] = ['eval_prompts.py', '--enable-perf-uploading']
         with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
             eval_prompts._parse_args()
 

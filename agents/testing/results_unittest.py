@@ -172,7 +172,11 @@ class ResultThreadTest(unittest.TestCase):
     def setUp(self):
         self._setUpPatches()
 
-        self.print_output_on_success = False
+        self.result_options = results.ResultOptions(
+            print_output_on_success=False,
+            enable_perf_uploading=False,
+            git_revision=None,
+        )
 
     def _setUpPatches(self):
         """Set up patches for tests."""
@@ -195,9 +199,7 @@ class ResultThreadTest(unittest.TestCase):
         self.addCleanup(report_result_patcher.stop)
 
     def _create_result_thread(self):
-        return results.ResultThread(
-            print_output_on_success=self.print_output_on_success,
-        )
+        return results.ResultThread(result_options=self.result_options)
 
     def _run_test_with_results(self, results_to_send):
         """Helper to run a test with a list of results."""
@@ -293,7 +295,7 @@ class ResultThreadTest(unittest.TestCase):
         thread.join(1)
 
     def test_print_output_on_success_true(self):
-        self.print_output_on_success = True
+        self.result_options.print_output_on_success = True
         test_result = results.TestResult(test_file='test.yaml',
                                          success=True,
                                          duration=1.0,
@@ -304,7 +306,7 @@ class ResultThreadTest(unittest.TestCase):
         self.mock_stdout.write.assert_called_once_with('log')
 
     def test_print_output_on_success_false(self):
-        self.print_output_on_success = False
+        self.result_options.print_output_on_success = False
         test_result = results.TestResult(test_file='test.yaml',
                                          success=True,
                                          duration=1.0,
@@ -315,7 +317,7 @@ class ResultThreadTest(unittest.TestCase):
         self.mock_stdout.write.assert_not_called()
 
     def test_always_print_output_on_failure(self):
-        self.print_output_on_success = False
+        self.result_options.print_output_on_success = False
         test_result = results.TestResult(test_file='test.yaml',
                                          success=False,
                                          duration=1.0,
