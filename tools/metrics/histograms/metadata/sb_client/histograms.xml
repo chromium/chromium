@@ -568,23 +568,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.CreditCardFormEvent.{EventName}"
-    enum="CreditCardFormEvent" expires_after="2026-10-20">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>bcb@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records a credit card form event that may trigger a CSD ping, with an enum
-    that represents the permutation of details for that event. This is recorded
-    on every event that may trigger a CREDIT_CARD_FORM classification attempt,
-    after checking for ESB.
-  </summary>
-  <token key="EventName">
-    <variant name="OnFieldTypesDetermined"
-        summary="Autofill OnFieldTypesDetermined"/>
-  </token>
-</histogram>
-
 <histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"
     enum="BooleanAvailable" expires_after="2026-04-12">
   <owner>andysjlim@chromium.org</owner>
