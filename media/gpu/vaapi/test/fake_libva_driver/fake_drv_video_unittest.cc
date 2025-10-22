@@ -90,7 +90,13 @@ class FakeDriverTest : public testing::Test {
   VADisplay display_ = nullptr;
 };
 
-TEST_F(FakeDriverTest, VerifyQueryConfigProfiles) {
+// TODO(crbug.com/454136608): re-enable after fixing flake.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_VerifyQueryConfigProfiles DISABLED_VerifyQueryConfigProfiles
+#else
+#define MAYBE_VerifyQueryConfigProfiles VerifyQueryConfigProfiles
+#endif
+TEST_F(FakeDriverTest, MAYBE_VerifyQueryConfigProfiles) {
   ASSERT_GT(vaMaxNumProfiles(display_), 0);
 
   std::vector<VAProfile> va_profiles(
