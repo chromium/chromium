@@ -353,6 +353,7 @@ component("skia") {
   public += skia_encode_png_public
   public += skia_encode_rust_png_public
   public += skia_encode_webp_public
+  public += skia_xps_rust_png_public
 
   # The imported Skia gni source paths are made absolute by gn.
   defines = []

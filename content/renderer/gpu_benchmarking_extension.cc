@@ -69,6 +69,7 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
+#include "third_party/skia/include/docs/SkXPSRustPngHelpers.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -588,7 +589,10 @@ static sk_sp<SkDocument> MakeXPSDocument(SkWStream* s) {
     LOG(ERROR) << "CoCreateInstance(CLSID_XpsOMObjectFactory, ...) failed:"
                << logging::SystemErrorCodeToString(hr);
   }
-  return SkXPS::MakeDocument(s, factory.Get());
+
+  SkXPS::Options opts;
+  opts.pngEncoder = SkXPS::EncodePngUsingRust;
+  return SkXPS::MakeDocument(s, factory.Get(), opts);
 }
 #endif
 }  // namespace
