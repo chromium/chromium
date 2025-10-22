@@ -4,7 +4,6 @@
 
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -217,18 +216,11 @@ IndexedDBExternalObject BackingStoreTestBase::CreateFileInfo(
     base::Time last_modified,
     std::string_view file_contents) {
   mojo::PendingRemote<blink::mojom::Blob> remote;
-  base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::string file_contents,
-             mojo::PendingReceiver<blink::mojom::Blob> pending_receiver) {
-            auto fake_blob = std::make_unique<storage::FakeBlob>(
-                base::Uuid::GenerateRandomV4().AsLowercaseString());
-            fake_blob->set_body(file_contents);
-            mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
-                                        std::move(pending_receiver));
-          },
-          std::string(file_contents), remote.InitWithNewPipeAndPassReceiver()));
+  auto fake_blob = std::make_unique<storage::FakeBlob>(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  fake_blob->set_body(file_contents);
+  mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
+                              remote.InitWithNewPipeAndPassReceiver());
   IndexedDBExternalObject info(std::move(remote), file_name, type,
                                last_modified, file_contents.size());
   return info;
@@ -238,36 +230,21 @@ IndexedDBExternalObject BackingStoreTestBase::CreateBlobInfo(
     const std::u16string& type,
     std::string_view blob_data) {
   mojo::PendingRemote<blink::mojom::Blob> remote;
-  base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::string blob_data,
-             mojo::PendingReceiver<blink::mojom::Blob> pending_receiver) {
-            auto fake_blob = std::make_unique<storage::FakeBlob>(
-                base::Uuid::GenerateRandomV4().AsLowercaseString());
-            fake_blob->set_body(blob_data);
-            mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
-                                        std::move(pending_receiver));
-          },
-          std::string(blob_data), remote.InitWithNewPipeAndPassReceiver()));
+  auto fake_blob = std::make_unique<storage::FakeBlob>(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  fake_blob->set_body(blob_data);
+  mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
+                              remote.InitWithNewPipeAndPassReceiver());
   IndexedDBExternalObject info(std::move(remote), type, blob_data.size());
   return info;
 }
 
 IndexedDBExternalObject BackingStoreTestBase::CreateFileSystemAccessHandle() {
-  auto id = base::UnguessableToken::Create();
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> remote;
-  base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::UnguessableToken id,
-             mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
-                 pending_receiver) {
-            mojo::MakeSelfOwnedReceiver(
-                std::make_unique<FakeFileSystemAccessTransferToken>(id),
-                std::move(pending_receiver));
-          },
-          id, remote.InitWithNewPipeAndPassReceiver()));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<FakeFileSystemAccessTransferToken>(
+          base::UnguessableToken::Create()),
+      remote.InitWithNewPipeAndPassReceiver());
   IndexedDBExternalObject info(std::move(remote));
   return info;
 }
