@@ -26,7 +26,7 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
  public:
   static const char kSupplementName[];
 
-  // Getter for printing
+  // Getter for printing (available in the window global scope)
   static WebPrintingManager* GetWebPrintingManager(ExecutionContext&);
 
   explicit WebPrintingManager(ExecutionContext*);
