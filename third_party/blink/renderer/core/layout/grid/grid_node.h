@@ -22,6 +22,10 @@ class CORE_EXPORT GridNode final : public BlockNode {
     DCHECK(box->IsLayoutGrid());
   }
 
+  bool HasCachedPlacementData() const {
+    return To<LayoutGrid>(box_.Get())->HasCachedPlacementData();
+  }
+
   const GridPlacementData& CachedPlacementData() const {
     return To<LayoutGrid>(box_.Get())->CachedPlacementData();
   }

@@ -103,7 +103,7 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
 
   // `start` should be the first intersection point that is not blocked
   // after.
-  while (start < intersection_count &&
+  while (start < last_intersection_index &&
          (gap_geometry
               .GetIntersectionBlockedStatus(track_direction, gap_index, start,
                                             intersections)

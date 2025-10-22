@@ -194,7 +194,22 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   } else {
     container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   }
-  container_builder_.SetFragmentsTotalBlockSize(block_size);
+
+  // When row-gap suppression occurs within a subgrid, the suppression affects
+  // the subgrid’s intrinsic block size. However, if the total block size is not
+  // updated to reflect this change, the subgrid will render incorrectly because
+  // it will still occupy space that should have been accounted for via the
+  // suppression. Hence, in such cases the total block size should be aligned
+  // with the intrinsic block size after suppression, as this represents the
+  // actual size of the subgrid once gap adjustments have been applied.
+  if (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled() &&
+      node.HasCachedPlacementData() &&
+      !node.CachedPlacementData().HasStandaloneAxis(
+          GridTrackSizingDirection::kForRows)) {
+    container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size);
+  } else {
+    container_builder_.SetFragmentsTotalBlockSize(block_size);
+  }
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     auto status = FinishFragmentation(&container_builder_);
