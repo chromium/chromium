@@ -1946,7 +1946,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 14
+// Next ID: 15
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -1997,6 +1997,13 @@ enum ClickabilityReason {
 
   // The node has mouse event handlers like mouseover and mouseenter.
   CLICKABILITY_REASON_MOUSE_HOVER = 13;
+
+  // The node has a CSS :hover pseudo-class, which indicates that it changes
+  // state when a mouse hovers over it. This should be relatively low-priority
+  // compared to stronger clickability signals. There's not enough granularity
+  // in Chrome to know what properties the rule might effect, so this reason
+  // just indicates that a :hover rule is defined.
+  CLICKABILITY_REASON_HOVER_PSEUDO_CLASS = 14;
 }
 
 // Next ID: 5

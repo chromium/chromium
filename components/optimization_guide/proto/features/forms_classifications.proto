@@ -178,6 +178,11 @@ message AutofillAiFieldEvent {
   // in forms that ask about multiple entity types (e.g. driver's license and
   // vehicle information).
   AutofillAiEntityType entity_type = 14 [features = { field_presence: IMPLICIT }];
+
+  // The storage type of the entity for which the metrics are being recorded,
+  // meaning whether it is stored locally for the user or in some server
+  // service.
+  AutofillAiEntityStorageType storage_type = 17 [features = { field_presence: IMPLICIT }];
 }
 
 message AutofillAiKeyMetrics {
