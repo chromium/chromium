@@ -177,6 +177,10 @@ void GetSkColorSpaceParams(Color::ColorSpace color_space,
       m = SkNamedGamut::kDisplayP3;
       t = SkNamedTransferFn::kSRGB;
       return;
+    case Color::ColorSpace::kDisplayP3Linear:
+      m = SkNamedGamut::kDisplayP3;
+      t = SkNamedTransferFn::kLinear;
+      return;
     case Color::ColorSpace::kA98RGB:
       m = SkNamedGamut::kAdobeRGB;
       t = SkNamedTransferFn::k2Dot2;
@@ -189,6 +193,10 @@ void GetSkColorSpaceParams(Color::ColorSpace color_space,
     case Color::ColorSpace::kRec2020:
       m = SkNamedGamut::kRec2020;
       t = SkNamedTransferFn::kRec2020;
+      return;
+    case Color::ColorSpace::kRec2100Linear:
+      m = SkNamedGamut::kRec2020;
+      t = SkNamedTransferFn::kLinear;
       return;
     case Color::ColorSpace::kXYZD50:
       m = SkNamedGamut::kXYZ;
@@ -355,9 +363,11 @@ std::array<bool, 3> Color::GetAnalogousMissingComponents(
     return color_space == ColorSpace::kSRGB ||
            color_space == ColorSpace::kSRGBLinear ||
            color_space == ColorSpace::kDisplayP3 ||
+           color_space == ColorSpace::kDisplayP3Linear ||
            color_space == ColorSpace::kA98RGB ||
            color_space == ColorSpace::kProPhotoRGB ||
            color_space == ColorSpace::kRec2020 ||
+           color_space == ColorSpace::kRec2100Linear ||
            color_space == ColorSpace::kXYZD50 ||
            color_space == ColorSpace::kXYZD65 ||
            color_space == ColorSpace::kSRGBLegacy;
@@ -377,9 +387,11 @@ std::array<bool, 3> Color::GetAnalogousMissingComponents(
     case ColorSpace::kSRGB:
     case ColorSpace::kSRGBLinear:
     case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
     case ColorSpace::kA98RGB:
     case ColorSpace::kProPhotoRGB:
     case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear:
     case ColorSpace::kXYZD50:
     case ColorSpace::kXYZD65:
     case ColorSpace::kSRGBLegacy:
@@ -587,9 +599,11 @@ std::tuple<float, float, float> Color::ToSRGB(bool gamut_map) const {
       return gfx::HWBToSRGB(param0_, param1_, param2_);
 
     case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
     case ColorSpace::kA98RGB:
     case ColorSpace::kProPhotoRGB:
     case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear:
     case ColorSpace::kXYZD50:
     case ColorSpace::kXYZD65:
     case ColorSpace::kLab:
@@ -615,9 +629,11 @@ std::tuple<float, float, float> Color::ToXYZD50(bool gamut_map) const {
     case ColorSpace::kSRGB:
     case ColorSpace::kSRGBLinear:
     case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
     case ColorSpace::kA98RGB:
     case ColorSpace::kProPhotoRGB:
     case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear:
     case ColorSpace::kXYZD50:
     case ColorSpace::kXYZD65: {
       skcms_Matrix3x3 m;
@@ -694,9 +710,11 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
     case ColorSpace::kXYZD50:
     case ColorSpace::kSRGBLinear:
     case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
     case ColorSpace::kA98RGB:
     case ColorSpace::kProPhotoRGB:
-    case ColorSpace::kRec2020: {
+    case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear: {
       skcms_Matrix3x3 m;
       skcms_TransferFunction t;
       GetSkColorSpaceParams(destination_color_space, m, t);
@@ -943,12 +961,16 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
       return "srgb-linear";
     case Color::ColorSpace::kDisplayP3:
       return "display-p3";
+    case Color::ColorSpace::kDisplayP3Linear:
+      return "display-p3-linear";
     case Color::ColorSpace::kA98RGB:
       return "a98-rgb";
     case Color::ColorSpace::kProPhotoRGB:
       return "prophoto-rgb";
     case Color::ColorSpace::kRec2020:
       return "rec2020";
+    case Color::ColorSpace::kRec2100Linear:
+      return "rec2100-linear";
     case Color::ColorSpace::kXYZD50:
       return "xyz-d50";
     case Color::ColorSpace::kXYZD65:
@@ -1287,6 +1309,9 @@ String Color::SerializeInterpolationSpace(
     case ColorSpace::kDisplayP3:
       result.Append("display-p3");
       break;
+    case ColorSpace::kDisplayP3Linear:
+      result.Append("display-p3-linear");
+      break;
     case ColorSpace::kA98RGB:
       result.Append("a98-rgb");
       break;
@@ -1295,6 +1320,9 @@ String Color::SerializeInterpolationSpace(
       break;
     case ColorSpace::kRec2020:
       result.Append("rec2020");
+      break;
+    case ColorSpace::kRec2100Linear:
+      result.Append("rec2100-linear");
       break;
   }
 

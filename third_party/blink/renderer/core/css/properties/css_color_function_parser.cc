@@ -72,10 +72,22 @@ Color::ColorSpace ColorSpaceFromColorSpaceArgument(CSSValueID id) {
       return Color::ColorSpace::kSRGB;
     case CSSValueID::kRec2020:
       return Color::ColorSpace::kRec2020;
+    case CSSValueID::kRec2100Linear:
+      if (RuntimeEnabledFeatures::ColorSpaceRec2100LinearEnabled()) {
+        return Color::ColorSpace::kRec2100Linear;
+      } else {
+        return Color::ColorSpace::kNone;
+      }
     case CSSValueID::kSRGBLinear:
       return Color::ColorSpace::kSRGBLinear;
     case CSSValueID::kDisplayP3:
       return Color::ColorSpace::kDisplayP3;
+    case CSSValueID::kDisplayP3Linear:
+      if (RuntimeEnabledFeatures::ColorSpaceDisplayP3LinearEnabled()) {
+        return Color::ColorSpace::kDisplayP3Linear;
+      } else {
+        return Color::ColorSpace::kNone;
+      }
     case CSSValueID::kA98Rgb:
       return Color::ColorSpace::kA98RGB;
     case CSSValueID::kProphotoRgb:
@@ -643,9 +655,11 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       case Color::ColorSpace::kSRGB:
       case Color::ColorSpace::kSRGBLinear:
       case Color::ColorSpace::kDisplayP3:
+      case Color::ColorSpace::kDisplayP3Linear:
       case Color::ColorSpace::kA98RGB:
       case Color::ColorSpace::kProPhotoRGB:
       case Color::ColorSpace::kRec2020:
+      case Color::ColorSpace::kRec2100Linear:
         context.Count(WebFeature::kCSSColor_SpaceRGB);
         if (resolved_color.has_value() && !IsInGamutRec2020(*resolved_color)) {
           context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);

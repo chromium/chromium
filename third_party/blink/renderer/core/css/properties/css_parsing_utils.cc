@@ -1839,6 +1839,11 @@ static std::optional<ColorInterpolationSpace> ConsumeColorInterpolationSpace(
     case CSSValueID::kDisplayP3:
       read_color_space = Color::ColorSpace::kDisplayP3;
       break;
+    case CSSValueID::kDisplayP3Linear:
+      if (RuntimeEnabledFeatures::ColorSpaceDisplayP3LinearEnabled()) {
+        read_color_space = Color::ColorSpace::kDisplayP3Linear;
+      }
+      break;
     case CSSValueID::kA98Rgb:
       read_color_space = Color::ColorSpace::kA98RGB;
       break;
@@ -1847,6 +1852,11 @@ static std::optional<ColorInterpolationSpace> ConsumeColorInterpolationSpace(
       break;
     case CSSValueID::kRec2020:
       read_color_space = Color::ColorSpace::kRec2020;
+      break;
+    case CSSValueID::kRec2100Linear:
+      if (RuntimeEnabledFeatures::ColorSpaceRec2100LinearEnabled()) {
+        read_color_space = Color::ColorSpace::kRec2100Linear;
+      }
       break;
     case CSSValueID::kLab:
       read_color_space = Color::ColorSpace::kLab;

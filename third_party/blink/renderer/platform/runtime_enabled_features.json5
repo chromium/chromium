@@ -1076,7 +1076,14 @@
       name: "CollectWidthAndHeightAsStylesForNestedSvg",
       status: "stable",
     },
-    // Enable the rec2100-linear color space in CSS and PredefinedColorSpace.
+    // Enable the display-p3-linear color space in CSS.
+    // https://chromestatus.com/feature/5162372125818880
+    {
+      name: "ColorSpaceDisplayP3Linear",
+      status: "experimental",
+    },
+    // Enable the rec2100-linear color space in CSS.
+    // https://chromestatus.com/feature/5204024772788224
     {
       name: "ColorSpaceRec2100Linear",
       status: "experimental",

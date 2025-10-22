@@ -73,9 +73,11 @@ class PLATFORM_EXPORT Color {
     kSRGB,
     kSRGBLinear,
     kDisplayP3,
+    kDisplayP3Linear,
     kA98RGB,
     kProPhotoRGB,
     kRec2020,
+    kRec2100Linear,
     kXYZD50,
     kXYZD65,
 
@@ -121,9 +123,11 @@ class PLATFORM_EXPORT Color {
     return color_space == ColorSpace::kSRGB ||
            color_space == ColorSpace::kSRGBLinear ||
            color_space == ColorSpace::kDisplayP3 ||
+           color_space == ColorSpace::kDisplayP3Linear ||
            color_space == ColorSpace::kA98RGB ||
            color_space == ColorSpace::kProPhotoRGB ||
            color_space == ColorSpace::kRec2020 ||
+           color_space == ColorSpace::kRec2100Linear ||
            color_space == ColorSpace::kXYZD50 ||
            color_space == ColorSpace::kXYZD65;
   }

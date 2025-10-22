@@ -221,6 +221,10 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
     case Color::ColorSpace::kXYZD65:
     case Color::ColorSpace::kXYZD50:
     case Color::ColorSpace::kSRGBLinear:
+    case Color::ColorSpace::kDisplayP3Linear:
+    case Color::ColorSpace::kRec2100Linear:
+      // Interpolation in a linear color space is unaffected by the color
+      // primaries of the space, so always use srgb-linear.
       sk_interpolation.fColorSpace = sk_colorspace::kSRGBLinear;
       break;
     case Color::ColorSpace::kLab:

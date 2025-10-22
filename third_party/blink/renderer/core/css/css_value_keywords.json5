@@ -1488,8 +1488,10 @@
     // "rec2020", included in color-gamut
     "srgb-linear",
     "display-p3",
+    "display-p3-linear",
     "a98-rgb",
     "prophoto-rgb",
+    "rec2100-linear",
     "xyz",
     "xyz-d50",
     "xyz-d65",
