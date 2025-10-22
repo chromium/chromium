@@ -48,10 +48,18 @@ public class AutoPictureInPictureTabHelperTestUtils {
     public static void waitForAutoPictureInPictureState(
             WebContents webContents, boolean expectedInPip, String failureMessage) {
         CriteriaHelper.pollUiThread(
-                () ->
-                        AutoPictureInPictureTabHelperTestUtilsJni.get()
-                                        .isInAutoPictureInPicture(webContents)
-                                == expectedInPip,
+                () -> {
+                    if (webContents == null || webContents.isDestroyed()) {
+                        // If WebContents is gone, it cannot be in auto-PiP.
+                        // This satisfies the condition if we expect PiP to be false.
+                        return !expectedInPip;
+                    }
+                    boolean isInAutoPip =
+                            AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                    .isInAutoPictureInPicture(webContents);
+
+                    return isInAutoPip == expectedInPip;
+                },
                 failureMessage);
     }
 
