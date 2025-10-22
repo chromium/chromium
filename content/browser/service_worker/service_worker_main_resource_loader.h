@@ -283,6 +283,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       const std::optional<std::string>& cache_name,
       scoped_refptr<ServiceWorkerVersion> active_worker);
 
+  // Returns true if `race-network-and-fetch-handler` router source is used, and
+  // the fetch event is not completed yet. This is used to decide the timing of
+  // the object destruction.
+  bool ShouldDelayDeletionUntilFetchEventCompletion();
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   int32_t request_id_ = 0;
