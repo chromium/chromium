@@ -77,6 +77,7 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/serial",
     "//chrome/browser/signin:signin_promo",
+    "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/hats",

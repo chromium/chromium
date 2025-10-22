@@ -16,6 +16,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -1885,6 +1888,42 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesGlicTieredRolloutTest, E2E) {
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+class SingleClientPreferencesSubscriptionEligibilityTest
+    : public SingleClientPreferencesSyncTest {
+ public:
+  void SetAiSubscriptionTier(int32_t subscription_tier) {
+    InjectPreferenceToFakeServer(
+        syncer::PRIORITY_PREFERENCES,
+        subscription_eligibility::prefs::kAiSubscriptionTier,
+        base::Value(subscription_tier));
+  }
+
+  subscription_eligibility::SubscriptionEligibilityService* service() {
+    return subscription_eligibility::SubscriptionEligibilityServiceFactory::
+        GetForProfile(GetProfile(0));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSubscriptionEligibilityTest,
+                       E2E) {
+  ASSERT_TRUE(SetupClients());
+
+  // Should just have 0 as the default value.
+  EXPECT_EQ(0, service()->GetAiSubscriptionTier());
+
+  // Set user eligible via server.
+  SetAiSubscriptionTier(/*subscription_tier=*/1);
+  ASSERT_TRUE(SetupSync());
+
+  // User should have priority preferences synced and rollout eligibility is
+  // true.
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+  EXPECT_EQ(1, GetPrefs(0)->GetInteger(
+                   subscription_eligibility::prefs::kAiSubscriptionTier));
+  EXPECT_EQ(1, service()->GetAiSubscriptionTier());
+}
 
 class SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled
     : public SingleClientPreferencesWithAccountStorageSyncTest {

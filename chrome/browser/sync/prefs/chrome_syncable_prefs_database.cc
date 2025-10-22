@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/tree_fixing/pref_names.h"
 #include "chrome/browser/promos/promos_pref_names.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -402,6 +403,7 @@ enum {
   kDesktopToiOSLensPromoLastImpressionTimestamp = 100335,
   kDesktopToiOSLensPromoImpressionsCounter = 100336,
   kDesktopToiOSLensPromoOptOut = 100337,
+  kSubscriptionEligibilityAiSubscriptionTier = 100338,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1719,6 +1721,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
+    {subscription_eligibility::prefs::kAiSubscriptionTier,
+     {syncable_prefs_ids::kSubscriptionEligibilityAiSubscriptionTier,
+      syncer::PRIORITY_PREFERENCES,
+      sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+      sync_preferences::MergeBehavior::kNone}},
 });
 
 }  // namespace
