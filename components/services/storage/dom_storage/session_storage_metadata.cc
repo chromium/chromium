@@ -64,12 +64,9 @@ std::vector<uint8_t> NumberToValue(int64_t map_number) {
 
 }  // namespace
 
-constexpr const int64_t SessionStorageMetadata::kMinSessionStorageSchemaVersion;
-constexpr const int64_t
-    SessionStorageMetadata::kLatestSessionStorageSchemaVersion;
-constexpr const int64_t SessionStorageMetadata::kInvalidDatabaseVersion;
+constexpr const int64_t SessionStorageMetadata::kLevelDbSchemaVersion;
 constexpr const int64_t SessionStorageMetadata::kInvalidMapId;
-constexpr const uint8_t SessionStorageMetadata::kDatabaseVersionBytes[];
+constexpr const uint8_t SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes[];
 constexpr const uint8_t SessionStorageMetadata::kNamespacePrefixBytes[];
 constexpr const uint8_t SessionStorageMetadata::kNextMapIdKeyBytes[];
 
@@ -85,7 +82,7 @@ SessionStorageMetadata::SessionStorageMetadata() = default;
 SessionStorageMetadata::~SessionStorageMetadata() = default;
 
 std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
-SessionStorageMetadata::SetupNewDatabase() {
+SessionStorageMetadata::SetupNewDatabaseForTesting() {
   next_map_id_ = 0;
   next_map_id_from_namespaces_ = 0;
   namespace_storage_key_map_.clear();
@@ -94,7 +91,7 @@ SessionStorageMetadata::SetupNewDatabase() {
   tasks.push_back(base::BindOnce(
       [](int64_t next_map_id, DomStorageBatchOperation& batch,
          const DomStorageDatabase& db) {
-        batch.Put(base::span(kDatabaseVersionBytes),
+        batch.Put(base::span(kLevelDbSchemaVersionKeyBytes),
                   LatestDatabaseVersionAsVector());
         batch.Put(base::span(kNextMapIdKeyBytes), NumberToValue(next_map_id));
       },
@@ -103,37 +100,13 @@ SessionStorageMetadata::SetupNewDatabase() {
 }
 
 bool SessionStorageMetadata::ParseDatabaseVersion(
-    std::optional<std::vector<uint8_t>> value,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* upgrade_tasks) {
-  if (!value) {
-    initial_database_version_from_disk_ = 0;
-  } else {
-    if (!ValueToNumber(value.value(), &initial_database_version_from_disk_)) {
-      initial_database_version_from_disk_ = kInvalidDatabaseVersion;
-      return false;
-    }
-    if (initial_database_version_from_disk_ >
-        kLatestSessionStorageSchemaVersion) {
-      return false;
-    }
-    if (initial_database_version_from_disk_ ==
-        kLatestSessionStorageSchemaVersion) {
-      return true;
-    }
-  }
-  if (initial_database_version_from_disk_ < kMinSessionStorageSchemaVersion)
-    return false;
-  upgrade_tasks->push_back(base::BindOnce(
-      [](DomStorageBatchOperation& batch, const DomStorageDatabase& db) {
-        batch.Put(base::span(kDatabaseVersionBytes),
-                  LatestDatabaseVersionAsVector());
-      }));
-  return true;
+    std::vector<uint8_t> version_bytes,
+    int64_t* parsed_version) {
+  return ValueToNumber(version_bytes, parsed_version);
 }
 
 bool SessionStorageMetadata::ParseNamespaces(
-    std::vector<DomStorageDatabase::KeyValuePair> values,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* upgrade_tasks) {
+    std::vector<DomStorageDatabase::KeyValuePair> values) {
   namespace_storage_key_map_.clear();
   next_map_id_from_namespaces_ = 0;
   // Since the data is ordered, all namespace data is in one spot. This keeps a
@@ -163,10 +136,6 @@ bool SessionStorageMetadata::ParseNamespaces(
       break;
     }
 
-    // Old databases have a dummy 'namespace-' entry.
-    if (key_size == kNamespacePrefixLength)
-      continue;
-
     // Check that the prefix is 'namespace-<guid>-
     if (key_size < kPrefixBeforeStorageKeyLength ||
         key_as_string[kPrefixBeforeStorageKeyLength - 1] !=
@@ -175,10 +144,6 @@ bool SessionStorageMetadata::ParseNamespaces(
       error = true;
       break;
     }
-
-    // Old databases have a dummy 'namespace-<guid>-' entry.
-    if (key_size == kPrefixBeforeStorageKeyLength)
-      continue;
 
     std::string_view namespace_id = key_as_string.substr(
         kNamespacePrefixLength, blink::kSessionStorageNamespaceIdLength);
@@ -231,25 +196,6 @@ bool SessionStorageMetadata::ParseNamespaces(
   }
   if (next_map_id_ == 0 || next_map_id_ < next_map_id_from_namespaces_)
     next_map_id_ = next_map_id_from_namespaces_;
-
-  // Namespace metadata migration.
-  DCHECK_NE(kInvalidDatabaseVersion, initial_database_version_from_disk_);
-  if (initial_database_version_from_disk_ == 0) {
-    std::vector<DomStorageDatabase::Key> prefix_keys_to_delete;
-    for (const auto& entry : maps)
-      prefix_keys_to_delete.push_back(entry.second->KeyPrefix());
-    // Remove the dummy 'namespaces-' entry.
-    upgrade_tasks->push_back(base::BindOnce(
-        [](std::vector<DomStorageDatabase::Key> prefix_keys_to_delete,
-           DomStorageBatchOperation& batch, const DomStorageDatabase& db) {
-          batch.Delete(base::span(kNamespacePrefixBytes));
-          // Remove all the refcount storage.
-          for (const auto& key : prefix_keys_to_delete)
-            batch.Delete(key);
-        },
-        std::move(prefix_keys_to_delete)));
-  }
-
   return true;
 }
 
@@ -263,7 +209,7 @@ void SessionStorageMetadata::ParseNextMapId(
 
 // static
 std::vector<uint8_t> SessionStorageMetadata::LatestDatabaseVersionAsVector() {
-  return NumberToValue(kLatestSessionStorageSchemaVersion);
+  return NumberToValue(kLevelDbSchemaVersion);
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>

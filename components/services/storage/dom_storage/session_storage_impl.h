@@ -223,12 +223,13 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     OpenResult open_result;
     const char* histogram_name;
   };
-  MetadataParseResult ParseDatabaseVersion(
-      ValueAndStatus version,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* migration_tasks);
-  MetadataParseResult ParseNamespaces(
-      KeyValuePairsAndStatus namespaces,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks);
+  struct DatabaseVersionParseResult : public MetadataParseResult {
+    // `nullopt` for new databases, read errors, and parsing errors.
+    std::optional<int64_t> database_version;
+  };
+  DatabaseVersionParseResult ParseDatabaseVersion(
+      ValueAndStatus version_texts_bytes);
+  MetadataParseResult ParseNamespaces(KeyValuePairsAndStatus namespaces);
   MetadataParseResult ParseNextMapId(ValueAndStatus next_map_id);
 
   void OnConnectionFinished();
@@ -261,7 +262,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     CONNECTION_FINISHED,
     CONNECTION_SHUTDOWN
   } connection_state_ = NO_CONNECTION;
-  bool database_initialized_ = false;
 
   const base::FilePath partition_directory_;
   const scoped_refptr<base::SequencedTaskRunner> database_task_runner_;

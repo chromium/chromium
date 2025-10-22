@@ -247,8 +247,6 @@ source_set("test_support") {
   sources = [
     "dom_storage/storage_area_test_util.cc",
     "dom_storage/storage_area_test_util.h",
-    "dom_storage/testing_legacy_session_storage_database.cc",
-    "dom_storage/testing_legacy_session_storage_database.h",
     "indexed_db/leveldb/fake_leveldb_factory.cc",
     "indexed_db/leveldb/fake_leveldb_factory.h",
     "indexed_db/leveldb/mock_level_db.cc",

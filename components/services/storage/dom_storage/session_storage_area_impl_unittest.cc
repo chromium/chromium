@@ -73,7 +73,7 @@ class SessionStorageAreaImplTest : public testing::Test {
         base::DoNothing());
 
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks =
-        metadata_.SetupNewDatabase();
+        metadata_.SetupNewDatabaseForTesting();
     auto map_id = metadata_.RegisterNewMap(
         metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
         test_storage_key1_, &save_tasks);

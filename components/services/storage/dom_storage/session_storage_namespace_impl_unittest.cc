@@ -80,7 +80,7 @@ class SessionStorageNamespaceImplTest
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
 
-    metadata_.SetupNewDatabase();
+    metadata_.SetupNewDatabaseForTesting();
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
     auto entry = metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
     auto map_id =

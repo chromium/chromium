@@ -793,9 +793,9 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   database_->RunDatabaseTask(
       base::BindOnce([](DomStorageDatabase& db) {
         ValueAndStatus version;
-        version.status =
-            db.Get(base::span(SessionStorageMetadata::kDatabaseVersionBytes),
-                   &version.value);
+        version.status = db.Get(
+            base::span(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
+            &version.value);
 
         KeyValuePairsAndStatus namespaces;
         namespaces.status = db.GetPrefixed(
@@ -815,24 +815,21 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
 }
 
 void SessionStorageImpl::OnGotDatabaseMetadata(
-    ValueAndStatus version,
+    ValueAndStatus version_bytes,
     KeyValuePairsAndStatus namespaces,
     ValueAndStatus next_map_id) {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks;
-
-  MetadataParseResult version_parse =
-      ParseDatabaseVersion(std::move(version), &migration_tasks);
+  DatabaseVersionParseResult version_parse =
+      ParseDatabaseVersion(std::move(version_bytes));
   if (version_parse.open_result != OpenResult::kSuccess) {
     LogDatabaseOpenResult(version_parse.open_result);
     DeleteAndRecreateDatabase(version_parse.histogram_name);
     return;
   }
 
-  MetadataParseResult namespaces_parse =
-      ParseNamespaces(std::move(namespaces), std::move(migration_tasks));
+  MetadataParseResult namespaces_parse = ParseNamespaces(std::move(namespaces));
   if (namespaces_parse.open_result != OpenResult::kSuccess) {
     LogDatabaseOpenResult(namespaces_parse.open_result);
     DeleteAndRecreateDatabase(namespaces_parse.histogram_name);
@@ -847,37 +844,54 @@ void SessionStorageImpl::OnGotDatabaseMetadata(
     return;
   }
 
+  // Write the version number for brand new empty databases.
+  if (!version_parse.database_version) {
+    database_->RunDatabaseTask(
+        base::BindOnce([](DomStorageDatabase& db) {
+          return db.Put(
+              base::span(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
+              SessionStorageMetadata::LatestDatabaseVersionAsVector());
+        }),
+        base::BindOnce(&SessionStorageImpl::OnCommitResult,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
   OnConnectionFinished();
 }
 
-SessionStorageImpl::MetadataParseResult
-SessionStorageImpl::ParseDatabaseVersion(
-    ValueAndStatus version,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* migration_tasks) {
-  if (version.status.ok()) {
-    if (!metadata_.ParseDatabaseVersion(std::move(version.value),
-                                        migration_tasks)) {
-      return {OpenResult::kInvalidVersion,
-              "SessionStorageContext.OpenResultAfterInvalidVersion"};
+SessionStorageImpl::DatabaseVersionParseResult
+SessionStorageImpl::ParseDatabaseVersion(ValueAndStatus version_text_bytes) {
+  if (version_text_bytes.status.ok()) {
+    static constexpr const char kInvalidVersionHistogramName[] =
+        "SessionStorageContext.OpenResultAfterInvalidVersion";
+
+    int64_t parsed_version;
+    if (!metadata_.ParseDatabaseVersion(std::move(version_text_bytes.value),
+                                        &parsed_version)) {
+      // `version_text_bytes` is not a number!
+      return {{OpenResult::kInvalidVersion, kInvalidVersionHistogramName},
+              /*database_version=*/std::nullopt};
     }
-    database_initialized_ = true;
-    return {OpenResult::kSuccess, ""};
+
+    if (parsed_version != SessionStorageMetadata::kLevelDbSchemaVersion) {
+      return {{OpenResult::kInvalidVersion, kInvalidVersionHistogramName},
+              /*database_version=*/std::nullopt};
+    }
+    return {{OpenResult::kSuccess, ""}, parsed_version};
   }
 
-  if (version.status.IsNotFound()) {
-    // treat as v0 or new database
-    metadata_.ParseDatabaseVersion(std::nullopt, migration_tasks);
-    return {OpenResult::kSuccess, ""};
+  if (version_text_bytes.status.IsNotFound()) {
+    // Brand new database are empty without a version.
+    return {{OpenResult::kSuccess, ""}, /*database_version=*/std::nullopt};
   }
 
-  // Other read error, Possibly database corruption
-  return {OpenResult::kVersionReadError,
-          "SessionStorageContext.OpenResultAfterReadVersionError"};
+  // Other read error, possibly database corruption.
+  return {{OpenResult::kVersionReadError,
+           "SessionStorageContext.OpenResultAfterReadVersionError"},
+          /*database_version=*/std::nullopt};
 }
 
 SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
-    KeyValuePairsAndStatus namespaces,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks) {
+    KeyValuePairsAndStatus namespaces) {
   DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   if (!namespaces.status.ok()) {
@@ -885,33 +899,13 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
             "SessionStorageContext.OpenResultAfterReadNamespacesError"};
   }
 
-  bool parsing_success = metadata_.ParseNamespaces(
-      std::move(namespaces.key_value_pairs), &migration_tasks);
+  bool parsing_success =
+      metadata_.ParseNamespaces(std::move(namespaces.key_value_pairs));
 
   if (!parsing_success) {
     return {OpenResult::kNamespacesReadError,
             "SessionStorageContext.OpenResultAfterReadNamespacesError"};
   }
-
-  if (!migration_tasks.empty()) {
-    // In tests this write may happen synchronously, which is problematic since
-    // the OnCommitResult callback can be invoked before the database is fully
-    // initialized. There's no harm in deferring in other situations, so we just
-    // always defer here.
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kParseNamespaces, std::move(migration_tasks),
-        base::BindOnce(
-            [](base::OnceCallback<void(DbStatus)> callback,
-               scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-               DbStatus status) {
-              callback_task_runner->PostTask(
-                  FROM_HERE, base::BindOnce(std::move(callback), status));
-            },
-            base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                           weak_ptr_factory_.GetWeakPtr()),
-            base::SequencedTaskRunner::GetCurrentDefault()));
-  }
-
   return {OpenResult::kSuccess, ""};
 }
 
