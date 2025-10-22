@@ -662,6 +662,12 @@ ci.thin_tester(
                     },
                 ),
             ),
+            "trace_test": targets.mixin(
+                # TODO(crbug.com/453961754): fix slowdown in trace_test and remove this sharding
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
