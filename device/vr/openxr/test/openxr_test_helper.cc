@@ -1042,10 +1042,7 @@ void OpenXrTestHelper::UpdateEventQueue() {
 std::optional<gfx::Transform> OpenXrTestHelper::GetPose() {
   base::AutoLock lock(lock_);
   if (test_hook_) {
-    device::PoseFrameData pose_data = test_hook_->WaitGetPresentingPose();
-    if (pose_data.is_valid) {
-      return PoseFrameDataToTransform(pose_data);
-    }
+    return test_hook_->WaitGetPresentingPose();
   }
   return std::nullopt;
 }
@@ -1157,12 +1154,12 @@ void OpenXrTestHelper::LocateJoints(
 
   base::span<XrHandJointLocationEXT> out_locations{locations->jointLocations,
                                                    locations->jointCount};
-  if (controller.pose_data.is_valid) {
+  if (controller.pose_data) {
     auto& palm_location = out_locations[0];
     palm_location.locationFlags = kValidTrackedPoseFlags;
     palm_location.radius = 1.0f;
-    palm_location.pose = device::GfxTransformToXrPose(
-        PoseFrameDataToTransform(controller.pose_data));
+    palm_location.pose =
+        device::GfxTransformToXrPose(controller.pose_data.value());
   }
   for (const auto& data : controller.hand_data) {
     if (!data.mojo_from_joint) {
@@ -1260,8 +1257,8 @@ std::optional<gfx::Transform> OpenXrTestHelper::GetTransformForSpace(
                          .profile_binding_map[GetPath(interaction_profile_)]);
     device::ControllerFrameData data =
         GetControllerDataFromPath(std::move(path_string));
-    if (data.pose_data.is_valid) {
-      transform = PoseFrameDataToTransform(data.pose_data);
+    if (data.pose_data) {
+      transform = data.pose_data;
     }
   } else {
     NOTREACHED() << "Locate Space only supports reference space or action "

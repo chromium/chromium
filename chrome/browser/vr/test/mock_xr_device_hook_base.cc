@@ -45,14 +45,7 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
   }
   ret->role = DeviceToMojoControllerRole(data.role);
   ret->is_valid = data.is_valid;
-  ret->pose_data = device_test::mojom::PoseFrameData::New();
-  ret->pose_data->device_to_origin = gfx::Transform();
-  for (int col = 0; col < 4; ++col) {
-    for (int row = 0; row < 4; ++row) {
-      ret->pose_data->device_to_origin->set_rc(
-          row, col, data.pose_data.device_to_origin[row + col * 4]);
-    }
-  }
+  ret->pose_data = data.pose_data;
 
   if (data.has_hand_data) {
     device::mojom::XRHandTrackingDataPtr hand_tracking_data =
@@ -186,17 +179,13 @@ void MockXRDeviceHookBase::WaitGetDeviceConfig(
 void MockXRDeviceHookBase::WaitGetPresentingPose(
     device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  auto pose = device_test::mojom::PoseFrameData::New();
-  pose->device_to_origin = gfx::Transform();
-  std::move(callback).Run(std::move(pose));
+  std::move(callback).Run(gfx::Transform());
 }
 
 void MockXRDeviceHookBase::WaitGetMagicWindowPose(
     device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  auto pose = device_test::mojom::PoseFrameData::New();
-  pose->device_to_origin = gfx::Transform();
-  std::move(callback).Run(std::move(pose));
+  std::move(callback).Run(gfx::Transform());
 }
 
 void MockXRDeviceHookBase::WaitGetControllerRoleForTrackedDeviceIndex(
@@ -325,11 +314,7 @@ device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(
   std::ranges::fill(ret.axis_data, device::ControllerAxisData{});
   ret.role = role;
   ret.is_valid = true;
-  // Identity matrix.
-  ret.pose_data.device_to_origin[0] = 1;
-  ret.pose_data.device_to_origin[5] = 1;
-  ret.pose_data.device_to_origin[10] = 1;
-  ret.pose_data.device_to_origin[15] = 1;
+  ret.pose_data = gfx::Transform();
   return ret;
 }
 

@@ -39,15 +39,12 @@ class MyXRMock : public MockXRDeviceHookBase {
       device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
       final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-    device_test::mojom::PoseFrameDataPtr pose =
-        device_test::mojom::PoseFrameData::New();
-
-    pose->device_to_origin = gfx::Transform();
+    gfx::Transform pose;
     uint32_t frame_count = GetFrameCount();
     // Add a translation with the value of the current frame count.
-    pose->device_to_origin->Translate3d(frame_count, frame_count, frame_count);
+    pose.Translate3d(frame_count, frame_count, frame_count);
     // Rotate about the Y-axis similarly.
-    pose->device_to_origin->RotateAboutYAxis(frame_count);
+    pose.RotateAboutYAxis(frame_count);
 
     std::move(callback).Run(std::move(pose));
   }

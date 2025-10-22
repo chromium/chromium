@@ -26,17 +26,6 @@ device::ControllerRole MojoToDeviceControllerRole(
   return device::kControllerRoleInvalid;
 }
 
-device::PoseFrameData MojoToDevicePoseFrameData(
-    device_test::mojom::PoseFrameDataPtr& pose) {
-  device::PoseFrameData ret = {};
-  ret.is_valid = !!pose->device_to_origin;
-  if (ret.is_valid) {
-    pose->device_to_origin->GetColMajorF(ret.device_to_origin);
-  }
-
-  return ret;
-}
-
 device_test::mojom::Eye XrEyeToMojoEye(device::XrEye eye) {
   switch (eye) {
     case device::XrEye::kLeft:
@@ -107,30 +96,26 @@ device::DeviceConfig XRTestHookWrapper::WaitGetDeviceConfig() {
   return {};
 }
 
-device::PoseFrameData XRTestHookWrapper::WaitGetPresentingPose() {
+std::optional<gfx::Transform> XRTestHookWrapper::WaitGetPresentingPose() {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::PoseFrameDataPtr pose;
+    std::optional<gfx::Transform> pose;
     hook_->WaitGetPresentingPose(&pose);
-    if (pose) {
-      return MojoToDevicePoseFrameData(pose);
-    }
+    return pose;
   }
 
-  return {};
+  return std::nullopt;
 }
 
-device::PoseFrameData XRTestHookWrapper::WaitGetMagicWindowPose() {
+std::optional<gfx::Transform> XRTestHookWrapper::WaitGetMagicWindowPose() {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::PoseFrameDataPtr pose;
+    std::optional<gfx::Transform> pose;
     hook_->WaitGetMagicWindowPose(&pose);
-    if (pose) {
-      return MojoToDevicePoseFrameData(pose);
-    }
+    return pose;
   }
 
-  return {};
+  return std::nullopt;
 }
 
 device::ControllerRole
@@ -185,7 +170,7 @@ device::ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
       ret.buttons_pressed = data->buttons_pressed;
       ret.buttons_touched = data->buttons_touched;
       ret.supported_buttons = data->supported_buttons;
-      ret.pose_data = MojoToDevicePoseFrameData(data->pose_data);
+      ret.pose_data = data->pose_data;
       ret.role = MojoToDeviceControllerRole(data->role);
       ret.is_valid = data->is_valid;
       for (unsigned int i = 0; i < device::kMaxNumAxes; ++i) {

@@ -20,7 +20,7 @@ const float kIPD = 0.2f;
 
 struct Frame {
   std::vector<device_test::mojom::ViewDataPtr> views;
-  device_test::mojom::PoseFrameDataPtr pose;
+  std::optional<gfx::Transform> pose;
   device_test::mojom::DeviceConfigPtr config;
 };
 
@@ -55,7 +55,7 @@ class MyXRMock : public MockXRDeviceHookBase {
   }
 
  private:
-  device_test::mojom::PoseFrameDataPtr last_immersive_frame_data
+  std::optional<gfx::Transform> last_immersive_frame_data
       GUARDED_BY(frame_data_lock);
   std::atomic_int frame_id_ = 0;
 };
@@ -77,7 +77,7 @@ void MyXRMock::ProcessSubmittedFrameUnlocked(
   unsigned int frame_id = ParseColorFrameId(views[0]->color);
   DLOG(ERROR) << "Frame Submitted: " << GetFrameCount() << " " << frame_id;
   submitted_frames.push_back(
-      {std::move(views), last_immersive_frame_data.Clone(), GetDeviceConfig()});
+      {std::move(views), last_immersive_frame_data, GetDeviceConfig()});
 
   ASSERT_TRUE(last_immersive_frame_data)
       << "Frame submitted without any frame data provided";
@@ -85,19 +85,17 @@ void MyXRMock::ProcessSubmittedFrameUnlocked(
   // We expect a waitGetPoses, then 2 submits (one for each eye), so after 2
   // submitted frames don't use the same frame_data again.
   if (GetFrameCount() % 2 == 0) {
-    last_immersive_frame_data = nullptr;
+    last_immersive_frame_data = std::nullopt;
   }
 }
 
 void MyXRMock::WaitGetMagicWindowPose(
     device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  auto pose = device_test::mojom::PoseFrameData::New();
-
   // Almost identity matrix - enough different that we can identify if magic
   // window poses are used instead of presenting poses.
-  pose->device_to_origin =
-      gfx::Transform::RowMajor(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  gfx::Transform pose;
+  pose.set_rc(1, 1, -1);
   std::move(callback).Run(std::move(pose));
 }
 
@@ -106,22 +104,19 @@ void MyXRMock::WaitGetPresentingPose(
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   DLOG(ERROR) << "WaitGetPresentingPose: " << frame_id_;
 
-  auto pose = device_test::mojom::PoseFrameData::New();
-
-  // Start with identity matrix.
-  pose->device_to_origin = gfx::Transform();
+  gfx::Transform pose;
 
   // Add a translation so each frame gets a different transform, and so its easy
   // to identify what the expected pose is.
-  pose->device_to_origin->Translate3d(0, 0, frame_id_);
+  pose.Translate3d(0, 0, frame_id_);
 
   frame_id_++;
   {
     base::AutoLock lock(frame_data_lock);
-    last_immersive_frame_data = pose.Clone();
+    last_immersive_frame_data = pose;
   }
 
-  std::move(callback).Run(std::move(pose));
+  std::move(callback).Run(pose);
 }
 
 std::string GetMatrixAsString(const gfx::Transform& m) {
@@ -135,7 +130,7 @@ std::string GetMatrixAsString(const gfx::Transform& m) {
 }
 
 std::string GetPoseAsString(const Frame& frame) {
-  return GetMatrixAsString(*(frame.pose->device_to_origin));
+  return GetMatrixAsString(*(frame.pose));
 }
 
 }  // namespace

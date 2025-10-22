@@ -153,12 +153,10 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   }
 
   void SetControllerPose(unsigned int index,
-                         const gfx::Transform& device_to_origin,
-                         bool is_valid) {
+                         const gfx::Transform& device_to_origin) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
-    controller_data.pose_data.is_valid = is_valid;
-    device_to_origin.GetColMajorF(controller_data.pose_data.device_to_origin);
+    controller_data.pose_data = device_to_origin;
     UpdateControllerAndWait(index, controller_data);
   }
 
@@ -835,7 +833,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerPositionTracking) {
   pose.RotateAboutYAxis(45);
   pose.RotateAboutZAxis(180);
   pose.Translate3d(0.5f, 2, -3);
-  my_mock.SetControllerPose(controller_index, pose, true);
+  my_mock.SetControllerPose(controller_index, pose);
 
   // Apply any offset we expect the runtime to add.
   pose.Translate3d(t->GetControllerOffset());
@@ -956,10 +954,10 @@ class WebXrHeadPoseMock : public MockXRDeviceHookBase {
       device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
       final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-    auto pose = device_test::mojom::PoseFrameData::New();
+    std::optional<gfx::Transform> pose;
     {
       base::AutoLock lock(pose_lock);
-      pose->device_to_origin = pose_;
+      pose = pose_;
     }
     std::move(callback).Run(std::move(pose));
   }

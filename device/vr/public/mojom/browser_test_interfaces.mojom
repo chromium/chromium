@@ -28,9 +28,6 @@ struct ViewData {
   gfx.mojom.Rect viewport;
 };
 
-struct PoseFrameData {
-  gfx.mojom.Transform? device_to_origin;
-};
 
 // Each component is the tangent of the up/down/left/right view frustum.
 struct ProjectionRaw {
@@ -75,7 +72,7 @@ struct ControllerFrameData {
   uint64 buttons_touched;
   uint64 supported_buttons;
   array<ControllerAxisData, 5> axis_data;
-  PoseFrameData pose_data;
+  gfx.mojom.Transform? pose_data;
   ControllerRole role = kControllerRoleInvalid;
   device.mojom.XRHandTrackingData? hand_data;
   bool is_valid;
@@ -123,11 +120,11 @@ interface XRTestHook {
 
   // Called by the XR runtime to retrieve the XR device's pose while in a
   // presenting/exclusive session.
-  [Sync] WaitGetPresentingPose() => (PoseFrameData data);
+  [Sync] WaitGetPresentingPose() => (gfx.mojom.Transform? data);
 
   // Called by the XR runtime to retrieve the XR device's pose while in a
   // magic window/non-exclusive session.
-  [Sync] WaitGetMagicWindowPose() => (PoseFrameData data);
+  [Sync] WaitGetMagicWindowPose() => (gfx.mojom.Transform? data);
 
   // Called by the XR runtime to retrieve the ControllerRole of the device
   // that the test has registered at the given index, i.e. which hand the
