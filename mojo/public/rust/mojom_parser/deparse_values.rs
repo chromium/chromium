@@ -127,8 +127,22 @@ pub fn deparse_struct(
                 pad_to_alignment(data, packed_field.alignment());
                 deparse_leaf_value(data, leaf_value)?
             }
-            MojomWireType::Bitfield { .. } => {
-                bail!("Bools not yet implemented")
+            MojomWireType::Bitfield { ordinals } => {
+                let mut iter = ordinals.into_iter().enumerate();
+                let mut bitfield: u8 = 0;
+                // Construct the bitfield bit-by-bit
+                while let Some((idx, Some(ordinal))) = iter.next() {
+                    let bit_value = get_field_at_ordinal(field_values, *ordinal)?;
+                    if let MojomValue::Bool(bit) = bit_value {
+                        bitfield |= (*bit as u8) << idx;
+                    } else {
+                        // We know this will fail, but calling it lets us avoid
+                        // writing a custom error message here.
+                        check_value_has_expected_type(bit_value, packed_field)?;
+                    }
+                }
+                // Now we've set all the bits, write it to the wire
+                data.push(bitfield)
             }
             MojomWireType::Pointer { ordinal, nested_data_type } => {
                 let nested_data_value = get_field_at_ordinal(field_values, *ordinal)?;

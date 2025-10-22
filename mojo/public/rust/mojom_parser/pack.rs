@@ -46,6 +46,26 @@ impl<'a> PackedField<'a> {
     }
 }
 
+/// Checks if the packed field is a bitfield with an empty slot, and inserts
+/// the ordinal if so.
+///
+/// Returns true if the bool was successfully packed, and false otherwise.
+fn try_pack_bool(ordinal: Ordinal, packed_field: &mut MojomWireType) -> bool {
+    match packed_field {
+        MojomWireType::Bitfield { ordinals } => {
+            if let Some(first_empty_slot) = ordinals.into_iter().position(|opt| opt.is_none()) {
+                ordinals[first_empty_slot] = Some(ordinal);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        _ => {
+            return false;
+        }
+    }
+}
+
 /// Transform the fields of a Mojom struct into their packed representation.
 /// This uses the basic algorithm from mojo/public/tools/mojom/mojom/generate/pack.py
 fn pack_struct(fields: &Vec<(String, MojomType)>) -> Vec<(String, MojomWireType)> {
@@ -54,6 +74,10 @@ fn pack_struct(fields: &Vec<(String, MojomType)>) -> Vec<(String, MojomWireType)
     // For each field, see if we can fit it between two existing packed fields.
     // If not, put it at the end.
     'outer: for (ordinal, (field_name, field_ty)) in fields.iter().enumerate() {
+        let is_bool = match field_ty {
+            MojomType::Bool => true,
+            _ => false,
+        };
         // Recursively pack any structs this field contains
         let field_ty = pack_mojom_type(field_ty, ordinal);
         let field_size = field_ty.size();
@@ -61,6 +85,9 @@ fn pack_struct(fields: &Vec<(String, MojomType)>) -> Vec<(String, MojomWireType)
         for i in 1..packed_fields.len() {
             let end_of_last_field = packed_fields[i - 1].end_offset;
             let empty_space = packed_fields[i].start_offset - end_of_last_field;
+            if is_bool && try_pack_bool(ordinal, &mut packed_fields[i - 1].ty) {
+                continue 'outer;
+            };
             // If we fit, then pack this field here
             if (field_size + bytes_to_align(end_of_last_field, field_size)) <= empty_space {
                 packed_fields.insert(
@@ -74,7 +101,18 @@ fn pack_struct(fields: &Vec<(String, MojomType)>) -> Vec<(String, MojomWireType)
                 continue 'outer;
             }
         }
-        // If we get here, we weren't able to fit it in anywhere.
+
+        // The above loop didn't check the very last element of packed_fields,
+        // so do that now
+        if is_bool
+            && let Some(last_packed_field) = packed_fields.last_mut()
+            && try_pack_bool(ordinal, &mut last_packed_field.ty)
+        {
+            continue;
+        }
+
+        // If we get all the way here then we failed to pack the field anywhere
+        // earlier, so add it to the end.
         let packed_field = PackedField::new(
             field_name,
             field_ty,
@@ -131,6 +169,8 @@ pub fn pack_mojom_type(ty: &MojomType, ordinal: Ordinal) -> MojomWireType {
         MojomType::UInt16 => MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::UInt16 },
         MojomType::UInt32 => MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::UInt32 },
         MojomType::UInt64 => MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::UInt64 },
-        MojomType::Bool => todo!("pack_mojom_type: Bools not yet implemented"),
+        MojomType::Bool => MojomWireType::Bitfield {
+            ordinals: [Some(ordinal), None, None, None, None, None, None, None],
+        },
     }
 }

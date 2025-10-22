@@ -67,6 +67,27 @@ struct NestedDataInfo<'a> {
     expected_offset: usize,
 }
 
+/// Return the highest ordinal that appears in a packed struct.
+// FOR_RELEASE: It would be nicer to store this in the wire type so we
+// don't need to compute it each time.
+fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Ordinal {
+    use std::cmp::max;
+    let mut max_so_far: Ordinal = 0;
+    for (_, wire_type) in fields.into_iter() {
+        match wire_type {
+            MojomWireType::Leaf { ordinal, .. } => max_so_far = max(max_so_far, *ordinal),
+            MojomWireType::Pointer { ordinal, .. } => max_so_far = max(max_so_far, *ordinal),
+            MojomWireType::Bitfield { ordinals } => {
+                let mut iter = ordinals.into_iter();
+                while let Some(Some(ordinal)) = iter.next() {
+                    max_so_far = max(max_so_far, *ordinal)
+                }
+            }
+        }
+    }
+    return max_so_far;
+}
+
 pub fn parse_struct(
     data: &mut ParserData,
     fields: &Vec<(String, MojomWireType)>,
@@ -81,8 +102,9 @@ pub fn parse_struct(
 
     // Pre-allocate space for the parsed values, so we can write directly into them by
     // index. We have to provide dummy values since rust won't allow uninitialized memory.
+
     let mut ret: Vec<(String, MojomValue)> =
-        fields.into_iter().map(|_| (String::new(), MojomValue::Int8(0))).collect();
+        vec![(String::new(), MojomValue::Int8(0)); get_max_ordinal(fields) + 1];
     for (name, mojom_wire_type) in fields {
         // Make sure we're at the right alignment for this field
         skip_to_alignment(data, mojom_wire_type.alignment())?;
@@ -108,9 +130,12 @@ pub fn parse_struct(
                 ret[*ordinal] = (name.clone(), parsed_value);
             }
             MojomWireType::Bitfield { ordinals } => {
-                let _ = ordinals;
-                // FOR_RELEASE: Go through each bit and make a bool out of it
-                bail!("Bitfields not yet implemented");
+                let mut iter = ordinals.into_iter().enumerate();
+                let parsed_bits = parse_u8(data)?;
+                while let Some((idx, Some(ordinal))) = iter.next() {
+                    let bit = (parsed_bits >> idx) & 1;
+                    ret[*ordinal] = (name.clone(), MojomValue::Bool(bit == 1))
+                }
             }
         };
     }

@@ -86,19 +86,21 @@ pub type Ordinal = usize;
 /// Bitfields are a special case; since they can contain values from multiple fields of the
 /// struct, each bit of the field is associated with an ordinal.
 pub enum MojomWireType {
-    Leaf {
-        ordinal: Ordinal,
-        leaf_type: PackedLeafType,
-    },
+    /// A single value with no additional structure, which is encoded directly
+    /// at this location.
+    Leaf { ordinal: Ordinal, leaf_type: PackedLeafType },
     /// Up to 8 booleans packed into a single byte.
     Bitfield {
+        /// A list of the ordinal associated with each bit, starting with the LSB.
+        /// Bits are never skipped, so the array is a contiguous block of `Some`s,
+        /// followed by zero or more `None`s.
         ordinals: [Option<Ordinal>; 8],
-        // The associated data is always a single byte
+        // The associated data is always a single byte, so no need to store a
+        // type here.
     },
-    Pointer {
-        ordinal: Ordinal,
-        nested_data_type: PackedStructuredType,
-    },
+    /// A 64-bit pointer to either an array or struct, which will appear at the
+    /// end of the containing struct.
+    Pointer { ordinal: Ordinal, nested_data_type: PackedStructuredType },
 }
 
 #[derive(Debug, Clone, PartialEq)]
