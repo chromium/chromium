@@ -7,11 +7,12 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import org.chromium.android_webview.AwPage;
-import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebViewPageBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
+
+import java.util.concurrent.Callable;
 
 /**
  * Adapter between WebViewPageBoundaryInterface and Page.
@@ -19,17 +20,11 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
  * <p>Once created, instances are kept alive by the peer Page.
  */
 @Lifetime.Temporary
-class SupportLibWebViewPageAdapter extends IsomorphicAdapter
-        implements WebViewPageBoundaryInterface {
+class SupportLibWebViewPageAdapter implements WebViewPageBoundaryInterface {
     private final AwPage mPage;
 
     SupportLibWebViewPageAdapter(AwPage page) {
         mPage = page;
-    }
-
-    @Override
-    AwSupportLibIsomorphic getPeeredObject() {
-        return mPage;
     }
 
     @Override
@@ -39,5 +34,10 @@ class SupportLibWebViewPageAdapter extends IsomorphicAdapter
             recordApiCall(ApiCall.PAGE_IS_PRERENDERING);
             return mPage.isPrerendering();
         }
+    }
+
+    @Override
+    public Object getOrCreatePeer(Callable<Object> creationCallable) {
+        return mPage.getOrCreateSupportLibObject(creationCallable);
     }
 }

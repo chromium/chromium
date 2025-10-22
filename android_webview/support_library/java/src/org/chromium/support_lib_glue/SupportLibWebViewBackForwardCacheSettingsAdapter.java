@@ -7,11 +7,12 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import org.chromium.android_webview.AwBackForwardCacheSettings;
-import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebViewBackForwardCacheSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
+
+import java.util.concurrent.Callable;
 
 /**
  * Adapter between WebViewBackForwardCacheSettingsBoundaryInterface and AwBackForwardCacheSettings.
@@ -19,7 +20,7 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
  * <p>Once created, instances are kept alive by the peer AwBackForwardCacheSettings.
  */
 @Lifetime.Temporary
-class SupportLibWebViewBackForwardCacheSettingsAdapter extends IsomorphicAdapter
+class SupportLibWebViewBackForwardCacheSettingsAdapter
         implements WebViewBackForwardCacheSettingsBoundaryInterface {
     private final AwBackForwardCacheSettings mAwBackForwardCacheSettings;
 
@@ -32,11 +33,6 @@ class SupportLibWebViewBackForwardCacheSettingsAdapter extends IsomorphicAdapter
         mAwBackForwardCacheSettings =
                 new AwBackForwardCacheSettings(
                         settings.getTimeoutInSeconds(), settings.getMaxPagesInCache());
-    }
-
-    @Override
-    AwSupportLibIsomorphic getPeeredObject() {
-        return mAwBackForwardCacheSettings;
     }
 
     @Override
@@ -57,5 +53,10 @@ class SupportLibWebViewBackForwardCacheSettingsAdapter extends IsomorphicAdapter
             recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE);
             return mAwBackForwardCacheSettings.getMaxPagesInCache();
         }
+    }
+
+    @Override
+    public Object getOrCreatePeer(Callable<Object> creationCallable) {
+        return mAwBackForwardCacheSettings.getOrCreateSupportLibObject(creationCallable);
     }
 }

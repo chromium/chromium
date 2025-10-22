@@ -6,7 +6,6 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
-import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.MessagePayload;
@@ -14,10 +13,10 @@ import org.chromium.support_lib_boundary.JsReplyProxyBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Callable;
 
 /** Adapter between JsReplyProxyBoundaryInterface and JsReplyProxy. */
-class SupportLibJsReplyProxyAdapter extends IsomorphicAdapter
-        implements JsReplyProxyBoundaryInterface {
+class SupportLibJsReplyProxyAdapter implements JsReplyProxyBoundaryInterface {
     private final JsReplyProxy mReplyProxy;
 
     public SupportLibJsReplyProxyAdapter(JsReplyProxy replyProxy) {
@@ -43,7 +42,7 @@ class SupportLibJsReplyProxyAdapter extends IsomorphicAdapter
     }
 
     @Override
-    /* package */ AwSupportLibIsomorphic getPeeredObject() {
-        return mReplyProxy;
+    public Object getOrCreatePeer(Callable<Object> creationCallable) {
+        return mReplyProxy.getOrCreateSupportLibObject(creationCallable);
     }
 }
