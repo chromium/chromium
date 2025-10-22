@@ -401,8 +401,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplGeminiNanoBrowserTest,
                      media::mojom::AvailabilityStatus::kUnavailable));
 }
 
+// TODO(crbug.com/454128590): Disabled because breaking UBsan.
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplGeminiNanoBrowserTest,
-                       InstallUnsupportedLanguage) {
+                       DISABLED_InstallUnsupportedLanguage) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Install(
       {kFrenchLanguageCode},
