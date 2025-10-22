@@ -190,6 +190,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kFeedHeaderRemoval,
     &feed::kFeedImageMemoryCacheSizePercentage,
     &feed::kFeedLoadingPlaceholder,
+    &feed::kFeedNoViewCache,
     &feed::kFeedPerformanceStudy,
     &feed::kFeedRecyclerBinderUnmountOnDetach,
     &feed::kFeedShowSignInCommand,
