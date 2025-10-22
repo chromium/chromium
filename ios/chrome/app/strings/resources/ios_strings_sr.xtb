@@ -1235,6 +1235,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5758759241456233788">Прегледи Мапа су искључени. Поново их укључите у Подешавањима.</translation>
 <translation id="5759484603608560822">Сакриј преузимања</translation>
 <translation id="5767099457279594162">Лозинка није дељена</translation>
+<translation id="5768870767339201169">Наставите тамо где сте стали</translation>
 <translation id="5779117921996157216">{count,plural, =1{Имате {count} угрожену лозинку која може да угрози безбедност. Решите проблем одмах да бисте били безбедни.}one{Имате {count} угрожену лозинку која може да угрози безбедност. Решите проблеме одмах да бисте били безбедни.}few{Имате {count} угрожене лозинке које могу да угрозе безбедност. Решите проблеме одмах да бисте били безбедни.}other{Имате {count} угрожених лозинки које могу да угрозе безбедност. Решите проблеме одмах да бисте били безбедни.}}</translation>
 <translation id="5791632441210678828">Дугме Сортирај за фид Пратите.</translation>
 <translation id="5803566855766646066">Желите ли стварно да одбаците ову нову картицу?</translation>
@@ -1691,6 +1692,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7486006552035434095">Синхронизујте уређаје</translation>
 <translation id="7491131399623468277">Идите у Подешавања…</translation>
+<translation id="7491161827858509164">Да бисте видели фајлове које сте раније преузели, отворите <ph name="BEGIN_LINK" />Фајлове<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Наставите са изменама</translation>
 <translation id="7500244509706269886">Аутоматски попуни образац</translation>
 <translation id="750493650310597496">Изабрано је 0 ставки</translation>
@@ -1728,6 +1730,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7612619742409846846">Пријављени сте у Google као</translation>
 <translation id="7612849887607288481">Отвори мени за AI прототип</translation>
 <translation id="7620522820075868385">Откажи</translation>
+<translation id="762078666799342162">Ранија преузимања можете да прегледате у <ph name="BEGIN_LINK" />Фајловима<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Угрожене лозинке}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="7640669552036055091">Картице са Android-а</translation>
@@ -1909,7 +1912,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8273982424131314219">Попунићете информације на <ph name="URL" /></translation>
 <translation id="8275068909952022340">Још…</translation>
 <translation id="8277328362018795342">Садржај странице се дели ради релевантнијих одговора</translation>
-<translation id="8278488584187265939">Прилагодите почетну страницу</translation>
 <translation id="8281781826761538115">Подразумевано – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8282657446819506217">Отвори у групи картица</translation>

@@ -1168,7 +1168,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5572648434713976849">Recibirás suxestións melloradas na barra de enderezos</translation>
 <translation id="5578795271662203820">Busca esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de lectura</translation>
-<translation id="5581786858144165447">Facer preguntas co modo IA</translation>
+<translation id="5581786858144165447">Pregunta co modo IA</translation>
 <translation id="5585019845078534178">Tarxetas</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="559567008082979829">Configura as descargas para que se eliminen ao cabo dun mes.</translation>
@@ -1908,7 +1908,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8273982424131314219">Completarás a información en <ph name="URL" /></translation>
 <translation id="8275068909952022340">Máis…</translation>
 <translation id="8277328362018795342">O contido da túa páxina compártese para obter respostas máis relevantes</translation>
-<translation id="8278488584187265939">Personalizar a páxina de inicio</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282657446819506217">Abrir nun grupo de pestanas</translation>
@@ -2178,6 +2177,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">Queres eliminar o grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="95332591904104970">Aplicacións conectadas</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="956218893102219091">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>

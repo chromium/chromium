@@ -1235,6 +1235,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5758759241456233788">Predogledi Zemljevidov so izklopljeni. Znova jih lahko vklopite v nastavitvah.</translation>
 <translation id="5759484603608560822">Skrij prenose</translation>
 <translation id="5767099457279594162">Geslo ni bilo deljeno</translation>
+<translation id="5768870767339201169">Nadaljujte, kjer ste ostali</translation>
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ogroženo geslo, ki lahko ogrozi vašo varnost. Popravite ga, če se želite zavarovati.}one{Imate {count} ogroženo geslo; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}two{Imate {count} ogroženi gesli; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}few{Imate {count} ogrožena gesla, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}other{Imate {count} ogroženih gesel, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}}</translation>
 <translation id="5791632441210678828">Gumb za razvrščanje za vir Spremljanje.</translation>
 <translation id="5803566855766646066">Ali ste prepričani, da želite zavreči to novo kartico?</translation>
@@ -1909,7 +1910,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8273982424131314219">Podatke boste vnesli na spletnem mestu <ph name="URL" /></translation>
 <translation id="8275068909952022340">Več …</translation>
 <translation id="8277328362018795342">Vaša vsebina strani se deli zaradi zagotavljanja ustreznejših odgovorov</translation>
-<translation id="8278488584187265939">Prilagodite domačo stran</translation>
 <translation id="8281781826761538115">Privzeto - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282657446819506217">Odpri v skupini zavihkov</translation>

@@ -49,6 +49,7 @@
 <translation id="11947597112837849">адреса на е-пошта</translation>
 <translation id="1197267115302279827">Премести обележувачи</translation>
 <translation id="1197761954713363183">Листот за потврдување на криптографскиот клуч е затворен</translation>
+<translation id="1197933394627598677">Прикажи го „Режимот за читање“</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1202892408424955784">Следени производи</translation>
 <translation id="1204037785786432551">Преземи линк</translation>
@@ -174,6 +175,7 @@
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792959175193046959">Променете ја стандардната локација за преземање во секое време</translation>
 <translation id="1796666869097395659">Минимизирајте ја картичката за да се вратите на неа подоцна</translation>
+<translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1807246157184219062">Светла</translation>
 <translation id="1807709131360304325">Отвори нов прозорец</translation>
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
@@ -1399,6 +1401,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
 <translation id="7230064152164845085">Префрли на „Инкогнито“</translation>
 <translation id="7237724030342645845">Google Password Manager престана да функционира</translation>
+<translation id="7239496616545081903">Скриј го „Режимот за читање“</translation>
 <translation id="72415438529550637">Предлогот за лозинка е затворен.</translation>
 <translation id="7248671827512403053">Апликација</translation>
 <translation id="7253951228444156601">Се проверуваат лозинките…</translation>
@@ -1741,6 +1744,7 @@
 <translation id="8723453889042591629">Брзо преведи ја страницава. За да ја измените кратенкава, допрете и задржете.</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8731268612289859741">Безбедносен код</translation>
+<translation id="8738163682604285902">Да се прикаже „Режим за читање“?</translation>
 <translation id="8746155870861185046">Споделете го нагласениот текст</translation>
 <translation id="8748850008226585750">Содржината е скриена</translation>
 <translation id="8754448020583829686">Копирај без линк</translation>

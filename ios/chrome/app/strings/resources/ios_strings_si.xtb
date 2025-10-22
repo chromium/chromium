@@ -1909,7 +1909,6 @@
 <translation id="8273982424131314219">ඔබ <ph name="URL" /> වෙත තතු පුරවනු ඇත</translation>
 <translation id="8275068909952022340">තව…</translation>
 <translation id="8277328362018795342">වඩාත් අදාළ පිළිතුරු සඳහා ඔබේ පිටු අන්තර්ගතය බෙදාගෙන ඇත</translation>
-<translation id="8278488584187265939">මුල් පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="8281781826761538115">පෙරනිමි - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8282657446819506217">පටිති සමූහය තුළ විවෘත කරන්න</translation>
@@ -2180,6 +2179,7 @@
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="94870150074703282">සමූහය මකන්න ද?</translation>
 <translation id="952704832371081537">අවලංගු කරන්න</translation>
+<translation id="95332591904104970">සම්බන්ධිත යෙදුම්</translation>
 <translation id="954667170699278022">කියවීම් ලැයිස්තුව</translation>
 <translation id="956218893102219091">ඔබේ IP ලිපිනය මත පදනම් වූ ඇස්තමේන්තුගත ස්ථානයක් වෙනුවට, වඩාත් නිවැරදි Gemini ප්‍රතිඵල සඳහා ඔබේ ඉතා නිවැරදි ස්ථානය භාවිත කරන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>

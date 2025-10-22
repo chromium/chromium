@@ -788,6 +788,7 @@
 <translation id="22792995594807632">Потребен е преглед пред преземањето</translation>
 <translation id="2283340219607151381">Зачувувај и пополнувај адреси</translation>
 <translation id="2283447177162560884">Избришано: „<ph name="PAGE_TITLE" />“</translation>
+<translation id="2283599456633275070">Патување</translation>
 <translation id="2286383991450886080">34 x 44 инчи</translation>
 <translation id="2288422996159078444">Сѐ што ќе напишете, сите страници што ќе ги прегледате или секоја друга активност на интернет се надгледува, а содржините на сајтовите може да се променат без ваше знаење.</translation>
 <translation id="2289385804009217824">Кратење</translation>
@@ -882,6 +883,7 @@
 <translation id="2436976580469434549">Уметности со конци и текстил</translation>
 <translation id="243815215670139125">Картичкава не можеше да се зачува во вашата сметка на Google. Наместо тоа, се зачува на Chrome на уредов.</translation>
 <translation id="2438874542388153331">Четири дупки десно</translation>
+<translation id="2440855519769445271">За да ги скриете опциите за „Платете подоцна“, одете во <ph name="BEGIN_LINK" />поставките за плаќање<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Достапни начини на плаќање што се пополнуваат со допир. Тастатурата е скриена.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />нема да ги зачувува следниве работи<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2224,7 @@
 <translation id="4648262692072505866">Хашот мора да биде формат SHA-256.</translation>
 <translation id="4652266463001779298">Не е дозволено</translation>
 <translation id="4652440160515225514">Вашата организација го блокираше овој сајт бидејќи прекршува правило.</translation>
+<translation id="4654457557264366314">Тарифните пакети подлежат на подобност.</translation>
 <translation id="4658638640878098064">Спојување горе лево</translation>
 <translation id="4660592918803576381">Отвори во Drive</translation>
 <translation id="4661556981531699496">Миленици и животни</translation>

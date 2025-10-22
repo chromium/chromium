@@ -1792,6 +1792,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7851858861565204677">Бусад төхөөрөмж</translation>
 <translation id="7853202427316060426">Үйл ажиллагаа</translation>
 <translation id="7854006015462979438">Ерөнхий тохиргоог нээнэ үү</translation>
+<translation id="7855678267851972597">Аудио</translation>
 <translation id="7859988229622350291">Хэзээ ч бүү орчуул</translation>
 <translation id="7863211248337747225">Аппыг авах</translation>
 <translation id="7865127013871431856">Орчуулах сонголт</translation>
@@ -1908,7 +1909,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8273982424131314219">Та мэдээллийг <ph name="URL" />-д бөглөнө</translation>
 <translation id="8275068909952022340">Бусад…</translation>
 <translation id="8277328362018795342">Таны хуудасны агуулгыг илүү хамааралтай хариулт өгөх зорилгоор хуваалцдаг</translation>
-<translation id="8278488584187265939">Нүүр хуудсыг өөрчлөх</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8282657446819506217">Табын бүлэгт нээх</translation>
@@ -1972,6 +1972,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Цонхнууд<ph name="FIRST_VISIBLE_TAB" /> -аар <ph name="LAST_VISIBLE_TAB" /> -аас <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Нууцлалтай горимд бусад аппаас холбоос нээх</translation>
 <translation id="8529767659511976195">Шинэ</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Аюулгүй үзэх үйлчилгээ асаалттай байна</translation>
 <translation id="8534481786647257214">Google+ пост дууссан.</translation>
@@ -2178,6 +2179,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="94870150074703282">Бүлгийг устгах уу?</translation>
 <translation id="952704832371081537">Цуцлах</translation>
+<translation id="95332591904104970">Холбоотой апп</translation>
 <translation id="954667170699278022">Унших жагсаалт</translation>
 <translation id="956218893102219091">Gemini-н хамгийн үнэн зөв үр дүнг авах бол IP хаягтаа тулгуурлан тооцоолсон байршлын оронд нарийвчилсан байршлаа ашиглана уу. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Интернэтээр үзсэн өгөгдлийг устгах</translation>

@@ -1792,6 +1792,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7851858861565204677">Outros dispositivos</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7854006015462979438">Abra "Geral"</translation>
+<translation id="7855678267851972597">Áudios</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
 <translation id="7863211248337747225">Instalar o app</translation>
 <translation id="7865127013871431856">Opções do Tradutor</translation>
@@ -1908,7 +1909,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8273982424131314219">As informações serão preenchidas em <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mais…</translation>
 <translation id="8277328362018795342">O conteúdo da página é compartilhado para oferecer respostas mais relevantes</translation>
-<translation id="8278488584187265939">Personalizar página inicial</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282657446819506217">Abrir no grupo de guias</translation>
@@ -1972,6 +1972,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Guias <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Abrir links de outros apps na navegação anônima</translation>
 <translation id="8529767659511976195">Novo</translation>
+<translation id="8531572740963685410">PDFs</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A Navegação Segura está ativada</translation>
 <translation id="8534481786647257214">A postagem no Google+ foi concluída.</translation>
@@ -2178,6 +2179,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="94870150074703282">Excluir grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="95332591904104970">Apps conectados</translation>
 <translation id="954667170699278022">Lista de leitura</translation>
 <translation id="956218893102219091">Use sua localização exata para ter resultados mais precisos no Gemini, em vez de uma localização aproximada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Excluir histórico</translation>

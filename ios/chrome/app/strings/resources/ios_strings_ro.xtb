@@ -1909,7 +1909,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8273982424131314219">Vei completa informațiile la <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mai multe…</translation>
 <translation id="8277328362018795342">Conținutul paginilor tale este trimis pentru răspunsuri mai relevante</translation>
-<translation id="8278488584187265939">Personalizează pagina de pornire</translation>
 <translation id="8281781826761538115">Prestabilit – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8282657446819506217">Deschide în grupul de file</translation>
@@ -2180,6 +2179,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="94870150074703282">Ștergi grupul?</translation>
 <translation id="952704832371081537">Anulează</translation>
+<translation id="95332591904104970">Aplicații conectate</translation>
 <translation id="954667170699278022">Listă de lecturi</translation>
 <translation id="956218893102219091">Folosește locația exactă pentru cele mai precise rezultate Gemini, în locul unei locații estimate pe baza adresei IP. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>

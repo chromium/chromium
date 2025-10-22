@@ -49,6 +49,7 @@
 <translation id="11947597112837849">adresën tënde të email-it</translation>
 <translation id="1197267115302279827">Zhvendos faqeshënuesit</translation>
 <translation id="1197761954713363183">Fleta e konfirmimit të çelësit të kalimit u mbyll</translation>
+<translation id="1197933394627598677">Shfaq "Modalitetin e leximit"</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1202892408424955784">Produktet e monitoruara</translation>
 <translation id="1204037785786432551">Lidhja e shkarkimit</translation>
@@ -174,6 +175,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1791662854739702043">I instaluar</translation>
 <translation id="1792959175193046959">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit</translation>
 <translation id="1796666869097395659">Minimizo skedën për t'u kthyer më vonë tek ajo</translation>
+<translation id="1799920918471566157">Këshilla për Chrome</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807709131360304325">Hap një dritare të re</translation>
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
@@ -1399,6 +1401,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 shkarkim në pritje}other{# shkarkime në pritje}}</translation>
 <translation id="7230064152164845085">Kalo te modaliteti "I fshehtë"</translation>
 <translation id="7237724030342645845">"Menaxheri i fjalëkalimeve i Google" ndaloi së funksionuari</translation>
+<translation id="7239496616545081903">Fshih "Modalitetin e leximit"</translation>
 <translation id="72415438529550637">Sugjerimi i fjalëkalimit u mbyll.</translation>
 <translation id="7248671827512403053">Aplikacion</translation>
 <translation id="7253951228444156601">Po kontrollon fjalëkalimet…</translation>
@@ -1741,6 +1744,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8723453889042591629">Përktheje me shpejtësi këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8731268612289859741">Kodi i sigurisë</translation>
+<translation id="8738163682604285902">Dëshiron të shikosh "Modalitetin e leximit"?</translation>
 <translation id="8746155870861185046">Ndaj theksimin</translation>
 <translation id="8748850008226585750">Përmbajtjet janë të fshehura</translation>
 <translation id="8754448020583829686">Kopjo pa lidhjen</translation>

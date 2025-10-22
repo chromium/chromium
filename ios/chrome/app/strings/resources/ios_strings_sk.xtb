@@ -1909,7 +1909,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8273982424131314219">Vyplníte informácie na webe <ph name="URL" /></translation>
 <translation id="8275068909952022340">Viac…</translation>
 <translation id="8277328362018795342">Obsah stránky sa zdieľa, aby ste mohli dostávať relevantnejšie odpovede</translation>
-<translation id="8278488584187265939">Prispôsobenie domovskej stránky</translation>
 <translation id="8281781826761538115">Predvolené – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8282657446819506217">Otvoriť v skupine kariet</translation>
@@ -2180,6 +2179,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="94870150074703282">Chcete skupinu odstrániť?</translation>
 <translation id="952704832371081537">Zrušiť</translation>
+<translation id="95332591904104970">Pripojené aplikácie</translation>
 <translation id="954667170699278022">Čitateľský zoznam</translation>
 <translation id="956218893102219091">Získavajte od Gemini presnejšie výsledky vychádzajúce z presnej polohy, nie z odhadovanej polohy na základe adresy IP. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>

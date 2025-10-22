@@ -1909,7 +1909,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8273982424131314219">Bilgileriniz <ph name="URL" /> adresinde doldurulacak</translation>
 <translation id="8275068909952022340">Diğer…</translation>
 <translation id="8277328362018795342">Sayfa içeriğiniz, daha alakalı yanıtlar vermek için paylaşılır</translation>
-<translation id="8278488584187265939">Ana sayfayı özelleştirin</translation>
 <translation id="8281781826761538115">Varsayılan - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Atla</translation>
 <translation id="8282657446819506217">Sekme Grubunda Aç</translation>
@@ -2180,6 +2179,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="94870150074703282">Grup silinsin mi?</translation>
 <translation id="952704832371081537">İptal</translation>
+<translation id="95332591904104970">Bağlı uygulamalar</translation>
 <translation id="954667170699278022">Okuma Listesi</translation>
 <translation id="956218893102219091">IP adresinize göre tahmini konum yerine tam konumunuzu kullanarak en doğru Gemini sonuçlarını alın. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Tarama verilerini sil</translation>

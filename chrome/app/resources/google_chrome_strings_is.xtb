@@ -21,6 +21,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="110877069173485804">Þetta er þitt Chrome</translation>
 <translation id="1125124144982679672">Hver er að nota Chrome?</translation>
 <translation id="1142745911746664600">Ekki er hægt að uppfæra Chrome</translation>
+<translation id="1148360048981192980">Næst þegar þú opnar Chrome í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að nota Google-aðgangsorðastjórnun.</translation>
 <translation id="1152920704813762236">Um ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Opna í Chrome</translation>
 <translation id="1157985233335035034">Nýleg tungumál</translation>
@@ -150,6 +151,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2681444469812712297">Opna <ph name="URL" /> í nýjum flipa í Google Chrome.</translation>
 <translation id="2699790011615497488">Opna Gemini í Chrome Beta</translation>
 <translation id="2712141162840347885">Veldu hvað sem er til að leita með Google-linsu eða ýttu á Esc til að loka Linsunni</translation>
+<translation id="2723860029395667894">Alltaf sýna flýtileið gervigreindarstillingar Google</translation>
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2742320827292110288">Viðvörun: Google Chrome getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="2753623023919742414">Smelltu til að leita</translation>
@@ -483,6 +485,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
+<translation id="6426623519983252346">Þú munt sjá ábendingu um að prófa <ph name="FEATURE_NAME" /> næst þegar þú opnar Chrome iOS.</translation>
 <translation id="6473905796280459355">Fara á síðuna Um Chrome</translation>
 <translation id="6481963882741794338">Tengdu Chrome við aðrar Google-þjónustur til að sérsníða upplifun þína og fleira</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
@@ -681,6 +684,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8641606876632989680">Chrome lætur þig vita þegar þú skráir þig inn með aðgangsorði sem er í hættu</translation>
 <translation id="8656634243791296665">Opna Gemini í Chrome Dev</translation>
 <translation id="8669527147644353129">Hjálparforrit Google Chrome</translation>
+<translation id="8677922833187616101">Alltaf sýna flýtileið gervigreindarstillingar Google</translation>
 <translation id="8679801911857917785">Þetta stýrir því einnig hvaða síða birtist þegar þú ræsir Chrome.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8712767363896337380">Næstum því uppfært! Endurræstu Chrome til að ljúka við uppfærsluna.</translation>

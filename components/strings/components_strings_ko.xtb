@@ -788,6 +788,7 @@
 <translation id="22792995594807632">다운로드하기 전에 검토 필요</translation>
 <translation id="2283340219607151381">주소 저장 및 자동 입력</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' 삭제됨</translation>
+<translation id="2283599456633275070">여행</translation>
 <translation id="2286383991450886080">34x44인치</translation>
 <translation id="2288422996159078444">내가 입력하는 내용, 접속하는 페이지, 웹상의 기타 모든 활동이 감시되며, 사이트의 콘텐츠가 눈치채지 못하게 변경될 수 있습니다.</translation>
 <translation id="2289385804009217824">트림</translation>
@@ -2294,7 +2295,7 @@
 <translation id="4758311279753947758">연락처 정보 추가</translation>
 <translation id="4761326898079498987">추가 세부정보를 검토하세요</translation>
 <translation id="4761869838909035636">Chrome 안전 확인 실행</translation>
-<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" />(으)로 계속 결제하시겠습니까?</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" />로 계속 결제하시겠습니까?</translation>
 <translation id="4763196677855776703"><ph name="URL" />에서 제공한 이용약관</translation>
 <translation id="4764680219299728632">레인지, 쿡탑, 오븐</translation>
 <translation id="4764776831041365478"><ph name="URL" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>

@@ -49,6 +49,7 @@
 <translation id="11947597112837849">ଇମେଲ ଠିକଣା</translation>
 <translation id="1197267115302279827">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="1197761954713363183">ପାସକୀ ସୁନିଶ୍ଚିତକରଣ ସିଟ ବନ୍ଦ ଅଛି</translation>
+<translation id="1197933394627598677">ରିଡିଂ ମୋଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1202892408424955784">ଟ୍ରାକ କରାଯାଇଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="1204037785786432551">ଲିଙ୍କ୍ ଡାଉନ୍‍‍ଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -174,6 +175,7 @@
 <translation id="1791662854739702043">ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
 <translation id="1792959175193046959">ଯେକୌଣସି ସମୟରେ ଡିଫଲ୍ଟ ଡାଉନ୍‌ଲୋଡ୍ ଲୋକେସନ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="1796666869097395659">ଏଠାକୁ ପରେ ଫେରିବା ପାଇଁ ଟାବକୁ ଛୋଟ କରନ୍ତୁ</translation>
+<translation id="1799920918471566157">Chrome ଟିପ୍ସ</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
 <translation id="1807709131360304325">ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="1810845389119482123">ପ୍ରାରମ୍ଭିକ ସିଙ୍କ୍ ସେଟ୍‌ଅପ୍ ସମାପ୍ତ ହୋଇ ନାହିଁ</translation>
@@ -1399,6 +1401,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}other{#ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}}</translation>
 <translation id="7230064152164845085">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="7237724030342645845">Google Password Manager କାମ କରିବା ବନ୍ଦ କରିଦେଇଛି</translation>
+<translation id="7239496616545081903">ରିଡିଂ ମୋଡକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="72415438529550637">ପାସୱାର୍ଡ ପରାମର୍ଶକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="7248671827512403053">ଆପ୍ଲିକେସନ୍</translation>
 <translation id="7253951228444156601">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଉଛି…</translation>
@@ -1741,6 +1744,7 @@
 <translation id="8723453889042591629">ଏହି ପୃଷ୍ଠାକୁ ଶୀଘ୍ର ଅନୁବାଦ କରନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ କରିବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8731268612289859741">ସୁରକ୍ଷା କୋଡ</translation>
+<translation id="8738163682604285902">ରିଡିଂ ମୋଡକୁ ଭ୍ୟୁ କରିବେ?</translation>
 <translation id="8746155870861185046">ହାଇଲାଇଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="8748850008226585750">ଲୁଚାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
 <translation id="8754448020583829686">ଲିଙ୍କ ବିନା କପି କରନ୍ତୁ</translation>

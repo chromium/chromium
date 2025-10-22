@@ -1909,7 +1909,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8273982424131314219">Du skal udfylde oplysningerne på <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mere…</translation>
 <translation id="8277328362018795342">Sideindholdet deles, så du kan få mere relevante svar</translation>
-<translation id="8278488584187265939">Tilpas startside</translation>
 <translation id="8281781826761538115">Standardsprog – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Spring over</translation>
 <translation id="8282657446819506217">Åbn i fanegruppe</translation>
@@ -2180,6 +2179,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
 <translation id="952704832371081537">Annuller</translation>
+<translation id="95332591904104970">Tilknyttede apps</translation>
 <translation id="954667170699278022">Læseliste</translation>
 <translation id="956218893102219091">Brug din præcise lokation for at få de mest nøjagtige Gemini-resultater i stedet for en estimeret lokation baseret på din IP-adresse. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Slet browserdata</translation>

@@ -49,6 +49,7 @@
 <translation id="11947597112837849">ইমেল অ্যাড্রেস</translation>
 <translation id="1197267115302279827">বুকমার্কগুলি সরান</translation>
 <translation id="1197761954713363183">পাসকী কনফার্মেশন শিট বন্ধ করা হয়েছে</translation>
+<translation id="1197933394627598677">রিডিং মোড দেখুন</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1202892408424955784">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
 <translation id="1204037785786432551">লিঙ্ক ডাউনলোড করুন</translation>
@@ -174,6 +175,7 @@
 <translation id="1791662854739702043">ইনস্টল হয়েছে</translation>
 <translation id="1792959175193046959">যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="1796666869097395659">পরে আবার এখানে ফিরে আসতে ট্যাব মিনিমাইজ করে রাখুন</translation>
+<translation id="1799920918471566157">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1807709131360304325">একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
@@ -1399,6 +1401,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
 <translation id="7230064152164845085">ছদ্মবেশী মোডে যান</translation>
 <translation id="7237724030342645845">Google Password Manager কাজ করা বন্ধ করে দিয়েছে</translation>
+<translation id="7239496616545081903">রিডিং মোড লুকান</translation>
 <translation id="72415438529550637">পাসওয়ার্ড সাজেশন দেওয়ার সুবিধা বন্ধ করা আছে।</translation>
 <translation id="7248671827512403053">অ্যাপ্লিকেশান</translation>
 <translation id="7253951228444156601">পাসওয়ার্ড চেক করে দেখা হচ্ছে…</translation>
@@ -1741,6 +1744,7 @@
 <translation id="8723453889042591629">এই পৃষ্ঠাটি দ্রুত অনুবাদ করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8731268612289859741">সিকিউরিটি কোড</translation>
+<translation id="8738163682604285902">রিডিং মোড খুলতে চান?</translation>
 <translation id="8746155870861185046">হাইলাইট শেয়ার করুন</translation>
 <translation id="8748850008226585750">সামগ্রী লুকানো আছে</translation>
 <translation id="8754448020583829686">লিঙ্ক ছাড়া কপি করুন</translation>

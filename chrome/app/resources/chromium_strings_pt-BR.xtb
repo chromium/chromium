@@ -63,6 +63,7 @@
 <translation id="1779356040007214683">Para tornar o Chromium mais seguro, desativamos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e podem ser sido adicionadas sem seu conhecimento.</translation>
 <translation id="1808667845054772817">Reinstalar o Chromium</translation>
 <translation id="1820835682567584003">O Chromium está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Na próxima vez que você abrir o Chromium no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para usar o Gerenciador de Senhas do Google.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="18552579716432081">Para excluir apenas os dados de navegação deste dispositivo e mantê-los na sua Conta do Google, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Você pode gerenciar as Contas do Google conectadas. Elas são usadas no navegador Chromium, na Play Store, no Gmail e muito mais. Se quiser adicionar uma conta para outra pessoa, como um membro da família, adicione um novo usuário ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -89,6 +90,7 @@
 <translation id="2049376729098081731">Escolha se você quer incluir o histórico do Chromium para ter experiências mais personalizadas nos Serviços do Google</translation>
 <translation id="2054039611381840095">Para receber as próximas atualizações do Chromium, você vai precisar do macOS 12 ou mais recente. Este computador está usando o macOS 11.</translation>
 <translation id="2086476982681781442">O Chromium bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
+<translation id="208726765006323911">Você verá uma mensagem para testar o recurso <ph name="FEATURE_NAME" /> na próxima vez que abrir o Chromium para iOS.</translation>
 <translation id="2099452623287920103">As senhas e outros dados do Chromium salvos na sua Conta do Google serão removidos deste dispositivo. Para os usar de novo no Chromium, faça login outra vez.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
@@ -149,6 +151,7 @@
 <translation id="2718390899429598676">Para maior segurança, o Chromium criptografará seus dados.</translation>
 <translation id="2721354645805494590">Para remover sua Conta do Google do Chromium, saia dela</translation>
 <translation id="2722636413143664436">Para acessar suas senhas, favoritos e muito mais em todos os seus dispositivos, faça login no Chromium</translation>
+<translation id="2723860029395667894">Sempre mostrar o atalho do Modo IA do Google</translation>
 <translation id="2738871930057338499">Não foi possível conectar à Internet. HTTP 403 Proibido. Verifique sua configuração do proxy.</translation>
 <translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2768103863314748511">Defina o Chromium como seu leitor de PDF padrão</translation>
@@ -630,6 +633,7 @@
 <translation id="8601359445272098721">Novidade! Agora você pode traduzir texto e imagens na sua tela selecionando o botão "Traduzir tela".</translation>
 <translation id="8619360774459241877">Iniciando o Chromium…</translation>
 <translation id="8648201657708811153">O Google Chrome for Testing não pode ser definido como seu navegador padrão.</translation>
+<translation id="8677922833187616101">Sempre mostrar o atalho do Modo IA do Google</translation>
 <translation id="8697124171261953979">Controla também qual página deve ser exibida quando você inicia o Chromium ou faz uma pesquisa na Omnibox.</translation>
 <translation id="8704119203788522458">Este é seu Chromium</translation>
 <translation id="8712637175834984815">Entendi</translation>

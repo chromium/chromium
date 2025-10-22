@@ -7842,14 +7842,6 @@ WAARSCHUWING: Als je deze instelling wijzigt, kan dit ervoor zorgen dat ander be
 Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> en <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> van het beleid <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> niet meer en gebruiken ze alleen de op <ph name="IP" /> gebaseerde locatie-omzetting op het scherm <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Systeemgegevens rapporteren</translation>
 <translation id="6339355882150329269">Gebruiker niet als inactief beschouwen tijdens afspelen van video's</translation>
-<translation id="6347110299837147365">Met dit beleid kunnen beheerders het HTTP-browsercachegeheugen op de schijf versleutelen.
-Wordt op dit moment alleen ondersteund in Windows.
-
-Als je dit beleid toepast, wordt het browsercachegeheugen versleuteld.
-
-Als je dit beleid niet toepast of niet instelt, wordt het browsercachegeheugen niet versleuteld.
-
-Versleuteling van het browsercachegeheugen kan invloed hebben op de prestaties.</translation>
 <translation id="6352714113109004581">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om toegang tot een HID-apparaat.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.

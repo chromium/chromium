@@ -1909,7 +1909,6 @@
 <translation id="8273982424131314219">ข้อมูลนี้จะกรอกลงใน <ph name="URL" /></translation>
 <translation id="8275068909952022340">เพิ่มเติม…</translation>
 <translation id="8277328362018795342">ระบบได้แชร์เนื้อหาของหน้าเว็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น</translation>
-<translation id="8278488584187265939">ปรับแต่งหน้าแรก</translation>
 <translation id="8281781826761538115">ค่าเริ่มต้น - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282657446819506217">เปิดในกลุ่มแท็บ</translation>
@@ -2180,6 +2179,7 @@
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="94870150074703282">ลบกลุ่มไหม</translation>
 <translation id="952704832371081537">ยกเลิก</translation>
+<translation id="95332591904104970">แอปที่เชื่อมต่อ</translation>
 <translation id="954667170699278022">เรื่องรออ่าน</translation>
 <translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>

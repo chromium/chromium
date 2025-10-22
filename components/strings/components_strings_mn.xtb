@@ -788,6 +788,7 @@
 <translation id="22792995594807632">Татахаас өмнө шалгах шаардлагатай</translation>
 <translation id="2283340219607151381">Хаягийг хадгалах болон бөглөх</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />'-г устгасан</translation>
+<translation id="2283599456633275070">Аялал</translation>
 <translation id="2286383991450886080">34 x 44 инч</translation>
 <translation id="2288422996159078444">Таны бичдэг дурын зүйл, таны үздэг дурын хуудас эсвэл веб дээрх бусад дурын үйл ажиллагааг хянан үзэж байна. Сайтуудын контентыг танд мэдэгдэлгүйгээр өөрчилж болзошгүй.</translation>
 <translation id="2289385804009217824">Тайрах</translation>
@@ -882,6 +883,7 @@
 <translation id="2436976580469434549">Мяндас, сүлжмэл урлагууд</translation>
 <translation id="243815215670139125">Энэ картыг таны Google Бүртгэлд хадгалж чадсангүй. Оронд нь тус картыг энэ төхөөрөмж дээр Chrome-д хадгалсан.</translation>
 <translation id="2438874542388153331">Баруун ирмэг дагуу дөрвөн нүх цоолох</translation>
+<translation id="2440855519769445271">Дараа төлөх сонголтуудыг нуухын тулд <ph name="BEGIN_LINK" />төлбөрийн тохиргоо<ph name="END_LINK" /> руу очно уу</translation>
 <translation id="2441854154602066476">Хүрэлтээр бөглөх боломжтой төлбөрийн хэрэгслүүд. Гарыг нуусан.</translation>
 <translation id="2442865686365739754">Chrome дараахыг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2223,6 +2225,7 @@
 <translation id="4648262692072505866">Хэш нь SHA-256 форматтай байх ёстой.</translation>
 <translation id="4652266463001779298">Зөвшөөрөөгүй</translation>
 <translation id="4652440160515225514">Энэ сайт бодлого зөрчиж байгаа тул танай байгууллага үүнийг блоклосон.</translation>
+<translation id="4654457557264366314">Төлбөрийн багц нь зохих эрхтэй байдлаас хамаарна.</translation>
 <translation id="4658638640878098064">Зүүн дээд буланд үдэх</translation>
 <translation id="4660592918803576381">Драйвт нээх</translation>
 <translation id="4661556981531699496">Тэжээвэр амьтан, амьтад</translation>

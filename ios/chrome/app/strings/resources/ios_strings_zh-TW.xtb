@@ -1909,7 +1909,6 @@
 <translation id="8273982424131314219">資訊即將填入到「<ph name="URL" />」</translation>
 <translation id="8275068909952022340">更多…</translation>
 <translation id="8277328362018795342">允許系統分享頁面內容，以提供更符合需求的答案</translation>
-<translation id="8278488584187265939">自訂首頁</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282657446819506217">在分頁群組中開啟</translation>
@@ -2180,6 +2179,7 @@
 <translation id="945522503751344254">提供意見</translation>
 <translation id="94870150074703282">要刪除群組嗎？</translation>
 <translation id="952704832371081537">取消</translation>
+<translation id="95332591904104970">連結的應用程式</translation>
 <translation id="954667170699278022">閱讀清單</translation>
 <translation id="956218893102219091">使用精確位置資訊，取得最準確的 Gemini 結果，而不是根據 IP 位址推估大概位置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>

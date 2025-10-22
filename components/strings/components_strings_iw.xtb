@@ -788,6 +788,7 @@
 <translation id="22792995594807632">נדרשת בדיקה לפני ההורדה</translation>
 <translation id="2283340219607151381">שמירה ומילוי של כתובות</translation>
 <translation id="2283447177162560884">בוצעה מחיקה של '<ph name="PAGE_TITLE" />'</translation>
+<translation id="2283599456633275070">נסיעות</translation>
 <translation id="2286383991450886080">‏34x44 אינץ'</translation>
 <translation id="2288422996159078444">כל הקלדת טקסט, הצגת דף או פעילות אחרת באינטרנט נמצאת במעקב. בנוסף, התוכן באתרים עשוי להשתנות ללא ידיעתך.</translation>
 <translation id="2289385804009217824">חיתוך</translation>
@@ -882,6 +883,7 @@
 <translation id="2436976580469434549">אומנויות טקסטיל ואריגים</translation>
 <translation id="243815215670139125">‏לא ניתן לשמור את הכרטיס הזה בחשבון שלך ב-Google. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה.</translation>
 <translation id="2438874542388153331">4 ניקובים בצד ימין</translation>
+<translation id="2440855519769445271">כדי להסתיר את האפשרויות לתשלום אחר כך, צריך לעבור אל <ph name="BEGIN_LINK" />הגדרות התשלומים<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">רשימת אמצעי התשלום הזמינים למילוי במגע. המקלדת מוסתרת.</translation>
 <translation id="2442865686365739754">‏<ph name="BEGIN_EMPHASIS" />לא יישמרו<ph name="END_EMPHASIS" /> ב-Chrome הנתונים הבאים:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2224,7 @@
 <translation id="4648262692072505866">‏הגיבוב חייב להיות בפורמט SHA-256.</translation>
 <translation id="4652266463001779298">אין הרשאה</translation>
 <translation id="4652440160515225514">האתר הזה נחסם על ידי הארגון שלך עקב הפרת מדיניות.</translation>
+<translation id="4654457557264366314">תוכניות התשלומים כפופות לעמידה בדרישות.</translation>
 <translation id="4658638640878098064">סיכת הידוק בפינה השמאלית העליונה</translation>
 <translation id="4660592918803576381">‏פתיחה ב-Drive</translation>
 <translation id="4661556981531699496">חיות מחמד ובעלי חיים</translation>

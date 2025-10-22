@@ -1792,6 +1792,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7851858861565204677">Други уреди</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворете General</translation>
+<translation id="7855678267851972597">Аудија</translation>
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
 <translation id="7863211248337747225">Преземете ја апликацијата</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>
@@ -1908,7 +1909,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8273982424131314219">Ќе ги пополните податоците на <ph name="URL" /></translation>
 <translation id="8275068909952022340">Повеќе…</translation>
 <translation id="8277328362018795342">Содржините на вашата страница се споделуваат за порелевантни одговори</translation>
-<translation id="8278488584187265939">Приспособете ја почетната страница</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8282657446819506217">Отвори во група картички</translation>
@@ -1972,6 +1972,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Картички <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> од <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Отворај линкови од други апликации во „Инкогнито“</translation>
 <translation id="8529767659511976195">Ново</translation>
+<translation id="8531572740963685410">PDF-датотеки</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">„Безбедното прелистување“ е вклучено</translation>
 <translation id="8534481786647257214">Објавата на Google+ е завршена.</translation>
@@ -2178,6 +2179,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="94870150074703282">Да се избрише групата?</translation>
 <translation id="952704832371081537">Откажи</translation>
+<translation id="95332591904104970">Поврзани апликации</translation>
 <translation id="954667170699278022">Список за читање</translation>
 <translation id="956218893102219091">Користете ја вашата прецизна локација за да добивате најпрецизни резултати од Gemini, наместо приближна локација заснована на вашата IP-адреса. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>

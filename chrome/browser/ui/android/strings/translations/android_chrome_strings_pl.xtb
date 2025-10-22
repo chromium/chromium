@@ -175,11 +175,13 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792959175193046959">W dowolnej chwili możesz zmienić domyślną lokalizację pobierania</translation>
 <translation id="1796666869097395659">Zminimalizuj kartę, aby wrócić do niej później</translation>
+<translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1807246157184219062">Jasny</translation>
 <translation id="1807709131360304325">Otwórz nowe okno</translation>
 <translation id="1810845389119482123">Nie dokończono wstępnego konfigurowania synchronizacji</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nie może dalej korzystać z konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Plansza dolna logowania</translation>
+<translation id="1823492026305965829">Zaloguj się jako <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
@@ -854,6 +856,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4910889077668685004">Aplikacje do płatności</translation>
 <translation id="4912413785358399818">Przenieś kartę</translation>
 <translation id="4913169188695071480">Zatrzymaj odświeżanie</translation>
+<translation id="4921224083091001889">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome jako <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Zrzut ekranu <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Możesz zapisywać obrazy i pliki, aby przeglądać je offline lub udostępniać w innych aplikacjach</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 zakładka i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}few{# zakładki i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{# zakładek i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{# zakładki i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
@@ -878,6 +881,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5007392906805964215">Sprawdź</translation>
 <translation id="5010886807652684893">Widok graficzny</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> chce się połączyć</translation>
+<translation id="5012016139642806466">Korzystaj z haseł i innych ustawień na wszystkich swoich urządzeniach</translation>
 <translation id="5012253429094023177">Wygląda na to, że witryny <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> i <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> są powiązane. Zanim użyjesz tego hasła, upewnij się, że witryna <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> jest godna zaufania.</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
 <translation id="5017529052065664584">Ostatnie 15 minut</translation>
@@ -1148,6 +1152,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6255809143828972562">Dzięki narzędziom Chrome możesz bezpiecznie przeglądać internet i mieć nad wszystkim kontrolę</translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
 <translation id="6264485186158353794">Wróć do bezpieczeństwa</translation>
+<translation id="6267106249090587268">Powiadomienia <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia z powodu spamu lub treści wprowadzających w błąd</translation>
 <translation id="6276708887952587684">Wyświetl źródło strony</translation>
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
 <translation id="6278428485366576908">Motyw</translation>

@@ -789,6 +789,7 @@
 <translation id="22792995594807632">ডাউনলোড করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="2283340219607151381">অ্যাড্রেস পূরণ করে সেভ করুন</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' মুছে ফেলা হয়েছে</translation>
+<translation id="2283599456633275070">ভ্রমণ</translation>
 <translation id="2286383991450886080">৩৪ x ৪৪ ইঞ্চি</translation>
 <translation id="2288422996159078444">আপনি যা লিখছেন, যে পৃষ্ঠাগুলি দেখছেন বা ওয়েবে আপনার অন্যান্য অ্যাক্টিভিটি, সব কিছুতেই নজর রাখা হচ্ছে। আপনাকে না জানিয়ে সাইটের কন্টেন্টে পরিবর্তন করা হতে পারে।</translation>
 <translation id="2289385804009217824">ট্রিম করুন</translation>
@@ -883,6 +884,7 @@
 <translation id="2436976580469434549">ফাইবার ও টেক্সটাইল আর্ট</translation>
 <translation id="243815215670139125">এই কার্ড আপনার Google অ্যাকাউন্টে সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ এটি সেভ করা হয়েছে।</translation>
 <translation id="2438874542388153331">ডানদিকে কোয়াড পাঞ্চ</translation>
+<translation id="2440855519769445271">পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="BEGIN_LINK" />পেমেন্ট সেটিংস<ph name="END_LINK" />-এ যান</translation>
 <translation id="2441854154602066476">টাচ করে পূরণ করা যাবে এমন পেমেন্ট পদ্ধতি উপলভ্য। কীবোর্ড লুকানো রয়েছে।</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />সেভ করবে না<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2223,6 +2225,7 @@
 <translation id="4648262692072505866">হ্যাশ অবশ্যই SHA-256 ফর্ম্যাটের হতে হবে।</translation>
 <translation id="4652266463001779298">অনুমতি নেই</translation>
 <translation id="4652440160515225514">আপনার সংস্থা এই সাইটটি ব্লক করেছে কারণ এটি একটি নীতি লঙ্ঘন করেছে।</translation>
+<translation id="4654457557264366314">পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে।</translation>
 <translation id="4658638640878098064">উপরে বাঁদিকে স্টেপল করুন</translation>
 <translation id="4660592918803576381">Drive-এ খুলুন</translation>
 <translation id="4661556981531699496">পোষ্য ও জীবজন্তু</translation>

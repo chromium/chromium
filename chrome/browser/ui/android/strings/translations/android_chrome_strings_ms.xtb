@@ -175,11 +175,13 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1791662854739702043">Dipasang</translation>
 <translation id="1792959175193046959">Tukar lokasi muat turun lalai pada bila-bila masa</translation>
 <translation id="1796666869097395659">Minimumkan tab untuk kembali kepada tab tersebut kemudian</translation>
+<translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1807709131360304325">Buka tetingkap baharu</translation>
 <translation id="1810845389119482123">Penyediaan penyegerakan permulaan belum selesai</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> tidak dapat diteruskan dengan menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Helaian bawah log masuk</translation>
+<translation id="1823492026305965829">Log masuk sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
 Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
@@ -854,6 +856,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4910889077668685004">Apl pembayaran</translation>
 <translation id="4912413785358399818">Alihkan tab</translation>
 <translation id="4913169188695071480">Berhenti memuat semula</translation>
+<translation id="4921224083091001889">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome sebagai <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Tangkapan skrin <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Anda boleh menyimpan imej dan fail untuk dilihat di luar talian atau dikongsi pada apl yang lain</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 penanda halaman dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}other{# penanda halaman dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
@@ -878,6 +881,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5007392906805964215">Semak</translation>
 <translation id="5010886807652684893">Paparan visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin menyambung</translation>
+<translation id="5012016139642806466">Dapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> dan <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> nampaknya berkaitan. Pastikan anda mempercayai <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> sebelum menggunakan kata laluan anda.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">15 minit yang lalu</translation>

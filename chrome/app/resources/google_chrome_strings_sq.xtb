@@ -21,6 +21,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="110877069173485804">Ky është Chrome për ty</translation>
 <translation id="1125124144982679672">Kush po e përdor Chrome?</translation>
 <translation id="1142745911746664600">Chrome nuk mund të përditësohet</translation>
+<translation id="1148360048981192980">Herën tjetër që të hapësh Chrome në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="1152920704813762236">Rreth ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Hape në Chrome</translation>
 <translation id="1157985233335035034">Gjuhët e fundit</translation>
@@ -150,6 +151,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2681444469812712297">Hap <ph name="URL" /> në një skedë të re në Google Chrome.</translation>
 <translation id="2699790011615497488">Hap Gemini në Chrome Beta</translation>
 <translation id="2712141162840347885">Zgjidh çdo gjë për të kërkuar me "Lenten e Google" ose shtyp butonin "Escape" për të dalë nga "Lentja e Google"</translation>
+<translation id="2723860029395667894">Shfaq gjithmonë shkurtoren e "Modalitetit të IA-së së Google"</translation>
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2742320827292110288">Paralajmërim: Google Chrome nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për ta çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
@@ -482,6 +484,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
+<translation id="6426623519983252346">Do të shikosh një kërkesë për të provuar <ph name="FEATURE_NAME" /> herën tjetër kur të hapësh Chrome për iOS.</translation>
 <translation id="6473905796280459355">Shko te faqja "Rreth Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
@@ -680,6 +683,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8641606876632989680">Chrome do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>
 <translation id="8656634243791296665">Hap Gemini në Chrome Dev</translation>
 <translation id="8669527147644353129">Ndihmësi i Google Chrome</translation>
+<translation id="8677922833187616101">Shfaq gjithmonë shkurtoren e "Modalitetit të IA-së së Google"</translation>
 <translation id="8679801911857917785">Kontrollon gjithashtu se cila faqe shfaqet kur fillon Chrome.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8712767363896337380">Pothuajse u përditësua! Nis Chrome sërish për të përfunduar përditësimin.</translation>

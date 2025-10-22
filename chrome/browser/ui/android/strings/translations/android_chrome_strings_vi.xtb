@@ -175,11 +175,13 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792959175193046959">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào</translation>
 <translation id="1796666869097395659">Thu nhỏ thẻ để quay lại sau</translation>
+<translation id="1799920918471566157">Mẹo dùng Chrome</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1807709131360304325">Mở một cửa sổ mới</translation>
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> không thể tiếp tục dùng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Bảng đăng nhập ở dưới cùng</translation>
+<translation id="1823492026305965829">Đăng nhập bằng <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Các địa chỉ và phương thức thanh toán trên Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
@@ -854,6 +856,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4910889077668685004">Ứng dụng thanh toán</translation>
 <translation id="4912413785358399818">Di chuyển thẻ</translation>
 <translation id="4913169188695071480">Ngừng làm mới</translation>
+<translation id="4921224083091001889">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome bằng <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Ảnh chụp màn hình <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Bạn có thể lưu hình ảnh và tệp để xem khi không có mạng hoặc chia sẻ trong các ứng dụng khác</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{Có 1 dấu trang và một số mục khác chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu vào Tài khoản Google của bạn.}other{Có # dấu trang và một số mục khác chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu vào Tài khoản Google của bạn.}}</translation>
@@ -878,6 +881,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5007392906805964215">Xem</translation>
 <translation id="5010886807652684893">Chế độ xem hình ảnh</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
+<translation id="5012016139642806466">Sử dụng mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> và <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> có vẻ liên quan đến nhau. Hãy đảm bảo <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> là trang web đáng tin cậy trước khi sử dụng mật khẩu của bạn.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">15 phút qua</translation>
@@ -1148,6 +1152,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6255809143828972562">Với các công cụ của Chrome, bạn có thể duyệt web an toàn và luôn nắm quyền kiểm soát</translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
 <translation id="6264485186158353794">Quay lại trang an toàn</translation>
+<translation id="6267106249090587268">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này do nội dung rác hoặc nội dung lừa đảo</translation>
 <translation id="6276708887952587684">Xem nguồn trang</translation>
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6278428485366576908">Chủ đề</translation>

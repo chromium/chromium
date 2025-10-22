@@ -1235,6 +1235,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5758759241456233788">Pregledi Mapa su isključeni. Ponovo ih uključite u Podešavanjima.</translation>
 <translation id="5759484603608560822">Sakrij preuzimanja</translation>
 <translation id="5767099457279594162">Lozinka nije deljena</translation>
+<translation id="5768870767339201169">Nastavite tamo gde ste stali</translation>
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ugroženu lozinku koja može da ugrozi bezbednost. Rešite problem odmah da biste bili bezbedni.}one{Imate {count} ugroženu lozinku koja može da ugrozi bezbednost. Rešite probleme odmah da biste bili bezbedni.}few{Imate {count} ugrožene lozinke koje mogu da ugroze bezbednost. Rešite probleme odmah da biste bili bezbedni.}other{Imate {count} ugroženih lozinki koje mogu da ugroze bezbednost. Rešite probleme odmah da biste bili bezbedni.}}</translation>
 <translation id="5791632441210678828">Dugme Sortiraj za fid Pratite.</translation>
 <translation id="5803566855766646066">Želite li stvarno da odbacite ovu novu karticu?</translation>
@@ -1691,6 +1692,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7484645889979462775">Nikad za ovaj sajt</translation>
 <translation id="7486006552035434095">Sinhronizujte uređaje</translation>
 <translation id="7491131399623468277">Idite u Podešavanja…</translation>
+<translation id="7491161827858509164">Da biste videli fajlove koje ste ranije preuzeli, otvorite <ph name="BEGIN_LINK" />Fajlove<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Nastavite sa izmenama</translation>
 <translation id="7500244509706269886">Automatski popuni obrazac</translation>
 <translation id="750493650310597496">Izabrano je 0 stavki</translation>
@@ -1728,6 +1730,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7612619742409846846">Prijavljeni ste u Google kao</translation>
 <translation id="7612849887607288481">Otvori meni za AI prototip</translation>
 <translation id="7620522820075868385">Otkaži</translation>
+<translation id="762078666799342162">Ranija preuzimanja možete da pregledate u <ph name="BEGIN_LINK" />Fajlovima<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Neispravna pristupna fraza</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="7640669552036055091">Kartice sa Android-a</translation>
@@ -1909,7 +1912,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8273982424131314219">Popunićete informacije na <ph name="URL" /></translation>
 <translation id="8275068909952022340">Još…</translation>
 <translation id="8277328362018795342">Sadržaj stranice se deli radi relevantnijih odgovora</translation>
-<translation id="8278488584187265939">Prilagodite početnu stranicu</translation>
 <translation id="8281781826761538115">Podrazumevano – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282657446819506217">Otvori u grupi kartica</translation>

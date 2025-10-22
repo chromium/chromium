@@ -467,7 +467,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="129808599775632797">&amp;Modyfikacje</translation>
 <translation id="130097046531636712">Ten tryb pozwala oszczędzać baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie</translation>
 <translation id="1301135395320604080">Strona <ph name="ORIGIN" /> może edytować te pliki</translation>
-<translation id="130174306655812048">Powiedz na przykład „OK Google, co to za utwór?”</translation>
 <translation id="1302227299132585524">Zezwól na kod JavaScript z Apple Events</translation>
 <translation id="1303101771013849280">Plik HTML z zakładkami</translation>
 <translation id="1303671224831497365">Nie znaleziono urządzeń Bluetooth</translation>
@@ -798,7 +797,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1541346352678737112">Nie znaleziono sieci</translation>
 <translation id="154198613844929213">{0,plural, =0{Usuwam.}=1{Usuwam za: 1 sekundę}few{Usuwam za: # sekundy}many{Usuwam za: # sekund}other{Usuwam za: # sekundy}}</translation>
 <translation id="1542137295869176367">Nie udało się zaktualizować Twoich danych logowania</translation>
-<translation id="1542524755306892917">Dzięki temu, gdy <ph name="SUPERVISED_USER_NAME" /> zadaje pytania, Asystent Google może udzielać spersonalizowanych odpowiedzi.</translation>
 <translation id="1543284117603151572">Zaimportowane z Edge</translation>
 <translation id="1543538514740974167">Szybciej do celu</translation>
 <translation id="1544588554445317666">Skróć nazwę pliku lub zapisz go w innym folderze</translation>
@@ -1171,7 +1169,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1784849162047402014">Na urządzeniu jest mało miejsca.</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tej aplikacji:}few{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tych aplikacji:}many{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tych aplikacji:}other{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tych aplikacji:}}</translation>
 <translation id="1786290960428378411">Prosi o zgodę na odczytywanie i zmienianie danych</translation>
-<translation id="1787350673646245458">Zdjęcie użytkownika</translation>
 <translation id="1790976235243700817">Anuluj dostęp</translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792619191750875668">Ekran rozszerzony</translation>
@@ -1295,7 +1292,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1871098866036088250">Otwórz w przeglądarce Chrome</translation>
 <translation id="1871131409931646355">Pełna historia pobierania</translation>
 <translation id="187145082678092583">Mniej aplikacji</translation>
-<translation id="1871534214638631766">Pokazuj powiązane informacje po kliknięciu prawym przyciskiem lub przytrzymaniu treści</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> używa aktualnej wersji oprogramowania</translation>
 <translation id="1873513359268939357">Kalendarz Outlooka</translation>
 <translation id="1873920700418191231">Przyznaj ponownie uprawnienia witrynie <ph name="WEBSITE" /></translation>
@@ -1322,7 +1318,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1886996562706621347">Zezwól, by strony prosiły użytkownika o ustawienie ich jako domyślnego modułu obsługi protokołu (zalecane)</translation>
 <translation id="1887210448491286312">Zatrzymaj przesyłanie karty na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Błąd logowania</translation>
-<translation id="1887597546629269384">Jeszcze raz powiedz „Hej Google”</translation>
 <translation id="1890026367080681123">Otwórz ustawienia umieszczonych treści</translation>
 <translation id="189035593835762169">Warunki korzystania z usługi</translation>
 <translation id="1891362123137972260">Na dysku jest bardzo mało miejsca. Zwolnij miejsce.</translation>
@@ -1568,7 +1563,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2052572566310583903">Zainstalowano na innych urządzeniach</translation>
 <translation id="2052723746739622752">Odepnij Gemini</translation>
 <translation id="2053312383184521053">Dane o stanie bezczynności</translation>
-<translation id="205560151218727633">Logo Asystenta Google</translation>
 <translation id="2058456167109518507">Wykryto urządzenie</translation>
 <translation id="2059913712424898428">Strefa czasowa</translation>
 <translation id="2060375639911876205">Usuń profil eSIM</translation>
@@ -1929,15 +1923,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” prosi o dodatkowe uprawnienia.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Zapisz w usłudze <ph name="BRAND" /> na tym urządzeniu</translation>
-<translation id="2307553512430195144">Jeśli wyrazisz zgodę, Asystent Google będzie czekać w trybie gotowości na wykrycie „OK Google” i za pomocą funkcji Voice Match rozpozna, że mówi <ph name="SUPERVISED_USER_NAME" />.
-    <ph name="BR" />
-    Funkcja Voice Match pomaga Asystentowi Google rozpoznawać głos użytkownika <ph name="SUPERVISED_USER_NAME" /> na Twoim urządzeniu typu <ph name="DEVICE_TYPE" /> i odróżniać go od innych osób.
-    <ph name="BR" />
-    Asystent wykorzystuje fragmenty nagrań głosu Twojego dziecka, aby utworzyć unikalny model głosu, który jest zapisany tylko na urządzeniach dziecka. Model głosu Twojego dziecka może być tymczasowo wysyłany do Google, aby umożliwić dokładniejszą identyfikację.
-    <ph name="BR" />
-    Jeśli później uznasz, że funkcja Voice Match nie jest odpowiednia dla Twojego dziecka, po prostu usuń ją w ustawieniach Asystenta. Aby zobaczyć lub usunąć klipy audio utworzone przez dziecko podczas konfigurowania Voice Match, wejdź na <ph name="VOICE_MATCH_SETTINGS_URL" /> na jego koncie.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Te klawisze nie są obsługiwane: Tab, Shift, Control, Escape, Caps Lock i Głośność</translation>
 <translation id="2309620859903500144">Ta witryna ma zablokowany dostęp do czujników ruchu i oświetlenia.</translation>
 <translation id="2310923358723722542">Wyświetlanie i powiększenie</translation>
@@ -2345,7 +2330,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2599048253926156421">Nazwa użytkownika została skopiowana do schowka</translation>
 <translation id="2602501489742255173">Przesuń palcem w górę, by rozpocząć</translation>
 <translation id="2603115962224169880">Oczyść komputer</translation>
-<translation id="2603355571917519942">Funkcja Voice Match jest gotowa</translation>
 <translation id="2604129989323098489">Strony zwykle proszą o informacje o wyświetlaczach, aby inteligentnie rozmieszczać otwierane okna. Przydaje się to np. przy wyświetlaniu dokumentów czy treści pełnoekranowych obok siebie.</translation>
 <translation id="2604255671529671813">Błąd połączenia z siecią</translation>
 <translation id="2604805099836652105">Formularz adresu (<ph name="ADDRESS_LABEL" />) został wypełniony.</translation>
@@ -2626,7 +2610,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2777525873368474674">Wklej link do obrazu</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Znaleziono 1 witrynę z dużą liczbą powiadomień}few{Znaleziono {NUM_SITES} witryny z dużą liczbą powiadomień}many{Znaleziono {NUM_SITES} witryn z dużą liczbą powiadomień}other{Znaleziono {NUM_SITES} witryny z dużą liczbą powiadomień}}</translation>
 <translation id="2778471504622896352">Dodaj aplikacje zdalne do Menu z aplikacjami w ChromeOS</translation>
-<translation id="2779728796406650689">Dzięki temu, gdy zadajesz pytania, Asystent Google może udzielać spersonalizowanych odpowiedzi.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
@@ -3222,7 +3205,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3211126692872351610">&amp;Szukaj „<ph name="SEARCH_TERMS" />” w <ph name="SEARCH_ENGINE" /> w nowej karcie</translation>
 <translation id="321367297115597343">Dodaj zakładkę do tego folderu</translation>
 <translation id="3213681682237645841">Pobieram głosy w języku: <ph name="LANGUAGE" />…</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> osoby, które mają podobny głos lub użyją nagrania, również będą mogły uzyskać dostęp do wyników użytkownika <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Utworzyć skrót?</translation>
 <translation id="321834671654278338">Dezinstalator aplikacji na Linuksa</translation>
 <translation id="3220943972464248773">Aby zsynchronizować hasła, potwierdź swoją tożsamość</translation>
@@ -3267,7 +3249,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – błąd sieci</translation>
 <translation id="3248902735035392926">Dbaj o bezpieczeństwo. Poświęć chwilę na <ph name="BEGIN_LINK" />sprawdzenie swoich rozszerzeń<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Synchronizacja plików</translation>
-<translation id="3251714896659475029">Pozwól użytkownikowi <ph name="SUPERVISED_USER_NAME" /> na przywoływanie Asystenta Google za pomocą „OK Google”</translation>
 <translation id="3251759466064201842">&lt;brak w certyfikacie&gt;</translation>
 <translation id="325238099842880997">Ustaw zasady korzystania z urządzeń cyfrowych, które pomogą dzieciom podczas zabawy, przeglądania treści i nauki w domu</translation>
 <translation id="3253225298092156258">Niedostępna</translation>
@@ -3368,7 +3349,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3319863571062685443">Adres został zapisany</translation>
 <translation id="3320271870899888245">Nie udało się połączyć z OneDrive. Spróbuj ponownie.</translation>
 <translation id="3320630259304269485">Bezpieczne przeglądanie (ochrona przed niebezpiecznymi stronami) i inne ustawienia zabezpieczeń</translation>
-<translation id="3320909810101200102">Aby wybrać dokument tożsamości, zeskanuj kod QR</translation>
 <translation id="3320957378743864387">Nie zezwolono na oferowanie pomocy w pisaniu</translation>
 <translation id="3321460131042519426">Włącz zawijanie wyrazów</translation>
 <translation id="3321494112580110651">Nie widzisz swojej drukarki?</translation>
@@ -3413,7 +3393,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="335581015389089642">Mowa</translation>
 <translation id="335587007651175930">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="3355936511340229503">Błąd połączenia</translation>
-<translation id="3356580349448036450">Zakończone</translation>
 <translation id="3359256513598016054">Ograniczenia zasad certyfikatu</translation>
 <translation id="3360297538363969800">Drukowanie nie udało się. Sprawdź swoją drukarkę i spróbuj ponownie.</translation>
 <translation id="3360306038446926262">Okna</translation>
@@ -3505,7 +3484,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3418798368381485936">Nie możesz zalogować się za pomocą tego konta</translation>
 <translation id="3420501302812554910">Wymagane jest zresetowanie wewnętrznego klucza bezpieczeństwa</translation>
 <translation id="3421387094817716717">Kryptografia klucza publicznego oparta na krzywych eliptycznych</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> osoba, która ma podobny głos lub użyje nagrania, również może mieć dostęp do Twoich wyników lub Asystenta.</translation>
 <translation id="3422989558057853751">Wybrano ostatni element. Odznaczenie go spowoduje wyjście z trybu wyboru</translation>
 <translation id="3423111258700187173">Wyniki znalezione w folderze <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Więcej informacji o tej funkcji opartej na AI</translation>
@@ -3832,7 +3810,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3636940436873918441">Preferowane języki</translation>
 <translation id="3637203148990213388">Dodatkowe konta</translation>
 <translation id="3640347231390550691">Chroń hasła przed phishingiem</translation>
-<translation id="3640613767643722554">Naucz Asystenta rozpoznawać Twój głos</translation>
 <translation id="364100968401221170">Aby usunąć dane przeglądania ze wszystkich zsynchronizowanych urządzeń i z konta Google, <ph name="BEGIN_LINK" />zaloguj się<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Musisz zaktualizować aplikację Steam na Chromebooka (beta). Uruchom ponownie Chromebooka i spróbuj jeszcze raz.</translation>
 <translation id="3641299252000913351">Trwa aktualizacja oprogramowania modemu. Nie wyłączaj urządzenia.</translation>
@@ -4021,7 +3998,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="375636864092143889">Strona używa mikrofonu</translation>
 <translation id="3756485814916578707">Przesyłam ekran</translation>
 <translation id="3756578970075173856">Ustawianie kodu PIN</translation>
-<translation id="3756795331760037744">Pozwól Asystentowi Google na używanie informacji wyświetlanych na ekranie użytkownika <ph name="SUPERVISED_USER_NAME" /> w celu oferowania pomocy</translation>
 <translation id="3756806135608816820">Witryny mogą prosić o zgodę na wyszukanie urządzeń Bluetooth</translation>
 <translation id="3757567010566591880">Odepnij od paska narzędzi</translation>
 <translation id="3757733214359997190">Nie znaleziono stron</translation>
@@ -4583,7 +4559,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4126375522951286587">Wyłącz: <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Dziennik urządzenia</translation>
-<translation id="4130750466177569591">Zgadzam się</translation>
 <translation id="4130877444234883490">Aby nacisnąć i przytrzymać przycisk myszy, użyj klawisza „M”</translation>
 <translation id="4130948219446157616">Zamknij widok u dołu</translation>
 <translation id="413121957363593859">Komponenty</translation>
@@ -4615,7 +4590,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
 <translation id="4149385644005013189">Wszystko wygląda świetnie.</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
-<translation id="4150569944729499860">Kontekst z ekranu</translation>
 <translation id="4151449637210235443">Opisz nam swoją ostatnią rozgrywkę</translation>
 <translation id="4151503145138736576">Brak miejsca na dane offline do wyczyszczenia</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
@@ -5140,7 +5114,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4532183705767666195">{COUNT,plural, =1{1 klucz dostępu}few{{COUNT} klucze dostępu}many{{COUNT} kluczy dostępu}other{{COUNT} klucza dostępu}}</translation>
 <translation id="4532625150642446981">Urządzenie „<ph name="USB_DEVICE_NAME" />” jest używane. Zmiana przypisania urządzenia, gdy jest ono używane, może spowodować błędy. Na pewno chcesz kontynuować?</translation>
 <translation id="4532646538815530781">Ta strona używa czujników ruchu.</translation>
-<translation id="4533846798469727141">Teraz powiedz „Hej Google”</translation>
 <translation id="4533985347672295764">Czas pracy procesora</translation>
 <translation id="4534661889221639075">Spróbuj ponownie.</translation>
 <translation id="4535127706710932914">Profil domyślny</translation>
@@ -5443,7 +5416,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Wyłącz wyciszenie strony}few{Wyłącz wyciszenie stron}many{Wyłącz wyciszenie stron}other{Wyłącz wyciszenie stron}}</translation>
 <translation id="4745096442457817087">Znaleźliśmy Twoje hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych</translation>
 <translation id="4745500401920035244">Administrator wprowadził zmianę systemową, która wyłączyła niektóre stare profile. Nie masz już dostępu do tego profilu, ale nadal możesz go usunąć</translation>
-<translation id="474609389162964566">Uruchamiaj Asystenta, mówiąc „OK Google”</translation>
 <translation id="4746757725581505837">Zamierzasz usunąć dane aplikacji <ph name="BRAND" /> zapisane na tym urządzeniu</translation>
 <translation id="4748783296226936791">Witryny zwykle łączą się z urządzeniami HID w celu obsługi funkcji, które korzystają z niestandardowych klawiatur, kontrolerów gier i innych urządzeń</translation>
 <translation id="4750185073185658673">Sprawdź więcej uprawnień na telefonie. Sprawdź, czy na telefonie są włączone Bluetooth i Wi-Fi.</translation>
@@ -5620,7 +5592,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="486635084936119914">Automatycznie otwieraj określone typy plików po pobraniu</translation>
 <translation id="4867272607148176509">Rodzice mogą zatwierdzać i blokować aplikacje, ustawiać limity czasu oraz kontrolować przeglądanie internetu. Później można dodać konto szkolne, aby uzyskać dostęp do większości zasobów szkolnych.</translation>
 <translation id="4867433544163083783">Sprawdź, czy można już uporządkować karty</translation>
-<translation id="4868281708609571334">Naucz Asystenta Google rozpoznawać głos użytkownika <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">To okno nie jest teraz zaznaczone. Aby je zaznaczyć, naciśnij Command-Shift-Opcja A.</translation>
 <translation id="4868351661310357223">Instaluj aplikacje i gry z Google Play na urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Odczytywanie informacji o sieci ChromeOS</translation>
@@ -6251,7 +6222,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5307386115243749078">Sparuj przełącznik Bluetooth</translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5308989548591363504">Sprawdź, czy na komputerze nie ma złośliwego oprogramowania</translation>
-<translation id="5309418307557605830">Tu też działa Asystent Google</translation>
 <translation id="5309641450810523897">Identyfikator zgłoszenia do zespołu pomocy</translation>
 <translation id="5311304534597152726">Logowanie się jako</translation>
 <translation id="5312746996236433535">odbicie lustrzane ekranu</translation>
@@ -6777,7 +6747,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5687935527303996204">Sprawdź, czy Twoje urządzenie jest prawidłowo podłączone, i nie wyłączaj go. Instalacja może potrwać do 20 minut. Po ukończeniu instalacji urządzenie automatycznie się wyłączy.</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Lokalizacja</translation>
-<translation id="5689531695336322499">Wygląda na to, że użytkownik <ph name="SUPERVISED_USER_NAME" /> już skonfigurował funkcję Voice Match z Asystentem na innym urządzeniu. Zapisane tam nagrania zostały użyte do utworzenia modelu głosu na tym urządzeniu.</translation>
 <translation id="56907980372820799">Połącz dane</translation>
 <translation id="5691581861107245578">Otrzymuj sugestie dotyczące emotikonów na podstawie tego, co piszesz</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
@@ -7296,7 +7265,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6059925163896151826">Urządzenia USB</translation>
 <translation id="6061408389284235459">Powiadomienie zostało wysłane na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Utwórz kod QR</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> osoby, które mają podobny głos lub użyją nagrania, również będą mogły uzyskać dostęp do wyników użytkownika <ph name="SUPERVISED_USER_NAME" />. Aby oszczędzać baterię, w ustawieniach Asystenta użytkownika <ph name="SUPERVISED_USER_NAME" /> możesz wybrać opcję powodującą, że „OK Google” jest włączone tylko wtedy, gdy urządzenie jest podłączone do źródła zasilania.</translation>
 <translation id="6064217302520318294">Blokada ekranu</translation>
 <translation id="606449270532897041">Zarządzaj danymi witryn</translation>
 <translation id="6064764629679333574">Popraw jakość dźwięku mikrofonu Bluetooth, przeskalowując dźwięk o niskiej rozdzielczości do wysokiej.</translation>
@@ -7820,6 +7788,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6434309073475700221">Odrzuć</translation>
 <translation id="6434325376267409267">Zanim będzie można używać <ph name="APP_NAME" />, musisz zaktualizować urządzenie.</translation>
 <translation id="6434755719322447931">Chaotyczny</translation>
+<translation id="6435307030888827407">Nie chcę się logować</translation>
 <translation id="6435339218366409950">Wybierz język, na który chcesz przetłumaczyć napisy</translation>
 <translation id="6436164536244065364">Zobacz w Chrome Web Store</translation>
 <translation id="6436778875248895551">Rozszerzenie „<ph name="EXTENSION_NAME" />” zablokował administrator</translation>
@@ -8069,7 +8038,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6602956230557165253">Nawiguj za pomocą strzałek w lewo i w prawo.</translation>
 <translation id="6603185457265641428">Wybierz, czy chcesz zsynchronizować historię</translation>
 <translation id="6605847144724004692">Nikt jeszcze tego nie ocenił</translation>
-<translation id="6606671997164410857">Wygląda na to, że masz już skonfigurowanego Asystenta na innym urządzeniu. Możesz jeszcze lepiej wykorzystać Asystenta, jeśli włączysz na tym urządzeniu kontekst z ekranu.</translation>
 <translation id="6607831829715835317">Więcej narzę&amp;dzi</translation>
 <translation id="6607890859198268021">Konto <ph name="USER_EMAIL" /> jest już zarządzane przez domenę <ph name="DOMAIN" />. Aby korzystać z kontroli rodzicielskiej na innym koncie Google, wyloguj się po konfiguracji, a potem wybierz „Dodaj osobę” na ekranie logowania.</translation>
 <translation id="6608166463665411119">Zresetuj kartę eSIM</translation>
@@ -8169,7 +8137,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6674571176963658787">Aby rozpocząć synchronizację, wpisz hasło wielowyrazowe</translation>
 <translation id="6675665718701918026">Podłączono urządzenie wskazujące</translation>
 <translation id="6675717447295898330">Utwórz nowy profil służbowy bez moich dotychczasowych danych</translation>
-<translation id="6676212663108450937">Przy uczeniu systemu swojego głosu warto korzystać ze słuchawek</translation>
 <translation id="6676291960742508499">Twoje karty, tytuły stron i adresy URL są wysyłane do Google</translation>
 <translation id="667752334740867460">Odbieram informacje o sieci Wi-Fi…</translation>
 <translation id="6677527809400770913">Przypisano gest <ph name="GESTURE" /> do czynności <ph name="ACTION" /></translation>
@@ -8189,9 +8156,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6686817083349815241">Zapisz hasło</translation>
 <translation id="6687008241368170505">Zmień kod PIN Menedżera haseł Google</translation>
 <translation id="6687079240787935001">Ukryj: <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Niech <ph name="SUPERVISED_USER_NAME" /> podejdzie teraz do komputera. Poproś dziecko o przeczytanie kilku wyrażeń z ekranu. Jest to konieczne, aby można było utworzyć model jego głosu.
-    <ph name="BR" />
-    Jeśli <ph name="SUPERVISED_USER_NAME" /> potrzebuje pomocy w czytaniu, niech powtarza za Tobą. Mów szeptem z dala od mikrofonu, aby Asystent nauczył się głosu dziecka, a nie Twojego.</translation>
 <translation id="6689948774466767379">Klawisze myszy</translation>
 <translation id="6690659332373509948">Nie można przeanalizować pliku: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Dalej</translation>
@@ -8368,13 +8332,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6808166974213191158">Program do zapisu obrazu systemu ChromeOS Flex</translation>
 <translation id="6808193438228982088">Lis</translation>
 <translation id="6809470175540814047">Otwórz w oknie incognito</translation>
-<translation id="6809656734323672573">Jeśli wyrazisz zgodę, Asystent Google będzie czekać w trybie gotowości na wykrycie „OK Google” i za pomocą funkcji Voice Match rozpoznawać, że to Ty mówisz.
-    <ph name="BR" />
-    Voice Match pozwala Asystentowi rozpoznawać Cię po głosie i odróżniać od innych osób. Asystent wykorzystuje fragmenty nagrań Twojego głosu, aby utworzyć jego unikalny model, który jest zapisany tylko na Twoim urządzeniu. Model Twojego głosu może być tymczasowo wysyłany do Google, aby umożliwić dokładniejszą identyfikację.
-    <ph name="BR" />
-    Jeśli po jakimś czasie stwierdzisz, że funkcja Voice Match Ci nie odpowiada, po prostu usuń ją w ustawieniach Asystenta. Aby zobaczyć lub usunąć klipy audio utworzone podczas konfigurowania Voice Match, wejdź na <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Automatycznie loguj się na stronach, używając zapisanych danych logowania. Gdy ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
 <translation id="6811034713472274749">Strona jest gotowa do wyświetlenia</translation>
 <translation id="6811151703183939603">Mocna</translation>
@@ -8431,7 +8388,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6842868554183332230">Witryny zwykle wykrywają, kiedy używasz urządzenia, aby określić Twoją dostępność w aplikacjach do czatowania</translation>
 <translation id="6843264316370513305">Debugowanie sieci</translation>
 <translation id="6843404741389995311">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu i galerii zdjęć</translation>
-<translation id="6843423766595476978">Ukończono konfigurację OK Google</translation>
 <translation id="6843725295806269523">wyciszenie</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Otwórz zmaksymalizowane</translation>
@@ -8682,7 +8638,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7014741021609395734">Poziom powiększenia</translation>
 <translation id="7015135594296285641">Zezwalaj na rozszerzenia</translation>
 <translation id="7016995776279438971">Czerwono-zielony, słaby czerwony (protanomalia)</translation>
-<translation id="7017004637493394352">Powiedz „OK Google” jeszcze raz</translation>
 <translation id="7017219178341817193">Dodaj nową stronę</translation>
 <translation id="7017354871202642555">Nie można ustawić trybu po ustawieniu okna.</translation>
 <translation id="7019546817926942979">Podłącz urządzenie do zasilania. Uaktualnianie Linuksa może szybko rozładować baterię. Podłącz ładowarkę i spróbuj ponownie.</translation>
@@ -8738,7 +8693,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7059858479264779982">Ustaw automatyczne uruchamianie</translation>
 <translation id="7063129466199351735">Przetwarzam skróty...</translation>
 <translation id="7063311912041006059">Adres URL z parametrem <ph name="SPECIAL_SYMBOL" /> zamiast zapytania</translation>
-<translation id="706342288220489463">Zezwól Asystentowi na korzystanie z informacji na ekranie, aby mógł Ci pomagać</translation>
 <translation id="70641621694466590">Otwórz stronę Hasła</translation>
 <translation id="7064209589142995848">Przenoszenie treści</translation>
 <translation id="7064734931812204395">Konfiguruję kontener Linuksa. Może to potrwać do 30 minut.</translation>
@@ -9390,7 +9344,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7520766081042531487">Portal incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Pokaż skróty</translation>
 <translation id="7521430434164837205">Pliki Microsoft 365</translation>
-<translation id="7522255036471229694">Powiedz „OK Google”</translation>
 <translation id="7523117833414447032">Czytając wielkie litery</translation>
 <translation id="7523585675576642403">Zmień nazwę profilu</translation>
 <translation id="7525067979554623046">Utwórz</translation>
@@ -9709,7 +9662,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7736119438443237821">Zamierzasz usunąć możliwość korzystania z kluczy dostępu na tym urządzeniu</translation>
 <translation id="7737115349420013392">Paruję z urządzeniem „<ph name="DEVICE_NAME" />”…</translation>
 <translation id="7737203573077018777">Otrzymano instrukcję <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
-<translation id="7737846262459425222">W dowolnej chwili możesz to zmienić, klikając Ustawienia &gt; Asystent Google &gt; Kontekst z ekranu.</translation>
 <translation id="7737948071472253612">Nie zezwolono na używanie kamery</translation>
 <translation id="77381465218432215">Pokazuj znaki akcentu i znaki specjalne</translation>
 <translation id="7739524723876359011">Naciśnij <ph name="ACCELERATOR" />, aby zaznaczyć ten dymek.</translation>
@@ -9814,7 +9766,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7806659658565827531">Dodaj adnotację do głównego węzła</translation>
 <translation id="7806722269368320106">Instaluję aplikację</translation>
 <translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
-<translation id="7807117920154132308">Wygląda na to, że <ph name="SUPERVISED_USER_NAME" /> ma już skonfigurowanego Asystenta Google na innym urządzeniu. <ph name="SUPERVISED_USER_NAME" /> może jeszcze lepiej wykorzystać Asystenta, jeśli włączysz kontekst z ekranu na tym urządzeniu.</translation>
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="7810367892333449285">Wpisany ciąg musi mieć format <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adres<ph name="LPA_2" />$<ph name="LPA_3" />opcjonalny zgodny identyfikator<ph name="LPA_4" /></translation>
@@ -9873,7 +9824,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z Chrome OS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii Chrome OS, używanych funkcjach i typowym wykorzystaniu pamięci, a także dane o korzystaniu z aplikacji na Androida i dotyczące ich dane diagnostyczne. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub wstrzymać w dowolnym momencie w ustawieniach urządzenia z Chrome OS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jeśli na swoim koncie Google włączysz ustawienie Aktywność w internecie i aplikacjach, mogą być na nim zapisywane dane Androida. Na account.google.com możesz je zobaczyć, usunąć oraz zmienić ustawienia konta.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> osoba, która ma podobny głos lub użyje nagrania, również może mieć dostęp do Twoich wyników lub Asystenta. Aby oszczędzać baterię, możesz wybrać w ustawieniach Asystenta opcję powodującą, że „OK Google” jest włączone tylko wtedy, gdy urządzenie jest podłączone do źródła zasilania.</translation>
 <translation id="7851457902707056880">Logowanie zostało ograniczone tylko do konta właściciela. Uruchom ponownie i zaloguj się na nie. Komputer automatycznie uruchomi się ponownie za 30 sekund.</translation>
 <translation id="7851716364080026749">Zawsze blokuj dostęp do kamery i mikrofonu</translation>
 <translation id="78526636422538552">Dodawanie większej liczby kont Google jest wyłączone</translation>
@@ -10045,7 +9995,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7963408577288987423">{COUNT,plural, =1{1 hasło}few{{COUNT} hasła}many{{COUNT} haseł}other{{COUNT} hasła}}</translation>
 <translation id="7963513503134856713">Okno zostało przeniesione w prawo</translation>
 <translation id="7963608432878156675">Ta nazwa jest widoczna dla innych urządzeń połączonych przez sieć lub Bluetooth</translation>
-<translation id="7963826112438303517">Asystent używa tych nagrań i wypowiadanych przez Ciebie poleceń do tworzenia i aktualizowania modelu Twojego głosu. Model ten jest przechowywany tylko na tych urządzeniach, na których jest włączona funkcja Voice Match. W ustawieniach Asystenta możesz zobaczyć aktywność głosową oraz nauczyć go ponownie modelu głosu.</translation>
 <translation id="7964458523224581615">Zieleń chromowa</translation>
 <translation id="7965946703747956421">Usuń: <ph name="CREDENTIAL_TYPE" /> dla nazwy użytkownika: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">K&amp;opiuj adres obrazu</translation>
@@ -10190,6 +10139,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8050191834453426339">Zweryfikuj ponownie</translation>
 <translation id="8051193500142930381">Nie będą działać funkcje, które potrzebują kamery</translation>
 <translation id="8052218774860457016">Zarządzaj synchronizacją przeglądarki</translation>
+<translation id="8052898407431791827">Skopiowano do schowka</translation>
 <translation id="8052944601017749068">Zaimportuj do grupy <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Załaduj ponownie tę stronę</translation>
 <translation id="8054500940978949009">Zezwolono. Włącz <ph name="LINK_BEGIN" />w systemie dostęp do mikrofonu<ph name="LINK_END" />.</translation>
@@ -10207,7 +10157,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8061244502316511332">Ta karta używa mikrofonu</translation>
 <translation id="8061464966246066292">Wysoki kontrast</translation>
 <translation id="8061970399284390013">Sprawdzanie pisowni i gramatyki</translation>
-<translation id="8061991877177392872">Wygląda na to, że Asystent zna już Twój głos z innego urządzenia, na którym masz ustawioną funkcję Voice Match. Zapisane tam nagrania zostały użyte do utworzenia modelu głosu na tym urządzeniu.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 kartka}few{{COUNT} kartki}many{{COUNT} kartek}other{{COUNT} kartki}}</translation>
 <translation id="8063235345342641131">Domyślny zielony awatar</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11561,7 +11510,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8987321822984361516">Przeglądarka zarządzana przez organizację, profil zarządzany przez <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Miesiąc</translation>
 <translation id="8988539543012086784">Ta strona jest zapisana w folderze <ph name="BOOKMARK_FOLDER" /></translation>
-<translation id="8989034257029389285">Możesz zapytać: „OK Google, co to za utwór?”</translation>
 <translation id="8989359959810288806">Aktualizuj stan tetheringu</translation>
 <translation id="8989779557457435460">Domyślnie udostępniaj bieżącą kartę</translation>
 <translation id="8990243615717080992">Zaloguj się przy użyciu hasła lub innej metody przywracania</translation>
@@ -11818,7 +11766,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9153367754133725216">Wyświetlaj sugestie nowych aplikacji i treści z internetu w Menu z aplikacjami i w wynikach wyszukiwania. Wysyła statystyki, aby ulepszać sugestie, tylko wtedy, gdy masz włączone wysyłanie raportów o awariach, danych diagnostycznych i danych o korzystaniu do ChromeOS.</translation>
 <translation id="9154194610265714752">Zaktualizowano</translation>
 <translation id="915485121129452731">Tablet z rysikiem</translation>
-<translation id="9155100833189043833">Bezpiecznie użyj dokumentu tożsamości z urządzenia mobilnego</translation>
 <translation id="9155344700756733162">Odznacz kolor</translation>
 <translation id="9157096865782046368">0,8 s</translation>
 <translation id="9157697743260533322">Nie można skonfigurować automatycznych aktualizacji dla wszystkich użytkowników (błąd uruchomienia procesu wstępnego: <ph name="ERROR_NUMBER" />)</translation>
@@ -11839,7 +11786,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9167063903968449027">Pokaż listę Do przeczytania</translation>
 <translation id="9167450455589251456">Profil nie jest obsługiwany</translation>
 <translation id="9167813284871066981">Liczba kont: <ph name="NUM_ACCOUNTS" /></translation>
-<translation id="9168436347345867845">Później</translation>
 <translation id="9169093579080634183">Więcej informacji o kartach</translation>
 <translation id="9169496697824289689">Pokaż skróty klawiszowe</translation>
 <translation id="916964310188958970">Dlaczego ta sugestia?</translation>

@@ -4932,6 +4932,11 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
 <translation id="4472740647327683596">Ancho de la página en micrómetros</translation>
 <translation id="4474167089968829729">Habilitar el almacenamiento de contraseñas en el gestor de contraseñas</translation>
+<translation id="4474266799109921560">Si se le asigna el valor 2 a esta política, se impedirá automáticamente que los orígenes de aplicaciones web aisladas usen la API WebPrinting.
+
+Si se le asigna el valor 3 a la política, se avisará al usuario cuando un origen de aplicación web aislada quiera usar la API WebPrinting.
+
+Si no se le asigna ningún valor, los orígenes de aplicaciones web aisladas podrán solicitar acceso a una impresora local, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="447692108909279121">Gestión de IPs de WebRTC</translation>
 <translation id="4478248026668918517">Bloquea la detección del nivel de las políticas.</translation>
 <translation id="4479671363221255277">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
@@ -5289,6 +5294,14 @@ Tras la configuración inicial, los usuarios podrán activar y desactivar los se
 <translation id="4674542060943819878">Habilitar la opción de cerrar alertas de contraseñas vulneradas</translation>
 <translation id="4674871290487541952">Permite los algoritmos no seguros en las comprobaciones de integridad de las actualizaciones e instalaciones de extensiones</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
+<translation id="4681603713834987752">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique a qué sitios se concederá automáticamente el acceso a impresoras locales a través de la API WebPrinting.
+Los patrones válidos se limitan a las aplicaciones web aisladas.
+
+Si no se establece la política, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="46845898956959634">Permitir la función Ayúdame a escribir y mejorar los modelos de IA.</translation>
 <translation id="4685721728282448265">Acuerdo de claves poscuántico CECPQ2 habilitado para TLS</translation>
 <translation id="468822697351680932">Usar la política de lista de sitios de Internet Explorer como fuente de reglas</translation>
@@ -7373,6 +7386,14 @@ Esta política solo se aplica a los nuevos intentos de conexión y no anula las 
 <translation id="5983274643567559194">Se ha inhabilitado la asignación de una combinación de teclas para la acción Supr ("Suprimir").</translation>
 <translation id="5984099692320899605">No utilizar NTLM para la autenticación</translation>
 <translation id="5984237109586500246">Aceptar contenido web presentado como Signed HTTP Exchange</translation>
+<translation id="5985770641601021372">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique a qué sitios se denegará automáticamente el acceso a impresoras locales a través de la API WebPrinting.
+Los patrones válidos se limitan a las aplicaciones web aisladas.
+
+Si no se establece la política, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5987654816293745077">Informar sobre los contadores de tiempo de ejecución del dispositivo</translation>
 <translation id="5991707691018985057">Mostrar el cuadro de diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload. No mostrar el cuadro de diálogo de cancelación cuando event.returnValue sea la cadena vacía del evento beforeunload.</translation>
 <translation id="5992485316563377005">Si se habilita la política o no se define, se activará la integridad del código del renderizador.
@@ -7930,14 +7951,6 @@ Si no se establece esta política o se le asigna el valor <ph name="ALLOW" />, s
 ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en otras políticas relacionadas con la geolocalización (por ejemplo, <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />). En concreto, si se asigna el valor <ph name="DISALLOW" /> a esta política, las opciones <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> y <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> de la política <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> no funcionarán correctamente y solo usarán la resolución de ubicación basada en <ph name="IP" /> en la pantalla <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Ofrece información del sistema</translation>
 <translation id="6339355882150329269">No considerar que el usuario está inactivo durante la reproducción de vídeos</translation>
-<translation id="6347110299837147365">Esta política permite a los administradores cifrar la caché HTTP del navegador en el disco.
-Actualmente, solo es compatible con Windows.
-
-Si se habilita esta política, se cifrará la caché del navegador.
-
-Si se inhabilita esta política o no se define, no se cifrará la memoria caché del navegador.
-
-El cifrado de la memoria caché del navegador puede afectar al rendimiento.</translation>
 <translation id="6352714113109004581">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les permitan acceder a un dispositivo HID.
 
       Si no se establece la política, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios (si se ha definido). De lo contrario, se aplicará la configuración personal del usuario.
@@ -8514,6 +8527,7 @@ Si se habilita, la función User-Agent Client Hints GREASE Update ajustará el a
 <translation id="6687291630099400188">No mostrar información del sistema en la pantalla de inicio de sesión</translation>
 <translation id="6689343802305995925">No se realiza ninguna acción.</translation>
 <translation id="6689792153960219308">Informar sobre el estado del hardware</translation>
+<translation id="6690130879720759384">No permitir que los orígenes de aplicaciones web aisladas soliciten acceso a impresoras locales mediante la API WebPrinting</translation>
 <translation id="6690425645391461516">Inhabilitar las comprobaciones de interceptación de DNS y permitir las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="669066148640728553">Especifica un periodo objetivo para el final del periodo de notificación de reinicio.
 
@@ -11127,6 +11141,7 @@ Si no se define esta política, su comportamiento lo determinará la política <
 Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Oculta tienda web en página Nueva pestaña y en menú de aplicaciones</translation>
 <translation id="8567697114274003779">Definir una etiqueta de empresa personalizada para un perfil gestionado</translation>
+<translation id="8571069584826006598">Permitir que los orígenes de aplicaciones web aisladas soliciten al usuario acceso a impresoras locales mediante la API WebPrinting</translation>
 <translation id="8571119890730528225">Inhabilitar la partición del almacenamiento de terceros.</translation>
 <translation id="8571314270766672278">Restaurar y restablecer el dispositivo al cambiar a una versión inferior (intentar conservar el registro)</translation>
 <translation id="8571871284943706125">Informa de los eventos de sesiones de CRD en dispositivos registrados de usuarios afiliados.

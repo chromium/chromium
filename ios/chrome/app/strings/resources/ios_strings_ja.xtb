@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">マップ プレビューをオフにしました。設定で再びオンにできます。</translation>
 <translation id="5759484603608560822">ダウンロードを非表示</translation>
 <translation id="5767099457279594162">パスワードは共有されませんでした</translation>
+<translation id="5768870767339201169">中断したところから再開</translation>
 <translation id="5779117921996157216">{count,plural, =1{不正使用されたパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}other{不正使用されたパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}}</translation>
 <translation id="5791632441210678828">フォロー中のフィードの並べ替えボタン</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
@@ -1691,6 +1692,7 @@
 <translation id="7484645889979462775">このサイトでは保存しない</translation>
 <translation id="7486006552035434095">デバイスを同期する</translation>
 <translation id="7491131399623468277">[設定] に移動…</translation>
+<translation id="7491161827858509164">以前にダウンロードしたファイルを表示するには、<ph name="BEGIN_LINK" />ファイル<ph name="END_LINK" />を開きます</translation>
 <translation id="7498234416455752244">編集を続ける</translation>
 <translation id="7500244509706269886">フォームに自動入力</translation>
 <translation id="750493650310597496">選択されていません</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7612619742409846846">Google にログイン済みのユーザー</translation>
 <translation id="7612849887607288481">AI プロトタイプのメニューを開く</translation>
 <translation id="7620522820075868385">キャンセル</translation>
+<translation id="762078666799342162">以前にダウンロードしたファイルは、<ph name="BEGIN_LINK" />ファイル<ph name="END_LINK" />で確認できます</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{不正使用されたパスワード}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="7640669552036055091">Android で開いたタブ</translation>
@@ -1909,7 +1912,6 @@
 <translation id="8273982424131314219"><ph name="URL" /> に情報を入力します</translation>
 <translation id="8275068909952022340">その他…</translation>
 <translation id="8277328362018795342">関連性の高い回答を提供するため、ページ コンテンツが共有されます</translation>
-<translation id="8278488584187265939">ホームページをカスタマイズする</translation>
 <translation id="8281781826761538115">デフォルト - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282657446819506217">タブグループで開く</translation>

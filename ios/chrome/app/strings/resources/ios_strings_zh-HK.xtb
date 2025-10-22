@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">已關閉「地圖預覽」，你可前往「設定」重啟此功能。</translation>
 <translation id="5759484603608560822">隱藏「下載檔案」</translation>
 <translation id="5767099457279594162">未分享密碼</translation>
+<translation id="5768870767339201169">從上次離開的地方繼續瀏覽</translation>
 <translation id="5779117921996157216">{count,plural, =1{你有 {count} 個密碼被盜用，可能導致安全風險。請立即修正以確保安全。}other{你有 {count} 個密碼被盜用，可能導致安全風險。請立即修正以確保安全。}}</translation>
 <translation id="5791632441210678828">將追蹤緊嘅動態消息排次序嘅掣。</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
@@ -1909,7 +1910,6 @@
 <translation id="8273982424131314219">你將在 <ph name="URL" /> 中填入資料</translation>
 <translation id="8275068909952022340">更多…</translation>
 <translation id="8277328362018795342">系統會分享頁面內容，以找出更相關的答案</translation>
-<translation id="8278488584187265939">自訂首頁</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282657446819506217">在分頁群組中開啟</translation>

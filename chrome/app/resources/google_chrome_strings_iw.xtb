@@ -19,6 +19,7 @@
 <translation id="110877069173485804">‏זה ה-Chrome שלך</translation>
 <translation id="1125124144982679672">‏מי משתמש/ת ב-Chrome?</translation>
 <translation id="1142745911746664600">‏לא ניתן לעדכן את Chrome</translation>
+<translation id="1148360048981192980">‏בפעם הבאה ש-Chrome ייפתח במכשיר <ph name="DEVICE_TYPE" />, תופיע הנחיה להשתמש במנהל הסיסמאות של Google.</translation>
 <translation id="1152920704813762236">‏מידע על ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;פתיחה ב-Chrome</translation>
 <translation id="1157985233335035034">שפות אחרונות</translation>
@@ -146,6 +147,7 @@
 <translation id="2681444469812712297">‏פתיחה של <ph name="URL" /> בכרטיסייה חדשה ב-Google Chrome.</translation>
 <translation id="2699790011615497488">‏פתיחת Gemini ב-Chrome בטא</translation>
 <translation id="2712141162840347885">‏אפשר לבחור משהו לחיפוש באמצעות Google Lens או ללחוץ על Escape כדי לצאת מ-Google Lens</translation>
+<translation id="2723860029395667894">‏להציג תמיד את קיצור הדרך למצב Google AI</translation>
 <translation id="2738871930057338499">‏לא ניתן להתחבר לאינטרנט. HTTP 403: קוד איסור. צריך לבדוק את ההגדרה של שרת ה-proxy.</translation>
 <translation id="2742320827292110288">‏אזהרה: Google Chrome לא יכול למנוע מתוספים לתעד את היסטוריית הגלישה שלך. כדי להשבית את התוסף הזה במצב אנונימי, יש לבטל את הבחירה באפשרות הזו.</translation>
 <translation id="2753623023919742414">צריך ללחוץ כדי לחפש</translation>
@@ -475,6 +477,7 @@
 <translation id="6412673304250309937">‏המערכת בודקת כתובות URL ששמורות ב-Chrome ומכילות רשימות של אתרים לא בטוחים. אם אתר מסוים מנסה לגנוב סיסמה או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מהתוכן של הדף.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך דקה. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}one{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}two{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}other{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}}</translation>
 <translation id="6418662306461808273">‏לעבור לפרופיל Chrome קיים?</translation>
+<translation id="6426623519983252346">‏בפעם הבאה ש-Chrome ייפתח ב-iOS, תופיע הנחיה לנסות את <ph name="FEATURE_NAME" />.</translation>
 <translation id="6473905796280459355">‏מעבר לדף 'מידע על Chrome'</translation>
 <translation id="6481963882741794338">‏אפשר לקשר את Chrome לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
 <translation id="648319183876919572">הגרסה המשופרת של הגלישה הבטוחה מגנה עליך טוב יותר מפני הורדות ואתרים מסוכנים</translation>
@@ -673,6 +676,7 @@
 <translation id="8641606876632989680">‏אם מערכת Chrome תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="8656634243791296665">‏פתיחת Gemini ב-Chrome פיתוח</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">‏להציג תמיד את קיצור הדרך למצב Google AI</translation>
 <translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome.</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8712767363896337380">‏העדכון כמעט הושלם. כדי להשלים את העדכון, עליך להפעיל את Chrome מחדש.</translation>

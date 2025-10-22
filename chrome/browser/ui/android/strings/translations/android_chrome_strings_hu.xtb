@@ -175,11 +175,13 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792959175193046959">Az alapértelmezett letöltési helyet bármikor módosíthatja</translation>
 <translation id="1796666869097395659">Lap kis méretűre állítása a későbbi visszatéréshez</translation>
+<translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1807709131360304325">Új ablak nyitása</translation>
 <translation id="1810845389119482123">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
 <translation id="1812027881030482584">A(z) <ph name="SITE_ETLD_PLUS_ONE" /> nem folytathatja a bejelentkezést a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> használatával</translation>
 <translation id="1820408774134375111">Alsó bejelentkezési lap</translation>
+<translation id="1823492026305965829">Bejelentkezés mint <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Keresés ezen az oldalon</translation>
@@ -854,6 +856,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4910889077668685004">Fizetési alkalmazások</translation>
 <translation id="4912413785358399818">Lap áthelyezése</translation>
 <translation id="4913169188695071480">Frissítés leállítása</translation>
+<translation id="4921224083091001889">Ha az összes eszközén szeretne hozzáférni jelszavaihoz és egyebekhez, jelentkezzen be a Chrome-ba a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Képernyőkép (<ph name="CURRENT_DATE_ISO" />)</translation>
 <translation id="4926901776383726965">Képeket és fájlokat menthet az offline megtekintéshez vagy más alkalmazásokban való megosztáshoz</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába.}other{# könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába.}}</translation>
@@ -878,6 +881,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5010886807652684893">Vizuális nézet</translation>
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
+<translation id="5012016139642806466">Bármely eszközéről hozzáférhet jelszavaihoz és egyebekhez</translation>
 <translation id="5012253429094023177">Úgy tűnik, hogy a(z) <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> és a(z) <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> kapcsolódik egymáshoz. A jelszó használata előtt győződjön meg róla, hogy a(z) <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> megbízható.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Elmúlt 15 perc</translation>
@@ -1148,6 +1152,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6255809143828972562">A Chrome eszközeivel biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6264485186158353794">Vissza a biztonsághoz</translation>
+<translation id="6267106249090587268">Értesítések <ph name="SEPARATOR" /> A Chrome spam vagy megtévesztő tartalom miatt eltávolította ezeket az engedélyeket</translation>
 <translation id="6276708887952587684">Az oldal forrásának megtekintése</translation>
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
 <translation id="6278428485366576908">Téma</translation>

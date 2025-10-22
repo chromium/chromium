@@ -716,7 +716,7 @@
 <translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3853162385423733133">Continuez à utiliser et à enregistrer les mots de passe dans votre compte Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importer</translation>
-<translation id="3857113360369572832">Ouvrez les <ph name="BEGIN_BOLD" />paramètres de Safari<ph name="END_BOLD" /></translation>
+<translation id="3857113360369572832">Ouvrez les <ph name="BEGIN_BOLD" />réglages de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3868495844258915202">Afficher l'URL complète</translation>
 <translation id="3875783148670536197">Démonstration</translation>
@@ -1909,7 +1909,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8273982424131314219">Les informations saisies seront partagées avec <ph name="URL" /></translation>
 <translation id="8275068909952022340">Plus…</translation>
 <translation id="8277328362018795342">Le contenu de vos pages est partagé pour vous offrir des réponses plus pertinentes</translation>
-<translation id="8278488584187265939">Personnaliser la page d'accueil</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8282657446819506217">Ouvrir dans un groupe d'onglets</translation>
@@ -2180,6 +2179,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="94870150074703282">Supprimer le groupe ?</translation>
 <translation id="952704832371081537">Annuler</translation>
+<translation id="95332591904104970">Applis connectées</translation>
 <translation id="954667170699278022">Liste de lecture</translation>
 <translation id="956218893102219091">Utilisez votre position exacte pour obtenir les résultats Gemini les plus précis, au lieu d'une position estimée en fonction de votre adresse IP. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Supprimer les données de navigation</translation>

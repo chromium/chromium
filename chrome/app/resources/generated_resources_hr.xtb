@@ -467,7 +467,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="129808599775632797">Izmjene</translation>
 <translation id="130097046531636712">To produljuje trajanje baterije ograničavajući pozadinsku aktivnost i vizualne efekte kao što je glatko pomicanje</translation>
 <translation id="1301135395320604080">Web-lokacija <ph name="ORIGIN" /> može uređivati sljedeće datoteke</translation>
-<translation id="130174306655812048">Pokušajte reći "Hey Google, what song is this?" (Hey Google, koja je to pjesma?)</translation>
 <translation id="1302227299132585524">Dopusti JavaScript iz Appleovih događaja</translation>
 <translation id="1303101771013849280">HTML datoteka oznaka</translation>
 <translation id="1303671224831497365">Nije pronađen nijedan Bluetooth uređaj</translation>
@@ -798,7 +797,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1541346352678737112">Nije pronađena nijedna mreža</translation>
 <translation id="154198613844929213">{0,plural, =0{Briše se odmah.}=1{Briše se za 1 s}one{Briše se za # s}few{Briše se za # s}other{Briše se za # s}}</translation>
 <translation id="1542137295869176367">Podatke za prijavu nije moguće ažurirati</translation>
-<translation id="1542524755306892917">To Google asistentu omogućuje da pruži prilagođene odgovore kad <ph name="SUPERVISED_USER_NAME" /> postavi pitanja.</translation>
 <translation id="1543284117603151572">Uvezeno iz Edgea</translation>
 <translation id="1543538514740974167">Brže otvaranje ove stranice</translation>
 <translation id="1544588554445317666">Pokušajte upotrijebiti kraći naziv datoteke ili je spremiti u drugu mapu</translation>
@@ -1171,7 +1169,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1784849162047402014">Na uređaju nema dovoljno prostora</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Deinstaliranjem aplikacije <ph name="APP_NAME" /> deinstalirat će se i ova aplikacija:}one{Deinstaliranjem aplikacije <ph name="APP_NAME" /> deinstalirat će se i ove aplikacije:}few{Deinstaliranjem aplikacije <ph name="APP_NAME" /> deinstalirat će se i ove aplikacije:}other{Deinstaliranjem aplikacije <ph name="APP_NAME" /> deinstalirat će se i ove aplikacije:}}</translation>
 <translation id="1786290960428378411">Zahtijevanje čitanja i promjene</translation>
-<translation id="1787350673646245458">Slika korisnika</translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni zaslon</translation>
@@ -1295,7 +1292,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1871098866036088250">Otvori u pregledniku Chrome</translation>
 <translation id="1871131409931646355">Cijela povijest preuzimanja</translation>
 <translation id="187145082678092583">Manje aplikacija</translation>
-<translation id="1871534214638631766">Prikaz povezanih informacija kad sadržaj kliknete desnom tipkom ili dugo pritisnete</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> je ažuriran</translation>
 <translation id="1873513359268939357">Kalendar programa Outlook</translation>
 <translation id="1873920700418191231">Ponovo odobrite dopuštenja za web-lokaciju <ph name="WEBSITE" /></translation>
@@ -1322,7 +1318,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1886996562706621347">Dopusti web-lokacijama traženje dopuštenja da postanu zadani rukovatelji za protokole (preporučeno)</translation>
 <translation id="1887210448491286312">Zaustavi emitiranje kartice na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Pogreška prijave</translation>
-<translation id="1887597546629269384">Ponovo izgovorite "Hej Google"</translation>
 <translation id="1890026367080681123">Otvorite postavke ugrađenog sadržaja</translation>
 <translation id="189035593835762169">Uvjeti i odredbe</translation>
 <translation id="1891362123137972260">Količina prostora na disku kritično je mala. Oslobodite prostor na disku.</translation>
@@ -1569,7 +1564,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2052572566310583903">Instalirano na vašim drugim uređajima</translation>
 <translation id="2052723746739622752">Otkvači Gemini</translation>
 <translation id="2053312383184521053">Podaci o stanju mirovanja</translation>
-<translation id="205560151218727633">Logotip Google asistenta</translation>
 <translation id="2058456167109518507">Otkriven je uređaj</translation>
 <translation id="2059913712424898428">Vremenska zona</translation>
 <translation id="2060375639911876205">Uklanjanje profila eSIM-a</translation>
@@ -1942,15 +1936,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="23030561267973084">Proširenje "<ph name="EXTENSION_NAME" />" zatražilo je dodatne dozvole.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Spremi u <ph name="BRAND" /> na ovom uređaju</translation>
-<translation id="2307553512430195144">Ako prihvatite, Google asistent čekat će u stanju mirovanja da bi detektirao "Hey Google" i pomoću Voice Matcha može prepoznati da govori <ph name="SUPERVISED_USER_NAME" />.
-    <ph name="BR" />
-    Voice Match pomaže Google asistentu da prepozna kad govori <ph name="SUPERVISED_USER_NAME" /> na uređaju <ph name="DEVICE_TYPE" /> i da razlikuje to dijete od drugih.
-    <ph name="BR" />
-    Asistent na temelju isječaka djetetovog glasa stvara jedinstveni glasovni model koji se pohranjuje samo na djetetovim uređajima. Djetetov glasovni model može se privremeno poslati Googleu radi poboljšavanja prepoznavanja djetetovog glasa.
-    <ph name="BR" />
-    Ako kasnije odlučite da Voice Match ne odgovara vašem djetetu, jednostavno ga uklonite u djetetovim postavkama Asistenta. Da biste pregledali ili izbrisali audioisječke koje dijete snimi tijekom postavljanja Voice Matcha, posjetite <ph name="VOICE_MATCH_SETTINGS_URL" /> na djetetovom računu.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Nisu podržane sljedeće tipke: Tab, Shift, Control, Escape, Caps Lock i tipka za glasnoću</translation>
 <translation id="2309620859903500144">Web-lokaciji je zabranjen pristup vašim senzorima pokreta ili svjetla.</translation>
 <translation id="2310923358723722542">Prikaz i povećavanje</translation>
@@ -2362,7 +2347,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2599048253926156421">Korisničko ime kopirano je u međuspremnik</translation>
 <translation id="2602501489742255173">Prijeđite prstom prema gore za početak</translation>
 <translation id="2603115962224169880">Očistite računalo</translation>
-<translation id="2603355571917519942">Voice Match je spreman</translation>
 <translation id="2604129989323098489">Web-lokacije obično traže informacije o zaslonima kako bi inteligentno mogle otvarati i postavljati prozore, kao što su usporedno prikazivanje dokumenata ili sadržaja na cijelom zaslonu</translation>
 <translation id="2604255671529671813">Pogreška mrežne veze</translation>
 <translation id="2604805099836652105">Obrazac za adresu (<ph name="ADDRESS_LABEL" />) je ispunjen.</translation>
@@ -2643,7 +2627,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2777525873368474674">Zalijepi vezu na sliku</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Pronađena je 1 web-lokacija s mnogo obavijesti}one{Pronađena je {NUM_SITES} web-lokacija s mnogo obavijesti}few{Pronađene su {NUM_SITES} web-lokacije s mnogo obavijesti}other{Pronađeno je {NUM_SITES} web-lokacija s mnogo obavijesti}}</translation>
 <translation id="2778471504622896352">Dodavanje udaljenih aplikacija u pokretač OS-a Chrome</translation>
-<translation id="2779728796406650689">To Google asistentu omogućuje da pruži prilagođene odgovore kad postavljate pitanja.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Pogreška pri instaliranju Linux aplikacije</translation>
@@ -3240,7 +3223,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3211126692872351610">&amp;Traži pojmove <ph name="SEARCH_TERMS" /> na novoj kartici tražilice <ph name="SEARCH_ENGINE" /></translation>
 <translation id="321367297115597343">Dodaj oznaku u ovu mapu</translation>
 <translation id="3213681682237645841">Preuzimanje glasova na jeziku: <ph name="LANGUAGE" />...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom možda bi mogao pristupiti osobnim rezultatima s računa kojim se koristi <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Želite li izraditi prečac?</translation>
 <translation id="321834671654278338">Linuxov program za deinstalaciju</translation>
 <translation id="3220943972464248773">Za sinkroniziranje zaporki potvrdite da ste to vi</translation>
@@ -3285,7 +3267,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – mrežna pogreška</translation>
 <translation id="3248902735035392926">Sigurnost je bitna. Odvojite trenutak i <ph name="BEGIN_LINK" />provjerite svoja proširenja<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Sinkronizacija datoteka</translation>
-<translation id="3251714896659475029">Dopustite da <ph name="SUPERVISED_USER_NAME" /> pristupa Google asistentu tako da izgovori "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;Nije dio certifikata&gt;</translation>
 <translation id="325238099842880997">Postavite osnovna digitalna pravila kako biste djeci pomogli da se igraju, istražuju i rješavaju školske zadatke kod kuće</translation>
 <translation id="3253225298092156258">Nedostupno</translation>
@@ -3388,7 +3369,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3319863571062685443">Vaša je adresa spremljena</translation>
 <translation id="3320271870899888245">Povezivanje s OneDriveom nije moguće. Pokušajte ponovno.</translation>
 <translation id="3320630259304269485">Sigurno pregledavanje (zaštita od opasnih web-lokacija) i druge sigurnosne postavke</translation>
-<translation id="3320909810101200102">Da biste odabrali osobni dokument, skenirajte QR kôd</translation>
 <translation id="3320957378743864387">Nije dopušteno nuditi pomoć pri pisanju</translation>
 <translation id="3321460131042519426">Omogući prelazak riječi u drugi redak</translation>
 <translation id="3321494112580110651">Ne vidite svoj pisač?</translation>
@@ -3433,7 +3413,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="335581015389089642">Govor</translation>
 <translation id="335587007651175930">Pretražite sadržaj svojeg zaslona pomoću Google objektiva</translation>
 <translation id="3355936511340229503">Pogreška veze</translation>
-<translation id="3356580349448036450">Dovršeno</translation>
 <translation id="3359256513598016054">Ograničenja pravila certifikata</translation>
 <translation id="3360297538363969800">Ispis nije uspio. Provjerite svoj pisač i pokušajte ponovo.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -3525,7 +3504,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3418798368381485936">Ne možete se prijaviti pomoću ovog računa</translation>
 <translation id="3420501302812554910">Potrebno je vratiti interni sigurnosni ključ na zadano</translation>
 <translation id="3421387094817716717">Javni ključ s eliptičnom krivuljom</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom vašeg glasa možda bi mogao pristupiti vašim osobnim rezultatima ili vašem Asistentu.</translation>
 <translation id="3422989558057853751">Posljednja odabrana stavka, ako se poništi odabir, izlazi se iz načina odabira</translation>
 <translation id="3423111258700187173">Pronađeni su rezultati u mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saznajte više o ovoj AI značajci</translation>
@@ -3852,7 +3830,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3636940436873918441">Preferirani jezici</translation>
 <translation id="3637203148990213388">Dodatni računi</translation>
 <translation id="3640347231390550691">Zaštita zaporki od krađe identiteta</translation>
-<translation id="3640613767643722554">Naučite Asistent da prepoznaje vaš glas</translation>
 <translation id="364100968401221170">Da biste izbrisali podatke o pregledavanju sa svih svojih sinkroniziranih uređaja i svojeg Google računa, <ph name="BEGIN_LINK" />prijavite se<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Potrebno je ažurirati Steam za Chromebook (Beta). Ponovo pokrenite Chromebook i pokušajte ponovo.</translation>
 <translation id="3641299252000913351">U tijeku je ažuriranje firmwarea modema. Nemojte isključiti uređaj.</translation>
@@ -4041,7 +4018,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="375636864092143889">Web-lokacija upotrebljava vaš mikrofon</translation>
 <translation id="3756485814916578707">Emitiranje zaslona</translation>
 <translation id="3756578970075173856">Postavljanje PIN-a</translation>
-<translation id="3756795331760037744">Dopustite Google asistentu da koristi informacije na zaslonu kojim se koristi <ph name="SUPERVISED_USER_NAME" /> kako bi pomogao</translation>
 <translation id="3756806135608816820">Web-lokacije mogu tražiti dopuštenje traženja Bluetooth uređaja</translation>
 <translation id="3757567010566591880">Otkvači s alatne trake</translation>
 <translation id="3757733214359997190">Nijedna web-lokacija nije pronađena</translation>
@@ -4605,7 +4581,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4126375522951286587">Isključite uređaj <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Elastični</translation>
 <translation id="4130199216115862831">Zapisnik uređaja</translation>
-<translation id="4130750466177569591">Slažem se</translation>
 <translation id="4130877444234883490">Pomoću tipke m pritisnite i zadržite tipku miša</translation>
 <translation id="4130948219446157616">Zatvori donji prikaz</translation>
 <translation id="413121957363593859">Komponente</translation>
@@ -4637,7 +4612,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4148957013307229264">Instaliranje...</translation>
 <translation id="4149385644005013189">Sve je uredno!</translation>
 <translation id="4150201353443180367">Zaslon</translation>
-<translation id="4150569944729499860">Kontekst na zaslonu</translation>
 <translation id="4151449637210235443">Recite nam više o nedavnom konceptu igre</translation>
 <translation id="4151503145138736576">Nema offline pohrane za oslobađanje</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
@@ -5162,7 +5136,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4532183705767666195">{COUNT,plural, =1{Jedan pristupni ključ}one{{COUNT} pristupni ključ}few{{COUNT} pristupna ključa}other{{COUNT} pristupnih ključeva}}</translation>
 <translation id="4532625150642446981">Uređaj "<ph name="USB_DEVICE_NAME" />" se upotrebljava. Ponovna dodjela uređaja koji je upotrebi može uzrokovati pogreške. Jeste li sigurni da želite nastaviti?</translation>
 <translation id="4532646538815530781">Web-lokacija upotrebljava senzore kretanja.</translation>
-<translation id="4533846798469727141">Sada recite "Hej Google"</translation>
 <translation id="4533985347672295764">Vrijeme CPU-a</translation>
 <translation id="4534661889221639075">Pokušajte ponovno.</translation>
 <translation id="4535127706710932914">Zadani profil</translation>
@@ -5465,7 +5438,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Uključi zvuk na web-lokaciji}one{Uključi zvuk na web-lokacijama}few{Uključi zvuk na web-lokacijama}other{Uključi zvuk na web-lokacijama}}</translation>
 <translation id="4745096442457817087">Vaša je zaporka pronađena u javnom neovlaštenom pristupu podacima</translation>
 <translation id="4745500401920035244">Vaš je administrator unio promjene na razini sustava čime su onemogućeni neki stari profili. Više ne možete pristupiti tom profilu, no i dalje ga možete ukloniti</translation>
-<translation id="474609389162964566">Aktivirajte Asistenta tako da kažete Ok Google</translation>
 <translation id="4746757725581505837">Izbrisat ćete podatke usluge <ph name="BRAND" /> spremljene na ovom uređaju</translation>
 <translation id="4748783296226936791">Web-lokacije se obično povezuju s HID uređajima radi značajki koje koriste neuobičajene tipkovnice, upravljače za igre i druge uređaje</translation>
 <translation id="4750185073185658673">Pregled daljnjih nekoliko dopuštenja nastavite na telefonu. Provjerite jesu li na telefonu uključeni Bluetooth i Wi-Fi.</translation>
@@ -5642,7 +5614,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="486635084936119914">Otvaranje određenih vrsta datoteka automatski nakon preuzimanja</translation>
 <translation id="4867272607148176509">Roditelji mogu odobriti ili blokirati aplikacije, postaviti vremenska ograničenja i upravljati pregledavanjem weba. Školski račun može se dodati kasnije kako bi se moglo pristupiti većini školskih resursa.</translation>
 <translation id="4867433544163083783">Provjerite odmah mogu li se kartice organizirati</translation>
-<translation id="4868281708609571334">Naučite Google asistenta da prepoznaje glas djeteta (<ph name="SUPERVISED_USER_NAME" />)</translation>
 <translation id="4868284252360267853">Ovaj dijalog trenutačno nije fokusiran. Pritisnite Command – Shift – opcija A da biste fokusirali ovaj dijalog.</translation>
 <translation id="4868351661310357223">Instalirajte aplikacije i igre s Google Playa na <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Čitaj informacije o mreži za ChromeOS</translation>
@@ -6273,7 +6244,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5307386115243749078">Uparivanje Bluetooth prekidača</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5308989548591363504">Provjerite je li instaliran zlonamjerni softver</translation>
-<translation id="5309418307557605830">Google asistent radi i ovdje</translation>
 <translation id="5309641450810523897">ID upita za korisničku podršku</translation>
 <translation id="5311304534597152726">Prijavite se kao</translation>
 <translation id="5312746996236433535">zrcaljenje zaslona</translation>
@@ -6798,7 +6768,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5687935527303996204">Provjerite je li uređaj priključen i nemojte ga isključiti. Instaliranje može potrajati do 20 minuta. Uređaj će se automatski isključiti kad se instaliranje završi.</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Lokacija</translation>
-<translation id="5689531695336322499">Čini se da je <ph name="SUPERVISED_USER_NAME" /> već postavio/postavila Voice Match za Asistenta na nekom drugom uređaju. Te su snimke iskorištene za izradu glasovnog modela na ovom uređaju.</translation>
 <translation id="56907980372820799">Povežite podatke</translation>
 <translation id="5691581861107245578">Primajte prijedloge emojija na temelju onoga što upisujete</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
@@ -7316,7 +7285,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6061408389284235459">Obavijest je poslana na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Izrada QR kôda</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom možda bi mogao pristupiti osobnim rezultatima s računa kojim se koristi <ph name="SUPERVISED_USER_NAME" />. Radi štednje baterije u postavkama Asistenta računa kojim se koristi <ph name="SUPERVISED_USER_NAME" /> možete odabrati da se "Hey Google" detektira samo kad je uređaj priključen na izvor napajanja.</translation>
 <translation id="6064217302520318294">Zaključavanje zaslona</translation>
 <translation id="606449270532897041">Upravljanje podacima web-lokacije</translation>
 <translation id="6064764629679333574">Poboljšajte kvalitetu zvuka Bluetooth mikrofona pojačanjem zvuka niske razlučivosti na visoku razlučivost.</translation>
@@ -7840,6 +7808,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6434325376267409267">Ažurirajte uređaj da biste mogli koristiti <ph name="APP_NAME" />.</translation>
 <translation id="6434755719322447931">Kaotično</translation>
+<translation id="6435307030888827407">Ostanite odjavljeni</translation>
 <translation id="6435339218366409950">Odaberite jezik na koji će se prevesti titlovi</translation>
 <translation id="6436164536244065364">Pogledaj u web-trgovini</translation>
 <translation id="6436778875248895551">Administrator je blokirao proširenje <ph name="EXTENSION_NAME" /></translation>
@@ -8089,7 +8058,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6602956230557165253">Krećite se pomoću lijeve i desne strelice.</translation>
 <translation id="6603185457265641428">Odaberite hoćete li sinkronizirati povijest</translation>
 <translation id="6605847144724004692">Još nije ocijenio nijedan korisnik.</translation>
-<translation id="6606671997164410857">Čini se da ste već postavili Google asistenta na drugom uređaju. Da biste iskoristili još više Asistentovih prednosti, uključite kontekst na zaslonu na ovom uređaju.</translation>
 <translation id="6607831829715835317">Više a&amp;lata</translation>
 <translation id="6607890859198268021">Računom <ph name="USER_EMAIL" /> već upravlja <ph name="DOMAIN" />. Da biste koristili roditeljski nadzor s nekim drugim Google računom, odjavite se nakon postavljanja, a zatim na zaslonu za prijavu odaberite "Dodaj osobu".</translation>
 <translation id="6608166463665411119">Poništi eSIM</translation>
@@ -8189,7 +8157,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6674571176963658787">Za pokretanje sinkronizacije unesite šifru</translation>
 <translation id="6675665718701918026">Pokazivački je uređaj povezan</translation>
 <translation id="6675717447295898330">Izradi novi profil za posao bez mojih postojećih podataka</translation>
-<translation id="6676212663108450937">Preporučujemo da prilikom uvježbavanja glasovnog modela upotrebljavate slušalice</translation>
 <translation id="6676291960742508499">Vaše kartice, naslovi stranica i URL-ovi šalju se Googleu</translation>
 <translation id="667752334740867460">Primanje informacija o Wi-Fiju...</translation>
 <translation id="6677527809400770913">Pokret <ph name="GESTURE" /> dodijeljen je radnji <ph name="ACTION" /></translation>
@@ -8209,9 +8176,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6686817083349815241">Spremite zaporku</translation>
 <translation id="6687008241368170505">Promijenite PIN za Google upravitelj zaporki</translation>
 <translation id="6687079240787935001">Sakrij <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Neka <ph name="SUPERVISED_USER_NAME" /> dođe do računala. Dijete će pročitati nekoliko izraza na ovom zaslonu da bi se izradio njegov glasovni model.
-    <ph name="BR" />
-    Ako <ph name="SUPERVISED_USER_NAME" /> treba pomoć s čitanjem, neka ponavlja za vama. Šapćite dalje od mikrofona kako bi Asistent naučio prepoznavati djetetov, a ne vaš glas.</translation>
 <translation id="6689948774466767379">Tipke za pokrete mišem</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti datoteku: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Proslijedi</translation>
@@ -8388,13 +8352,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6808166974213191158">Zapisivač slike sustava ChromeOS Flex</translation>
 <translation id="6808193438228982088">Lisica</translation>
 <translation id="6809470175540814047">Otvori u anonimnom prozoru</translation>
-<translation id="6809656734323672573">Ako prihvatite, Google asistent čekat će u stanju mirovanja da bi detektirao "Hey Google" i pomoću Voice Matcha može prepoznati da govorite vi.
-    <ph name="BR" />
-    Voice Match omogućuje Asistentu da vas prepozna i razlikuje od drugih. Asistent na temelju isječaka vašeg glasa stvara jedinstveni glasovni model koji se pohranjuje samo na vašem uređaju. Vaš se glasovni model može privremeno poslati Googleu radi boljeg prepoznavanja vašeg glasa.
-    <ph name="BR" />
-    Ako kasnije odlučite da Voice Match nije za vas, jednostavno ga uklonite u postavkama Asistenta. Da biste pregledali ili izbrisali audioisječke koje ste snimili tijekom postavljanja Voice Matcha, posjetite <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Automatski se prijavite na web-lokacije pomoću spremljenih vjerodajnica. Kada je ta značajka onemogućena, tražit će se potvrda prije svakog prijavljivanja na web-lokaciju.</translation>
 <translation id="6811034713472274749">Stranica je spremna za prikaz</translation>
 <translation id="6811151703183939603">Čvrst</translation>
@@ -8453,7 +8410,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6842868554183332230">Web-lokacije obično otkriju kad aktivno koristite uređaj kako bi postavile vašu dostupnost u aplikacijama za chat</translation>
 <translation id="6843264316370513305">Otklanjanje pogrešaka mreže</translation>
 <translation id="6843404741389995311">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere i galerije fotografija</translation>
-<translation id="6843423766595476978">Ok Google spreman je za upotrebu</translation>
 <translation id="6843725295806269523">isključi ton</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Maksimalno otvaranje</translation>
@@ -8704,7 +8660,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7014741021609395734">Razina zumiranja</translation>
 <translation id="7015135594296285641">Dopustite proširenja</translation>
 <translation id="7016995776279438971">Crveno-zeleno, crveno – slabo (protanomalija)</translation>
-<translation id="7017004637493394352">Ponovo recite "Ok Google"</translation>
 <translation id="7017219178341817193">Dodajte novu stranicu</translation>
 <translation id="7017354871202642555">Nakon postavljanja prozora nije moguće postaviti način.</translation>
 <translation id="7019546817926942979">Uređaj mora biti priključen na napajanje. Nadogradnja Linuxa može značajno isprazniti bateriju. Priključite uređaj na punjač i pokušajte ponovno.</translation>
@@ -8760,7 +8715,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7059858479264779982">Postavi na automatsko pokretanje</translation>
 <translation id="7063129466199351735">Obrada prečaca...</translation>
 <translation id="7063311912041006059">URL sa simbolom <ph name="SPECIAL_SYMBOL" /> umjesto upita</translation>
-<translation id="706342288220489463">Dopustite Asistentu da koristi informacije na zaslonu kako bi vam pomogao</translation>
 <translation id="70641621694466590">Prelazak na stranicu Zaporke</translation>
 <translation id="7064209589142995848">Prijenos sadržaja</translation>
 <translation id="7064734931812204395">Konfigurira se Linuxov spremnik. To može potrajati 30 minuta.</translation>
@@ -9413,7 +9367,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7520766081042531487">Portal u anonimnom načinu: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Prikaži prečace</translation>
 <translation id="7521430434164837205">Microsoft 365 datoteke</translation>
-<translation id="7522255036471229694">Recite "Ok Google"</translation>
 <translation id="7523117833414447032">Prilikom čitanja velikih slova</translation>
 <translation id="7523585675576642403">Preimenujte profil</translation>
 <translation id="7525067979554623046">Stvori</translation>
@@ -9732,7 +9685,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7736119438443237821">Spremate se ukloniti pristup pristupnim ključevima na ovom uređaju</translation>
 <translation id="7737115349420013392">Uparivanje s uređajem "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7737203573077018777">Primljena je uputa <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
-<translation id="7737846262459425222">To uvijek možete promijeniti u Postavkama &gt; Google asistent &gt; Kontekst na zaslonu.</translation>
 <translation id="7737948071472253612">Nije dopuštena upotreba kamere</translation>
 <translation id="77381465218432215">Prikaz naglasaka i posebnih znakova</translation>
 <translation id="7739524723876359011">Pritisnite <ph name="ACCELERATOR" /> da biste fokusirali ovaj oblačić.</translation>
@@ -9837,7 +9789,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7806659658565827531">Dodavanje zabilješke glavnog čvora</translation>
 <translation id="7806722269368320106">Aplikacija, instalira se</translation>
 <translation id="7807067443225230855">Pretraživanje i Asistent</translation>
-<translation id="7807117920154132308">Čini se da je <ph name="SUPERVISED_USER_NAME" /> već postavio/postavila Google asistenta na nekom drugom uređaju. <ph name="SUPERVISED_USER_NAME" /> može iskoristiti još više Asistentovih prednosti tako da uključi kontekst na zaslonu na ovom uređaju.</translation>
 <translation id="7807711621188256451">Uvijek dopusti hostu <ph name="HOST" /> pristup kameri</translation>
 <translation id="7810202088502699111">Na ovoj su stranici blokirani skočni prozori.</translation>
 <translation id="7810367892333449285">Unos treba biti u formatu <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adresa<ph name="LPA_2" />$<ph name="LPA_3" />neobavezno podudaranje ID-ja<ph name="LPA_4" /></translation>
@@ -9896,7 +9847,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o situacijama u kojima se OS Chrome ruši, o tome kojim se značajkama koristite, koliko memorije obično upotrebljavate te podatke o upotrebi i dijagnostici Android aplikacija. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama uređaja s OS-om Chrome. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ako je za vaš Google račun uključena postavka Aktivnost na webu i u aplikacijama, vaši podaci s Androida mogu se spremati na vaš Google račun. Na stranici account.google.com možete pogledati svoje podatke, izbrisati ih ili promijeniti postavke računa.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom vašeg glasa možda bi mogao pristupiti vašim osobnim rezultatima ili vašem Asistentu. Radi štednje baterije u postavkama Asistenta možete odabrati da se "Hey Google" detektira samo kad je uređaj priključen na izvor napajanja.</translation>
 <translation id="7851457902707056880">Prijava je ograničena na vlasnički račun. Ponovo pokrenite uređaj i prijavite se vlasničkim računom. Uređaj će se automatski ponovo pokrenuti za 30 sekundi.</translation>
 <translation id="7851716364080026749">Uvijek blokiraj pristup kameri i mikrofonu</translation>
 <translation id="78526636422538552">Dodavanje dodatnih Google računa onemogućeno je</translation>
@@ -10068,7 +10018,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7963408577288987423">{COUNT,plural, =1{1 zaporka}one{{COUNT} zaporka}few{{COUNT} zaporke}other{{COUNT} zaporki}}</translation>
 <translation id="7963513503134856713">Prozor je premješten udesno</translation>
 <translation id="7963608432878156675">Ovaj je naziv vidljiv drugim uređajima za povezivanje s Bluetoothom i mrežnom vezom</translation>
-<translation id="7963826112438303517">Te snimke i zahtjeve koje izgovorite Asistent upotrebljava za izradu i ažuriranje vašeg glasovnog modela koji se sprema samo na uređajima na kojima ste uključili Voice Match. Glasovnu aktivnost možete pregledati ili ponovo uvježbati u postavkama Asistenta.</translation>
 <translation id="7964458523224581615">Plavo-zelena</translation>
 <translation id="7965946703747956421">Izbrišite <ph name="CREDENTIAL_TYPE" /> za korisničko ime: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">K&amp;opiraj adresu slike</translation>
@@ -10213,6 +10162,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8050191834453426339">Ponovno potvrdite</translation>
 <translation id="8051193500142930381">Značajke kojima je potrebna kamera neće raditi</translation>
 <translation id="8052218774860457016">Upravljanje sinkronizacijom preglednika</translation>
+<translation id="8052898407431791827">Kopirano u međuspremnik</translation>
 <translation id="8052944601017749068">Uvezite u grupu <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Ponovo učitaj ovu stranicu</translation>
 <translation id="8054500940978949009">Dopušteno. Uključite <ph name="LINK_BEGIN" />pristup mikrofonu sustava<ph name="LINK_END" />.</translation>
@@ -10230,7 +10180,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8061244502316511332">Ova kartica upotrebljava vaš mikrofon</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8061970399284390013">Provjera pravopisa i gramatike</translation>
-<translation id="8061991877177392872">Čini se da ste već postavili Voice Match za svojeg Asistenta na nekom drugom uređaju. Te su snimke iskorištene za izradu glasovnog modela na ovom uređaju.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{Jedan list papira}one{{COUNT} list papira}few{{COUNT} lista papira}other{{COUNT} listova papira}}</translation>
 <translation id="8063235345342641131">Zadani zeleni avatar</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11588,7 +11537,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8987321822984361516">Preglednikom upravlja organizacija, profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8988539543012086784">Ova je stranica spremljena u: <ph name="BOOKMARK_FOLDER" /></translation>
-<translation id="8989034257029389285">Možete pitati "Hey Google, what song is this?" (Hey Google, koja je to pjesma?)</translation>
 <translation id="8989359959810288806">Osvježi status modemskog povezivanja</translation>
 <translation id="8989779557457435460">Dijeli trenutačnu karticu prema zadanim postavkama</translation>
 <translation id="8990243615717080992">Prijavite se pomoću zaporke ili nekog drugog načina oporavka</translation>
@@ -11848,7 +11796,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9153367754133725216">Pogledajte prijedloge za nove aplikacije i web-sadržaj u Pokretaču i rezultatima pretraživanja. Šalje statistiku radi poboljšanja prijedloga samo ako ste odabrali slanje izvješća o rušenju te dijagnostičkih podataka i podataka o upotrebi ChromeOS-u.</translation>
 <translation id="9154194610265714752">Ažurirano</translation>
 <translation id="915485121129452731">Grafički tablet</translation>
-<translation id="9155100833189043833">Sigurno upotrebljavajte osobni dokument s mobilnog uređaja</translation>
 <translation id="9155344700756733162">Poništi odabir boje</translation>
 <translation id="9157096865782046368">0,8 sekundi</translation>
 <translation id="9157697743260533322">Postavljanje automatskih ažuriranja za sve korisnike nije uspjelo (pogreška prilikom pokretanja pripremne provjere: <ph name="ERROR_NUMBER" />)</translation>
@@ -11869,7 +11816,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9167063903968449027">Prikaži popis za čitanje</translation>
 <translation id="9167450455589251456">Profil nije podržan</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> račun/računa</translation>
-<translation id="9168436347345867845">Kasnije ću</translation>
 <translation id="9169093579080634183">Saznajte više o karticama</translation>
 <translation id="9169496697824289689">Prikaz tipkovnih prečaca</translation>
 <translation id="916964310188958970">Zašto taj prijedlog?</translation>

@@ -788,6 +788,7 @@
 <translation id="22792995594807632">يجب مراجعة الملفات قبل تنزيلها</translation>
 <translation id="2283340219607151381">حفظ العناوين وملؤها</translation>
 <translation id="2283447177162560884">تم حذف "<ph name="PAGE_TITLE" />".</translation>
+<translation id="2283599456633275070">السفر</translation>
 <translation id="2286383991450886080">34 × 44 بوصة</translation>
 <translation id="2288422996159078444">تتم مراقبة أي نص تكتبه أو أي صفحات تطّلع عليها أو أي نشاط آخر تجريه على الإنترنت، ويمكن أن يتم تغيير المحتوى على المواقع الإلكترونية بدون معرفتك.</translation>
 <translation id="2289385804009217824">قطع</translation>
@@ -4637,7 +4638,7 @@
 <translation id="8601027005147870853">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> نشاطك على موقع إلكتروني تنتقل إليه باستخدام Chrome على هذا الجهاز</translation>
 <translation id="8601456038554914806">معدّات رياضات مائية</translation>
 <translation id="8601782593888534566">خيال علمي وفانتازيا</translation>
-<translation id="8604103095921958091">‏تم فتح شاشة بنود خدمة "الدفع الآجل" (BNPL) بطول الشاشة.</translation>
+<translation id="8604103095921958091">‏تم فتح صفحة بنود خدمة "الدفع الآجل" (BNPL) على كامل الشاشة.</translation>
 <translation id="8606988009912891950">‏تساعد ميزة "مواضيع الإعلانات" المواقع الإلكترونية في عرض إعلانات ملائمة لك، مع حماية سجلّ تصفّحك وهويتك. ويمكن لمتصفِّح Chrome تحديد المواضيع التي تهمّك بناءً على أحدث سجلّ تصفّح خاص بك. بعد ذلك، يمكن للموقع الإلكتروني الذي تنتقل إليه أن يطلب من Chrome مشاركته المواضيع المهمّة لك، وذلك بهدف تخصيص الإعلانات التي تظهر لك.</translation>
 <translation id="8612919051706159390">منتديات إلكترونية</translation>
 <translation id="8617269623452051934">استخدامك للجهاز</translation>
@@ -4878,7 +4879,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">يريد الموقع الإلكتروني <ph name="URL" /> البحث عن أي جهاز على شبكتك المحلية والاتصال به</translation>
 <translation id="9046864189129893978">الميكروفونات (<ph name="MICS_COUNT" />)</translation>
-<translation id="9046865906192819796">‏تم فتح شاشة بنود خدمة "الدفع الآجل" (BNPL) في نصف الشاشة.</translation>
+<translation id="9046865906192819796">‏تم فتح صفحة بنود خدمة "الدفع الآجل" (BNPL) في النصف السفلي.</translation>
 <translation id="9047528041803621289">يتيح لك محرك البحث التلقائي البحث على الويب، ويمكنك تغييره في الإعدادات.</translation>
 <translation id="9048035366624198823">تتطلّب هذه الإجراءات ضبط سياسة <ph name="POLICY_NAME" /> على "<ph name="POLICY_VALUE" />": <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 × 36 بوصة</translation>

@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
 <translation id="4300272766492248925">অ্যাপ্লিকেশান খুলুন</translation>
 <translation id="430786093962686457">শিফন</translation>
+<translation id="4309762678330556039">অটোমেটিক ট্রান্সক্রিপশন তৈরি করে অডিও সার্চ করুন। আপনি ইন্টারনেটে কানেক্ট না থাকলেও রেকর্ডিং তৈরি করতে পারবেন।</translation>
 <translation id="4310735698903592804">Google AI দ্বারা পরিচালিত সাম্প্রতিক ওয়ালপেপার</translation>
 <translation id="4320904097188876154">নিয়ন পিঙ্ক</translation>
 <translation id="432961742358282111">সংজ্ঞা, অনুবাদ বা ইউনিটের কনভার্সন পেতে ডানদিকের বোতামে ক্লিক করুন বা প্রেস করে ধরে রাখুন। এই ফিচার ম্যানেজ করতে, বাঁদিক বা ডানদিকের তীরচিহ্ন কী বোতাম ব্যবহার করুন।</translation>
@@ -1472,6 +1473,7 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল <ph name="PROGRESS_PERCENTAGE" />% ডাউনলোড হয়েছে</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">এই APN বন্ধ করা বা সরানো যাচ্ছে না। নিশ্চিত করুন যে চালু করা <ph name="ATTACH" /> APN বন্ধ করা আছে বা সরানো হয়েছে।</translation>
+<translation id="7458359366992324037">রিমোট ডিসপ্লে</translation>
 <translation id="7458970041932198923">অবতার দেখার ও সেট করার জন্য ডিভাইসটি নেটওয়ার্কের সঙ্গে কানেক্ট করে পেজটি আবার লোড করুন।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>

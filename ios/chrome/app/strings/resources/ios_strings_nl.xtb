@@ -1235,6 +1235,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5758759241456233788">Previews van Maps uitgezet. Zet deze weer aan in Instellingen.</translation>
 <translation id="5759484603608560822">Downloads verbergen</translation>
 <translation id="5767099457279594162">Wachtwoord is niet gedeeld</translation>
+<translation id="5768870767339201169">Ga verder waar je gebleven was</translation>
 <translation id="5779117921996157216">{count,plural, =1{Je hebt {count} gehackt wachtwoord dat een beveiligingsrisico kan vormen. Pas dit nu aan om beveiligd te blijven.}other{Je hebt {count} gehackte wachtwoorden die een beveiligingsrisico kunnen vormen. Pas ze nu aan om beveiligd te blijven.}}</translation>
 <translation id="5791632441210678828">Knop Sorteren voor de feed Je volgt.</translation>
 <translation id="5803566855766646066">Weet je zeker dat je deze nieuwe kaart wilt sluiten?</translation>
@@ -1909,7 +1910,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
 <translation id="8275068909952022340">Meer…</translation>
 <translation id="8277328362018795342">Je paginacontent wordt gedeeld voor relevantere antwoorden</translation>
-<translation id="8278488584187265939">Homepage aanpassen</translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282657446819506217">Openen in tabbladgroep</translation>

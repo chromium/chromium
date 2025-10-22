@@ -175,11 +175,13 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1791662854739702043">Ubicación</translation>
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
 <translation id="1796666869097395659">Minimizar la pestaña para volver a ella más tarde</translation>
+<translation id="1799920918471566157">Consejos de Chrome</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807709131360304325">Abrir una ventana nueva</translation>
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="1820408774134375111">Hoja inferior de inicio de sesión</translation>
+<translation id="1823492026305965829">Iniciar sesión como <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
@@ -854,6 +856,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4910889077668685004">Aplicaciones para pagar</translation>
 <translation id="4912413785358399818">Mover pestaña</translation>
 <translation id="4913169188695071480">Dejar de actualizar</translation>
+<translation id="4921224083091001889">Para acceder a tus contraseñas y otras opciones en todos tus dispositivos, inicia sesión en Chrome como <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Captura de pantalla <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Puedes guardar imágenes y archivos para verlos sin conexión o compartirlos en otras aplicaciones</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 marcador y otros elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google.}other{# marcadores y otros elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google.}}</translation>
@@ -878,6 +881,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5007392906805964215">Ver</translation>
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quiere conectarse</translation>
+<translation id="5012016139642806466">Accede a tus contraseñas y otras opciones en todos tus dispositivos</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> y <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> parecen estar relacionados. Asegúrate de que <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> es de confianza antes de usar tu contraseña.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>

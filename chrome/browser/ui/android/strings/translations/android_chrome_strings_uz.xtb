@@ -175,11 +175,13 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1791662854739702043">Oʻrnatilgan</translation>
 <translation id="1792959175193046959">Yuklanmalar standart jildini istalgan vaqtda o‘zgartirish mumkin</translation>
 <translation id="1796666869097395659">Keyinroq qaytish uchun varaqni yigʻish</translation>
+<translation id="1799920918471566157">Chrome maslahatlari</translation>
 <translation id="1807246157184219062">Yorqin</translation>
 <translation id="1807709131360304325">Yangi oynada ochish</translation>
 <translation id="1810845389119482123">Sinxronizatsiya oxirigacha sozlanmagan</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan ochilmaydi</translation>
 <translation id="1820408774134375111">Quyi ekrandagi kirish oynasi</translation>
+<translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> hisobidan kirish</translation>
 <translation id="1825772852827001597">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Sahifa ichidan qidirish</translation>
@@ -854,6 +856,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4910889077668685004">To‘lov ilovalari</translation>
 <translation id="4912413785358399818">Varaqni koʻchirish</translation>
 <translation id="4913169188695071480">Yangilanishni to‘xtatish</translation>
+<translation id="4921224083091001889">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun Chrome hisobiga (<ph name="EMAIL" />) kiring</translation>
 <translation id="4925120120285606924">Skrinshot: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Rasm va fayllarni oflayn ochish uchun saqlash yoki boshqa ilovalarda ulashish mumkin</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 ta bukmark va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda saqlang.}other{# ta bukmark va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda saqlang.}}</translation>
@@ -878,6 +881,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5010886807652684893">Vizual shaklda</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> qurilmangiz bilan aloqa o‘rnatmoqchi</translation>
+<translation id="5012016139642806466">Parollar, tarix va sozlamalarni barcha qurilmalarda sinxronlang</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> va <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> resurslari bogʻliq shekilli. Bu paroldan foydalanishdan oldin <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> resursi ishonchli ekanini tekshiring.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Oxirgi 15 daqiqa</translation>

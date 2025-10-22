@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">Maps மாதிரிக்காட்சிகள் ஆஃப் செய்யப்பட்டுள்ளது. அமைப்புகளில் இதை மீண்டும் ஆன் செய்யலாம்.</translation>
 <translation id="5759484603608560822">'பதிவிறக்கங்கள்' என்பதை மறை</translation>
 <translation id="5767099457279594162">கடவுச்சொல் பகிரப்படவில்லை</translation>
+<translation id="5768870767339201169">விட்ட இடத்திலிருந்து தொடங்குங்கள்</translation>
 <translation id="5779117921996157216">{count,plural, =1{உங்கள் பாதுகாப்பிற்கு ஆபத்தை ஏற்படுத்தக்கூடிய, களவாடப்பட்ட கடவுச்சொல் {count} உள்ளது. பாதுகாப்பாக இருக்க அதை இப்போதே மாற்றுங்கள்.}other{உங்கள் பாதுகாப்பிற்கு ஆபத்தை ஏற்படுத்தக்கூடிய, களவாடப்பட்ட கடவுச்சொற்கள் {count} உள்ளன. பாதுகாப்பாக இருக்க அவற்றை இப்போதே மாற்றுங்கள்.}}</translation>
 <translation id="5791632441210678828">பின்தொடரும் ஊட்டத்தின் தலைப்புகளை வரிசைப்படுத்துவதற்கான பட்டன்.</translation>
 <translation id="5803566855766646066">இந்தப் புதிய கார்டை நிராகரிக்க வேண்டுமா?</translation>
@@ -1691,6 +1692,7 @@
 <translation id="7484645889979462775">இந்த தளத்திற்கு எப்போதும் இல்லை</translation>
 <translation id="7486006552035434095">சாதனங்களை ஒத்திசைவிலேயே வைத்திருங்கள்</translation>
 <translation id="7491131399623468277">அமைப்புகளுக்குச் செல்…</translation>
+<translation id="7491161827858509164">முன்பு பதிவிறக்கிய ஃபைல்களைப் பார்க்க <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> ஆப்ஸைத் திறக்கவும்</translation>
 <translation id="7498234416455752244">திருத்துவதைத் தொடர்க</translation>
 <translation id="7500244509706269886">படிவத்தைத் தானாக நிரப்பு</translation>
 <translation id="750493650310597496">எதுவும் தேர்ந்தெடுக்கப்படவில்லை</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7612619742409846846">Google இல் உள்நுழைந்திருக்கும் கணக்கு</translation>
 <translation id="7612849887607288481">AI முன்வடிவ மெனுவைத் திற</translation>
 <translation id="7620522820075868385">வேண்டாம்</translation>
+<translation id="762078666799342162">முன்பு பதிவிறக்கியவற்றை <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> ஆப்ஸில் பார்க்கலாம்</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள்}=1{களவாடப்பட்ட கடவுச்சொல்: {COUNT}}other{களவாடப்பட்ட கடவுச்சொற்கள்: {COUNT}}}</translation>
 <translation id="7640669552036055091">Androidல் செயலில் இருந்த பக்கங்கள்</translation>
@@ -1909,7 +1912,6 @@
 <translation id="8273982424131314219"><ph name="URL" /> என்ற தளத்தில் தகவலை நிரப்புவீர்கள்</translation>
 <translation id="8275068909952022340">மேலும்…</translation>
 <translation id="8277328362018795342">மிகவும் தொடர்புடைய பதில்களுக்காக உங்கள் பக்க உள்ளடக்கம் பகிரப்படும்</translation>
-<translation id="8278488584187265939">முகப்புப் பக்கத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="8281781826761538115">இயல்பு - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8282657446819506217">பக்கக் குழுவில் திற</translation>
@@ -2180,6 +2182,7 @@
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="94870150074703282">குழுவை நீக்கவா?</translation>
 <translation id="952704832371081537">ரத்துசெய்</translation>
+<translation id="95332591904104970">இணைக்கப்பட்ட ஆப்ஸ்</translation>
 <translation id="954667170699278022">வாசிப்புப் பட்டியல்</translation>
 <translation id="956218893102219091">மிகவும் துல்லியமான முடிவுகளை Gemini வழங்க, உங்கள் IP முகவரியின் அடிப்படையிலான தோராய இருப்பிடத்திற்குப் பதிலாக உங்கள் துல்லியமான இருப்பிடத்தைப் பயன்படுத்தலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>

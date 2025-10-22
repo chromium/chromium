@@ -1235,6 +1235,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5758759241456233788">Maps Preview off. Turn it back on in Settings.</translation>
 <translation id="5759484603608560822">Hide Downloads</translation>
 <translation id="5767099457279594162">Password was not shared</translation>
+<translation id="5768870767339201169">Pick up from where you left off</translation>
 <translation id="5779117921996157216">{count,plural, =1{You have {count} compromised password that could put your security at risk. Fix it now to stay safe.}other{You have {count} compromised passwords that could put your security at risk. Fix them now to stay safe.}}</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
@@ -1909,7 +1910,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8273982424131314219">You'll fill info into <ph name="URL" /></translation>
 <translation id="8275068909952022340">More…</translation>
 <translation id="8277328362018795342">Your page content is shared for more relevant answers</translation>
-<translation id="8278488584187265939">Customise home page</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282657446819506217">Open in tab group</translation>
@@ -2180,6 +2180,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="94870150074703282">Delete group?</translation>
 <translation id="952704832371081537">Cancel</translation>
+<translation id="95332591904104970">Connected apps</translation>
 <translation id="954667170699278022">Reading list</translation>
 <translation id="956218893102219091">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Delete browsing data</translation>

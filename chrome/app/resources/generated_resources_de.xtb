@@ -465,7 +465,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="129808599775632797">Änderungen</translation>
 <translation id="130097046531636712">Die Akkulaufzeit wird verlängert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen eingeschränkt werden</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kann die folgenden Dateien bearbeiten</translation>
-<translation id="130174306655812048">Sag einfach „Hey Google, wie heißt dieser Song?“</translation>
 <translation id="1302227299132585524">JavaScript von Apple Events erlauben</translation>
 <translation id="1303101771013849280">Lesezeichen-HTML-Datei</translation>
 <translation id="1303671224831497365">Keine Bluetooth-Geräte gefunden</translation>
@@ -793,7 +792,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1541346352678737112">Kein Netzwerk gefunden</translation>
 <translation id="154198613844929213">{0,plural, =0{Daten werden jetzt gelöscht.}=1{Daten werden gelöscht in: 1 Sekunde}other{Daten werden gelöscht in: # Sekunden}}</translation>
 <translation id="1542137295869176367">Deine Anmeldedaten konnten nicht aktualisiert werden</translation>
-<translation id="1542524755306892917">Durch diese Option kann Google Assistant relevantere Antworten geben, wenn <ph name="SUPERVISED_USER_NAME" /> Fragen stellt.</translation>
 <translation id="1543284117603151572">Aus Edge importiert</translation>
 <translation id="1543538514740974167">Schneller hierherkommen</translation>
 <translation id="1544588554445317666">Versuch, einen kürzeren Dateinamen oder einen anderen Ordner zu verwenden</translation>
@@ -1166,7 +1164,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1784849162047402014">Gerät verfügt über wenig Speicherplatz</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Durch das Deinstallieren von „<ph name="APP_NAME" />“ wird auch diese App deinstalliert:}other{Durch das Deinstallieren von „<ph name="APP_NAME" />“ werden auch diese Apps deinstalliert:}}</translation>
 <translation id="1786290960428378411">Anfrage zum Lesen und Ändern läuft</translation>
-<translation id="1787350673646245458">Nutzerbild</translation>
 <translation id="1790976235243700817">Zugriff entfernen</translation>
 <translation id="1791662854739702043">Installiert</translation>
 <translation id="1792619191750875668">Erweiterter Bildschirm</translation>
@@ -1290,7 +1287,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1871098866036088250">In Chrome-Browser öffnen</translation>
 <translation id="1871131409931646355">Vollständiger Downloadverlauf</translation>
 <translation id="187145082678092583">Weniger Apps</translation>
-<translation id="1871534214638631766">Zugehörige Informationen durch Rechtsklick mit der Maus oder langes Drücken einblenden</translation>
 <translation id="1871615898038944731">Dein <ph name="DEVICE_TYPE" /> ist auf dem neuesten Stand</translation>
 <translation id="1873513359268939357">Outlook-Kalender</translation>
 <translation id="1873920700418191231">Berechtigung wieder zulassen für <ph name="WEBSITE" /></translation>
@@ -1317,7 +1313,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1886996562706621347">Registrierung von Websites als Standard-Handler für Protokolle zulassen (empfohlen)</translation>
 <translation id="1887210448491286312">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ beenden</translation>
 <translation id="1887442540531652736">Fehler bei der Anmeldung</translation>
-<translation id="1887597546629269384">Sag noch einmal „Hey Google“</translation>
 <translation id="1890026367080681123">Zu den Einstellungen für eingebettete Inhalte gehen</translation>
 <translation id="189035593835762169">Nutzungsbedingungen</translation>
 <translation id="1891362123137972260">Es ist nur noch sehr wenig Speicherplatz vorhanden. Gib bitte Speicherplatz frei.</translation>
@@ -1564,7 +1559,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2052572566310583903">Auf deinen anderen Geräten installiert</translation>
 <translation id="2052723746739622752">Gemini loslösen</translation>
 <translation id="2053312383184521053">Daten für inaktiven Zustand</translation>
-<translation id="205560151218727633">Google Assistant-Logo</translation>
 <translation id="2058456167109518507">Gerät erkannt</translation>
 <translation id="2059913712424898428">Zeitzone</translation>
 <translation id="2060375639911876205">eSIM-Profil entfernen</translation>
@@ -1936,15 +1930,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" hat zusätzliche Berechtigungen angefordert.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Auf diesem Gerät in <ph name="BRAND" /> speichern</translation>
-<translation id="2307553512430195144">Sofern du zustimmst, wartet Google Assistant im Stand-by-Modus auf „Hey Google“ und kann dann mit Voice Match die Stimme von <ph name="SUPERVISED_USER_NAME" /> erkennen.
-    <ph name="BR" />
-    Mit Voice Match kann Google Assistant die Stimme von <ph name="SUPERVISED_USER_NAME" /> auf dem Gerät (<ph name="DEVICE_TYPE" />) erkennen und das Kind von anderen unterscheiden.
-    <ph name="BR" />
-    Assistant nimmt Audioclips der Stimme deines Kindes auf, um ein eindeutiges Sprachmodell zu erstellen, das nur auf seinen Geräten gespeichert ist. Das Sprachmodell deines Kindes wird eventuell vorübergehend an Google gesendet, um seine Stimme besser erkennen zu können.
-    <ph name="BR" />
-    Falls du dich später gegen Voice Match entscheidest, entferne die Funktion einfach in den Assistant-Einstellungen deines Kindes. Unter <ph name="VOICE_MATCH_SETTINGS_URL" /> kannst du die Audioclips, die dein Kind während der Voice Match-Einrichtung aufgenommen hat, im Konto deines Kindes aufrufen oder löschen.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Folgende Tasten werden nicht unterstützt: Tabulatortaste, Umschalttaste, Steuerungtaste, Esc-Taste, Feststelltaste, Lautstärketaste</translation>
 <translation id="2309620859903500144">Diese Website darf nicht auf meine Bewegungs- oder Lichtsensoren zugreifen.</translation>
 <translation id="2310923358723722542">Anzeige und Vergrößerung</translation>
@@ -2356,7 +2341,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2599048253926156421">Nutzername in Zwischenablage kopiert</translation>
 <translation id="2602501489742255173">Zum Starten nach oben wischen</translation>
 <translation id="2603115962224169880">Computer bereinigen</translation>
-<translation id="2603355571917519942">Voice Match ist bereit</translation>
 <translation id="2604129989323098489">Websites fragen in der Regel nach Informationen über deine Bildschirme, damit sie Fenster intelligent öffnen und platzieren können, z. B. um Dokumente oder Vollbildinhalte nebeneinander anzuzeigen</translation>
 <translation id="2604255671529671813">Fehler bei der Netzwerkverbindung</translation>
 <translation id="2604805099836652105">Adressformular „<ph name="ADDRESS_LABEL" />“ ausgefüllt.</translation>
@@ -2637,7 +2621,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2777525873368474674">Bildlink einfügen</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 Website mit vielen Benachrichtigungen gefunden}other{{NUM_SITES} Websites mit vielen Benachrichtigungen gefunden}}</translation>
 <translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
-<translation id="2779728796406650689">Durch diese Option kann Google Assistant relevantere Antworten auf deine Fragen geben.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
@@ -3233,7 +3216,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3211126692872351610">Auf neuem Tab bei <ph name="SEARCH_ENGINE" /> nach „<ph name="SEARCH_TERMS" />“ &amp;suchen</translation>
 <translation id="321367297115597343">Diesem Ordner ein Lesezeichen hinzufügen</translation>
 <translation id="3213681682237645841">Stimmen auf <ph name="LANGUAGE" /> werden heruntergeladen…</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse deines Kindes zugreifen.</translation>
 <translation id="3217843140356091325">Verknüpfung erstellen?</translation>
 <translation id="321834671654278338">Linux-Deinstallationsprogramm</translation>
 <translation id="3220943972464248773">Bestätige deine Identität, um deine Passwörter zu synchronisieren</translation>
@@ -3278,7 +3260,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
 <translation id="3248902735035392926">Sicherheit ist wichtig. Nimm dir einen Moment Zeit, um deine <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Dateisynchronisierung</translation>
-<translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> erlauben, Google Assistant mit „Hey Google“ zu aktivieren</translation>
 <translation id="3251759466064201842">&lt;Gehört nicht zum Zertifikat&gt;</translation>
 <translation id="325238099842880997">Grundregeln für den Umgang mit digitalen Medien aufstellen, um Kindern zu helfen, sich beim Spielen, Surfen und ihren Schulaufgaben zurechtzufinden</translation>
 <translation id="3253225298092156258">Nicht verfügbar</translation>
@@ -3381,7 +3362,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3319863571062685443">Deine Adresse wurde gespeichert</translation>
 <translation id="3320271870899888245">Es kann keine Verbindung zu OneDrive hergestellt werden. Versuche es noch einmal.</translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
-<translation id="3320909810101200102">Scanne den QR‑Code, um eine ID auszuwählen</translation>
 <translation id="3320957378743864387">Hilfe beim Formulieren nicht erlaubt</translation>
 <translation id="3321460131042519426">Zeilenumbruch aktivieren</translation>
 <translation id="3321494112580110651">Wird dein Drucker nicht angezeigt?</translation>
@@ -3426,7 +3406,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="335581015389089642">Sprachausgabe</translation>
 <translation id="335587007651175930">Mit Google Lens auf dem Bildschirm suchen</translation>
 <translation id="3355936511340229503">Verbindungsfehler</translation>
-<translation id="3356580349448036450">Fertig</translation>
 <translation id="3359256513598016054">Beschränkungen für Zertifikatrichtlinien</translation>
 <translation id="3360297538363969800">Fehler beim Drucken. Bitte überprüfe deinen Drucker und versuche es noch einmal.</translation>
 <translation id="3360306038446926262">Fenster</translation>
@@ -3518,7 +3497,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3418798368381485936">Mit diesem Konto kannst du dich nicht anmelden</translation>
 <translation id="3420501302812554910">Interner Sicherheitsschlüssel muss zurückgesetzt werden</translation>
 <translation id="3421387094817716717">Öffentlicher Schlüssel für elliptische Kurven</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme oder einer Aufnahme deiner Stimme kann möglicherweise auf deine persönlichen Ergebnisse oder deinen Assistant zugreifen.</translation>
 <translation id="3422989558057853751">Letztes Element ausgewählt – wenn du die Auswahl aufhebst, wird der Auswahlmodus beendet</translation>
 <translation id="3423111258700187173">In „<ph name="FOLDER_TITLE" />“ gefundene Ergebnisse</translation>
 <translation id="3423226218833787854">Weitere Informationen zu dieser KI-Funktion</translation>
@@ -3845,7 +3823,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3636940436873918441">Bevorzugte Sprachen</translation>
 <translation id="3637203148990213388">Zusätzliche Konten</translation>
 <translation id="3640347231390550691">Passwörter vor Phishing schützen</translation>
-<translation id="3640613767643722554">Assistant beibringen, deine Stimme zu erkennen</translation>
 <translation id="364100968401221170">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich an<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Steam for Chromebook (Beta) muss aktualisiert werden. Starte dein Chromebook neu und versuche es noch einmal</translation>
 <translation id="3641299252000913351">Dein Modem erhält gerade ein Firmware-Update. Bitte schalte das Gerät nicht aus.</translation>
@@ -4034,7 +4011,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="375636864092143889">Die Website verwendet dein Mikrofon</translation>
 <translation id="3756485814916578707">Bildschirm wird gestreamt</translation>
 <translation id="3756578970075173856">PIN festlegen</translation>
-<translation id="3756795331760037744">Google Assistant erlauben, Informationen auf dem Bildschirm von <ph name="SUPERVISED_USER_NAME" /> zu verwenden, um besser helfen zu können</translation>
 <translation id="3756806135608816820">Websites dürfen darum bitten, nach Bluetooth-Geräten zu suchen</translation>
 <translation id="3757567010566591880">Von Symbolleiste loslösen</translation>
 <translation id="3757733214359997190">Keine Websites gefunden</translation>
@@ -4598,7 +4574,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4126375522951286587"><ph name="VM_NAME" /> herunterfahren</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
-<translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="4130877444234883490">Verwende „m“, um eine Maustaste zu drücken und gedrückt zu halten</translation>
 <translation id="4130948219446157616">Untere Ansicht schließen</translation>
 <translation id="413121957363593859">Komponenten</translation>
@@ -4630,7 +4605,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149385644005013189">Sieht gut aus!</translation>
 <translation id="4150201353443180367">Display</translation>
-<translation id="4150569944729499860">Bildschirmkontext</translation>
 <translation id="4151449637210235443">Erzähl uns von deinem letzten Gameplay</translation>
 <translation id="4151503145138736576">Kein Offlinespeicher zum Aufräumen vorhanden</translation>
 <translation id="4152011295694446843">Hier werden deine Lesezeichen angezeigt</translation>
@@ -5155,7 +5129,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4532183705767666195">{COUNT,plural, =1{1 Passkey}other{{COUNT} Passkeys}}</translation>
 <translation id="4532625150642446981">„<ph name="USB_DEVICE_NAME" />“ wird gegenwärtig verwendet. Wenn du das Gerät neu zuweist, während es verwendet wird, kann dies zu Fehlern führen. Möchtest du den Vorgang wirklich fortsetzen?</translation>
 <translation id="4532646538815530781">Diese Website nutzt Bewegungssensoren.</translation>
-<translation id="4533846798469727141">Sag jetzt „Hey Google“</translation>
 <translation id="4533985347672295764">CPU-Zeit</translation>
 <translation id="4534661889221639075">Versuche es noch einmal.</translation>
 <translation id="4535127706710932914">Standardprofil</translation>
@@ -5458,7 +5431,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Stummschaltung für Website aufheben}other{Stummschaltung für Websites aufheben}}</translation>
 <translation id="4745096442457817087">Dein Passwort wurde in einer öffentlichen Datenpanne gefunden</translation>
 <translation id="4745500401920035244">Dein Administrator hat eine systemweite Änderung vorgenommen, durch die einige alte Profile deaktiviert wurden. Du kannst nicht mehr auf dieses Profil zugreifen, es aber noch entfernen.</translation>
-<translation id="474609389162964566">Mit „Hey Google“ auf Assistant zugreifen</translation>
 <translation id="4746757725581505837">Du bist dabei, deine auf diesem Gerät gespeicherten <ph name="BRAND" />-Daten zu löschen</translation>
 <translation id="4748783296226936791">Websites verbinden sich normalerweise für solche Funktionen mit HID-Geräten, für die ungewöhnliche Tastaturen, Gamecontroller und andere Geräte verwendet werden</translation>
 <translation id="4750185073185658673">Auf deinem Smartphone kannst du weitere Berechtigungen prüfen. Bluetooth und WLAN müssen auf dem Gerät aktiviert sein.</translation>
@@ -5635,7 +5607,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
 <translation id="4867272607148176509">Eltern können Apps genehmigen oder blockieren, Zeitlimits festlegen und das Surfen im Web kontrollieren. Das Konto einer Bildungseinrichtung kann später hinzugefügt werden, um auf die meisten Ressourcen der Bildungseinrichtung zuzugreifen.</translation>
 <translation id="4867433544163083783">Prüfen, ob Tabs organisiert werden können</translation>
-<translation id="4868281708609571334">Google Assistant beibringen, die Stimme von <ph name="SUPERVISED_USER_NAME" /> zu erkennen</translation>
 <translation id="4868284252360267853">Dieses Dialogfeld ist aktuell nicht aktiv. Drücke die Befehlstaste-Umschalt-Optionstaste-A, um dieses Dialogfeld hervorzuheben.</translation>
 <translation id="4868351661310357223">Hier kannst du Apps und Spiele von Google Play auf deinem <ph name="DEVICE_TYPE" /> installieren.</translation>
 <translation id="4869170227080975044">Informationen zum ChromeOS-Netzwerk lesen</translation>
@@ -6266,7 +6237,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5307386115243749078">Bluetooth-Schalter koppeln</translation>
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5308989548591363504">Auf Malware überprüfen</translation>
-<translation id="5309418307557605830">Google Assistant funktioniert hier auch</translation>
 <translation id="5309641450810523897">ID der Supportanfrage</translation>
 <translation id="5311304534597152726">Anmeldung als</translation>
 <translation id="5312746996236433535">Display spiegeln</translation>
@@ -6791,7 +6761,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5687935527303996204">Sieh nach, ob das Gerät eingesteckt ist und schalte es nicht aus. Die Installation kann bis zu 20 Minuten dauern. Dein Gerät wird automatisch heruntergefahren, sobald die Installation fertig ist.</translation>
 <translation id="5689233503102158537">Alt + Rücktaste</translation>
 <translation id="5689516760719285838">Standort</translation>
-<translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> hat Voice Match mit Assistant offenbar schon auf einem anderen Gerät eingerichtet. Diese vorherigen Aufnahmen wurden verwendet, um ein Sprachmodell auf diesem Gerät zu erstellen.</translation>
 <translation id="56907980372820799">Daten verknüpfen</translation>
 <translation id="5691581861107245578">Vorschläge für Emojis basierend auf der Eingabe erhalten</translation>
 <translation id="5691772641933328258">Fingerabdruck nicht erkannt</translation>
@@ -7309,7 +7278,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6059925163896151826">USB-Geräte</translation>
 <translation id="6061408389284235459">Eine Benachrichtigung wurde an <ph name="DEVICE_NAME" /> gesendet</translation>
 <translation id="6063284707309177505">QR-Code erstellen</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse deines Kindes zugreifen. Zur Schonung des Akkus kannst du in den Assistant-Einstellungen von <ph name="SUPERVISED_USER_NAME" /> festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="6064217302520318294">Displaysperre</translation>
 <translation id="606449270532897041">Websitedaten verwalten</translation>
 <translation id="6064764629679333574">Du kannst die Klangqualität des Bluetooth-Mikrofons verbessern, indem du eine höhere Audio-Auflösung wählst.</translation>
@@ -7833,6 +7801,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6434325376267409267">Dein Gerät muss aktualisiert werden, bevor du <ph name="APP_NAME" /> verwenden kannst.</translation>
 <translation id="6434755719322447931">Chaotisch</translation>
+<translation id="6435307030888827407">Abgemeldet bleiben</translation>
 <translation id="6435339218366409950">Wähle die Sprache aus, in die die Untertitel übersetzt werden sollen</translation>
 <translation id="6436164536244065364">Im Web Store ansehen</translation>
 <translation id="6436778875248895551">Die Erweiterung „<ph name="EXTENSION_NAME" />“ wurde von deinem Administrator blockiert</translation>
@@ -8078,7 +8047,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6602956230557165253">Verwende zum Navigieren den Rechts- und Linkspfeil.</translation>
 <translation id="6603185457265641428">Festlegen, ob der Verlauf synchronisiert werden soll</translation>
 <translation id="6605847144724004692">Noch nicht von Nutzern bewertet.</translation>
-<translation id="6606671997164410857">Du hast Google Assistant schon auf einem anderen Gerät eingerichtet. Wenn auf diesem Gerät „Bildschirmkontext“ aktiviert ist, kannst du Assistant noch besser nutzen.</translation>
 <translation id="6607831829715835317">Weitere Too&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wird schon von <ph name="DOMAIN" /> verwaltet. Wenn du die Jugendschutzeinstellungen auf ein anderes Google-Konto anwenden möchtest, melde dich nach der Einrichtung ab und wähle auf dem Anmeldebildschirm "Person hinzufügen" aus.</translation>
 <translation id="6608166463665411119">eSIM zurücksetzen</translation>
@@ -8178,7 +8146,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6674571176963658787">Gib deine Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="6675665718701918026">Zeigegerät verbunden</translation>
 <translation id="6675717447295898330">Ein neues Profil für die Arbeit ohne meine vorhandenen Daten erstellen</translation>
-<translation id="6676212663108450937">Es ist ratsam, beim Trainieren deiner Stimme Kopfhörer zu verwenden</translation>
 <translation id="6676291960742508499">Deine Tabs, Seitentitel und URLs werden an Google gesendet</translation>
 <translation id="667752334740867460">WLAN-Informationen werden empfangen…</translation>
 <translation id="6677527809400770913">Geste „<ph name="GESTURE" />“ wurde Aktion „<ph name="ACTION" />“ zugewiesen</translation>
@@ -8198,9 +8165,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6686817083349815241">Passwort speichern</translation>
 <translation id="6687008241368170505">PIN für Google Passwortmanager ändern</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ausblenden</translation>
-<translation id="6689714331348768690">Bitte <ph name="SUPERVISED_USER_NAME" />, an den Computer zu kommen. Dein Kind muss einige Sätze auf diesem Bildschirm vorlesen, damit sein Sprachmodell erstellt werden kann.
-    <ph name="BR" />
-    Falls <ph name="SUPERVISED_USER_NAME" /> Hilfe beim Lesen braucht, lies vor und lasse dein Kind den Text wiederholen. Flüstere dabei und sprich nicht in Richtung des Mikrofons, damit Assistant die Stimme deines Kindes lernt und nicht deine.</translation>
 <translation id="6689948774466767379">Tastaturmaus</translation>
 <translation id="6690659332373509948">Datei kann nicht geparst werden: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Vorwärts</translation>
@@ -8377,13 +8341,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6808166974213191158">Chrome OS Flex-Systemimage-Writer</translation>
 <translation id="6808193438228982088">Fuchs</translation>
 <translation id="6809470175540814047">In &amp;Inkognitofenster öffnen</translation>
-<translation id="6809656734323672573">Sofern du zustimmst, wartet Google Assistant im Stand-by-Modus auf „Hey Google“ und kann dann mit Voice Match deine Stimme erkennen.
-    <ph name="BR" />
-    Mit Voice Match kann Assistant deine Stimme erkennen und dich von anderen Personen unterscheiden. Assistant nimmt Audioclips deiner Stimme auf, um ein eindeutiges Sprachmodell zu erstellen, das nur auf deinem Gerät gespeichert ist. Dieses Modell wird eventuell vorübergehend an Google gesendet, damit deine Stimme besser erkannt werden kann.
-    <ph name="BR" />
-    Wenn du Voice Match später doch nicht verwenden möchtest, kannst du die Funktion einfach in den Assistant-Einstellungen entfernen. Unter <ph name="VOICE_MATCH_SETTINGS_URL" /> kannst du die Audioclips, die du während der Voice Match-Einrichtung aufgenommen hast, aufrufen oder löschen.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion deaktiviert ist, wirst du bei jeder Anmeldung auf einer Website nach einer Bestätigung gefragt.</translation>
 <translation id="6811034713472274749">Seitenansicht bereit</translation>
 <translation id="6811151703183939603">Fest</translation>
@@ -8442,7 +8399,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6842868554183332230">Websites rufen normalerweise Informationen zu deiner aktiven Nutzung eines Geräts ab, um deine Verfügbarkeit in Chat-Apps anzuzeigen</translation>
 <translation id="6843264316370513305">Netzwerk-Fehlerbehebung</translation>
 <translation id="6843404741389995311">Du kannst die Kamera und die Fotogalerie nutzen, um einzukaufen, Texte übersetzen zu lassen und zu identifizieren, was du gerade siehst</translation>
-<translation id="6843423766595476978">"Ok Google" ist eingerichtet</translation>
 <translation id="6843725295806269523">Stumm</translation>
 <translation id="6844548824283407900">AES‑256</translation>
 <translation id="6845038076637626672">Maximiert öffnen</translation>
@@ -8693,7 +8649,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7014741021609395734">Zoomstufe</translation>
 <translation id="7015135594296285641">Erweiterungen zulassen</translation>
 <translation id="7016995776279438971">Rot-Grün, Rot-Sehschwäche (Protanomalie)</translation>
-<translation id="7017004637493394352">Sag noch einmal „Hey Google“.</translation>
 <translation id="7017219178341817193">Neue Seite hinzufügen</translation>
 <translation id="7017354871202642555">Nach Erstellung des Fensters kann der Modus nicht mehr festgelegt werden.</translation>
 <translation id="7019546817926942979">Dein Gerät muss an ein Ladegerät angeschlossen werden. Wenn du Linux aktualisierst, kann dies den Akku stark beanspruchen. Verbinde das Gerät mit einem Ladegerät und versuche es noch einmal.</translation>
@@ -8749,7 +8704,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7059858479264779982">Automatisch starten</translation>
 <translation id="7063129466199351735">Verknüpfungen werden bearbeitet...</translation>
 <translation id="7063311912041006059">URL mit <ph name="SPECIAL_SYMBOL" /> statt der Suchanfrage</translation>
-<translation id="706342288220489463">Assistant erlauben, Informationen auf deinem Bildschirm zum besseren Beantworten von Fragen zu verwenden</translation>
 <translation id="70641621694466590">Zur Seite „Passwörter“</translation>
 <translation id="7064209589142995848">Inhaltsübertragung</translation>
 <translation id="7064734931812204395">Der Linux-Container wird konfiguriert. Dies kann bis zu 30 Minuten dauern.</translation>
@@ -9402,7 +9356,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Verknüpfungen anzeigen</translation>
 <translation id="7521430434164837205">Microsoft 365-Dateien</translation>
-<translation id="7522255036471229694">Sag „Hey Google“.</translation>
 <translation id="7523117833414447032">Beim Lesen von Großbuchstaben</translation>
 <translation id="7523585675576642403">Profil umbenennen</translation>
 <translation id="7525067979554623046">Erstellen</translation>
@@ -9721,7 +9674,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7736119438443237821">Du bist dabei, den Zugriff auf deine Passkeys auf diesem Gerät zu entfernen</translation>
 <translation id="7737115349420013392">Wird mit "<ph name="DEVICE_NAME" />" gekoppelt…</translation>
 <translation id="7737203573077018777">Anweisung „<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />“ erhalten</translation>
-<translation id="7737846262459425222">Du kannst dies jederzeit unter „Einstellungen“ &gt; „Google Assistant“ &gt; „Bildschirmkontext“ ändern.</translation>
 <translation id="7737948071472253612">Dürfen meine Kamera nicht verwenden</translation>
 <translation id="77381465218432215">Akzente und Sonderzeichen anzeigen</translation>
 <translation id="7739524723876359011">Wenn du dieses Infofeld hervorheben möchtest, drücke auf „<ph name="ACCELERATOR" />“.</translation>
@@ -9826,7 +9778,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7806659658565827531">Hauptknoten mit Anmerkungen versehen</translation>
 <translation id="7806722269368320106">Eine App wird installiert</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
-<translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> hat Google Assistant schon auf einem anderen Gerät eingerichtet. <ph name="SUPERVISED_USER_NAME" /> kann Assistant noch besser nutzen, wenn auf diesem Gerät „Bildschirmkontext“ aktiviert ist.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf deine Kamera gestatten</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="7810367892333449285">Deine Eingabe muss dieses Format haben: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+-Adresse<ph name="LPA_2" />$<ph name="LPA_3" />optionale ID zum Abgleich<ph name="LPA_4" /></translation>
@@ -9885,7 +9836,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass deine Chrome OS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps enthalten – außerdem Informationen über Chrome OS-Abstürze und Angaben dazu, welche Funktionen du verwendest und wie viel Speicher in der Regel genutzt wird. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen deines Chrome OS-Geräts aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ in deinem Google-Konto aktiviert ist, werden deine Android-Daten möglicherweise in deinem Google-Konto gespeichert. Unter account.google.com kannst du deine Daten sehen und löschen sowie deine Kontoeinstellungen ändern.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme oder einer Aufnahme deiner Stimme kann möglicherweise auf deine persönlichen Ergebnisse oder deinen Assistant zugreifen. Zur Schonung des Akkus kannst du in den Assistant-Einstellungen festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="7851457902707056880">Die Anmeldung ist nur über das Eigentümerkonto möglich. Bitte starte das Gerät neu und melde dich dann mit dem Eigentümerkonto an. Das Gerät wird in 30 Sekunden automatisch neu gestartet.</translation>
 <translation id="7851716364080026749">Kamera- und Mikrofonzugriff immer blockieren</translation>
 <translation id="78526636422538552">Option zum Hinzufügen weiterer Google-Konten ist deaktiviert</translation>
@@ -10057,7 +10007,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7963408577288987423">{COUNT,plural, =1{1 Passwort}other{{COUNT} Passwörter}}</translation>
 <translation id="7963513503134856713">Fenster nach rechts verschoben</translation>
 <translation id="7963608432878156675">Dieser Name ist für andere Geräte als Bluetooth- und Netzwerkverbindung sichtbar</translation>
-<translation id="7963826112438303517">Assistant verwendet diese Aufzeichnungen und deine mündlichen Anfragen, um dein Sprachmodell zu erstellen und zu aktualisieren. Es wird nur in Geräten gespeichert, in denen du Voice Match aktiviert hast. In den Assistant-Einstellungen kannst du dir die Sprachaktivität anzeigen lassen oder das Sprachmodell neu trainieren.</translation>
 <translation id="7964458523224581615">Blaugrün</translation>
 <translation id="7965946703747956421"><ph name="CREDENTIAL_TYPE" /> für <ph name="USER_EMAIL" /> löschen</translation>
 <translation id="7966241909927244760">Bildadresse k&amp;opieren</translation>
@@ -10202,6 +10151,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8050191834453426339">Erneut bestätigen</translation>
 <translation id="8051193500142930381">Funktionen, die eine Kamera benötigen, funktionieren dann nicht</translation>
 <translation id="8052218774860457016">Browsersynchronisierung verwalten</translation>
+<translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8052944601017749068">In <ph name="CERT_GROUP" /> importieren</translation>
 <translation id="8053390638574070785">Diese Seite neu laden</translation>
 <translation id="8054500940978949009">Zugelassen. Aktiviere den <ph name="LINK_BEGIN" />Mikrofonzugriff für Systemdienste<ph name="LINK_END" />.</translation>
@@ -10219,7 +10169,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8061244502316511332">Dieser Tab verwendet dein Mikrofon</translation>
 <translation id="8061464966246066292">Hoher Kontrast</translation>
 <translation id="8061970399284390013">Rechtschreib- und Grammatikprüfung</translation>
-<translation id="8061991877177392872">Du hast Voice Match schon auf einem anderen Gerät mit Assistant eingerichtet. Diese vorherigen Aufnahmen wurden verwendet, um ein Sprachmodell auf diesem Gerät zu erstellen.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 Blatt Papier}other{{COUNT} Blätter Papier}}</translation>
 <translation id="8063235345342641131">Grüner Standardavatar</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
@@ -11575,7 +11524,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8987321822984361516">Browser wird von einer Organisation verwaltet, Profil wird von <ph name="PROFILE_DOMAIN" /> verwaltet</translation>
 <translation id="8987927404178983737">Monat</translation>
 <translation id="8988539543012086784">Diese Seite wurde in „<ph name="BOOKMARK_FOLDER" />“ gespeichert.</translation>
-<translation id="8989034257029389285">Du kannst fragen „Hey Google, welcher Song ist das?“</translation>
 <translation id="8989359959810288806">Tethering-Status aktualisieren</translation>
 <translation id="8989779557457435460">Aktuellen Tab standardmäßig teilen</translation>
 <translation id="8990243615717080992">Du kannst dich mit einem Passwort oder einer anderen Wiederherstellungsmethode anmelden</translation>
@@ -11835,7 +11783,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9153367754133725216">Vorschläge für neue Apps und Webinhalte im Launcher und in den Suchergebnissen sehen. Statistiken zur Verbesserung von Vorschlägen werden nur gesendet, wenn du festgelegt hast, dass Absturzberichte, Diagnose- und Nutzungsdaten an ChromeOS gesendet werden sollen.</translation>
 <translation id="9154194610265714752">Aktualisiert</translation>
 <translation id="915485121129452731">Grafiktablet</translation>
-<translation id="9155100833189043833">Amtlichen Ausweis von deinem Mobilgerät verwenden</translation>
 <translation id="9155344700756733162">Farbauswahl aufheben</translation>
 <translation id="9157096865782046368">0,8 Sekunden</translation>
 <translation id="9157697743260533322">Automatische Updates für alle Nutzer konnten nicht eingerichtet werden (Preflight-Startfehler: <ph name="ERROR_NUMBER" />)</translation>
@@ -11856,7 +11803,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9167063903968449027">Leseliste anzeigen</translation>
 <translation id="9167450455589251456">Das Profil wird nicht unterstützt</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> Konten</translation>
-<translation id="9168436347345867845">Später</translation>
 <translation id="9169093579080634183">Weitere Informationen zu Tabs</translation>
 <translation id="9169496697824289689">Tastenkombinationen ansehen</translation>
 <translation id="916964310188958970">Warum erhalte ich diesen Vorschlag?</translation>

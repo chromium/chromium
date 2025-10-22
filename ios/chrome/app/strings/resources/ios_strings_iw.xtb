@@ -1792,6 +1792,7 @@
 <translation id="7851858861565204677">מכשירים אחרים</translation>
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7854006015462979438">פתיחת המידע הכללי</translation>
+<translation id="7855678267851972597">אודיו</translation>
 <translation id="7859988229622350291">אין לתרגם אף פעם</translation>
 <translation id="7863211248337747225">להורדת האפליקציה</translation>
 <translation id="7865127013871431856">אפשרויות תרגום</translation>
@@ -1908,7 +1909,6 @@
 <translation id="8273982424131314219">הפרטים ימולאו באתר <ph name="URL" /></translation>
 <translation id="8275068909952022340">עוד…</translation>
 <translation id="8277328362018795342">תוכן הדף שותף כדי שהתשובות יהיו רלוונטיות יותר</translation>
-<translation id="8278488584187265939">התאמה אישית של דף הבית</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8282657446819506217">פתיחה בקבוצת כרטיסיות</translation>
@@ -1972,6 +1972,7 @@
 <translation id="8524799873541103884">כרטיסיות <ph name="INCOGNITO" /> ‏<ph name="FIRST_VISIBLE_TAB" /> עד <ph name="LAST_VISIBLE_TAB" /> מתוך <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">פתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
 <translation id="8529767659511976195">חדש</translation>
+<translation id="8531572740963685410">‏קובצי PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">הגלישה הבטוחה מופעלת</translation>
 <translation id="8534481786647257214">‏הפרסום ב-‏Google+‎ בוצע.</translation>

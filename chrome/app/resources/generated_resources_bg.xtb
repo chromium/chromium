@@ -465,7 +465,6 @@
 <translation id="129808599775632797">&amp;Промени</translation>
 <translation id="130097046531636712">Това удължава живота на батерията, като ограничава активността на заден план и визуалните ефекти, като например гладкото превъртане</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да редактира следните файлове</translation>
-<translation id="130174306655812048">Опитайте „Ok Google, коя е тази песен?“</translation>
 <translation id="1302227299132585524">Разрешаване на JavaScript от събития на Apple</translation>
 <translation id="1303101771013849280">HTML файл с отметки</translation>
 <translation id="1303671224831497365">Няма намерени устройства с Bluetooth</translation>
@@ -794,7 +793,6 @@
 <translation id="1541346352678737112">Няма намерена мрежа</translation>
 <translation id="154198613844929213">{0,plural, =0{Изтрива се сега.}=1{Изтрива се след 1 секунда}other{Изтрива се след # секунди}}</translation>
 <translation id="1542137295869176367">Данните ви за вход не бяха актуализирани</translation>
-<translation id="1542524755306892917">Това дава възможност на Google Асистент да предоставя персонализирани отговори, когато <ph name="SUPERVISED_USER_NAME" /> задава въпроси.</translation>
 <translation id="1543284117603151572">Импортирани от Edge</translation>
 <translation id="1543538514740974167">Стигайте дотук по-бързо</translation>
 <translation id="1544588554445317666">Запазете файла с по-кратко име или в друга папка</translation>
@@ -1174,7 +1172,6 @@
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{При деинсталиране на <ph name="APP_NAME" /> ще бъде деинсталирано и следното приложение:}other{При деинсталиране на <ph name="APP_NAME" /> ще бъдат деинсталирани и следните приложения:}}</translation>
 <translation id="1786290960428378411">Заявява се четене и промяна</translation>
-<translation id="1787350673646245458">Изображение на потребител</translation>
 <translation id="1790976235243700817">Премахване на достъпа</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792619191750875668">Разширен екран</translation>
@@ -1299,7 +1296,6 @@
 <translation id="1871098866036088250">Отваряне в браузъра Chrome</translation>
 <translation id="1871131409931646355">Пълна история на изтеглянията</translation>
 <translation id="187145082678092583">По-малко приложения</translation>
-<translation id="1871534214638631766">Показване на сродната информация при кликване с десния бутон или продължително натискане на съдържание</translation>
 <translation id="1871615898038944731">Устройството ви <ph name="DEVICE_TYPE" /> е актуално</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231">Повторно предоставяне на разрешенията за <ph name="WEBSITE" /></translation>
@@ -1326,7 +1322,6 @@
 <translation id="1886996562706621347">Разрешаване на питания от сайтове дали да са манипулаторите по подразбиране за протоколите (препоръчително)</translation>
 <translation id="1887210448491286312">Спиране на предаването на раздела към „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1887442540531652736">Грешка при влизането</translation>
-<translation id="1887597546629269384">Кажете „Hey Google“ отново</translation>
 <translation id="1890026367080681123">Към настройките за вграденото съдържание</translation>
 <translation id="189035593835762169">Общи условия</translation>
 <translation id="1891362123137972260">Свободното място на диска е критично малко. Моля, освободете място.</translation>
@@ -1573,7 +1568,6 @@
 <translation id="2052572566310583903">Инсталирани на другите ви устройства</translation>
 <translation id="2052723746739622752">Освобождаване на Gemini</translation>
 <translation id="2053312383184521053">Данни за състоянието на неактивност</translation>
-<translation id="205560151218727633">Лого на Google Асистент</translation>
 <translation id="2058456167109518507">Открито е устройство</translation>
 <translation id="2059913712424898428">Часова зона</translation>
 <translation id="2060375639911876205">Премахване на потребителския профил на електронната SIM карта</translation>
@@ -1948,15 +1942,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> поиска допълнителни разрешения.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Запазване в(ъв) <ph name="BRAND" /> на това устройство</translation>
-<translation id="2307553512430195144">Ако приемете, Google Асистент ще бъде в режим на готовност, за да разпознава активиращата фраза „Ok Google“. Услугата може да познава гласа на <ph name="SUPERVISED_USER_NAME" /> с помощта на Voice Match.
-    <ph name="BR" />
-    Voice Match помага на Google Асистент да идентифицира гласа на <ph name="SUPERVISED_USER_NAME" /> на вашия <ph name="DEVICE_TYPE" /> и да го отличава от другите хора.
-    <ph name="BR" />
-    Асистент взима откъси с гласа на детето ви, за да създаде уникален гласов модел, който се съхранява само на устройствата му. Този модел може да бъде изпратен временно до Google с цел по-добро идентифициране на гласа.
-    <ph name="BR" />
-    Ако по-късно решите, че функцията Voice Match не е подходяща за детето ви, трябва само да я премахнете от настройките на Асистент в профила му. За да прегледате или изтриете аудиооткъсите, които детето ви записва по време на настройването на Voice Match, посетете <ph name="VOICE_MATCH_SETTINGS_URL" /> от профила му.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Следните клавиши не се поддържат: Tab, Shift, Control, Escape, Caps lock, клавишите за силата на звука</translation>
 <translation id="2309620859903500144">Достъпът на този сайт до сензорите ви за движение или светлина е блокиран.</translation>
 <translation id="2310923358723722542">Екран и увеличение</translation>
@@ -2368,7 +2353,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2599048253926156421">Потребителското име е копирано в буферната памет</translation>
 <translation id="2602501489742255173">Прекарайте пръст нагоре, за да започнете</translation>
 <translation id="2603115962224169880">Почистване на компютъра</translation>
-<translation id="2603355571917519942">Функцията Voice Match е готова за използване</translation>
 <translation id="2604129989323098489">Сайтовете обикновено искат информация за дисплеите ви, за да могат да отварят и разполагат прозорци интелигентно, като например да показват успоредно документи или съдържание на цял екран</translation>
 <translation id="2604255671529671813">Грешка при свързване с мрежата</translation>
 <translation id="2604805099836652105">Попълнихте формуляра за <ph name="ADDRESS_LABEL" /> адрес.</translation>
@@ -2649,7 +2633,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2777525873368474674">Поставете връзка към изображение</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Намерен е 1 сайт с много известия}other{Намерени са {NUM_SITES} сайта с много известия}}</translation>
 <translation id="2778471504622896352">Добавяйте отдалечени приложения към стартовия панел на ChromeOS</translation>
-<translation id="2779728796406650689">Това дава възможност на Google Асистент да ви предоставя персонализирани отговори, когато задавате въпроси.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
@@ -3247,7 +3230,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3211126692872351610">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ чрез <ph name="SEARCH_ENGINE" /> в нов раздел</translation>
 <translation id="321367297115597343">Добавяне на отметка към тази папка</translation>
 <translation id="3213681682237645841">Изтеглят се гласовете за <ph name="LANGUAGE" />...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис.</translation>
 <translation id="3217843140356091325">Да се създаде ли пряк път?</translation>
 <translation id="321834671654278338">Деинсталираща програма за Linux</translation>
 <translation id="3220943972464248773">За да се синхронизират паролите ви, потвърдете, че сте вие</translation>
@@ -3292,7 +3274,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – грешка в мрежата</translation>
 <translation id="3248902735035392926">Безопасността е от първостепенна важност. Отделете малко време и <ph name="BEGIN_LINK" />проверете разширенията си сега<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Синхронизиране на файловете</translation>
-<translation id="3251714896659475029">Разрешаване на <ph name="SUPERVISED_USER_NAME" /> да осъществява достъп до Google Асистент с „Ok Google“</translation>
 <translation id="3251759466064201842">&lt;Не е част от сертификата&gt;</translation>
 <translation id="325238099842880997">Задайте дигитални правила, с чиято помощ децата могат да играят, изследват и да изпълняват училищни задачи</translation>
 <translation id="3253225298092156258">Няма достъп</translation>
@@ -3395,7 +3376,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3319863571062685443">Адресът ви е запазен</translation>
 <translation id="3320271870899888245">Не може да се установи връзка с OneDrive. Опитайте отново.</translation>
 <translation id="3320630259304269485">Безопасно сърфиране (защита от опасни сайтове) и други настройки за сигурността</translation>
-<translation id="3320909810101200102">За да изберете документ за самоличност, сканирайте QR кода</translation>
 <translation id="3320957378743864387">Сайтове без разрешение за предлагане на помощ при писане</translation>
 <translation id="3321460131042519426">Активиране на пренасянето на думи</translation>
 <translation id="3321494112580110651">Не виждате принтера си?</translation>
@@ -3440,7 +3420,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="335581015389089642">Speech</translation>
 <translation id="335587007651175930">Търсете това, което е на екрана ви, с Google Обектив</translation>
 <translation id="3355936511340229503">Грешка във връзката</translation>
-<translation id="3356580349448036450">Завършено</translation>
 <translation id="3359256513598016054">Ограничения на правилата за сертификата</translation>
 <translation id="3360297538363969800">Отпечатването не бе успешно. Моля, проверете принтера си и опитайте отново.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -3532,7 +3511,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3418798368381485936">Не можете да влезете с този профил</translation>
 <translation id="3420501302812554910">Вътрешният ключ за сигурност трябва да бъде нулиран</translation>
 <translation id="3421387094817716717">Публичен ключ за алгоритъм, основан на елиптични криви</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Достъпът до персоналните ви резултати или до Асистент може да е възможен и посредством подобен глас или запис.</translation>
 <translation id="3422989558057853751">Последният елемент е избран. Ако отмените избора му, ще излезете от режима на избиране</translation>
 <translation id="3423111258700187173">Намерени резултати в(ъв) „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="3423226218833787854">Научете повече за тази функция на AI</translation>
@@ -3859,7 +3837,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3636940436873918441">Предпочитани езици</translation>
 <translation id="3637203148990213388">Допълнителни профили</translation>
 <translation id="3640347231390550691">Защитете паролите си от фишинг</translation>
-<translation id="3640613767643722554">Обучете Асистент да разпознава гласа ви</translation>
 <translation id="364100968401221170">За да изтриете данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />влезте в него<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Steam за Chromebook (бета) трябва да се актуализира. Рестартирайте своя Chromebook и опитайте отново.</translation>
 <translation id="3641299252000913351">Фърмуерът на модема се актуализира. Не изключвайте устройството.</translation>
@@ -4048,7 +4025,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="375636864092143889">Сайтът използва микрофона ви</translation>
 <translation id="3756485814916578707">Екранът се предава</translation>
 <translation id="3756578970075173856">Задаване на ПИН код</translation>
-<translation id="3756795331760037744">Разрешаване на Google Асистент да използва информацията на екрана на <ph name="SUPERVISED_USER_NAME" /> за помощ</translation>
 <translation id="3756806135608816820">Сайтовете могат да извеждат запитвания за търсене на устройства с Bluetooth</translation>
 <translation id="3757567010566591880">Освобождаване от лентата с инструменти</translation>
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
@@ -4613,7 +4589,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4126375522951286587">Изключване на <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Супергерой</translation>
 <translation id="4130199216115862831">Регистрационен файл на устройството</translation>
-<translation id="4130750466177569591">Приемам</translation>
 <translation id="4130877444234883490">Използвайте клавиша m, за да натиснете и задържите бутон на мишката</translation>
 <translation id="4130948219446157616">Затваряне на долния изглед</translation>
 <translation id="413121957363593859">Компоненти</translation>
@@ -4645,7 +4620,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4148957013307229264">Инсталира се...</translation>
 <translation id="4149385644005013189">Всичко изглежда добре!</translation>
 <translation id="4150201353443180367">Екран</translation>
-<translation id="4150569944729499860">Контекст на екрана</translation>
 <translation id="4151449637210235443">Разкажете ни за скорошните си изживявания от играта</translation>
 <translation id="4151503145138736576">Няма офлайн хранилище за изчистване</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
@@ -5170,7 +5144,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4532183705767666195">{COUNT,plural, =1{1 ключ за достъп}other{{COUNT} ключа за достъп}}</translation>
 <translation id="4532625150642446981"><ph name="USB_DEVICE_NAME" /> се използва. При повторно свързване на устройство, което се използва, може да възникнат грешки. Наистина ли искате да продължите?</translation>
 <translation id="4532646538815530781">Този сайт използва сензорите за движение.</translation>
-<translation id="4533846798469727141">Сега кажете „Hey Google“</translation>
 <translation id="4533985347672295764">Процесорно време</translation>
 <translation id="4534661889221639075">Опитайте отново.</translation>
 <translation id="4535127706710932914">Потребителски профил по подразбиране</translation>
@@ -5473,7 +5446,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Включване отново на звука на сайта}other{Включване отново на звука на сайтовете}}</translation>
 <translation id="4745096442457817087">Паролата ви бе разкрита при обществено нарушение на сигурността на данните</translation>
 <translation id="4745500401920035244">Администраторът направи промяна на ниво система, за да деактивира някои стари потребителски профили. Вече нямате достъп до този потребителски профил, но все още можете да го премахнете</translation>
-<translation id="474609389162964566">Осъществяване на достъп до Асистент посредством „Ok Google“</translation>
 <translation id="4746757725581505837">Напът сте да изтриете данните в <ph name="BRAND" />, запазени на това устройство</translation>
 <translation id="4748783296226936791">Сайтовете обикновено се свързват с HID устройства, за да осигуряват функции, за които се използват необичайни клавиатури, контролери за игра и други устройства</translation>
 <translation id="4750185073185658673">Прегледайте още няколко разрешения на телефона си. Уверете се, че сте включили Bluetooth и Wi-Fi на телефона си.</translation>
@@ -5651,7 +5623,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="486635084936119914">Автоматично отваряне на определени файлови типове след изтегляне</translation>
 <translation id="4867272607148176509">Родителите могат да одобряват или блокират приложения, да задават времеви ограничения и да контролират сърфирането в мрежата. По-късно можете да добавите училищен профил за достъп до повечето училищни ресурси.</translation>
 <translation id="4867433544163083783">Проверете сега дали разделите могат да бъдат организирани</translation>
-<translation id="4868281708609571334">Научете Google Асистент да разпознава гласа на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Понастоящем фокусът не е върху този диалогов прозорец. Натиснете Command + Shift + Option A, за да поставите фокуса върху него.</translation>
 <translation id="4868351661310357223">Инсталирайте приложения и игри от Google Play на своя <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Четене на информация за мрежата за ChromeOS</translation>
@@ -6283,7 +6254,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5307386115243749078">Сдвояване на превключвател с Bluetooth</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5308989548591363504">Проверка за злонамерен софтуер</translation>
-<translation id="5309418307557605830">Google Асистент работи и тук</translation>
 <translation id="5309641450810523897">ID на заявката за поддръжка</translation>
 <translation id="5311304534597152726">Влизате като</translation>
 <translation id="5312746996236433535">дублиране на екрана</translation>
@@ -6811,7 +6781,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5687935527303996204">Проверете дали устройството ви е включено в електрическата мрежа и не го изключвайте. Инсталацията може да трае до 20 минути. Устройството ще се изключи автоматично, щом инсталацията завърши.</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Местоположение</translation>
-<translation id="5689531695336322499">Изглежда, че функцията Voice Match за Асистент вече е настроена от <ph name="SUPERVISED_USER_NAME" /> на друго устройство. Предишните записи бяха използвани за създаване на гласов модел на това устройство.</translation>
 <translation id="56907980372820799">Свързване на данните</translation>
 <translation id="5691581861107245578">Получавайте предложения за емоджи въз основа на това, което въвеждате</translation>
 <translation id="5691772641933328258">Отпечатъкът не бе разпознат</translation>
@@ -7330,7 +7299,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6061408389284235459">До <ph name="DEVICE_NAME" /> бе изпратено известие</translation>
 <translation id="6063284707309177505">Създаване на QR код</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис. С цел икономия на батерията от настройките на Асистент в профила на <ph name="SUPERVISED_USER_NAME" /> можете да изберете „Ok Google“ да активира услугата само когато устройството е свързано с източник на захранване.</translation>
 <translation id="6064217302520318294">Заключване на екрана</translation>
 <translation id="606449270532897041">Управление на данните за сайтовете</translation>
 <translation id="6064764629679333574">Подобрете качеството на звука от микрофона с Bluetooth, като увеличите разделителната способност на звука.</translation>
@@ -7854,6 +7822,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6434309073475700221">Отхвърляне</translation>
 <translation id="6434325376267409267">Устройството ви трябва да бъде актуализирано, преди да можете да използвате <ph name="APP_NAME" />.</translation>
 <translation id="6434755719322447931">Хаотично</translation>
+<translation id="6435307030888827407">Използване без вход в профил</translation>
 <translation id="6435339218366409950">Изберете езика, на който да бъдат преведени надписите</translation>
 <translation id="6436164536244065364">Преглед в уеб магазина</translation>
 <translation id="6436778875248895551">Разширението „<ph name="EXTENSION_NAME" />“ е блокирано от администратора ви</translation>
@@ -8099,7 +8068,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6602956230557165253">Използвайте клавишите със стрелки за наляво и за надясно, за да се придвижвате.</translation>
 <translation id="6603185457265641428">Изберете дали историята да се синхронизира</translation>
 <translation id="6605847144724004692">Още няма оценка от потребители.</translation>
-<translation id="6606671997164410857">Изглежда, че вече сте настроили Google Асистент на друго устройство. Възползвайте се в още по-голяма степен от Асистент, като включите „Контекст на екрана“ на това устройство.</translation>
 <translation id="6607831829715835317">Още инструме&amp;нти</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> вече се управлява от <ph name="DOMAIN" />. За да използвате родителски контроли с друг профил в Google, излезте от този след настройването и изберете „Добавяне на човек“ на екрана за вход.</translation>
 <translation id="6608166463665411119">Нулиране на електронната SIM карта</translation>
@@ -8199,7 +8167,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="6675665718701918026">Свързано е посочващо устройство</translation>
 <translation id="6675717447295898330">Създаване на нов потребителски профил за служебни цели без съществуващите ми данни</translation>
-<translation id="6676212663108450937">Добре е да използвате слушалки, докато обучавате гласовия си модел</translation>
 <translation id="6676291960742508499">Разделите, заглавията на страниците и URL адресите се изпращат до Google.</translation>
 <translation id="667752334740867460">Получава се информация за Wi-Fi…</translation>
 <translation id="6677527809400770913">Жестът „<ph name="GESTURE" />“ е зададен за действието „<ph name="ACTION" />“</translation>
@@ -8219,9 +8186,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6686817083349815241">Запазване на паролата ви</translation>
 <translation id="6687008241368170505">Промяна на ПИН кода за Google Мениджър на пароли</translation>
 <translation id="6687079240787935001">Скриване на <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Помолете <ph name="SUPERVISED_USER_NAME" /> да дойде до компютъра. Детето ви ще прочете няколко фрази на този екран, за да бъде създаден гласовият му модел.
-    <ph name="BR" />
-    Ако <ph name="SUPERVISED_USER_NAME" /> се нуждае от помощ с четенето, може да повтаря след вас. Шепнете далеч от микрофона, така че Асистент да научи гласа на детето ви вместо вашия.</translation>
 <translation id="6689948774466767379">Клавиши за мишката</translation>
 <translation id="6690659332373509948">Файлът „<ph name="FILE_NAME" />“ не може да се анализира синтактично</translation>
 <translation id="6691936601825168937">&amp;Препращане</translation>
@@ -8398,13 +8362,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6808166974213191158">Запис на системни изображения на ChromeOS Flex</translation>
 <translation id="6808193438228982088">Лисица</translation>
 <translation id="6809470175540814047">Отваряне на прозорец в режим „инкогнито“</translation>
-<translation id="6809656734323672573">Ако приемете, Google Асистент ще бъде в режим на готовност, за да разпознава активиращата фраза „Ok Google“. Услугата може да познава гласа ви с помощта на Voice Match.
-    <ph name="BR" />
-    Voice Match позволява на Асистент да ви идентифицира и да ви отличава от другите хора. Асистент взима откъси с гласа ви, за да създаде уникален гласов модел, който се съхранява само на устройствата ви. Гласовият ви модел може да бъде изпратен временно до Google с цел по-добро идентифициране на гласа ви.
-    <ph name="BR" />
-    Ако по-късно решите, че не искате да използвате функцията Voice Match, трябва само да я премахнете от настройките на Асистент. За да прегледате или изтриете аудиооткъсите, които сте записали по време на настройването на Voice Match, посетете <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Автоматично влизане в уебсайтове посредством съхраняваните идентификационни данни. Когато функцията е деактивирана, ще се изисква потвърждение преди всяко влизане в профил в уебсайт.</translation>
 <translation id="6811034713472274749">Страницата е готова за преглед</translation>
 <translation id="6811151703183939603">Силна</translation>
@@ -8463,7 +8420,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6842868554183332230">Сайтовете обикновено разпознават кога използвате устройството си активно, за да задават състоянието ви в приложения за чат</translation>
 <translation id="6843264316370513305">Отстраняване на грешки в мрежата</translation>
 <translation id="6843404741389995311">Пазарувайте, превеждайте и идентифицирайте това, което виждате във визьора на камерата и фотогалерията си</translation>
-<translation id="6843423766595476978">Настроихте Ok Google</translation>
 <translation id="6843725295806269523">заглушаване</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Отваряне с увеличен изглед</translation>
@@ -8714,7 +8670,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7014741021609395734">Увеличение</translation>
 <translation id="7015135594296285641">Разрешаване на разширенията</translation>
 <translation id="7016995776279438971">Червено-зелен, нарушено възприемане на червено (протаномалия)</translation>
-<translation id="7017004637493394352">Кажете „Ok Google“ отново</translation>
 <translation id="7017219178341817193">Добавяне на нова страница</translation>
 <translation id="7017354871202642555">Не може да се зададе режим, след като е настроен прозорец.</translation>
 <translation id="7019546817926942979">Устройството ви трябва да е включено в електрическата мрежа. Надстройването на Linux може да изтощи батерията. Включете устройството си в електрическата мрежа и опитайте отново.</translation>
@@ -8770,7 +8725,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7059858479264779982">Задаване на автоматично стартиране</translation>
 <translation id="7063129466199351735">Преките пътища се обработват...</translation>
 <translation id="7063311912041006059">URL адрес с <ph name="SPECIAL_SYMBOL" /> вместо заявка</translation>
-<translation id="706342288220489463">Разрешаване на Асистент да използва информацията на екрана, за да ви помага</translation>
 <translation id="70641621694466590">Към страницата „Пароли“</translation>
 <translation id="7064209589142995848">Прехвърляне на съдържание</translation>
 <translation id="7064734931812204395">Контейнерът за Linux се конфигурира. Това може да отнеме до 30 минути.</translation>
@@ -9423,7 +9377,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7520766081042531487">Портал в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Показване на преки пътища</translation>
 <translation id="7521430434164837205">Файлове на Microsoft 365</translation>
-<translation id="7522255036471229694">Кажете „Ok Google“</translation>
 <translation id="7523117833414447032">При четене на главни букви</translation>
 <translation id="7523585675576642403">Преименуване на профила</translation>
 <translation id="7525067979554623046">Създаване</translation>
@@ -9742,7 +9695,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7736119438443237821">Напът сте да премахнете достъпа до ключовете си за достъп на това устройство</translation>
 <translation id="7737115349420013392">Сдвоява се с(ъс) „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="7737203573077018777">Получена е инструкция за <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
-<translation id="7737846262459425222">Можете да промените това по всяко време от „Настройки &gt; Google Асистент &gt; Контекст на екрана“.</translation>
 <translation id="7737948071472253612">Сайтове без разрешение за използване на камерата ви</translation>
 <translation id="77381465218432215">Показване на ударения и специални знаци</translation>
 <translation id="7739524723876359011">Натиснете <ph name="ACCELERATOR" />, за да поставите фокуса върху това балонче.</translation>
@@ -9847,7 +9799,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7806659658565827531">Добавяне на пояснения за основния възел</translation>
 <translation id="7806722269368320106">Приложение – инсталира се</translation>
 <translation id="7807067443225230855">Търсене и Асистент</translation>
-<translation id="7807117920154132308">Изглежда, че Google Асистент вече е настроен от <ph name="SUPERVISED_USER_NAME" /> на друго устройство. <ph name="SUPERVISED_USER_NAME" /> може да се възползва в още по-голяма степен от Асистент, като включи „Контекст на екрана“.</translation>
 <translation id="7807711621188256451">Достъпът на <ph name="HOST" /> до камерата ви винаги да е разрешен</translation>
 <translation id="7810202088502699111">Изскачащите прозорци са блокирани на тази страница.</translation>
 <translation id="7810367892333449285">Въведеното от вас трябва да е във формат <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адрес<ph name="LPA_2" />$<ph name="LPA_3" />незадължителен идентификатор за съответствие<ph name="LPA_4" /></translation>
@@ -9906,7 +9857,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Като разрешите на устройствата си с Chrome OS да изпращат автоматични сигнали, ни помагате да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в Chrome OS, с кои функции работите, колко памет обикновено ползвате, както и диагностични данни и данни за употребата на приложения за Android. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, като например програмистите за Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството си с Chrome OS. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ако настройката „Активност в мрежата и приложенията“ е включена за профила ви в Google, данните ви от Android може да се запазват в него. Имате възможност да преглеждате и изтривате данните си и да променяте настройките на профила си на адрес account.google.com.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Достъпът до персоналните ви резултати или до Асистент може да е възможен и посредством подобен глас или запис. С цел икономия на батерията от настройките на Асистент можете да изберете „Ok Google“ да активира услугата само когато устройството е свързано с източник на захранване.</translation>
 <translation id="7851457902707056880">Влизането е ограничено само до профила на собственика. Моля, рестартирайте и влезте с този профил. Машината ще се рестартира автоматично след 30 секунди.</translation>
 <translation id="7851716364080026749">Достъпът до камерата и микрофона да се блокира винаги</translation>
 <translation id="78526636422538552">Функцията за добавяне на профили в Google е деактивирана</translation>
@@ -10078,7 +10028,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7963408577288987423">{COUNT,plural, =1{1 парола}other{{COUNT} пароли}}</translation>
 <translation id="7963513503134856713">Прозорецът бе преместен надясно</translation>
 <translation id="7963608432878156675">Това име се вижда от другите устройства при връзки с мрежи и чрез Bluetooth</translation>
-<translation id="7963826112438303517">Асистент използва тези записи и гласовите ви заявки, за да създаде и актуализира гласовия ви модел, който се съхранява само на устройствата, на които сте включили Voice Match. Можете да прегледате гласовата активност или да обучите отново гласовия модел от настройките на Асистент.</translation>
 <translation id="7964458523224581615">изумруденозелено</translation>
 <translation id="7965946703747956421">Изтриване на <ph name="CREDENTIAL_TYPE" /> за потребителското име <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">К&amp;опиране на адреса на изображението</translation>
@@ -10223,6 +10172,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8050191834453426339">Повторно потвърждаване</translation>
 <translation id="8051193500142930381">Функциите, за които е необходима камера, няма да работят</translation>
 <translation id="8052218774860457016">Управление на синхронизирането на браузъра</translation>
+<translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8052944601017749068">Импортиране във: <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Презареждане на тази страница</translation>
 <translation id="8054500940978949009">Разрешено. Включете <ph name="LINK_BEGIN" />достъпа до системния микрофон<ph name="LINK_END" />.</translation>
@@ -10240,7 +10190,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8061244502316511332">Този раздел използва микрофона ви</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8061970399284390013">Проверка на правописа и граматиката</translation>
-<translation id="8061991877177392872">Изглежда, че вече сте настроили Voice Match за Асистент на друго устройство. Предишните записи бяха използвани за създаване на гласов модел на това устройство.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартия}other{{COUNT} листа хартия}}</translation>
 <translation id="8063235345342641131">Стандартен зелен аватар</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11596,7 +11545,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8987321822984361516">Браузърът се управлява от организация, а потребителският профил – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8988539543012086784">Тази страница е запазена в(ъв) <ph name="BOOKMARK_FOLDER" /></translation>
-<translation id="8989034257029389285">Можете да попитате „Ok Google, коя е тази песен?“</translation>
 <translation id="8989359959810288806">Опресняване на състоянието на тетъринга</translation>
 <translation id="8989779557457435460">Споделяне на текущия раздел по подразбиране</translation>
 <translation id="8990243615717080992">Влезте в профила си посредством парола или друг метод за възстановяване</translation>
@@ -11856,7 +11804,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9153367754133725216">Показване на предложения за нови приложения и уеб съдържание в стартовия панел и резултатите от търсенето. Изпраща статистически данни, за да подобри предложенията само ако сте избрали да изпращате до ChromeOS сигнали за сривове, диагностична информация и данни за употребата.</translation>
 <translation id="9154194610265714752">Актуализирано</translation>
 <translation id="915485121129452731">Графичен таблет</translation>
-<translation id="9155100833189043833">Безопасно използване на документ за самоличност от мобилното ви устройство</translation>
 <translation id="9155344700756733162">Отмяна на избрания цвят</translation>
 <translation id="9157096865782046368">0,8 секунди</translation>
 <translation id="9157697743260533322">Настройването на автоматични актуализации за всички потребители не бе успешно (грешка при стартирането на предстартовия процес: <ph name="ERROR_NUMBER" />)</translation>
@@ -11877,7 +11824,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9167063903968449027">Показване на списъка за четене</translation>
 <translation id="9167450455589251456">Потребителският профил не се поддържа</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> профила</translation>
-<translation id="9168436347345867845">По-късно</translation>
 <translation id="9169093579080634183">Научете повече за разделите</translation>
 <translation id="9169496697824289689">Преглед на клавишните комбинации</translation>
 <translation id="916964310188958970">Защо виждате това предложение?</translation>

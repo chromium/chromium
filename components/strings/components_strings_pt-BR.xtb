@@ -788,6 +788,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="22792995594807632">Revise antes de baixar os arquivos</translation>
 <translation id="2283340219607151381">Salvar e preencher endereços</translation>
 <translation id="2283447177162560884">Item "<ph name="PAGE_TITLE" />" excluído</translation>
+<translation id="2283599456633275070">Viagem</translation>
 <translation id="2286383991450886080">34 x 44 pol.</translation>
 <translation id="2288422996159078444">Tudo o que é digitado, as páginas que são acessadas e qualquer outra atividade na Web está sendo monitorado, e o conteúdo dos sites pode mudar sem que você saiba.</translation>
 <translation id="2289385804009217824">Cortar</translation>
@@ -882,6 +883,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2436976580469434549">Artes têxteis e de fibras</translation>
 <translation id="243815215670139125">Não pudemos salvar o cartão na sua Conta do Google. Ele foi salvo no Chrome neste dispositivo.</translation>
 <translation id="2438874542388153331">Perfuração quádrupla no lado direito</translation>
+<translation id="2440855519769445271">Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK" />configurações de pagamento<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Formas de pagamento disponíveis para preenchimento com um toque. Teclado oculto.</translation>
 <translation id="2442865686365739754">O Chrome <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2224,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4648262692072505866">O hash precisa estar no formato SHA-256.</translation>
 <translation id="4652266463001779298">Sem permissão</translation>
 <translation id="4652440160515225514">Sua organização bloqueou este site porque ele viola uma política.</translation>
+<translation id="4654457557264366314">Os planos de pagamento estão sujeitos à qualificação.</translation>
 <translation id="4658638640878098064">Grampo na parte superior direita</translation>
 <translation id="4660592918803576381">Abrir no Drive</translation>
 <translation id="4661556981531699496">Animais em geral e de estimação</translation>

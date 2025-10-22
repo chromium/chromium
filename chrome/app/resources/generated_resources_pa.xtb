@@ -466,7 +466,6 @@
 <translation id="129808599775632797">&amp;ਸੋਧਾਂ</translation>
 <translation id="130097046531636712">ਇਹ ਨਿਰਵਿਘਨ ਸਕ੍ਰੋਲ ਕਰਨ ਵਰਗੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸਰਗਰਮੀ ਅਤੇ ਦ੍ਰਿਸ਼ਟੀਗਤ ਪ੍ਰਭਾਵਾਂ ਨੂੰ ਸੀਮਤ ਕਰ ਕੇ ਬੈਟਰੀ ਪਾਵਰ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
-<translation id="130174306655812048">“Ok Google, ਇਹ ਕਿਹੜਾ ਗੀਤ ਹੈ?” ਬੋਲ ਕੇ ਦੇਖੋ</translation>
 <translation id="1302227299132585524">Apple ਇਵੈਂਟਾਂ ਤੋਂ JavaScript ਚੱਲਣ ਦਿਓ</translation>
 <translation id="1303101771013849280">ਬੁੱਕਮਾਰਕਸ HTML ਫਾਈਲ</translation>
 <translation id="1303671224831497365">ਕੋਈ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਹੀਂ ਲੱਭੀਆਂ</translation>
@@ -798,7 +797,6 @@
 <translation id="1541346352678737112">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="154198613844929213">{0,plural, =0{ਹੁਣੇ ਮਿਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ।}=1{ਇੰਨੇ ਸਮੇਂ ਵਿੱਚ ਮਿਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ: 1 second}other{ਇੰਨੇ ਸਮੇਂ ਵਿੱਚ ਮਿਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ: # seconds}}</translation>
 <translation id="1542137295869176367">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਡਾਟੇ ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
-<translation id="1542524755306892917">ਇਹ Google Assistant ਨੂੰ <ph name="SUPERVISED_USER_NAME" /> ਸਵਾਲ ਪੁੱਛਣ 'ਤੇ ਵਿਉਂਤਬੱਧ ਜਵਾਬ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="1543284117603151572">Edge ਤੋਂ ਆਯਾਤ ਕੀਤਾ</translation>
 <translation id="1543538514740974167">ਤੇਜ਼ੀ ਨਾਲ ਇੱਥੇ ਪਹੁੰਚੋ</translation>
 <translation id="1544588554445317666">ਇੱਕ ਛੋਟਾ ਫ਼ਾਈਲ ਨਾਮ ਵਰਤਣ ਜਾਂ ਕਿਸੇ ਵੱਖਰੇ ਫੋਲਡਰ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -1179,7 +1177,6 @@
 <translation id="1784849162047402014">ਡੀਵਾਈਸ ਵਿੱਚ ਡਿਸਕ ਜਗ੍ਹਾ ਘੱਟ ਹੈ</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਵੇਗੀ:}one{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਵੇਗੀ:}other{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪਾਂ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਣਗੀਆਂ:}}</translation>
 <translation id="1786290960428378411">ਪੜ੍ਹਣ ਅਤੇ ਬਦਲਣ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
-<translation id="1787350673646245458">ਵਰਤੋਂਕਾਰ ਚਿੱਤਰ</translation>
 <translation id="1790976235243700817">ਪਹੁੰਚ ਹਟਾਓ</translation>
 <translation id="1791662854739702043">ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1792619191750875668">ਵਿਸਤ੍ਰਿਤ ਡਿਸਪਲੇ</translation>
@@ -1304,7 +1301,6 @@
 <translation id="1871098866036088250">Chrome ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1871131409931646355">ਪੂਰਾ ਡਾਊਨਲੋਡ ਇਤਿਹਾਸ</translation>
 <translation id="187145082678092583">ਘੱਟ ਐਪਾਂ</translation>
-<translation id="1871534214638631766">ਸਮੱਗਰੀ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰਨ ਜਾਂ ਉਸਨੂੰ ਦਬਾਈ ਰੱਖਣ 'ਤੇ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</translation>
 <translation id="1871615898038944731">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਅੱਪ ਟੂ ਡੇਟ ਹੈ</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਦੁਬਾਰਾ ਆਗਿਆ ਦਿਓ</translation>
@@ -1331,7 +1327,6 @@
 <translation id="1886996562706621347">ਸਾਈਟਾਂ ਨੂੰ ਪ੍ਰੋਟੋਕੋਲਾਂ ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਹੈਂਡਲਰ ਬਣਨ ਲਈ ਕਹਿਣ ਦੀ ਆਗਿਆ ਦਿਓ (ਸਿਫ਼ਾਰਿਸ਼ ਕੀਤਾ)</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> 'ਤੇ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="1887442540531652736">ਸਾਈਨ-ਇਨ ਗੜਬੜ</translation>
-<translation id="1887597546629269384">ਦੁਬਾਰਾ "Hey Google" ਕਹੋ</translation>
 <translation id="1890026367080681123">ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ ਦੀਆਂ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="189035593835762169">ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ</translation>
 <translation id="1891362123137972260">ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਹੁਤ ਘੱਟ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਡਿਸਕ ਵਿਚਲੀ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ।</translation>
@@ -1578,7 +1573,6 @@
 <translation id="2052572566310583903">ਤੁਹਾਡੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="2052723746739622752">Gemini ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="2053312383184521053">ਨਿਸ਼ਕਿਰਿਆ ਸਥਿਤੀ ਡਾਟਾ</translation>
-<translation id="205560151218727633">Google Assistant ਲੋਗੋ</translation>
 <translation id="2058456167109518507">ਡੀਵਾਈਸ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
 <translation id="2059913712424898428">ਸਮਾਂ ਜ਼ੋਨ</translation>
 <translation id="2060375639911876205">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਹਟਾਓ</translation>
@@ -1953,15 +1947,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ਨੇ ਵਾਧੂ ਅਨੁਮਤੀਆਂ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ।</translation>
 <translation id="2304820083631266885">ਗ੍ਰਹਿ</translation>
 <translation id="2306794767168143227">ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
-<translation id="2307553512430195144">ਜੇ ਤੁਸੀਂ ਸਹਿਮਤ ਹੋ, ਤਾਂ Google Assistant ਵੱਲੋਂ "Ok Google" ਨੂੰ ਪਛਾਣਨ ਲਈ ਸਟੈਂਡਬਾਈ ਮੋਡ ਵਿੱਚ ਉਡੀਕ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਇਹ ਇਸ ਗੱਲ ਦੀ ਪਛਾਣ ਵੀ ਕਰ ਸਕਦੀ ਹੈ ਕਿ ਤੁਸੀਂ <ph name="SUPERVISED_USER_NAME" /> Voice Match ਨਾਲ ਬੋਲ ਰਹੇ ਹੋ।
-    <ph name="BR" />
-    Voice Match ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਅਵਾਜ਼ ਦੀ ਪਛਾਣ ਕਰਨ ਵਿੱਚ Google Assistant ਦੀ ਮਦਦ ਕਰਦੀ ਹੈ ਅਤੇ ਉਸਨੂੰ ਹੋਰ ਲੋਕਾਂ ਤੋਂ ਵੱਖ ਕਰਦੀ ਹੈ।
-    <ph name="BR" />
-    Assistant ਤੁਹਾਡੇ ਬੱਚੇ ਦੀ ਅਵਾਜ਼ ਦੀਆਂ ਕਲਿੱਪਾਂ ਲੈ ਕੇ ਵਿਲੱਖਣ ਅਵਾਜ਼ੀ ਮਾਡਲ ਬਣਾਉਂਦੀ ਹੈ, ਜਿਸਨੂੰ ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਦੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡੇ ਬੱਚੇ ਦੀ ਅਵਾਜ਼ ਨੂੰ ਬਿਹਤਰ ਤਰੀਕੇ ਨਾਲ ਪਛਾਣਨ ਲਈ ਉਸ ਦਾ ਅਵਾਜ਼ੀ ਮਾਡਲ ਕੁਝ ਸਮੇਂ ਲਈ Google ਨੂੰ ਭੇਜਿਆ ਜਾ ਸਕਦਾ ਹੈ।
-    <ph name="BR" />
-    ਜੇ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਇਹ ਫ਼ੈਸਲਾ ਕਰਦੇ ਹੋ ਕਿ Voice Match ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਸਹੀ ਨਹੀਂ ਹੈ, ਤਾਂ ਬਸ ਇਸ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀਆਂ Assistant ਸੈਟਿੰਗਾਂ ਤੋਂ ਹਟਾ ਦਿਓ। Voice Match ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਵੇਲੇ ਆਪਣੇ ਬੱਚੇ ਦੀਆਂ ਰਿਕਾਰਡ ਕੀਤੀਆਂ ਆਡੀਓ ਕਲਿੱਪਾਂ ਦੇਖਣ ਜਾਂ ਮਿਟਾਉਣ ਲਈ, ਆਪਣੇ ਬੱਚੇ ਦੇ ਖਾਤੇ ਤੋਂ <ph name="VOICE_MATCH_SETTINGS_URL" /> 'ਤੇ ਜਾਓ।
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">ਅੱਗੇ ਦਿੱਤੀਆਂ ਕੁੰਜੀਆਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਮੋਸ਼ਨ ਜਾਂ ਲਾਈਟ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2310923358723722542">ਡਿਸਪਲੇ ਅਤੇ ਵੱਡਦਰਸ਼ੀਕਰਨ</translation>
@@ -2373,7 +2358,6 @@
 <translation id="2599048253926156421">ਵਰਤੋਂਕਾਰ ਨਾਮ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2602501489742255173">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2603115962224169880">ਕੰਪਿਊਟਰ ਸਾਫ਼ ਕਰੋ</translation>
-<translation id="2603355571917519942">Voice Match ਤਿਆਰ ਹੈ</translation>
 <translation id="2604129989323098489">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਤੁਹਾਡੀਆਂ ਡਿਸਪਲੇਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਮੰਗਦੀਆਂ ਹਨ ਤਾਂ ਜੋ ਉਹ ਵਿੰਡੋਆਂ ਨੂੰ ਸਮਝਦਾਰੀ ਨਾਲ ਖੋਲ੍ਹ ਸਕਣ ਅਤੇ ਵਿਵਸਥਿਤ ਕਰ ਸਕਣ, ਜਿਵੇਂ ਕਿ ਦਸਤਾਵੇਜ਼ਾਂ ਜਾਂ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਦੀ ਸਮੱਗਰੀ ਨੂੰ ਨਾਲੋ-ਨਾਲ ਦਿਖਾਉਣਾ</translation>
 <translation id="2604255671529671813">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> ਪਤੇ ਦਾ ਫ਼ਾਰਮ ਭਰਿਆ ਗਿਆ।</translation>
@@ -2654,7 +2638,6 @@
 <translation id="2777525873368474674">ਚਿੱਤਰ ਦਾ ਲਿੰਕ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਵਾਲੀ 1 ਸਾਈਟ ਮਿਲੀ}one{ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਵਾਲੀ {NUM_SITES} ਸਾਈਟ ਮਿਲੀ}other{ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਵਾਲੀਆਂ {NUM_SITES} ਸਾਈਟਾਂ ਮਿਲੀਆਂ}}</translation>
 <translation id="2778471504622896352">ChromeOS ਲਾਂਚਰ ਵਿੱਚ ਰਿਮੋਟ ਐਪਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="2779728796406650689">ਇਹ Google Assistant ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਵਾਲ ਪੁੱਛਣ 'ਤੇ ਵਿਉਂਤਬੱਧ ਜਵਾਬ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ</translation>
@@ -3253,7 +3236,6 @@
 <translation id="3211126692872351610"><ph name="SEARCH_ENGINE" /> 'ਤੇ ਨਵੀਂ ਟੈਬ ਵਿੱਚ "<ph name="SEARCH_TERMS" />" &amp;ਖੋਜੋ</translation>
 <translation id="321367297115597343">ਇਸ ਫੋਲਡਰ ਵਿੱਚ ਕੋਈ ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> ਅਵਾਜ਼ਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕਿਸੇ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਅਵਾਜ਼ ਦੀ ਰਿਕਾਰਡਿੰਗ ਨਾਲ <ph name="SUPERVISED_USER_NAME" /> ਦੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="3217843140356091325">ਕੀ ਸ਼ਾਰਟਕੱਟ ਬਣਾਉਣਾ ਹੈ?</translation>
 <translation id="321834671654278338">Linux ਸਥਾਪਨਾਕਾਰ</translation>
 <translation id="3220943972464248773">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਸਿੰਕ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -3298,7 +3280,6 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ਨੈੱਟਵਰਕ ਗੜਬੜ</translation>
 <translation id="3248902735035392926">ਸੁਰੱਖਿਆ ਮਾਈਨੇ ਰੱਖਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੁਣੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ<ph name="END_LINK" /> ਲਈ ਸਮਾਂ ਕੱਢੋ</translation>
 <translation id="3251119461199395237">ਫ਼ਾਈਲ ਸਿੰਕ</translation>
-<translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> ਨੂੰ "Ok Google" ਬੋਲ ਕੇ Google Assistant ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
 <translation id="3251759466064201842">&lt;ਸਰਟੀਫਿਕੇਟ ਦਾ ਭਾਗ ਨਹੀਂ&gt;</translation>
 <translation id="325238099842880997">ਘਰ ਵਿੱਚ ਬੱਚਿਆਂ ਦੇ ਖੇਡਣ, ਪੜਚੋਲ ਅਤੇ ਸਕੂਲ ਦਾ ਕੰਮ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ ਬੁਨਿਆਦੀ ਡਿਜੀਟਲ ਨਿਯਮ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3253225298092156258">ਉਪਲਬਧ ਨਹੀਂ</translation>
@@ -3401,7 +3382,6 @@
 <translation id="3319863571062685443">ਤੁਹਾਡਾ ਪਤਾ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="3320271870899888245">OneDrive ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3320630259304269485">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ (ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੋਂ ਸੁਰੱਖਿਆ) ਅਤੇ ਹੋਰ ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ</translation>
-<translation id="3320909810101200102">ਕੋਈ ਆਈਡੀ ਚੁਣਨ ਲਈ, QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="3320957378743864387">ਲਿਖਤੀ ਮਦਦ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="3321460131042519426">ਸ਼ਬਦ ਸਮੇਟਣਾ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3321494112580110651">ਕੀ ਤੁਹਾਡਾ ਪ੍ਰਿੰਟਰ ਨਹੀਂ ਦਿਸ ਰਿਹਾ?</translation>
@@ -3446,7 +3426,6 @@
 <translation id="335581015389089642">ਸਪੀਚ</translation>
 <translation id="335587007651175930">Google Lens ਨਾਲ ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਸਮੱਗਰੀ ਬਾਰੇ ਖੋਜੋ</translation>
 <translation id="3355936511340229503">ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
-<translation id="3356580349448036450">ਪੂਰਾ</translation>
 <translation id="3359256513598016054">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੀਤੀ ਪਾਬੰਦੀਆਂ</translation>
 <translation id="3360297538363969800">ਪ੍ਰਿੰਟਿੰਗ ਅਸਫਲ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਿੰਟਰ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -3538,7 +3517,6 @@
 <translation id="3418798368381485936">ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕਰ ਸਕਦੇ</translation>
 <translation id="3420501302812554910">ਅੰਦਰੂਨੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3421387094817716717">ਅੰਡਾਕਾਰ ਘੁਮਾਓ ਜਨਤਕ ਕੁੰਜੀ</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕੋਈ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਰਿਕਾਰਡਿੰਗ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਜਾਂ ਤੁਹਾਡੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ।</translation>
 <translation id="3422989558057853751">ਆਖਰੀ ਆਈਟਮ ਚੁਣੀ ਗਈ, ਇਸਨੂੰ ਅਣਚੁਣਿਆ ਕਰਨ 'ਤੇ, ਚੋਣ ਮੋਡ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ਵਿੱਚ ਨਤੀਜੇ ਮਿਲੇ</translation>
 <translation id="3423226218833787854">ਇਸ AI ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -3865,7 +3843,6 @@
 <translation id="3636940436873918441">ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="3637203148990213388">ਵਧੀਕ ਖਾਤੇ</translation>
 <translation id="3640347231390550691">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦੀ ਫ਼ਿਸ਼ਿੰਗ ਤੋਂ ਸੁਰੱਖਿਆ ਕਰੋ</translation>
-<translation id="3640613767643722554">ਆਪਣੀ Assistant ਨੂੰ ਤੁਹਾਡੀ ਅਵਾਜ਼ ਪਛਾਣਨਾ ਸਿਖਾਓ</translation>
 <translation id="364100968401221170">ਤੁਹਾਡੇ ਸਾਰੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਅਤੇ ਤੁਹਾਡੇ 'Google ਖਾਤੇ' ਵਿੱਚੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />ਸਾਈਨ-ਇਨ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="3641070112313110357">Chromebook ਲਈ Steam (ਬੀਟਾ) ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਆਪਣੀ Chromebook ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3641299252000913351">ਮੋਡੈਮ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ।</translation>
@@ -4054,7 +4031,6 @@
 <translation id="375636864092143889">ਸਾਈਟ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="3756485814916578707">ਸਕ੍ਰੀਨ 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3756578970075173856">ਪਿੰਨ ਸੈੱਟ ਕਰੋ</translation>
-<translation id="3756795331760037744">ਮਦਦ ਲਈ Google Assistant ਨੂੰ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦਿਓ</translation>
 <translation id="3756806135608816820">ਸਾਈਟਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਖੋਜ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3757567010566591880">ਟੂਲਬਾਰ ਤੋਂ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="3757733214359997190">ਕੋਈ ਸਾਈਟ ਨਹੀਂ ਮਿਲੀ</translation>
@@ -4618,7 +4594,6 @@
 <translation id="4126375522951286587"><ph name="VM_NAME" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">ਡੀਵਾਈਸ ਲੌਗ</translation>
-<translation id="4130750466177569591">ਮੈਂ ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="4130877444234883490">ਮਾਊਸ ਬਟਨ ਦਬਾਉਣ ਲਈ “m” ਦੀ ਵਰਤੋਂ ਕਰੋ ਅਤੇ ਰੋਕ ਕੇ ਰੱਖੋ</translation>
 <translation id="4130948219446157616">ਹੇਠਲੇ ਦ੍ਰਿਸ਼ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="413121957363593859">ਕੰਪੋਨੈਂਟਸ</translation>
@@ -4650,7 +4625,6 @@
 <translation id="4148957013307229264">ਇੰਸਟੌਲ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4149385644005013189">ਹੁਣ ਸਭ ਕੁਝ ਠੀਕ ਲੱਗਦਾ ਹੈ!</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
-<translation id="4150569944729499860">ਸਕ੍ਰੀਨ ਸੰਦਰਭ</translation>
 <translation id="4151449637210235443">ਸਾਨੂੰ ਆਪਣੇ ਹਾਲੀਆ ਗੇਮਪਲੇ ਬਾਰੇ ਦੱਸੋ</translation>
 <translation id="4151503145138736576">ਖਾਲੀ ਕਰਨ ਲਈ ਆਫ਼ਲਾਈਨ ਸਟੋਰੇਜ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="4152011295694446843">ਤੁਹਾਨੂੰ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਮਿਲਣਗੇ</translation>
@@ -5175,7 +5149,6 @@
 <translation id="4532183705767666195">{COUNT,plural, =1{1 ਪਾਸਕੀ}one{{COUNT} ਪਾਸਕੀ}other{{COUNT} ਪਾਸਕੀਆਂ}}</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਡੀਵਾਈਸ ਨੂੰ ਕਿਸੇ ਹੋਰ ਆਭਾਸੀ ਮਸ਼ੀਨ ਨਾਲ ਜੋੜਨਾ ਗੜਬੜ ਪੈਦਾ ਕਰ ਸਕਦਾ ਹੈ। ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4532646538815530781">ਇਹ ਸਾਈਟ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ।</translation>
-<translation id="4533846798469727141">ਹੁਣ "Hey Google" ਕਹੋ</translation>
 <translation id="4533985347672295764">CPU ਸਮਾਂ</translation>
 <translation id="4534661889221639075">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4535127706710932914">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਪ੍ਰੋਫਾਈਲ</translation>
@@ -5478,7 +5451,6 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ਸਾਈਟ ਅਣਮਿਊਟ ਕਰੋ}one{ਸਾਈਟ ਅਣਮਿਊਟ ਕਰੋ}other{ਸਾਈਟਾਂ ਅਣਮਿਊਟ ਕਰੋ}}</translation>
 <translation id="4745096442457817087">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਕਿਸੇ ਜਨਤਕ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ</translation>
 <translation id="4745500401920035244">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਮੁੱਚੇ ਸਿਸਟਮ ਵਿੱਚ ਅਜਿਹਾ ਬਦਲਾਅ ਕੀਤਾ ਹੈ ਜੋ ਕੁਝ ਪੁਰਾਣੇ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਹੁਣ ਇਸ ਪ੍ਰੋਫਾਈਲ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਕਰ ਸਕਦੇ ਹੋ, ਪਰ ਇਸਨੂੰ ਹਾਲੇ ਹੀ ਹਟਾ ਸਕਦੇ ਹੋ</translation>
-<translation id="474609389162964566">"Ok Google" ਬੋਲ ਕੇ ਆਪਣੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="4746757725581505837">ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਆਪਣਾ <ph name="BRAND" /> ਡਾਟਾ ਮਿਟਾਉਣ ਲੱਗੇ ਹੋ</translation>
 <translation id="4748783296226936791">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਅਸਧਾਰਨ ਕੀ-ਬੋਰਡਾਂ, ਗੇਮ ਕੰਟਰੋਲਰਾਂ ਅਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ HID ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="4750185073185658673">ਕੁਝ ਹੋਰ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਜਾਓ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ।</translation>
@@ -5655,7 +5627,6 @@
 <translation id="486635084936119914">ਕੁਝ ਕਿਸਮ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਤੋਂ ਬਾਅਦ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="4867272607148176509">ਮਾਂ-ਪਿਓ ਐਪਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇ ਸਕਦੇ ਹਨ ਜਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਬਲਾਕ ਕਰ ਸਕਦੇ ਹਨ, ਸਮਾਂ ਸੀਮਾਵਾਂ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹਨ ਅਤੇ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਿੰਗ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹਨ। ਜ਼ਿਆਦਾਤਰ ਸਕੂਲੀ ਸਰੋਤਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਬਾਅਦ ਵਿੱਚ ਸਕੂਲ ਖਾਤਾ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4867433544163083783">ਹੁਣ ਦੇਖੋ ਕਿ ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
-<translation id="4868281708609571334">Google Assistant ਨੂੰ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਅਵਾਜ਼ ਦੀ ਪਛਾਣ ਕਰਨਾ ਸਿਖਾਓ</translation>
 <translation id="4868284252360267853">ਇਹ ਵਿੰਡੋ ਫ਼ਿਲਹਾਲ ਫੋਕਸ ਵਿੱਚ ਨਹੀਂ ਹੈ। ਇਸ ਵਿੰਡੋ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ Command-Shift-Option A ਦਬਾਓ।</translation>
 <translation id="4868351661310357223">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Play ਤੋਂ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਸਥਾਪਤ ਕਰੋ।</translation>
 <translation id="4869170227080975044">ChromeOS ਦੇ ਨੈੱਟਵਰਕ ਦੀ ਜਾਣਕਾਰੀ ਪੜ੍ਹੋ</translation>
@@ -6287,7 +6258,6 @@
 <translation id="5307386115243749078">ਬਲੂਟੁੱਥ ਸਵਿੱਚ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5308989548591363504">ਮਾਲਵੇਅਰ ਦੀ ਜਾਂਚ ਕਰਨਾ</translation>
-<translation id="5309418307557605830">Google Assistant ਇਸ 'ਤੇ ਵੀ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="5309641450810523897">ਸਹਾਇਤਾ ਕੇਸ ਆਈਡੀ</translation>
 <translation id="5311304534597152726">ਇਸ ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5312746996236433535">ਸਕ੍ਰੀਨ ਪ੍ਰਤਿਬਿੰਬ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
@@ -6814,7 +6784,6 @@
 <translation id="5687935527303996204">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਪਲੱਗ-ਇਨ ਹੈ ਅਤੇ ਇਸਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਸਥਾਪਨਾ ਵਿੱਚ 20 ਮਿੰਟ ਤੱਕ ਲੱਗ ਸਕਦੇ ਹਨ। ਸਥਾਪਨਾ ਪੂਰੀ ਹੋਣ 'ਤੇ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">ਟਿਕਾਣਾ</translation>
-<translation id="5689531695336322499">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ <ph name="SUPERVISED_USER_NAME" /> ਨੇ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੀ Assistant ਨਾਲ ਪਹਿਲਾਂ ਹੀ Voice Match ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਨ੍ਹਾਂ ਪਿਛਲੀਆਂ ਰਿਕਾਰਡਿੰਗਾਂ ਨੂੰ ਅਵਾਜ਼ੀ ਮਾਡਲ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਗਿਆ ਸੀ।</translation>
 <translation id="56907980372820799">ਡਾਟਾ ਲਿੰਕ ਕਰੋ</translation>
 <translation id="5691581861107245578">ਜੋ ਵੀ ਤੁਸੀਂ ਟਾਈਪ ਕਰ ਰਹੇ ਹੋ ਉਸ ਆਧਾਰ 'ਤੇ ਇਮੋਜੀ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="5691772641933328258">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਪਛਾਣ ਨਹੀਂ ਹੋਈ</translation>
@@ -7333,7 +7302,6 @@
 <translation id="6059925163896151826">USB ਡੀਵਾਈਸਾਂ</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> ਨੂੰ ਸੂਚਨਾ ਭੇਜੀ ਗਈ</translation>
 <translation id="6063284707309177505">QR ਕੋਡ ਬਣਾਓ</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕਿਸੇ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਅਵਾਜ਼ ਦੀ ਰਿਕਾਰਡਿੰਗ ਨਾਲ <ph name="SUPERVISED_USER_NAME" /> ਦੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਬੈਟਰੀ ਬਚਾਉਣ ਲਈ, ਤੁਸੀਂ <ph name="SUPERVISED_USER_NAME" /> ਦੀਆਂ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ "Ok Google" ਨੂੰ ਸਿਰਫ਼ ਉਦੋਂ ਚਾਲੂ ਰੱਖਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ ਜਦੋਂ ਇਹ ਡੀਵਾਈਸ ਕਿਸੇ ਪਾਵਰ ਦੇ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਹੋਵੇ।</translation>
 <translation id="6064217302520318294">ਸਕ੍ਰੀਨ ਲਾਕ</translation>
 <translation id="606449270532897041">ਸਾਈਟ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6064764629679333574">ਘੱਟ-ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਵਾਲੀ ਆਡੀਓ ਦਾ ਜ਼ਿਆਦਾ-ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਵਿੱਚ ਸਕੇਲ ਵਧਾ ਕੇ ਬਲੂਟੁੱਥ ਵਾਲੇ ਮਾਈਕ ਦੀ ਧੁਨੀ ਦੀ ਕੁਆਲਿਟੀ ਵਿੱਚ ਸੁਧਾਰ ਕਰੋ।</translation>
@@ -7857,6 +7825,7 @@
 <translation id="6434309073475700221">ਬਰਖਾਸਤ</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> ਨੂੰ ਵਰਤਣ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6434755719322447931">ਕੇਇਔਟਿਕ</translation>
+<translation id="6435307030888827407">ਸਾਈਨ-ਆਊਟ ਰਹੋ</translation>
 <translation id="6435339218366409950">ਉਹ ਭਾਸ਼ਾ ਚੁਣੋ ਜਿਸ ਵਿੱਚ ਸੁਰਖੀਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ</translation>
 <translation id="6436164536244065364">ਵੈੱਬ ਸਟੋਰ ਵਿੱਚ ਦੇਖੋ</translation>
 <translation id="6436778875248895551">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ "<ph name="EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ</translation>
@@ -8104,7 +8073,6 @@
 <translation id="6602956230557165253">ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਖੱਬੀ ਅਤੇ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ।</translation>
 <translation id="6603185457265641428">ਚੁਣੋ ਕਿ ਇਤਿਹਾਸ ਦਾ ਸਿੰਕ ਕਰਨਾ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="6605847144724004692">ਹਾਲੇ ਤੱਕ ਕਿਸੇ ਵੀ ਵਰਤੋਂਕਾਰ ਵੱਲੋਂ ਰੇਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
-<translation id="6606671997164410857">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ Google Assistant ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਸਕ੍ਰੀਨ ਸੰਦਰਭ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੀ Assistant ਦਾ ਹੋਰ ਜ਼ਿਆਦਾ ਲਾਹਾ ਲਓ।</translation>
 <translation id="6607831829715835317">ਹੋਰ ਟੂ&amp;ਲਸ</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> ਦਾ ਪਹਿਲਾਂ ਤੋਂ ਹੀ <ph name="DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕਿਸੇ ਵੱਖਰੇ Google ਖਾਤੇ ਨਾਲ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ ਵਰਤਣ ਲਈ, ਸੈੱਟਅੱਪ ਕਰਨ ਤੋਂ ਬਾਅਦ ਸਾਈਨ-ਆਊਟ ਕਰੋ, ਫਿਰ ਸਾਈਨ-ਇਨ ਸਕ੍ਰੀਨ 'ਤੇ "ਵਿਅਕਤੀ ਸ਼ਾਮਲ ਕਰੋ" ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="6608166463665411119">ਈ-ਸਿਮ ਰੀਸੈੱਟ ਕਰੋ</translation>
@@ -8204,7 +8172,6 @@
 <translation id="6674571176963658787">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6675665718701918026">ਪੁਆਇੰਟਰ ਵਾਲੀ ਡੀਵਾਈਸ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6675717447295898330">ਮੇਰੇ ਮੌਜੂਦਾ ਡਾਟੇ ਦੇ ਬਿਨਾਂ ਕੰਮ ਲਈ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ</translation>
-<translation id="6676212663108450937">ਆਪਣੀ ਅਵਾਜ਼ ਦੀ ਸਿਖਲਾਈ ਦੌਰਾਨ ਕਿਰਪਾ ਕਰਕੇ ਹੈੱਡਫ਼ੋਨ ਵਰਤਣ ਬਾਰੇ ਵਿਚਾਰ ਕਰੋ</translation>
 <translation id="6676291960742508499">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ, ਪੇਜ ਸਿਰਲੇਖ ਅਤੇ URL Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="667752334740867460">ਵਾਈ-ਫਾਈ ਜਾਣਕਾਰੀ ਨੂੰ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6677527809400770913"><ph name="GESTURE" /> ਇਸ਼ਾਰੇ ਨੂੰ <ph name="ACTION" /> ਦੇ ਲਈ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ</translation>
@@ -8224,10 +8191,6 @@
 <translation id="6686817083349815241">ਆਪਣਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6687008241368170505">Google Password Manager ਦਾ ਪਿੰਨ ਬਦਲੋ</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ਲੁਕਾਓ</translation>
-<translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> ਨੂੰ ਕੰਪਿਊਟਰ 'ਤੇ ਆਉਣ ਲਈ ਕਹੋ। ਤੁਹਾਡਾ ਬੱਚਾ ਆਪਣਾ ਅਵਾਜ਼ੀ ਮਾਡਲ ਬਣਾਉਣ ਲਈ ਇਸ ਸਕ੍ਰੀਨ 'ਤੇ ਕੁਝ ਵਾਕਾਂਸ਼ ਪੜ੍ਹੇਗਾ।
-    <ph name="BR" />
-    
-ਜੇ <ph name="SUPERVISED_USER_NAME" /> ਨੂੰ ਪੜ੍ਹਨ ਵਿੱਚ ਮਦਦ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਆਪਣੇ ਬੱਚੇ ਨੂੰ ਉਚਾਰਨ ਦੱਸ ਕੇ ਉਸ ਤੋਂ ਦੁਹਰਾਓ। ਮਾਈਕ ਤੋਂ ਦੂਰ ਹੋ ਕੇ ਘੁਸਰ-ਮੁਸਰ ਕਰੋ ਤਾਂ ਜੋ Assistant ਤੁਹਾਡੀ ਬਜਾਏ ਤੁਹਾਡੇ ਬੱਚੇ ਦੀ ਅਵਾਜ਼ ਸਿੱਖ ਸਕੇ।</translation>
 <translation id="6689948774466767379">ਮਾਊਸ ਕੁੰਜੀਆਂ</translation>
 <translation id="6690659332373509948">ਫਾਈਲ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;ਫਾਰਵਰਡ</translation>
@@ -8404,13 +8367,6 @@
 <translation id="6808166974213191158">ChromeOS Flex ਸਿਸਟਮ ਇਮੇਜ ਰਾਈਟਰ</translation>
 <translation id="6808193438228982088">ਲੂੰਬੜੀ</translation>
 <translation id="6809470175540814047">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
-<translation id="6809656734323672573">ਜੇ ਤੁਸੀਂ ਸਹਿਮਤ ਹੋ, ਤਾਂ Google Assistant ਵੱਲੋਂ "Ok Google" ਨੂੰ ਪਛਾਣਨ ਲਈ ਸਟੈਂਡਬਾਈ ਮੋਡ ਵਿੱਚ ਉਡੀਕ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਇਹ ਇਸ ਗੱਲ ਦੀ ਪਛਾਣ ਵੀ ਕਰ ਸਕਦੀ ਹੈ ਕਿ ਤੁਸੀਂ Voice Match ਨਾਲ ਬੋਲ ਰਹੇ ਹੋ।
-    <ph name="BR" />
-    Voice Match ਨਾਲ ਤੁਹਾਡੀ Assistant ਤੁਹਾਡੀ ਪਛਾਣ ਕਰ ਸਕਦੀ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ ਦੂਜਿਆਂ ਨਾਲੋਂ ਵੱਖ ਦੱਸ ਸਕਦੀ ਹੈ। Assistant ਤੁਹਾਡੀ ਅਵਾਜ਼ ਦੀਆਂ ਕਲਿੱਪਾਂ ਲੈ ਕੇ ਵਿਲੱਖਣ ਅਵਾਜ਼ੀ ਮਾਡਲ ਬਣਾਉਂਦੀ ਹੈ, ਜਿਸਨੂੰ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਵਾਜ਼ ਨੂੰ ਬਿਹਤਰ ਤਰੀਕੇ ਨਾਲ ਪਛਾਣਨ ਲਈ ਤੁਹਾਡਾ ਅਵਾਜ਼ੀ ਮਾਡਲ ਕੁਝ ਸਮੇਂ ਲਈ Google ਨੂੰ ਭੇਜਿਆ ਜਾ ਸਕਦਾ ਹੈ।
-    <ph name="BR" />
-    ਜੇ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਫ਼ੈਸਲਾ ਕਰਦੇ ਹੋ ਕਿ ਤੁਹਾਨੂੰ Voice Match ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ, ਤਾਂ ਬਸ ਇਸਨੂੰ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਹਟਾ ਦਿਓ। Voice Match ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਵੇਲੇ ਆਪਣੀਆਂ ਰਿਕਾਰਡ ਕੀਤੀਆਂ ਆਡੀਓ ਕਲਿੱਪਾਂ ਦੇਖਣ ਜਾਂ ਮਿਟਾਉਣ ਲਈ, <ph name="VOICE_MATCH_SETTINGS_URL" /> 'ਤੇ ਜਾਓ।
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">ਸਟੋਰ ਕੀਤੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਆਪਣੇ-ਆਪ ਸਾਈਟਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ। ਜਦੋਂ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੁੰਦੀ ਹੈ, ਤਾਂ ਤੁਹਾਨੂੰ ਇੱਕ ਵੈੱਬਸਾਈਟ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6811034713472274749">ਦੇਖਣ ਲਈ ਪੰਨਾ ਤਿਆਰ ਹੈ</translation>
 <translation id="6811151703183939603">ਮਜ਼ਬੂਤ</translation>
@@ -8469,7 +8425,6 @@
 <translation id="6842868554183332230">ਚੈਟ ਐਪਾਂ 'ਤੇ ਤੁਹਾਡੀ ਉਪਲਬਧਤਾ ਨੂੰ ਸੈੱਟ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾ ਲੈਂਦੀਆਂ ਹਨ</translation>
 <translation id="6843264316370513305">ਨੈੱਟਵਰਕ ਡੀਬੱਗਿੰਗ</translation>
 <translation id="6843404741389995311">ਤੁਹਾਨੂੰ ਜਿਹੜੀਆਂ ਚੀਜ਼ਾਂ ਦਿਖ ਰਹੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਨੂੰ ਕੈਮਰੇ ਅਤੇ ਫ਼ੋਟੋ ਗੈਲਰੀ ਦੀ ਮਦਦ ਨਾਲ ਖਰੀਦੋ, ਅਨੁਵਾਦ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਕਰੋ</translation>
-<translation id="6843423766595476978">Ok Google ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ ਹੈ</translation>
 <translation id="6843725295806269523">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">ਅਧਿਕਤਮ ਕੀਤਾ ਖੋਲ੍ਹੋ</translation>
@@ -8720,7 +8675,6 @@
 <translation id="7014741021609395734">ਜ਼ੂਮ ਪੱਧਰ</translation>
 <translation id="7015135594296285641">ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="7016995776279438971">ਲਾਲ-ਹਰਾ, ਲਾਲ ਰੰਗ ਨੂੰ ਸਹੀ ਤਰ੍ਹਾਂ ਦੇਖਣ ਵਿੱਚ ਦਿੱਕਤ ਆਉਣਾ (ਪ੍ਰੋਟੈਨੋਮਲੀ)</translation>
-<translation id="7017004637493394352">ਦੁਬਾਰਾ "Ok Google" ਕਹੋ</translation>
 <translation id="7017219178341817193">ਇੱਕ ਨਵਾਂ ਸਫ਼ਾ ਜੋੜੋ</translation>
 <translation id="7017354871202642555">window ਦੇ ਸੈਟ ਹੋਣ ਤੋਂ ਬਾਅਦ ਮੋਡ ਸੈਟ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="7019546817926942979">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਪਲੱਗ-ਇਨ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਦੌਰਾਨ ਤੁਹਾਡੀ ਬੈਟਰੀ ਬਹੁਤ ਛੇਤੀ ਖਤਮ ਹੋ ਸਕਦੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਚਾਰਜਰ ਨਾਲ ਕਨੈਕਟ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -8775,7 +8729,6 @@
 <translation id="7059858479264779982">ਸਵੈ-ਲਾਂਚ ਕਰਨ ਲਈ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="7063129466199351735">ਪ੍ਰੋਸੈਸਿੰਗ ਸ਼ੌਰਟਕਟਸ...</translation>
 <translation id="7063311912041006059">ਪੁੱਛਗਿੱਛ ਦੀ ਥਾਂ 'ਤੇ <ph name="SPECIAL_SYMBOL" /> ਵਾਲਾ URL</translation>
-<translation id="706342288220489463">ਮਦਦ ਲਈ ਆਪਣੀ Assistant ਨੂੰ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦਿਓ</translation>
 <translation id="70641621694466590">ਪਾਸਵਰਡ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="7064209589142995848">ਕੰਟੈਂਟ ਟ੍ਰਾਂਸਫ਼ਰ</translation>
 <translation id="7064734931812204395">Linux ਕੰਟੇਨਰ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ 30 ਮਿੰਟਾਂ ਦਾ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
@@ -9428,7 +9381,6 @@
 <translation id="7520766081042531487">ਇਨਕੋਗਨਿਟੋ ਪੋਰਟਲ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ਸ਼ਾਰਟਕੱਟ ਦਿਖਾਓ</translation>
 <translation id="7521430434164837205">Microsoft 365 ਫ਼ਾਈਲਾਂ</translation>
-<translation id="7522255036471229694">"Ok Google" ਕਹੋ</translation>
 <translation id="7523117833414447032">ਵੱਡੇ ਅੱਖਰ ਪੜ੍ਹਨ ਵੇਲੇ</translation>
 <translation id="7523585675576642403">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="7525067979554623046">ਬਣਾਓ</translation>
@@ -9747,7 +9699,6 @@
 <translation id="7736119438443237821">ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੀਆਂ ਪਾਸਕੀਆਂ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਹਟਾਉਣ ਵਾਲੇ ਹੋ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ਨਾਲ ਜੋੜਾਬੱਧ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> ਹਿਦਾਇਤ ਪ੍ਰਾਪਤ ਹੋਈ</translation>
-<translation id="7737846262459425222">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਸੈਟਿੰਗਾਂ &gt; Google Assistant &gt; ਸਕ੍ਰੀਨ ਸੰਦਰਭ ਵਿੱਚ ਜਾ ਕੇ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7737948071472253612">ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="77381465218432215">ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਅਤੇ ਖਾਸ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦਿਖਾਓ</translation>
 <translation id="7739524723876359011">ਇਸ ਬੁਲਬੁਲੇ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ <ph name="ACCELERATOR" /> ਦਬਾਓ।</translation>
@@ -9852,7 +9803,6 @@
 <translation id="7806659658565827531">ਮੁੱਖ ਨੋਡ ਨੂੰ ਐਨੋਟੇਟ ਕਰੋ</translation>
 <translation id="7806722269368320106">ਇੱਕ ਐਪ, ਸਥਾਪਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="7807067443225230855">Search ਅਤੇ Assistant</translation>
-<translation id="7807117920154132308">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ <ph name="SUPERVISED_USER_NAME" /> ਨੇ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ Google Assistant ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਸਕ੍ਰੀਨ ਸੰਦਰਭ ਨੂੰ ਚਾਲੂ ਕਰਕੇ <ph name="SUPERVISED_USER_NAME" /> ਵੱਲੋਂ Assistant ਦਾ ਹੋਰ ਜ਼ਿਆਦਾ ਲਾਹਾ ਲਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7807711621188256451">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਤੇ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="7810202088502699111">ਪੌਪ-ਅਪਸ ਇਸ ਸਫ਼ੇ ਤੇ ਬਲੌਕ ਕੀਤੇ ਗਏ ਸੀ।</translation>
 <translation id="7810367892333449285">ਤੁਹਾਡਾ ਇੰਦਰਾਜ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ਪਤਾ<ph name="LPA_2" />$<ph name="LPA_3" />ਮੇਲ ਖਾਂਦੀ ਵਿਕਲਪਿਕ ਆਈਡੀ<ph name="LPA_4" /> ਦੇ ਫਾਰਮੈਟ ਵਿੱਚ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
@@ -9911,7 +9861,6 @@
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ਤੁਹਾਡੇ ChromeOS ਡੀਵਾਈਸਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਰਿਪੋਰਟਾਂ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦੇਣ ਨਾਲ ਸਾਨੂੰ, ChromeOS ਵਿੱਚ ਕੀ ਠੀਕ ਕਰਨਾ ਹੈ ਅਤੇ ਕੀ ਸੁਧਾਰ ਕਰਨਾ ਹੈ, ਇਸ ਨੂੰ ਤਰਜੀਹ ਦੇਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਅਜਿਹੀਆਂ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀਆਂ ਹਨ ਜਿਵੇਂ ਕਿ ChromeOS ਕਦੋਂ ਕ੍ਰੈਸ਼ ਹੁੰਦਾ ਹੈ, ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋ, ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਕਿੰਨੀ ਮੈਮੋਰੀ ਵਰਤਦੇ ਹੋ ਅਤੇ Android ਐਪ ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ। ਕੁਝ ਇਕੱਤਰ ਡਾਟਾ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ ਦੀ ਵੀ ਮਦਦ ਕਰੇਗਾ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਆਪਣੀਆਂ ChromeOS ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਦੀ ਆਗਿਆ ਦੇਣਾ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ਜੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਲਈ ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ, ਤਾਂ ਤੁਹਾਡਾ Android ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। account.google.com 'ਤੇ ਤੁਸੀਂ ਆਪਣਾ ਡਾਟਾ ਦੇਖ ਸਕਦੇ ਹੋ, ਇਸਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ ਅਤੇ ਆਪਣੀਆਂ ਖਾਤਾ ਸੈਟਿੰਗਾਂ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕੋਈ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਰਿਕਾਰਡਿੰਗ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਜਾਂ ਤੁਹਾਡੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ। ਬੈਟਰੀ ਬਚਾਉਣ ਲਈ, ਤੁਸੀਂ ਆਪਣੀਆਂ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ "Ok Google" ਨੂੰ ਸਿਰਫ਼ ਉਦੋਂ ਚਾਲੂ ਰੱਖਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ ਜਦੋਂ ਇਹ ਡੀਵਾਈਸ ਕਿਸੇ ਪਾਵਰ ਦੇ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਹੋਵੇ।</translation>
 <translation id="7851457902707056880">ਸਾਈਨ-ਇਨ ਨੂੰ ਸਿਰਫ਼ ਮਾਲਕ ਖਾਤੇ ਤੱਕ ਪ੍ਰਤਿਬੰਧਿਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਰੀਬੂਟ ਕਰਕੇ ਮਾਲਕ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ। ਮਸ਼ੀਨ 30 ਸਕਿੰਟਾਂ ਵਿੱਚ ਸਵੈ ਰੀਬੂਟ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="7851716364080026749">ਹਮੇਸ਼ਾਂ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="78526636422538552">ਹੋਰ Google ਖਾਤੇ ਸ਼ਾਮਲ ਕਰਨ ਦਾ ਵਿਕਲਪ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
@@ -10083,7 +10032,6 @@
 <translation id="7963408577288987423">{COUNT,plural, =1{1 ਪਾਸਵਰਡ}one{{COUNT} ਪਾਸਵਰਡ}other{{COUNT} ਪਾਸਵਰਡ}}</translation>
 <translation id="7963513503134856713">ਵਿੰਡੋ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="7963608432878156675">ਇਹ ਨਾਮ ਬਲੂਟੁੱਥ ਅਤੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨਾਂ ਲਈ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨੂੰ ਦਿਸੇਗਾ</translation>
-<translation id="7963826112438303517">ਤੁਹਾਡੀ Assistant ਇਹਨਾਂ ਰਿਕਾਰਡਿੰਗਾਂ ਅਤੇ ਤੁਹਾਡੀਆਂ ਬੋਲੀਆਂ ਗਈਆਂ ਬੇਨਤੀਆਂ ਦੀ ਵਰਤੋਂ ਤੁਹਾਡੀ ਅਵਾਜ਼ ਦਾ ਮਾਡਲ ਬਣਾਉਣ ਅਤੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕਰਦੀ ਹੈ, ਜਿਸਨੂੰ ਸਿਰਫ਼ ਉਹਨਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਜਿੱਥੇ ਤੁਸੀਂ Voice Match ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੈ। Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਅਵਾਜ਼ੀ ਸਰਗਰਮੀ ਨੂੰ ਮਿਟਾਓ ਜਾਂ ਮੁੜ-ਸਿਖਾਓ।</translation>
 <translation id="7964458523224581615">ਵਿਰੀਡੀਅਨ</translation>
 <translation id="7965946703747956421">ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਮ ਲਈ <ph name="CREDENTIAL_TYPE" /> ਨੂੰ ਮਿਟਾਓ: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">ਚਿੱਤਰ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
@@ -10227,6 +10175,7 @@
 <translation id="8050191834453426339">ਦੁਬਾਰਾ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8051193500142930381">ਜਿਹੜੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਕੈਮਰੇ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ ਉਹ ਕੰਮ ਨਹੀਂ ਕਰਨਗੀਆਂ</translation>
 <translation id="8052218774860457016">ਬ੍ਰਾਊਜ਼ਰ ਸਿੰਕ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="8052898407431791827">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8052944601017749068"><ph name="CERT_GROUP" /> ਵਿੱਚ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="8053390638574070785">ਇਹ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="8054500940978949009">ਆਗਿਆ ਹੈ। <ph name="LINK_BEGIN" />ਸਿਸਟਮ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪਹੁੰਚ<ph name="LINK_END" /> ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
@@ -10244,7 +10193,6 @@
 <translation id="8061244502316511332">ਇਹ ਟੈਬ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="8061464966246066292">ਉੱਚ ਕੰਟ੍ਰਾਸਟ</translation>
 <translation id="8061970399284390013">ਸ਼ਬਦ-ਜੋੜ ਅਤੇ ਵਿਆਕਰਨ ਜਾਂਚ</translation>
-<translation id="8061991877177392872">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੀ Assistant ਨਾਲ ਪਹਿਲਾਂ ਹੀ Voice Match ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹਨਾਂ ਪਿਛਲੀਆਂ ਰਿਕਾਰਡਿੰਗਾਂ ਨੂੰ ਅਵਾਜ਼ੀ ਮਾਡਲ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਗਿਆ ਸੀ।</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ}one{{COUNT} ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ}other{{COUNT} ਕਾਗਜ਼ ਦੀਆਂ ਸ਼ੀਟਾਂ}}</translation>
 <translation id="8063235345342641131">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਹਰਾ ਅਵਤਾਰ</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11601,7 +11549,6 @@
 <translation id="8987321822984361516">ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਸੇ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8987927404178983737">ਮਹੀਨਾ</translation>
 <translation id="8988539543012086784">ਇਹ ਪੰਨਾ <ph name="BOOKMARK_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
-<translation id="8989034257029389285">ਤੁਸੀਂ “Ok Google, ਇਹ ਕਿਹੜਾ ਗੀਤ ਹੈ?” ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="8989359959810288806">ਟੈਦਰਿੰਗ ਸਥਿਤੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="8989779557457435460">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਮੌਜੂਦਾ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="8990243615717080992">ਪਾਸਵਰਡ ਜਾਂ ਕਿਸੇ ਹੋਰ ਰਿਕਵਰੀ ਵਿਧੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -11861,7 +11808,6 @@
 <translation id="9153367754133725216">ਲਾਂਚਰ ਅਤੇ ਖੋਜ ਨਤੀਜਿਆਂ ਵਿੱਚ ਨਵੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬ ਸਮੱਗਰੀ ਲਈ ਸੁਝਾਅ ਦੇਖੋ। ਜੇ ਤੁਸੀਂ ChromeOS ਨੂੰ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਅਤੇ ਤਸ਼ਖੀਸੀ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜਣਾ ਚੁਣਿਆ ਹੈ, ਤਾਂ ਸਿਰਫ਼ ਉਦੋਂ ਹੀ ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਅੰਕੜੇ ਭੇਜੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="9154194610265714752">ਅੱਪਡੇਟ ਕੀਤਾ</translation>
 <translation id="915485121129452731">ਪੈੱਨ ਟੈਬਲੈੱਟ</translation>
-<translation id="9155100833189043833">ਆਪਣੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ ਤੋਂ ਆਈਡੀ ਦੀ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="9155344700756733162">ਰੰਗ ਨੂੰ ਅਣਚੁਣਿਆ ਕਰੋ</translation>
 <translation id="9157096865782046368">0.8 ਸਕਿੰਟ</translation>
 <translation id="9157697743260533322">ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਵੈਚਲਿਤ ਅੱਪਡੇਟਾਂ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ (ਪ੍ਰੀਫਲਾਈਟ ਲਾਂਚ ਗੜਬੜ: <ph name="ERROR_NUMBER" />)</translation>
@@ -11882,7 +11828,6 @@
 <translation id="9167063903968449027">ਪੜ੍ਹਨ-ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="9167450455589251456">ਪ੍ਰੋਫਾਈਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> ਖਾਤੇ</translation>
-<translation id="9168436347345867845">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="9169093579080634183">ਟੈਬਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="9169496697824289689">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੇਖੋ</translation>
 <translation id="916964310188958970">ਇਹ ਸੁਝਾਅ ਕਿਉਂ?</translation>

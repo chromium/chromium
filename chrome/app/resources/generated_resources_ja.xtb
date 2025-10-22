@@ -465,7 +465,6 @@
 <translation id="129808599775632797">修正(&amp;M)</translation>
 <translation id="130097046531636712">バックグラウンド アクティビティとスムーズ スクロールのような視覚効果を制限することで、バッテリーの駆動時間を延ばします</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> は次のファイルを編集できます</translation>
-<translation id="130174306655812048">「OK Google、この曲はなに？」のようにきいてみましょう。</translation>
 <translation id="1302227299132585524">Apple Events からの JavaScript を許可</translation>
 <translation id="1303101771013849280">HTML ファイルをブックマークに登録</translation>
 <translation id="1303671224831497365">Bluetooth デバイスが見つかりませんでした</translation>
@@ -796,7 +795,6 @@
 <translation id="1541346352678737112">ネットワークが見つかりません</translation>
 <translation id="154198613844929213">{0,plural, =0{削除しています。}=1{1 秒後に削除します}other{# 秒後に削除します}}</translation>
 <translation id="1542137295869176367">ログインデータを更新できませんでした</translation>
-<translation id="1542524755306892917"><ph name="SUPERVISED_USER_NAME" /> が質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
 <translation id="1543284117603151572">Edge からインポート</translation>
 <translation id="1543538514740974167">このページにすばやくアクセス</translation>
 <translation id="1544588554445317666">ファイル名を短くするか、別のフォルダに保存してください</translation>
@@ -1168,7 +1166,6 @@
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」をアンインストールすると、次のアプリもアンインストールされます。}other{「<ph name="APP_NAME" />」をアンインストールすると、次のアプリもアンインストールされます。}}</translation>
 <translation id="1786290960428378411">読み取りと変更をリクエストしています</translation>
-<translation id="1787350673646245458">ユーザー画像</translation>
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
@@ -1290,7 +1287,6 @@
 <translation id="1871098866036088250">Chrome ブラウザで開く</translation>
 <translation id="1871131409931646355">すべてのダウンロード履歴</translation>
 <translation id="187145082678092583">表示するアプリを減らす</translation>
-<translation id="1871534214638631766">コンテンツを右クリックまたは長押ししたときに関連情報を表示します</translation>
 <translation id="1871615898038944731">お使いの <ph name="DEVICE_TYPE" /> は最新です</translation>
 <translation id="1873513359268939357">Outlook カレンダー</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> にもう一度権限を許可します</translation>
@@ -1317,7 +1313,6 @@
 <translation id="1886996562706621347">サイトからのプロトコルのデフォルト ハンドラとしての登録要求を許可する（推奨）</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> へのタブのキャストを停止する</translation>
 <translation id="1887442540531652736">ログインエラー</translation>
-<translation id="1887597546629269384">もう一度「OK Google」と話しかけてください</translation>
 <translation id="1890026367080681123">埋め込みコンテンツの設定に移動します</translation>
 <translation id="189035593835762169">利用規約</translation>
 <translation id="1891362123137972260">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてください。</translation>
@@ -1564,7 +1559,6 @@
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
 <translation id="2052723746739622752">Gemini の固定を解除</translation>
 <translation id="2053312383184521053">アイドル状態のデータ</translation>
-<translation id="205560151218727633">Google アシスタントのロゴ</translation>
 <translation id="2058456167109518507">デバイスが検出されました</translation>
 <translation id="2059913712424898428">タイムゾーン</translation>
 <translation id="2060375639911876205">eSIM プロファイルの削除</translation>
@@ -1935,14 +1929,6 @@
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」が追加の許可をリクエストしています。</translation>
 <translation id="2304820083631266885">惑星</translation>
 <translation id="2306794767168143227">このデバイスの <ph name="BRAND" /> に保存する</translation>
-<translation id="2307553512430195144">同意すると、Google アシスタントはスタンバイ モードで待機して「OK Google」を検出します。Google アシスタントは Voice Match で <ph name="SUPERVISED_USER_NAME" /> さんが話していることを認識できます。<ph name="BR" />
-    Voice Match を使用すると、お使いの <ph name="DEVICE_TYPE" /> で Google アシスタントが <ph name="SUPERVISED_USER_NAME" /> さんの声を認識できるようになります。
-    <ph name="BR" />
-    アシスタントはお子様の声を録音して一意の音声モデルを作成します。音声モデルはお子様のデバイスにのみ保存されます。より正確に声を識別できるよう、お子様の音声モデルが一時的に Google に送信される場合があります。
-    <ph name="BR" />
-    Voice Match はお子様には必要ないと判断された場合は、お子様の [アシスタントの設定] で削除してください。Voice Match のセットアップ中にお子様が録音した音声クリップを確認または削除するには、お子様のアカウントから <ph name="VOICE_MATCH_SETTINGS_URL" /> にアクセスしてください。
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Tab キー、Shift キー、Ctrl キー、Esc キー、CapsLock キー、音量キーは使用できません</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
 <translation id="2310923358723722542">表示と拡大</translation>
@@ -2353,7 +2339,6 @@
 <translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
-<translation id="2603355571917519942">Voice Match は設定済みです</translation>
 <translation id="2604129989323098489">サイトは通常、ウィンドウをインテリジェントに開いて配置できるように（ドキュメントや全画面コンテンツを並べて表示するなど）、ディスプレイに関する情報をリクエストします</translation>
 <translation id="2604255671529671813">ネットワーク接続エラー</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> の住所フォームを入力しました。</translation>
@@ -2634,7 +2619,6 @@
 <translation id="2777525873368474674">画像リンクを貼り付ける</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{通知の数が多いサイトが 1 件見つかりました}other{通知の数が多いサイトが {NUM_SITES} 件見つかりました}}</translation>
 <translation id="2778471504622896352">ChromeOS ランチャーにリモートアプリを追加する</translation>
-<translation id="2779728796406650689">質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />、<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
@@ -3230,7 +3214,6 @@
 <translation id="3211126692872351610">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
 <translation id="321367297115597343">このフォルダにブックマークを追加する</translation>
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> の音声をダウンロードしています...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。</translation>
 <translation id="3217843140356091325">ショートカットを作成しますか？</translation>
 <translation id="321834671654278338">Linux アンインストーラ</translation>
 <translation id="3220943972464248773">パスワードを同期するには、本人確認を行ってください</translation>
@@ -3275,7 +3258,6 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
 <translation id="3251119461199395237">ファイルの同期</translation>
-<translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> さんが「OK Google」と話しかけて Google アシスタントにアクセスできるようにする</translation>
 <translation id="3251759466064201842">&lt;証明書に含まれていません&gt;</translation>
 <translation id="325238099842880997">お子様がゲームやインターネット、自宅学習にデバイスを利用する際のデジタルルールを設定できます</translation>
 <translation id="3253225298092156258">利用できません</translation>
@@ -3378,7 +3360,6 @@
 <translation id="3319863571062685443">住所を保存しました</translation>
 <translation id="3320271870899888245">OneDrive に接続できません。もう一度お試しください。</translation>
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
-<translation id="3320909810101200102">ID を選択するには、QR コードをスキャンしてください</translation>
 <translation id="3320957378743864387">文章作成サポートを表示しないサイト</translation>
 <translation id="3321460131042519426">ワードラップを有効にする</translation>
 <translation id="3321494112580110651">お使いのプリンタが表示されない場合</translation>
@@ -3423,7 +3404,6 @@
 <translation id="335581015389089642">スピーチ</translation>
 <translation id="335587007651175930">Google レンズで画面上のコンテンツを検索</translation>
 <translation id="3355936511340229503">接続エラー</translation>
-<translation id="3356580349448036450">完了</translation>
 <translation id="3359256513598016054">証明書ポリシーの制約</translation>
 <translation id="3360297538363969800">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
 <translation id="3360306038446926262">ウィンドウ</translation>
@@ -3515,7 +3495,6 @@
 <translation id="3418798368381485936">このアカウントではログインできません</translation>
 <translation id="3420501302812554910">内部セキュリティ キーのリセットが必要です</translation>
 <translation id="3421387094817716717">楕円曲線公開鍵</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、アカウントに基づく情報やアシスタントにアクセスできてしまうことがあります。</translation>
 <translation id="3422989558057853751">最後の項目が選択されています。選択を解除すると選択モードが終了します</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> で一致する結果が見つかりました</translation>
 <translation id="3423226218833787854">この AI 機能の詳細について</translation>
@@ -3841,7 +3820,6 @@
 <translation id="3636940436873918441">優先言語</translation>
 <translation id="3637203148990213388">追加のアカウント</translation>
 <translation id="3640347231390550691">フィッシングからパスワードを保護します</translation>
-<translation id="3640613767643722554">アシスタントに声を認識させましょう</translation>
 <translation id="364100968401221170">同期しているすべてのデバイスと Google アカウントから閲覧履歴データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
 <translation id="3641070112313110357">Chromebook 向け Steam（ベータ版）を更新する必要があります。Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="3641299252000913351">モデムのファームウェアの更新が進行中です。デバイスの電源を切らないでください。</translation>
@@ -4030,7 +4008,6 @@
 <translation id="375636864092143889">サイトでマイクが使用されています</translation>
 <translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3756578970075173856">PIN を設定</translation>
-<translation id="3756795331760037744">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの画面上の情報を使用したサポートを許可する</translation>
 <translation id="3756806135608816820">サイトが Bluetooth デバイスの検出を要求できるようにする</translation>
 <translation id="3757567010566591880">ツールバーの固定を解除</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
@@ -4594,7 +4571,6 @@
 <translation id="4126375522951286587"><ph name="VM_NAME" /> をシャットダウン</translation>
 <translation id="412730574613779332">スパンデックス</translation>
 <translation id="4130199216115862831">デバイスログ</translation>
-<translation id="4130750466177569591">同意する</translation>
 <translation id="4130877444234883490">M　キーを使用してマウスボタンを長押しする</translation>
 <translation id="4130948219446157616">下のビューを閉じる</translation>
 <translation id="413121957363593859">コンポーネント</translation>
@@ -4626,7 +4602,6 @@
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="4149385644005013189">よく整理されています</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>
-<translation id="4150569944729499860">画面のコンテキスト</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
 <translation id="4151503145138736576">クリーンアップの必要なオフライン ストレージはありません</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
@@ -5149,7 +5124,6 @@
 <translation id="4532183705767666195">{COUNT,plural, =1{1 件のパスキー}other{{COUNT} 件のパスキー}}</translation>
 <translation id="4532625150642446981">「<ph name="USB_DEVICE_NAME" />」は使用中です。このデバイスを使用中に再割り当てすると、エラーが発生する可能性があります。続行してもよろしいですか？</translation>
 <translation id="4532646538815530781">このサイトはモーション センサーを使用しています。</translation>
-<translation id="4533846798469727141">それでは「OK Google」と話しかけてください</translation>
 <translation id="4533985347672295764">CPU 時間</translation>
 <translation id="4534661889221639075">もう一度お試しください。</translation>
 <translation id="4535127706710932914">デフォルトのプロフィール</translation>
@@ -5452,7 +5426,6 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
 <translation id="4745096442457817087">一般に報告されているデータ侵害であなたのパスワードが検出されました</translation>
 <translation id="4745500401920035244">管理者がシステム全体に行った変更により、一部の古いプロフィールが無効になりました。このプロフィールにアクセスすることはできませんが、削除することはできます</translation>
-<translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
 <translation id="4746757725581505837">このデバイスに保存されている <ph name="BRAND" /> のデータを削除しようとしています</translation>
 <translation id="4748783296226936791">一般的ではないキーボードや、ゲーム コントローラなどのデバイスを使用する機能に対応するために、多くのサイトは HID デバイスに接続します</translation>
 <translation id="4750185073185658673">スマートフォンでアクセス許可の設定を見直し、スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
@@ -5629,7 +5602,6 @@
 <translation id="486635084936119914">ダウンロード後に特定の種類のファイルを自動的に開きます</translation>
 <translation id="4867272607148176509">保護者はアプリの承認とブロック、利用時間の上限の設定、ウェブ ブラウジングの制御を行えます。学校のリソースのほとんどにアクセスするための学校用アカウントは、後で追加できます。</translation>
 <translation id="4867433544163083783">タブを整理できるかどうかを今すぐ確認</translation>
-<translation id="4868281708609571334">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの声を認識させる</translation>
 <translation id="4868284252360267853">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには command+shift+option+a キーを押してください。</translation>
 <translation id="4868351661310357223">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。</translation>
 <translation id="4869170227080975044">ChromeOS のネットワーク情報を読み取る</translation>
@@ -6258,7 +6230,6 @@
 <translation id="5307386115243749078">Bluetooth スイッチのペア設定</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5308989548591363504">マルウェアがないか確認する</translation>
-<translation id="5309418307557605830">Google アシスタントはこのデバイスで使用できます</translation>
 <translation id="5309641450810523897">サポートケース ID</translation>
 <translation id="5311304534597152726">次のユーザーとしてログイン:</translation>
 <translation id="5312746996236433535">画面のミラーリング</translation>
@@ -6784,7 +6755,6 @@
 <translation id="5687935527303996204">デバイスが電源に接続されていることを確認してください。電源をオフにしないでください。インストールには 20 分ほどかかる場合があります。インストールが完了するとデバイスは自動的にシャットダウンします。</translation>
 <translation id="5689233503102158537">Alt+Backspace</translation>
 <translation id="5689516760719285838">位置情報</translation>
-<translation id="5689531695336322499">アシスタントの Voice Match は、<ph name="SUPERVISED_USER_NAME" /> さんがすでに別のデバイスで設定済みのようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>
 <translation id="56907980372820799">データをリンク</translation>
 <translation id="5691581861107245578">入力した内容に基づいて絵文字の候補が表示されます</translation>
 <translation id="5691772641933328258">指紋を認識できません</translation>
@@ -7303,7 +7273,6 @@
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> に通知を送信しました</translation>
 <translation id="6063284707309177505">QR コードを作成</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。バッテリー消費を抑えるには、<ph name="SUPERVISED_USER_NAME" /> さんの [アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
 <translation id="6064217302520318294">画面ロック</translation>
 <translation id="606449270532897041">サイトデータを管理</translation>
 <translation id="6064764629679333574">低解像度音声を高解像度にアップスケーリングすることで、Bluetooth マイクの音質を向上させます。</translation>
@@ -7827,6 +7796,7 @@
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
 <translation id="6434755719322447931">無秩序</translation>
+<translation id="6435307030888827407">ログアウト状態を保持する</translation>
 <translation id="6435339218366409950">字幕の訳文言語を選択してください</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
 <translation id="6436778875248895551">拡張機能「<ph name="EXTENSION_NAME" />」は管理者によってブロックされました</translation>
@@ -8071,7 +8041,6 @@
 <translation id="6602956230557165253">ナビゲートするには左右の矢印キーを使用します。</translation>
 <translation id="6603185457265641428">履歴を同期するかどうかを選択する</translation>
 <translation id="6605847144724004692">まだ評価されていません。</translation>
-<translation id="6606671997164410857">Google アシスタントは、すでに別のデバイスで設定済みのようです。このデバイスで [画面のコンテキスト] をオンにすれば、アシスタントをもっと活用していただけるようになります。</translation>
 <translation id="6607831829715835317">その他のツール(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> はすでに <ph name="DOMAIN" /> によって管理されています。別の Google アカウントで保護者による使用制限を設定するには、セットアップ後にログアウトしてから、ログイン画面で [ユーザーを追加] を選択します。</translation>
 <translation id="6608166463665411119">eSIM をリセット</translation>
@@ -8171,7 +8140,6 @@
 <translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
 <translation id="6675665718701918026">ポインティング デバイスが接続されました</translation>
 <translation id="6675717447295898330">既存のデータを使用せずに、仕事用のプロフィールを新しく作成する</translation>
-<translation id="6676212663108450937">音声を認識させる場合はヘッドフォンの使用をご検討ください</translation>
 <translation id="6676291960742508499">タブ、ページのタイトル、URL が Google に送信されます</translation>
 <translation id="667752334740867460">Wi-Fi 情報を受信しています...</translation>
 <translation id="6677527809400770913">ジェスチャー <ph name="GESTURE" /> を <ph name="ACTION" /> に割り当てました</translation>
@@ -8191,9 +8159,6 @@
 <translation id="6686817083349815241">パスワードを保存</translation>
 <translation id="6687008241368170505">Google パスワード マネージャーの PIN を変更</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
-<translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> さんにパソコンの前に来てもらってください。お子様の音声モデルを作成するには、この画面上のフレーズをいくつか声に出して読んでもらいます。
-    <ph name="BR" />
-    <ph name="SUPERVISED_USER_NAME" /> さんが声を出して読む際にサポートが必要な場合は、あなたが読んだ後に繰り返してもらうようにします。その際、マイクから離れて小声で読むようにすると、アシスタントがあなたではなくお子様の声を認識できるようになります。</translation>
 <translation id="6689948774466767379">マウスキー</translation>
 <translation id="6690659332373509948">ファイル <ph name="FILE_NAME" /> を解析できません</translation>
 <translation id="6691936601825168937">進む(&amp;F)</translation>
@@ -8369,13 +8334,6 @@
 <translation id="6808166974213191158">ChromeOS Flex システム イメージ ライター</translation>
 <translation id="6808193438228982088">キツネ</translation>
 <translation id="6809470175540814047">シークレット ウィンドウで開く</translation>
-<translation id="6809656734323672573">同意すると、Google アシスタントはスタンバイ モードで待機して「OK Google」を検出します。Google アシスタントは Voice Match であなたが話していることを認識できます。
-    <ph name="BR" />
-    Voice Match を利用すると、アシスタントはあなたの声を認識できるようになります。アシスタントはあなたの声を録音して一意の音声モデルを作成します。音声モデルはあなたのデバイスにのみ保存されます。あなたの声を正しく認識できるよう、音声モデルが Google に一時的に送信されることもあります。
-    <ph name="BR" />
-    後で Voice Match が必要なくなった場合は、[アシスタントの設定] で簡単に削除できます。Voice Match のセットアップ中に録音した音声クリップを確認または削除するには、<ph name="VOICE_MATCH_SETTINGS_URL" /> にアクセスしてください。
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能が無効になっている場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
 <translation id="6811151703183939603">重い</translation>
@@ -8434,7 +8392,6 @@
 <translation id="6842868554183332230">チャットアプリのステータスを設定するため、サイトでデバイスのアクティブ状態を検出する場合があります。</translation>
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
 <translation id="6843404741389995311">カメラとフォト ギャラリーを使って、見たものを購入、翻訳、特定できます</translation>
-<translation id="6843423766595476978">OK Google の設定が完了しました</translation>
 <translation id="6843725295806269523">ミュート</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">最大化して開く</translation>
@@ -8685,7 +8642,6 @@
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7015135594296285641">拡張機能を許可</translation>
 <translation id="7016995776279438971">赤 - 緑、赤色弱（第一色弱）</translation>
-<translation id="7017004637493394352">もう一度「OK Google」と言ってください</translation>
 <translation id="7017219178341817193">新しいページを追加</translation>
 <translation id="7017354871202642555">ウィンドウが設定されている場合はモードを設定できません。</translation>
 <translation id="7019546817926942979">デバイスを電源に接続する必要があります。Linux のアップグレードを行うと、電池を大幅に消耗します。デバイスを電源に接続してから、もう一度お試しください。</translation>
@@ -8741,7 +8697,6 @@
 <translation id="7059858479264779982">自動起動に設定する</translation>
 <translation id="7063129466199351735">ショートカットを処理しています...</translation>
 <translation id="7063311912041006059">URL（<ph name="SPECIAL_SYMBOL" />=検索語句）</translation>
-<translation id="706342288220489463">アシスタントに画面上の情報を使用したサポートを許可する</translation>
 <translation id="70641621694466590">パスワード ページに移動</translation>
 <translation id="7064209589142995848">コンテンツ移行</translation>
 <translation id="7064734931812204395">Linux コンテナを設定しています。最長で 30 分ほどかかります。</translation>
@@ -9394,7 +9349,6 @@
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ショートカットを表示</translation>
 <translation id="7521430434164837205">Microsoft 365 ファイル</translation>
-<translation id="7522255036471229694">「OK Google」と言ってください</translation>
 <translation id="7523117833414447032">大文字の読み上げ</translation>
 <translation id="7523585675576642403">プロファイルの名前を変更</translation>
 <translation id="7525067979554623046">作成</translation>
@@ -9713,7 +9667,6 @@
 <translation id="7736119438443237821">このデバイスのパスキーへのアクセス権を削除しようとしています</translation>
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> の指示を受信しました</translation>
-<translation id="7737846262459425222">この設定は、[設定] &gt; [Google アシスタント] &gt; [画面のコンテキスト] でいつでも変更できます。</translation>
 <translation id="7737948071472253612">カメラの使用を許可しないサイト</translation>
 <translation id="77381465218432215">アクセント記号と特殊文字を表示</translation>
 <translation id="7739524723876359011">このバブルをフォーカスするには <ph name="ACCELERATOR" /> を押します。</translation>
@@ -9817,7 +9770,6 @@
 <translation id="7806659658565827531">メインノードにアノテーションを付ける</translation>
 <translation id="7806722269368320106">アプリ、インストール中</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>
-<translation id="7807117920154132308">Google アシスタントは、<ph name="SUPERVISED_USER_NAME" /> さんがすでに別のデバイスで設定済みのようです。このデバイスで [画面のコンテキスト] をオンにすれば、<ph name="SUPERVISED_USER_NAME" /> さんにアシスタントをもっと活用していただけるようになります。</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="7810367892333449285">エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
@@ -9876,7 +9828,6 @@
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。自動レポートでは、ChromeOS がクラッシュした時間、使用されている機能、通常のメモリ使用量、Android アプリの診断データと使用状況データなどの情報が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。データの確認と削除、アカウント設定の変更は、account.google.com で行えます。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、アカウントに基づく情報やアシスタントにアクセスできてしまうことがあります。バッテリー消費を抑えるには、[アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
 <translation id="7851457902707056880">ログインは所有者アカウントのみに制限されています。再起動して、所有者アカウントでログインしてください。30 秒後に自動的に再起動します。</translation>
 <translation id="7851716364080026749">カメラとマイクへのアクセスを常にブロックする</translation>
 <translation id="78526636422538552">Google アカウントをさらに追加するオプションは無効になっています</translation>
@@ -10048,7 +9999,6 @@
 <translation id="7963408577288987423">{COUNT,plural, =1{1 件のパスワード}other{{COUNT} 件のパスワード}}</translation>
 <translation id="7963513503134856713">ウィンドウを右に移動しました</translation>
 <translation id="7963608432878156675">この名前は、他のデバイスの Bluetooth やネットワーク接続で表示されます</translation>
-<translation id="7963826112438303517">アシスタントによって、これらの録音データと音声によるリクエストからお客様の音声モデルが作成、更新されます。この音声モデルは、Voice Match をオンにしているデバイスにのみ保存されます。音声認識の確認や再認識は、[アシスタントの設定] で行います。</translation>
 <translation id="7964458523224581615">ビリジアン</translation>
 <translation id="7965946703747956421">ユーザー名 <ph name="USER_EMAIL" /> の <ph name="CREDENTIAL_TYPE" /> を削除</translation>
 <translation id="7966241909927244760">画像アドレスをコピー(&amp;C)</translation>
@@ -10193,6 +10143,7 @@
 <translation id="8050191834453426339">もう一度ご確認ください</translation>
 <translation id="8051193500142930381">カメラを必要とする機能は動作しなくなります</translation>
 <translation id="8052218774860457016">ブラウザの同期を管理</translation>
+<translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8052944601017749068"><ph name="CERT_GROUP" /> にインポート</translation>
 <translation id="8053390638574070785">ページを再読み込み</translation>
 <translation id="8054500940978949009">許可。<ph name="LINK_BEGIN" />システムのマイクへのアクセス<ph name="LINK_END" />をオンにする。</translation>
@@ -10210,7 +10161,6 @@
 <translation id="8061244502316511332">このタブはマイクを使用しています</translation>
 <translation id="8061464966246066292">ハイコントラスト</translation>
 <translation id="8061970399284390013">スペルと文法のチェック</translation>
-<translation id="8061991877177392872">アシスタントの Voice Match は、すでに別のデバイスで設定されたようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 枚}other{{COUNT} 枚}}</translation>
 <translation id="8063235345342641131">デフォルトの緑のアバター</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11566,7 +11516,6 @@
 <translation id="8987321822984361516">ブラウザは組織によって管理され、プロファイルは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8988539543012086784">このページは <ph name="BOOKMARK_FOLDER" /> に保存されています</translation>
-<translation id="8989034257029389285">「OK Google、この曲はなに？」と話しかけます。</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
 <translation id="8989779557457435460">デフォルトで現在のタブを共有する</translation>
 <translation id="8990243615717080992">パスワードまたはその他の復元方法でログインできます</translation>
@@ -11826,7 +11775,6 @@
 <translation id="9153367754133725216">ランチャーと検索結果に新しいアプリやウェブ コンテンツの候補が表示されます。障害レポート、診断データ、使用状況データを ChromeOS に送信するよう選択した場合のみ、候補の精度を向上させるために統計情報を送信します。</translation>
 <translation id="9154194610265714752">更新完了</translation>
 <translation id="915485121129452731">ペンタブレット</translation>
-<translation id="9155100833189043833">モバイル デバイスの ID を安全に使用してください</translation>
 <translation id="9155344700756733162">色の選択を解除</translation>
 <translation id="9157096865782046368">0.8秒</translation>
 <translation id="9157697743260533322">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト開始エラー: <ph name="ERROR_NUMBER" />）</translation>
@@ -11847,7 +11795,6 @@
 <translation id="9167063903968449027">リーディング リストを表示</translation>
 <translation id="9167450455589251456">このプロファイルはサポートされていません</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> 件のアカウント</translation>
-<translation id="9168436347345867845">後で行う</translation>
 <translation id="9169093579080634183">タブの詳細</translation>
 <translation id="9169496697824289689">キーボード ショートカットを表示</translation>
 <translation id="916964310188958970">この候補が表示された理由</translation>

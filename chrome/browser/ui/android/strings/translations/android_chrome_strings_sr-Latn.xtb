@@ -175,11 +175,13 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792959175193046959">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku</translation>
 <translation id="1796666869097395659">Umanjite karticu da biste se kasnije vratili na nju</translation>
+<translation id="1799920918471566157">Saveti za Chrome</translation>
 <translation id="1807246157184219062">Svetla</translation>
 <translation id="1807709131360304325">Otvorite novi prozor</translation>
 <translation id="1810845389119482123">Početno podešavanje sinhronizacije nije završeno</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne može da nastavi da koristi uslugu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Donja tabela za prijavljivanje</translation>
+<translation id="1823492026305965829">Prijavi me kao <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
@@ -854,6 +856,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
 <translation id="4912413785358399818">Premesti karticu</translation>
 <translation id="4913169188695071480">Zaustavi osvežavanje</translation>
+<translation id="4921224083091001889">Da bi vam lozinke i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chrome kao <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Snimak ekrana <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Možete da čuvate slike i fajlove da biste ih pregledali oflajn ili delili u drugim aplikacijama</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 obeleživač i druge stavke su sačuvani samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}one{# obeleživač i druge stavke su sačuvani samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}few{# obeleživača i druge stavke su sačuvani samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}other{# obeleživača i druge stavke su sačuvani samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}}</translation>
@@ -878,6 +881,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5010886807652684893">Vizuelni prikaz</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> želi da se poveže</translation>
+<translation id="5012016139642806466">Pristupajte lozinkama i drugom sadržaju na svim uređajima</translation>
 <translation id="5012253429094023177">Izgleda da su <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> i <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> povezani. Uverite se da je <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> pouzdan pre korišćenja ove lozinke.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Poslednjih 15 minuta</translation>
@@ -1148,6 +1152,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6255809143828972562">Pomoću Chrome alatki možete bezbedno da pregledate i zadržite kontrolu</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6264485186158353794">Nazad na bezbedno</translation>
+<translation id="6267106249090587268">Obaveštenja <ph name="SEPARATOR" /> Chrome je uklonio ove dozvole zbog nepoželjnog ili obmanjujućeg sadržaja</translation>
 <translation id="6276708887952587684">Pregledajte izvor stranice</translation>
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
 <translation id="6278428485366576908">Tema</translation>

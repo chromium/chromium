@@ -49,6 +49,7 @@
 <translation id="11947597112837849">כתובת אימייל</translation>
 <translation id="1197267115302279827">העברת סימניות</translation>
 <translation id="1197761954713363183">גיליון האישור של מפתח הגישה סגור</translation>
+<translation id="1197933394627598677">הצגת מצב הקריאה</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1202892408424955784">מוצרים במעקב</translation>
 <translation id="1204037785786432551">הורדת קישור</translation>
@@ -174,6 +175,7 @@
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
 <translation id="1796666869097395659">מזעור הכרטיסייה כדי לחזור אליה מאוחר יותר</translation>
+<translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807709131360304325">פתיחת חלון חדש</translation>
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
@@ -390,7 +392,7 @@
 <translation id="2834884592945939112">‏הגדרות, שגיאה בחשבון Google</translation>
 <translation id="2838367486340230368">ההסבר על המדריך בנושא פרטיות נפתח בחצי הגובה</translation>
 <translation id="2839327205551510876">בוטל המעקב אחר <ph name="SITE_NAME" /></translation>
-<translation id="2839604041336226596">‫<ph name="TAB_TITLE" />, כרטיסייה מוצמדת שנבחרה בכמה מקומות</translation>
+<translation id="2839604041336226596">‫<ph name="TAB_TITLE" />, כרטיסייה מוצמדת מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{כרטיסיית מצב אנונימי אחת (<ph name="TAB_COUNT_ONE" />) תיסגר}one{<ph name="TAB_COUNT_MANY" /> כרטיסיות מצב אנונימי ייסגרו}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות מצב אנונימי ייסגרו}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות מצב אנונימי ייסגרו}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{התבצעה בדיקה לפני יום אחד}one{התבצעה בדיקה לפני # ימים}two{התבצעה בדיקה לפני יומיים}other{התבצעה בדיקה לפני # ימים}}</translation>
 <translation id="2842985007712546952">תיקיית אב</translation>
@@ -700,7 +702,7 @@
 <translation id="4285846616383034558">‏קובצי cookie, מטמון ונתונים נוספים מאתרים</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">כרטיסייה פרטית חדשה</translation>
-<translation id="4298161202289999785">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה בכמה מקומות</translation>
+<translation id="4298161202289999785">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
 <translation id="4300632303535881174">חזרה לדף הקודם</translation>
 <translation id="4303044213806199882">‎chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
@@ -1141,7 +1143,7 @@
 <translation id="623755660902014047">מצב קריאה</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6248988683584659830">חיפוש בהגדרות</translation>
-<translation id="6250847299079540062">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת שנבחרה בכמה מקומות</translation>
+<translation id="6250847299079540062">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="6251449557817521191">‏לצפייה בהיסטוריה ב-Chrome</translation>
 <translation id="6254139308321626268">‏מוצג לך קובץ PDF</translation>
 <translation id="6255809143828972562">‏בעזרת הכלים של Chrome אפשר לגלוש בבטחה ובשליטה</translation>
@@ -1185,7 +1187,7 @@
 <translation id="6410883413783534063">ניתן לפתוח כרטיסיות כדי להיכנס אל דפים שונים בו-זמנית</translation>
 <translation id="6411009031428071896">האזנה לפיד</translation>
 <translation id="6411219469806822692">אי אפשר לזוז למעלה יותר. יש לנסות להתחיל מחלק גבוה יותר בדף.</translation>
-<translation id="6412215853589222273">‫<ph name="TAB_TITLE" />, כרטיסייה שנבחרה בכמה מקומות</translation>
+<translation id="6412215853589222273">‫<ph name="TAB_TITLE" />, כרטיסייה מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="641643625718530986">הדפסה…</translation>
 <translation id="6433501201775827830">בחירת מנוע החיפוש</translation>
 <translation id="6434309073475700221">מחיקה</translation>
@@ -1399,6 +1401,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}one{# הורדות בהמתנה}two{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
 <translation id="7230064152164845085">מעבר למצב פרטי</translation>
 <translation id="7237724030342645845">‏מנהל הסיסמאות של Google הפסיק לפעול</translation>
+<translation id="7239496616545081903">הסתרת מצב הקריאה</translation>
 <translation id="72415438529550637">ההצעה לסיסמה נסגרה.</translation>
 <translation id="7248671827512403053">יישום</translation>
 <translation id="7253951228444156601">הסיסמאות נבדקות…</translation>
@@ -1741,6 +1744,7 @@
 <translation id="8723453889042591629">תרגום מהיר של הדף הזה. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8731268612289859741">קוד האבטחה</translation>
+<translation id="8738163682604285902">להציג את מצב הקריאה?</translation>
 <translation id="8746155870861185046">שיתוף של הטקסט המודגש</translation>
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8754448020583829686">העתקה בלי הקישור</translation>

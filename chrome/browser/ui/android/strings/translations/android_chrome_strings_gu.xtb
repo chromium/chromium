@@ -49,6 +49,7 @@
 <translation id="11947597112837849">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="1197267115302279827">બુકમાર્ક ખસેડો</translation>
 <translation id="1197761954713363183">પાસકી કન્ફર્મેશન શીટ બંધ છે</translation>
+<translation id="1197933394627598677">વાંચન મોડ બતાવો</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1202892408424955784">ટ્રૅક કરેલી પ્રોડક્ટ</translation>
 <translation id="1204037785786432551">ડાઉનલોડ કરવાની લિંક</translation>
@@ -174,6 +175,7 @@
 <translation id="1791662854739702043">ઇન્સ્ટોલ કરેલું</translation>
 <translation id="1792959175193046959">ડિફૉલ્ટ ડાઉનલોડ સ્થાનને કોઈપણ સમયે બદલો</translation>
 <translation id="1796666869097395659">પછીથી ટૅબ પર પાછા ફરવા માટે તેને નાનું કરો</translation>
+<translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1807709131360304325">એક નવી વિન્ડો ખોલો</translation>
 <translation id="1810845389119482123">સિંકનું પ્રારંભિક સેટઅપ પૂર્ણ થયું નથી</translation>
@@ -1147,6 +1149,7 @@
 <translation id="6255809143828972562">Chromeના ટૂલ વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>
+<translation id="6267106249090587268">નોટિફિકેશન <ph name="SEPARATOR" /> સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી છે</translation>
 <translation id="6276708887952587684">પેજનો સૉર્સ જુઓ</translation>
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6278428485366576908">થીમ</translation>
@@ -1399,6 +1402,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ડાઉનલોડ બાકી}one{# ડાઉનલોડ બાકી}other{# ડાઉનલોડ બાકી}}</translation>
 <translation id="7230064152164845085">છૂપા મોડ પર સ્વિચ કરો</translation>
 <translation id="7237724030342645845">Google Password Manager કામ કરતું અટકી ગયું</translation>
+<translation id="7239496616545081903">વાંચન મોડ છુપાવો</translation>
 <translation id="72415438529550637">પાસવર્ડ સૂચવવાની સુવિધા બંધ છે.</translation>
 <translation id="7248671827512403053">ઍપ્લિકેશન</translation>
 <translation id="7253951228444156601">પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
@@ -1741,6 +1745,7 @@
 <translation id="8723453889042591629">આ પેજનો ઝડપથી અનુવાદ કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8731268612289859741">સિક્યુરિટી કોડ</translation>
+<translation id="8738163682604285902">વાંચન મોડ જોઈએ છે?</translation>
 <translation id="8746155870861185046">હાઇલાઇટ કરેલી ટેક્સ્ટ શેર કરો</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8754448020583829686">લિંક વિના કૉપિ કરો</translation>

@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Речиси е време за пауза</translation>
 <translation id="10619348099955377">Копирај го името за приказ</translation>
 <translation id="1062407476771304334">Замени</translation>
+<translation id="1064236804542808595">Врати ги кратенките на организацијата</translation>
 <translation id="1065369186007547872">Chrome мисли дека не сакате известувања од сајтов. Затоа, барањата се скриени за да се намалат прекините.</translation>
 <translation id="1066964438793906105">Скенирај за злонамерен софтвер</translation>
 <translation id="1067661089446014701">За дополнителна безбедност, можете да ги шифрирате лозинките на уредот пред да се зачуваат во сметката на Google</translation>
@@ -465,7 +466,6 @@
 <translation id="129808599775632797">&amp;Промени</translation>
 <translation id="130097046531636712">Ова го продолжува траењето на батеријата со ограничување на активностите во заднина и визуелните ефекти, како што е непреченото лизгање</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да ги изменува следниве датотеки</translation>
-<translation id="130174306655812048">Обидете се со „Ok Google, what song is this?“ (Ok Google, која песна е ова?)</translation>
 <translation id="1302227299132585524">Дозволи JavaScript од настани на Apple</translation>
 <translation id="1303101771013849280">Обележува ХТМЛ-датотека</translation>
 <translation id="1303671224831497365">Не се пронајдени уреди со Bluetooth</translation>
@@ -797,7 +797,6 @@
 <translation id="1541346352678737112">Не е најдена мрежа</translation>
 <translation id="154198613844929213">{0,plural, =0{Се брише сега.}=1{Ќе се избрише за 1 секунда}one{Ќе се избрише за # секунда}other{Ќе се избрише за # секунди}}</translation>
 <translation id="1542137295869176367">Не може да се ажурираат податоците за најавување</translation>
-<translation id="1542524755306892917">Ова овозможува „Помошникот на Google“ да дава приспособени одговори кога <ph name="SUPERVISED_USER_NAME" /> поставува прашања.</translation>
 <translation id="1543284117603151572">Увезенo од Edge</translation>
 <translation id="1543538514740974167">Стигнете тука побрзо</translation>
 <translation id="1544588554445317666">Користете пократко име на датотека или зачувајте во друга папка</translation>
@@ -1053,6 +1052,7 @@
 <translation id="1700517974991662022">Посетено</translation>
 <translation id="1703331064825191675">Не грижете се за своите лозинки</translation>
 <translation id="1703666494654169921">Не им дозволувај на сајтовите да ги користат уредите за виртуелна реалност или мобилниот интернет</translation>
+<translation id="1703849276368677471">Алатки</translation>
 <translation id="1704097193565924901">Почетна голема буква</translation>
 <translation id="1704230497453185209">Не им дозволувај на сајтовите да пуштаат звук</translation>
 <translation id="1706586824377653884">Додадено од вашиот администратор</translation>
@@ -1177,7 +1177,6 @@
 <translation id="1784849162047402014">Уредот нема доволно простор на дискот</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Со деинсталирањето на „<ph name="APP_NAME" />“ ќе се деинсталира и следнава апликација:}one{Со деинсталирањето на „<ph name="APP_NAME" />“ ќе се деинсталираат и следниве апликации:}other{Со деинсталирањето на „<ph name="APP_NAME" />“ ќе се деинсталираат и следниве апликации:}}</translation>
 <translation id="1786290960428378411">Барање за читање и променување</translation>
-<translation id="1787350673646245458">Слика на корисникот</translation>
 <translation id="1790976235243700817">Отстрани го пристапот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Продолжен екран</translation>
@@ -1188,6 +1187,7 @@
 <translation id="1796460466266263589">За да продолжите да го користите Gemini, потврдете дека сте вие</translation>
 <translation id="1796588414813960292">Функциите на коишто им требаат звуци нема да работат</translation>
 <translation id="1797117170091578105">Играјте со вашата тастатура Chromebook. Можете да ги приспособите копчињата на конкретни дејства.</translation>
+<translation id="1798726622311813209">Кредитни и дебитни картички</translation>
 <translation id="1799852120691957794">Не може да се вратат прозорците од претходната сесија</translation>
 <translation id="180203835522132923">Search + O, потоа W</translation>
 <translation id="1802624026913571222">Режим во мирување кога капакот е затворен</translation>
@@ -1301,7 +1301,6 @@
 <translation id="1871098866036088250">Отворај во прелистувачот Chrome</translation>
 <translation id="1871131409931646355">Целосна историја на преземања</translation>
 <translation id="187145082678092583">Помалку апликации</translation>
-<translation id="1871534214638631766">Прикажувај поврзани информации кога ќе кликнам со десно копче или кога долго ќе притиснам на содржини</translation>
 <translation id="1871615898038944731">Вашиот <ph name="DEVICE_TYPE" /> е ажуриран</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231">Повторно одобрете ги дозволите за <ph name="WEBSITE" /></translation>
@@ -1328,7 +1327,6 @@
 <translation id="1886996562706621347">Дозволи им на локациите да побараат да станат стандардни ракувачи на протоколи (препорачано)</translation>
 <translation id="1887210448491286312">Сопри со емитување картичка на <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Грешка при најавувањето</translation>
-<translation id="1887597546629269384">Повторно кажете „Hey Google“</translation>
 <translation id="1890026367080681123">Одете во поставките за вметнати содржини</translation>
 <translation id="189035593835762169">Одредби и услови</translation>
 <translation id="1891362123137972260">Дискот е речиси полн. Ослободете простор на дискот.</translation>
@@ -1474,6 +1472,7 @@
 <translation id="1984417487208496350">Без заштита (не се препорачува)</translation>
 <translation id="1984683754853869253">Дали сакате да создадете нов профил за во училиште?</translation>
 <translation id="198507684520034826">Помош</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Напредни поставки за локација</translation>
 <translation id="1987317783729300807">Сметки</translation>
 <translation id="1987574314042117472">Изберете и инсталирајте популарни апликации</translation>
@@ -1574,7 +1573,6 @@
 <translation id="2052572566310583903">Инсталирана на вашите други уреди</translation>
 <translation id="2052723746739622752">Откачи го Gemini</translation>
 <translation id="2053312383184521053">Податоци во состојба на неактивност</translation>
-<translation id="205560151218727633">Лого на „Помошникот на Google“</translation>
 <translation id="2058456167109518507">Откриен е уред</translation>
 <translation id="2059913712424898428">Временска зона</translation>
 <translation id="2060375639911876205">Отстранете го профилот на eSIM</translation>
@@ -1949,15 +1947,6 @@
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ побара дополнителни дозволи.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Зачувајте во <ph name="BRAND" /> на уредов</translation>
-<translation id="2307553512430195144">Ако се согласите, „Помошникот на Google“ ќе чека во режим на подготвеност за да слушне „Ok Google”, а преку Voice Match може да препознае дека зборува <ph name="SUPERVISED_USER_NAME" />.
-    <ph name="BR" />
-    Voice Match му помага на „Помошникот на Google“ да го препознае гласот на <ph name="SUPERVISED_USER_NAME" /> на вашиот <ph name="DEVICE_TYPE" /> и да го разликува од останатите.
-    <ph name="BR" />
-    „Помошникот“ зачувува исечоци од гласот на вашето дете за да создаде уникатен гласовен модел којшто се складира само на уредот или уредите на детето. Гласовниот модел на вашето дете може привремено да се испрати до Google за подобра идентификација на гласот.
-    <ph name="BR" />
-    Ако подоцна одлучите дека Voice Match не е за вашето дете, само отстранете ја преку поставките за „Помошникот“ на детето. За да ги прегледате или избришете аудиоисечоците коишто вашето дете ги снима при поставувањето на Voice Match, одете на <ph name="VOICE_MATCH_SETTINGS_URL" /> од сметката на детето.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Следните копчиња не се поддржани: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">Пристапот на сајтов до сензорите за движење или светлина е блокиран.</translation>
 <translation id="2310923358723722542">Екран и зголемување</translation>
@@ -2369,7 +2358,6 @@
 <translation id="2599048253926156421">Корисничкото име е копирано во привремена меморија</translation>
 <translation id="2602501489742255173">Повлечете нагоре за да започнете</translation>
 <translation id="2603115962224169880">Чистење на компјутерот</translation>
-<translation id="2603355571917519942">Voice Match е подготвена</translation>
 <translation id="2604129989323098489">Сајтовите обично бараат податоци за вашите екрани за да можат да отвораат и поставуваат прозорци интелигентно, како прикажување документи или содржини една до друга на цел екран</translation>
 <translation id="2604255671529671813">Грешка во мрежното поврзување</translation>
 <translation id="2604805099836652105">Формуларот за адреса <ph name="ADDRESS_LABEL" /> е пополнет.</translation>
@@ -2650,7 +2638,6 @@
 <translation id="2777525873368474674">Залепете линк од сликата</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Најден е 1 сајт со многу известувања}one{Најдени се {NUM_SITES} сајт со многу известувања}other{Најдени се {NUM_SITES} сајта со многу известувања}}</translation>
 <translation id="2778471504622896352">Додајте далечински апликации на стартерот на ChromeOS</translation>
-<translation id="2779728796406650689">Ова овозможува „Помошникот на Google“ да дава приспособени одговори кога поставувате прашања.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
@@ -3130,6 +3117,7 @@
 <translation id="3122883569442693641">Повеќе детали</translation>
 <translation id="3124111068741548686">Рачки на КОРИСНИК</translation>
 <translation id="3124332159330678621">Приспособете го Chrome за да му дадете нов изглед на вашиот прелистувач</translation>
+<translation id="3124950826511066429">Поставки што влијаат на тоа како функционира автоматското пополнување кај различни типови податоци</translation>
 <translation id="3125361247594231799">Закачете го за следниот пат</translation>
 <translation id="3125816458150005808">Може да ја откачите и да ја отворите од менито</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -3247,7 +3235,6 @@
 <translation id="3211126692872351610">Пребарајте „<ph name="SEARCH_TERMS" />“ на <ph name="SEARCH_ENGINE" /> во нова картичка</translation>
 <translation id="321367297115597343">Додајте обележувач на папкава</translation>
 <translation id="3213681682237645841">Се преземаaт гласови на <ph name="LANGUAGE" />…</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до личните резултати на <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Дали да се создаде кратенка?</translation>
 <translation id="321834671654278338">Деинсталатор на Linux</translation>
 <translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
@@ -3292,7 +3279,6 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - мрежна грешка</translation>
 <translation id="3248902735035392926">Безбедноста е значајна. Одвојте малку време и <ph name="BEGIN_LINK" />проверите ги екстензиите сега<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Синхронизација на датотеки</translation>
-<translation id="3251714896659475029">Дозволете <ph name="SUPERVISED_USER_NAME" /> да пристапува до „Помошникот на Google“ со „Ok Google“</translation>
 <translation id="3251759466064201842">&lt;Не е дел од сертификатот&gt;</translation>
 <translation id="325238099842880997">Поставете основни дигитални правила за да им помогнете на децата да си играат, да истражуваат и да извршуваат училишни задачи дома</translation>
 <translation id="3253225298092156258">Не е достапна</translation>
@@ -3395,7 +3381,6 @@
 <translation id="3319863571062685443">Вашата адреса е зачувана</translation>
 <translation id="3320271870899888245">Не може да се поврзе на OneDrive. Обидете се повторно.</translation>
 <translation id="3320630259304269485">Безбедно прелистување (заштита од опасни сајтови) и други безбедносни поставки</translation>
-<translation id="3320909810101200102">За да изберете ID, скенирајте го QR-кодот</translation>
 <translation id="3320957378743864387">Сајтови без дозвола да нудат помош при пишување</translation>
 <translation id="3321460131042519426">Овозможи прелом на зборови</translation>
 <translation id="3321494112580110651">Не го гледате вашиот печатач?</translation>
@@ -3440,7 +3425,6 @@
 <translation id="335581015389089642">Говор</translation>
 <translation id="335587007651175930">Пребарувајте го тоа што е на екранот со Google Lens</translation>
 <translation id="3355936511340229503">Грешка при поврзување</translation>
-<translation id="3356580349448036450">Завршено</translation>
 <translation id="3359256513598016054">Ограничувања на политика за сертификат</translation>
 <translation id="3360297538363969800">Печатењето не успеа. Проверете го вашиот печатач и обидете се повторно.</translation>
 <translation id="3360306038446926262">Прозорци</translation>
@@ -3532,7 +3516,6 @@
 <translation id="3418798368381485936">Може да се најавите со сметкава</translation>
 <translation id="3420501302812554910">Потребно е ресетирање на внатрешен безбедносен клуч</translation>
 <translation id="3421387094817716717">Јавен клуч на елиптична крива</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“.</translation>
 <translation id="3422989558057853751">Последна избрана ставка, ако го поништите изборот, ќе излезете од режимот на избор</translation>
 <translation id="3423111258700187173">Најдени се резултати во <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Дознајте повеќе за оваа AI-функција</translation>
@@ -3859,7 +3842,6 @@
 <translation id="3636940436873918441">Претпочитани јазици</translation>
 <translation id="3637203148990213388">Дополнителни сметки</translation>
 <translation id="3640347231390550691">Заштитете ги лозинките од фишинг</translation>
-<translation id="3640613767643722554">Научете го вашиот „Помошник“ да ви го препознава гласот</translation>
 <translation id="364100968401221170">За да ги избришете податоците од прелистување од сите синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />најавете се<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">„Steam за Chromebook“ (бета) треба да се ажурира. Рестартирајте го вашиот Chromebook, па обидете се повторно.</translation>
 <translation id="3641299252000913351">Во тек е ажурирање за фирмверот на модемот. Не исклучувајте го уредот.</translation>
@@ -4048,7 +4030,6 @@
 <translation id="375636864092143889">Сајтот го користи микрофонот</translation>
 <translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3756578970075173856">Поставете PIN</translation>
-<translation id="3756795331760037744">Дозволете „Помошникот на Google“ да ги користи податоците од екранот на <ph name="SUPERVISED_USER_NAME" /> за да помогне</translation>
 <translation id="3756806135608816820">Сајтовите може да прашуваат дали да бараат уреди со Bluetooth</translation>
 <translation id="3757567010566591880">Откачи од алатникот</translation>
 <translation id="3757733214359997190">Не се најдени сајтови</translation>
@@ -4612,7 +4593,6 @@
 <translation id="4126375522951286587">Исклучи <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Дневник на уредот</translation>
-<translation id="4130750466177569591">Се согласувам</translation>
 <translation id="4130877444234883490">Користете „M“ за да притиснете копче на глувчето и да задржите</translation>
 <translation id="4130948219446157616">Затвори го приказот долу</translation>
 <translation id="413121957363593859">Компоненти</translation>
@@ -4644,7 +4624,6 @@
 <translation id="4148957013307229264">Се инсталира...</translation>
 <translation id="4149385644005013189">Сѐ изгледа уредно!</translation>
 <translation id="4150201353443180367">Екран</translation>
-<translation id="4150569944729499860">Контекст на екранот</translation>
 <translation id="4151449637210235443">Кажете ни за вашето неодамнешно играње</translation>
 <translation id="4151503145138736576">Нема офлајн простор за подзачистување</translation>
 <translation id="4152011295694446843">Вашите обележувачи ќе ги најдете тука</translation>
@@ -5169,7 +5148,6 @@
 <translation id="4532183705767666195">{COUNT,plural, =1{1 криптографски клуч}one{{COUNT} криптографски клуч}other{{COUNT} криптографски клучеви}}</translation>
 <translation id="4532625150642446981">„<ph name="USB_DEVICE_NAME" />“ се користи. Преназначувањето на уредот додека се користи може да предизвика грешки. Дали сигурно сакате да продолжите?</translation>
 <translation id="4532646538815530781">Овој сајт користи сензори за движење.</translation>
-<translation id="4533846798469727141">Сега кажете „Hey Google“</translation>
 <translation id="4533985347672295764">Време на процесор</translation>
 <translation id="4534661889221639075">Обидете се повторно.</translation>
 <translation id="4535127706710932914">Стандарден профил</translation>
@@ -5380,6 +5358,7 @@
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Кредитна/дебитна картичка</translation>
 <translation id="4679018849559620189">Ова помага да пристапите до вашите зачувани криптографски клучеви на секој уред</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">Звукот е исклучен на страницава</translation>
 <translation id="4680112532510845139">Спуштете слика овде</translation>
 <translation id="4681453295291708042">Оневозможете „Споделување во близина“</translation>
@@ -5471,7 +5450,6 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>
 <translation id="4745096442457817087">Вашата лозинка е најдена при јавен упад во податоци</translation>
 <translation id="4745500401920035244">Администраторот изврши промена на целиот систем што оневозможува некои стари профили. Веќе не може да пристапувате до профилов, но сѐ уште може да го отстраните</translation>
-<translation id="474609389162964566">Пристапувајте до вашиот „Помошник“ со „Ok Google“</translation>
 <translation id="4746757725581505837">Ќе ги избришете вашите податоци во <ph name="BRAND" /> што се зачувани на уредов</translation>
 <translation id="4748783296226936791">Сајтовите обично се поврзуваат со HID-уреди за функции што користат невообичаени тастатури, контролери за игри и други уреди</translation>
 <translation id="4750185073185658673">Одете на телефонот за да прегледате уште неколку дозволи. Проверете дали се вклучени Bluetooth и Wi-Fi на телефонот.</translation>
@@ -5649,7 +5627,6 @@
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4867272607148176509">Родителите може да одобруваат или блокираат апликации, да поставуваат временски ограничувања и да го контролираат прелистувањето на интернет. Училишна сметка може да се додаде подоцна за пристапување до повеќето училишни ресурси.</translation>
 <translation id="4867433544163083783">Проверете сега дали картичките може да се организираат</translation>
-<translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
 <translation id="4868351661310357223">Инсталирајте апликации и игри од Google Play на вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">да чита податоци за мрежа на ChromeOS</translation>
@@ -5925,6 +5902,7 @@
 <translation id="5068553687099139861">ги прикаже лозинките</translation>
 <translation id="506886127401228110">Вклучете ги изолираните веб-апликации</translation>
 <translation id="5068919226082848014">Пица</translation>
+<translation id="5070630163913211970">Тековната картичка се споделува со Gemini кога ќе започнете нов разговор. <ph name="LINK_BEGIN" />Дознајте повеќе за AI и приватноста<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">Назад на „Неодамнешни преземања“</translation>
 <translation id="5071892329440114717">Прикажи ги деталите за стандардната заштита</translation>
 <translation id="5072500507106264618">Само системските услуги може да ја користат локацијата</translation>
@@ -6280,7 +6258,6 @@
 <translation id="5307386115243749078">Спари Bluetooth-прекинувач</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5308989548591363504">Проверување за злонамерен софтвер</translation>
-<translation id="5309418307557605830">„Помошникот на Google“ функционира и тука</translation>
 <translation id="5309641450810523897">ID на предметот за поддршка</translation>
 <translation id="5311304534597152726">Се најавувате како</translation>
 <translation id="5312746996236433535">отсликување на екранот</translation>
@@ -6388,6 +6365,7 @@
 <translation id="5398497406011404839">Сокриени обележувачи</translation>
 <translation id="5398572795982417028">Претпочитани вредности за надворешни граници на страницата, ограничувањето е <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ви помага да пишувате кратки текстови за нешта на интернет, како рецензии</translation>
+<translation id="5400068721524309244">Кога се споделуваат картички, содржините и URL-адресите на нивните страници се испраќаат до Google</translation>
 <translation id="5400196580536813396">Не е дозволено да се бараат или да се користат печатачи до коишто може да пристапи вашиот уред</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5402367795255837559">Браилово писмо</translation>
@@ -6806,7 +6784,6 @@
 <translation id="5687935527303996204">Уверете се дека уредот е приклучен и не исклучувајте го. Инсталацијата може да потрае до 20 минути. Вашиот уред автоматски ќе се исклучи кога ќе заврши инсталацијата.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
-<translation id="5689531695336322499">Се чини дека <ph name="SUPERVISED_USER_NAME" /> веќе има поставено Voice Match со „Помошникот“ на друг уред. Претходните снимки се користеа за да се направи гласовниот модел на уредов.</translation>
 <translation id="56907980372820799">Поврзи податоци</translation>
 <translation id="5691581861107245578">Добивајте предлози за емоџија според она што го пишувате</translation>
 <translation id="5691772641933328258">Отпечатокот не е препознаен</translation>
@@ -7325,7 +7302,6 @@
 <translation id="6059925163896151826">USB-уреди</translation>
 <translation id="6061408389284235459">Известување е испратено на <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Создај QR-код</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до личните резултати на <ph name="SUPERVISED_USER_NAME" />. За да заштедите батерија, во поставките за „Помошникот“ на <ph name="SUPERVISED_USER_NAME" /> може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>
 <translation id="6064217302520318294">Заклучување екран</translation>
 <translation id="606449270532897041">Управувајте со податоците од сајт</translation>
 <translation id="6064764629679333574">Подобрете го звукот на микрофонот преку надградување на квалитетот на аудиото од низок на висок.</translation>
@@ -7722,6 +7698,7 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> го оневозможи отстранувањето грешки на ADB Ова ќе го ресетира вашиот <ph name="DEVICE_TYPE" /> по 24 часа. Направете бекап на датотеките што сакате да ги задржите.</translation>
 <translation id="6336194758029258346">Јазик на апликациjата</translation>
 <translation id="6337543438445391085">Можно е некои лични податоци да се опфатат во податоците. Погрижете се да ги прегледате извезените датотеки.</translation>
+<translation id="6338554362382763574">Може лесно да му поставувате прашања на Gemini за картичките што ги споделувате додека прелистувате</translation>
 <translation id="6338968693068997776">Додајте уред со USB</translation>
 <translation id="6339668969738228384">Создавање нов профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Интернет протокол за печатење (IPPS)</translation>
@@ -7848,6 +7825,7 @@
 <translation id="6434309073475700221">Отфрли</translation>
 <translation id="6434325376267409267">Уредот треба да се ажурира пред да може да користите <ph name="APP_NAME" />.</translation>
 <translation id="6434755719322447931">Хаотично</translation>
+<translation id="6435307030888827407">Останете одјавени</translation>
 <translation id="6435339218366409950">Изберете го јазикот за превод на титловите</translation>
 <translation id="6436164536244065364">Прикажи во веб-продавница</translation>
 <translation id="6436778875248895551">Екстензијата „<ph name="EXTENSION_NAME" />“ е блокирана од администраторот</translation>
@@ -8066,6 +8044,7 @@
 <translation id="6586451623538375658">Замени го примарното копче на глушецот</translation>
 <translation id="6588043302623806746">Користете безбеден DNS</translation>
 <translation id="6589760925779188068">Панакота</translation>
+<translation id="6589769062042696460">Тековната картичка се споделува со Gemini кога ќе започнете нов разговор. Вашите податоци не се користат за подобрување на моделите на генеративната AI. <ph name="LINK_BEGIN" />Дознајте повеќе за AI и приватноста<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">Преименувај папка</translation>
 <translation id="6592267180249644460">Дневникот WebRTC е зачуван во <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Вашиот отпечаток е снимен</translation>
@@ -8094,7 +8073,6 @@
 <translation id="6602956230557165253">За навигација користете ги левото и десното копче со стрелка.</translation>
 <translation id="6603185457265641428">Изберете дали да се синхронизира историјата</translation>
 <translation id="6605847144724004692">Сѐ уште нема оцени од корисници.</translation>
-<translation id="6606671997164410857">Се чини дека веќе имате поставено „Помошник на Google“ на друг уред Може да извлечете максимум од вашиот „Помошник“ ако вклучите „Контекст на екранот“ на овој уред.</translation>
 <translation id="6607831829715835317">Повеќе алат&amp;ки</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> веќе управува со <ph name="USER_EMAIL" />. За да користите родителски контроли со друга сметка на Google, одјавете се по поставувањето, а потоа изберете „Додајте лице“ на екранот за најавување.</translation>
 <translation id="6608166463665411119">Ресетирај ја eSIM-картичката</translation>
@@ -8194,7 +8172,6 @@
 <translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="6675665718701918026">Уредот за покажување е поврзан</translation>
 <translation id="6675717447295898330">Создај нов работен профил без моите постојни податоци</translation>
-<translation id="6676212663108450937">Размислете за користење слушалки при обучувањето на гласот.</translation>
 <translation id="6676291960742508499">Вашите картички, наслови на страници и URL-адреси се испраќаат до Google</translation>
 <translation id="667752334740867460">Се примаат податоци за Wi-Fi…</translation>
 <translation id="6677527809400770913">Дејството <ph name="GESTURE" /> е доделено на <ph name="ACTION" /></translation>
@@ -8214,9 +8191,6 @@
 <translation id="6686817083349815241">Зачувајте ја лозинката</translation>
 <translation id="6687008241368170505">Променете го PIN-кодот за Google Password Manager</translation>
 <translation id="6687079240787935001">Скриј <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Побарајте од <ph name="SUPERVISED_USER_NAME" /> да дојде до компјутерот. Вашето дете ќе прочита неколку фрази од екранов за да создаде свој гласовен модел.
-    <ph name="BR" />
-    Ако <ph name="SUPERVISED_USER_NAME" /> има потреба од помош при читањето, тогаш нека повторува после вас. Шепотете подалеку од микрофонот за да може „Помошникот“ да го научи гласот на вашето дете, а не вашиот.</translation>
 <translation id="6689948774466767379">Копчиња за глувче</translation>
 <translation id="6690659332373509948">Не може да анализира датотека: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Напред</translation>
@@ -8343,6 +8317,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Бекапот на Linux е откажан</translation>
 <translation id="6782067259631821405">Погрешен PIN</translation>
+<translation id="6782219876520622071">Разговорите за споделените картички може да ги гледаат прегледувачи за подобрување на Gemini</translation>
 <translation id="6783036716881942511">Да се заборави уредов?</translation>
 <translation id="6783667414610055871">Поставки за Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профилот е поддржан</translation>
@@ -8392,13 +8367,6 @@
 <translation id="6808166974213191158">ChromeOS Flex System Image Writer</translation>
 <translation id="6808193438228982088">Лисица</translation>
 <translation id="6809470175540814047">Отвори во прозорец „Инкогнито“</translation>
-<translation id="6809656734323672573">Ако се согласите, „Помошникот на Google“ ќе чека во режим на подготвеност за да слушне „Ok Google”, а преку Voice Match може да препознае дека зборувате вие.
-    <ph name="BR" />
-    Voice Match овозможува вашиот „Помошник“ да ве идентификува и да ве разликува од останатите. „Помошникот“ снима исечоци од вашиот глас за да создаде уникатен гласовен модел којшто се складира само на вашиот уред. Вашиот гласовен модел може привремено да се испрати до Google за подобра идентификација на гласот.
-    <ph name="BR" />
-    Ако подоцна одлучите дека Voice Match не е за вас, само отстранете ја преку поставките за „Помошникот“. За да ги прегледате или избришете аудиоисечоците снимени при поставувањето на Voice Match, одете во <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Ако функцијата е оневозможена, ќе ви се бара потврда пред секое најавување на веб-сајт.</translation>
 <translation id="6811034713472274749">Страницата е спремна за прикажување</translation>
 <translation id="6811151703183939603">Цврсто</translation>
@@ -8457,7 +8425,6 @@
 <translation id="6842868554183332230">Сајтовите обично откриваат кога активно го користите уредот за да ја постават вашата достапност во апликациите за разговор</translation>
 <translation id="6843264316370513305">Отстранување грешки на мрежата</translation>
 <translation id="6843404741389995311">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата и фотогалеријата</translation>
-<translation id="6843423766595476978">„Ok Google“ е поставен</translation>
 <translation id="6843725295806269523">исклучи тон</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Отвори максимизирано</translation>
@@ -8473,6 +8440,7 @@
 <translation id="6852290167968069627">ChromeOS не може да ја продолжи вашата претходна сесија поради проблем со мрежата. Поврзете се на стабилна мрежа, па обидете се повторно.</translation>
 <translation id="6852529053326738838">Побарајте од вашата организација или регистрирајте се со вашата работна е-пошта за да проверите дали вашата сметка ги исполнува условите.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> инсталирана од <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
+<translation id="6853118789186721762">Потсетникот е испратен на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">Година: <ph name="DROPDOWN_NAME" /></translation>
 <translation id="68541483639528434">Затвори други картички</translation>
 <translation id="6855892664589459354">Бекап и враќање на Crostini</translation>
@@ -8707,7 +8675,6 @@
 <translation id="7014741021609395734">Ниво на зумирање</translation>
 <translation id="7015135594296285641">Дозволи екстензии</translation>
 <translation id="7016995776279438971">Црвена и зелена, слаба црвена (протаномалија)</translation>
-<translation id="7017004637493394352">Кажете „Ok Google" повторно</translation>
 <translation id="7017219178341817193">Додај нова страница</translation>
 <translation id="7017354871202642555">Не може да се постави режимот откако ќе се постави прозорецот.</translation>
 <translation id="7019546817926942979">Вашиот уред треба да биде приклучен. Надградувањето на Linux може значително да ви ја потроши батеријата. Поврзете го уредот на полнач и обидете се повторно.</translation>
@@ -8762,7 +8729,6 @@
 <translation id="7059858479264779982">Постави на автоматско стартување</translation>
 <translation id="7063129466199351735">Обработување кратенки...</translation>
 <translation id="7063311912041006059">URL со <ph name="SPECIAL_SYMBOL" /> наместо прашалник</translation>
-<translation id="706342288220489463">Дозволете вашиот „Помошник“ да користи податоци од екранот за да ви помага</translation>
 <translation id="70641621694466590">Одете на страницата со лозинки</translation>
 <translation id="7064209589142995848">Префрлање содржини</translation>
 <translation id="7064734931812204395">Се конфигурира контејнерот за Linux. Ова може да потрае до 30 минути.</translation>
@@ -8773,6 +8739,7 @@
 <translation id="7066572364168923329">Изберете го поставувањето на вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Амбиентални бои</translation>
 <translation id="7067725467529581407">Никогаш не прикажувај го ова повторно.</translation>
+<translation id="7067779359472606732">Потсетникот е испратен на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Најавете се за да видите картички од други уреди</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> и уште неколку апликации се блокирани на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Ја отвора страницата со поставки за безбедност во нова картичка</translation>
@@ -9414,7 +9381,6 @@
 <translation id="7520766081042531487">Инкогнито портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Прикажи кратенки</translation>
 <translation id="7521430434164837205">Датотеки на Microsoft 365</translation>
-<translation id="7522255036471229694">Кажете „Ok Google“</translation>
 <translation id="7523117833414447032">При читање големи букви</translation>
 <translation id="7523585675576642403">Преименувајте го профилот</translation>
 <translation id="7525067979554623046">Создај</translation>
@@ -9733,7 +9699,6 @@
 <translation id="7736119438443237821">Ќе го отстраните пристапот до вашите криптографски клучеви на уредов</translation>
 <translation id="7737115349420013392">Се спарува со „<ph name="DEVICE_NAME" />“…</translation>
 <translation id="7737203573077018777">Примени се упатства од <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
-<translation id="7737846262459425222">Ова може да го промените во секое време во „Поставки &gt; Помошник на Google &gt; Контекст на екранот“.</translation>
 <translation id="7737948071472253612">Не им е дозволено да ја користат камерата</translation>
 <translation id="77381465218432215">Прикажувај ги знаците за акцентирање и специјалните знаци</translation>
 <translation id="7739524723876359011">Притиснете <ph name="ACCELERATOR" /> за да го фокусирате балончево.</translation>
@@ -9838,7 +9803,6 @@
 <translation id="7806659658565827531">Додавајте прибелешки на главниот нод</translation>
 <translation id="7806722269368320106">Апликација, се инсталира</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
-<translation id="7807117920154132308">Се чини дека <ph name="SUPERVISED_USER_NAME" /> веќе има поставено „Помошник на Google“ на друг уред. <ph name="SUPERVISED_USER_NAME" /> може да извлече максимум од „Помошникот“ ако вклучи „Контекст на екранот“ на овој уред.</translation>
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
 <translation id="7810202088502699111">На оваа страница се блокирани појавни прозорци.</translation>
 <translation id="7810367892333449285">Вашиот код треба да биде во следниов формат: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
@@ -9897,7 +9861,6 @@
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите со ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Извештаиве може да содржат податоци за падовите на ChromeOS, кои функции ги користите, колку меморија типично користите и дијагностички податоци и податоци за користењето на апликации на Android. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот со ChromeOS. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“. За да заштедите батерија, во поставките за „Помошникот“ може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>
 <translation id="7851457902707056880">Најавувањето беше ограничено само на сопственикот на сметката. Рестартирајте и најавете се со сметката на корисникот. Машината автоматски ќе се рестартира за 30 секунди.</translation>
 <translation id="7851716364080026749">Секогаш блокирај пристап за камера и микрофон</translation>
 <translation id="78526636422538552">Додавањето повеќе сметки на Google е оневозможено</translation>
@@ -10069,7 +10032,6 @@
 <translation id="7963408577288987423">{COUNT,plural, =1{1 лозинка}one{{COUNT} лозинка}other{{COUNT} лозинки}}</translation>
 <translation id="7963513503134856713">Прозорецот е преместен на десната страна</translation>
 <translation id="7963608432878156675">Имево е видливо за други уреди преку Bluetooth и мрежна врска</translation>
-<translation id="7963826112438303517">Вашиот „Помошник“ ги користи снимкиве и изговорените барања за да го создаде и ажурира вашиот гласовен модел, којшто се складира само на уредите на кои сте ја вклучиле Voice Match. Прегледајте ја или повторно обучете ја активноста со глас во „Поставките за Помошникот“.</translation>
 <translation id="7964458523224581615">Viridian</translation>
 <translation id="7965946703747956421">Бришење <ph name="CREDENTIAL_TYPE" /> за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">К&amp;опирај ја адресата на сликата</translation>
@@ -10213,6 +10175,7 @@
 <translation id="8050191834453426339">Потврди повторно</translation>
 <translation id="8051193500142930381">Функциите на коишто им треба камерата нема да работат</translation>
 <translation id="8052218774860457016">Управување со синхронизацијата на прелистувачот</translation>
+<translation id="8052898407431791827">Копирано во привремената меморија</translation>
 <translation id="8052944601017749068">Увезете во <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Пак вчитај страница</translation>
 <translation id="8054500940978949009">Дозволено. Вклучете <ph name="LINK_BEGIN" />пристап до микрофонот за оперативниот систем<ph name="LINK_END" />.</translation>
@@ -10230,7 +10193,6 @@
 <translation id="8061244502316511332">Картичкава го користи микрофонот</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8061970399284390013">Проверка на правопис и граматика</translation>
-<translation id="8061991877177392872">Се чини дека веќе сте ја поставиле Voice Match за вашиот „Помошник на Google“ на друг уред. Претходните снимки се користеа за да се направи гласовниот модел за уредов.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартија}one{{COUNT} лист хартија}other{{COUNT} листови хартија}}</translation>
 <translation id="8063235345342641131">Стандарден зелен аватар</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11260,6 +11222,7 @@
 <translation id="876161309768861172">Не можеше да се најави. Обидете се повторно.</translation>
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
+<translation id="8763170551806710928">Прикажи ги чиповите</translation>
 <translation id="8763927697961133303">USB-уред</translation>
 <translation id="8766796754185931010">Котоери</translation>
 <translation id="8767069439158587614">Прикажи ги сите пребарувања за <ph name="QUERY_CLUSTER_NAME" /></translation>
@@ -11589,8 +11552,8 @@
 <translation id="8987321822984361516">Со прелистувачот управува организација, со профилот управува <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8988539543012086784">Страницава е зачувана во <ph name="BOOKMARK_FOLDER" /></translation>
-<translation id="8989034257029389285">Може да прашате „Hey Google, what song is this?“ (Ok Google, која песна е ова?)</translation>
 <translation id="8989359959810288806">Освежи го статусот на интернет преку мобилен</translation>
+<translation id="8989779557457435460">Стандардно споделувај ја тековната картичка</translation>
 <translation id="8990243615717080992">Најавете се со лозинка или друг начин на враќање</translation>
 <translation id="8991520179165052608">Сајтот може да го користи микрофонот</translation>
 <translation id="8991694323904646277">Нема камера</translation>
@@ -11848,7 +11811,6 @@
 <translation id="9153367754133725216">Гледајте предлози за нови апликации и интернет-содржини во „Стартер“ и резултатите од пребарување. Статистикa за подобрување на предлозите се испраќа само ако сте избрале да се испраќаат извештаи за падови, како и дијагностички и податоци за користење до ChromeOS.</translation>
 <translation id="9154194610265714752">Ажурно</translation>
 <translation id="915485121129452731">Пенкало за таблет</translation>
-<translation id="9155100833189043833">Безбедно користете документ за идентификација од вашиот мобилен уред</translation>
 <translation id="9155344700756733162">Поништување на изборот на бојата</translation>
 <translation id="9157096865782046368">0,8 секунди</translation>
 <translation id="9157697743260533322">Не успеа поставувањето автоматски ажурирања за сите корисници (грешка при стартување preflight: <ph name="ERROR_NUMBER" />)</translation>
@@ -11869,7 +11831,6 @@
 <translation id="9167063903968449027">Прикажи го списокот за читање</translation>
 <translation id="9167450455589251456">Профилот не е поддржан</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> сметки</translation>
-<translation id="9168436347345867845">Остави за подоцна</translation>
 <translation id="9169093579080634183">Дознајте повеќе за картичките</translation>
 <translation id="9169496697824289689">Прикажи кратенки на тастатура</translation>
 <translation id="916964310188958970">Зошто овој предлог?</translation>

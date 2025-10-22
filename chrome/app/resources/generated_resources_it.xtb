@@ -465,7 +465,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="129808599775632797">&amp;Modifiche</translation>
 <translation id="130097046531636712">Estende la durata della batteria limitando l'attività in background e gli effetti visivi, come lo scorrimento uniforme</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> può modificare i seguenti file</translation>
-<translation id="130174306655812048">Prova "Hey Google, qual è il titolo di questa canzone?"</translation>
 <translation id="1302227299132585524">Consenti JavaScript da Apple Events</translation>
 <translation id="1303101771013849280">File HTML preferiti</translation>
 <translation id="1303671224831497365">Nessun dispositivo Bluetooth trovato</translation>
@@ -796,7 +795,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1541346352678737112">Nessuna rete trovata</translation>
 <translation id="154198613844929213">{0,plural, =0{Eliminazione in corso ora}=1{Eliminazione tra 1 secondo}other{Eliminazione tra # secondi}}</translation>
 <translation id="1542137295869176367">Impossibile aggiornare i dati di accesso</translation>
-<translation id="1542524755306892917">Ciò consente all'Assistente Google di fornire risposte personalizzate alle domande di <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="1543284117603151572">Importati da Edge</translation>
 <translation id="1543538514740974167">Accedi più rapidamente a questa pagina</translation>
 <translation id="1544588554445317666">Prova a usare un nome di file più breve o a salvare l'elemento in un'altra cartella</translation>
@@ -1169,7 +1167,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1784849162047402014">Spazio insufficiente sul disco del dispositivo</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{La disinstallazione di "<ph name="APP_NAME" />" comporterà anche la disinstallazione di questa app:}other{La disinstallazione di "<ph name="APP_NAME" />" comporterà anche la disinstallazione di queste app:}}</translation>
 <translation id="1786290960428378411">Richiesta di lettura e modifica</translation>
-<translation id="1787350673646245458">Immagine dell'utente</translation>
 <translation id="1790976235243700817">Rimuovi accesso</translation>
 <translation id="1791662854739702043">Installato</translation>
 <translation id="1792619191750875668">Display esteso</translation>
@@ -1293,7 +1290,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1871098866036088250">Apri nel browser Chrome</translation>
 <translation id="1871131409931646355">Cronologia dei download completa</translation>
 <translation id="187145082678092583">Meno app</translation>
-<translation id="1871534214638631766">Mostra le informazioni correlate quando fai clic con il tasto destro del mouse o eserciti una pressione prolungata su un contenuto</translation>
 <translation id="1871615898038944731">Il dispositivo <ph name="DEVICE_TYPE" /> è aggiornato</translation>
 <translation id="1873513359268939357">Calendario di Outlook</translation>
 <translation id="1873920700418191231">Consenti di nuovo le autorizzazioni per il sito <ph name="WEBSITE" /></translation>
@@ -1320,7 +1316,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1886996562706621347">Consenti ai siti di chiedere di diventare gestori predefiniti dei protocolli (consigliata)</translation>
 <translation id="1887210448491286312">Interrompi la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Errore di accesso</translation>
-<translation id="1887597546629269384">Dì di nuovo "Ok Google"</translation>
 <translation id="1890026367080681123">Vai alle impostazioni dei contenuti incorporati</translation>
 <translation id="189035593835762169">Termini e condizioni</translation>
 <translation id="1891362123137972260">Lo spazio sul disco sta per esaurirsi. Libera spazio.</translation>
@@ -1567,7 +1562,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2052572566310583903">Installata su altri dispositivi</translation>
 <translation id="2052723746739622752">Stacca Gemini</translation>
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
-<translation id="205560151218727633">Logo dell'Assistente Google</translation>
 <translation id="2058456167109518507">Dispositivo rilevato</translation>
 <translation id="2059913712424898428">Fuso orario</translation>
 <translation id="2060375639911876205">Rimuovi profilo eSIM</translation>
@@ -1939,15 +1933,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha richiesto altre autorizzazioni.</translation>
 <translation id="2304820083631266885">Pianeta</translation>
 <translation id="2306794767168143227">Salva su <ph name="BRAND" /> su questo dispositivo</translation>
-<translation id="2307553512430195144">Se accetti, l'Assistente Google attenderà in modalità standby per individuare il comando "Hey Google" e potrà riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /> con Voice Match.
-    <ph name="BR" />
-    Voice Match aiuta l'Assistente Google a identificare la voce di <ph name="SUPERVISED_USER_NAME" /> su <ph name="DEVICE_TYPE" /> e distinguerla dalle altre.
-    <ph name="BR" />
-    L'assistente acquisisce clip della voce di tuo figlio per creare un modello vocale univoco che viene memorizzato soltanto sui suoi dispositivi. Il modello vocale di tuo figlio potrebbe essere inviato temporaneamente a Google per poter identificare meglio la sua voce.
-    <ph name="BR" />
-    Se in un secondo momento decidi che la funzionalità Voice Match non è adatta alle esigenze di tuo figlio, puoi disattivarla dalle impostazioni del suo assistente. Per visualizzare o eliminare i clip audio registrati da tuo figlio durante la configurazione di Voice Match, visita la pagina <ph name="VOICE_MATCH_SETTINGS_URL" /> dal suo account.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">I seguenti tasti non sono supportati: Tab, Maiusc, Ctrl, Esc, Bloc maiusc, Volume</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
 <translation id="2310923358723722542">Display e ingrandimento</translation>
@@ -2359,7 +2344,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2599048253926156421">Nome utente copiato negli appunti</translation>
 <translation id="2602501489742255173">Scorri verso l'alto per iniziare</translation>
 <translation id="2603115962224169880">Pulisci il computer</translation>
-<translation id="2603355571917519942">Funzionalità Voice Match pronta</translation>
 <translation id="2604129989323098489">Generalmente i siti chiedono informazioni sui tuoi schermi per poter aprire e posizionare le finestre in modo intelligente, ad esempio per mostrare documenti o contenuti a schermo intero affiancati</translation>
 <translation id="2604255671529671813">Errore di connessione alla rete</translation>
 <translation id="2604805099836652105">Modulo per l'indirizzo <ph name="ADDRESS_LABEL" /> compilato.</translation>
@@ -2640,7 +2624,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2777525873368474674">Incolla link immagine</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{È stato trovato un sito con molte notifiche}other{Sono stati trovati {NUM_SITES} siti con molte notifiche}}</translation>
 <translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di ChromeOS</translation>
-<translation id="2779728796406650689">In questo modo l'Assistente Google potrà fornire risposte personalizzate alle tue domande.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
@@ -3238,7 +3221,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3211126692872351610">&amp;Cerca "<ph name="SEARCH_TERMS" />" su <ph name="SEARCH_ENGINE" /> in una nuova scheda</translation>
 <translation id="321367297115597343">Aggiungi un preferito a questa cartella</translation>
 <translation id="3213681682237645841">Download delle voci in <ph name="LANGUAGE" /> in corso…</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile o in possesso di una registrazione della sua voce potrebbe essere in grado di accedere ai risultati personali di <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Vuoi creare una scorciatoia?</translation>
 <translation id="321834671654278338">Programma di disinstallazione di Linux</translation>
 <translation id="3220943972464248773">Per sincronizzare le tue password devi verificare la tua identità</translation>
@@ -3283,7 +3265,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
 <translation id="3248902735035392926">La sicurezza è importante. Prenditi un attimo per <ph name="BEGIN_LINK" />controllare ora le tue estensioni<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Sincronizzazione dei file</translation>
-<translation id="3251714896659475029">Consenti a <ph name="SUPERVISED_USER_NAME" /> di accedere all'Assistente Google con "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;Non parte del certificato&gt;</translation>
 <translation id="325238099842880997">Stabilisci regole di base relative all'utilizzo dei dispositivi digitali per aiutare i bambini a giocare, navigare sul Web e fare i compiti a casa</translation>
 <translation id="3253225298092156258">Non disponibile</translation>
@@ -3386,7 +3367,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3319863571062685443">Il tuo indirizzo è stato salvato</translation>
 <translation id="3320271870899888245">Impossibile collegarsi a OneDrive. Riprova.</translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
-<translation id="3320909810101200102">Per scegliere un documento di identità, scansiona il codice QR</translation>
 <translation id="3320957378743864387">Nessuna autorizzazione a offrire assistenza per la scrittura</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3321494112580110651">Non vedi la stampante?</translation>
@@ -3431,7 +3411,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="335581015389089642">Voce</translation>
 <translation id="335587007651175930">Cerca quello che c'è sullo schermo con Google Lens</translation>
 <translation id="3355936511340229503">Errore di connessione</translation>
-<translation id="3356580349448036450">Fine</translation>
 <translation id="3359256513598016054">Vincoli policy certificati</translation>
 <translation id="3360297538363969800">Errore di stampa. Controlla la stampante e riprova.</translation>
 <translation id="3360306038446926262">Finestre</translation>
@@ -3523,7 +3502,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3418798368381485936">Non puoi accedere con questo account</translation>
 <translation id="3420501302812554910">È necessario reimpostare il token di sicurezza interno</translation>
 <translation id="3421387094817716717">Chiave pubblica della curva ellittica</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente.</translation>
 <translation id="3422989558057853751">Ultimo elemento selezionato, deselezionandolo si uscirà dalla modalità di selezione</translation>
 <translation id="3423111258700187173">Risultati trovati in: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Scopri di più su questa funzionalità di IA</translation>
@@ -3850,7 +3828,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3636940436873918441">Lingue preferite</translation>
 <translation id="3637203148990213388">Account aggiuntivi</translation>
 <translation id="3640347231390550691">Proteggi le tue password dal phishing</translation>
-<translation id="3640613767643722554">Insegna all'assistente a riconoscere la tua voce</translation>
 <translation id="364100968401221170"><ph name="BEGIN_LINK" />Accedi<ph name="END_LINK" /> per eliminare i dati di navigazione da tutti i dispositivi sincronizzati e dal tuo Account Google.</translation>
 <translation id="3641070112313110357">È necessario aggiornare Steam per Chromebook (beta). Riavvia Chromebook e riprova.</translation>
 <translation id="3641299252000913351">Aggiornamento firmware del modem in corso. Non spegnere il dispositivo.</translation>
@@ -4039,7 +4016,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="375636864092143889">Il sito sta usando il microfono</translation>
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3756578970075173856">Imposta il PIN</translation>
-<translation id="3756795331760037744">Consenti all'Assistente Google di utilizzare le informazioni visualizzate sullo schermo di <ph name="SUPERVISED_USER_NAME" /> per fornire aiuto</translation>
 <translation id="3756806135608816820">I siti possono chiedere di cercare dispositivi Bluetooth</translation>
 <translation id="3757567010566591880">Sblocca dalla barra degli strumenti</translation>
 <translation id="3757733214359997190">Nessun sito trovato</translation>
@@ -4603,7 +4579,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4126375522951286587">Arresta <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Log dispositivo</translation>
-<translation id="4130750466177569591">Accetto</translation>
 <translation id="4130877444234883490">Usa il tasto "M" per tenere premuto un tasto del mouse</translation>
 <translation id="4130948219446157616">Chiudi visualizzazione dal basso</translation>
 <translation id="413121957363593859">Componenti</translation>
@@ -4635,7 +4610,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4148957013307229264">Installazione...</translation>
 <translation id="4149385644005013189">Sembra tutto in ordine.</translation>
 <translation id="4150201353443180367">Display</translation>
-<translation id="4150569944729499860">Contesto dello schermata</translation>
 <translation id="4151449637210235443">Parlaci del tuo gameplay recente</translation>
 <translation id="4151503145138736576">Nessuno spazio di archiviazione offline da liberare</translation>
 <translation id="4152011295694446843">Qui troverai i tuoi preferiti</translation>
@@ -5160,7 +5134,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4532183705767666195">{COUNT,plural, =1{1 passkey}other{{COUNT} passkey}}</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" è in uso. La riassegnazione del dispositivo mentre è in uso potrebbe causare degli errori. Vuoi continuare?</translation>
 <translation id="4532646538815530781">Questo sito usa sensori di movimento.</translation>
-<translation id="4533846798469727141">Ora dì "Ok Google"</translation>
 <translation id="4533985347672295764">Tempo di CPU</translation>
 <translation id="4534661889221639075">Riprova.</translation>
 <translation id="4535127706710932914">Profilo predefinito</translation>
@@ -5463,7 +5436,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
 <translation id="4745096442457817087">La password è stata compromessa nell'ambito di una violazione dei dati pubblici</translation>
 <translation id="4745500401920035244">L'amministratore ha apportato una modifica a livello di sistema che disattiva alcuni vecchi profili. Non puoi più accedere a questo profilo, ma puoi comunque rimuoverlo</translation>
-<translation id="474609389162964566">Accedi al tuo assistente con "Hey Google"</translation>
 <translation id="4746757725581505837">Stai per eliminare i dati relativi a <ph name="BRAND" /> salvati su questo dispositivo</translation>
 <translation id="4748783296226936791">Solitamente i siti si connettono ai dispositivi HID per funzionalità che usano tastiere insolite, controller di gioco e altri dispositivi</translation>
 <translation id="4750185073185658673">Controlla altre autorizzazioni dal telefono. Assicurati che il Bluetooth e il Wi-Fi del telefono siano attivi.</translation>
@@ -5640,7 +5612,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="486635084936119914">Apri automaticamente determinati tipi di file dopo il download</translation>
 <translation id="4867272607148176509">I genitori possono approvare o bloccare le app, impostare limiti di tempo e controllare la navigazione sul web. Un account della scuola può essere aggiunto in un secondo momento per accedere alla maggior parte delle risorse scolastiche.</translation>
 <translation id="4867433544163083783">Controlla se le schede possono essere organizzate</translation>
-<translation id="4868281708609571334">Insegna all'Assistente Google a riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Questa finestra di dialogo non è attualmente attiva. Premi Comando+Maiusc+Opzione+A per attivarla.</translation>
 <translation id="4868351661310357223">Installa app e giochi da Google Play su <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Lettura di informazioni di rete di ChromeOS</translation>
@@ -6272,7 +6243,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5307386115243749078">Accoppia un sensore Bluetooth</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5308989548591363504">Controlla la presenza di malware</translation>
-<translation id="5309418307557605830">L'Assistente Google funziona anche qui</translation>
 <translation id="5309641450810523897">ID richiesta di assistenza</translation>
 <translation id="5311304534597152726">Accesso come</translation>
 <translation id="5312746996236433535">mirroring dello schermo</translation>
@@ -6797,7 +6767,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5687935527303996204">Assicurati che il dispositivo sia collegato alla corrente e non spegnerlo. L'installazione potrebbe richiedere fino a 20 minuti. Al termine dell'installazione il dispositivo si arresterà automaticamente.</translation>
 <translation id="5689233503102158537">Alt + backspace</translation>
 <translation id="5689516760719285838">Posizione</translation>
-<translation id="5689531695336322499">Sembra che <ph name="SUPERVISED_USER_NAME" /> abbia già configurato Voice Match con l'assistente su un altro dispositivo. Le registrazioni precedenti sono state usate per creare un modello vocale su questo dispositivo.</translation>
 <translation id="56907980372820799">Collega dati</translation>
 <translation id="5691581861107245578">Ricevi suggerimenti di emoji basati su quello che scrivi</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
@@ -7315,7 +7284,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6059925163896151826">Dispositivi USB</translation>
 <translation id="6061408389284235459">Una notifica è stata inviata a <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Crea codice QR</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile o in possesso di una registrazione della sua voce potrebbe essere in grado di accedere ai risultati personali di <ph name="SUPERVISED_USER_NAME" />. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente di <ph name="SUPERVISED_USER_NAME" /> in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
 <translation id="6064217302520318294">Blocco schermo</translation>
 <translation id="606449270532897041">Gestisci i dati dei siti</translation>
 <translation id="6064764629679333574">Migliora la qualità del suono del microfono Bluetooth aumentando la risoluzione dell'audio da bassa risoluzione ad alta risoluzione.</translation>
@@ -7839,6 +7807,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6434309073475700221">Elimina</translation>
 <translation id="6434325376267409267">Il dispositivo deve essere aggiornato per poter utilizzare <ph name="APP_NAME" />.</translation>
 <translation id="6434755719322447931">Caotico</translation>
+<translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
 <translation id="6435339218366409950">Scegli la lingua in cui tradurre i sottotitoli codificati</translation>
 <translation id="6436164536244065364">Visualizza nel Web Store</translation>
 <translation id="6436778875248895551">L'estensione "<ph name="EXTENSION_NAME" />" è stata bloccata dall'amministratore</translation>
@@ -8084,7 +8053,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6602956230557165253">Utilizza i tasti freccia sinistra e destra per spostarti.</translation>
 <translation id="6603185457265641428">Scegli se sincronizzare la cronologia</translation>
 <translation id="6605847144724004692">Nessuna valutazione disponibile.</translation>
-<translation id="6606671997164410857">Sembra che tu abbia già configurato l'Assistente Google su un altro dispositivo. Ottieni ancora di più dall'assistente attivando Contesto dello schermo su questo dispositivo.</translation>
 <translation id="6607831829715835317">A&amp;ltri strumenti</translation>
 <translation id="6607890859198268021">L'indirizzo <ph name="USER_EMAIL" /> è già gestito da <ph name="DOMAIN" />. Per utilizzare la funzionalità Controllo genitori con un altro Account Google, esci dopo la configurazione, quindi seleziona "Aggiungi persona" nella schermata di accesso.</translation>
 <translation id="6608166463665411119">Reimposta eSIM</translation>
@@ -8184,7 +8152,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6674571176963658787">Per avviare la sincronizzazione devi inserire la tua passphrase</translation>
 <translation id="6675665718701918026">Dispositivo di puntamento collegato</translation>
 <translation id="6675717447295898330">Crea un nuovo profilo di lavoro senza i miei dati esistenti</translation>
-<translation id="6676212663108450937">Considera l'uso di cuffie mentre eserciti il riconoscimento vocale</translation>
 <translation id="6676291960742508499">Le tue schede, i titoli delle pagine e gli URL vengono inviati a Google</translation>
 <translation id="667752334740867460">Ricezione di informazioni sulla rete Wi-Fi in corso…</translation>
 <translation id="6677527809400770913">Gesto <ph name="GESTURE" /> assegnato a <ph name="ACTION" /></translation>
@@ -8204,9 +8171,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6686817083349815241">Salva la password</translation>
 <translation id="6687008241368170505">Cambia il PIN del Gestore delle password di Google</translation>
 <translation id="6687079240787935001">Nascondi <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Fai venire al computer <ph name="SUPERVISED_USER_NAME" />. Tuo figlio leggerà alcune frasi sullo schermo per creare il suo modello vocale.
-    <ph name="BR" />
-    Se <ph name="SUPERVISED_USER_NAME" /> ha bisogno di aiuto nella lettura, chiedi di ripetere quello che leggi tu. Rimani a una certa distanza dal microfono, in modo che l'assistente possa identificare la voce di tuo figlio e non la tua.</translation>
 <translation id="6689948774466767379">Tasti mouse</translation>
 <translation id="6690659332373509948">Impossibile analizzare il file: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Avanti</translation>
@@ -8383,13 +8347,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6808166974213191158">ChromeOS Flex System Image Writer</translation>
 <translation id="6808193438228982088">Volpe</translation>
 <translation id="6809470175540814047">Apri nella finestra di navigazione in incognito</translation>
-<translation id="6809656734323672573">Se accetti, l'Assistente Google attenderà in modalità standby per individuare il comando "Hey Google" e potrà riconoscere la tua voce con Voice Match.
-    <ph name="BR" />
-    Voice Match consente all'assistente di identificarti e distinguerti dagli altri. L'assistente acquisisce clip della tua voce per creare un modello vocale univoco che viene memorizzato soltanto sul tuo dispositivo. Il modello vocale può essere inviato temporaneamente a Google per identificare meglio la tua voce.
-    <ph name="BR" />
-    Se in un secondo momento decidi di non voler usare la funzionalità Voice Match, puoi semplicemente disattivarla nelle Impostazioni dell'assistente. Per visualizzare o eliminare i clip audio che registri durante la configurazione di Voice Match, visita la pagina <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la conferma prima di ogni accesso ai siti web.</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
 <translation id="6811151703183939603">Decisa</translation>
@@ -8448,7 +8405,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6842868554183332230">In genere, i siti rilevano quando stai utilizzando attivamente il tuo dispositivo per impostare la tua disponibilità nelle app di chat</translation>
 <translation id="6843264316370513305">Debug rete</translation>
 <translation id="6843404741389995311">Acquista, traduci e identifica ciò che vedi con la fotocamera e la galleria fotografica</translation>
-<translation id="6843423766595476978">Ok Google impostato</translation>
 <translation id="6843725295806269523">disattiva audio</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Apri ingrandita</translation>
@@ -8699,7 +8655,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7014741021609395734">Livello di zoom</translation>
 <translation id="7015135594296285641">Consenti estensioni</translation>
 <translation id="7016995776279438971">Rosso-verde, rosso debole (protanomalia)</translation>
-<translation id="7017004637493394352">Di' "Ok Google" di nuovo</translation>
 <translation id="7017219178341817193">Aggiungi una nuova pagina</translation>
 <translation id="7017354871202642555">Impossibile impostare la modalità dopo l'impostazione della finestra.</translation>
 <translation id="7019546817926942979">Devi collegare il dispositivo alla corrente. L'upgrade di Linux potrebbe comportare un notevole consumo della batteria. Collega il dispositivo a un caricabatterie e riprova.</translation>
@@ -8755,7 +8710,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7059858479264779982">Imposta avvio automatico</translation>
 <translation id="7063129466199351735">Elaborazione delle scorciatoie...</translation>
 <translation id="7063311912041006059">URL con <ph name="SPECIAL_SYMBOL" /> al posto della query</translation>
-<translation id="706342288220489463">Consenti all'assistente di usare le informazioni visualizzate sullo schermo per aiutarti</translation>
 <translation id="70641621694466590">Vai alla pagina Password</translation>
 <translation id="7064209589142995848">Trasferimento dei contenuti</translation>
 <translation id="7064734931812204395">Configurazione del contenitore Linux. L'operazione potrebbe richiedere fino a 30 minuti.</translation>
@@ -9408,7 +9362,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7520766081042531487">Portale in modalità di navigazione in incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostra scorciatoie</translation>
 <translation id="7521430434164837205">File di Microsoft 365</translation>
-<translation id="7522255036471229694">Di' "Ok Google"</translation>
 <translation id="7523117833414447032">Durante la lettura delle lettere maiuscole</translation>
 <translation id="7523585675576642403">Rinomina profilo</translation>
 <translation id="7525067979554623046">Crea</translation>
@@ -9727,7 +9680,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7736119438443237821">Stai per rimuovere l'accesso alle tue passkey su questo dispositivo</translation>
 <translation id="7737115349420013392">Accoppiamento con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737203573077018777">È stata ricevuta l'istruzione <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
-<translation id="7737846262459425222">Puoi modificare questa preferenza in qualsiasi momento in Impostazioni &gt; Assistente Google &gt; Contesto dello schermo.</translation>
 <translation id="7737948071472253612">Non possono utilizzare la videocamera</translation>
 <translation id="77381465218432215">Mostra lettere accentate e caratteri speciali</translation>
 <translation id="7739524723876359011">Premi <ph name="ACCELERATOR" /> per selezionare questo fumetto.</translation>
@@ -9832,7 +9784,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7806659658565827531">Annota il nodo principale</translation>
 <translation id="7806722269368320106">Un'app, in fase di installazione</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>
-<translation id="7807117920154132308">Sembra che <ph name="SUPERVISED_USER_NAME" /> abbia già impostato l'Assistente Google su un altro dispositivo. <ph name="SUPERVISED_USER_NAME" /> può ottenere ancora di più dall'assistente attivando Contesto dello schermo su questo dispositivo.</translation>
 <translation id="7807711621188256451">Consenti sempre a <ph name="HOST" /> di accedere alla webcam</translation>
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="7810367892333449285">Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
@@ -9891,7 +9842,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che utilizzi, sulla quantità di memoria solitamente impiegata, nonché sui dati diagnostici e sull'utilizzo delle app per Android. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come gli sviluppatori Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni dell'account, all'indirizzo account.google.com.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
 <translation id="7851457902707056880">L'accesso è consentito soltanto all'account del proprietario. Riavvia ed esegui l'accesso con l'account del proprietario. Il computer si riavvierà automaticamente tra 30 secondi.</translation>
 <translation id="7851716364080026749">Impedisci sempre l'accesso a webcam e microfono</translation>
 <translation id="78526636422538552">L'aggiunta di altri Account Google è disattivata</translation>
@@ -10063,7 +10013,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7963408577288987423">{COUNT,plural, =1{1 password}other{{COUNT} password}}</translation>
 <translation id="7963513503134856713">Finestra spostata a destra</translation>
 <translation id="7963608432878156675">Questo nome è visibile ad altri dispositivi per le connessioni di rete e Bluetooth</translation>
-<translation id="7963826112438303517">L'assistente usa queste registrazioni e le tue richieste vocali per creare e aggiornare il tuo modello vocale, che viene memorizzato soltanto sui dispositivi in cui hai attivato Voice Match. Visualizza o reimposta l'attività vocale nelle Impostazioni dell'assistente.</translation>
 <translation id="7964458523224581615">Verde veronese</translation>
 <translation id="7965946703747956421">Elimina <ph name="CREDENTIAL_TYPE" /> per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">C&amp;opia l'indirizzo dell'immagine</translation>
@@ -10208,6 +10157,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8050191834453426339">Verifica di nuovo</translation>
 <translation id="8051193500142930381">Le funzionalità che richiedono una videocamera non funzioneranno</translation>
 <translation id="8052218774860457016">Gestisci la sincronizzazione del browser</translation>
+<translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8052944601017749068">Importa in <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Ricarica questa pagina</translation>
 <translation id="8054500940978949009">Autorizzazione consentita. Attiva l'<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
@@ -10225,7 +10175,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8061244502316511332">Questa scheda sta usando il microfono</translation>
 <translation id="8061464966246066292">Contrasto elevato</translation>
 <translation id="8061970399284390013">Controllo ortografico e grammaticale</translation>
-<translation id="8061991877177392872">Sembra che tu abbia già configurato Voice Match con l'assistente su un altro dispositivo. Le registrazioni precedenti sono state usate per creare un modello vocale su questo dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 foglio}other{{COUNT} fogli}}</translation>
 <translation id="8063235345342641131">Avatar verde predefinito</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11581,7 +11530,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8987321822984361516">Browser gestito da un'organizzazione, profilo gestito da <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Mese</translation>
 <translation id="8988539543012086784">Questa pagina è salvata in: <ph name="BOOKMARK_FOLDER" /></translation>
-<translation id="8989034257029389285">Potresti chiedere "Hey Google, qual è il titolo di questa canzone?"</translation>
 <translation id="8989359959810288806">Aggiorna stato tethering</translation>
 <translation id="8989779557457435460">Condividi la scheda corrente per impostazione predefinita</translation>
 <translation id="8990243615717080992">Accedi con una password o un altro metodo di recupero</translation>
@@ -11841,7 +11789,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9153367754133725216">Ricevi suggerimenti relativi a nuove app e contenuti web in Avvio app e nei risultati di ricerca. Invia statistiche per migliorare i suggerimenti solo se hai scelto di inviare a ChromeOS report sugli arresti anomali e dati diagnostici e sull'utilizzo.</translation>
 <translation id="9154194610265714752">Aggiornato</translation>
 <translation id="915485121129452731">Tablet con penna</translation>
-<translation id="9155100833189043833">Utilizza in sicurezza un ID dal tuo dispositivo mobile</translation>
 <translation id="9155344700756733162">Deseleziona colore</translation>
 <translation id="9157096865782046368">0,8 secondi</translation>
 <translation id="9157697743260533322">Impostazione degli aggiornamenti automatici per tutti gli utenti non riuscita (errore di avvio preliminare: <ph name="ERROR_NUMBER" />)</translation>
@@ -11862,7 +11809,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9167063903968449027">Mostra Elenco di lettura</translation>
 <translation id="9167450455589251456">Il profilo non è supportato</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> account</translation>
-<translation id="9168436347345867845">Più tardi</translation>
 <translation id="9169093579080634183">Scopri di più sulle schede</translation>
 <translation id="9169496697824289689">Visualizza scorciatoie da tastiera</translation>
 <translation id="916964310188958970">Perché questo suggerimento?</translation>

@@ -1909,7 +1909,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8273982424131314219">Uppgifterna fylls i på <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mer …</translation>
 <translation id="8277328362018795342">Ditt sidinnehåll delas för mer relevanta svar</translation>
-<translation id="8278488584187265939">Anpassa startsida</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8282657446819506217">Öppna i flikgrupp</translation>
@@ -2180,6 +2179,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="94870150074703282">Vill du ta bort gruppen?</translation>
 <translation id="952704832371081537">Avbryt</translation>
+<translation id="95332591904104970">Anslutna appar</translation>
 <translation id="954667170699278022">Läslista</translation>
 <translation id="956218893102219091">Använd din exakta plats för att få Gemini-resultat som är så specifika som möjligt i stället för en ungefärlig plats baserat på din IP-adress. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Radera webbinformation</translation>

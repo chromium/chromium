@@ -788,6 +788,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="22792995594807632">Yfirferðar er krafist fyrir niðurhal</translation>
 <translation id="2283340219607151381">Vista og fylla út heimilisföng</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ var eytt</translation>
+<translation id="2283599456633275070">Ferðalög</translation>
 <translation id="2286383991450886080">34 x 44 to.</translation>
 <translation id="2288422996159078444">Verið er að fylgjast með öllu sem þú slærð inn, síðum sem þú skoðar og öllum öðrum aðgerðum á vefnum. Innihald vefsvæða getur breyst án vitundar þinnar.</translation>
 <translation id="2289385804009217824">Klippa</translation>
@@ -882,6 +883,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2436976580469434549">Textíllist</translation>
 <translation id="243815215670139125">Ekki var hægt að vista þetta kort á Google-reikninginn þinn. Í staðinn var það vistað í Chrome í þessu tæki.</translation>
 <translation id="2438874542388153331">Fjögur göt hægra megin</translation>
+<translation id="2440855519769445271">Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til að fela valkosti greiðslufrests</translation>
 <translation id="2441854154602066476">Listi yfir greiðslumáta sem hægt er að færa inn við snertingu. Lyklaborð er falið.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />vistar ekki<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2224,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4648262692072505866">Tætigildi verður að vera á sniðinu SHA-256.</translation>
 <translation id="4652266463001779298">Ekki heimilað</translation>
 <translation id="4652440160515225514">Fyrirtækið þitt setti þetta vefsvæði á bannlista þar sem það brýtur gegn reglum.</translation>
+<translation id="4654457557264366314">Greiðsluáætlanir eru háðar gjaldgengi.</translation>
 <translation id="4658638640878098064">Hefti efst til vinstri</translation>
 <translation id="4660592918803576381">Opna í Drive</translation>
 <translation id="4661556981531699496">Gæludýr og önnur dýr</translation>

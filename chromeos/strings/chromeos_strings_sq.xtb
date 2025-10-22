@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4300272766492248925">Hap aplikacionin</translation>
 <translation id="430786093962686457">byrynxhyk</translation>
+<translation id="4309762678330556039">Krijo automatikisht transkriptime dhe kërko audio. Mund të krijosh regjistrime edhe kur nuk je i lidhur me internetin.</translation>
 <translation id="4310735698903592804">Imazhet e fundit të sfondit të mundësuara nga inteligjenca artificiale e Google</translation>
 <translation id="4320904097188876154">rozë neoni</translation>
 <translation id="432961742358282111">Kliko me butonin djathtas ose shtyp dhe mbaj shtypur për të marrë përkufizime, përkthime ose konvertime të njësive. Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
@@ -1472,6 +1473,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7425832472614771259">Modeli i transkriptimit në <ph name="LANGUAGE_NAME" /> është shkarkuar në <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e aktivizuara <ph name="ATTACH" />.</translation>
+<translation id="7458359366992324037">Ekrani në distancë</translation>
 <translation id="7458970041932198923">Lidhu me një rrjet dhe ringarko faqen për të parë dhe për të caktuar simbolet.</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7481312909269577407">Përpara</translation>

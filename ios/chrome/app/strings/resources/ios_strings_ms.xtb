@@ -1692,6 +1692,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7484645889979462775">Jangan sekali-kali untuk tapak ini</translation>
 <translation id="7486006552035434095">Pastikan peranti anda disegerakkan</translation>
 <translation id="7491131399623468277">Pergi ke Tetapan…</translation>
+<translation id="7491161827858509164">Untuk melihat fail yang telah anda muat turun sebelum ini, buka <ph name="BEGIN_LINK" />Fail<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Teruskan mengedit</translation>
 <translation id="7500244509706269886">Borang autolengkap</translation>
 <translation id="750493650310597496">0 dipilih</translation>
@@ -1729,6 +1730,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7612619742409846846">Dilog masuk ke Google sebagai</translation>
 <translation id="7612849887607288481">Buka Menu Pemprototaip AI</translation>
 <translation id="7620522820075868385">Batal</translation>
+<translation id="762078666799342162">Anda boleh melihat muat turun terdahulu anda dalam <ph name="BEGIN_LINK" />Fail<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Frasa laluan tidak betul</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Kata laluan yang terjejas}=1{{COUNT} kata laluan yang terjejas}other{{COUNT} kata laluan yang terjejas}}</translation>
 <translation id="7640669552036055091">Tab daripada Android</translation>
@@ -1910,7 +1912,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8273982424131314219">Anda akan mengisi maklumat pada <ph name="URL" /></translation>
 <translation id="8275068909952022340">Lagi…</translation>
 <translation id="8277328362018795342">Kandungan halaman anda dikongsi untuk mendapatkan jawapan yang lebih berkaitan</translation>
-<translation id="8278488584187265939">Sesuaikan halaman utama</translation>
 <translation id="8281781826761538115">Lalai - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8282657446819506217">Buka dalam Kumpulan Tab</translation>

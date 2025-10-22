@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">Tính năng Xem trước bản đồ đang tắt. Hãy vào phần Cài đặt để bật lại.</translation>
 <translation id="5759484603608560822">Ẩn Tệp đã tải xuống</translation>
 <translation id="5767099457279594162">Mật khẩu chưa được chia sẻ</translation>
+<translation id="5768870767339201169">Bắt đầu từ nơi bạn đã dừng lại</translation>
 <translation id="5779117921996157216">{count,plural, =1{Bạn có {count} mật khẩu bị lộ. Điều này có thể khiến bạn gặp rủi ro về bảo mật. Hãy khắc phục ngay để giữ an toàn.}other{Bạn có {count} mật khẩu bị lộ. Điều này có thể khiến bạn gặp rủi ro về bảo mật. Hãy khắc phục ngay để giữ an toàn.}}</translation>
 <translation id="5791632441210678828">Nút sắp xếp cho Nguồn cấp dữ liệu đang theo dõi.</translation>
 <translation id="5803566855766646066">Bạn có chắc chắn muốn hủy thẻ mới này không?</translation>
@@ -1691,6 +1692,7 @@
 <translation id="7484645889979462775">Không bao giờ đối với trang web này</translation>
 <translation id="7486006552035434095">Đồng bộ hoá các thiết bị của bạn</translation>
 <translation id="7491131399623468277">Vào phần Cài đặt…</translation>
+<translation id="7491161827858509164">Để xem các tệp bạn đã tải xuống, hãy mở <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Tiếp tục chỉnh sửa</translation>
 <translation id="7500244509706269886">Tự động điền biểu mẫu</translation>
 <translation id="750493650310597496">Đã chọn 0</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7612619742409846846">Đã đăng nhập vào Google bằng</translation>
 <translation id="7612849887607288481">Mở trình đơn nguyên mẫu AI</translation>
 <translation id="7620522820075868385">Huỷ</translation>
+<translation id="762078666799342162">Bạn có thể xem các tệp đã tải xuống trong <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Cụm mật khẩu không chính xác</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mật khẩu bị lộ}=1{{COUNT} mật khẩu bị lộ}other{{COUNT} mật khẩu bị lộ}}</translation>
 <translation id="7640669552036055091">Thẻ trên Android</translation>
@@ -1909,7 +1912,6 @@
 <translation id="8273982424131314219">Thông tin của bạn sẽ được điền vào <ph name="URL" /></translation>
 <translation id="8275068909952022340">Khác…</translation>
 <translation id="8277328362018795342">Nội dung trên trang được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn</translation>
-<translation id="8278488584187265939">Tuỳ chỉnh trang chủ</translation>
 <translation id="8281781826761538115">Mặc định - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8282657446819506217">Mở trong nhóm thẻ</translation>

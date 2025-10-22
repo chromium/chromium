@@ -1235,6 +1235,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5758759241456233788">L'opció Previsualització de Maps està desactivada. Torna a activar-la a Configuració.</translation>
 <translation id="5759484603608560822">Amaga l'opció Baixades</translation>
 <translation id="5767099457279594162">La contrasenya no s'ha compartit</translation>
+<translation id="5768870767339201169">Continua des d'on ho vas deixar</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tens {count} contrasenya en perill que podria posar en risc la teva seguretat. Corregeix el problema per protegir-te.}other{Tens {count} contrasenyes en perill que podrien posar en risc la teva seguretat. Corregeix el problema per protegir-te.}}</translation>
 <translation id="5791632441210678828">Botó Ordena del tauler Seguint</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
@@ -1909,7 +1910,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8273982424131314219">Emplenaràs informació a <ph name="URL" /></translation>
 <translation id="8275068909952022340">Més…</translation>
 <translation id="8277328362018795342">El contingut de les pàgines es comparteix per oferir-te respostes més rellevants</translation>
-<translation id="8278488584187265939">Personalitza la pàgina d'inici</translation>
 <translation id="8281781826761538115">Idioma predeterminat: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omet</translation>
 <translation id="8282657446819506217">Obre en un grup de pestanyes</translation>

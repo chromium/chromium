@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
 <translation id="4300272766492248925">Апп нээх</translation>
 <translation id="430786093962686457">шифон</translation>
+<translation id="4309762678330556039">Сийрүүлэг автоматаар үүсгэж, аудионоос хайгаарай. Та интернэтэд холбогдоогүй үедээ ч бичлэг үүсгэх боломжтой.</translation>
 <translation id="4310735698903592804">Google AI-аар дэмжигдсэн саяхны дэлгэцийн зургууд</translation>
 <translation id="4320904097188876154">неон ягаан</translation>
 <translation id="432961742358282111">Тодорхойлолт, орчуулга авах, нэгж хөрвүүлэхийн тулд баруун талыг товших эсвэл удаан дарна уу. Энэ онцлогийг удирдахын тулд зүүн, баруун сум товчнуудыг ашиглана уу.</translation>
@@ -1472,6 +1473,7 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />-н сийрүүлгийн загварыг <ph name="PROGRESS_PERCENTAGE" />% татсан</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Энэ APN-г идэвхгүй болгох эсвэл хасах боломжгүй. Идэвхжүүлсэн <ph name="ATTACH" /> APN-г идэвхгүй болгосон эсвэл хассан болохыг баталгаажуулна уу.</translation>
+<translation id="7458359366992324037">Алсын дэлгэц</translation>
 <translation id="7458970041932198923">Аватар зургийг харах болон тохируулахын тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
 <translation id="7481312909269577407">Forward</translation>

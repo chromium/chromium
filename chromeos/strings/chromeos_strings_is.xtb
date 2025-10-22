@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
 <translation id="4300272766492248925">Opna forrit</translation>
 <translation id="430786093962686457">siffoni</translation>
+<translation id="4309762678330556039">Búðu sjálfkrafa til textauppskriftir og leitaðu að hljóði. Þú getur búið til upptökur, jafnvel þótt nettenging sé ekki til staðar.</translation>
 <translation id="4310735698903592804">Nýleg veggfóður knúin af gervigreind Google</translation>
 <translation id="4320904097188876154">neonbleikur</translation>
 <translation id="432961742358282111">Hægrismelltu eða haltu inni til að sjá skilgreiningar, þýðingar eða umreiknaðar mælieiningar. Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
@@ -1472,6 +1473,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />, textauppskrift, <ph name="PROGRESS_PERCENTAGE" />% sótt</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á <ph name="ATTACH" />-aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
+<translation id="7458359366992324037">Fjartengdur skjár</translation>
 <translation id="7458970041932198923">Tengstu neti og endurhladdu síðunni til að skoða og stilla notendamyndir.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7481312909269577407">Áfram</translation>

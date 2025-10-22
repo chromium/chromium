@@ -49,6 +49,7 @@
 <translation id="11947597112837849">e-poçt ünvanı</translation>
 <translation id="1197267115302279827">Əlfəcinləri köçürün</translation>
 <translation id="1197761954713363183">Giriş açarı təsdiqi üçün vərəq bağlandı</translation>
+<translation id="1197933394627598677">Oxu rejimini göstərin</translation>
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1202892408424955784">İzlənilən məhsullar</translation>
 <translation id="1204037785786432551">Linki endirin</translation>
@@ -174,6 +175,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1791662854739702043">Quraşdırıldı</translation>
 <translation id="1792959175193046959">İstənilən zaman defolt endirmə məkanını dəyişin</translation>
 <translation id="1796666869097395659">Sonra qayıtmaq üçün tabı kiçildin</translation>
+<translation id="1799920918471566157">Chrome ipucuları</translation>
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1807709131360304325">Yeni pəncərə açın</translation>
 <translation id="1810845389119482123">İlkin sinxronizasiya ayarlanması tamamlanmayıb</translation>
@@ -1397,6 +1399,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 endirmə gözlənilir}other{# endirmə gözlənilir}}</translation>
 <translation id="7230064152164845085">Anonim rejimə keçin</translation>
 <translation id="7237724030342645845">Google Parol Meneceri dayandı</translation>
+<translation id="7239496616545081903">Oxu rejimini gizlədin</translation>
 <translation id="72415438529550637">Parol təklifi bağlandı.</translation>
 <translation id="7248671827512403053">Tətbiq</translation>
 <translation id="7253951228444156601">Parollar yoxlanılır…</translation>
@@ -1739,6 +1742,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8723453889042591629">Səhifəni sürətlə tərcümə edin. Qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
 <translation id="8731268612289859741">Təhlükəsizlik kodu</translation>
+<translation id="8738163682604285902">Oxu rejiminə baxılsın?</translation>
 <translation id="8746155870861185046">Vurğulamanı paylaşın</translation>
 <translation id="8748850008226585750">Məzmun gizlidir</translation>
 <translation id="8754448020583829686">Keçidsiz kopyalayın</translation>

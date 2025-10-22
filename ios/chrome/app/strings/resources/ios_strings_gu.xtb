@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">Mapsના પ્રીવ્યૂ બંધ છે. સેટિંગમાં જઈને તેને ફરી ચાલુ કરો.</translation>
 <translation id="5759484603608560822">'ડાઉનલોડ' છુપાવો</translation>
 <translation id="5767099457279594162">પાસવર્ડ શેર કરવામાં આવ્યો નથી</translation>
+<translation id="5768870767339201169">તમે જ્યાંથી છોડ્યું હતું ત્યાંથી ચાલુ કરો</translation>
 <translation id="5779117921996157216">{count,plural, =1{તમારા {count} પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}one{તમારા {count} પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}other{તમારા {count} પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}}</translation>
 <translation id="5791632441210678828">'ફૉલો કરી રહ્યાં છે' ફીડ સૉર્ટ કરવાનું બટન.</translation>
 <translation id="5803566855766646066">શું તમે ખરેખર આ નવું કાર્ડ કાઢી નાખવા માગો છો?</translation>
@@ -1792,6 +1793,7 @@
 <translation id="7851858861565204677">અન્ય ઉપકરણો</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7854006015462979438">સામાન્ય ખોલો</translation>
+<translation id="7855678267851972597">ઑડિયો</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7863211248337747225">ઍપ મેળવો</translation>
 <translation id="7865127013871431856">Google Translateના વિકલ્પો</translation>
@@ -1908,7 +1910,6 @@
 <translation id="8273982424131314219">તમે <ph name="URL" /> માં માહિતી ભરશો</translation>
 <translation id="8275068909952022340">વધુ…</translation>
 <translation id="8277328362018795342">વધુ સુસંગત જવાબો માટે તમારા પેજનું કન્ટેન્ટ શેર કરવામાં આવ્યું છે</translation>
-<translation id="8278488584187265939">હોમ પેજને કસ્ટમાઇઝ કરો</translation>
 <translation id="8281781826761538115">ડિફૉલ્ટ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8282657446819506217">ટૅબના ગ્રૂપમાં ખોલો</translation>
@@ -1972,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ના  <ph name="FIRST_VISIBLE_TAB" /> થી <ph name="LAST_VISIBLE_TAB" /> સુધી <ph name="INCOGNITO" /> ટેબ્સ</translation>
 <translation id="8528009254289981965">અન્ય ઍપમાંની લિંકને છૂપા મોડમાં ખોલો</translation>
 <translation id="8529767659511976195">નવી</translation>
+<translation id="8531572740963685410">PDFs</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8534481786647257214">Google+ પોસ્ટ પૂર્ણ કરેલ છે.</translation>
@@ -2178,6 +2180,7 @@
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="94870150074703282">ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="952704832371081537">રદ કરો</translation>
+<translation id="95332591904104970">કનેક્ટ થયેલી ઍપ</translation>
 <translation id="954667170699278022">વાંચન સૂચિ</translation>
 <translation id="956218893102219091">તમારા IP ઍડ્રેસના આધારે અંદાજિત લોકેશનને બદલે, Geminiના સૌથી સચોટ પરિણામો માટે તમારા સચોટ લોકેશનનો ઉપયોગ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>

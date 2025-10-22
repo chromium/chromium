@@ -466,7 +466,6 @@
 <translation id="129808599775632797">&amp;मॉडिफ़िकेशन</translation>
 <translation id="130097046531636712">इससे बैकग्राउंड में होने वाली गतिविधि और विज़ुअल इफ़ेक्ट, जैसे कि स्मूद स्क्रोलिंग को सीमित किया जाता है, ताकि बैटरी ज़्यादा देर तक काम करे</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों में बदलाव कर सकती है</translation>
-<translation id="130174306655812048">“Ok Google, यह कौनसा गाना है?” पूछें</translation>
 <translation id="1302227299132585524">Apple Events से JavaScript की अनुमति दें</translation>
 <translation id="1303101771013849280">HTML फ़ाइल को बुकमार्क करता है</translation>
 <translation id="1303671224831497365">कोई ब्लूटूथ डिवाइस नहीं मि‍ला</translation>
@@ -798,7 +797,6 @@
 <translation id="1541346352678737112">कोई भी नेटवर्क नहीं मिला</translation>
 <translation id="154198613844929213">{0,plural, =0{अब मिटाया जा रहा है.}=1{मिटाए जाने में बचा समय: 1 सेकंड}one{मिटाए जाने में बचा समय: # सेकंड}other{मिटाए जाने में बचा समय: # सेकंड}}</translation>
 <translation id="1542137295869176367">आपका साइन इन करने के लिए डेटा अपडेट नहीं किया जा सका</translation>
-<translation id="1542524755306892917">इससे Google Assistant, <ph name="SUPERVISED_USER_NAME" /> के सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
 <translation id="1543284117603151572">Edge से आयात किया गया</translation>
 <translation id="1543538514740974167">यहां तेज़ी से पहुंचें</translation>
 <translation id="1544588554445317666">फ़ाइल का पाथ छोटा करें या इसे किसी दूसरी जगह सेव करके देखें</translation>
@@ -1179,7 +1177,6 @@
 <translation id="1784849162047402014">डिवाइस पर डिस्क स्पेस कम है</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" को अनइंस्टॉल करने पर, यह ऐप्लिकेशन भी अनइंस्टॉल हो जाएगा:}one{"<ph name="APP_NAME" />" को अनइंस्टॉल करने पर, यह ऐप्लिकेशन भी अनइंस्टॉल हो जाएगा:}other{"<ph name="APP_NAME" />" को अनइंस्टॉल करने पर, ये ऐप्लिकेशन भी अनइंस्टॉल हो जाएंगे:}}</translation>
 <translation id="1786290960428378411">पढ़ने और बदलाव करने का अनुरोध किया जा रहा है</translation>
-<translation id="1787350673646245458">उपयोगकर्ता की इमेज</translation>
 <translation id="1790976235243700817">ऐक्सेस हटाएं</translation>
 <translation id="1791662854739702043">इंस्‍टॉल किया गया</translation>
 <translation id="1792619191750875668">बढ़ाया हुआ डिसप्ले</translation>
@@ -1304,7 +1301,6 @@
 <translation id="1871098866036088250">Chrome ब्राउज़र में खोलें</translation>
 <translation id="1871131409931646355">डाउनलोड का पूरा इतिहास</translation>
 <translation id="187145082678092583">कम ऐप्लिकेशन</translation>
-<translation id="1871534214638631766">सामग्री पर दायां क्लिक करने या दबाकर रखने पर उससे जुड़ी जानकारी दिखाता है</translation>
 <translation id="1871615898038944731">आपका <ph name="DEVICE_TYPE" /> अप टू डेट है</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> को फिर से अनुमतियां दें</translation>
@@ -1331,7 +1327,6 @@
 <translation id="1886996562706621347">साइटों को प्रोटोकॉल के लिए डिफ़ॉल्‍ट हैंडलर बनने के लिए पूछने देने की अनुमति दें (सुझाव)</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> पर, टैब को कास्ट करना बंद करें</translation>
 <translation id="1887442540531652736">साइन इन में गड़बड़ी</translation>
-<translation id="1887597546629269384">दोबारा "Hey Google" बोलें</translation>
 <translation id="1890026367080681123">एम्बेड किए गए कॉन्टेंट सेटिंग पर जाएं</translation>
 <translation id="189035593835762169">नियम और शर्तें</translation>
 <translation id="1891362123137972260">डिस्क में बहुत कम जगह है. कृपया डिस्क में थोड़ी जगह खाली करें.</translation>
@@ -1578,7 +1573,6 @@
 <translation id="2052572566310583903">आपके दूसरे डिवाइसों पर इंस्टॉल किया गया है</translation>
 <translation id="2052723746739622752">Gemini को अनपिन करें</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिति डेटा</translation>
-<translation id="205560151218727633">Google Assistant लोगो</translation>
 <translation id="2058456167109518507">डिवाइस की पहचान हुई</translation>
 <translation id="2059913712424898428">समय क्षेत्र</translation>
 <translation id="2060375639911876205">eSIM प्रोफ़ाइल हटाएं</translation>
@@ -1953,15 +1947,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ने अतिरिक्त अनुमतियों का अनुरोध किया है.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2306794767168143227">इस डिवाइस पर <ph name="BRAND" /> में सेव करें</translation>
-<translation id="2307553512430195144">अगर आप सहमति देते हैं, तो "Ok Google" पहचानने के लिए Google Assistant स्टैंडबाय मोड में इंतज़ार करेगी. साथ ही, Assistant पहचान सकती है कि <ph name="SUPERVISED_USER_NAME" /> वॉइस मैच के साथ बोल रहे हैं.
-    <ph name="BR" />
-    वॉइस मैच सुविधा की मदद से, Google Assistant आपके <ph name="DEVICE_TYPE" /> पर <ph name="SUPERVISED_USER_NAME" /> की आवाज़ पहचान सकती है और बता सकती है कि वह अन्य लोगों की आवाज़ से अलग है.
-    <ph name="BR" />
-    Assistant आपके बच्चे की आवाज़ की क्लिप लेकर, आवाज़ का नमूना बनाती है. इसे सिर्फ़ उनके डिवाइसों पर सेव किया जाता है. आपके बच्चे की आवाज़ का नमूना, कुछ समय के लिए Google को भेजा जा सकता है, ताकि उसकी आवाज़ अच्छी तरह पहचानी जा सके.
-    <ph name="BR" />
-    अगर बाद में आपको लगता है कि वॉइस मैच की सुविधा आपके बच्चे के लिए सही नहीं है, तो Assistant की सेटिंग में जाकर, इस सुविधा को आसानी से बंद किया जा सकता है. वॉइस मैच की सुविधा सेट अप करने के दौरान, अपने बच्चे की रिकॉर्ड की गई ऑडियो क्लिप देखने या मिटाने के लिए, अपने बच्चे के खाते से <ph name="VOICE_MATCH_SETTINGS_URL" /> पर जाएं.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">इन कुंजियों को अपनी पसंद के मुताबिक नहीं बनाया जा सकता: Tab, Shift, Control, Escape, Caps Lock, Volume</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
 <translation id="2310923358723722542">डिसप्ले और ज़ूम करने की सुविधा</translation>
@@ -2373,7 +2358,6 @@
 <translation id="2599048253926156421">उपयोगकर्ता नाम को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="2602501489742255173">शुरू करने के लिए ऊपर की ओर स्वाइप करें</translation>
 <translation id="2603115962224169880">कंप्यूटर साफ़ करें</translation>
-<translation id="2603355571917519942">वॉइस मैच की सुविधा इस्तेमाल किए जाने के लिए तैयार है</translation>
 <translation id="2604129989323098489">आम तौर पर, साइटें आपके डिसप्ले के बारे में जानकारी मांगती हैं, ताकि वे सोच-समझकर विंडो खोल सकें और उन्हें प्लेस कर सकें. जैसे, दस्तावेज़ या कॉन्टेंट को फ़ुल-स्क्रीन पर साथ-साथ दिखाना</translation>
 <translation id="2604255671529671813">नेटवर्क कनेक्शन गड़बड़ी</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> के पते का फ़ॉर्म भरा गया.</translation>
@@ -2654,7 +2638,6 @@
 <translation id="2777525873368474674">इमेज का लिंक चिपकाएं</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{बहुत सारी सूचनाओं वाली 1 साइट मिली}one{बहुत सारी सूचनाओं वाली {NUM_SITES} साइट मिली}other{बहुत सारी सूचनाओं वाली {NUM_SITES} साइट मिलीं}}</translation>
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
-<translation id="2779728796406650689">इससे Google Assistant, आपके सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
@@ -3252,7 +3235,6 @@
 <translation id="3211126692872351610">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
 <translation id="321367297115597343">इस फ़ोल्डर में कोई बुकमार्क जोड़ें</translation>
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> भाषा में ऑडियो डाउनलोड किया जा रहा है...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी <ph name="SUPERVISED_USER_NAME" /> के निजी खोज नतीजे ऐक्सेस किए जा सकते हैं.</translation>
 <translation id="3217843140356091325">शॉर्टकट बनाएं?</translation>
 <translation id="321834671654278338">Linux अनइंस्टॉलर</translation>
 <translation id="3220943972464248773">पासवर्ड सिंक करने के लिए अपनी पहचान की पुष्टि करें</translation>
@@ -3297,7 +3279,6 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क गड़बड़ी</translation>
 <translation id="3248902735035392926">सुरक्षा ज़रूरी है. थोड़ा समय निकालकर, <ph name="BEGIN_LINK" />अभी अपने एक्सटेंशन की जांच करें.<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">फ़ाइल सिंक करना</translation>
-<translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> को "Ok Google" बोलकर Google Assistant ऐक्सेस करने की अनुमति दें</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्र का भाग नहीं है&gt;</translation>
 <translation id="325238099842880997">घर पर खेलने, नई चीज़ें सीखने, और स्कूल का काम करने में मदद करने में बच्चों की मदद करने के बुनियादी नियम तय करें.</translation>
 <translation id="3253225298092156258">उपलब्ध नहीं है</translation>
@@ -3400,7 +3381,6 @@
 <translation id="3319863571062685443">आपका पता सेव हो गया है</translation>
 <translation id="3320271870899888245">OneDrive से कनेक्ट नहीं किया जा सकता. फिर से कोशिश करें.</translation>
 <translation id="3320630259304269485">सुरक्षित ब्राउज़िंग (नुकसान पहुंचाने वाली साइटों से सुरक्षा) और दूसरी सुरक्षा सेटिंग</translation>
-<translation id="3320909810101200102">कोई आईडी चुनने के लिए, क्यूआर कोड को स्कैन करें</translation>
 <translation id="3320957378743864387">लिखने में मदद पाने की सुविधा नहीं दी जा सकती</translation>
 <translation id="3321460131042519426">शब्द रैप करना चालू करें</translation>
 <translation id="3321494112580110651">क्या आपका प्रिंटर नहीं दिख रहा है?</translation>
@@ -3445,7 +3425,6 @@
 <translation id="335581015389089642">बोली</translation>
 <translation id="335587007651175930">Google Lens की मदद से, स्क्रीन पर मौजूद कॉन्टेंट के बारे में खोजें</translation>
 <translation id="3355936511340229503">कनेक्शन गड़बड़ी</translation>
-<translation id="3356580349448036450">पूरा हुआ</translation>
 <translation id="3359256513598016054">प्रमाणपत्र नीति बाध्यताएं</translation>
 <translation id="3360297538363969800">प्रिंट करना पूरा नहीं हो सका. कृपया अपना प्रिंटर जाँचें और फिर से कोशिश करें.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -3537,7 +3516,6 @@
 <translation id="3418798368381485936">इस खाते का इस्तेमाल करके, साइन इन नहीं किया जा सकता</translation>
 <translation id="3420501302812554910">अंदरूनी सुरक्षा कुंजी को रीसेट करने की ज़रूरत है</translation>
 <translation id="3421387094817716717">अंडाकार वक्र वाली सार्वजनिक कुंजी</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है.</translation>
 <translation id="3422989558057853751">यह चुना गया आखिरी आइटम है. इससे चुने हुए का निशान हटाने पर, चुनने वाला मोड बंद हो जाएगा</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> में नतीजे मिले</translation>
 <translation id="3423226218833787854">एआई की इस सुविधा के बारे में ज़्यादा जानें</translation>
@@ -3864,7 +3842,6 @@
 <translation id="3636940436873918441">पसंदीदा भाषाएं</translation>
 <translation id="3637203148990213388">अतिरिक्त खाते</translation>
 <translation id="3640347231390550691">फ़िशिंग के खतरे से अपने पासवर्ड की सुरक्षा करें</translation>
-<translation id="3640613767643722554">अपनी Assistant को आपकी आवाज़ पहचानना सिखाएं</translation>
 <translation id="364100968401221170">सिंक किए हुए सभी डिवाइसों और अपने Google खाते से ब्राउज़िंग डेटा मिटाने के लिए, <ph name="BEGIN_LINK" />साइन इन करें<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Chromebook के लिए Steam (बीटा वर्शन) को अपडेट करना होगा. अपना Chromebook रीस्टार्ट करें और फिर से कोशिश करें.</translation>
 <translation id="3641299252000913351">मॉडम फ़र्मवेयर अपडेट हो रहा है. अपने डिवाइस को बंद न करें.</translation>
@@ -4053,7 +4030,6 @@
 <translation id="375636864092143889">साइट आपका माइक्रोफ़ोन इस्तेमाल कर रही है</translation>
 <translation id="3756485814916578707">स्क्रीन कास्ट की जा रही है</translation>
 <translation id="3756578970075173856">पिन सेट करें</translation>
-<translation id="3756795331760037744">मदद करने के लिए, Google Assistant को <ph name="SUPERVISED_USER_NAME" /> की स्क्रीन की जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="3756806135608816820">साइटें, ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती हैं</translation>
 <translation id="3757567010566591880">टूलबार से अनपिन करें</translation>
 <translation id="3757733214359997190">कोई साइट नहीं मिली</translation>
@@ -4616,7 +4592,6 @@
 <translation id="4126375522951286587"><ph name="VM_NAME" /> को शट डाउन करें</translation>
 <translation id="412730574613779332">स्‍पैंडेक्‍स</translation>
 <translation id="4130199216115862831">डिवाइस लॉग</translation>
-<translation id="4130750466177569591">मैं सहमत हूं</translation>
 <translation id="4130877444234883490">माउस बटन को दबाकर रखने के लिए, “m” का इस्तेमाल करें</translation>
 <translation id="4130948219446157616">बॉटम व्यू को बंद करें</translation>
 <translation id="413121957363593859">घटक</translation>
@@ -4648,7 +4623,6 @@
 <translation id="4148957013307229264">इंस्‍टॉल हो रहा है...</translation>
 <translation id="4149385644005013189">समीक्षा की ज़रूरत नहीं है!</translation>
 <translation id="4150201353443180367">डिसप्ले</translation>
-<translation id="4150569944729499860">स्क्रीन कॉन्टेक्स्ट</translation>
 <translation id="4151449637210235443">हमें अपने हाल ही के गेमप्ले के बारे में बताएं</translation>
 <translation id="4151503145138736576">स्टोरेज खाली करने के लिए, ऑफ़लाइन स्टोरेज उपलब्ध नहीं है</translation>
 <translation id="4152011295694446843">आपको अपने बुकमार्क यहां मिलेंगे</translation>
@@ -5173,7 +5147,6 @@
 <translation id="4532183705767666195">{COUNT,plural, =1{1 पासकी}one{{COUNT} पासकी}other{{COUNT} पासकी}}</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" को इस्तेमाल किया जा रहा है. इस्तेमाल के दौरान अगर आप डिवाइस को फिर से असाइन करेंगे, तो इससे गड़बड़ियां हो सकती हैं. क्या आप वाकई जारी रखना चाहते हैं?</translation>
 <translation id="4532646538815530781">यह साइट हलचल पकड़ने वाले सेंसर का इस्तेमाल कर रही है.</translation>
-<translation id="4533846798469727141">अब "Hey Google" बोलें</translation>
 <translation id="4533985347672295764">CPU समय</translation>
 <translation id="4534661889221639075">फिर से कोशिश करें.</translation>
 <translation id="4535127706710932914">सामान्य प्रोफ़ाइल</translation>
@@ -5476,7 +5449,6 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
 <translation id="4745096442457817087">आपका पासवर्ड, सार्वजनिक तौर पर लीक हो चुका है</translation>
 <translation id="4745500401920035244">आपके एडमिन ने पूरे सिस्टम में ऐसा बदलाव किया है जो कुछ पुरानी प्रोफ़ाइलों को बंद कर देता है. अब इस प्रोफ़ाइल को ऐक्सेस नहीं किया जा सकता. हालांकि, आपके पास इसे हटाने का विकल्प अब भी है</translation>
-<translation id="474609389162964566">अपनी Assistant को "Ok Google" बोलकर ऐक्सेस करें</translation>
 <translation id="4746757725581505837">इस डिवाइस पर सेव किया गया <ph name="BRAND" /> का डेटा मिटा दिया जाएगा</translation>
 <translation id="4748783296226936791">आम तौर पर, साइटें उन सुविधाओं के लिए एचआईडी डिवाइसों से कनेक्ट करती हैं जो असामान्य कीबोर्ड, गेम कंट्रोलर, और दूसरे डिवाइस इस्तेमाल करती हैं</translation>
 <translation id="4750185073185658673">कुछ और अनुमतियां देखने के लिए अपने फ़ोन के अनुमतियों वाले सेक्शन पर जाएं. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
@@ -5653,7 +5625,6 @@
 <translation id="486635084936119914">कुछ निश्चित फ़ाइल प्रकारों को डाउनलोड करने के बाद उन्हें अपने आप खोलें</translation>
 <translation id="4867272607148176509">माता-पिता, ऐप्लिकेशन को मंज़ूरी दे सकते हैं या ब्लॉक कर सकते हैं. इसके अलावा, वे ऐप्लिकेशन के इस्तेमाल की समयसीमा सेट कर सकते हैं और वेब ब्राउज़िंग को कंट्रोल कर सकते हैं. स्कूल के ज़्यादातर संसाधनों को ऐक्सेस करने के लिए, स्कूल वाला खाता बाद में जोड़ा जा सकता है.</translation>
 <translation id="4867433544163083783">अब देखें कि टैब व्यवस्थित किए जा सकते हैं या नहीं</translation>
-<translation id="4868281708609571334">Google Assistant को <ph name="SUPERVISED_USER_NAME" /> की आवाज़ पहचानना सिखाएं</translation>
 <translation id="4868284252360267853">यह डायलॉग इस समय फ़ोकस में नहीं है. इस पर फ़ोकस करने के लिए, Command-Shift-A दबाएं.</translation>
 <translation id="4868351661310357223">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें.</translation>
 <translation id="4869170227080975044">ChromeOS के नेटवर्क की जानकारी पढ़ता है</translation>
@@ -6284,7 +6255,6 @@
 <translation id="5307386115243749078">ब्लूटूथ स्विच को दूसरे डिवाइस से जोड़ें</translation>
 <translation id="5308380583665731573">कनेक्ट करें</translation>
 <translation id="5308989548591363504">मैलवेयर का पता लगाना</translation>
-<translation id="5309418307557605830">Google Assistant यहां भी काम करती है</translation>
 <translation id="5309641450810523897">सहायता अनुरोध का आईडी</translation>
 <translation id="5311304534597152726">इसके रूप में प्रवेश हो रहा है</translation>
 <translation id="5312746996236433535">स्क्रीन शेयर करने वाला बटन</translation>
@@ -6811,7 +6781,6 @@
 <translation id="5687935527303996204">पक्का करें कि आपका डिवाइस प्लग-इन हो और उसे बंद न करें. इंस्टॉल करने में 20 मिनट लग सकते हैं. इंस्टॉल करने के बाद, आपका डिवाइस अपने-आप शट डाउन हो जाएगा.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
-<translation id="5689531695336322499">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर, Assistant के साथ वॉइस मैच की सुविधा को सेट अप कर लिया है. इस डिवाइस पर आवाज़ का नमूना बनाने के लिए, इन पुरानी रिकॉर्डिंग का इस्तेमाल किया गया है.</translation>
 <translation id="56907980372820799">डेटा लिंक करें</translation>
 <translation id="5691581861107245578">आप जो भी लिख रहे हैं उसके आधार पर इमोजी के सुझाव पाएं</translation>
 <translation id="5691772641933328258">फ़िंगरप्रिंट नहीं पहचाना गया</translation>
@@ -7330,7 +7299,6 @@
 <translation id="6059925163896151826">USB डिवाइस</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> को सूचना भेजी गई</translation>
 <translation id="6063284707309177505">QR कोड बनाएं</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी <ph name="SUPERVISED_USER_NAME" /> के निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. बैटरी बचाने के लिए, आप <ph name="SUPERVISED_USER_NAME" /> की Assistant सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
 <translation id="606449270532897041">साइट डेटा मैनेज करें</translation>
 <translation id="6064764629679333574">ब्लूटूथ वाले माइक की साउंड क्वालिटी को बेहतर बनाएं. इसके लिए, कम क्वालिटी वाले ऑडियो को अच्छी क्वालिटी वाले ऑडियो में बदलने की सुविधा चालू करें.</translation>
@@ -7854,6 +7822,7 @@
 <translation id="6434309073475700221">खारिज करें</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> का इस्तेमाल करने से पहले अपने डिवाइस को अपडेट करें.</translation>
 <translation id="6434755719322447931">अस्त-व्यस्त</translation>
+<translation id="6435307030888827407">साइन आउट रहें</translation>
 <translation id="6435339218366409950">वह भाषा चुनें जिसमें आपको कैप्शन का अनुवाद करना है</translation>
 <translation id="6436164536244065364">वेब स्टोर में देखें</translation>
 <translation id="6436778875248895551">आपके एडमिन ने इस एक्सटेंशन "<ph name="EXTENSION_NAME" />" को ब्लॉक किया है</translation>
@@ -8101,7 +8070,6 @@
 <translation id="6602956230557165253">नेविगेट करने के लिए बाईं और दाईं 'तीर का निशान' वाली कुंजियों का इस्तेमाल करें.</translation>
 <translation id="6603185457265641428">चुनें कि इतिहास को सिंक करना है या नहीं</translation>
 <translation id="6605847144724004692">किसी भी उपयोगकर्ता ने अभी तक रेट नहीं किया है.</translation>
-<translation id="6606671997164410857">ऐसा लगता है कि आपने पहले ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. 'स्क्रीन पर दिखने वाला कॉन्टेंट इस्तेमाल करें' चालू करके, Assistant से ज़्यादा फ़ायदे पाएं.</translation>
 <translation id="6607831829715835317">ज़्यादा टू&amp;ल</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> पहले ही <ph name="USER_EMAIL" /> को प्रबंधित कर रहा है. दूसरे Google खाते पर माता-पिता के कंट्रोल की सुविधा इस्तेमाल करने के लिए, सेट अप करने के बाद साइन आउट करें. फिर, साइन इन वाली स्क्रीन पर "व्यक्ति जोड़ें" को चुनें.</translation>
 <translation id="6608166463665411119">ई-सिम को रीसेट करें</translation>
@@ -8201,7 +8169,6 @@
 <translation id="6674571176963658787">इसे चालू करने के लिए, अपना लंबा पासवर्ड डालें</translation>
 <translation id="6675665718701918026">सूचक डिवाइस कनेक्ट किया गया</translation>
 <translation id="6675717447295898330">मेरे मौजूदा डेटा का इस्तेमाल किए बिना, ऑफ़िस के लिए एक नई प्रोफ़ाइल बनाएं</translation>
-<translation id="6676212663108450937">कृपया अपनी आवाज़ की कसरत करते समय हेडफ़ोन का इस्तेमाल करें</translation>
 <translation id="6676291960742508499">आपके टैब, पेज के टाइटल, और यूआरएल Google को भेजे जाएंगे</translation>
 <translation id="667752334740867460">वाई-फ़ाई की जानकारी ली जा रही है...</translation>
 <translation id="6677527809400770913"><ph name="GESTURE" /> जेस्चर को <ph name="ACTION" /> के लिए असाइन किया गया</translation>
@@ -8221,9 +8188,6 @@
 <translation id="6686817083349815241">अपना पासवर्ड सेव करें</translation>
 <translation id="6687008241368170505">Google Password Manager का पिन बदलें</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> छिपाएं</translation>
-<translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> को कंप्यूटर पर आने के लिए कहें. अपनी आवाज़ का नमूना बनाने के लिए, आपका बच्चा इस स्क्रीन पर कुछ वाक्यांश पढ़ेगा.
-    <ph name="BR" />
-    अगर <ph name="SUPERVISED_USER_NAME" /> को पढ़ने में मदद चाहिए, तो उन्हें अपने बाद वाक्यांश दोहराने को कहें. माइक से दूर होकर धीरे बोलें, ताकि Assistant आपके बजाय आपके बच्चे की आवाज़ जानें.</translation>
 <translation id="6689948774466767379">माउस के बटन</translation>
 <translation id="6690659332373509948">इस फ़ाइल को पार्स करने में असमर्थ: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;अग्रेषित करें</translation>
@@ -8400,13 +8364,6 @@
 <translation id="6808166974213191158">ChromeOS Flex का सिस्टम इमेज राइटर</translation>
 <translation id="6808193438228982088">लोमड़ी</translation>
 <translation id="6809470175540814047">गुप्त विंडों में खोलें</translation>
-<translation id="6809656734323672573">अगर आप सहमति देते हैं, तो "Ok Google" पहचानने के लिए Google Assistant स्टैंडबाय मोड में इंतज़ार करेगी. साथ ही, Assistant पहचान सकती है कि आप वॉइस मैच के साथ बोल रहे हैं.
-    <ph name="BR" />
-    वॉइस मैच की सुविधा की मदद से, Assistant आपकी आवाज़ पहचान सकती है. साथ ही, आपकी और दूसरे लोगों की आवाज़ में फ़र्क़ कर सकती है. Assistant आपकी आवाज़ की क्लिप लेकर आवाज़ का अलग नमूना बनाती है. इसे सिर्फ़ आपके डिवाइस पर सेव किया जाता है. आपकी आवाज़ का नमूना, कुछ समय के लिए Google को भेजा जा सकता है, ताकि आपकी आवाज़ को बेहतर ढंग से पहचाना जा सके.
-    <ph name="BR" />
-    अगर आप बाद में वॉइस मैच की सुविधा का इस्तेमाल न करना चाहें, तो बस Assistant की सेटिंग में जाकर इसे बंद कर दें. वॉइस मैच की सुविधा सेट अप करने के दौरान, अपनी रिकॉर्ड की गई ऑडियो क्लिप देखने या मिटाने के लिए, <ph name="VOICE_MATCH_SETTINGS_URL" /> पर जाएं.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">स्टोर किए गए क्रेडेंशियल का इस्तेमाल करके वेबसाइट में अपने आप साइन इन करें. जब यह सुविधा बंद होगी, तो किसी वेबसाइट में साइन इन करने से पहले आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
 <translation id="6811034713472274749">पेज देखने के लिए तैयार है</translation>
 <translation id="6811151703183939603">ज़ोर से दबाएं (फ़र्म)</translation>
@@ -8465,7 +8422,6 @@
 <translation id="6842868554183332230">आम तौर पर, साइटें यह पता लगाती हैं कि आप अपने डिवाइस का इस्तेमाल कब करते हैं, ताकि चैट ऐप्लिकेशन में सेट किया जा सके कि आप उपलब्ध हैं या नहीं</translation>
 <translation id="6843264316370513305">नेटवर्क डीबग करना</translation>
 <translation id="6843404741389995311">कैमरे से फ़ोटो कैप्चर करके या गैलरी से कोई फ़ोटो अपलोड करके, उसमें दिख रही चीज़ें पहचानें, खरीदें, और उनके कॉन्टेंट का अनुवाद पाएं</translation>
-<translation id="6843423766595476978">Ok Google पूरी तरह तैयार है</translation>
 <translation id="6843725295806269523">म्यूट करें</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">बड़े दृश्य में खोलें</translation>
@@ -8716,7 +8672,6 @@
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7015135594296285641">एक्सटेंशन को अनुमति दें</translation>
 <translation id="7016995776279438971">लाल-हरे रंग की पहचान से जुड़ी समस्या (प्रोटनॉमली) के लिए फ़िल्टर</translation>
-<translation id="7017004637493394352">फिर से "Ok Google" बोलें</translation>
 <translation id="7017219178341817193">कोई नया पेज जोड़ें</translation>
 <translation id="7017354871202642555">विंडो के सेट होने के बाद मोड सेट नहीं कर सकता है.</translation>
 <translation id="7019546817926942979">आपको अपने डिवाइस को चार्जिंग पर लगाना होगा. Linux को अपग्रेड करते समय, बैटरी जल्दी खत्म हो सकती है. कृपया अपने डिवाइस को चार्जर से कनेक्ट करें और फिर से कोशिश करें.</translation>
@@ -8772,7 +8727,6 @@
 <translation id="7059858479264779982">अपने-आप-लॉन्च पर सेट करें</translation>
 <translation id="7063129466199351735">शॉर्टकट प्रोसेस हो रहे हैं...</translation>
 <translation id="7063311912041006059">क्वेरी की जगह <ph name="SPECIAL_SYMBOL" /> वाला यूआरएल</translation>
-<translation id="706342288220489463">मदद करने के लिए, Assistant को स्क्रीन पर मौजूद जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="70641621694466590">पासवर्ड पेज पर जाएं</translation>
 <translation id="7064209589142995848">कॉन्टेंट ट्रांसफ़र</translation>
 <translation id="7064734931812204395">Linux कंटेनर कॉन्फ़िगर हो रही है. इसमें 30 मिनट तक लग सकते हैं.</translation>
@@ -9424,7 +9378,6 @@
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">शॉर्टकट दिखाएं</translation>
 <translation id="7521430434164837205">Microsoft 365 फ़ाइलें</translation>
-<translation id="7522255036471229694">"Ok Google" बोलें</translation>
 <translation id="7523117833414447032">कैपिटल लेटर पढ़ते समय</translation>
 <translation id="7523585675576642403">प्रोफ़ाइल का नाम बदलें</translation>
 <translation id="7525067979554623046">बनाएं</translation>
@@ -9743,7 +9696,6 @@
 <translation id="7736119438443237821">इस डिवाइस से पासकी का ऐक्सेस हटाया जा रहा है</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> निर्देश मिला</translation>
-<translation id="7737846262459425222">आप जब चाहें, सेटिंग &gt; Google Assistant &gt; स्क्रीन पर दिखने वाली सामग्री इस्तेमाल करें, में जाकर बदलाव कर सकते हैं.</translation>
 <translation id="7737948071472253612">कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="77381465218432215">उच्चारण के चिह्न और विशेष वर्ण दिखाएं</translation>
 <translation id="7739524723876359011">इस बबल पर फ़ोकस करने के लिए, <ph name="ACCELERATOR" /> दबाएं.</translation>
@@ -9848,7 +9800,6 @@
 <translation id="7806659658565827531">मुख्य नोड की व्याख्या करें</translation>
 <translation id="7806722269368320106">एक ऐप्लिकेशन इंस्टॉल हो रहा है</translation>
 <translation id="7807067443225230855">सर्च और Assistant</translation>
-<translation id="7807117920154132308">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. इस डिवाइस पर 'स्क्रीन पर दिखने वाला कॉन्टेंट इस्तेमाल करें' चालू करके, <ph name="SUPERVISED_USER_NAME" /> Assistant से ज़्यादा फ़ायदे पा सकते हैं.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> को हमेशा अपने कैमरे को एक्सेस करने की अनुमति दें</translation>
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
 <translation id="7810367892333449285">आपकी एंट्री <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ पता<ph name="LPA_2" />$<ph name="LPA_3" />मेल खाने वाला वैकल्पिक आईडी<ph name="LPA_4" /> के फ़ॉर्मैट में होनी चाहिए</translation>
@@ -9907,7 +9858,6 @@
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ChromeOS वाले डिवाइसों पर, अपने-आप रिपोर्ट भेजने की सुविधा चालू करने से, हमें यह समझने में मदद मिलती है कि ChromeOS की किन गड़बड़ियों को सबसे पहले ठीक करना है और किन चीज़ों को बेहतर बनाना है. इन रिपोर्ट में बहुत सी जानकारी शामिल हो सकती हैं, जैसे कि ChromeOS कब बंद हो जाता है, ChromeOS वाले आपके डिवाइसों पर किन सुविधाओं का इस्तेमाल किया जाता है, और आम तौर पर इनकी कितनी मेमोरी इस्तेमाल होती है. साथ ही, Android ऐप्लिकेशन की परफ़ॉर्मेंस और उसके इस्तेमाल से जुड़ा डेटा भी इन रिपोर्ट में शामिल हो सकता है. इकट्ठा किए गए कुछ डेटा से, Google के ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपर को भी मदद मिलेगी.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ChromeOS वाले डिवाइस की सेटिंग में जाकर, अपने-आप रिपोर्ट भेजने की इस सुविधा को किसी भी समय चालू या बंद किया जा सकता है. डोमेन एडमिन, Admin console में जाकर इस सेटिंग को बदल सकता है.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />अगर आपके Google खाते की वेब और ऐप्लिकेशन गतिविधि वाली सेटिंग चालू है, तो आपके Android डिवाइस का डेटा आपके Google खाते में सेव हो सकता है. account.google.com पर जाकर, डेटा को देखा और मिटाया जा सकता है. साथ ही, खाते की सेटिंग भी बदली जा सकती हैं.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है. बैटरी बचाने के लिए, आप अपनी Assistant की सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
 <translation id="7851457902707056880">साइन इन की सिर्फ़ मालिक के खाते तक पाबंदी लगाई गई है. कृपया 'रीबूट' करें और मालिक खाते से साइन इन करें. मशीन 30 सेकंड में अपने आप 'रीबूट' हो जाएगी.</translation>
 <translation id="7851716364080026749">कैमरा और माइक्रोफ़ोन एक्सेस कभी भी ब्लॉक करें</translation>
 <translation id="78526636422538552">और Google खाते जोड़ने की सुविधा बंद है</translation>
@@ -10079,7 +10029,6 @@
 <translation id="7963408577288987423">{COUNT,plural, =1{1 पासवर्ड}one{{COUNT} पासवर्ड}other{{COUNT} पासवर्ड}}</translation>
 <translation id="7963513503134856713">विंडो को दाईं ओर ले जाया गया</translation>
 <translation id="7963608432878156675">यह नाम अन्य डिवाइस को दिखता है, ताकि ब्लूटूथ और इंटरनेट से कनेक्ट किया जा सके</translation>
-<translation id="7963826112438303517">आपकी Assistant आपकी आवाज़ का नमूना बनाने और उसे अपडेट करने के लिए, इन रिकॉर्डिंग के साथ ही आपके बोले गए अनुरोधों का इस्तेमाल करती है. आवाज़ का नमूना सिर्फ़ उन डिवाइस पर सेव किया जाता है जहां आपने Voice Match को चालू किया हुआ है. Assistant की सेटिंग में जाकर आवाज़ की गतिविधि देखें या उसे फिर से आवाज़ पहचानना सिखाएं.</translation>
 <translation id="7964458523224581615">विरीडियन</translation>
 <translation id="7965946703747956421">इस उपयोगकर्ता नाम के लिए <ph name="CREDENTIAL_TYPE" /> मिटाएं: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">इमेज के पते को कॉपी करें</translation>
@@ -10224,6 +10173,7 @@
 <translation id="8050191834453426339">फिर से पुष्टि करें</translation>
 <translation id="8051193500142930381">जिन सुविधाओं के लिए कैमरे की ज़रूरत होती है वे काम नहीं करेंगी</translation>
 <translation id="8052218774860457016">ब्राउज़र से डेटा सिंक करने की सुविधा को मैनेज करें</translation>
+<translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8052944601017749068"><ph name="CERT_GROUP" /> में इंपोर्ट करें</translation>
 <translation id="8053390638574070785">यह पेज फिर से लोड करें</translation>
 <translation id="8054500940978949009">अनुमति है. <ph name="LINK_BEGIN" />सिस्टम का माइक्रोफ़ोन ऐक्सेस करने<ph name="LINK_END" /> की अनुमति दें.</translation>
@@ -10241,7 +10191,6 @@
 <translation id="8061244502316511332">यह टैब आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="8061464966246066292">उच्च स्क्रीन की रोशनी</translation>
 <translation id="8061970399284390013">स्पेलिंग और व्याकरण की जांच</translation>
-<translation id="8061991877177392872">ऐसा लगता है कि आपने पहले ही किसी दूसरे डिवाइस पर, Assistant के साथ वॉइस मैच की सुविधा को सेट अप कर लिया है. इस डिवाइस पर आवाज़ का नमूना बनाने के लिए, इन पुरानी रिकॉर्डिंग का इस्तेमाल किया गया है.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{काग़ज़ की 1 शीट}one{काग़ज़ की {COUNT} शीट}other{काग़ज़ की {COUNT} शीट}}</translation>
 <translation id="8063235345342641131">डिफ़ॉल्ट हरा अवतार</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11598,7 +11547,6 @@
 <translation id="8987321822984361516">ब्राउज़र को कोई संगठन मैनेज करता है और प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="8987927404178983737">माह</translation>
 <translation id="8988539543012086784">यह पेज <ph name="BOOKMARK_FOLDER" /> में सेव किया गया है</translation>
-<translation id="8989034257029389285">यह पूछा जा सकता है कि “Ok Google, यह कौनसा गाना है?”</translation>
 <translation id="8989359959810288806">टेदरिंग का स्टेटस रीफ़्रेश करें</translation>
 <translation id="8989779557457435460">डिफ़ॉल्ट रूप से मौजूदा टैब को शेयर करें</translation>
 <translation id="8990243615717080992">साइन इन करने के लिए, पासवर्ड या रिकवरी के किसी अन्य तरीके का इस्तेमाल करें</translation>
@@ -11858,7 +11806,6 @@
 <translation id="9153367754133725216">लॉन्चर और खोज के नतीजों में, नए ऐप्लिकेशन और वेब कॉन्टेंट के लिए सुझाव देखें. इससे सुझावों को बेहतर बनाने के लिए आंकड़े सिर्फ़ तब भेजे जाते हैं, जब आपने ChromeOS को क्रैश रिपोर्ट, ऐप्लिकेशन की परफ़ॉर्मेंस से जुड़ी जानकारी, और इसके इस्तेमाल से जुड़ा डेटा भेजने का विकल्प चुना हो.</translation>
 <translation id="9154194610265714752">अपडेट किया गया</translation>
 <translation id="915485121129452731">पेन टैबलेट</translation>
-<translation id="9155100833189043833">अपने फ़ोन या टैबलेट पर आईडी कार्ड का इस्तेमाल सुरक्षित तरीके से करें</translation>
 <translation id="9155344700756733162">चुने हुए रंग से सही का निशान हटाएं</translation>
 <translation id="9157096865782046368">0.8 सेकंड</translation>
 <translation id="9157697743260533322">सभी उपयोगकर्ताओं के लिए स्वचालित अपडेट सेट करने में विफल (प्रीफ़्लाइट लॉन्च गड़बड़ी: <ph name="ERROR_NUMBER" />)</translation>
@@ -11879,7 +11826,6 @@
 <translation id="9167063903968449027">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="9167450455589251456">इस प्रोफ़ाइल से वीएम सॉफ़्टवेयर इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> खाते</translation>
-<translation id="9168436347345867845">बाद में करें</translation>
 <translation id="9169093579080634183">टैब के बारे में ज़्यादा जानें</translation>
 <translation id="9169496697824289689">कीबोर्ड शॉर्टकट देखें</translation>
 <translation id="916964310188958970">यह सुझाव क्यों दिख रहा है?</translation>

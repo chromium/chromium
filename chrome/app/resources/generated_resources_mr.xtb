@@ -465,7 +465,6 @@
 <translation id="129808599775632797">&amp;सुधारणा</translation>
 <translation id="130097046531636712">हे बॅकग्राउंड अ‍ॅक्टिव्हिटी आणि सहजपणे होणारे स्क्रोलिंग यांसारखे व्हिज्युअल इफेक्ट मर्यादित ठेवून बॅटरीची पॉवर वाढवते</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> खालील फाइल संपादित करू शकते</translation>
-<translation id="130174306655812048">“Ok Google, हे कोणते गाणे आहे?” असे म्हणून पहा</translation>
 <translation id="1302227299132585524">Apple इव्हेंट वरून JavaScript ला अनुमती द्या</translation>
 <translation id="1303101771013849280">HTML फाईल बुकमार्क करते</translation>
 <translation id="1303671224831497365">ब्लूटूथ डिव्हाइस सापडली नाहीत</translation>
@@ -797,7 +796,6 @@
 <translation id="1541346352678737112">कोणतेही नेटवर्क आढळले नाही</translation>
 <translation id="154198613844929213">{0,plural, =0{Deleting now.}=1{हटवत आहे: एक सेकंद}other{हटवत आहे: # सेकंद}}</translation>
 <translation id="1542137295869176367">तुमचा साइन इन डेटा अपडेट केला जाऊ शकला नाही</translation>
-<translation id="1542524755306892917"><ph name="SUPERVISED_USER_NAME" /> प्रश्न विचारतात, तेव्हा हे Google Assistant ला अनुकूल केलेले प्रतिसाद देऊ देते.</translation>
 <translation id="1543284117603151572">Edge वरून इंपोर्ट केले</translation>
 <translation id="1543538514740974167">येथे आणखी झटपट जा</translation>
 <translation id="1544588554445317666">लहान फाइल नाव वापरून पहा किंवा वेगळ्या फोल्डरमध्ये सेव्ह करा</translation>
@@ -1178,7 +1176,6 @@
 <translation id="1784849162047402014">डिव्हाइसवर डिस्क स्‍थान कमी आहे</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" अनइंस्टॉल केल्याने हे अ‍ॅपदेखील अनइंस्टॉल केले जाईल:}other{"<ph name="APP_NAME" />" अनइंस्टॉल केल्याने ही अ‍ॅप्सदेखील अनइंस्टॉल केली जातील:}}</translation>
 <translation id="1786290960428378411">रीड करण्याची आणि बदलण्याची विनंती करत आहे</translation>
-<translation id="1787350673646245458">वापरकर्ता इमेज</translation>
 <translation id="1790976235243700817">अ‍ॅक्सेस काढून टाका</translation>
 <translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792619191750875668">एक्स्टेंशनित डिस्प्ले</translation>
@@ -1303,7 +1300,6 @@
 <translation id="1871098866036088250">Chrome ब्राउझरमध्ये उघडा</translation>
 <translation id="1871131409931646355">पूर्ण डाउनलोड इतिहास</translation>
 <translation id="187145082678092583">काही अ‍ॅप्स</translation>
-<translation id="1871534214638631766">तुम्ही आशयावर राइट क्लिक करता किंवा प्रेस करून ठेवता तेव्हा त्यासंबंधित माहिती दाखवा</translation>
 <translation id="1871615898038944731">तुमचे <ph name="DEVICE_TYPE" /> अद्ययावत आहे</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> साठी पुन्हा परवानग्यांना अनुमती द्या</translation>
@@ -1330,7 +1326,6 @@
 <translation id="1886996562706621347">प्रोटोकॉलकरिता डीफॉल्ट हँडलर होण्यासाठी साइटना विचारण्याची अनुमती द्या</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> वर टॅब कास्‍ट करणे थांबवा</translation>
 <translation id="1887442540531652736">साइन इन एरर</translation>
-<translation id="1887597546629269384">पुन्हा "Hey Google" म्हणा</translation>
 <translation id="1890026367080681123">एंबेड केलेल्या आशयाच्या सेटिंग्जवर जा</translation>
 <translation id="189035593835762169">अटी आणि नियम</translation>
 <translation id="1891362123137972260">डिस्कवरील जागा अतिशय कमी आहे. कृपया डिस्कवरील जागा मोकळी करा.</translation>
@@ -1577,7 +1572,6 @@
 <translation id="2052572566310583903">तुमच्या इतर डिव्हाइसवर इंस्टॉल केले</translation>
 <translation id="2052723746739622752">Gemini अनपिन करा</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिती डेटा</translation>
-<translation id="205560151218727633">Google Assistant लोगो</translation>
 <translation id="2058456167109518507">डिव्हाइस आढळले</translation>
 <translation id="2059913712424898428">टाइमझोन</translation>
 <translation id="2060375639911876205">eSIM प्रोफाइल काढून टाका</translation>
@@ -1952,15 +1946,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" नी अतिरिक्त परवानग्यांची विनंती केली आहे.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2306794767168143227">या डिव्हाइसवर <ph name="BRAND" /> मध्ये सेव्ह करा</translation>
-<translation id="2307553512430195144">तुम्ही सहमती दर्शवल्यास, Google Assistant हे “Ok Google” डिटेक्ट करण्यासाठी स्टँडबाय मोडमध्ये प्रतीक्षा करेल आणि <ph name="SUPERVISED_USER_NAME" /> बोलत असल्याचे Voice Match वापरून ओळखू शकेल.
-    <ph name="BR" />
-    Voice Match हे Google Assistant ला तुमच्या <ph name="DEVICE_TYPE" /> वर <ph name="SUPERVISED_USER_NAME" /> चा आवाज ओळखण्यात आणि त्यांच्यात व इतरांमध्ये फरक ओळखण्यात मदत करते.
-    <ph name="BR" />
-    युनिक व्हॉइस मॉडेल तयार करण्यासाठी Assistant तुमच्या लहान मुलाच्या आवाजाच्या क्लिप घेते ज्या फक्त त्यांच्या डिव्हाइसवर स्टोअर केल्या जातात. तुमच्या लहान मुलाचा आवाज आणखी चांगल्या प्रकारे ओळखता येण्यासाठी त्यांचे व्हॉइस मॉडेल तात्पुरते Google ला पाठवले जाऊ शकते.
-    <ph name="BR" />
-    Voice Match हे तुमच्या लहान मुलासाठी योग्य नाही असे तुम्हाला नंतर वाटल्यास, ते फक्त त्यांच्या Assistant सेटिंग्ज मधून काढून टाका. Voice Match सेट करताना तुमच्या लहान मुलाने रेकॉर्ड केलेल्या ऑडिओ क्लिप पाहण्यासाठी किंवा त्या हटवण्यासाठी, तुमच्या लहान मुलाच्या खात्यामधून <ph name="VOICE_MATCH_SETTINGS_URL" /> वर जा.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">पुढील कीना सपोर्ट नाही: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">या साइटला तुमचे गती किंवा प्रकाश सेन्सर ॲक्सेस करण्यापासून ब्लॉक केले गेले आहे.</translation>
 <translation id="2310923358723722542">डिस्प्ले आणि मॅग्निफिकेशन</translation>
@@ -2372,7 +2357,6 @@
 <translation id="2599048253926156421">वापरकर्ता नाव क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2602501489742255173">सुरू करण्यासाठी वर स्वाइप करा</translation>
 <translation id="2603115962224169880">काँप्युटर साफ करा</translation>
-<translation id="2603355571917519942">Voice Match तयार आहे</translation>
 <translation id="2604129989323098489">साइट सामान्यतः तुमच्या डिस्प्लेबद्दल माहिती विचारतात, जेणेकरून त्या दस्तऐवज किंवा फुल-स्क्रीन आशय बाजूबाजूला दाखवण्यासारखे बुद्धिमानपणे विंडो उघडू आणि ठेवू शकतात</translation>
 <translation id="2604255671529671813">नेटवर्क कनेक्शन एरर</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> पत्त्याचा फॉर्म भरला आहे.</translation>
@@ -2653,7 +2637,6 @@
 <translation id="2777525873368474674">इमेजची लिंक पेस्ट करा</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{खूप सूचनांसह १ साइट मिळाली}other{खूप सूचनांसह {NUM_SITES} साइट मिळाल्या}}</translation>
 <translation id="2778471504622896352">ChromeOS लाँचरमध्ये रिमोट अ‍ॅप्स जोडा</translation>
-<translation id="2779728796406650689">तुम्ही प्रश्न विचारता, तेव्हा हे Google Assistant ला अनुकूल केलेले प्रतिसाद देऊ देते.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
@@ -3251,7 +3234,6 @@
 <translation id="3211126692872351610">नवीन टॅबमध्ये “<ph name="SEARCH_TERMS" />” साठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="321367297115597343">या फोल्डरमध्ये बुकमार्क जोडा</translation>
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> मधील आवाज डाउनलोड करत आहे...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित <ph name="SUPERVISED_USER_NAME" /> चे वैयक्तिक परिणाम अ‍ॅक्सेस करू शकेल.</translation>
 <translation id="3217843140356091325">शॉर्टकट तयार करायचा?</translation>
 <translation id="321834671654278338">Linux अनइंस्टॉलर</translation>
 <translation id="3220943972464248773">तुमचे पासवर्ड सिंक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
@@ -3296,7 +3278,6 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क एरर</translation>
 <translation id="3248902735035392926">सुरक्षा महत्त्वाची आहे. थोडा वेळ काढा आणि <ph name="BEGIN_LINK" />आता तुमची एक्स्टेंशन तपासा<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">फाइल सिंक करणे</translation>
-<translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> ला “Ok Google” म्हणून Google Assistant अ‍ॅक्सेस करू द्या</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्राचा भाग नाही&gt;</translation>
 <translation id="325238099842880997">लहान मुलांना घरामध्ये खेळण्यास, एक्सप्लोर करण्यास आणि शाळेतील कामे करण्यास मदत करण्याकरिता डिजिटल मूलभूत नियम सेट करा</translation>
 <translation id="3253225298092156258">उपलब्ध नाही</translation>
@@ -3399,7 +3380,6 @@
 <translation id="3319863571062685443">तुमचा ॲड्रेस सेव्ह केला आहे</translation>
 <translation id="3320271870899888245">OneDrive शी कनेक्ट करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="3320630259304269485">सुरक्षित ब्राउझिंग (धोकादायक साइटपासून संरक्षण) आणि इतर सुरक्षितता सेटिंग्ज</translation>
-<translation id="3320909810101200102">आयडी निवडण्यासाठी, QR कोड स्कॅन करा</translation>
 <translation id="3320957378743864387">लिहिण्याशी संबंधित मदत देऊ करण्याची अनुमती नाही</translation>
 <translation id="3321460131042519426">वर्ड व्रॅप सुरू करा</translation>
 <translation id="3321494112580110651">तुमचा प्रिंटर दिसत नाही का?</translation>
@@ -3444,7 +3424,6 @@
 <translation id="335581015389089642">भाषण</translation>
 <translation id="335587007651175930">Google Lens वापरून तुमच्या स्क्रीनवरील गोष्टी शोधा</translation>
 <translation id="3355936511340229503">कनेक्शन एरर</translation>
-<translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3359256513598016054">सर्टिफिकेट धोरण प्रतिबंध</translation>
 <translation id="3360297538363969800">प्रिंट अयशस्वी. कृपया तुमचा प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3360306038446926262">विंडो</translation>
@@ -3536,7 +3515,6 @@
 <translation id="3418798368381485936">तुम्ही हे खाते वापरून साइन इन करू शकत नाही</translation>
 <translation id="3420501302812554910">अंतर्गत सिक्युरिटी की रीसेट करणे आवश्यक आहे</translation>
 <translation id="3421387094817716717">एल्लिपटिक कर्व्ह सार्वजनिक की</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित तुमचे वैयक्तिक परिणाम अथवा Assistant अ‍ॅक्सेस करू शकेल.</translation>
 <translation id="3422989558057853751">शेवटचा आयटम निवडला आहे, त्याची निवड रद्द केल्याने निवड मोडमधून बाहेर पडाल</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> मध्ये परिणाम आढळले</translation>
 <translation id="3423226218833787854">या AI वैशिष्ट्याबद्दल अधिक जाणून घ्या</translation>
@@ -3863,7 +3841,6 @@
 <translation id="3636940436873918441">प्राधान्य दिलेल्या भाषा</translation>
 <translation id="3637203148990213388">अतिरिक्त खाती</translation>
 <translation id="3640347231390550691">फिशिंगपासून तुमच्या पासवर्डचे संरक्षण करा</translation>
-<translation id="3640613767643722554">तुमच्या असिस्टंटला तुमचा आवाज ओळखण्यास शिकवा</translation>
 <translation id="364100968401221170">तुमच्या सिंक केलेल्या सर्व डिव्हाइसमधून आणि तुमच्या Google खात्यामधून ब्राउझिंग डेटा हटवण्यासाठी, <ph name="BEGIN_LINK" />साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Chromebook साठी Steam (बीटा) अपडेट केलेले असणे आवश्यक आहे. तुमचे Chromebook रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3641299252000913351">मोडेम फर्मवेअर अपडेट प्रगतीपथावर आहे. तुमचे डिव्हाइस बंद करू नका.</translation>
@@ -4052,7 +4029,6 @@
 <translation id="375636864092143889">साइट तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
 <translation id="3756578970075173856">पिन सेट करा</translation>
-<translation id="3756795331760037744">मदत करण्यासाठी Google Assistant ला <ph name="SUPERVISED_USER_NAME" /> च्या स्क्रीनवरील माहिती वापरण्याची अनुमती द्या</translation>
 <translation id="3756806135608816820">साइट या ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकतात</translation>
 <translation id="3757567010566591880">टूलबारवरून अनपिन करा</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
@@ -4614,7 +4590,6 @@
 <translation id="4126375522951286587"><ph name="VM_NAME" /> बंद करा</translation>
 <translation id="412730574613779332">स्‍पॅनडेक्‍स</translation>
 <translation id="4130199216115862831">डिव्‍हाइस लॉग</translation>
-<translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4130877444234883490">माउस बटण प्रेस करून धरून ठेवण्यासाठी “m” वापरा</translation>
 <translation id="4130948219446157616">तळाकडील दृश्य बंद करा</translation>
 <translation id="413121957363593859">घटक</translation>
@@ -4646,7 +4621,6 @@
 <translation id="4148957013307229264">स्थापना करत आहे...</translation>
 <translation id="4149385644005013189">गोष्टी नीटनेटक्या दिसत आहेत!</translation>
 <translation id="4150201353443180367">डिस्प्ले करा</translation>
-<translation id="4150569944729499860">स्क्रीन संदर्भ</translation>
 <translation id="4151449637210235443">आम्हाला तुमच्या अलीकडील गेमप्लेबद्दल सांगा</translation>
 <translation id="4151503145138736576">साफ करण्यासाठी कोणतेही ऑफलाइन स्टोरेज नाही</translation>
 <translation id="4152011295694446843">तुमचे बुकमार्क तुम्हाला येथे सापडतील</translation>
@@ -5171,7 +5145,6 @@
 <translation id="4532183705767666195">{COUNT,plural, =1{१ पासकी}other{{COUNT} पासकी}}</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" वापरात आहे. डिव्हाइस वापरात असताना ते पुन्हा नियुक्त केल्यामुळे एरर उद्भवू शकतात. तुम्हाला नक्की पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="4532646538815530781">ही साइट मोशन सेन्सर वापरत आहे.</translation>
-<translation id="4533846798469727141">आता "Hey Google" म्हणा</translation>
 <translation id="4533985347672295764">सीपीयू वेळ</translation>
 <translation id="4534661889221639075">पुन्हा प्रयत्न करा.</translation>
 <translation id="4535127706710932914">डीफॉल्ट प्रोफाइल</translation>
@@ -5474,7 +5447,6 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करा}other{साइट अनम्यूट करा}}</translation>
 <translation id="4745096442457817087">तुमचा पासवर्ड सार्वजनिक डेटा भंगामध्ये आढळला होता</translation>
 <translation id="4745500401920035244">तुमच्या ॲडमिनिस्ट्रेटरने संपूर्ण सिस्टीममध्ये बदल केला आहे, ज्यामुळे काही जुन्या प्रोफाइल बंद झाल्या आहेत. तुम्ही आता ही प्रोफाइल अ‍ॅक्सेस करू शकत नसला, तरीही ती काढून टाकू शकता</translation>
-<translation id="474609389162964566">“Ok Google” म्हणून Assistant अ‍ॅक्सेस करा</translation>
 <translation id="4746757725581505837">तुम्ही तुमचा या डिव्हाइसवर सेव्ह केलाले <ph name="BRAND" /> डेटा हटवणार आहात</translation>
 <translation id="4748783296226936791">असामान्य कीबोर्ड, गेम नियंत्रक आणि इतर डिव्हाइसचा वापर करणाऱ्या वैशिष्ट्यांसाठी साइट सामान्यपणे HID डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="4750185073185658673">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा. तुमच्या फोनचे ब्लूटूथ आणि वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
@@ -5652,7 +5624,6 @@
 <translation id="486635084936119914">डाउनलोड केल्यानंतर काही फाईल प्रकार स्वयंचलितपणे उघडा</translation>
 <translation id="4867272607148176509">पालक ॲप्स मंजूर किंवा ब्लॉक करू शकतात, वेळ मर्यादा सेट करू शकतात आणि वेब ब्राउझिंग नियंत्रित करू शकतात. बहुतेक शालेय स्रोत अ‍ॅक्सेस करण्यासाठी शाळेचे खाते नंतर जोडले जाऊ शकते.</translation>
 <translation id="4867433544163083783">टॅब संगतवार लावले जाऊ शकतात की नाही हे आता तपासा</translation>
-<translation id="4868281708609571334">Google Assistant ला <ph name="SUPERVISED_USER_NAME" /> चा आवाज ओळखण्यास शिकवा</translation>
 <translation id="4868284252360267853">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Command-Shift-Option A प्रेस करा.</translation>
 <translation id="4868351661310357223">Google Play वरून तुमच्या <ph name="DEVICE_TYPE" /> वर ॲप्स आणि गेम इंस्टॉल करा.</translation>
 <translation id="4869170227080975044">ChromeOS नेटवर्कशी संबंधित सूचना वाचा</translation>
@@ -6284,7 +6255,6 @@
 <translation id="5307386115243749078">ब्लूटूथ स्विच पेअर करा</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5308989548591363504">मालवेअर आहे का हे तपासा</translation>
-<translation id="5309418307557605830">Google Assistant येथेदेखील काम करते</translation>
 <translation id="5309641450810523897">सपोर्ट केस आयडी</translation>
 <translation id="5311304534597152726">हे म्हणून साइन करा</translation>
 <translation id="5312746996236433535">स्क्रीन मिरर करा</translation>
@@ -6811,7 +6781,6 @@
 <translation id="5687935527303996204">तुमचे डिव्हाइस प्लग इन केले असल्याची खात्री करा आणि ते बंद करू नका. इंस्टॉलेशनला कमाल २० मिनिटे लागू शकतात. तुमचे डिव्हाइस इंस्टॉलेशन पूर्ण होईल तेव्हा, आपोआप बंद होईल.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">स्थान</translation>
-<translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> ने आधीच दुसर्‍या डिव्हाइसवर Assistant सोबत Voice Match सेट केले आहे असे दिसते. या डिव्हाइसवर व्हॉइस मॉडेल तयार करण्यासाठी ही मागील रेकॉर्डिंग वापरली गेली.</translation>
 <translation id="56907980372820799">डेटाची लिंक जोडा</translation>
 <translation id="5691581861107245578">तुम्ही काय टाइप करत आहात यावर आधारित इमोजी सूचना मिळवा</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखली नाही</translation>
@@ -7333,7 +7302,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6059925163896151826">USB डिव्हाइसेस</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> ला सूचना पाठवली गेली होती</translation>
 <translation id="6063284707309177505">QR कोड तयार करा</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित <ph name="SUPERVISED_USER_NAME" /> चे वैयक्तिक परिणाम अ‍ॅक्सेस करू शकेल. बॅटरी वाचवण्यासाठी, हे डिव्हाइस एखाद्या पॉवर स्रोताशी कनेक्ट केले असेल तेव्हाच “Ok Google” सुरू असावे असे तुम्ही <ph name="SUPERVISED_USER_NAME" /> च्या Assistant सेटिंग्जमध्ये निवडू शकता.</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
 <translation id="606449270532897041">साइट डेटा व्यवस्थापित करा</translation>
 <translation id="6064764629679333574">कमी रेझोल्यूशनचा ऑडिओ उच्च रेझोल्यूशनमध्ये अपस्केल करून, ब्लूटूथ माइकच्या आवाजाच्या गुणवत्तेमध्ये सुधारणा करा.</translation>
@@ -7857,6 +7825,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6434325376267409267">तुम्ही <ph name="APP_NAME" /> वापरण्यापूर्वी तुमचे डिव्हाइस अपडेट केले जाणे आवश्यक आहे.</translation>
 <translation id="6434755719322447931">अव्यवस्थित</translation>
+<translation id="6435307030888827407">साइन आउट केलेले रहा</translation>
 <translation id="6435339218366409950">कॅप्शन भाषांतरित करायची आहेत ती भाषा निवडा</translation>
 <translation id="6436164536244065364">वेब स्टोअर मध्‍ये पहा</translation>
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" हे एक्स्टेंशन तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केले आहे</translation>
@@ -8102,7 +8071,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6602956230557165253">नेव्हिगेट करण्यासाठी डावी आणि उजवी बाण की वापरा.</translation>
 <translation id="6603185457265641428">इतिहास सिंक करायचा की नाही ते निवडा</translation>
 <translation id="6605847144724004692">कोणत्याही वापरकर्त्यांनी अजून रेट केलेले नाही.</translation>
-<translation id="6606671997164410857">तुम्ही आधीच दुसऱ्या डिव्हाइसवर Google Assistant सेट केले आहे असे दिसते. या डिव्हाइसवर स्क्रीन संदर्भ सुरू करून Assistant चा पुरेपूर वापर करा.</translation>
 <translation id="6607831829715835317">अधिक साध&amp;ने</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> हा आधीपासून <ph name="DOMAIN" /> यांच्‍याकडून व्यवस्थापित केला जात आहे. वेगळे Google खाते यासह पालक नियंत्रणे वापरायची असल्‍यास, सेटअप केल्‍यानंतर साइन आउट करा, त्‍यानंतर साइन इन स्क्रीनवर "व्‍यक्‍ती जोडा" असे निवडा.</translation>
 <translation id="6608166463665411119">eSIM रीसेट करा</translation>
@@ -8202,7 +8170,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6674571176963658787">सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="6675665718701918026">निर्देशित करणारे डिव्हाइस कनेक्‍ट केले</translation>
 <translation id="6675717447295898330">माझ्या सद्य डेटाशिवाय कामासाठी वेगळी प्रोफाइल तयार करा</translation>
-<translation id="6676212663108450937">तुमच्या व्हॉइसला प्रशिक्षित करत असताना कृपया हेडफोन वापरणे विचारात घ्या</translation>
 <translation id="6676291960742508499">तुमचे टॅब, पेजची शीर्षके आणि URLs Google ला पाठवल्या जातात</translation>
 <translation id="667752334740867460">वाय-फायची माहिती मिळवत आहे...</translation>
 <translation id="6677527809400770913"><ph name="ACTION" /> साठी <ph name="GESTURE" /> हे जेश्चर असाइन केले आहे</translation>
@@ -8222,9 +8189,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6686817083349815241">तुमचा पासवर्ड सेव्ह करा</translation>
 <translation id="6687008241368170505">Google Password Manager चा पिन बदला</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> लपवा</translation>
-<translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> ला कॉंप्युटरजवळ बोलवा. तुमचे लहान मूल त्यांचे व्हॉइस मॉडेल तयार करण्यासाठी या स्क्रीनवरील काही वाक्ये वाचेल.
-    <ph name="BR" />
-    <ph name="SUPERVISED_USER_NAME" /> ला वाचताना मदत हवी असल्यास, तुमच्या लहान मुलाला तुमच्या पाठोपाठ म्हणायला सांगा. माइकपासून लांब हळू आवाजात बोला जेणेकरून, Assistant हे तुमच्या लहान मुलाचा आवाज ओळखायला शिकेल, तुमचा नाही.</translation>
 <translation id="6689948774466767379">माउस की</translation>
 <translation id="6690659332373509948">फाइल पार्स करता आली नाही: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;पुढील</translation>
@@ -8401,13 +8365,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6808166974213191158">ChromeOS Flex सिस्टीम इमेज रायटर</translation>
 <translation id="6808193438228982088">कोल्हा</translation>
 <translation id="6809470175540814047">गुप्त विंडोमध्ये उघडा</translation>
-<translation id="6809656734323672573">तुम्ही सहमती दर्शवल्यास, Google Assistant हे “Ok Google” डिटेक्ट करण्यासाठी स्टँडबाय मोडमध्ये प्रतीक्षा करेल आणि तुम्ही बोलत असल्याचे Voice Match वापरून ओळखू शकेल.
-    <ph name="BR" />
-    Voice Match हे तुम्हाला ओळखण्याची आणि तुमच्यात व इतरांमध्ये फरक ओळखण्याची Assistant ला अनुमती देते. युनिक व्हॉइस मॉडेल तयार करण्यासाठी Assistant हे तुमच्या आवाजाच्या क्लिप घेते ज्या फक्त तुमच्या डिव्हाइसवर स्टोअर केल्या जातात. तुमचा आवाज आणखी चांगल्या प्रकारे ओळखता येण्यासाठी तुमचे व्हॉइस मॉडेल तात्पुरते Google ला पाठवले जाऊ शकते.
-    <ph name="BR" />
-    Voice Match हे तुमच्यासाठी योग्य नाही असे तुम्हाला नंतर वाटल्यास, ते फक्त Assistant सेटिंग्जमधून काढून टाका. Voice Match सेट करताना तुम्ही रेकॉर्ड केलेल्या ऑडिओ क्लिप पाहण्यासाठी किंवा त्या हटवण्यासाठी, <ph name="VOICE_MATCH_SETTINGS_URL" /> वर जा.
-    <ph name="BR" />
-    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य अक्षम केले असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी प्रत्येकवेळी तुम्हाला पुष्टीकरणासाठी विचारले जाईल.</translation>
 <translation id="6811034713472274749">पेज पाहाण्यासाठी तयार आहे</translation>
 <translation id="6811151703183939603">कणखर</translation>
@@ -8466,7 +8423,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6842868554183332230">चॅट अ‍ॅप्सवर तुमची उपलब्धता सेट करण्यासाठी, तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरता ते साइट सहसा डिटेक्ट करतात</translation>
 <translation id="6843264316370513305">नेटवर्क डीबगिंग</translation>
 <translation id="6843404741389995311">तुमचा कॅमेरा आणि फोटो गॅलरी वापरून तुम्ही पाहता त्या गोष्टी खरेदी करा, त्यांचे भाषांतर करा व ओळखा</translation>
-<translation id="6843423766595476978">Ok Google सर्व तयार आहे</translation>
 <translation id="6843725295806269523">म्यूट करा</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">वाढवलेले उघडा</translation>
@@ -8717,7 +8673,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7014741021609395734">झूम करण्याची पातळी</translation>
 <translation id="7015135594296285641">एक्स्टेंशनना अनुमती द्या</translation>
 <translation id="7016995776279438971">लाल-हिरवा, लाल रंगाची दृष्टिक्षीणता (प्रथमवर्ण दृष्टिक्षीणता)</translation>
-<translation id="7017004637493394352">पुन्हा "Ok Google" म्हणा</translation>
 <translation id="7017219178341817193">एक नवीन पेज जोडा</translation>
 <translation id="7017354871202642555">विंडो सेट केल्यानंतर मोड सेट करणे शक्य नाही.</translation>
 <translation id="7019546817926942979">तुमचे डिव्हाइस प्लग-इन केलेले असणे आवश्यक आहे. Linux अपग्रेड करणे तुमची बॅटरी मोठ्या प्रमाणात संपवू शकते. कृपया तुमचे डिव्हाइस चार्जरशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -8773,7 +8728,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7059858479264779982">स्वयं-लाँच करा वर सेट करा</translation>
 <translation id="7063129466199351735">प्रक्रिया करण्‍याचे शॉर्टकट...</translation>
 <translation id="7063311912041006059">क्वेरीच्या जागेवर <ph name="SPECIAL_SYMBOL" /> सह URL</translation>
-<translation id="706342288220489463">मदत करण्यासाठी, Assistant ला तुमच्या स्क्रीनवरील माहिती वापरण्याची अनुमती द्या</translation>
 <translation id="70641621694466590">पासवर्ड पेजवर जा</translation>
 <translation id="7064209589142995848">आशय ट्रान्सफर</translation>
 <translation id="7064734931812204395">Linux कंटेनर कॉन्फिगर करत आहे. याला सुमारे ३० मिनिटे लागू शकतात.</translation>
@@ -9426,7 +9380,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">शॉर्टकट दाखवा</translation>
 <translation id="7521430434164837205">Microsoft 365 फाइल</translation>
-<translation id="7522255036471229694">"Ok Google" म्हणा</translation>
 <translation id="7523117833414447032">कॅपिटल अक्षरे वाचताना</translation>
 <translation id="7523585675576642403">प्रोफाइलचे नाव बदला</translation>
 <translation id="7525067979554623046">तयार करा</translation>
@@ -9745,7 +9698,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7736119438443237821">तुम्ही या डिव्हाइसवरील तुमच्या पासकीचा ॲक्सेस काढून टाकणार आहात</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सोबत पेअर करत आहे...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
-<translation id="7737846262459425222">तुम्ही हे सेटिंग्ज &gt; Google Assistant &gt;स्क्रीन संदर्भ येथे कधीही बदलू शकता.</translation>
 <translation id="7737948071472253612">तुमचा कॅमेरा वापरण्याची अनुमती नाही</translation>
 <translation id="77381465218432215">आघातचिन्ह आणि विशेष वर्ण दाखवा</translation>
 <translation id="7739524723876359011">या बबलवर फोकस करण्यासाठी <ph name="ACCELERATOR" /> दाबा.</translation>
@@ -9850,7 +9802,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7806659658565827531">मुख्य नोडवर भाष्य करा</translation>
 <translation id="7806722269368320106">एक अ‍ॅप, इंस्टॉल करत आहे</translation>
 <translation id="7807067443225230855">शोध आणि साहाय्यक</translation>
-<translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> ने आधीच दुसर्‍या डिव्हाइसवर Google Assistant सेट केले आहे असे दिसते. या डिव्हाइसवर स्क्रीन संदर्भ सुरू करून <ph name="SUPERVISED_USER_NAME" /> हे Assistant चा पुरेपूर वापर करू शकतात.</translation>
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
 <translation id="7810202088502699111">या पेजवर पॉप-अप ब्लॉक केलेले होते.</translation>
 <translation id="7810367892333449285">तुमच्या एंट्रीचा फॉरमॅट <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> असा असायला हवा</translation>
@@ -9909,7 +9860,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />तुमच्या ChromeOS डिव्‍हाइसना आपोआप अहवाल पाठवण्‍याची अनुमती देण्‍याने आम्‍हाला ChromeOS मध्‍ये कोणती सुधारणा करायची आणि कशाचे निराकरण करायचे याला प्राधान्य देण्‍यात मदत होते. या अहवालांमध्ये ChromeOS कधी क्रॅश होते, तुम्ही कोणती वैशिष्ट्ये वापरता, तुम्ही सामान्यतः किती मेमरी वापरता आणि Android अ‍ॅप निदान व वापर डेटा यांसारख्या गोष्टींचा समावेश असू शकतो. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही तुमच्या ChromeOS डिव्‍हाइस सेटिंग्‍जमध्‍ये कधीही या अहवालांना अनुमती देणे सुरू करू शकता किंवा थांबवू शकता. तुम्ही डोमेन अ‍ॅडमिनिस्ट्रेटर असल्यास, तुम्ही हे सेटिंग ॲडमिन कन्सोलमध्ये बदलू शकता.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />तुमच्या Google खाते साठी वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू असल्यास, तुमचा Android डेटा तुमच्या Google खाते मध्ये सेव्ह केला जाऊ शकतो. तुम्ही account.google.com येथे तुमचा डेटा पाहू शकता, तो हटवू शकता आणि तुमची खाते सेटिंग्ज बदलू शकता.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित तुमचे वैयक्तिक परिणाम अथवा Assistant अ‍ॅक्सेस करू शकेल. बॅटरी वाचवण्यासाठी, हे डिव्हाइस एखाद्या पॉवर स्रोताशी कनेक्ट केले असेल तेव्हाच “Ok Google” सुरू असावे असे तुम्ही तुमच्या Assistant सेटिंग्जमध्ये निवडू शकता.</translation>
 <translation id="7851457902707056880">साइन इन केवळ मालकाच्या खात्यावर प्रतिबंधित आहे. कृपया रिबूट करा आणि मालक खात्यासह साइन इन करा. मशीन 30 सेकंदांमध्ये स्वयं रिबूट होईल.</translation>
 <translation id="7851716364080026749">नेहमी कॅमेरा आणि मायक्रोफोन ॲक्सेस ब्लॉक करा</translation>
 <translation id="78526636422538552">आणखी Google खाती जोडणे बंद केले आहे</translation>
@@ -10081,7 +10031,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{१ पासवर्ड}other{{COUNT} पासवर्ड}}</translation>
 <translation id="7963513503134856713">विंडो उजवीकडे हलवली</translation>
 <translation id="7963608432878156675">हे नाव इतर डिव्हाइसच्या ब्लूटूथ आणि नेटवर्क कनेक्शनसाठी दृश्यमान आहे</translation>
-<translation id="7963826112438303517">तुमचे व्हॉइस मॉडेल तयार करण्यासाठी आणि अपडेट करण्यासाठी तुमचे असिस्टंट ही रेकॉर्डिंग आणि तुमच्या बोललेल्या विनंत्या वापरते, जे फक्त तुम्ही Voice Match सुरू केलेल्या डिव्हाइसवर स्टोअर केले जाते. असिस्टंट सेटिंग्जमध्ये व्हॉइस अ‍ॅक्टिव्हिटी पहा किंवा पुन्हा शिका.</translation>
 <translation id="7964458523224581615">विरिडियन</translation>
 <translation id="7965946703747956421">या वापरकर्ता नावासाठी <ph name="CREDENTIAL_TYPE" /> हटवा: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">इमेज पत्ता कॉपी करा</translation>
@@ -10226,6 +10175,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8050191834453426339">पुन्हा पडताळणी करा</translation>
 <translation id="8051193500142930381">कॅमेर्‍याची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="8052218774860457016">ब्राउझर सिंक व्यवस्थापित करा</translation>
+<translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="8052944601017749068"><ph name="CERT_GROUP" /> मध्ये इंपोर्ट करा</translation>
 <translation id="8053390638574070785">हे पेज रीलोड करा</translation>
 <translation id="8054500940978949009">अनुमती दिली आहे. <ph name="LINK_BEGIN" />सिस्टीम मायक्रोफोन अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
@@ -10243,7 +10193,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8061244502316511332">हा टॅब तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="8061464966246066292">उच्च रंगभेद</translation>
 <translation id="8061970399284390013">शुद्धलेखन आणि व्याकरण तपासणी</translation>
-<translation id="8061991877177392872">तुम्ही Assistant सोबत Voice Match दुसर्‍या डिव्हाइसवर आधीच सेट केले आहे असे दिसते. या डिव्हाइसवर व्हॉइस मॉडेल तयार करण्यासाठी ही मागील रेकॉर्डिंग वापरली गेली.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{कागदाचे एक पत्रक}other{कागदाची {COUNT} पत्रके}}</translation>
 <translation id="8063235345342641131">डीफॉल्ट हिरवा अवतार</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -11600,7 +11549,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8987321822984361516">संस्थेद्वारे व्यवस्थापित केलेले ब्राउझर, <ph name="PROFILE_DOMAIN" /> द्वारे व्यवस्थापित केलेली प्रोफाइल</translation>
 <translation id="8987927404178983737">महिना</translation>
 <translation id="8988539543012086784">हे पेज <ph name="BOOKMARK_FOLDER" /> वर सेव्ह केले आहे</translation>
-<translation id="8989034257029389285">तुम्ही “Ok Google, हे कोणते गाणे आहे?” असे तुम्ही विचारू शकता</translation>
 <translation id="8989359959810288806">टेदरिंग स्टेटस रिफ्रेश करा</translation>
 <translation id="8989779557457435460">सद्य टॅब बाय डीफॉल्ट शेअर करा</translation>
 <translation id="8990243615717080992">पासवर्ड किंवा इतर रिकव्‍हरीची पद्धत वापरून साइन इन करा</translation>
@@ -11860,7 +11808,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9153367754133725216">लाँचर आणि शोध परिणामांमध्ये नवीन अ‍ॅप्स व वेब आशयासाठी सूचना पहा. तुम्ही क्रॅश अहवाल आणि निदान व वापर डेटा ChromeOS वर पाठवणे निवडले असल्यासच सूचनांमध्ये सुधारणा करण्यासाठी आकडेवारी पाठवते.</translation>
 <translation id="9154194610265714752">अपडेट केलेले</translation>
 <translation id="915485121129452731">पेन टॅबलेट</translation>
-<translation id="9155100833189043833">तुमच्या मोबाइल डिव्हाइसवरून आयडी सुरक्षितपणे वापरा</translation>
 <translation id="9155344700756733162">रंगाची निवड रद्द करा</translation>
 <translation id="9157096865782046368">०.८ सेकंद</translation>
 <translation id="9157697743260533322">सर्व वापरकर्त्यांसाठी ऑटोमॅटिक अपडेट सेट करण्यात अयशस्वी झाले (प्रीफ्लाइट लाँच एरर: <ph name="ERROR_NUMBER" />)</translation>
@@ -11881,7 +11828,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9167063903968449027">वाचन सूची दाखवा</translation>
 <translation id="9167450455589251456">प्रोफाइलला सपोर्ट नाही</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> खाती</translation>
-<translation id="9168436347345867845">ते नंतर करा</translation>
 <translation id="9169093579080634183">टॅबबद्दल अधिक जाणून घ्या</translation>
 <translation id="9169496697824289689">कीबोर्ड शॉर्टकट पहा</translation>
 <translation id="916964310188958970">ही सूचना कशासाठी आहे?</translation>

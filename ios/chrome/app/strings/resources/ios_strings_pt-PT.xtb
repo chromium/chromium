@@ -1235,6 +1235,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5758759241456233788">Pré-visualizações do Maps desativadas. Ative-as nas Definições.</translation>
 <translation id="5759484603608560822">Ocultar Transferências</translation>
 <translation id="5767099457279594162">A palavra-passe não foi partilhada</translation>
+<translation id="5768870767339201169">Retome a partir do ponto em que ficou</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tem {count} palavras-passe comprometida que pode pôr a sua segurança em risco. Corrija-a agora para manter a sua segurança.}other{Tem {count} palavras-passe comprometidas que podem pôr a sua segurança em risco. Corrija-as agora para manter a sua segurança.}}</translation>
 <translation id="5791632441210678828">Botão Ordenar do feed A seguir.</translation>
 <translation id="5803566855766646066">Tem a certeza de que quer rejeitar o novo cartão?</translation>
@@ -1691,6 +1692,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7486006552035434095">Mantenha os seus dispositivos sincronizados</translation>
 <translation id="7491131399623468277">Aceder às Definições…</translation>
+<translation id="7491161827858509164">Para ver os ficheiros que transferiu anteriormente, abra a app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Continuar a editar</translation>
 <translation id="7500244509706269886">Preencher automaticamente formulário</translation>
 <translation id="750493650310597496">0 selecionados</translation>
@@ -1728,6 +1730,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612849887607288481">Abrir menu Criar protótipo de IA</translation>
 <translation id="7620522820075868385">Cancelar</translation>
+<translation id="762078666799342162">Pode ver as transferências anteriores na app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Palavras-passe comprometidas}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="7640669552036055091">Separadores do Android</translation>
@@ -1909,7 +1912,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8273982424131314219">Vai preencher as informações em <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mais…</translation>
 <translation id="8277328362018795342">O conteúdo da página é partilhado para receber respostas mais relevantes</translation>
-<translation id="8278488584187265939">Personalize a página inicial</translation>
 <translation id="8281781826761538115">Predefinição – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ignorar</translation>
 <translation id="8282657446819506217">Abrir no grupo de separadores</translation>

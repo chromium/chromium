@@ -1909,7 +1909,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8273982424131314219">آپ <ph name="URL" /> میں معلومات پر کریں گے</translation>
 <translation id="8275068909952022340">مزید…</translation>
 <translation id="8277328362018795342">مزید متعلقہ جوابات کے لیے آپ کے صفحہ کے مواد کا اشتراک کیا گیا ہے</translation>
-<translation id="8278488584187265939">ہوم صفحہ کو حسب ضرورت بنائیں</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8282657446819506217">ٹیب گروپ میں کھولیں</translation>
@@ -2180,6 +2179,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="94870150074703282">گروپ حذف کریں؟</translation>
 <translation id="952704832371081537">منسوخ کریں</translation>
+<translation id="95332591904104970">منسلک ایپس</translation>
 <translation id="954667170699278022">پڑھنے کی فہرست</translation>
 <translation id="956218893102219091">‏اپنے IP پتہ کی بنیاد پر تخمینی مقام کے بجائے، انتہائی درست Gemini نتائج کے لیے اپنے قطعی مقام کا استعمال کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>

@@ -175,11 +175,13 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Altere a localização de transferência predefinida em qualquer altura.</translation>
 <translation id="1796666869097395659">Minimize o separador para regressar mais tarde</translation>
+<translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1810845389119482123">A configuração da sincronização inicial não está concluída</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar a usar <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Secção inferior de início de sessão</translation>
+<translation id="1823492026305965829">Iniciar sessão como <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.
 Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Localizar na página</translation>
@@ -854,6 +856,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4910889077668685004">Apps de pagamento</translation>
 <translation id="4912413785358399818">Mover separador</translation>
 <translation id="4913169188695071480">Parar a atualização</translation>
+<translation id="4921224083091001889">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chrome como <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Captura de ecrã <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Pode guardar imagens e ficheiros para ver offline ou partilhar noutras apps</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 marcador e outros itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google.}other{# marcadores e outros itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google.}}</translation>
@@ -878,6 +881,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5007392906805964215">Rever</translation>
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quer estabelecer ligação</translation>
+<translation id="5012016139642806466">Tenha as suas palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> e <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> parecem estar relacionados. Certifique-se de que confia em <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> antes de usar esta palavra-passe.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
@@ -1148,6 +1152,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6255809143828972562">Com as ferramentas do Chrome, pode navegar em segurança e manter o controlo</translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
 <translation id="6264485186158353794">Voltar para segurança</translation>
+<translation id="6267106249090587268">Notificações <ph name="SEPARATOR" /> O Chrome removeu estas autorizações devido a spam ou conteúdos enganosos</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6278428485366576908">Tema</translation>

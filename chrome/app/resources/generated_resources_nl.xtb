@@ -465,7 +465,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="129808599775632797">&amp;Wijzigingen</translation>
 <translation id="130097046531636712">Zo verleng je de batterijduur door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan de volgende bestanden bewerken</translation>
-<translation id="130174306655812048">Zeg 'Hey Google, welk nummer is dit?'</translation>
 <translation id="1302227299132585524">JavaScript vanuit Apple Events toestaan</translation>
 <translation id="1303101771013849280">HTML-bestand met bookmarks</translation>
 <translation id="1303671224831497365">Geen Bluetooth-apparaten gevonden</translation>
@@ -796,7 +795,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1541346352678737112">Geen netwerk gevonden</translation>
 <translation id="154198613844929213">{0,plural, =0{Deze gegevens worden nu verwijderd}=1{Deze gegevens worden over 1 seconde verwijderd}other{Deze gegevens worden over # seconden verwijderd}}</translation>
 <translation id="1542137295869176367">Je inloggegevens kunnen niet worden geüpdatet</translation>
-<translation id="1542524755306892917">Hierdoor kan de Google Assistent aangepaste antwoorden geven als <ph name="SUPERVISED_USER_NAME" /> vragen stelt.</translation>
 <translation id="1543284117603151572">Geïmporteerd uit Edge</translation>
 <translation id="1543538514740974167">Sneller terugkeren</translation>
 <translation id="1544588554445317666">Gebruik een kortere bestandsnaam of sla op in een andere map</translation>
@@ -1169,7 +1167,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1784849162047402014">Weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Als je <ph name="APP_NAME" /> verwijdert, wordt ook deze app verwijderd:}other{Als je <ph name="APP_NAME" /> verwijdert, worden ook deze apps verwijderd:}}</translation>
 <translation id="1786290960428378411">Verzoek om lezen en wijzigen</translation>
-<translation id="1787350673646245458">Gebruikersafbeelding</translation>
 <translation id="1790976235243700817">Toegang intrekken</translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
 <translation id="1792619191750875668">Uitgebreid scherm</translation>
@@ -1293,7 +1290,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1871098866036088250">Openen in de Chrome-browser</translation>
 <translation id="1871131409931646355">Volledige downloadgeschiedenis</translation>
 <translation id="187145082678092583">Minder apps</translation>
-<translation id="1871534214638631766">Gerelateerde informatie bekijken als je met de rechtermuisknop klikt of lang drukt op content</translation>
 <translation id="1871615898038944731">Je <ph name="DEVICE_TYPE" /> is up-to-date.</translation>
 <translation id="1873513359268939357">Outlook Agenda</translation>
 <translation id="1873920700418191231">Rechten opnieuw toestaan voor <ph name="WEBSITE" /></translation>
@@ -1320,7 +1316,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1886996562706621347">Websites laten vragen of je ze als de standaardhandler voor protocollen wilt instellen (aanbevolen)</translation>
 <translation id="1887210448491286312">Tabblad casten naar <ph name="DEVICE_NAME" /> stoppen</translation>
 <translation id="1887442540531652736">Fout bij inloggen</translation>
-<translation id="1887597546629269384">Zeg nog een keer 'Hey Google'</translation>
 <translation id="1890026367080681123">Naar instellingen voor ingesloten content</translation>
 <translation id="189035593835762169">Algemene voorwaarden</translation>
 <translation id="1891362123137972260">Er is zeer weinig schijfruimte beschikbaar. Maak ruimte vrij.</translation>
@@ -1567,7 +1562,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2052572566310583903">Geïnstalleerd op je andere apparaten</translation>
 <translation id="2052723746739622752">Gemini losmaken</translation>
 <translation id="2053312383184521053">Gegevens van inactieve status</translation>
-<translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Apparaat gedetecteerd</translation>
 <translation id="2059913712424898428">Tijdzone</translation>
 <translation id="2060375639911876205">Profiel voor e-simkaart verwijderen</translation>
@@ -1939,15 +1933,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="23030561267973084">De extensie '<ph name="EXTENSION_NAME" />' heeft gevraagd om extra rechten.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2306794767168143227">Opslaan in <ph name="BRAND" /> op dit apparaat</translation>
-<translation id="2307553512430195144">Als je akkoord gaat, wacht de Google Assistent in stand-bymodus om te luisteren of er 'Hey Google' wordt gezegd en kan deze met Voice Match de stem van <ph name="SUPERVISED_USER_NAME" /> herkennen.
-    <ph name="BR" />
-Via Voice Match kan de Google Assistent de stem van <ph name="SUPERVISED_USER_NAME" /> herkennen op je <ph name="DEVICE_TYPE" /> en onderscheiden van anderen.
-    <ph name="BR" />
-De Assistent neemt clips van de stem van je kind op om een uniek spraakmodel te maken, dat alleen op de apparaten van je kind wordt opgeslagen. Het spraakmodel van je kind kan tijdelijk naar Google worden gestuurd zodat de stem van je kind beter kan worden herkend.
-    <ph name="BR" />
-Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijder je de functie via de instellingen voor de Assistent op het apparaat van je kind. Als je de audiofragmenten die je kind opneemt tijdens het instellen van Voice Match wilt bekijken of verwijderen, ga je vanuit het account van je kind naar <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-<ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">De volgende toetsen worden niet ondersteund: Tab, Shift, Ctrl, Escape, Caps Lock en Volume</translation>
 <translation id="2309620859903500144">Deze site heeft geen toegang tot je bewegings- of lichtsensoren.</translation>
 <translation id="2310923358723722542">Scherm en vergroting</translation>
@@ -2359,7 +2344,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2599048253926156421">Gebruikersnaam gekopieerd naar klembord</translation>
 <translation id="2602501489742255173">Swipe omhoog om te beginnen</translation>
 <translation id="2603115962224169880">Computer opruimen</translation>
-<translation id="2603355571917519942">Voice Match is klaar</translation>
 <translation id="2604129989323098489">Sites vragen meestal om informatie over je schermen, zodat ze vensters op een intelligente manier kunnen openen en plaatsen, zoals documenten of content op volledig scherm naast elkaar laten zien.</translation>
 <translation id="2604255671529671813">Fout bij netwerkverbinding</translation>
 <translation id="2604805099836652105">Adresformulier voor <ph name="ADDRESS_LABEL" /> ingevuld.</translation>
@@ -2640,7 +2624,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2777525873368474674">Afbeeldingslink plakken</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 site met veel meldingen gevonden}other{{NUM_SITES} sites met veel meldingen gevonden}}</translation>
 <translation id="2778471504622896352">Externe apps toevoegen aan de ChromeOS Launcher</translation>
-<translation id="2779728796406650689">Hierdoor kan de Google Assistent aangepaste antwoorden geven als je vragen stelt.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
@@ -3236,7 +3219,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3211126692872351610">&amp;Zoeken naar '<ph name="SEARCH_TERMS" />' via <ph name="SEARCH_ENGINE" /> op nieuw tabblad</translation>
 <translation id="321367297115597343">Een bookmark toevoegen aan deze map</translation>
 <translation id="3213681682237645841">Stemmen voor het <ph name="LANGUAGE" /> downloaden...</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of opname kan misschien ook toegang krijgen tot de persoonlijke resultaten van <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Snelkoppeling maken?</translation>
 <translation id="321834671654278338">Linux-verwijderprogramma</translation>
 <translation id="3220943972464248773">Bevestig dat jij het bent als je je wachtwoorden wilt synchroniseren</translation>
@@ -3281,7 +3263,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrijk. Neem nu even de tijd om <ph name="BEGIN_LINK" />je extensies te controleren<ph name="END_LINK" />.</translation>
 <translation id="3251119461199395237">Bestandssynchronisatie</translation>
-<translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> toegang geven tot de Google Assistent met 'Hey Google'</translation>
 <translation id="3251759466064201842">&lt;Geen onderdeel van certificaat&gt;</translation>
 <translation id="325238099842880997">Stel digitale huisregels in, zodat je kind thuis kan spelen, ontdekken en leren</translation>
 <translation id="3253225298092156258">Niet beschikbaar</translation>
@@ -3384,7 +3365,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3319863571062685443">Je adres is opgeslagen</translation>
 <translation id="3320271870899888245">Kan niet koppelen aan OneDrive. Probeer het opnieuw.</translation>
 <translation id="3320630259304269485">Safe Browsing (bescherming tegen gevaarlijke sites) en andere beveiligingsinstellingen</translation>
-<translation id="3320909810101200102">Scan de QR-code om een ID te kiezen</translation>
 <translation id="3320957378743864387">Geen toestemming om hulp bij schrijven aan te bieden</translation>
 <translation id="3321460131042519426">Tekstterugloop aanzetten</translation>
 <translation id="3321494112580110651">Staat je printer er niet bij?</translation>
@@ -3429,7 +3409,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="335581015389089642">Spraak</translation>
 <translation id="335587007651175930">Zoeken naar wat er op je scherm staat met Google Lens</translation>
 <translation id="3355936511340229503">Verbindingsfout</translation>
-<translation id="3356580349448036450">Voltooid</translation>
 <translation id="3359256513598016054">Beleidsbeperkingen voor certificaat</translation>
 <translation id="3360297538363969800">Afdrukken is mislukt. Controleer je printer en probeer het opnieuw.</translation>
 <translation id="3360306038446926262">Vensters</translation>
@@ -3521,7 +3500,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3418798368381485936">Je kunt niet inloggen met dit account</translation>
 <translation id="3420501302812554910">Interne beveiligingssleutel moet worden gereset</translation>
 <translation id="3421387094817716717">Openbare sleutel voor elliptische kromme</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of een opname van je stem kan misschien toegang krijgen tot je persoonlijke resultaten of de Assistent.</translation>
 <translation id="3422989558057853751">Laatste item geselecteerd. Als je het deselecteert, verlaat je de selectiemodus.</translation>
 <translation id="3423111258700187173">Resultaten gevonden in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Meer informatie over deze AI-functie</translation>
@@ -3848,7 +3826,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3636940436873918441">Voorkeurstalen</translation>
 <translation id="3637203148990213388">Extra accounts</translation>
 <translation id="3640347231390550691">Bescherm je wachtwoorden tegen phishing</translation>
-<translation id="3640613767643722554">Train de Assistent om je stem te herkennen</translation>
 <translation id="364100968401221170">Als je browsegegevens wilt verwijderen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />log je in<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">Steam voor Chromebook (bèta) moet worden geüpdatet. Start je Chromebook opnieuw op en probeer het nog een keer.</translation>
 <translation id="3641299252000913351">Firmware van modem wordt geüpdatet. Zet het apparaat niet uit.</translation>
@@ -4037,7 +4014,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="375636864092143889">Site gebruikt je microfoon</translation>
 <translation id="3756485814916578707">Scherm casten</translation>
 <translation id="3756578970075173856">Pincode instellen</translation>
-<translation id="3756795331760037744">Toestaan dat de Google Assistent informatie op het scherm van <ph name="SUPERVISED_USER_NAME" /> gebruikt om te helpen</translation>
 <translation id="3756806135608816820">Sites kunnen vragen of ze naar bluetooth-apparaten mogen zoeken</translation>
 <translation id="3757567010566591880">Losmaken van werkbalk</translation>
 <translation id="3757733214359997190">Geen sites gevonden</translation>
@@ -4600,7 +4576,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4126375522951286587"><ph name="VM_NAME" /> uitzetten</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Apparaatlogboek</translation>
-<translation id="4130750466177569591">Ik ga akkoord</translation>
 <translation id="4130877444234883490">Gebruik m om een muisknop ingedrukt te houden</translation>
 <translation id="4130948219446157616">Weergave onderaan sluiten</translation>
 <translation id="413121957363593859">Componenten</translation>
@@ -4632,7 +4607,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4148957013307229264">Installeren...</translation>
 <translation id="4149385644005013189">Het ziet er netjes uit.</translation>
 <translation id="4150201353443180367">Weergave</translation>
-<translation id="4150569944729499860">Schermcontext</translation>
 <translation id="4151449637210235443">Vertel ons over je recente gameplay</translation>
 <translation id="4151503145138736576">Geen offline opslag om op te schonen</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
@@ -5157,7 +5131,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4532183705767666195">{COUNT,plural, =1{1 toegangssleutel}other{{COUNT} toegangssleutels}}</translation>
 <translation id="4532625150642446981">'<ph name="USB_DEVICE_NAME" />' is in gebruik. Als je het apparaat opnieuw toewijst terwijl het in gebruik is, kan dit tot fouten leiden. Weet je zeker dat je wilt doorgaan?</translation>
 <translation id="4532646538815530781">Deze site gebruikt bewegingssensoren.</translation>
-<translation id="4533846798469727141">Zeg nu 'Hey Google'</translation>
 <translation id="4533985347672295764">CPU-tijd</translation>
 <translation id="4534661889221639075">Probeer het opnieuw.</translation>
 <translation id="4535127706710932914">Standaardprofiel</translation>
@@ -5460,7 +5433,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Geluid van site aanzetten}other{Geluid van sites aanzetten}}</translation>
 <translation id="4745096442457817087">Je wachtwoord is gevonden bij een openbaar gegevenslek</translation>
 <translation id="4745500401920035244">Je beheerder heeft een wijziging in het systeem aangebracht waardoor sommige oude profielen niet meer kunnen worden gebruikt. Je hebt geen toegang meer tot dit profiel, maar je kunt het nog wel verwijderen.</translation>
-<translation id="474609389162964566">De Assistent openen met 'Hey Google'</translation>
 <translation id="4746757725581505837">Je staat op het punt om je gegevens van <ph name="BRAND" /> te verwijderen die zijn opgeslagen op dit apparaat</translation>
 <translation id="4748783296226936791">Sites maken meestal verbinding met HID-apparaten voor functies die ongebruikelijke toetsenborden, gamecontrollers en andere apparaten gebruiken</translation>
 <translation id="4750185073185658673">Check nog een paar rechten op je telefoon. Zorg dat bluetooth en wifi op je telefoon aanstaan.</translation>
@@ -5637,7 +5609,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="486635084936119914">Bepaalde bestandstypen na downloaden automatisch openen</translation>
 <translation id="4867272607148176509">Ouders kunnen apps goedkeuren of blokkeren, tijdlimieten instellen en browsen op internet beheren. Je kunt later een schoolaccount toevoegen om toegang te krijgen tot de meeste schoolbronnen.</translation>
 <translation id="4867433544163083783">Check nu of tabbladen kunnen worden geordend</translation>
-<translation id="4868281708609571334">De Google Assistent leren de stem van <ph name="SUPERVISED_USER_NAME" /> te herkennen</translation>
 <translation id="4868284252360267853">De focus staat momenteel niet op dit dialoogvenster. Druk op Command-Shift-Option A om de focus op dit dialoogvenster te zetten.</translation>
 <translation id="4868351661310357223">Installeer apps en games van Google Play op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">ChromeOS-netwerkgegevens lezen</translation>
@@ -6268,7 +6239,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5307386115243749078">Bluetooth-schakelaar koppelen</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5308989548591363504">Checken op malware</translation>
-<translation id="5309418307557605830">De Google Assistent werkt hier ook</translation>
 <translation id="5309641450810523897">ID supportaanvraag</translation>
 <translation id="5311304534597152726">Inloggen als</translation>
 <translation id="5312746996236433535">Scherm spiegelen</translation>
@@ -6793,7 +6763,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5687935527303996204">Zorg dat je apparaat is aangesloten en zet het niet uit. De installatie kan tot 20 minuten duren. Je apparaat wordt automatisch uitgezet nadat de installatie is afgerond.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Locatie</translation>
-<translation id="5689531695336322499">Zo te zien heeft <ph name="SUPERVISED_USER_NAME" /> Voice Match al ingesteld voor de Assistent op een ander apparaat. De eerdere opnamen daarvan zijn gebruikt om een spraakmodel op dit apparaat te maken.</translation>
 <translation id="56907980372820799">Gegevens koppelen</translation>
 <translation id="5691581861107245578">Krijg suggesties voor emoji's op basis van wat je typt</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
@@ -7311,7 +7280,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6059925163896151826">USB-apparaten</translation>
 <translation id="6061408389284235459">Er is een melding gestuurd naar <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">QR-code maken</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of opname kan misschien ook toegang krijgen tot de persoonlijke resultaten van <ph name="SUPERVISED_USER_NAME" />. Je kunt de batterij sparen door in de Assistent-instellingen van <ph name="SUPERVISED_USER_NAME" /> te selecteren dat 'Hey Google' alleen aanstaat als dit apparaat is aangesloten op een voedingsbron.</translation>
 <translation id="6064217302520318294">Schermvergrendeling</translation>
 <translation id="606449270532897041">Sitegegevens beheren</translation>
 <translation id="6064764629679333574">Verbeter de kwaliteit van het geluid van de bluetooth-microfoon door audio met lage resolutie op te schalen naar hoge resolutie.</translation>
@@ -7835,6 +7803,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6434309073475700221">Verwijderen</translation>
 <translation id="6434325376267409267">Je apparaat moet worden geüpdatet voordat je <ph name="APP_NAME" /> kunt gebruiken.</translation>
 <translation id="6434755719322447931">Chaotisch</translation>
+<translation id="6435307030888827407">Uitgelogd blijven</translation>
 <translation id="6435339218366409950">Kies de taal waarnaar je de ondertiteling wilt vertalen</translation>
 <translation id="6436164536244065364">Bekijken in Web Store</translation>
 <translation id="6436778875248895551">De extensie <ph name="EXTENSION_NAME" /> is geblokkeerd door je beheerder</translation>
@@ -8080,7 +8049,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6602956230557165253">Gebruik de pijl naar links en naar rechts om te navigeren.</translation>
 <translation id="6603185457265641428">Kies of je je geschiedenis wilt synchroniseren</translation>
 <translation id="6605847144724004692">Nog niet beoordeeld door gebruikers.</translation>
-<translation id="6606671997164410857">Zo te zien heb je de Google Assistent al ingesteld op een ander apparaat. Haal nog meer uit de Assistent door Schermcontext aan te zetten op dit apparaat.</translation>
 <translation id="6607831829715835317">Meer hu&amp;lpprogramma's</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wordt al beheerd door <ph name="DOMAIN" />. Als je ouderlijk toezicht wilt gebruiken met een ander Google-account, log je uit na het instellen en selecteer je 'Persoon toevoegen' op het inlogscherm.</translation>
 <translation id="6608166463665411119">E-simkaart resetten</translation>
@@ -8180,7 +8148,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6674571176963658787">Geef je wachtwoordzin op om de synchronisatie te starten</translation>
 <translation id="6675665718701918026">Aanwijsapparaat verbonden</translation>
 <translation id="6675717447295898330">Een nieuw profiel voor werk maken zonder mijn bestaande gegevens</translation>
-<translation id="6676212663108450937">Overweeg het gebruik van een hoofdtelefoon wanneer je je stem traint</translation>
 <translation id="6676291960742508499">Je tabbladen, paginatitels en URL's worden naar Google gestuurd</translation>
 <translation id="667752334740867460">Wifi-gegevens ontvangen...</translation>
 <translation id="6677527809400770913">Gebaar <ph name="GESTURE" /> toegewezen aan <ph name="ACTION" /></translation>
@@ -8200,9 +8167,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6686817083349815241">Je wachtwoord opslaan</translation>
 <translation id="6687008241368170505">Pincode voor Google Wachtwoordmanager wijzigen</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> verbergen</translation>
-<translation id="6689714331348768690">Vraag <ph name="SUPERVISED_USER_NAME" /> om naar de computer te komen. Je kind leest een paar zinnen op dit scherm voor om een eigen spraakmodel te maken.
-    <ph name="BR" />
-Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je kind jou dan nazeggen. Fluister weg van de microfoon zodat de Assistent de stem van je kind leert herkennen in plaats van die van jou.</translation>
 <translation id="6689948774466767379">Muistoetsen</translation>
 <translation id="6690659332373509948">Fout bij het parseren van dit bestand: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Vooruit</translation>
@@ -8379,13 +8343,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6808166974213191158">Chrome OS Flex System Image Writer</translation>
 <translation id="6808193438228982088">Vos</translation>
 <translation id="6809470175540814047">Openen in incognitovenster</translation>
-<translation id="6809656734323672573">Als je akkoord gaat, wacht de Google Assistent in stand-bymodus om te luisteren of er 'Hey Google' wordt gezegd en kan deze met Voice Match je stem herkennen.
-    <ph name="BR" />
-Via Voice Match kan de Assistent je herkennen en onderscheiden van anderen. De Assistent neemt clips van je stem op om een uniek spraakmodel te maken, dat alleen op jouw apparaten wordt opgeslagen. Je spraakmodel kan tijdelijk naar Google worden gestuurd zodat je stem beter kan worden herkend.
-    <ph name="BR" />
-Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit gewoon in de instellingen voor de Assistent. Je kunt de audiofragmenten die je opneemt tijdens het instellen van Voice Match bekijken of verwijderen via <ph name="VOICE_MATCH_SETTINGS_URL" />.
-    <ph name="BR" />
-<ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit bevestigen voordat je inlogt op een website.</translation>
 <translation id="6811034713472274749">Pagina kan nu worden bekeken</translation>
 <translation id="6811151703183939603">Stevig</translation>
@@ -8444,7 +8401,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6842868554183332230">Sites nemen meestal waar wanneer je je apparaat actief gebruikt zodat ze je beschikbaarheid kunnen instellen in chat-apps</translation>
 <translation id="6843264316370513305">Foutopsporing voor netwerk</translation>
 <translation id="6843404741389995311">Winkel, vertaal en identificeer wat je ziet met je camera en fotogalerij</translation>
-<translation id="6843423766595476978">'Hey Google' is helemaal ingesteld</translation>
 <translation id="6843725295806269523">geluid uitzetten</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Gemaximaliseerd openen</translation>
@@ -8695,7 +8651,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7015135594296285641">Extensies toestaan</translation>
 <translation id="7016995776279438971">Rood-groen, rood zwak (protanomalie)</translation>
-<translation id="7017004637493394352">Zeg nog een keer "Hey Google"</translation>
 <translation id="7017219178341817193">Een nieuwe pagina toevoegen</translation>
 <translation id="7017354871202642555">Kan modus niet instellen nadat venster is ingesteld.</translation>
 <translation id="7019546817926942979">Je apparaat moet worden aangesloten. Als je Linux upgradet, kan je batterij aanzienlijk sneller leeglopen. Sluit je apparaat aan op een oplader en probeer het opnieuw.</translation>
@@ -8751,7 +8706,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7059858479264779982">Instellen op automatisch starten</translation>
 <translation id="7063129466199351735">Snelle links verwerken...</translation>
 <translation id="7063311912041006059">URL met <ph name="SPECIAL_SYMBOL" /> in plaats van zoekterm</translation>
-<translation id="706342288220489463">Toestaan dat de Assistent de informatie op je scherm gebruikt om te helpen</translation>
 <translation id="70641621694466590">Naar de pagina Wachtwoorden</translation>
 <translation id="7064209589142995848">Contentoverdracht</translation>
 <translation id="7064734931812204395">De Linux-container wordt geconfigureerd. Dit kan tot dertig minuten duren.</translation>
@@ -9403,7 +9357,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7520766081042531487">Incognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Snelkoppelingen tonen</translation>
 <translation id="7521430434164837205">Microsoft 365-bestanden</translation>
-<translation id="7522255036471229694">Zeg "Hey Google"</translation>
 <translation id="7523117833414447032">Bij voorlezen van hoofdletters</translation>
 <translation id="7523585675576642403">Naam van profiel wijzigen</translation>
 <translation id="7525067979554623046">Maken</translation>
@@ -9722,7 +9675,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7736119438443237821">Je staat op het punt om de toegang tot je toegangssleutels in te trekken voor dit apparaat</translation>
 <translation id="7737115349420013392">Koppelen met '<ph name="DEVICE_NAME" />'…</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instructie ontvangen</translation>
-<translation id="7737846262459425222">Je kunt dit altijd wijzigen via Instellingen &gt; Google Assistent &gt; Schermcontext.</translation>
 <translation id="7737948071472253612">Geen toestemming om je camera te gebruiken</translation>
 <translation id="77381465218432215">Accenttekens en speciale tekens tonen</translation>
 <translation id="7739524723876359011">Druk op <ph name="ACCELERATOR" /> om de focus op deze ballon te zetten.</translation>
@@ -9827,7 +9779,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7806659658565827531">Hoofdknooppunt annoteren</translation>
 <translation id="7806722269368320106">Een app die wordt geïnstalleerd</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
-<translation id="7807117920154132308">Zo te zien heeft <ph name="SUPERVISED_USER_NAME" /> de Google Assistent al ingesteld op een ander apparaat. <ph name="SUPERVISED_USER_NAME" /> kan nog meer uit de Assistent halen door Schermcontext aan te zetten op dit apparaat.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> altijd toegang tot je camera geven</translation>
 <translation id="7810202088502699111">Er zijn pop-ups op deze pagina geblokkeerd</translation>
 <translation id="7810367892333449285">Je invoer moet deze indeling hebben: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adres<ph name="LPA_2" />$<ph name="LPA_3" />optionele overeenkomende ID<ph name="LPA_4" /></translation>
@@ -9886,7 +9837,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Als je je Chrome OS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in Chrome OS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer Chrome OS crasht, welke functies je gebruikt, hoeveel geheugen je gewoonlijk gebruikt, en diagnostische en gebruiksgegevens van Android-apps. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome OS-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Als de instelling Web- en app-activiteit aanstaat voor je Google-account, kunnen je Android-gegevens worden opgeslagen in je Google-account. Op account.google.com kun je je gegevens bekijken en verwijderen, en je accountinstellingen wijzigen.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of een opname van je stem kan misschien toegang krijgen tot je persoonlijke resultaten of de Assistent. Je kunt de batterij sparen door in je Assistent-instellingen te selecteren dat 'Hey Google' alleen aanstaat als dit apparaat is aangesloten op een voedingsbron.</translation>
 <translation id="7851457902707056880">Er kan alleen worden ingelogd met het account van de eigenaar. Start het apparaat opnieuw op en log in met het account van de eigenaar. Het apparaat wordt over 30 seconden automatisch opnieuw opgestart.</translation>
 <translation id="7851716364080026749">Toegang tot de camera en microfoon altijd blokkeren</translation>
 <translation id="78526636422538552">Toevoegen van meer Google-accounts staat uit</translation>
@@ -10058,7 +10008,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7963408577288987423">{COUNT,plural, =1{1 wachtwoord}other{{COUNT} wachtwoorden}}</translation>
 <translation id="7963513503134856713">Venster naar rechts verplaatst</translation>
 <translation id="7963608432878156675">Deze naam is zichtbaar voor andere apparaten voor bluetooth- en netwerkverbindingen</translation>
-<translation id="7963826112438303517">Je Assistent gebruikt deze opnamen en je spraakopdrachten om je spraakmodel te maken en te updaten. Dit wordt alleen opgeslagen op apparaten waarvoor je Voice Match hebt aangezet. Je kunt je spraakactiviteit bekijken of het spraakmodel opnieuw trainen in de instellingen voor de Assistent.</translation>
 <translation id="7964458523224581615">Viridiaan</translation>
 <translation id="7965946703747956421"><ph name="CREDENTIAL_TYPE" /> verwijderen voor gebruikersnaam: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">Adres van afbeelding k&amp;opiëren</translation>
@@ -10203,6 +10152,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8050191834453426339">Opnieuw verifiëren</translation>
 <translation id="8051193500142930381">Functies waarvoor een camera nodig is, werken niet</translation>
 <translation id="8052218774860457016">Browsersynchronisatie beheren</translation>
+<translation id="8052898407431791827">Gekopieerd naar klembord</translation>
 <translation id="8052944601017749068">Importeren naar <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Laad pagina opnieuw</translation>
 <translation id="8054500940978949009">Toegestaan. Zet <ph name="LINK_BEGIN" />microfoontoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
@@ -10220,7 +10170,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8061244502316511332">Dit tabblad gebruikt je microfoon</translation>
 <translation id="8061464966246066292">Hoog contrast</translation>
 <translation id="8061970399284390013">Spelling- en grammaticacontrole</translation>
-<translation id="8061991877177392872">Zoe te zien heb je Voice Match al ingesteld voor de Assistent op een ander apparaat. De eerdere opnamen daarvan zijn gebruikt om een spraakmodel op dit apparaat te maken.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 vel papier}other{{COUNT} vellen papier}}</translation>
 <translation id="8063235345342641131">Standaard groene avatar</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
@@ -11577,7 +11526,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8987321822984361516">Browser beheerd door een organisatie, profiel beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8988539543012086784">Deze pagina is opgeslagen in <ph name="BOOKMARK_FOLDER" /></translation>
-<translation id="8989034257029389285">Je kunt vragen 'Hey Google, welk nummer is dit?'</translation>
 <translation id="8989359959810288806">Tethering-status vernieuwen</translation>
 <translation id="8989779557457435460">Huidig tabblad standaard delen</translation>
 <translation id="8990243615717080992">Inloggen met een wachtwoord of een andere herstelmethode</translation>
@@ -11837,7 +11785,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9153367754133725216">Bekijk suggesties voor nieuwe apps en webcontent in de Launcher en zoekresultaten. Hiermee worden alleen statistieken verstuurd om suggesties te verbeteren als je ervoor hebt gekozen crashrapporten en diagnostische en gebruiksgegevens naar ChromeOS te sturen.</translation>
 <translation id="9154194610265714752">Bijgewerkt</translation>
 <translation id="915485121129452731">Pentablet</translation>
-<translation id="9155100833189043833">Gebruik een ID beter beveiligd vanaf je mobiele apparaat</translation>
 <translation id="9155344700756733162">Kleur deselecteren</translation>
 <translation id="9157096865782046368">0,8 seconden</translation>
 <translation id="9157697743260533322">Kan automatische updates niet instellen voor alle gebruikers (lanceringsfout bij pre-flight-procedure: <ph name="ERROR_NUMBER" />)</translation>
@@ -11858,7 +11805,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9167063903968449027">Leeslijst tonen</translation>
 <translation id="9167450455589251456">Het profiel wordt niet ondersteund</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> accounts</translation>
-<translation id="9168436347345867845">Later doen</translation>
 <translation id="9169093579080634183">Meer informatie over tabbladen</translation>
 <translation id="9169496697824289689">Sneltoetsen bekijken</translation>
 <translation id="916964310188958970">Waarom deze suggestie?</translation>

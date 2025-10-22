@@ -1235,6 +1235,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5758759241456233788">Žemėlapių peržiūros išjungtos. Įjunkite jas nustatymuose.</translation>
 <translation id="5759484603608560822">Slėpti atsisiuntimus</translation>
 <translation id="5767099457279594162">Slaptažodis nebuvo bendrinamas</translation>
+<translation id="5768870767339201169">Tęskite nuo ten, kur baigėte</translation>
 <translation id="5779117921996157216">{count,plural, =1{Turite {count} pažeistą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}one{Turite {count} pažeistą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}few{Turite {count} pažeistus slaptažodžius, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}many{Turite {count} pažeisto slaptažodžio, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}other{Turite {count} pažeistų slaptažodžių, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}}</translation>
 <translation id="5791632441210678828">Sklaidos kanalo „Stebima“ rūšiavimo mygtukas.</translation>
 <translation id="5803566855766646066">Ar tikrai norite atmesti šią naują kortelę?</translation>
@@ -1691,6 +1692,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7484645889979462775">Niekada šiam puslapiui</translation>
 <translation id="7486006552035434095">Įrenginių sinchronizavimas</translation>
 <translation id="7491131399623468277">Eikite į skiltį „Nustatymai“…</translation>
+<translation id="7491161827858509164">Jei norite peržiūrėti ankstesnius atsisiuntimus, atidarykite <ph name="BEGIN_LINK" />Failų<ph name="END_LINK" /> programą</translation>
 <translation id="7498234416455752244">Toliau redaguoti</translation>
 <translation id="7500244509706269886">Automatiškai užpildyti formą</translation>
 <translation id="750493650310597496">Pasirinkta: 0</translation>
@@ -1728,6 +1730,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7612619742409846846">Prisijungta prie „Google“ kaip</translation>
 <translation id="7612849887607288481">Atidaryti DI prototipų meniu</translation>
 <translation id="7620522820075868385">Atšaukti</translation>
+<translation id="762078666799342162">Ankstesnius atsisiuntimus galite peržiūrėti naudodami <ph name="BEGIN_LINK" />Failų<ph name="END_LINK" /> programą</translation>
 <translation id="7638584964844754484">Neteisinga slaptafrazė</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Pažeisti slaptažodžiai}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="7640669552036055091">Skirtukai iš „Android“</translation>
@@ -1909,7 +1912,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8273982424131314219">Informaciją užpildysite adresu <ph name="URL" /></translation>
 <translation id="8275068909952022340">Daugiau…</translation>
 <translation id="8277328362018795342">Puslapio turinys bendrinamas, kad gautumėte aktualesnius atsakymus</translation>
-<translation id="8278488584187265939">Pagrindinio puslapio tinkinimas</translation>
 <translation id="8281781826761538115">Numatytoji – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8282657446819506217">Atidaryti skirtukų grupėje</translation>
@@ -2180,6 +2182,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="94870150074703282">Ištrinti grupę?</translation>
 <translation id="952704832371081537">Atšaukti</translation>
+<translation id="95332591904104970">Prijungtos programėlės</translation>
 <translation id="954667170699278022">Skaitymo sąrašas</translation>
 <translation id="956218893102219091">Naudokite tikslią vietovę, kad gautumėte tiksliausius „Gemini“ rezultatus, o ne numatomą vietą, pagrįstą jūsų IP adresu. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Ištrinti naršymo duomenis</translation>

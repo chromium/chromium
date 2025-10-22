@@ -175,6 +175,7 @@
 <translation id="1791662854739702043">已安裝</translation>
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
 <translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
+<translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1807709131360304325">開啟新視窗</translation>
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
@@ -1148,6 +1149,7 @@
 <translation id="6255809143828972562">透過 Chrome 工具，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全連線</translation>
+<translation id="6267106249090587268">通知 <ph name="SEPARATOR" /> 由於發現垃圾或欺詐內容，因此 Chrome 已移除有關權限</translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題背景</translation>

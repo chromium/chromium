@@ -433,7 +433,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="5947104538377036631">Chrome 捷徑</translation>
-<translation id="5960071705175224773">不明應用程式變更了你的設定</translation>
+<translation id="5960071705175224773">你的設定已由不明應用程式變更</translation>
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5980111191913430208">來源不明的擴充程式、應用程式和主題可能會損害你的裝置。Chromium 建議你只透過「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」安裝這些項目</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
@@ -715,7 +715,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8992769679401294069">你已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入密碼短語。</translation>
 <translation id="8999117580775242387">無法使用 HTTPS 時，Chrome 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
-<translation id="9010418943148193727">你的預設搜尋引擎在 Chrome 以外被更改，Chrome 已重設有關設定以保障你的安全。</translation>
+<translation id="9010418943148193727">你的預設搜尋引擎已透過 Chrome 以外的服務變更，Chrome 已重設有關設定以保護你免受威脅。</translation>
 <translation id="9014771989710951291">Chrome 由多個機構管理</translation>
 <translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9066987883552592250">關閉 Chrome Canary 版 Gemini</translation>

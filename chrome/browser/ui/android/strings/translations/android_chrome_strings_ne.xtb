@@ -49,6 +49,7 @@
 <translation id="11947597112837849">इमेल ठेगाना</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
 <translation id="1197761954713363183">पासकी पुष्टि गर्ने पाना बन्द गरिएको छ</translation>
+<translation id="1197933394627598677">रिडिङ मोड देखाउनुहोस्</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
 <translation id="1204037785786432551">डाउनलोड लिंक</translation>
@@ -174,6 +175,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
 <translation id="1796666869097395659">पछि फेरि फर्कन ट्याब मिनिमाइज गर्नुहोस्</translation>
+<translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1807709131360304325">कुनै नयाँ विन्डो खोल्नुहोस्</translation>
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
@@ -1398,6 +1400,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
 <translation id="7230064152164845085">इन्कोग्निटो प्रयोग गर्नुहोस्</translation>
 <translation id="7237724030342645845">Google पासवर्ड म्यानेजरले काम गर्न छाडेको छ</translation>
+<translation id="7239496616545081903">रिडिङ मोड लुकाउनुहोस्</translation>
 <translation id="72415438529550637">पासवर्ड सिफारिस गर्ने सुविधा बन्द गरिएको छ।</translation>
 <translation id="7248671827512403053">एप</translation>
 <translation id="7253951228444156601">पासवर्डहरू जाँच गरिँदै…</translation>
@@ -1740,6 +1743,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8723453889042591629">यो पेज तुरुन्तै अनुवाद गर्नुहोस्। यो सर्टकट परिवर्तन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
+<translation id="8738163682604285902">रिडिङ मोड हेर्ने हो?</translation>
 <translation id="8746155870861185046">हाइलाइट गरिएको टेक्स्ट सेयर गर्नुहोस्</translation>
 <translation id="8748850008226585750">सामग्रीहरू लुकाइएका छन्</translation>
 <translation id="8754448020583829686">लिंकविनै कपी गर्नुहोस्</translation>

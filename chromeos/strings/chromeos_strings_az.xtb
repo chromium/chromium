@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
 <translation id="4300272766492248925">Tətbiqi açın</translation>
 <translation id="430786093962686457">şifon</translation>
+<translation id="4309762678330556039">Avtomatik olaraq transkripsiya yaradın və audio axtarın. İnternetə qoşulmadıqda belə səsyazmalar yarada bilərsiniz.</translation>
 <translation id="4310735698903592804">Son divar kağızları Google AI tərəfindən dəstəklənir</translation>
 <translation id="4320904097188876154">neon çəhrayı</translation>
 <translation id="432961742358282111">Tərif, tərcümə və ya vahid konversiyaları üçün sağ düymə ilə toxunun və ya basıb saxlayın. Bu funksiyanı idarə etmək üçün Sol və ya Sağ ox düyməsindən istifadə edin.</translation>
@@ -1472,6 +1473,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> transkripsiya modeli <ph name="PROGRESS_PERCENTAGE" />% endirilib</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN-i deaktiv etmək və ya silmək olmur. Aktiv <ph name="ATTACH" /> APN-lər deaktiv edilməli və ya silinməlidir.</translation>
+<translation id="7458359366992324037">Uzaqdan displey</translation>
 <translation id="7458970041932198923">Səhifəni görmək və avatarlar ayarlamaq üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7481312909269577407">İrəli</translation>

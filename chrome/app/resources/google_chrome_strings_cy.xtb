@@ -21,6 +21,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="110877069173485804">Dyma eich Chrome</translation>
 <translation id="1125124144982679672">Pwy sy'n defnyddio Chrome?</translation>
 <translation id="1142745911746664600">Ni ellir diweddaru Chrome</translation>
+<translation id="1148360048981192980">Y tro nesaf y byddwch yn agor Chrome ar eich <ph name="DEVICE_TYPE" />, byddwch yn gweld anogwr i ddefnyddio Rheolwr Cyfrineiriau Google.</translation>
 <translation id="1152920704813762236">Ynghylch ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Agor yn Chrome</translation>
 <translation id="1157985233335035034">Ieithoedd diweddar</translation>
@@ -150,6 +151,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2681444469812712297">Agor <ph name="URL" /> mewn tab newydd yn Google Chrome.</translation>
 <translation id="2699790011615497488">Agor Gemini yn Chrome Beta</translation>
 <translation id="2712141162840347885">Dewiswch unrhyw beth i'w chwilio gyda Google Lens neu pwyswch Escape i adael Google Lens</translation>
+<translation id="2723860029395667894">Dangos llwybr byr Dull AI Google bob amser</translation>
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2742320827292110288">Rhybudd: Ni all Google Chrome atal estyniadau rhag cofnodi eich hanes pori. I ddiffodd yr estyniad hwn yn y modd Anhysbys, dad-ddewiswch yr opsiwn hwn.</translation>
 <translation id="2753623023919742414">Cliciwch i chwilio</translation>
@@ -483,6 +485,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6412673304250309937">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chrome. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am 1 funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}zero{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}two{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}few{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}many{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}other{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}}</translation>
 <translation id="6418662306461808273">Newid i broffil Chrome presennol?</translation>
+<translation id="6426623519983252346">Byddwch yn gweld anogwr i roi cynnig ar <ph name="FEATURE_NAME" /> y tro nesaf y byddwch yn agor Chrome iOS.</translation>
 <translation id="6473905796280459355">Mynd i'r dudalen Ynghylch Chrome</translation>
 <translation id="6481963882741794338">Cysylltwch Chrome a gwasanaethau Google eraill at ddibenion personoleiddio a dibenion eraill</translation>
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
@@ -681,6 +684,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8641606876632989680">Bydd Chrome yn eich hysbysu pan fyddwch yn mewngofnodi gyda chyfrinair sydd dan fygythiad</translation>
 <translation id="8656634243791296665">Agor Gemini yn Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
+<translation id="8677922833187616101">Dangos Llwybr Byr Dull AI Google Bob Amser</translation>
 <translation id="8679801911857917785">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chrome.</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8712767363896337380">Bron yn gyfoes! Ail-lansiwch Chrome i orffen diweddaru.</translation>

@@ -1909,7 +1909,6 @@
 <translation id="8273982424131314219">信息即将填写到 <ph name="URL" /></translation>
 <translation id="8275068909952022340">更多…</translation>
 <translation id="8277328362018795342">系统会分享网页内容，提供更切合需求的回答</translation>
-<translation id="8278488584187265939">自定义首页</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282657446819506217">在标签页分组中打开</translation>
@@ -2180,6 +2179,7 @@
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="94870150074703282">要删除分组吗？</translation>
 <translation id="952704832371081537">取消</translation>
+<translation id="95332591904104970">关联的应用</translation>
 <translation id="954667170699278022">阅读清单</translation>
 <translation id="956218893102219091">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">删除浏览数据</translation>

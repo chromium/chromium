@@ -1792,6 +1792,7 @@
 <translation id="7851858861565204677">अन्य डिभाइसहरू</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7854006015462979438">"सामान्य" खोल्नुहोस्</translation>
+<translation id="7855678267851972597">अडियोहरू</translation>
 <translation id="7859988229622350291">कहिल्यै अनुवाद नगर्नुहोस्</translation>
 <translation id="7863211248337747225">एप डाउनलोड गर्नुहोस्</translation>
 <translation id="7865127013871431856">अनुवादसम्बन्धी विकल्पहरू</translation>
@@ -1908,7 +1909,6 @@
 <translation id="8273982424131314219">तपाईंले <ph name="URL" /> मा जानकारी भर्नु पर्ने हुन्छ</translation>
 <translation id="8275068909952022340">थप…</translation>
 <translation id="8277328362018795342">अझ सान्दर्भिक जवाफहरू दिने प्रयोजनका लागि तपाईंको पेजको कन्टेन्ट सेयर गरिन्छ</translation>
-<translation id="8278488584187265939">होम पेज कस्टमाइज गर्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8282657446819506217">ट्याब समूहमा खोल्नुहोस्</translation>
@@ -1972,6 +1972,7 @@
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ट्याबहरू <ph name="FIRST_VISIBLE_TAB" /> मार्फत <ph name="LAST_VISIBLE_TAB" /> को <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">अन्य एपका लिंकहरू इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="8529767659511976195">नयाँ</translation>
+<translation id="8531572740963685410">PDF हरू</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8534481786647257214">Google+ पोस्ट पूरा भयो।</translation>
@@ -2178,6 +2179,7 @@
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="94870150074703282">समूह मेटाउने हो?</translation>
 <translation id="952704832371081537">रद्द गर्नुहोस्</translation>
+<translation id="95332591904104970">कनेक्ट गरिएका एपहरू</translation>
 <translation id="954667170699278022">रिडिङ लिस्ट</translation>
 <translation id="956218893102219091">Gemini ले उपलब्ध गराउने सबैभन्दा सटीक परिणामहरू प्राप्त गर्न आफ्नो IP एड्रेसमा आधारित अनुमानित लोकेसन प्रयोग गर्नुको साटो आफ्नो सटीक लोकेसन प्रयोग गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>

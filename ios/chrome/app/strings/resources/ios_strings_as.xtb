@@ -1792,6 +1792,7 @@
 <translation id="7851858861565204677">অন্য ডিভাইচ</translation>
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7854006015462979438">সাধাৰণ খোলক</translation>
+<translation id="7855678267851972597">অডিঅ’</translation>
 <translation id="7859988229622350291">কেতিয়াও অনুবাদ কৰিব নলগীয়া</translation>
 <translation id="7863211248337747225">এপ্‌টো ইনষ্টল কৰক</translation>
 <translation id="7865127013871431856">অনুবাদৰ বিকল্প</translation>
@@ -1914,7 +1915,6 @@
 <translation id="8273982424131314219">আপুনি <ph name="URL" />ত তথ্য পূৰ কৰিব</translation>
 <translation id="8275068909952022340">অধিক…</translation>
 <translation id="8277328362018795342">অধিক প্ৰাসংগিক উত্তৰৰ বাবে আপোনাৰ পৃষ্ঠাৰ সমল শ্বেয়াৰ কৰা হৈছে</translation>
-<translation id="8278488584187265939">গৃহ পৃষ্ঠা কাষ্টমাইজ কৰক</translation>
 <translation id="8281781826761538115">ডিফ’ল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8282657446819506217">টেবৰ গোটত খোলক</translation>
@@ -1978,6 +1978,7 @@
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> টেব <ph name="NUMBER_OF_OPEN_TABS" />টাৰ ভিতৰত <ph name="FIRST_VISIBLE_TAB" />টাৰ পৰা <ph name="LAST_VISIBLE_TAB" />টালৈ</translation>
 <translation id="8528009254289981965">ইনক’গনিট’ ম’ডত অন্য এপৰ পৰা লিংকসমূহ খোলক</translation>
 <translation id="8529767659511976195">নতুন</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">সুৰক্ষিত ব্ৰাউজিং অন আছে</translation>
 <translation id="8534481786647257214">Google+ প’ষ্ট সম্পূৰ্ণ হ’ল৷</translation>

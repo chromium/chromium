@@ -1793,6 +1793,7 @@
 <translation id="7851858861565204677">অন্যান্য ডিভাইস</translation>
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>
 <translation id="7854006015462979438">'সাধারণ' সেটিংস খুলুন</translation>
+<translation id="7855678267851972597">অডিও</translation>
 <translation id="7859988229622350291">কখনও অনুবাদ করবেন না</translation>
 <translation id="7863211248337747225">অ্যাপ ইনস্টল করুন</translation>
 <translation id="7865127013871431856">অনুবাদের বিকল্প</translation>
@@ -1909,7 +1910,6 @@
 <translation id="8273982424131314219">আপনি <ph name="URL" />-এ তথ্য পূরণ করবেন</translation>
 <translation id="8275068909952022340">আরও…</translation>
 <translation id="8277328362018795342">আরও প্রাসঙ্গিক উত্তরের জন্য আপনার পৃষ্ঠার কন্টেন্ট শেয়ার করা হয়েছে</translation>
-<translation id="8278488584187265939">হোম পেজ কাস্টমাইজ করুন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এড়িয়ে যান</translation>
 <translation id="8282657446819506217">ট্যাব গ্রুপে খুলুন</translation>
@@ -1973,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />টির মধ্যে <ph name="FIRST_VISIBLE_TAB" /> থেকে <ph name="LAST_VISIBLE_TAB" /> পর্যন্ত <ph name="INCOGNITO" /> ট্যাব</translation>
 <translation id="8528009254289981965">'ছদ্মবেশী' ট্যাবে অন্যান্য অ্যাপ থেকে লিঙ্ক খুলুন</translation>
 <translation id="8529767659511976195">নতুন</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing চালু আছে</translation>
 <translation id="8534481786647257214">Google+ পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
@@ -2179,6 +2180,7 @@
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="94870150074703282">গ্রুপটি মুছবেন?</translation>
 <translation id="952704832371081537">বাতিল করুন</translation>
+<translation id="95332591904104970">কানেক্ট করা অ্যাপ</translation>
 <translation id="954667170699278022">পড়ার তালিকা</translation>
 <translation id="956218893102219091">Gemini থেকে সবচেয়ে নিখুঁত ফলাফল পেতে, আনুমানিক লোকেশনের পরিবর্তে, আপনার IP অ্যাড্রেসের ভিত্তিতে পাওয়া সুনির্দিষ্ট লোকেশন ব্যবহার করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>

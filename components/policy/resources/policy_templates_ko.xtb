@@ -8001,14 +8001,6 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 경고: 이 설정을 변경할 때 위치정보와 관련된 다른 정책(예: <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />)이 손상될 수 있으니 주의하세요. 특히 이 정책이 <ph name="DISALLOW" />(으)로 설정된 경우 그러면 <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> 정책의 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> 및 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> 옵션이 오작동하고 <ph name="LOG_IN" /> 화면에 <ph name="IP" /> 기반 위치 확인만 사용합니다.</translation>
 <translation id="6338982178236723271">시스템 정보 보고</translation>
 <translation id="6339355882150329269">동영상이 재생되는 동안 사용자를 유휴 상태로 간주하지 않음</translation>
-<translation id="6347110299837147365">관리자는 이 정책을 사용하여 디스크의 브라우저 HTTP 캐시를 암호화할 수 있습니다.
-현재는 Windows에서만 지원됩니다.
-
-이 정책을 사용 설정하면 브라우저 캐시가 암호화됩니다.
-
-정책을 사용 중지하거나 설정하지 않으면 브라우저 캐시가 암호화되지 않습니다.
-
-브라우저 캐시 암호화는 성능에 영향을 미칠 수 있습니다.</translation>
 <translation id="6352714113109004581">정책을 설정하면 어떤 사이트에서 사용자에게 HID 기기 액세스를 요청할 수 있는지 URL 패턴 목록을 만들어 지정할 수 있습니다.
 
       정책을 설정하지 않았을 때 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />이 설정되어 있으면 모든 사이트에 적용되며 설정되어 있지 않으면 사용자의 개인 설정이 적용됩니다.

@@ -65,6 +65,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1779356040007214683">Til að gera Chromium öruggara höfum við slökkt á vissum viðbótum sem ekki eru á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
 <translation id="1808667845054772817">Setja Chromium upp aftur</translation>
 <translation id="1820835682567584003">Chromium er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Næst þegar þú opnar Chromium í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að nota Google-aðgangsorðastjórnun.</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Skráðu þig út af Chromium<ph name="END_LINK" /> til að eyða vefskoðunargögnum aðeins úr þessu tæki en ekki af Google-reikningnum þínum.</translation>
 <translation id="185970820835152459">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chromium vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -91,6 +92,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2049376729098081731">Veldu hvort að Chromium ferill eigi að fylgja með til að fá sérsniðnari upplifun í Google-þjónustum</translation>
 <translation id="2054039611381840095">Til að fá frekari uppfærslur á Chromium þarftu macOS 12 eða nýrri útgáfu. Þessi tölva notar macOS 11.</translation>
 <translation id="2086476982681781442">Chromium lokaði á þetta niðurhal vegna þess að skráin er blekkjandi og gæti gert óvæntar breytingar á tækinu þínu</translation>
+<translation id="208726765006323911">Þú munt sjá ábendingu um að prófa <ph name="FEATURE_NAME" /> næst þegar þú opnar Chromium iOS.</translation>
 <translation id="2099452623287920103">Lykilorðið þitt og önnur Chromium-gögn sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chromium skaltu skrá þig aftur inn.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chromium er ekki notað í 1 mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Flipar verða áfram opnir.}one{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chromium er ekki notað í # mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Flipar verða áfram opnir.}other{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chromium er ekki notað í # mínútur. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Flipar verða áfram opnir.}}</translation>
 <translation id="2126108037660393668">Ekki tókst að staðfesta skrána sem var sótt.</translation>
@@ -151,6 +153,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2718390899429598676">Chromium dulkóðar gögnin þín til að auka öryggið.</translation>
 <translation id="2721354645805494590">Skráðu þig út til að fjarlægja Google-reikninginn þinn af Chromium</translation>
 <translation id="2722636413143664436">Skráðu þig inn á Chromium til að fá aðgang að aðgangsorðum, bókamerkjum og fleiru í öllum tækjunum þínum</translation>
+<translation id="2723860029395667894">Alltaf sýna flýtileið gervigreindarstillingar Google</translation>
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2753623023919742414">Smelltu til að leita</translation>
 <translation id="2768103863314748511">Stilltu Chromium sem sjálfgefinn PDF-lesara</translation>
@@ -638,6 +641,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8601359445272098721">Nýtt! Þú getur þýtt bæði texta og myndir á skjánum þínum með því að velja hnappinn „þýða skjá“</translation>
 <translation id="8619360774459241877">Ræsir Chromium...</translation>
 <translation id="8648201657708811153">Ekki er hægt að gera Google Chrome for Testing að sjálfgefna vafranum þínum.</translation>
+<translation id="8677922833187616101">Alltaf sýna flýtileið gervigreindarstillingar Google</translation>
 <translation id="8697124171261953979">Það stýrir því einnig hvaða síða opnast þegar þú ræsir Chromium eða leitar í veffangastikunni.</translation>
 <translation id="8704119203788522458">Chromium er þitt</translation>
 <translation id="8712637175834984815">Ég skil</translation>
