@@ -15,6 +15,7 @@ import "components/optimization_guide/proto/features/forms_classifications.proto
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
 import "components/optimization_guide/proto/features/history_query_intent.proto";
+import "components/optimization_guide/proto/features/ios_smart_tab_grouping.proto";
 import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/notification_content_detection.proto";
 import "components/optimization_guide/proto/features/password_change_submission.proto";
@@ -93,6 +94,8 @@ message LogAiDataRequest {
     WalletablePassExtractionLoggingData walletable_pass_extraction = 28;
 
     AmountExtractionLoggingData amount_extraction = 29;
+
+    IosSmartTabGroupingLoggingData ios_smart_tab_grouping = 30;
 
     DefaultLoggingData default = 1000;
   }
