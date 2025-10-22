@@ -1648,6 +1648,22 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_work_work_multiprocess_java") {
+    aar_path = "../androidx/cipd/libs/androidx_work_work_multiprocess/work-multiprocess.aar"
+    info_path = "../androidx/committed/libs/androidx_work_work_multiprocess/androidx_work_work_multiprocess.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_concurrent_concurrent_futures_ktx_java",
+      ":androidx_room_room_runtime_java",
+      ":androidx_work_work_runtime_java",
+      "//third_party/android_deps:guava_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_work_work_runtime_java") {
     aar_path =
         "../androidx/cipd/libs/androidx_work_work_runtime/work-runtime.aar"
