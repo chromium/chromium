@@ -6,9 +6,9 @@
 #define COMPONENTS_VIZ_CLIENT_CLIENT_RESOURCE_PROVIDER_H_
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -171,7 +171,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::flat_map<ResourceId, ImportedResource> imported_resources_;
+  std::unordered_map<ResourceId, ImportedResource> imported_resources_;
   // The ResourceIds in ClientResourceProvider start from 1 to avoid
   // conflicts with id from DisplayResourceProvider.
   ResourceIdGenerator id_generator_;
