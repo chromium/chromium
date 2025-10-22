@@ -84,12 +84,14 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& pref_name,
       std::optional<int> os_type,
-      std::optional<int> form_factor) const override;
+      std::optional<int> form_factor,
+      std::optional<jlong> max_sync_recency_microseconds) const override;
   base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& pref_name,
       std::optional<int> os_type,
-      std::optional<int> form_factor) const override;
+      std::optional<int> form_factor,
+      std::optional<jlong> max_sync_recency_microseconds) const override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Exposed for testing.

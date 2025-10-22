@@ -35,7 +35,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "components/sync_preferences/cross_device_pref_tracker/android/timestamped_pref_value_bridge_android.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/sync_preferences/cross_device_pref_tracker/android/jni_headers/CrossDevicePrefTracker_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1048,7 +1047,8 @@ namespace {
 // Helper to convert OsType and FormFactor from Java ints to optional C++ enums.
 CrossDevicePrefTracker::DeviceFilter ToDeviceFilter(
     std::optional<int> os_type,
-    std::optional<int> form_factor) {
+    std::optional<int> form_factor,
+    std::optional<jlong> max_sync_recency_microseconds) {
   CrossDevicePrefTracker::DeviceFilter filter;
   if (os_type.has_value()) {
     filter.os_type = static_cast<syncer::DeviceInfo::OsType>(os_type.value());
@@ -1056,6 +1056,10 @@ CrossDevicePrefTracker::DeviceFilter ToDeviceFilter(
   if (form_factor.has_value()) {
     filter.form_factor =
         static_cast<syncer::DeviceInfo::FormFactor>(form_factor.value());
+  }
+  if (max_sync_recency_microseconds.has_value()) {
+    filter.max_sync_recency =
+        base::Microseconds(max_sync_recency_microseconds.value());
   }
   return filter;
 }
@@ -1072,11 +1076,12 @@ ScopedJavaLocalRef<jobjectArray> CrossDevicePrefTrackerImpl::GetValues(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& pref_name,
     std::optional<int> os_type,
-    std::optional<int> form_factor) const {
+    std::optional<int> form_factor,
+    std::optional<jlong> max_sync_recency_microseconds) const {
   std::vector<ScopedJavaLocalRef<jobject>> result;
-  std::vector<TimestampedPrefValue> timestamped_pref_values =
-      GetValues(base::android::ConvertJavaStringToUTF8(env, pref_name),
-                ToDeviceFilter(os_type, form_factor));
+  std::vector<TimestampedPrefValue> timestamped_pref_values = GetValues(
+      base::android::ConvertJavaStringToUTF8(env, pref_name),
+      ToDeviceFilter(os_type, form_factor, max_sync_recency_microseconds));
   for (const auto& timestamped_pref_value : timestamped_pref_values) {
     TimestampedPrefValueBridge bridge(timestamped_pref_value);
     result.push_back(bridge.GetJavaObject());
@@ -1088,10 +1093,12 @@ ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetMostRecentValue(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& pref_name,
     std::optional<int> os_type,
-    std::optional<int> form_factor) const {
+    std::optional<int> form_factor,
+    std::optional<jlong> max_sync_recency_microseconds) const {
   std::optional<TimestampedPrefValue> timestamped_pref_value =
-      GetMostRecentValue(base::android::ConvertJavaStringToUTF8(env, pref_name),
-                         ToDeviceFilter(os_type, form_factor));
+      GetMostRecentValue(
+          base::android::ConvertJavaStringToUTF8(env, pref_name),
+          ToDeviceFilter(os_type, form_factor, max_sync_recency_microseconds));
   if (!timestamped_pref_value.has_value()) {
     return nullptr;
   }

@@ -81,13 +81,18 @@ public class CrossDevicePrefTracker {
      * @param prefName The canonical name of the pref to query.
      * @param osType The {@link OsType} to use. If null, matches any OS type.
      * @param formFactor The {@link FormFactor} to use. If null, matches any form factor.
+     * @param maxSyncRecencyMicroseconds A number of microseconds representing the maximum permitted
+     *     difference between a device's last updated timestamp and the current time. If null,
+     *     devices are included regardless of their last update time.
      */
     public TimestampedPrefValue[] getValues(
             String prefName,
             @Nullable @OsType Integer osType,
-            @Nullable @FormFactor Integer formFactor) {
+            @Nullable @FormFactor Integer formFactor,
+            @Nullable Long maxSyncRecencyMicroseconds) {
         if (mNativePtr == 0) return new TimestampedPrefValue[0];
-        return CrossDevicePrefTrackerJni.get().getValues(mNativePtr, prefName, osType, formFactor);
+        return CrossDevicePrefTrackerJni.get()
+                .getValues(mNativePtr, prefName, osType, formFactor, maxSyncRecencyMicroseconds);
     }
 
     /**
@@ -96,14 +101,19 @@ public class CrossDevicePrefTracker {
      * @param prefName The canonical name of the pref to query.
      * @param osType The {@link OsType} to use. If null, matches any OS type.
      * @param formFactor The {@link FormFactor} to use. If null, matches any form factor.
+     * @param maxSyncRecencyMicroseconds A number of microseconds representing the maximum permitted
+     *     difference between a device's last updated timestamp and the current time. If null,
+     *     devices are included regardless of their last update time.
      */
     public @Nullable TimestampedPrefValue getMostRecentValue(
             String prefName,
             @Nullable @OsType Integer osType,
-            @Nullable @FormFactor Integer formFactor) {
+            @Nullable @FormFactor Integer formFactor,
+            @Nullable Long maxSyncRecencyMicroseconds) {
         if (mNativePtr == 0) return null;
         return CrossDevicePrefTrackerJni.get()
-                .getMostRecentValue(mNativePtr, prefName, osType, formFactor);
+                .getMostRecentValue(
+                        mNativePtr, prefName, osType, formFactor, maxSyncRecencyMicroseconds);
     }
 
     @NativeMethods
@@ -112,12 +122,14 @@ public class CrossDevicePrefTracker {
                 long nativeCrossDevicePrefTracker,
                 String prefName,
                 @JniType("std::optional<int>") @Nullable @OsType Integer osType,
-                @JniType("std::optional<int>") @Nullable @FormFactor Integer formFactor);
+                @JniType("std::optional<int>") @Nullable @FormFactor Integer formFactor,
+                @JniType("std::optional<jlong>") @Nullable Long maxSyncRecencyMicroseconds);
 
         @Nullable TimestampedPrefValue getMostRecentValue(
                 long nativeCrossDevicePrefTracker,
                 String prefName,
                 @JniType("std::optional<int>") @Nullable @OsType Integer osType,
-                @JniType("std::optional<int>") @Nullable @FormFactor Integer formFactor);
+                @JniType("std::optional<int>") @Nullable @FormFactor Integer formFactor,
+                @JniType("std::optional<jlong>") @Nullable Long maxSyncRecencyMicroseconds);
     }
 }
