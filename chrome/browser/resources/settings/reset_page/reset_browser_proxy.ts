@@ -42,6 +42,11 @@ export interface ResetBrowserProxy {
    * @return A promise firing with the tool name, once it has been retrieved.
    */
   getTriggeredResetToolName(): Promise<string>;
+
+  /**
+   * @return A method that retrieves the list of tampered prefs.
+   */
+  getTamperedPreferencePaths(): Promise<string[]>;
 }
 
 export class ResetBrowserProxyImpl implements ResetBrowserProxy {
@@ -78,6 +83,10 @@ export class ResetBrowserProxyImpl implements ResetBrowserProxy {
 
   getTriggeredResetToolName(): Promise<string> {
     return sendWithPromise('getTriggeredResetToolName');
+  }
+
+  getTamperedPreferencePaths(): Promise<string[]> {
+    return sendWithPromise('getTamperedPreferencePaths');
   }
 
   static getInstance(): ResetBrowserProxy {

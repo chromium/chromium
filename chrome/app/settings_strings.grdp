@@ -2165,6 +2165,24 @@
   <message name="IDS_SETTINGS_RESET_LEARN_MORE_ACCESSIBILITY_TEXT" desc="Accessibility label for a 'Learn more' link that links out to a help article about resetting settings.">
     Learn more about resetting settings
   </message>
+  <message name="IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_TITLE" desc="The title of the dialog informing the user that automated resetting of some settings occurred.">
+    Chrome reset these settings
+  </message>
+  <message name="IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_BODY" desc="The body of the dialog informing the user that automated resetting of some settings occurred.">
+    These settings were changed from outside of Chrome. To protect you, Chrome reset them.
+  </message>
+  <message name="IDS_SETTINGS_RESET_PINNED_TABS" desc="A string that is used to describe the pinned tabs setting.">
+    Pinned tabs
+  </message>
+  <message name="IDS_SETTINGS_RESET_EXTENSIONS" desc="A string that is used to describe the extensions setting.">
+    Extension(s)
+  </message>
+  <message name="IDS_SETTINGS_RESET_HOMEPAGE" desc="A string that is used to describe the homepage setting.">
+    Homepage
+  </message>
+  <message name="IDS_SETTINGS_RESET_DSE" desc="A string that is used to describe the DSE setting.">
+    Default Search Engine (DSE)
+  </message>
 
   <!-- Reset card title and Chrome Cleanup item on Windows -->
   <if expr="is_win and _google_chrome">

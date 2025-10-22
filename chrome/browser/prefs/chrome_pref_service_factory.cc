@@ -568,6 +568,14 @@ void ClearResetTime(Profile* profile) {
   ProfilePrefStoreManager::ClearResetTime(profile->GetPrefs());
 }
 
+const base::Value::List& GetTamperedPrefList(Profile* profile) {
+  return profile->GetPrefs()->GetList(user_prefs::kTrackedPreferencesReset);
+}
+
+void ClearTamperedPrefList(Profile* profile) {
+  profile->GetPrefs()->ClearPref(user_prefs::kTrackedPreferencesReset);
+}
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   ProfilePrefStoreManager::RegisterProfilePrefs(registry);
 }

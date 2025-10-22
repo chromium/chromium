@@ -49,6 +49,9 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   void OnJavascriptAllowed() override {}
   void OnJavascriptDisallowed() override;
 
+  // Retrieves the paths of tampered preferences.
+  void HandleGetTamperedPreferencePaths(const base::Value::List& args);
+
  protected:
   // Overridden in tests to substitute with a test version of ProfileResetter.
   virtual ProfileResetter* GetResetter();

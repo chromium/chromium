@@ -107,6 +107,13 @@ base::Time GetResetTime(Profile* profile);
 // profile.
 void ClearResetTime(Profile* profile);
 
+// Returns the list of tampered pref paths. Returns an empty list if no prefs
+// are set.
+const base::Value::List& GetTamperedPrefList(Profile* profile);
+
+// Clears the list of tampered prefs.
+void ClearTamperedPrefList(Profile* profile);
+
 // Register user prefs used by chrome preference system.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
