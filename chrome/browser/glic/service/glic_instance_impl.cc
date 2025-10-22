@@ -187,6 +187,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
     embedder_to_show = GetActiveEmbedder();
   } else {
     DeactivateCurrentEmbedder();
+    // Ensure that there is a WebContents for the embedder to use.
+    host_.CreateContents(/*initially_hidden=*/false);
     embedder_to_show = CreateActiveEmbedder(options);
     CHECK(embedder_to_show);
     host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
@@ -553,9 +555,6 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   }
 
   host_.SetDelegate(delegate);
-
-  // Create the WebContents if it's not already created.
-  host_.CreateContents(/*initially_hidden=*/false);
   host_.webui_contents()->UpdateWebContentsVisibility(
       content::Visibility::VISIBLE);
   host_.NotifyWindowIntentToShow();
