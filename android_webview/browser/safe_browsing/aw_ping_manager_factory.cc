@@ -70,10 +70,6 @@ AwPingManagerFactory::GetURLLoaderFactory() const {
   if (testing_url_loader_factory_) {
     return testing_url_loader_factory_;
   }
-  // TODO(crbug.com/40820267): Support separate SafeBrowsingNetworkContexts per
-  // browser context instead of having the same one all contexts. If done
-  // similar to the chrome/ implementation, GetURLLoaderFactory will take in a
-  // browser context as a parameter.
   return android_webview::AwBrowserProcess::GetInstance()
       ->GetSafeBrowsingUIManager()
       ->GetURLLoaderFactory();
