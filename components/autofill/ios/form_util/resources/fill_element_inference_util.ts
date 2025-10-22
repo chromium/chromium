@@ -313,12 +313,12 @@ export function isTextAreaElement(element: any): boolean {
  * @return Whether element is a checkbox or a radio button.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-gCrWebLegacy.fill.isCheckableElement = function(element: any): boolean {
+export function isCheckableElement(element: any): boolean {
   if (!element) {
     return false;
   }
   return element.type === 'checkbox' || element.type === 'radio';
-};
+}
 
 /**
  * Returns true if `element` is one of the input element types that can be
@@ -333,7 +333,7 @@ gCrWebLegacy.fill.isCheckableElement = function(element: any): boolean {
  */
 export function isAutofillableInputElement(element: Element): boolean {
   return isTextField(element) ||
-      (gCrWebLegacy.fill.isCheckableElement(element) &&
+      (isCheckableElement(element) &&
        !autofillFormFeaturesApi.getFunction(
            'isAutofillIgnoreCheckableElementsEnabled')());
 }

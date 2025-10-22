@@ -571,7 +571,7 @@ gCrWebLegacy.fill.inferLabelFromDefinitionList =
 gCrWebLegacy.fill.inferLabelForElement =
     function(element: FormControlElement): inferenceUtil.InferredLabel|null {
   let r: inferenceUtil.InferredLabel|null = null;
-  if (gCrWebLegacy.fill.isCheckableElement(element)) {
+  if (inferenceUtil.isCheckableElement(element)) {
     r = inferLabelFromNext(element);
     if (r) {
       return r;

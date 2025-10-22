@@ -541,7 +541,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
         field.max_length = 524288;
       }
     }
-    field.is_checkable = gCrWebLegacy.fill.isCheckableElement(element);
+    field.is_checkable = inferenceUtil.isCheckableElement(element);
   } else if (inferenceUtil.isTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else {

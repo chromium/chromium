@@ -126,7 +126,7 @@ function isFormInteresting_(form) {
 function countEditableElements_(elements) {
   let numEditableElements = 0;
   for (const element of elements) {
-    if (!__gCrWeb.fill.isCheckableElement(element)) {
+    if (!inferenceUtil.isCheckableElement(element)) {
       ++numEditableElements;
     }
   }
@@ -276,7 +276,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
     }
 
     // TODO(crbug.com/40573146): Investigate autofilling checkable elements.
-    if (__gCrWeb.fill.isCheckableElement(element)) {
+    if (inferenceUtil.isCheckableElement(element)) {
       continue;
     }
 
@@ -417,7 +417,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
       // Reset to the first index.
       // TODO(bondd): Store initial values and reset to the correct one here.
       value = element.options[0].value;
-    } else if (__gCrWeb.fill.isCheckableElement(element)) {
+    } else if (inferenceUtil.isCheckableElement(element)) {
       // TODO(crbug.com/40573146): Investigate autofilling checkable elements.
     }
     if (value !== null) {
@@ -582,7 +582,7 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
     field.isAutofilled = true;
   } else if (inferenceUtil.isSelectElement(field)) {
     filled = fillUtil.setInputElementValue(data['value'], field);
-  } else if (__gCrWeb.fill.isCheckableElement(field)) {
+  } else if (inferenceUtil.isCheckableElement(field)) {
     filled = fillUtil.setInputElementValue(data['is_checked'], field);
   }
   return filled;
