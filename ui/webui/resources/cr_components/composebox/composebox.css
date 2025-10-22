@@ -359,7 +359,7 @@
   display: none;
   opacity: 1;
   position: absolute;
-  right: 16px;
+  inset-inline-end: 16px;
   top: 6px;
 }
 
@@ -371,17 +371,12 @@
 
 :host([expanded_]) #lensIcon {
   animation: fade-out-in var(--lens-icon-animation-duration) linear;
-  right: 68px;
+  inset-inline-end: 68px;
   top: auto;
 }
 
 :host([lens-button-disabled_]) #lensIcon {
   opacity: 0.3;
-}
-
-:host-context([dir='rtl']) #lensIcon {
-  left: 68px;
-  right: unset;
 }
 
 :host(:not([show-submit_])) #submitContainer,
