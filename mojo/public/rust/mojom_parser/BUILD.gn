@@ -13,3 +13,15 @@ rust_static_library("mojom_parser") {
   crate_root = "lib.rs"
   deps = [ "//third_party/rust/anyhow/v1:lib" ]
 }
+
+rust_static_library("mojom_parser_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "test.rs"
+  sources = [ "test.rs" ]
+  deps = [
+    ":mojom_parser",
+    "//testing/rust_gtest_interop",
+    "//third_party/rust/anyhow/v1:lib",
+  ]
+}

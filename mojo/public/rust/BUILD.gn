@@ -4,12 +4,14 @@
 import("//build/rust/rust_bindgen.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
 
 group("all") {
   # Meta target, don't depend on it from production code
   testonly = true
   deps = [
     ":mojo_c_system_bindings",
+    ":rust_mojo_tests",
     "mojom_parser",
   ]
 }
@@ -42,5 +44,12 @@ rust_executable("exe_using_system_api") {
   deps = [
     ":mojo_rust_system_api",
     "//base",
+  ]
+}
+
+test("rust_mojo_tests") {
+  deps = [
+    "mojom_parser:mojom_parser_unittests",
+    "//base/test:run_all_unittests",
   ]
 }

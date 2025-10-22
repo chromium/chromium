@@ -18,4 +18,5 @@ pub use crate::ast::*;
 pub use crate::deparse_values::*;
 pub use crate::pack::*;
 pub use crate::parse_messages::*;
+pub use crate::parse_primitives::ParserData;
 pub use crate::parse_values::*;
