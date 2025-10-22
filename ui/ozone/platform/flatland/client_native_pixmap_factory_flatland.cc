@@ -67,12 +67,12 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     // 1. all the planes are pointing to the same underlying VM objects.
     // 2. the end of last plane should cover all the memory blocks.
     // 3. vmo.get_size() should return a size to cover all the planes.
-    // 4. vmo.get_size() should return a size well aligned with ZX_PAGE_SIZE.
+    // 4. vmo.get_size() should return a size well aligned with system page size.
     // See checks being performed in the CreateFromHandle.
 
     CHECK(handle_.planes[0].vmo);
     CHECK_EQ(handle_.planes[0].vmo.get_size(&mapping_size_), ZX_OK);
-    CHECK_EQ(mapping_size_ % ZX_PAGE_SIZE, 0UL);
+    CHECK_EQ(mapping_size_ % zx_system_get_page_size(), 0UL);
 
     // Pre-commit the pages of the pixmap, since it is likely that every page
     // will be touched. This is also necessary to successfully pre-fill the page
@@ -166,7 +166,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     // zx_vmo_get_size() should return a page-aligned size. This is important
     // because we request a page-aligned size in
     // ClientNativePixmapFuchsia::Map().
-    DCHECK_EQ(vmo_size % ZX_PAGE_SIZE, 0u);
+    DCHECK_EQ(vmo_size % zx_system_get_page_size(), 0u);
 
     // The CanFitImageForSizeAndFormat() call above should guarantee that the
     // (offset + size) for each plane is <= |last_plane_end|, and since we now
