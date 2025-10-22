@@ -398,6 +398,12 @@ inline bool EqualIgnoringASCIICase(const StringView& a,
                     : EqualIgnoringASCIICase(a.Span16(), span);
 }
 
+WTF_EXPORT int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b);
+inline bool CodeUnitCompareIgnoringAsciiCaseLessThan(StringView a,
+                                                     StringView b) {
+  return CodeUnitCompareIgnoringAsciiCase(a, b) < 0;
+}
+
 // TODO(esprehn): Can't make this an overload of blink::Equal since that makes
 // calls to Equal() that pass literal strings ambiguous. Figure out if we can
 // replace all the callers with EqualStringView and then rename it to Equal().

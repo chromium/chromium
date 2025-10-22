@@ -747,6 +747,12 @@ WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
                                                 const LChar*);
 
+template <typename CharacterType1, typename CharacterType2>
+int CodeUnitCompareIgnoringAsciiCase(base::span<const CharacterType1> c1,
+                                     base::span<const CharacterType2> c2) {
+  return CodeUnitCompare(c1, c2, [](auto c) { return ToASCIILower(c); });
+}
+
 template <typename CharType>
 inline wtf_size_t Find(base::span<const CharType> characters,
                        CharType match_character,

@@ -199,7 +199,7 @@ static String FormatNumber(double number, const char* suffix) {
   return result;
 }
 
-static String FormatInfinityOrNaN(double number, const char* suffix) {
+static String FormatInfinityOrNaN(double number, StringView suffix) {
   String result;
   if (std::isinf(number)) {
     if (number > 0) {
@@ -213,7 +213,7 @@ static String FormatInfinityOrNaN(double number, const char* suffix) {
     result = "NaN";
   }
 
-  if (strlen(suffix) > 0) {
+  if (suffix.length() > 0) {
     result = StrCat({result, " * 1", suffix});
   }
   return result;
@@ -305,14 +305,15 @@ String CSSNumericLiteralValue::CustomCSSText() const {
         if (!std::isfinite(value)) {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
-          text = FormatNumber(value, UnitTypeToString(GetType()));
+          text =
+              FormatNumber(value, UnitTypeToString(GetType()).Utf8().c_str());
         }
       } else {
         StringBuilder builder;
         int int_value = value;
-        const char* unit_type = UnitTypeToString(GetType());
+        StringView unit_type = UnitTypeToString(GetType());
         builder.AppendNumber(int_value);
-        builder.Append(StringView(unit_type));
+        builder.Append(unit_type);
         text = builder.ReleaseString();
       }
     } break;

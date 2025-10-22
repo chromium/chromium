@@ -194,6 +194,51 @@ TEST(StringImplTest, UpperASCII) {
       StringImpl::Create(kTestWithNonASCIIComparison)->UpperASCII().get()));
 }
 
+TEST(StringImplTest, CodeUnitCompareIgnoringAsciiCase) {
+  StringView lchar1("abC");
+  StringView lchar2("ABc");
+  StringView lchar3("xyz");
+  StringView lchar4("ab");
+  StringView uchar1(u"abC");
+  StringView uchar2(u"ABc");
+  StringView uchar3(u"xyz");
+  StringView uchar4(u"ab");
+  StringView empty_lchar("");
+  StringView empty_uchar(u"");
+  StringView lchar_ascii("abc");
+  StringView uchar_nonascii(u"ab\u00E1");
+  StringView lchar_nonascii("ab\xE1");
+
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(lchar1, lchar2), 0);
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(uchar1, uchar2), 0);
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(empty_lchar, empty_lchar), 0);
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(empty_uchar, empty_uchar), 0);
+
+  EXPECT_LT(CodeUnitCompareIgnoringAsciiCase(lchar1, lchar3), 0);
+  EXPECT_GT(CodeUnitCompareIgnoringAsciiCase(lchar3, lchar1), 0);
+  EXPECT_GT(CodeUnitCompareIgnoringAsciiCase(lchar1, lchar4), 0);
+  EXPECT_LT(CodeUnitCompareIgnoringAsciiCase(lchar4, lchar1), 0);
+  EXPECT_LT(CodeUnitCompareIgnoringAsciiCase(uchar1, uchar3), 0);
+  EXPECT_GT(CodeUnitCompareIgnoringAsciiCase(uchar3, uchar1), 0);
+  EXPECT_GT(CodeUnitCompareIgnoringAsciiCase(uchar1, uchar4), 0);
+  EXPECT_LT(CodeUnitCompareIgnoringAsciiCase(uchar4, uchar1), 0);
+  EXPECT_GT(CodeUnitCompareIgnoringAsciiCase(lchar1, empty_lchar), 0);
+  EXPECT_LT(CodeUnitCompareIgnoringAsciiCase(empty_lchar, lchar1), 0);
+
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(lchar1, uchar2), 0);
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(uchar1, lchar2), 0);
+  EXPECT_LT(CodeUnitCompareIgnoringAsciiCase(lchar1, uchar3), 0);
+  EXPECT_GT(CodeUnitCompareIgnoringAsciiCase(uchar3, lchar1), 0);
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(lchar_ascii, uchar_nonascii), -1);
+  EXPECT_EQ(CodeUnitCompareIgnoringAsciiCase(lchar_nonascii, uchar_nonascii),
+            0);
+
+  EXPECT_TRUE(CodeUnitCompareIgnoringAsciiCaseLessThan(lchar1, lchar3));
+  EXPECT_FALSE(CodeUnitCompareIgnoringAsciiCaseLessThan(lchar3, lchar1));
+  EXPECT_FALSE(CodeUnitCompareIgnoringAsciiCaseLessThan(lchar1, lchar2));
+  EXPECT_TRUE(CodeUnitCompareIgnoringAsciiCaseLessThan(lchar4, lchar1));
+}
+
 TEST(StringImplTest, WtfReverseFind) {
   const auto text = base::byte_span_from_cstring("becde");
 

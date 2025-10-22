@@ -961,8 +961,9 @@ UnitsVector CollectSumOrProductInOrder(const CSSMathExpressionOperation* root) {
   // ret.
   auto comp = [&](const CSSPrimitiveValue::UnitType& key_a,
                   const CSSPrimitiveValue::UnitType& key_b) {
-    return UNSAFE_TODO(strcmp(CSSPrimitiveValue::UnitTypeToString(key_a),
-                              CSSPrimitiveValue::UnitTypeToString(key_b))) < 0;
+    StringView a = CSSPrimitiveValue::UnitTypeToString(key_a);
+    StringView b = CSSPrimitiveValue::UnitTypeToString(key_b);
+    return CodeUnitCompareIgnoringAsciiCaseLessThan(a, b);
   };
   Vector<CSSPrimitiveValue::UnitType> keys;
   keys.reserve(numeric_children.size());

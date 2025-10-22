@@ -518,6 +518,77 @@ TEST(StringViewTest, EqualIgnoringASCIICase) {
   EXPECT_TRUE(EqualIgnoringASCIICase(StringView(""), ""));
 }
 
+TEST(StringViewTest, CodeUnitCompareIgnoringAsciiCase) {
+  StringView a8("abc");
+  StringView b8("abc");
+  StringView c8("ABC");
+  StringView d8("abd");
+  StringView e8("");
+
+  EXPECT_EQ(0, blink::CodeUnitCompareIgnoringAsciiCase(a8, b8));
+  EXPECT_EQ(0, blink::CodeUnitCompareIgnoringAsciiCase(a8, c8));
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(a8, d8), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(d8, a8), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(a8, e8), 0);
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(e8, a8), 0);
+
+  StringView a16(u"abc");
+  StringView b16(u"abc");
+  StringView c16(u"ABC");
+  StringView d16(u"abd");
+  StringView e16(u"");
+
+  EXPECT_EQ(0, blink::CodeUnitCompareIgnoringAsciiCase(a16, b16));
+  EXPECT_EQ(0, blink::CodeUnitCompareIgnoringAsciiCase(a16, c16));
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(a16, d16), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(d16, a16), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(a16, e16), 0);
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(e16, a16), 0);
+
+  EXPECT_EQ(0, blink::CodeUnitCompareIgnoringAsciiCase(a8, a16));
+  EXPECT_EQ(0, blink::CodeUnitCompareIgnoringAsciiCase(a8, c16));
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(a8, d16), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(d16, a8), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(a8, e16), 0);
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(e16, a8), 0);
+
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a8, b8));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a8, c8));
+  EXPECT_TRUE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a8, d8));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(d8, a8));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a8, e8));
+  EXPECT_TRUE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(e8, a8));
+
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a16, b16));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a16, c16));
+  EXPECT_TRUE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a16, d16));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(d16, a16));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(a16, e16));
+  EXPECT_TRUE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(e16, a16));
+
+  StringView short8("ab");
+  StringView long8("abc");
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(short8, long8), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(long8, short8), 0);
+  EXPECT_TRUE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(short8, long8));
+  EXPECT_FALSE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(long8, short8));
+
+  StringView short16(u"ab");
+  StringView long16(u"abc");
+  EXPECT_LT(blink::CodeUnitCompareIgnoringAsciiCase(short16, long16), 0);
+  EXPECT_GT(blink::CodeUnitCompareIgnoringAsciiCase(long16, short16), 0);
+  EXPECT_TRUE(blink::CodeUnitCompareIgnoringAsciiCaseLessThan(short16, long16));
+  EXPECT_FALSE(
+      blink::CodeUnitCompareIgnoringAsciiCaseLessThan(long16, short16));
+
+  StringView non_ascii8("ab\xE1");
+  StringView non_ascii16(u"ab\u00E1");
+  EXPECT_EQ(0,
+            blink::CodeUnitCompareIgnoringAsciiCase(non_ascii8, non_ascii16));
+  EXPECT_FALSE(
+      blink::CodeUnitCompareIgnoringAsciiCaseLessThan(non_ascii8, non_ascii16));
+}
+
 TEST(StringViewTest, DeprecatedEqualIgnoringCase) {
   constexpr UChar kLongSAndKelvin[] = {0x017F, 0x212A, 0};
   EXPECT_TRUE(DeprecatedEqualIgnoringCase("SK", kLongSAndKelvin));

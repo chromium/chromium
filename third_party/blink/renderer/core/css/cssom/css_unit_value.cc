@@ -125,7 +125,7 @@ String CSSUnitValue::unit() const {
   if (unit_ == CSSPrimitiveValue::UnitType::kPercentage) {
     return "percent";
   }
-  return CSSPrimitiveValue::UnitTypeToString(unit_);
+  return CSSPrimitiveValue::UnitTypeToString(unit_).ToString();
 }
 
 CSSStyleValue::StyleValueType CSSUnitValue::GetType() const {

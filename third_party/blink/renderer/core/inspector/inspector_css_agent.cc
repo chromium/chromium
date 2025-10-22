@@ -3213,13 +3213,13 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
       if (!exp_value.IsNumericLiteralValue()) {
         continue;
       }
-      const char* value_name =
+      StringView value_name =
           CSSPrimitiveValue::UnitTypeToString(exp_value.GetUnitType());
       std::unique_ptr<protocol::CSS::MediaQueryExpression>
           media_query_expression =
               protocol::CSS::MediaQueryExpression::create()
                   .setValue(exp_value.GetDoubleValue())
-                  .setUnit(String(value_name))
+                  .setUnit(value_name.ToString())
                   .setFeature(media_query_exp.MediaFeature())
                   .build();
 

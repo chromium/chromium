@@ -1601,12 +1601,6 @@ bool EqualIgnoringNullity(StringImpl* a, StringImpl* b) {
   return Equal(a, b);
 }
 
-template <typename CharacterType1, typename CharacterType2>
-int CodeUnitCompareIgnoringASCIICase(base::span<const CharacterType1> c1,
-                                     base::span<const CharacterType2> c2) {
-  return CodeUnitCompare(c1, c2, [](auto c) { return ToASCIILower(c); });
-}
-
 template <typename CharacterType>
 int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
                                      base::span<const CharacterType> string2) {
@@ -1614,7 +1608,7 @@ int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
     return !string2.empty() ? -1 : 0;
   }
   return VisitCharacters(*string1, [string2](auto string1_chars) {
-    return CodeUnitCompareIgnoringASCIICase(string1_chars, string2);
+    return CodeUnitCompareIgnoringAsciiCase(string1_chars, string2);
   });
 }
 

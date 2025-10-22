@@ -301,6 +301,15 @@ StringView StringView::LowerASCIIMaybeUsingBuffer(
                           StackStringViewAllocator(buffer));
 }
 
+int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b) {
+  if (a.Is8Bit()) {
+    return b.Is8Bit() ? CodeUnitCompareIgnoringAsciiCase(a.Span8(), b.Span8())
+                      : CodeUnitCompareIgnoringAsciiCase(a.Span8(), b.Span16());
+  }
+  return b.Is8Bit() ? CodeUnitCompareIgnoringAsciiCase(a.Span16(), b.Span8())
+                    : CodeUnitCompareIgnoringAsciiCase(a.Span16(), b.Span16());
+}
+
 UChar32 StringView::CodepointAt(unsigned i) const {
   SECURITY_DCHECK(i < length());
   if (Is8Bit())
