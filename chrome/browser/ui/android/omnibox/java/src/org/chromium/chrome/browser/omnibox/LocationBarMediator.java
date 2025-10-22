@@ -231,6 +231,7 @@ class LocationBarMediator
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final ObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
+    private final boolean mPersistEditingState;
 
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mInstallButtonToolbarWidthConsumer;
@@ -314,6 +315,11 @@ class LocationBarMediator
                         mIsTablet,
                         this::shouldShowLensButton,
                         this::updateLensButtonVisibility);
+
+        mPersistEditingState =
+                OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()
+                        && OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.getValue()
+                        && mIsTablet;
     }
 
     /**
@@ -1614,6 +1620,10 @@ class LocationBarMediator
     /* package */ static class LocationBarState implements UserData {
         public String userText = "";
         public boolean isUrlBarFocused;
+        // On Android, we don't need to persist the cursor position since it is provided in
+        // selectionStart or selectionEnd when no text is selected.
+        public int selectionStart;
+        public int selectionEnd;
 
         static @Nullable LocationBarState from(@Nullable Tab tab) {
             if (tab == null || tab.isDestroyed()) {
@@ -1640,6 +1650,11 @@ class LocationBarMediator
             if (previousState != null) {
                 previousState.userText = mUrlCoordinator.getTextWithoutAutocomplete();
                 previousState.isUrlBarFocused = isUrlBarFocused();
+
+                if (mPersistEditingState) {
+                    previousState.selectionStart = mUrlCoordinator.getSelectionStart();
+                    previousState.selectionEnd = mUrlCoordinator.getSelectionEnd();
+                }
             }
         }
 
@@ -1651,6 +1666,10 @@ class LocationBarMediator
             clearOmniboxFocus();
             setUrlBarFocus(
                     true, currentState.userText, OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
+            if (mPersistEditingState) {
+                mUrlCoordinator.setSelection(
+                        currentState.selectionStart, currentState.selectionEnd);
+            }
         }
     }
 

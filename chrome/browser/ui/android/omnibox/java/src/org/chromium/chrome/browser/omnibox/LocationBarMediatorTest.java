@@ -231,6 +231,7 @@ public class LocationBarMediatorTest {
     private UrlBarData mUrlBarData;
     private boolean mIsToolbarMicEnabled;
     private LocationBarEmbedderUiOverrides mUiOverrides;
+    private OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
 
     @Before
     public void setUp() {
@@ -258,9 +259,8 @@ public class LocationBarMediatorTest {
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
-                new OneshotSupplierImpl<>();
-        templateUrlServiceSupplier.set(mTemplateUrlService);
+        mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
+        mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         mUiOverrides = new LocationBarEmbedderUiOverrides();
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
@@ -279,7 +279,7 @@ public class LocationBarMediatorTest {
                         mProfileSupplier,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
-                        templateUrlServiceSupplier,
+                        mTemplateUrlServiceSupplier,
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ false,
@@ -296,7 +296,18 @@ public class LocationBarMediatorTest {
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
 
-        mTabletMediator =
+        mTabletMediator = createTabletMediator();
+
+        ShadowUrlUtilities.sIsNtp = false;
+        sGeoHeaderPrimeCount = 0;
+        sGeoHeaderStopCount = 0;
+        GeolocationHeader.setPrimeLocationForGeoHeaderIfEnabledForTesting(
+                () -> sGeoHeaderPrimeCount++);
+        GeolocationHeader.setStopListeningForLocationUpdatesForTesting(() -> sGeoHeaderStopCount++);
+    }
+
+    private LocationBarMediator createTabletMediator() {
+        var tabletMediator =
                 new LocationBarMediator(
                         mContext,
                         mLocationBarTablet,
@@ -305,7 +316,7 @@ public class LocationBarMediatorTest {
                         mProfileSupplier,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
-                        templateUrlServiceSupplier,
+                        mTemplateUrlServiceSupplier,
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ true,
@@ -318,22 +329,16 @@ public class LocationBarMediatorTest {
                         () -> mModalDialogManager,
                         new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator);
-        mTabletMediator.setCoordinators(
+        tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int buttonWidth =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
-        mTabletMediator.getMicButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        mTabletMediator.getLensButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        mTabletMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        mTabletMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-
-        ShadowUrlUtilities.sIsNtp = false;
-        sGeoHeaderPrimeCount = 0;
-        sGeoHeaderStopCount = 0;
-        GeolocationHeader.setPrimeLocationForGeoHeaderIfEnabledForTesting(
-                () -> sGeoHeaderPrimeCount++);
-        GeolocationHeader.setStopListeningForLocationUpdatesForTesting(() -> sGeoHeaderStopCount++);
+        tabletMediator.getMicButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        tabletMediator.getLensButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        tabletMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        tabletMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        return tabletMediator;
     }
 
     @Test
@@ -1727,6 +1732,68 @@ public class LocationBarMediatorTest {
                 LocationBarMediator.LocationBarState.from(previousTab);
         assertTrue(previousState.isUrlBarFocused);
         assertEquals(previousText, previousState.userText);
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
+    public void testRestoringTextAndEditingStateOnTablet() {
+        OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.setForTesting(true);
+        // Recreate mediator to respect the overridden feature flag and params.
+        mTabletMediator = createTabletMediator();
+
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
+        NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);
+        doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
+
+        UserDataHost tabUserDataHost = new UserDataHost();
+        doReturn(tabUserDataHost).when(mTab).getUserDataHost();
+
+        // Prepare a state to be restored for mTab.
+        String newText = "new text";
+        final int newSelectionStart = 2;
+        final int newSelectionEnd = 6;
+        LocationBarMediator.LocationBarState newState =
+                LocationBarMediator.LocationBarState.from(mTab);
+        newState.userText = newText;
+        newState.isUrlBarFocused = true;
+        newState.selectionStart = newSelectionStart;
+        newState.selectionEnd = newSelectionEnd;
+
+        Tab previousTab = Mockito.mock(Tab.class);
+        doReturn(mProfile).when(previousTab).getProfile();
+        UserDataHost previousTabUserDataHost = new UserDataHost();
+        doReturn(previousTabUserDataHost).when(previousTab).getUserDataHost();
+
+        // Emulate a state where the omnibox is focused and user has typed a text.
+        mTabletMediator.onUrlFocusChange(true);
+        String previousText = "previous text";
+        final int previousSelectionStart = 1;
+        final int previousSelectionEnd = 5;
+        doReturn(previousText).when(mUrlCoordinator).getTextWithoutAutocomplete();
+        doReturn(previousText).when(mUrlCoordinator).getTextWithAutocomplete();
+        doReturn(previousSelectionStart).when(mUrlCoordinator).getSelectionStart();
+        doReturn(previousSelectionEnd).when(mUrlCoordinator).getSelectionEnd();
+
+        // Emulate a tab switch from previousTab to mTab.
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        mTabletMediator.onTabChanged(previousTab);
+        mTabletMediator.onUrlChanged(true);
+
+        // The state for mTab was restored.
+        verify(mUrlCoordinator)
+                .setUrlBarData(
+                        argThat(matchesUrlBarDataForQuery(newText)),
+                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(SelectionState.SELECT_END));
+        verify(mUrlCoordinator).setSelection(eq(newSelectionStart), eq(newSelectionEnd));
+
+        // The state for previousTab was saved.
+        LocationBarMediator.LocationBarState previousState =
+                LocationBarMediator.LocationBarState.from(previousTab);
+        assertTrue(previousState.isUrlBarFocused);
+        assertEquals(previousText, previousState.userText);
+        assertEquals(previousSelectionStart, previousState.selectionStart);
+        assertEquals(previousSelectionEnd, previousState.selectionEnd);
     }
 
     @Test

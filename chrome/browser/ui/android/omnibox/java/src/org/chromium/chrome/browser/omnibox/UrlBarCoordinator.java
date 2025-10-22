@@ -231,6 +231,17 @@ public class UrlBarCoordinator
         return mUrlBar.getTextWithoutAutocomplete();
     }
 
+    /**
+     * Sets the selection anchor to startPos and the selection edge to endPos. When startPos is same
+     * as endPos, no text is selected and the cursor moves to startPos/EndPos.
+     *
+     * @param startPos The start position of the selection.
+     * @param endPos The end position of the selection
+     */
+    public void setSelection(int startPos, int endPos) {
+        mUrlBar.setSelection(startPos, endPos);
+    }
+
     /** Returns the {@link ViewRectProvider} for the UrlBar. */
     public ViewRectProvider getViewRectProvider() {
         return new ViewRectProvider(mUrlBar);
