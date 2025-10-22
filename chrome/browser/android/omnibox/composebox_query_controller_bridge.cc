@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -25,6 +27,11 @@
 
 static jlong JNI_ComposeBoxQueryControllerBridge_Init(JNIEnv* env,
                                                       Profile* profile) {
+  auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_service || !aim_service->IsAimEligible()) {
+    return 0L;
+  }
+
   ComposeboxQueryControllerBridge* instance =
       new ComposeboxQueryControllerBridge(profile);
   return reinterpret_cast<intptr_t>(instance);
