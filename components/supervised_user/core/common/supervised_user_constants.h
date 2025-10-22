@@ -186,8 +186,6 @@ extern const char* const kCustodianInfoPrefs[10];
 // Filenames.
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
-extern const char kSyncGoogleDashboardURL[];
-
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
 

@@ -160,4 +160,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "account_managed_status_timeout",
                    base::Seconds(5));
 
+BASE_FEATURE(kSyncEnableNewSyncDashboardUrl, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

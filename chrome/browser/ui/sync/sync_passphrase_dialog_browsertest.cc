@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(SyncPassphraseDialogBrowserTest, FooterLink) {
   // The sync settings page is open and active.
   GURL active_url =
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
-  EXPECT_TRUE(
-      base::StartsWith(active_url.spec(), chrome::kSyncGoogleDashboardURL))
+  EXPECT_TRUE(base::StartsWith(active_url.spec(),
+                               chrome::kLegacySyncGoogleDashboardURL))
       << "active_url: " << active_url;
 }

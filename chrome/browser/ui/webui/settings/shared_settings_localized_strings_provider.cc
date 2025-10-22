@@ -199,7 +199,10 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
-          GURL(chrome::kSyncGoogleDashboardURL),
+          GURL(base::FeatureList::IsEnabled(
+                   syncer::kSyncEnableNewSyncDashboardUrl)
+                   ? chrome::kNewSyncGoogleDashboardURL
+                   : chrome::kLegacySyncGoogleDashboardURL),
           g_browser_process->GetApplicationLocale())
           .spec();
 

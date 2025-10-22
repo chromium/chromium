@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -348,7 +349,11 @@ public class SyncSettingsUtils {
      */
     public static void openSyncDashboard(Activity activity) {
         // TODO(crbug.com/41450409): Create a builder for custom tab intents.
-        openCustomTabWithURL(activity, ChromeStringConstants.SYNC_DASHBOARD_URL);
+        openCustomTabWithURL(
+                activity,
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL)
+                        ? ChromeStringConstants.NEW_SYNC_DASHBOARD_URL
+                        : ChromeStringConstants.LEGACY_SYNC_DASHBOARD_URL);
     }
 
     /**

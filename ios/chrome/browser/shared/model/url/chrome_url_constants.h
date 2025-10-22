@@ -82,9 +82,13 @@ inline constexpr char kChromeUIUserDefaultsInternalsHost[] =
 inline constexpr char kChromeUIVersionHost[] = "version";
 inline constexpr char kChromeUIDownloadsHost[] = "downloads";
 
-// URL to the sync google dashboard.
-inline constexpr char kSyncGoogleDashboardURL[] =
+// Legacy URL to the sync google dashboard.
+inline constexpr char kLegacySyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync/";
+
+// New URL to the sync google dashboard.
+inline constexpr char kNewSyncGoogleDashboardURL[] =
+    "https://chrome.google.com/data";
 
 // URL to opt-in to on-device encryption.
 inline constexpr char kOnDeviceEncryptionOptInURL[] =

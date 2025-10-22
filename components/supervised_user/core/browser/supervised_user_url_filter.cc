@@ -229,9 +229,12 @@ bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
   // startup) for performance if the set of allowed URL prefixes grows large.
   static const char* const kAllowedUrlPrefixes[] = {
       // The Chrome sync dashboard is linked to from within Chrome settings.
-      // Allow both the initial URL that is loaded, and the URL to which it
-      // redirects.
-      kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
+      // Allow both the initial URL that is loaded, and the URL to which it may
+      // redirect. The legacy counterparts are also allowed in case there were
+      // tabs open.
+      "https://www.google.com/settings/chrome/sync",
+      "https://www.google.com/settings/chrome/data",
+      "https://chrome.google.com/sync", "https://chrome.google.com/data"};
 
   for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
     if (base::StartsWith(effective_url.spec(), allowedUrlPrefix)) {

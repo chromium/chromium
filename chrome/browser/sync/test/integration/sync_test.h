@@ -253,7 +253,7 @@ class SyncTest : public PlatformBrowserTest,
       SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
       SetupSyncMode setup_mode = kSyncTheFeature);
 
-  // This is similar to click the reset button on chrome.google.com/sync.
+  // This is similar to click the reset button on chrome.google.com/data.
   // Only takes effect when running with external servers.
   // Please call this before setting anything.
   [[nodiscard]] bool ResetSyncForPrimaryAccount();

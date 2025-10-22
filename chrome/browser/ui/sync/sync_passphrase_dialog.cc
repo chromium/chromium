@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -21,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,7 +38,9 @@ namespace {
 void OpenSyncDashboardAndCloseDialog(BrowserWindowInterface& browser,
                                      ui::DialogModel* model) {
   GURL sync_dashboard_url = google_util::AppendGoogleLocaleParam(
-      GURL(chrome::kSyncGoogleDashboardURL),
+      GURL(base::FeatureList::IsEnabled(syncer::kSyncEnableNewSyncDashboardUrl)
+               ? chrome::kNewSyncGoogleDashboardURL
+               : chrome::kLegacySyncGoogleDashboardURL),
       g_browser_process->GetApplicationLocale());
   browser.OpenGURL(sync_dashboard_url,
                    WindowOpenDisposition::NEW_FOREGROUND_TAB);

@@ -613,10 +613,14 @@ TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
   // appended, and the redirect URL with locale appended).
   EXPECT_EQ(GetFilteringBehavior("https://www.google.com/settings/chrome/sync"),
             FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/settings/chrome/data"),
+            FilteringBehavior::kAllow);
   EXPECT_EQ(GetFilteringBehavior(
                 "https://www.google.com/settings/chrome/sync?hl=en-US"),
             FilteringBehavior::kAllow);
   EXPECT_EQ(GetFilteringBehavior("https://chrome.google.com/sync?hl=en-US"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://chrome.google.com/data?hl=en-US"),
             FilteringBehavior::kAllow);
 }
 

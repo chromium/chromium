@@ -1106,7 +1106,7 @@ TEST_F(SyncServiceImplTest, DashboardResetTwiceDoesNotCrash) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  // Disable sync via dashboard (https://chrome.google.com/sync).
+  // Disable sync via dashboard (https://chrome.google.com/data).
   service()->OnActionableProtocolError(
       {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
 

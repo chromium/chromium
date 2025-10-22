@@ -2473,7 +2473,7 @@ Your Google account may have other forms of browsing history like searches and a
           =1 {Item saved in your Google Account, <ph name="ACCOUNT_EMAIL">%1$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}
           other {Items saved in your Google Account, <ph name="ACCOUNT_EMAIL">%1$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}}
       </message>
-      <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data.">
+      <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/data Dashboard to manage sync data.">
         Review your synced data
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_TITLE" desc="Title of sync passphrase type dialog. [CHAR_LIMIT=24]">

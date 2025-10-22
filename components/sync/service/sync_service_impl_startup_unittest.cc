@@ -462,7 +462,7 @@ TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
-  // Mimic sync reset via the https://chrome.google.com/sync dashboard.
+  // Mimic sync reset via the https://chrome.google.com/data dashboard.
   // Sync-the-feature should be disabled. On desktop, the sync service will
   // immediately start up again in transport mode. On mobile the account is
   // removed and transport is disabled. InitialSyncFeatureSetupComplete is reset

@@ -577,8 +577,13 @@ inline constexpr char16_t kSyncEncryptionHelpURL[] =
 inline constexpr char kSyncErrorsHelpURL[] =
     "https://support.google.com/chrome?p=settings_sync_error";
 
-inline constexpr char kSyncGoogleDashboardURL[] =
+// Legacy URL to the sync google dashboard.
+inline constexpr char kLegacySyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync";
+
+// New URL to the sync google dashboard.
+inline constexpr char kNewSyncGoogleDashboardURL[] =
+    "https://chrome.google.com/data";
 
 // The URL for the "Learn more" page for sync setup on the personal stuff page.
 inline constexpr char16_t kSyncLearnMoreURL[] =
