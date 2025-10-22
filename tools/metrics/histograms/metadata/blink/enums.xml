@@ -4820,7 +4820,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4342" label="OBSOLETE_DeferredShaping2ReshapedByInspector"/>
   <int value="4343" label="OBSOLETE_DeferredShaping2ReshapedByPrinting"/>
   <int value="4344" label="OBSOLETE_DeferredShaping2ReshapedByScrolling"/>
-  <int value="4345" label="LCPCandidateImageFromOriginDirtyStyle"/>
+  <int value="4345" label="OBSOLETE_LCPCandidateImageFromOriginDirtyStyle"/>
   <int value="4346" label="V8TurboFanOsrCompileStarted"/>
   <int value="4347" label="V8Document_HasRedemptionRecord_Method"/>
   <int value="4348" label="OBSOLETE_DeferredShaping2ReshapedByLastResort"/>

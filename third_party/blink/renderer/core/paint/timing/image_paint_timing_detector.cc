@@ -532,7 +532,6 @@ void ImageRecordsManager::OnImageLoaded(MediaRecordIdHash record_id_hash,
     if (document && document->domWindow()) {
       record->SetLoadTime(ImageElementTiming::From(*document->domWindow())
                               .GetBackgroundImageLoadTime(style_image));
-      record->SetIsOriginClean(style_image->IsFromOriginCleanStyleSheet());
     }
   }
   OnImageLoadedInternal(record, current_frame_index);

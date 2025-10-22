@@ -57,7 +57,6 @@ class StyleImageSet final : public StyleImage {
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
-  bool IsFromOriginCleanStyleSheet() const override;
 
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,

@@ -140,11 +140,6 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 
   // TODO: update trace value with animated frame data
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
-    if (!largest_image->IsOriginClean()) {
-      UseCounter::Count(window->document(),
-                        WebFeature::kLCPCandidateImageFromOriginDirtyStyle);
-    }
-
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
         kTraceCategories, kLCPCandidate, largest_image->PaintTime(), "data",
         ImageCandidateTraceData(largest_image, is_triggered_by_soft_navigation),

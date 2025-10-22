@@ -187,8 +187,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
 
   virtual bool IsLoadedAfterMouseover() const { return false; }
 
-  virtual bool IsFromOriginCleanStyleSheet() const { return true; }
-
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
