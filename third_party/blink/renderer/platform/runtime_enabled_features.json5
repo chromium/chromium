@@ -707,13 +707,6 @@
       status: "stable",
     },
     {
-      // Used to enable Blink side of features flags for Default Nav Transition.
-      name: "BackForwardTransitions",
-      status: {
-        "Android": "stable",
-      },
-    },
-    {
       name: "BackgroundFetch",
       public: true,
       status: "stable",

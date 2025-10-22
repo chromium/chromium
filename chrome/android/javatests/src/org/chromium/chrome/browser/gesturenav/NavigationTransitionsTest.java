@@ -58,7 +58,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
@@ -90,8 +89,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=BackForwardTransitions"
-            + ":min-required-physical-ram-mb/0/screenshot-send-result-delay-ms/0",
     "force-prefers-no-reduced-motion",
     // Resampling can make scroll offsets non-deterministic so turn it off.
     "disable-features=ResamplingScrollEvents",
@@ -167,24 +164,6 @@ public class NavigationTransitionsTest {
 
         private boolean mExpectRequested = true;
         private CallbackHelper mCallbackHelper;
-    }
-
-    private class ReleaseController {
-        private final Runnable mRelease;
-        private final String mExpectedUrl;
-
-        public ReleaseController(Runnable release, String expectedUrl) {
-            mRelease = release;
-            mExpectedUrl = expectedUrl;
-        }
-
-        public void release() {
-            mRelease.run();
-        }
-
-        public void waitForPageLoad() {
-            ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivityTab(), mExpectedUrl);
-        }
     }
 
     private ScreenshotCallback mScreenshotCallback;
@@ -288,7 +267,7 @@ public class NavigationTransitionsTest {
         }
     }
 
-    private ReleaseController performNavigationTransitionAndHold(
+    private Runnable performNavigationTransitionAndHold(
             String expectedUrl, @BackGestureEventSwipeEdge int edge) {
         assertThat(edge).isAnyOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT);
         final float widthPx =
@@ -342,7 +321,7 @@ public class NavigationTransitionsTest {
                                 });
                     };
         }
-        return new ReleaseController(mRelease, expectedUrl);
+        return mRelease;
     }
 
     private void performNavigationTransition(
@@ -1005,96 +984,6 @@ public class NavigationTransitionsTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(
-            "BackForwardTransitions"
-                    + ":transition_from_native_pages/true"
-                    + "/transition_to_native_pages/false")
-    @DisabledTest(message = "crbug.com/398843362")
-    public void testSwipeBackToNTPWithoutTransition() throws TimeoutException {
-        if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
-                && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
-
-        final String url = mTestServer.getURL("/chrome/test/data/android/blue.html");
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
-        mActivityTestRule.loadUrl(url);
-
-        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
-
-        // No screenshot on gesture mode when navigating back.
-        mScreenshotCallback.expectRequested(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
-        ReleaseController releaseController =
-                performNavigationTransitionAndHold(UrlConstants.NTP_URL, BackEventCompat.EDGE_LEFT);
-        CriteriaHelper.pollInstrumentationThread(
-                () ->
-                        AnimationStage.NONE
-                                == mActivityTestRule
-                                        .getWebContents()
-                                        .getCurrentBackForwardTransitionStage(),
-                "Back forward transition is not enabled for native pages");
-        releaseController.release();
-        CriteriaHelper.pollInstrumentationThread(
-                () ->
-                        AnimationStage.NONE
-                                == mActivityTestRule
-                                        .getWebContents()
-                                        .getCurrentBackForwardTransitionStage(),
-                "Back forward transition is not enabled for native pages");
-        releaseController.waitForPageLoad();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(
-            "BackForwardTransitions"
-                    + ":transition_from_native_pages/false"
-                    + "/transition_to_native_pages/false")
-    public void testSwipeBackFromNTPWithoutTransition()
-            throws InterruptedException, TimeoutException {
-        var helper = mScreenshotCallback.expectRequested(true);
-
-        final String url = mTestServer.getURL("/chrome/test/data/android/blue.html");
-
-        final Tab tab = mActivityTestRule.getActivityTab();
-
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
-        helper.waitForNext();
-
-        loadUrlAndWaitForScreenshotCallback(url, helper);
-
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        helper.waitForNext();
-
-        // No screenshot on gesture mode when navigating back.
-        helper =
-                mScreenshotCallback.expectRequested(
-                        mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
-        ReleaseController releaseController =
-                performNavigationTransitionAndHold(url, BackEventCompat.EDGE_LEFT);
-        CriteriaHelper.pollInstrumentationThread(
-                () ->
-                        AnimationStage.NONE
-                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
-                "Back forward transition is not enabled for native pages");
-        releaseController.release();
-        CriteriaHelper.pollInstrumentationThread(
-                () ->
-                        AnimationStage.NONE
-                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
-                "Back forward transition is not enabled for native pages");
-        releaseController.waitForPageLoad();
-        helper.waitForNext();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(
-            "BackForwardTransitions"
-                    + ":transition_from_native_pages/true"
-                    + "/transition_to_native_pages/true")
     @DisabledTest(message = "crbug.com/398140569")
     public void testSwipeBackToNativeBookmarksPageWithTransition() throws InterruptedException {
         final Tab tab = mActivityTestRule.getActivityTab();
@@ -1104,7 +993,7 @@ public class NavigationTransitionsTest {
 
         //         No screenshot on gesture mode when navigating back.
         mScreenshotCallback.expectRequested(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
-        ReleaseController releaseController =
+        Runnable release =
                 performNavigationTransitionAndHold(
                         "chrome-native://bookmarks/folder/0", BackEventCompat.EDGE_LEFT);
         Assert.assertEquals(
@@ -1112,7 +1001,7 @@ public class NavigationTransitionsTest {
                 AnimationStage.OTHER,
                 tab.getWebContents().getCurrentBackForwardTransitionStage());
 
-        releaseController.release();
+        release.run();
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         AnimationStage.INVOKE_ANIMATION

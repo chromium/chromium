@@ -117,8 +117,8 @@ class WebContentsView {
   virtual void FullscreenStateChanged(bool is_fullscreen) = 0;
 
   // Returns an animation manager that displays a preview of the history page
-  // during a session history navigation gesture. Only non-null if
-  // `features::kBackForwardTransitions` is enabled for the supported platform.
+  // during a session history navigation gesture. Only non-null if supported for
+  // the platform.
   virtual BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() = 0;
 

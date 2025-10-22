@@ -4,8 +4,11 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
+#include "base/android/jni_callback.h"
+#include "base/auto_reset.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/screen.h"
@@ -13,62 +16,34 @@
 namespace content {
 namespace {
 
-const base::FeatureParam<int> kMaxScreenshotCount{
-    &blink::features::kBackForwardTransitions, "max-screenshot-count", 20};
+const int kMaxScreenshotCount = 20;
 
-const base::FeatureParam<int> kMaxCacheSize{
-    &blink::features::kBackForwardTransitions, "max-cache-size", -1};
+static int g_min_required_physical_ram_mb = 7200;
 
-const base::FeatureParam<int> kMinRequiredPhysicalRamMb{
-    &blink::features::kBackForwardTransitions, "min-required-physical-ram-mb",
-    7200};
+const double kPercentageOfRamToUse = 0.5;
 
-const base::FeatureParam<double> kPercentageOfRamToUse{
-    &blink::features::kBackForwardTransitions, "percentage-of-ram-to-use", 0.5};
-
-const base::FeatureParam<base::TimeDelta> kInvisibleCacheCleanupDelay{
-    &blink::features::kBackForwardTransitions, "invisible-cache-cleanup-delay",
-    base::Minutes(7)};
-
-// Compression can be done in a best-effort basis to reduce contention.
-// Quiescence is defined as no visible page loading and no input being
-// processed.
-const base::FeatureParam<bool> kCompressScreenshotWhenQuiet{
-    &blink::features::kBackForwardTransitions, "compress-screenshot-when-quiet",
-    true};
+const base::TimeDelta kInvisibleCacheCleanupDelay = base::Minutes(7);
 
 // SendResult is an expensive operation and the start of a navigation is a busy
 // time. Delaying SendResult reduces chances of contention.
 // The value can be based on human reaction times and LCP latencies and it can
 // be adjusted based on the incidence of the value SentScreenshotRequest in
 // Navigation.GestureTransition.CacheHitOrMissReason.
-const base::FeatureParam<int> kScreenshotSendResultDelayMs{
-    &blink::features::kBackForwardTransitions,
-    "screenshot-send-result-delay-ms", 400};
+const base::TimeDelta kScreenshotSendResultDelay = base::Milliseconds(400);
 
 size_t GetMaxCacheSizeInBytes() {
   constexpr int kLowEndMax = 32 * 1024 * 1024;  // 32MB
   constexpr int kOtherMax = 128 * 1024 * 1024;  // 128MB
-  const size_t default_size =
-      base::SysInfo::IsLowEndDevice() ? kLowEndMax : kOtherMax;
-
-  int size = kMaxCacheSize.Get();
-  return size < 0 ? default_size : static_cast<size_t>(size);
-}
-
-int GetMinRequiredPhysicalRamMb() {
-  return kMinRequiredPhysicalRamMb.Get();
+  return base::SysInfo::IsLowEndDevice() ? kLowEndMax : kOtherMax;
 }
 
 }  // namespace
 
 // static
-bool NavigationTransitionConfig::AreBackForwardTransitionsEnabled() {
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <
-      GetMinRequiredPhysicalRamMb()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
+bool NavigationTransitionConfig::SupportsBackForwardTransitions(
+    base::PassKey<ContentBrowserClient>) {
+  return base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
+         g_min_required_physical_ram_mb;
 }
 
 // static
@@ -88,11 +63,11 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
   }
 
   size_t memory_required_for_max_screenshots =
-      display_size_in_bytes * kMaxScreenshotCount.Get();
+      display_size_in_bytes * kMaxScreenshotCount;
 
   size_t physical_memory_budget =
       (base::SysInfo::AmountOfPhysicalMemory().InBytes() *
-       kPercentageOfRamToUse.Get()) /
+       kPercentageOfRamToUse) /
       100;
   physical_memory_budget =
       std::min(physical_memory_budget, GetMaxCacheSizeInBytes());
@@ -109,17 +84,18 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
 // static
 base::TimeDelta
 NavigationTransitionConfig::GetCleanupDelayForInvisibleCaches() {
-  return kInvisibleCacheCleanupDelay.Get();
-}
-
-// static
-bool NavigationTransitionConfig::ShouldCompressScreenshotWhenQuiet() {
-  return kCompressScreenshotWhenQuiet.Get();
+  return kInvisibleCacheCleanupDelay;
 }
 
 // static
 base::TimeDelta NavigationTransitionConfig::ScreenshotSendResultDelay() {
-  return base::Milliseconds(kScreenshotSendResultDelayMs.Get());
+  return kScreenshotSendResultDelay;
+}
+
+// static
+base::AutoReset<int>
+NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(int mb) {
+  return base::AutoReset<int>(&g_min_required_physical_ram_mb, mb);
 }
 
 }  // namespace content

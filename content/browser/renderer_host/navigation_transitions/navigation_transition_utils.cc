@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/common/content_features.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/animation/animation.h"
@@ -374,7 +375,8 @@ bool NavigationTransitionUtils::
     CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
         NavigationRequest& navigation_request,
         bool did_receive_commit_ack) {
-  if (!NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
+  if (!BackForwardTransitionAnimationManager::
+          ShouldAnimateBackForwardTransitions()) {
     return false;
   }
 
@@ -574,7 +576,8 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     NavigationRequest& navigation_request,
     std::optional<blink::SameDocNavigationScreenshotDestinationToken>
         destination_token) {
-  if (!NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
+  if (!BackForwardTransitionAnimationManager::
+          ShouldAnimateBackForwardTransitions()) {
     // The source of this call is from the renderer. We can't always trust the
     // renderer thus fail safely.
     return;
@@ -683,10 +686,6 @@ int NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
 
 bool NavigationTransitionUtils::ShouldSkipScreenshot(
     const NavigationRequest& navigation_request) {
-  if (!base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
-    // Preserve existing behavior, where the renderer decides.
-    return false;
-  }
   std::optional<CacheHitOrMissReason> reason;
   return ShouldSkipScreenshotWithMissReason(navigation_request, reason);
 }

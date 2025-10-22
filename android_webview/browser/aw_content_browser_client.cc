@@ -177,7 +177,6 @@ bool g_created_network_context_params = false;
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
 
-
 // Get async check tracker to make Safe Browsing v5 check asynchronous
 base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
@@ -656,10 +655,8 @@ void AwContentBrowserClient::OverrideWebPreferences(
     aw_settings->PopulateWebPreferences(web_prefs);
   }
 
-  // This preference is needed for back-forward transitions, but they are not
-  // enabled for webview (crbug.com/361600214).
-  web_prefs->increment_local_surface_id_for_mainframe_same_doc_navigation =
-      false;
+  // Back-forward transitions are not enabled for webview (crbug.com/361600214).
+  web_prefs->should_screenshot_on_mainframe_same_doc_navigation = false;
 
   AwWebContentsDelegate* delegate =
       static_cast<AwWebContentsDelegate*>(web_contents->GetDelegate());
@@ -1524,6 +1521,10 @@ bool AwContentBrowserClient::IsSharedStorageSelectURLAllowed(
   // TODO(https://crbug.com/401255068): We should have a more stringent check
   // here before launching beyond DEV.
   return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
+}
+
+bool AwContentBrowserClient::ShouldAnimateBackForwardTransitions() {
+  return false;
 }
 
 }  // namespace android_webview

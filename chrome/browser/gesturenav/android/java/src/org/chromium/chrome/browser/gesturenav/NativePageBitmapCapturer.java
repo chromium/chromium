@@ -22,7 +22,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.back_press.BackPressMetrics.CaptureNativeViewResult;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.resources.dynamics.CaptureObserver;
@@ -36,6 +35,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     // as the tab size won't change inside one single window.
     private static final UnownedUserDataKey<NativePageBitmapCapturer> CAPTURER_KEY =
             new UnownedUserDataKey<>(NativePageBitmapCapturer.class);
+    private static final float SCALE = 1;
 
     private @Nullable HardwareDraw mHardwareDraw;
 
@@ -52,11 +52,6 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     public static boolean maybeCaptureNativeView(Tab tab, Callback<@Nullable Bitmap> callback) {
         if (!isCapturable(tab)) {
             return false;
-        }
-
-        if (!enableAsyncNativePageScreenshot()) {
-            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(null));
-            return true;
         }
 
         int result = shouldUseFallbackUx(tab);
@@ -83,7 +78,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             return capturer.mHardwareDraw.startBitmapCapture(
                     tab.getView(),
                     tab.getWebContents().getViewAndroidDelegate().getContainerView().getHeight(),
-                    getScale(),
+                    SCALE,
                     new CaptureObserver() {
                         @Override
                         public void onCaptureStart(Canvas canvas, @Nullable Rect dirtyRect) {
@@ -112,7 +107,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
      * @return Null if fails; otherwise, a Bitmap object.
      */
     public static @Nullable Bitmap maybeCaptureNativeViewSync(Tab tab, int topControlsHeight) {
-        if (!isCapturable(tab) || !enableSyncNativePageScreenshot()) {
+        if (!isCapturable(tab)) {
             return null;
         }
 
@@ -188,7 +183,6 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             bitmap.eraseColor(assumeNonNull(tab.getNativePage()).getBackgroundColor());
 
             Canvas canvas = new Canvas(bitmap);
-            float scale = getScale();
 
             // Translate to exclude the area of the top controls if present.
             // When requesting a fullscreen bitmap, the content will translate the layer up. Add
@@ -197,29 +191,12 @@ public class NativePageBitmapCapturer implements UnownedUserData {
                     0,
                     -tab.getNativePage().getHeightOverlappedWithTopControls()
                             + (fullscreen ? topControlsHeight : 0));
-            canvas.scale(scale, scale);
             view.draw(canvas);
             return bitmap;
         }
     }
 
-    private static float getScale() {
-        return (float)
-                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                        ChromeFeatureList.BACK_FORWARD_TRANSITIONS, "downscale", 1);
-    }
-
     private static boolean enableHardwareDraw() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
-    }
-
-    private static boolean enableAsyncNativePageScreenshot() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.BACK_FORWARD_TRANSITIONS, "native-page-screenshot-async", true);
-    }
-
-    private static boolean enableSyncNativePageScreenshot() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.BACK_FORWARD_TRANSITIONS, "native-page-screenshot-sync", true);
     }
 }

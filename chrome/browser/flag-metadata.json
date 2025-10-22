@@ -1172,11 +1172,6 @@
     "expiry_milestone": 148
   },
   {
-    "name": "back-forward-transitions",
-    "owners": [ "liuwilliam@google.com", "acondor@google.com", "chrome-seamless-core@google.com" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "back-forward-transitions-cross-doc-shared-image",
     "owners": [ "acondor@chromium.org", "clank-performance-team@google.com" ],
     "expiry_milestone": 145

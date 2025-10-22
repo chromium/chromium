@@ -292,7 +292,6 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL_FIELD_TRIAL =
             "BackgroundThreadPoolFieldTrial";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
-    public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
     public static final String BATCH_TAB_RESTORE = "BatchTabRestore";
     public static final String BCIV_BOTTOM_CONTROLS = "AndroidBcivBottomControls";
     public static final String BIOMETRIC_AUTH_IDENTITY_CHECK = "BiometricAuthIdentityCheck";
@@ -897,9 +896,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeBottomChin =
             newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeEverywhere =
-            newCachedFlag(
-                    EDGE_TO_EDGE_EVERYWHERE,
-                    /* defaultValue= */ true);
+            newCachedFlag(EDGE_TO_EDGE_EVERYWHERE, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeMonitorConfigurations =
             newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeTablet =
@@ -1693,16 +1690,13 @@ public abstract class ChromeFeatureList {
 
     public static final IntCachedFeatureParam sReadAloudReadabilityDelayMsAfterPageLoad =
             newIntCachedFeatureParam(
-              READALOUD,
-              "read_aloud_readability_delay_ms_after_page_load",
-              3000);
+                    READALOUD, "read_aloud_readability_delay_ms_after_page_load", 3000);
 
     public static final BooleanCachedFeatureParam sShouldConsiderLanguageInOverviewReadability =
             newBooleanCachedFeatureParam(
-              READALOUD_AUDIO_OVERVIEWS,
-              "read_aloud_audio_overviews_should_consider_language_in_overview_readability",
-              true
-            );
+                    READALOUD_AUDIO_OVERVIEWS,
+                    "read_aloud_audio_overviews_should_consider_language_in_overview_readability",
+                    true);
 
     /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
     public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =

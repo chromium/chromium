@@ -1045,12 +1045,6 @@ inline constexpr char kAutoPictureInPictureForVideoPlaybackName[] =
 inline constexpr char kAutoPictureInPictureForVideoPlaybackDescription[] =
     "Enables auto picture in picture for video playback";
 
-inline constexpr char kBackForwardTransitionsName[] =
-    "Back-forward visual transitions";
-inline constexpr char kBackForwardTransitionsDescription[] =
-    "If enabled, adds animated gesture transitions for back/forward session "
-    "history navigations.";
-
 inline constexpr char kBackForwardTransitionsCrossDocSharedImageName[] =
     "Back-forward transitions on cross-document navigations use SharedImage";
 inline constexpr char kBackForwardTransitionsCrossDocSharedImageDescription[] =
@@ -1145,7 +1139,6 @@ inline constexpr char kBorealisZinkGlDriverName[] = "Borealis Zink GL Driver";
 inline constexpr char kBorealisZinkGlDriverDescription[] =
     "Enables zink driver for GL rendering in Borealis. Can be enabled for "
     "recommended GL apps only or for all GL apps. Defaults to recommended.";
-
 
 inline constexpr char kAndroidSettingsContainmentName[] =
     "Android Settings Containment";
@@ -2085,7 +2078,6 @@ inline constexpr char kExtensionsToolbarZeroStateVistWebStore[] =
     "Visit Chrome Web Store";
 inline constexpr char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
     "Explore CWS extensions by category";
-
 
 inline constexpr char kExtensionsOnChromeUrlsName[] =
     "Extensions on chrome:// URLs";
@@ -3490,7 +3482,6 @@ inline constexpr char kAnnotatedPageContentsForVirtualStructureDescription[] =
     "Use annotated page content proto instead of accessibility snapshot to "
     "populate virtual structure on tabbed activity.";
 
-
 inline constexpr char kPowerBookmarkBackendName[] = "Power bookmark backend";
 inline constexpr char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";
@@ -4778,7 +4769,6 @@ inline constexpr char kProofreaderAPIForGeminiNanoDescription[] =
 // Android ---------------------------------------------------------------------
 // FLAG_DESCRIPTIONS_ANDROID_START
 
-
 inline constexpr char kAAudioPerStreamDeviceSelectionName[] =
     "AAudio per-stream device selection";
 inline constexpr char kAAudioPerStreamDeviceSelectionDescription[] =
@@ -5915,7 +5905,6 @@ inline constexpr char kOpenXRAndroidSmoothDepthDescription[] =
 // FLAG_DESCRIPTIONS_ANDROID_END
 // Non-Android -----------------------------------------------------------------
 
-
 inline constexpr char kAccountStoragePrefsThemesAndSearchEnginesName[] =
     "Account storage of preferences, themes and search engines";
 inline constexpr char kAccountStoragePrefsThemesAndSearchEnginesDescription[] =
@@ -6310,9 +6299,7 @@ inline constexpr char
         "attestation statement from a security key when creating a Web "
         "Authentication credential.";
 
-
 // Windows ---------------------------------------------------------------------
-
 
 inline constexpr char kCalculateNativeWinOcclusionName[] =
     "Calculate window occlusion on Windows";
@@ -6430,9 +6417,7 @@ inline constexpr char kUseXpsForPrintingFromPdfDescription[] =
     "When enabled, use XPS printing API instead of the GDI print API when "
     "printing PDF documents.";
 
-
 // Mac -------------------------------------------------------------------------
-
 
 inline constexpr char kImmersiveFullscreenName[] =
     "Immersive Fullscreen Toolbar";
@@ -6497,9 +6482,7 @@ inline constexpr char kBlockRootWindowAccessibleNameChangeEventDescription[] =
     "where frequent or unnecessary name change events could lead to "
     "performance issues or unwanted behavior in assistive applications.";
 
-
 // Windows and Mac -------------------------------------------------------------
-
 
 inline constexpr char kLocationProviderManagerName[] =
     "Enable location provider manager for Geolocation API";
@@ -6508,17 +6491,13 @@ inline constexpr char kLocationProviderManagerDescription[] =
     "the operating system's location API or the network-based provider "
     "as the data source for Geolocation API.";
 
-
 // Windows, Mac and Android  --------------------------------------------------
-
 
 inline constexpr char kUseAngleName[] = "Choose ANGLE graphics backend";
 
 inline constexpr char kUseAngleDefault[] = "Default";
 
-
 // ChromeOS -------------------------------------------------------------------
-
 
 inline constexpr char kAcceleratedMjpegDecodeName[] =
     "Hardware-accelerated mjpeg decode for captured frame";
@@ -8195,7 +8174,6 @@ inline constexpr char kEnableArmHwdrmDescription[] =
 
 // Linux -----------------------------------------------------------------------
 
-
 inline constexpr char kPulseaudioLoopbackForCastName[] =
     "Linux System Audio Loopback for Cast (pulseaudio)";
 inline constexpr char kPulseaudioLoopbackForCastDescription[] =
@@ -8228,7 +8206,6 @@ inline constexpr char kWaylandSessionManagementName[] =
     "Wayland session management";
 inline constexpr char kWaylandSessionManagementDescription[] =
     "Enable Wayland's xx/xdg-session-management-v1 experimental support.";
-
 
 // Random platform combinations -----------------------------------------------
 
@@ -8375,12 +8352,10 @@ inline constexpr char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "
     "debug issues with the WebXR Device API.";
 
-
 inline constexpr char kOpenXrSpatialEntitiesName[] = "OpenXR Spatial Entities";
 inline constexpr char kOpenXrSpatialEntitiesDescription[] =
     "Allows the OpenXR runtime to use the spatial entities set of extensions "
     "to understand the environment.";
-
 
 inline constexpr char kWebUITabStripFlagId[] = "webui-tab-strip";
 inline constexpr char kWebUITabStripName[] = "WebUI tab strip";
@@ -8393,13 +8368,11 @@ inline constexpr char kWebUITabStripContextMenuAfterTapDescription[] =
     "Enables the context menu to appear after a tap gesture rather than "
     "following a press gesture.";
 
-
 inline constexpr char kAutofillCreditCardUploadName[] =
     "Enable offering upload of Autofilled credit cards";
 inline constexpr char kAutofillCreditCardUploadDescription[] =
     "Enables a new option to upload credit cards to Google Payments for sync "
     "to all Chrome devices.";
-
 
 inline constexpr char kElasticOverscrollName[] = "Elastic Overscroll";
 inline constexpr char kElasticOverscrollDescription[] =

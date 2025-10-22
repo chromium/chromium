@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BACK_FORWARD_TRANSITION_ANIMATION_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_BACK_FORWARD_TRANSITION_ANIMATION_MANAGER_H_
 
+#include "base/auto_reset.h"
 #include "content/common/content_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -110,8 +111,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
       NavigationDirection navigation_direction,
       ui::BackGestureEventSwipeEdge edge);
 
-  // Returns true if back forward visual transitions are enabled.
-  static bool AreBackForwardTransitionsEnabled();
+  // Returns true if back forward visual transitions are supported on this
+  // device.
+  static bool ShouldAnimateBackForwardTransitions();
+
+  // Sets the minimum required physical ram in Mb for the feature to be enabled.
+  static base::AutoReset<int> SetMinRequiredPhysicalRamMbForTesting(int mb);
 };
 
 }  // namespace content

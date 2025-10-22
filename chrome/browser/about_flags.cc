@@ -8885,9 +8885,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"back-forward-transitions", flag_descriptions::kBackForwardTransitionsName,
-     flag_descriptions::kBackForwardTransitionsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kBackForwardTransitions)},
     {"back-forward-transitions-cross-doc-shared-image",
      flag_descriptions::kBackForwardTransitionsCrossDocSharedImageName,
      flag_descriptions::kBackForwardTransitionsCrossDocSharedImageDescription,

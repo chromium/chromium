@@ -1276,8 +1276,7 @@ class RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     auto preferences = web_contents()->GetOrCreateWebPreferences();
-    preferences.increment_local_surface_id_for_mainframe_same_doc_navigation =
-        GetParam();
+    preferences.should_screenshot_on_mainframe_same_doc_navigation = GetParam();
     web_contents()->SetWebPreferences(preferences);
   }
 
