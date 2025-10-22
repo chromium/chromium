@@ -20,7 +20,6 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,12 +27,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -55,7 +52,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaFeatures;
 import org.chromium.media.MediaSwitches;
@@ -80,8 +76,6 @@ import java.util.concurrent.TimeoutException;
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R) // crbug.com/430452403
 @Batch(Batch.PER_CLASS)
 public class AutoPictureInPictureTabHelperTest {
-    private static final String TAG = "AutoPipTest";
-
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -100,8 +94,6 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Before
     public void setUp() {
-        // Some of the tests may finish the activity using moveTaskToBack.
-        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mPage.getActivity();
@@ -177,29 +169,36 @@ public class AutoPictureInPictureTabHelperTest {
     public void testHideAutoPip() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         Tab originalTab = mPage.getTab();
-
-        // Enter auto-PiP and hide the window.
-        enterAutoPipAndHide(webContents, originalTab);
-
-        // After auto-pip and hide, we should be on a new tab.
-        CriteriaHelper.pollUiThread(
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+        // After enterAutoPip, we are on a new tab.
+        final Tab[] newTab = new Tab[1];
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Criteria.checkThat(
-                            "TabModels are not initialized yet.",
-                            mActivity.areTabModelsInitialized(),
-                            Matchers.is(true));
-                    Criteria.checkThat(
-                            "Still on the original tab.",
-                            mActivity.getTabModelSelector().getCurrentTab().getId()
-                                    == originalTab.getId(),
-                            Matchers.is(false));
+                    newTab[0] = mActivity.getTabModelSelector().getCurrentTab();
                 });
+        assertNotEquals("Should be on a new tab after entering auto-PiP.", originalTab, newTab[0]);
+
+        // Simulate clicking the hide button.
+        ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
+
+        // Wait for the PictureInPictureActivity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Now that the activity is gone, verify the C++ state.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after hide.");
 
+        // Verify we are still on the new tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            "Should still be on the new tab.",
+                            newTab[0].getId(),
+                            mActivity.getTabModelSelector().getCurrentTab().getId());
+                });
+
         // Verify that the video is still playing on the original tab.
+        switchToTab(originalTab);
         assertFalse(
                 "Video should still be playing.", DOMUtils.isMediaPaused(webContents, VIDEO_ID));
     }
@@ -252,9 +251,7 @@ public class AutoPictureInPictureTabHelperTest {
                 });
 
         // Wait for the PictureInPictureActivity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Now that the activity is gone, verify the C++ state.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -445,18 +442,20 @@ public class AutoPictureInPictureTabHelperTest {
         PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
 
         // Immediately close the PiP window to simulate a quick dismissal.
-        // Use finish() to simulate a user/system close. This triggers the correct
-        // lifecycle (onPictureInPictureModeChanged).
-        ThreadUtils.runOnUiThreadBlocking(() -> pipActivity.finish());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Configuration config = pipActivity.getResources().getConfiguration();
+                    pipActivity.onPictureInPictureModeChanged(false, config);
+                });
 
         // Wait for the PiP activity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Verify that the dismiss count is now 1.
-        assertDismissCount(
-                webContents, url, 1, "Dismiss count should be 1 after a quick dismissal.");
+        assertEquals(
+                "Dismiss count should be 1 after a quick dismissal.",
+                1,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 
     @Test
@@ -478,16 +477,13 @@ public class AutoPictureInPictureTabHelperTest {
         switchToTab(originalTab);
 
         // Wait for the PiP activity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Verify that the dismiss count is still 0.
-        assertDismissCount(
-                webContents,
-                url,
+        assertEquals(
+                "Dismiss count should not be incremented when manually switching back to the tab.",
                 0,
-                "Dismiss count should not be incremented when manually switching back to the tab.");
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 
     @Test
@@ -509,21 +505,20 @@ public class AutoPictureInPictureTabHelperTest {
         ThreadUtils.runOnUiThreadBlocking(pipActivity::expireQuickDismissalTimerForTesting);
 
         // Close the PiP window.
-        // Use finish() to simulate a user/system close. This triggers the correct
-        // lifecycle (onPictureInPictureModeChanged).
-        ThreadUtils.runOnUiThreadBlocking(() -> pipActivity.finish());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Configuration config = pipActivity.getResources().getConfiguration();
+                    pipActivity.onPictureInPictureModeChanged(false, config);
+                });
 
         // Wait for the PiP activity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Verify that the dismiss count is still 0.
-        assertDismissCount(
-                webContents,
-                url,
+        assertEquals(
+                "Dismiss count should not be incremented after the timer expires.",
                 0,
-                "Dismiss count should not be incremented when manually switching back to the tab.");
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 
     @Test
@@ -539,12 +534,19 @@ public class AutoPictureInPictureTabHelperTest {
                 0,
                 AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
 
-        // Enter auto-PiP and hide the window.
-        enterAutoPipAndHide(webContents, originalTab);
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+
+        // Simulate clicking the hide button.
+        ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
+
+        // Wait for the PiP activity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Verify that the dismiss count is now 1.
-        assertDismissCount(
-                webContents, url, 1, "Dismiss count should be 1 after hide button dismissal.");
+        assertEquals(
+                "Dismiss count should be 1 after hide button dismissal.",
+                1,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 
     /**
@@ -629,24 +631,6 @@ public class AutoPictureInPictureTabHelperTest {
         Tab newTab = createNewTabInBackground(originalTab);
         fulfillVideoPlaybackConditions(webContents);
         switchToTab(newTab);
-
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        // Check that the element in PiP is our video element.
-                        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                        webContents,
-                                        "document.pictureInPictureElement && "
-                                                + "document.pictureInPictureElement.id == '"
-                                                + VIDEO_ID
-                                                + "'")
-                                .equals("true");
-                    } catch (TimeoutException e) {
-                        return false;
-                    }
-                },
-                "Video element did not enter Picture-in-Picture mode.");
-
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
 
@@ -676,57 +660,5 @@ public class AutoPictureInPictureTabHelperTest {
                 },
                 "Could not find PictureInPictureActivity.");
         return (PictureInPictureActivity) activityHolder[0];
-    }
-
-    /** Waits for the hide action to be present in the Picture-in-Picture window. */
-    private void waitForHideActionPresence(PictureInPictureActivity pipActivity) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    String hideActionTitle =
-                            mActivity.getString(R.string.accessibility_listen_in_the_background);
-                    return pipActivity.getActionsForTesting().stream()
-                            .anyMatch(action -> action.getTitle().equals(hideActionTitle));
-                },
-                "Hide action not found.");
-    }
-
-    /**
-     * Enters auto-PiP, waits for the hide action, triggers it, and waits for the PiP activity to be
-     * destroyed.
-     */
-    private void enterAutoPipAndHide(WebContents webContents, Tab originalTab)
-            throws TimeoutException {
-        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
-
-        // Verify video is playing and hide action is visible before clicking it.
-        DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
-        waitForHideActionPresence(pipActivity);
-
-        // Simulate clicking the hide button.
-        ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
-
-        // Wait for the PictureInPictureActivity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
-    }
-
-    /** Asserts that the dismiss count for the given URL is the expected value. */
-    private void assertDismissCount(
-            WebContents webContents, String url, int expectedCount, String failureMessage) {
-        // A race condition in the test environment can prematurely destroy the WebContents
-        // after the PiP window closes. This makes it unsafe to query the final dismiss
-        // count via JNI, which would cause a crash. The feature's logic to update the
-        // count has already executed; we are just unable to verify it in this specific
-        // race scenario. Returning here prevents a flaky test failure.
-        if (webContents.isDestroyed()) {
-            Log.w(TAG, "WebContents destroyed before final dismiss count check; skipping.");
-            return;
-        }
-
-        assertEquals(
-                failureMessage,
-                expectedCount,
-                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 }
