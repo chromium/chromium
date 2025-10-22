@@ -41,6 +41,7 @@ class ComposeboxQueryControllerBridge
       const std::optional<FileUploadErrorType>& error_type) override;
 
  private:
+  raw_ptr<Profile> profile_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
 };
 

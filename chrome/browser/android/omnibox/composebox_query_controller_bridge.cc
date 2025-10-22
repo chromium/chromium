@@ -38,7 +38,8 @@ static jlong JNI_ComposeBoxQueryControllerBridge_Init(JNIEnv* env,
 }
 
 ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
-    Profile* profile) {
+    Profile* profile)
+    : profile_{profile} {
   auto query_controller_config_params = std::make_unique<
       ComposeboxQueryController::QueryControllerConfigParams>();
   query_controller_config_params->send_lns_surface = false;
@@ -79,8 +80,14 @@ ComposeboxQueryControllerBridge::AddFile(
 
   std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
   lens::MimeType mime_type;
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
 
   if (file_type.find("pdf") != std::string::npos) {
+    if (!aim_service->IsPdfUploadEligible()) {
+      return {};
+    }
+
     mime_type = lens::MimeType::kPdf;
   } else if (file_type.find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
@@ -90,7 +97,8 @@ ComposeboxQueryControllerBridge::AddFile(
                                                .max_width = 1600,
                                                .compression_quality = 40};
   } else {
-    NOTREACHED();
+    // Unsupported mime type.
+    return {};
   }
 
   std::unique_ptr<lens::ContextualInputData> input_data =
