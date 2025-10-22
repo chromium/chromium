@@ -144,6 +144,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
      * @param formattedOrigin The origin receiving the contact details, formatted for display in the
      *     UI.
      * @param delegate A delegate listening for events from the toolbar.
+     * @param contactsFetcher An instance of {@link ContactsFetcher} to query data.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(
@@ -156,7 +157,8 @@ public class PickerCategoryView extends OptimizedFrameLayout
             boolean shouldIncludeAddresses,
             boolean shouldIncludeIcons,
             String formattedOrigin,
-            ContactsPickerToolbar.ContactsToolbarDelegate delegate) {
+            ContactsPickerToolbar.ContactsToolbarDelegate delegate,
+            ContactsFetcher contactsFetcher) {
         super(assertNonNull(windowAndroid.getContext().get()), null);
 
         mWindowAndroid = windowAndroid;
@@ -189,7 +191,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         mSelectableListLayout.initializeEmptyView(R.string.contacts_picker_no_contacts_found);
 
         mPickerAdapter = adapter;
-        mPickerAdapter.init(this, context, formattedOrigin);
+        mPickerAdapter.init(this, context, formattedOrigin, contactsFetcher);
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(mPickerAdapter);
         int titleId =
                 multiSelectionAllowed
@@ -414,9 +416,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
 
         if (mSiteWantsIcons && PickerAdapter.includesIcons()) {
             // Fetch missing icons and compress them first.
-            Context context = assumeNonNull(mWindowAndroid.getContext().get());
-            new CompressContactIconsWorkerTask(
-                            context.getContentResolver(), mBitmapCache, selectedContacts, this)
+            new CompressContactIconsWorkerTask(mBitmapCache, selectedContacts, this)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             return;
         }

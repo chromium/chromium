@@ -129,6 +129,9 @@ public class ContactsPickerDialogTest
     // A callback that fires when an action is taken in the dialog (cancel/done etc).
     public final CallbackHelper onActionCallback = new CallbackHelper();
 
+    // A ContactsFetcher for testing.
+    private final ContactsFetcherTestImpl mContactsFetcher = new ContactsFetcherTestImpl();
+
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
@@ -155,7 +158,7 @@ public class ContactsPickerDialogTest
         mIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(mIcon);
         canvas.drawColor(Color.BLUE);
-        ContactViewHolder.setIconForTesting(mIcon);
+        mContactsFetcher.setTestIcon(mIcon);
         // Disable the async task since it tries to access contact icons which would fail in tests.
         CompressContactIconsWorkerTask.sDisableForTesting = true;
     }
@@ -255,7 +258,8 @@ public class ContactsPickerDialogTest
                                                 addresses,
                                                 icons,
                                                 formattedOrigin,
-                                                /* shouldPadForContent= */ false);
+                                                /* shouldPadForContent= */ false,
+                                                mContactsFetcher);
 
                                 mDialog.show();
                                 return true;
@@ -503,7 +507,8 @@ public class ContactsPickerDialogTest
             mTestContacts.add(owner2);
         }
 
-        PickerAdapter.setTestContactsAndOwner(mTestContacts, ownerEmail);
+        mContactsFetcher.setTestContacts(mTestContacts);
+        PickerAdapter.setTestOwner(ownerEmail);
     }
 
     @Test
@@ -968,7 +973,8 @@ public class ContactsPickerDialogTest
     @Test
     @LargeTest
     public void testEmptyContactListCrash() throws Throwable {
-        PickerAdapter.setTestContactsAndOwner(new ArrayList<>(), null);
+        mContactsFetcher.setTestContacts(new ArrayList<>());
+        PickerAdapter.setTestOwner(null);
 
         createDialog(/* multiselect= */ true);
         Assert.assertTrue(mDialog.isShowing());
@@ -994,6 +1000,8 @@ public class ContactsPickerDialogTest
         setTestContacts(/* ownerEmail= */ "owner@example.com");
         createDialog(/* multiselect= */ true);
         Assert.assertTrue(mDialog.isShowing());
+
+        mContactsFetcher.awaitFetchIcon();
 
         mRenderTestRule.render(mDialog.getCategoryViewForTesting(), "selection_none");
 
