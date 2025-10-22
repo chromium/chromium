@@ -4601,29 +4601,6 @@
             ]
         }
     ],
-    "CanvasInterventions": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250527_NonDogfood",
-                    "params": {
-                        "enable_in_regular_mode": "false"
-                    },
-                    "enable_features": [
-                        "CanvasNoise"
-                    ]
-                }
-            ]
-        }
-    ],
     "CanvasTextNg": [
         {
             "platforms": [
@@ -10899,30 +10876,6 @@
             ]
         }
     ],
-    "FingerprintingProtectionFilter": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250331",
-                    "params": {
-                        "activation_level": "dry_run",
-                        "enable_only_if_3pc_blocked": "false",
-                        "performance_measurement_rate": "1.0"
-                    },
-                    "enable_features": [
-                        "EnableFingerprintingProtectionFilter"
-                    ]
-                }
-            ]
-        }
-    ],
     "FledgeBiddingAndAuctionNonceSupport": [
         {
             "platforms": [
@@ -13963,43 +13916,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableiPadFeedGhostCards"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IPProtectionPhase0": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_incognito_full_mdl_Canary_Dev_2025-08-06_North_America",
-                    "params": {
-                        "BypassProbabilisticRevealTokenRegistry": "false",
-                        "IpPrivacyDebugExperimentArm": "30",
-                        "IpPrivacyDirectOnly": "false",
-                        "IpPrivacyEnableIppInDevTools": "true",
-                        "IpPrivacyEnableUserBypass": "true",
-                        "IpPrivacyOnlyInIncognito": "true",
-                        "IpPrivacyUseQuicProxies": "false",
-                        "MaskedDomainListExperimentalVersion": "2025.8.8.0",
-                        "ProbabilisticRevealTokenFetchOnly": "false",
-                        "ProbabilisticRevealTokensOnlyInIncognito": "false"
-                    },
-                    "enable_features": [
-                        "EnableIpPrivacyProxy",
-                        "IpProtectionUx",
-                        "MaskedDomainList"
-                    ],
-                    "disable_features": [
-                        "EnableProbabilisticRevealTokens"
                     ]
                 }
             ]
@@ -22684,44 +22600,6 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "InternalServerSideSpeechRecognitionByFinch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScriptBlockingDryRunIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableFingerprintingProtectionFilteriOSDryRun"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScriptBlockingIncognito": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250812",
-                    "params": {
-                        "performance_measurement_rate": "1.0"
-                    },
-                    "enable_features": [
-                        "EnableFingerprintingProtectionFilterInIncognito",
-                        "FingerprintingProtectionUx"
                     ]
                 }
             ]
