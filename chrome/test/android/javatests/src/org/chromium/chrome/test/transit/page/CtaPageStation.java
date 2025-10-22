@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.test.transit.ChromeTriggers;
@@ -71,7 +70,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                         ToolbarControlContainer.class,
                         withId(R.id.control_container),
                         ViewElement.unscopedOption());
-        declareView(HomeButton.class, withId(R.id.home_button), ViewElement.unscopedOption());
+        // TODO(crbug.com/416324280): Declare the HomeButton with R.id.home_button as an optional
+        //  ViewElement.
         tabSwitcherButtonElement =
                 declareView(
                         ToggleTabStackButton.class,
