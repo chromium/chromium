@@ -18,6 +18,7 @@ import posixpath
 import subprocess
 import sys
 import tempfile
+import time
 from typing import Any
 import unittest
 
@@ -450,7 +451,8 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                      test_renavigation=False)
              ])
 
-  def _GetLocalPerfettoTraceProcessorPath(self) -> str | None:
+  @classmethod
+  def _GetLocalPerfettoTraceProcessorPath(cls) -> str | None:
     """Gets the path to the local Perfetto trace_processor_shell binary.
 
     Returns:
@@ -460,7 +462,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # TODO(crbug.com/383999365): Remove this special case once locally built
     # versions of trace_processor_shell on Windows support the necessary HTTP
     # functionality.
-    os_name = self.browser.platform.GetOSName()
+    os_name = cls.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
       logging.warning(
           'Falling back to cloud version of trace_processor_shell because '
@@ -478,7 +480,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # version for consistency.
       binary = 'host_trace_processor_shell'
 
-    output_directory = self.GetOriginalFinderOptions().chromium_output_dir
+    output_directory = cls.GetOriginalFinderOptions().chromium_output_dir
     if not output_directory:
       logging.warning(
           'Chromium output directory not set, not able to find local '
@@ -493,7 +495,13 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       return None
     return filepath
 
-  def _GetTraceProcessorForTrace(self, trace: bytes) -> tp.TraceProcessor:
+  @classmethod
+  def _GetTraceProcessorLoadTimeout(cls) -> int:
+    """Determines the load timeout to use for a TraceProcessor.
+
+    Returns:
+      The load timeout that should be used based on platform, etc.
+    """
     # The default 2 second load timeout works in almost all cases, but can
     # cause flakes on rare occasions. Known slow configurations are:
     #   * Mac/Debug (due to slower binaries?)
@@ -502,25 +510,38 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     #   * ChromeOS VMs (extra load from VM slows down system)
     load_timeout = 2
     slow_load_timeout = 10
-    os_name = self.browser.platform.GetOSName()
+    os_name = cls.browser.platform.GetOSName()
     if os_name == 'mac':
-      if self.browser.browser_type == 'debug':
+      if cls.browser.browser_type == 'debug':
         load_timeout = slow_load_timeout
-      elif 'nvidia' in self.__class__.GetPlatformTags(self.browser):
+      elif 'nvidia' in cls.GetPlatformTags(cls.browser):
         load_timeout = slow_load_timeout
     elif os_name == 'linux':
       load_timeout = slow_load_timeout
     elif os_name == 'chromeos':
-      if 'chromeos-board-amd64-generic' in self.__class__.GetPlatformTags(
-          self.browser):
+      if 'chromeos-board-amd64-generic' in cls.GetPlatformTags(cls.browser):
         load_timeout = slow_load_timeout
+    return load_timeout
 
-    processor_path = self._GetLocalPerfettoTraceProcessorPath()
+  @classmethod
+  def _GetTraceProcessorConfig(cls) -> tp.TraceProcessorConfig:
+    """Gets the standardized trace processor config for the current platform.
+
+    Returns:
+      A TraceProcessorConfig with an automatically determined load timeout.
+      Will use the locally built trace processor if available.
+    """
+    load_timeout = cls._GetTraceProcessorLoadTimeout()
+    processor_path = cls._GetLocalPerfettoTraceProcessorPath()
     if processor_path:
       processor_config = tp.TraceProcessorConfig(bin_path=processor_path,
                                                  load_timeout=load_timeout)
     else:
       processor_config = tp.TraceProcessorConfig(load_timeout=load_timeout)
+    return processor_config
+
+  def _GetTraceProcessorForTrace(self, trace: bytes) -> tp.TraceProcessor:
+    processor_config = self._GetTraceProcessorConfig()
     trace_processor = tp.TraceProcessor(io.BytesIO(trace),
                                         config=processor_config)
     return trace_processor
@@ -610,6 +631,29 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs(data_paths)
+
+    # This is a workaround for the case where:
+    #   1. The cloud binary is used instead of the locally compiled one, namely
+    #      on Windows.
+    #   2. Multiple parallel jobs try to use the trace processor for the first
+    #      time in close succession.
+    # When this occurs, one job can download the binary and start using it,
+    # which causes the other job to fail to move their copy of the binary to
+    # the cached location. Because these jobs cannot communicate with each
+    # other, we need to make a best effort to have one ensure that the binary
+    # is downloaded while preventing the others from interfering.
+    # TODO(crbug.com/453705242): Remove this if/when Perfetto provides a way
+    # to prevent multiple parallel Perfetto uses from conflicting with each
+    # other when downloading the binary.
+    if cls._GetLocalPerfettoTraceProcessorPath():
+      return
+    if cls.child.worker_num == 1:
+      with tp.TraceProcessor(None, config=cls._GetTraceProcessorConfig()):
+        pass
+    else:
+      # At the time of writing, the downloaded binary is ~11 MB, so 5 seconds
+      # should be plenty for the first job to download it.
+      time.sleep(5)
 
   @classmethod
   def TearDownProcess(cls) -> None:
