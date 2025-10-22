@@ -230,6 +230,15 @@ enum ActionResultCode {
   // The tool took too long to execute.
   kToolTimeout = 33,
 
+  // The task triggered a file picker.
+  kFilePickerTriggered = 34,
+
+  // File picker was confirmed.
+  kFilePickerConfirmed = 35,
+
+  // File pikcer was cancelled.
+  kFilePickerCancelled = 36,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
