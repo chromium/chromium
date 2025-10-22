@@ -223,7 +223,11 @@ import java.util.function.Supplier;
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
 @LooperMode(LooperMode.Mode.LEGACY)
-@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
+@DisableFeatures({
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.DATA_SHARING_JOIN_ONLY,
+    ChromeFeatureList.TAB_COLLECTION_ANDROID, // crbug.com/454100056
+})
 public class TabListMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 

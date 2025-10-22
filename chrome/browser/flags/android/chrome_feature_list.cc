@@ -776,9 +776,9 @@ BASE_FEATURE(kSubmenusTabContextMenuLffTabStrip, base::FEATURE_DISABLED_BY_DEFAU
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabArchivalDragDropAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabClosureMethodRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTabCollectionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabCollectionAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabFreezingUsesDiscard, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTabGroupAndroidVisualDataCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabGroupAndroidVisualDataCleanup, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabGroupEntryPointsAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabGroupParityBottomSheetAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabModelInitFixes, base::FEATURE_ENABLED_BY_DEFAULT);

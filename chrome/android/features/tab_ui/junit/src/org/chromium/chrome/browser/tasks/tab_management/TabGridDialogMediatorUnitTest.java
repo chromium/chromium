@@ -161,7 +161,10 @@ import java.util.function.Supplier;
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
-@DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+@DisableFeatures({
+    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
+    ChromeFeatureList.TAB_COLLECTION_ANDROID, // crbug.com/454100056
+})
 public class TabGridDialogMediatorUnitTest {
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";

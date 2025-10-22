@@ -87,7 +87,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @EnableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
 @DisableFeatures({
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
-    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY
+    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY,
+    ChromeFeatureList.TAB_COLLECTION_ANDROID // crbug.com/454100056
 })
 public class TabPersistentStoreIntegrationTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);

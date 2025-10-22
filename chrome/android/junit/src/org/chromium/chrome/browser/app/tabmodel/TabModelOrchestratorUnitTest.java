@@ -23,7 +23,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
 
 /** Tests for {@link TabModelOrchestrator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID) // crbug.com/454100056
 public class TabModelOrchestratorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;

@@ -24711,22 +24711,6 @@
             ]
         }
     ],
-    "TabCollectionAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabCollectionAndroid",
-                        "TabGroupAndroidVisualDataCleanup"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGridEmptyThumbnail": [
         {
             "platforms": [
