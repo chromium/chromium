@@ -18,14 +18,6 @@ import org.chromium.on_device_model.mojom.SessionParams;
 public interface AiCoreFactory {
     AiCoreSessionBackend createSessionBackend(ModelExecutionFeature feature, SessionParams params);
 
-    // TODO(crbug.com/449213567): Remove this method once the downstream code is updated.
-    default AiCoreModelDownloaderBackend createModelDownloader(ModelExecutionFeature feature) {
-        return createModelDownloader(feature, new DownloaderParams());
-    }
-
-    // TODO(crbug.com/449213567): Remove default implementation once the downstream code is updated.
-    default AiCoreModelDownloaderBackend createModelDownloader(
-            ModelExecutionFeature feature, DownloaderParams params) {
-        return createModelDownloader(feature);
-    }
+    AiCoreModelDownloaderBackend createModelDownloader(
+            ModelExecutionFeature feature, DownloaderParams params);
 }
