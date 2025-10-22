@@ -3008,7 +3008,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du laddar ned en uppdatering i dag. Uppdateringen laddas ned automatiskt när du ansluter till internet.}other{<ph name="MANAGER" /> kräver att du laddar ned en uppdatering före deadline. Uppdateringen laddas ned automatiskt när du ansluter till internet.}}</translation>
 <translation id="3030772324014024606">Redigera</translation>
 <translation id="3030795534674718505">Tillåts att använda uppgifter som webbplatsen har sparat om dig</translation>
-<translation id="3030967311408872958">Soluppgång till solnedgång</translation>
+<translation id="3030967311408872958">Solnedgång till soluppgång</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Använd styrplattan och tangentbordet för att högerklicka</translation>
 <translation id="3031557471081358569">Välj objekt att importera:</translation>
