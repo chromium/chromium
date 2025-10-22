@@ -127,7 +127,6 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
                 .querySafeModeVariationsSeedContentProvider();
     }
 
-    // TODO(crbug.com/40259816): Update this to include timeout capability.
     private static class ContentProviderQuery {
         private static final String URI_SUFFIX = ".SafeModeVariationsSeedContentProvider";
         private static final String URI_PATH = VariationsFastFetchModeUtils.URI_PATH;
