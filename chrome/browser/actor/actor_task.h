@@ -115,6 +115,11 @@ class ActorTask {
   void AddTab(tabs::TabHandle tab, AddTabCallback callback);
   void RemoveTab(tabs::TabHandle tab);
 
+  // Transient version of the above. The tab will enter the same
+  // simulated-visible state but only until the next call to Act. Until then it
+  // will always be be included in the LastActedTabs set.
+  void ObserveTabOnce(tabs::TabHandle tab_handle);
+
   // Returns true if the given tab is part of this task's tab set.
   bool HasTab(tabs::TabHandle tab) const;
 
@@ -176,6 +181,8 @@ class ActorTask {
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
 
+  void ResetToObserveTabsSet();
+
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
 
@@ -202,6 +209,11 @@ class ActorTask {
   // of a tab in this map signifies that it is part of the task.
   absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActingTabState>>
       acting_tabs_;
+
+  // An additional set of tabs to capture for observations at the end of an Act
+  // turn. Reset at the beginning of each call to Act.
+  absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActingTabState>>
+      to_observe_tabs_;
 
   // Running number of actions taken in the current state.
   size_t actions_in_current_state_ = 0;

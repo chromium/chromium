@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
@@ -18,7 +19,8 @@ class WaitTool : public Tool {
  public:
   explicit WaitTool(TaskId task_id,
                     ToolDelegate& tool_delegate,
-                    base::TimeDelta wait_duration);
+                    base::TimeDelta wait_duration,
+                    tabs::TabHandle observe_tab_handle);
   ~WaitTool() override;
 
   // actor::Tool
@@ -29,6 +31,8 @@ class WaitTool : public Tool {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       std::optional<ObservationDelayController::PageStabilityConfig>
           page_stability_config) override;
+  void UpdateTaskBeforeInvoke(ActorTask& task,
+                              InvokeCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;
 
   static void SetNoDelayForTesting();
@@ -41,6 +45,8 @@ class WaitTool : public Tool {
   static bool no_delay_for_testing_;
 
   base::TimeDelta wait_duration_;
+
+  tabs::TabHandle observe_tab_handle_;
 
   base::WeakPtrFactory<WaitTool> weak_ptr_factory_{this};
 };

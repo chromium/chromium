@@ -68,6 +68,7 @@ using ::optimization_guide::proto::ScrollAction;
 using ::optimization_guide::proto::ScrollToAction;
 using ::optimization_guide::proto::SelectAction;
 using ::optimization_guide::proto::TypeAction;
+using ::optimization_guide::proto::WaitAction;
 using tabs::TabHandle;
 using tabs::TabInterface;
 
@@ -338,9 +339,16 @@ Actions MakeDragAndRelease(content::RenderFrameHost& rfh,
   return actions;
 }
 
-Actions MakeWait() {
+Actions MakeWait(std::optional<base::TimeDelta> duration,
+                 std::optional<TabHandle> observe_tab_handle) {
   Actions actions;
-  actions.add_actions()->mutable_wait();
+  WaitAction* wait = actions.add_actions()->mutable_wait();
+  if (observe_tab_handle.has_value()) {
+    wait->set_observe_tab_id(observe_tab_handle->raw_value());
+  }
+  if (duration.has_value()) {
+    wait->set_wait_time_ms(duration->InMilliseconds());
+  }
   return actions;
 }
 
@@ -502,10 +510,11 @@ std::unique_ptr<ToolRequest> MakeDragAndReleaseRequest(
   return std::make_unique<DragAndReleaseToolRequest>(
       tab.GetHandle(), MakeTarget(from_point), MakeTarget(to_point));
 }
-std::unique_ptr<ToolRequest> MakeWaitRequest() {
+std::unique_ptr<ToolRequest> MakeWaitRequest(TabInterface* observe_tab) {
   // TODO(bokan): Move this the default in WaitToolRequest.
   constexpr base::TimeDelta kWaitTime = base::Seconds(3);
-  return std::make_unique<WaitToolRequest>(kWaitTime);
+  return std::make_unique<WaitToolRequest>(
+      kWaitTime, observe_tab ? observe_tab->GetHandle() : TabHandle::Null());
 }
 
 std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,

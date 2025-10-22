@@ -9,8 +9,10 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
@@ -18,8 +20,11 @@ bool WaitTool::no_delay_for_testing_ = false;
 
 WaitTool::WaitTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
-                   base::TimeDelta wait_duration)
-    : Tool(task_id, tool_delegate), wait_duration_(wait_duration) {}
+                   base::TimeDelta wait_duration,
+                   tabs::TabHandle observe_tab_handle)
+    : Tool(task_id, tool_delegate),
+      wait_duration_(wait_duration),
+      observe_tab_handle_(observe_tab_handle) {}
 
 WaitTool::~WaitTool() = default;
 
@@ -48,6 +53,15 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
         page_stability_config) {
   // Wait tool shouldn't delay observation aside from its own built-in delay.
   return nullptr;
+}
+
+void WaitTool::UpdateTaskBeforeInvoke(ActorTask& task,
+                                      InvokeCallback callback) const {
+  if (observe_tab_handle_ != tabs::TabHandle::Null()) {
+    task.ObserveTabOnce(observe_tab_handle_);
+  }
+
+  std::move(callback).Run(MakeOkResult());
 }
 
 tabs::TabHandle WaitTool::GetTargetTab() const {

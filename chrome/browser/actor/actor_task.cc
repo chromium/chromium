@@ -153,6 +153,7 @@ void ActorTask::SetState(State new_state) {
     for (const auto& [tab, _] : acting_tabs_) {
       DidTabBecomeInactive(tab);
     }
+    ResetToObserveTabsSet();
   }
   ui_event_dispatcher_->OnActorTaskSyncChange(
       ui::UiEventDispatcher::ChangeTaskState{
@@ -186,6 +187,9 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                             std::nullopt, {});
     return;
   }
+
+  ResetToObserveTabsSet();
+
   SetState(State::kActing);
 
   actions_in_current_state_ += actions.size();
@@ -335,6 +339,27 @@ void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
   }
 }
 
+void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
+  CHECK(IsActive());
+
+  if (to_observe_tabs_.contains(tab_handle) ||
+      acting_tabs_.contains(tab_handle)) {
+    return;
+  }
+
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (!tab) {
+    return;
+  }
+
+  auto itr = to_observe_tabs_
+                 .emplace(tab_handle, std::make_unique<ActingTabState>(this))
+                 .first;
+  ActingTabState* state = itr->second.get();
+
+  DidContentsBecomeActive(state, tab->GetContents());
+}
+
 void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
                                 tabs::TabInterface::DetachReason reason) {
   if (reason != tabs::TabInterface::DetachReason::kDelete) {
@@ -348,6 +373,18 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
   // paused tasks as is?
 
   actor::ActorKeyedService::Get(profile_)->StopTask(id(), /*success=*/false);
+}
+
+void ActorTask::ResetToObserveTabsSet() {
+  for (const auto& [tab_handle, state] : to_observe_tabs_) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab) {
+      continue;
+    }
+
+    DidContentsBecomeInactive(state.get(), tab->GetContents());
+  }
+  to_observe_tabs_.clear();
 }
 
 bool ActorTask::HasTab(tabs::TabHandle tab) const {
@@ -366,7 +403,13 @@ absl::flat_hash_set<tabs::TabHandle> ActorTask::GetLastActedTabs() const {
   // TODO(crbug.com/420669167): Currently the client only acts on a single tab
   // so we can return the full set but with multi-tab this will need to be
   // smarter about which tabs are relevant to the last/current action.
-  return GetTabs();
+  absl::flat_hash_set<tabs::TabHandle> last_acted_tabs = GetTabs();
+
+  for (const auto& [handle, _] : to_observe_tabs_) {
+    last_acted_tabs.insert(handle);
+  }
+
+  return last_acted_tabs;
 }
 
 absl::flat_hash_set<tabs::TabHandle> ActorTask::GetTabs() const {
@@ -385,6 +428,9 @@ void ActorTask::DidTabBecomeActive(tabs::TabHandle handle) {
     return;
   }
   ActingTabState* state = acting_tabs_[handle].get();
+
+  // TODO(b/454107412): This is assuming the tab isn't discarded but nothing
+  // guarantees that.
   content::WebContents* contents = tab->GetContents();
   if (!contents) {
     return;

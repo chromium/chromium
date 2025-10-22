@@ -435,7 +435,10 @@ std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
   const base::TimeDelta wait_time =
       action.has_wait_time_ms() ? base::Milliseconds(action.wait_time_ms())
                                 : base::Seconds(3);
-  return std::make_unique<WaitToolRequest>(wait_time);
+  const tabs::TabHandle observe_tab_handle =
+      action.has_observe_tab_id() ? TabHandle(action.observe_tab_id())
+                                  : TabHandle::Null();
+  return std::make_unique<WaitToolRequest>(wait_time, observe_tab_handle);
 }
 
 std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
