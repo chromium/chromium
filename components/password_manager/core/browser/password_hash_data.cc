@@ -7,14 +7,19 @@
 #include <iterator>
 #include <string_view>
 
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "crypto/kdf.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace password_manager {
+
+crypto::SubtlePassKey MakeCryptoPassKeyForPasswordHash() {
+  return {};
+}
 
 PasswordHashData::PasswordHashData() = default;
 
@@ -48,35 +53,21 @@ bool PasswordHashData::MatchesPassword(const std::string& user,
 uint64_t CalculatePasswordHash(std::u16string_view text,
                                const std::string& salt) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  constexpr size_t kBytesFromHash = 8;
-  constexpr uint64_t kScryptCost = 32;  // It must be a power of 2.
-  constexpr uint64_t kScryptBlockSize = 8;
-  constexpr uint64_t kScryptParallelization = 1;
-  constexpr size_t kScryptMaxMemory = 1024 * 1024;
+  constexpr crypto::kdf::ScryptParams kScryptParams = {
+      .cost = 32,  // scrypt requires this to be a power of 2
+      .block_size = 8,
+      .parallelization = 1,
+      .max_memory_bytes = 1024 * 1024,
+  };
 
-  uint8_t hash[kBytesFromHash];
-  std::string_view text_8bits(reinterpret_cast<const char*>(text.data()),
-                              text.size() * 2);
-  const uint8_t* salt_ptr = reinterpret_cast<const uint8_t*>(salt.c_str());
+  std::array<uint8_t, 8> result;
+  crypto::kdf::DeriveKeyScrypt(kScryptParams, base::as_byte_span(text),
+                               base::as_byte_span(salt), result,
+                               MakeCryptoPassKeyForPasswordHash());
 
-  int scrypt_ok = EVP_PBE_scrypt(text_8bits.data(), text_8bits.size(), salt_ptr,
-                                 salt.size(), kScryptCost, kScryptBlockSize,
-                                 kScryptParallelization, kScryptMaxMemory, hash,
-                                 kBytesFromHash);
-
-  // EVP_PBE_scrypt can only fail due to memory allocation error (which aborts
-  // Chromium) or invalid parameters. In case of a failure a hash could leak
-  // information from the stack, so using CHECK is better than DCHECK.
-  CHECK(scrypt_ok);
-
+  uint64_t val = base::U64FromLittleEndian(result);
   // Take 37 bits of |hash|.
-  uint64_t hash37 = ((static_cast<uint64_t>(hash[0]))) |
-                    ((static_cast<uint64_t>(hash[1])) << 8) |
-                    ((static_cast<uint64_t>(hash[2])) << 16) |
-                    ((static_cast<uint64_t>(hash[3])) << 24) |
-                    (((static_cast<uint64_t>(hash[4])) & 0x1F) << 32);
-
-  return hash37;
+  return val & UINT64_C(0x1FFFFFFFFF);
 }
 
 std::string CanonicalizeUsername(const std::string& username,

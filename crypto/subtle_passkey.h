@@ -35,6 +35,7 @@ class KeychainKeyProvider;
 
 namespace password_manager {
 crypto::SubtlePassKey MakeCryptoPassKey();
+crypto::SubtlePassKey MakeCryptoPassKeyForPasswordHash();
 }
 
 class OSCryptImpl;
@@ -84,6 +85,7 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // This class uses custom scrypt parameters and has to keep doing so for
   // compatibility with a server-side implementation.
   friend SubtlePassKey password_manager::MakeCryptoPassKey();
+  friend SubtlePassKey password_manager::MakeCryptoPassKeyForPasswordHash();
 
   // This class uses custom PBKDF2 parameters which cannot be changed for
   // compatibility with persisted data.
