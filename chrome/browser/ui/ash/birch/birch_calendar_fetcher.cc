@@ -74,15 +74,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 BirchCalendarFetcher::BirchCalendarFetcher(Profile* profile)
     : profile_(profile),
       refresh_token_waiter_(std::make_unique<RefreshTokenWaiter>(profile_)) {
-  std::vector<std::string> scopes;
-  scopes.push_back(GaiaConstants::kCalendarReadOnlyOAuth2Scope);
   url_loader_factory_ = profile_->GetURLLoaderFactory();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   sender_ = std::make_unique<google_apis::RequestSender>(
       std::make_unique<google_apis::AuthService>(
           identity_manager,
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          url_loader_factory_, scopes),
+          url_loader_factory_, signin::OAuthConsumerId::kAuthServiceCalendar),
       url_loader_factory_,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
