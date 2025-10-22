@@ -420,7 +420,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                 mActivity,
                                 parentView,
                                 tabListCoordinator,
-                                mTabGroupModelFilterSupplier);
+                                mTabGroupModelFilterSupplier,
+                                tabBookmarkerSupplier,
+                                bottomSheetController,
+                                modalDialogManager,
+                                onTabGroupCreation);
 
                 TabListRecyclerView pinnedTabStripRecyclerView =
                         mPinnedTabsCoordinator.getPinnedTabsRecyclerView();

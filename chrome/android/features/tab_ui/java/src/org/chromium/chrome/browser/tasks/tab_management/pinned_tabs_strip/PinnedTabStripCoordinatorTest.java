@@ -31,11 +31,14 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
@@ -56,6 +59,10 @@ public class PinnedTabStripCoordinatorTest {
     @Mock private PinnedTabStripMediator mMediator;
     @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     @Mock private ItemTouchHelper2 mItemTouchHelper;
+    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Runnable mOnTabGroupCreation;
 
     private PinnedTabStripCoordinator mCoordinator;
 
@@ -75,7 +82,14 @@ public class PinnedTabStripCoordinatorTest {
         FrameLayout parentView = new FrameLayout(activity);
         mCoordinator =
                 new PinnedTabStripCoordinator(
-                        activity, parentView, mTabListCoordinator, mTabGroupModelFilterSupplier) {
+                        activity,
+                        parentView,
+                        mTabListCoordinator,
+                        mTabGroupModelFilterSupplier,
+                        mTabBookmarkerSupplier,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mOnTabGroupCreation) {
                     @Override
                     PinnedTabStripMediator createMediator(
                             Activity activity,
@@ -84,7 +98,11 @@ public class PinnedTabStripCoordinatorTest {
                             TabListModel tabListModel,
                             TabListModel pinnedTabsModelList,
                             PropertyModel stripPropertyModel,
-                            ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+                            ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+                            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+                            BottomSheetController bottomSheetController,
+                            ModalDialogManager modalDialogManager,
+                            Runnable onTabGroupCreation) {
                         return mMediator;
                     }
 

@@ -31,8 +31,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,9 +47,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -75,8 +80,13 @@ public class PinnedTabStripMediatorTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private Profile mProfile;
-    @Mock TabGroupSyncService mTabGroupSyncService;
-    @Mock CollaborationService mCollaborationService;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Runnable mOnTabGroupCreation;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -95,6 +105,7 @@ public class PinnedTabStripMediatorTest {
         when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
+        BookmarkModel.setInstanceForTesting(mBookmarkModel);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -116,7 +127,11 @@ public class PinnedTabStripMediatorTest {
                         mTabListModel,
                         mPinnedTabsModelList,
                         mStripPropertyModel,
-                        mTabGroupModelFilterSupplier);
+                        mTabGroupModelFilterSupplier,
+                        mTabBookmarkerSupplier,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mOnTabGroupCreation);
 
         ArgumentCaptor<TabListItemSizeChangedObserver> observerCaptor =
                 ArgumentCaptor.forClass(TabListItemSizeChangedObserver.class);

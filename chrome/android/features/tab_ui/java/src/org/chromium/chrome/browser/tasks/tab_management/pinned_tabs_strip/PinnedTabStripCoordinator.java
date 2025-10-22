@@ -19,11 +19,14 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -50,7 +53,11 @@ public class PinnedTabStripCoordinator {
             Activity activity,
             ViewGroup parentView,
             TabListCoordinator tabListCoordinator,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
+            @Nullable Runnable onTabGroupCreation) {
         mPinnedTabsRecyclerView =
                 (TabListRecyclerView)
                         LayoutInflater.from(activity)
@@ -92,7 +99,11 @@ public class PinnedTabStripCoordinator {
                         tabListModel,
                         pinnedTabsModelList,
                         pinnedTabStripPropertyModel,
-                        tabGroupModelFilterSupplier);
+                        tabGroupModelFilterSupplier,
+                        tabBookmarkerSupplier,
+                        bottomSheetController,
+                        modalDialogManager,
+                        onTabGroupCreation);
 
         PinnedTabStripItemTouchHelperCallback callback =
                 new PinnedTabStripItemTouchHelperCallback(
@@ -130,7 +141,11 @@ public class PinnedTabStripCoordinator {
             TabListModel tabListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
+            @Nullable Runnable onTabGroupCreation) {
         GridLayoutManager tabGridListLayoutManager =
                 (GridLayoutManager) tabGridListRecyclerView.getLayoutManager();
         assumeNonNull(tabGridListLayoutManager);
@@ -141,7 +156,11 @@ public class PinnedTabStripCoordinator {
                 tabListModel,
                 pinnedTabsModelList,
                 stripPropertyModel,
-                tabGroupModelFilterSupplier);
+                tabGroupModelFilterSupplier,
+                tabBookmarkerSupplier,
+                bottomSheetController,
+                modalDialogManager,
+                onTabGroupCreation);
     }
 
     private static PinnedTabStripItemView createPinnedTabStripItemView(

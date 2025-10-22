@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ALL_KEYS_TAB_GRID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.FAVICON_FETCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.GRID_CARD_SIZE;
@@ -30,6 +31,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -39,10 +42,14 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewRectUpdater;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -66,8 +73,13 @@ public class PinnedTabStripMediator {
     private final PropertyModel mStripPropertyModel;
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
     private final TabModelObserver mTabModelObserver;
+    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private @Nullable PinnedTabStripItemContextMenuCoordinator mContextMenuCoordinator;
+    private final BottomSheetController mBottomSheetController;
+    private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
+    private final ModalDialogManager mModalDialogManager;
+    private final @Nullable Runnable mOnTabGroupCreation;
 
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -81,7 +93,7 @@ public class PinnedTabStripMediator {
     /**
      * Constructor for the PinnedTabsStripMediator.
      *
-     * @param context The current context for getting the required reources.
+     * @param activity The current activity for getting the required resources.
      * @param tabGridListLayoutManager The layout manager for the main tab grid.
      * @param tabListCoordinator The coordinator for the main tab grid.
      * @param tabGridListModel The model for the main tab grid.
@@ -96,7 +108,11 @@ public class PinnedTabStripMediator {
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
+            @Nullable Runnable onTabGroupCreation) {
         mActivity = activity;
         mTabGridListLayoutManager = tabGridListLayoutManager;
         mTabGridListModel = tabGridListModel;
@@ -104,8 +120,12 @@ public class PinnedTabStripMediator {
         mStripPropertyModel = stripPropertyModel;
         mTabLisCoordinator = tabListCoordinator;
         mTabListItemSizeChangedObserver = this::onTabGridListItemSizeChanged;
+        mBottomSheetController = bottomSheetController;
+        mModalDialogManager = modalDialogManager;
+        mOnTabGroupCreation = onTabGroupCreation;
         mTabLisCoordinator.addTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -297,14 +317,39 @@ public class PinnedTabStripMediator {
 
     private void onTabGroupModelFilterChanged(
             @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+        if (mTabGroupListBottomSheetCoordinator != null) {
+            mTabGroupListBottomSheetCoordinator.destroy();
+        }
+
         if (oldFilter != null) {
             oldFilter.removeObserver(mTabModelObserver);
         }
         if (newFilter != null) {
             newFilter.addObserver(mTabModelObserver);
+            Profile profile = mTabGroupModelFilterSupplier.get().getTabModel().getProfile();
+            assumeNonNull(profile);
+
+            TabGroupCreationDialogManager tabGroupCreationDialogManager =
+                    new TabGroupCreationDialogManager(
+                            mActivity, mModalDialogManager, mOnTabGroupCreation);
+            mTabGroupListBottomSheetCoordinator =
+                    new TabGroupListBottomSheetCoordinator(
+                            mActivity,
+                            profile,
+                            tabGroupId ->
+                                    tabGroupCreationDialogManager.showDialog(tabGroupId, newFilter),
+                            /* tabMovedCallback= */ null,
+                            newFilter,
+                            mBottomSheetController,
+                            /* supportsShowNewGroup= */ true,
+                            /* destroyOnHide= */ false);
             mContextMenuCoordinator =
                     PinnedTabStripItemContextMenuCoordinator.createContextMenuCoordinator(
-                            mActivity, newFilter);
+                            mActivity,
+                            mTabBookmarkerSupplier,
+                            newFilter,
+                            mTabGroupListBottomSheetCoordinator,
+                            tabGroupCreationDialogManager);
         }
     }
 
@@ -315,5 +360,9 @@ public class PinnedTabStripMediator {
     void destroy() {
         mTabLisCoordinator.removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         mTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        if (mTabGroupListBottomSheetCoordinator != null) {
+            mTabGroupListBottomSheetCoordinator.destroy();
+            mTabGroupListBottomSheetCoordinator = null;
+        }
     }
 }

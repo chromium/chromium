@@ -48547,6 +48547,40 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="TabSwitcher.PinnedTabs.ContextMenu{ActionType}">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <description>
+    Recorded when a user long presses on a pinned tab card in the tab switcher
+    to show the context menu. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name="" summary="aggregated"/>
+    <variant name=".AddBookmark"
+        summary="Recorded when the 'Add to bookmarks' option in the context
+                 menu is selected."/>
+    <variant name=".AddToGroup"
+        summary="Recorded when the 'Add to group' option in the context menu
+                 is selected."/>
+    <variant name=".AddToGroup"
+        summary="Recorded when the 'Add to group' option in the context menu
+                 is selected."/>
+    <variant name=".CloseTab"
+        summary="Recorded when the 'Close tab' option in the context menu is
+                 selected."/>
+    <variant name=".EditBookmark"
+        summary="Recorded when the 'Edit bookmark' option in the context menu
+                 is selected."/>
+    <variant name=".MoveToGroup"
+        summary="Recorded when the 'move to group' option in the context menu
+                 is selected."/>
+    <variant name=".UnpinTab"
+        summary="Recorded when the 'Unpin Tab' option in the context menu is
+                 selected."/>
+  </token>
+</action>
+
 <action name="TaskManagement.OpenInChromeActionButtonClicked">
   <obsolete>The button option was removed and code deleted.</obsolete>
   <owner>dfalcantara@chromium.org</owner>
