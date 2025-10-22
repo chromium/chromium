@@ -404,8 +404,7 @@ class RasterBufferProviderPerfTest
       uint64_t previous_content_id,
       bool depends_on_at_raster_decodes) override {
     return raster_buffer_provider_->AcquireBufferForRaster(
-        resource, resource_content_id, previous_content_id,
-        depends_on_at_raster_decodes);
+        resource, resource_content_id, previous_content_id);
   }
 
   void RunMessageLoopUntilAllTasksHaveCompleted() {

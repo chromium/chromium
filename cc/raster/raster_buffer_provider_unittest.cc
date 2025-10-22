@@ -262,8 +262,7 @@ class RasterBufferProviderTest
     // The raster buffer has no tile ids associated with it for partial update,
     // so doesn't need to provide a valid dirty rect.
     std::unique_ptr<RasterBuffer> raster_buffer =
-        raster_buffer_provider_->AcquireBufferForRaster(
-            resource, 0, 0, depends_on_at_raster_decodes);
+        raster_buffer_provider_->AcquireBufferForRaster(resource, 0, 0);
     TileTask::Vector empty;
     tasks_.push_back(
         new TestRasterTaskImpl(this, id, std::move(raster_buffer), &empty));
@@ -278,8 +277,7 @@ class RasterBufferProviderTest
     ResourcePool::InUsePoolResource resource =
         AllocateResource(gfx::Size(1, 1));
     std::unique_ptr<RasterBuffer> raster_buffer =
-        raster_buffer_provider_->AcquireBufferForRaster(
-            resource, 0, 0, false /* depends_on_at_raster_decodes */);
+        raster_buffer_provider_->AcquireBufferForRaster(resource, 0, 0);
     TileTask::Vector empty;
     tasks_.push_back(new BlockingTestRasterTaskImpl(
         this, id, std::move(raster_buffer), lock, &empty));
@@ -289,8 +287,7 @@ class RasterBufferProviderTest
   void AppendTaskWithResource(unsigned id,
                               const ResourcePool::InUsePoolResource* resource) {
     std::unique_ptr<RasterBuffer> raster_buffer =
-        raster_buffer_provider_->AcquireBufferForRaster(
-            *resource, 0, 0, false /* depends_on_at_raster_decodes */);
+        raster_buffer_provider_->AcquireBufferForRaster(*resource, 0, 0);
     TileTask::Vector empty;
     tasks_.push_back(
         new TestRasterTaskImpl(this, id, std::move(raster_buffer), &empty));
