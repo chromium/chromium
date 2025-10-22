@@ -17,6 +17,7 @@
 #include "components/metrics/dwa/dwa_entry_builder.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/dwa_service.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
@@ -58,7 +59,7 @@ class DwaBrowserTest : public SyncTest {
     // Explicitly enable DWA and disable metrics reporting. Disabling metrics
     // reporting should affect only UMA--not DWA.
     scoped_feature_list_.InitWithFeatures(
-        {dwa::kDwaFeature, dwa::kPrivateMetricsFeature},
+        {dwa::kDwaFeature, private_metrics::kPrivateMetricsFeature},
         {internal::kMetricsReportingFeature});
   }
 

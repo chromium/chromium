@@ -28,11 +28,6 @@ namespace metrics::dwa {
 // Enables DWA recording.
 COMPONENT_EXPORT(DWA_RECORDER) BASE_DECLARE_FEATURE(kDwaFeature);
 
-// Enables Private Metrics reporting. This flag enables the flow for reporting
-// `PrivateMetricReport` protocol buffer as described in
-// go/chrome-trusted-private-metrics and go/etld-plus-one-metrics.
-COMPONENT_EXPORT(DWA_RECORDER) BASE_DECLARE_FEATURE(kPrivateMetricsFeature);
-
 class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
  public:
   DwaRecorder();

@@ -13,6 +13,7 @@
 #include "components/metrics/dwa/dwa_pref_names.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/private_metrics/private_metrics_unsent_log_store_metrics.h"
 #include "components/metrics/server_urls.h"
@@ -30,16 +31,15 @@ PrivateMetricsReportingService::PrivateMetricsReportingService(
                        local_state,
                        storage_limits.max_log_size_bytes,
                        /*logs_event_manager=*/nullptr),
-      unsent_log_store_(
-          std::make_unique<PrivateMetricsUnsentLogStoreMetrics>(),
-          local_state,
-          base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)
-              ? prefs::kUnsentLogStoreName
-              : dwa::prefs::kUnsentLogStoreName,
-          /*metadata_pref_name=*/nullptr,
-          storage_limits,
-          client->GetUploadSigningKey(),
-          /*logs_event_manager=*/nullptr) {}
+      unsent_log_store_(std::make_unique<PrivateMetricsUnsentLogStoreMetrics>(),
+                        local_state,
+                        base::FeatureList::IsEnabled(kPrivateMetricsFeature)
+                            ? prefs::kUnsentLogStoreName
+                            : dwa::prefs::kUnsentLogStoreName,
+                        /*metadata_pref_name=*/nullptr,
+                        storage_limits,
+                        client->GetUploadSigningKey(),
+                        /*logs_event_manager=*/nullptr) {}
 
 PrivateMetricsReportingService::~PrivateMetricsReportingService() = default;
 
@@ -59,7 +59,7 @@ metrics::LogStore* PrivateMetricsReportingService::log_store() {
 }
 
 GURL PrivateMetricsReportingService::GetUploadUrl() const {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
     return metrics::GetPrivateMetricsServerUrl();
   }
   return metrics::GetDwaServerUrl();
@@ -77,7 +77,7 @@ std::string_view PrivateMetricsReportingService::upload_mime_type() const {
 
 metrics::MetricsLogUploader::MetricServiceType
 PrivateMetricsReportingService::service_type() const {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
     return MetricsLogUploader::PRIVATE_METRICS;
   }
   return MetricsLogUploader::DWA;
@@ -85,7 +85,7 @@ PrivateMetricsReportingService::service_type() const {
 
 void PrivateMetricsReportingService::LogCellularConstraint(
     bool upload_canceled) {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramBoolean(
         "PrivateMetrics.LogUpload.Canceled.CellularConstraint",
         upload_canceled);
@@ -100,7 +100,7 @@ void PrivateMetricsReportingService::LogResponseOrErrorCode(int response_code,
                                                             bool was_https) {
   // `was_https` is ignored since all Private Metrics logs are received over
   // HTTPS.
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramSparse("PrivateMetrics.LogUpload.ResponseOrErrorCode",
                              response_code >= 0 ? response_code : error_code);
   } else {
@@ -110,7 +110,7 @@ void PrivateMetricsReportingService::LogResponseOrErrorCode(int response_code,
 }
 
 void PrivateMetricsReportingService::LogSuccessLogSize(size_t log_size) {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramCounts10000("PrivateMetrics.LogSize.OnSuccess",
                                   log_size / 1024);
   } else {

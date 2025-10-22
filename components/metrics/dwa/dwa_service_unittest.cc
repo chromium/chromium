@@ -12,6 +12,7 @@
 #include "components/metrics/dwa/dwa_pref_names.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/pref_service.h"
@@ -34,7 +35,7 @@ class DwaServiceTest : public testing::Test {
     DwaService::RegisterPrefs(prefs_.registry());
 
     scoped_feature_list_.InitWithFeatures(
-        {dwa::kDwaFeature, dwa::kPrivateMetricsFeature}, {});
+        {dwa::kDwaFeature, private_metrics::kPrivateMetricsFeature}, {});
   }
 
   DwaServiceTest(const DwaServiceTest&) = delete;
@@ -54,7 +55,7 @@ class DwaServiceTest : public testing::Test {
   }
 
   int GetPersistedLogCount() {
-    if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
+    if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
       return prefs_.GetList(private_metrics::prefs::kUnsentLogStoreName).size();
     }
     return prefs_.GetList(prefs::kUnsentLogStoreName).size();

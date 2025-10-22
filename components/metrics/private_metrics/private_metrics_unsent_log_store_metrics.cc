@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/dwa/dwa_recorder.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 
 namespace metrics::private_metrics {
 
@@ -17,7 +18,7 @@ PrivateMetricsUnsentLogStoreMetrics::~PrivateMetricsUnsentLogStoreMetrics() =
 
 void PrivateMetricsUnsentLogStoreMetrics::RecordLogReadStatus(
     metrics::UnsentLogStoreMetrics::LogReadStatus status) {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramEnumeration("PrivateMetrics.PersistentLogRecall.Status",
                                   status);
   } else {
@@ -28,7 +29,7 @@ void PrivateMetricsUnsentLogStoreMetrics::RecordLogReadStatus(
 void PrivateMetricsUnsentLogStoreMetrics::RecordCompressionRatio(
     size_t compressed_size,
     size_t original_size) {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramPercentage(
         "PrivateMetrics.ProtoCompressionRatio",
         static_cast<int>(100 * compressed_size / original_size));
@@ -40,7 +41,7 @@ void PrivateMetricsUnsentLogStoreMetrics::RecordCompressionRatio(
 }
 
 void PrivateMetricsUnsentLogStoreMetrics::RecordDroppedLogSize(size_t size) {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramCounts1M("PrivateMetrics.UnsentLogs.DroppedSize",
                                static_cast<int>(size));
   } else {
@@ -51,7 +52,7 @@ void PrivateMetricsUnsentLogStoreMetrics::RecordDroppedLogSize(size_t size) {
 
 void PrivateMetricsUnsentLogStoreMetrics::RecordDroppedLogsNum(
     int dropped_logs_num) {
-  if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     base::UmaHistogramCounts10000("PrivateMetrics.UnsentLogs.NumDropped",
                                   dropped_logs_num);
   } else {

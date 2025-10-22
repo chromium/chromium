@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("private_metrics_features") {
+  sources = [ "private_metrics_features.cc" ]
+  public = [ "private_metrics_features.h" ]
+  deps = [ "//base" ]
+}
+
 component("dwa_recorder") {
   sources = [
     "//components/metrics/dwa/dwa_recorder.cc",
@@ -12,7 +18,10 @@ component("dwa_recorder") {
     "//components/metrics/dwa/mojom",
     "//third_party/metrics_proto",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":private_metrics_features",
+    "//base",
+  ]
 }
 
 component("private_metrics_recorders") {
@@ -25,7 +34,10 @@ component("private_metrics_recorders") {
     "//components/metrics/private_metrics/mojom",
     "//third_party/metrics_proto",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":private_metrics_features",
+    "//base",
+  ]
 }
 
 # TODO(crbug.com/433729993): Build dwa static library under private_metrics static library.
@@ -68,6 +80,7 @@ static_library("private_metrics") {
   ]
   defines = [ "IS_DWA_IMPL" ]
   deps = [
+    ":private_metrics_features",
     "//base",
     "//build:buildflag_header_h",
     "//components/metrics",
@@ -94,6 +107,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":private_metrics",
+    ":private_metrics_features",
     "//base",
     "//base/test:test_support",
     "//components/metrics",

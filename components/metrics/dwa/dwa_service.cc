@@ -21,6 +21,7 @@
 #include "components/metrics/dwa/dwa_rotation_scheduler.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "third_party/federated_compute/src/fcp/confidentialcompute/crypto.h"
@@ -136,7 +137,7 @@ void DwaService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
+  if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
     BuildPrivateMetricReportAndStoreLog(reason);
   } else {
     BuildDwaReportAndStoreLog(reason);
@@ -428,7 +429,7 @@ bool DwaService::ValidateEncryptionPublicKey(
 void DwaService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
-    if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+    if (base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature)) {
       BuildPrivateMetricReportAndStoreLog(
           metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
     } else {

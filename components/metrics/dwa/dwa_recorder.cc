@@ -11,12 +11,11 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 
 namespace metrics::dwa {
 
 BASE_FEATURE(kDwaFeature, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivateMetricsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -150,7 +149,7 @@ DwaRecorder::GetEntriesForTesting() const {
 // static
 bool DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled() {
   return base::FeatureList::IsEnabled(kDwaFeature) ||
-         base::FeatureList::IsEnabled(kPrivateMetricsFeature);
+         base::FeatureList::IsEnabled(private_metrics::kPrivateMetricsFeature);
 }
 
 }  // namespace metrics::dwa
