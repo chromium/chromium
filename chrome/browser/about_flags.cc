@@ -1647,10 +1647,8 @@ const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
     {"ForceToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowToolsAndModels", "true"},
-    {"ShowCreateImageTool", "true"},
-    {"ShowComposeboxZps", "true"},
+    {"ShowContextMenu", "true"},     {"ShowToolsAndModels", "true"},
+    {"ShowCreateImageTool", "true"}, {"ShowComposeboxZps", "true"},
     {"ForceToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
@@ -13405,8 +13403,8 @@ const FeatureEntry kFeatureEntries[] = {
                                     kProfilePickerTextVariations,
                                     "ProfilePickerTextVariations")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    // Add new entries above this line.
 
+    // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
