@@ -180,9 +180,6 @@ config("skia_library_config") {
     # https://crbug.com/443057959
     #"SK_DISABLE_LEGACY_INIT_DECODERS",
   ]
-  if (use_blink) {
-    defines += [ "SK_CODEC_DECODES_ICO" ]
-  }
 
   if (use_blink) {
     defines += [ "SK_TYPEFACE_FACTORY_FONTATIONS" ]
@@ -383,7 +380,6 @@ component("skia") {
     sources += skia_encode_jpeg_srcs
     public += skia_encode_jpeg_public
     sources += [
-      "//third_party/skia/src/codec/SkIcoCodec.cpp",
       "//third_party/skia/src/codec/SkJpegCodec.cpp",
       "//third_party/skia/src/codec/SkJpegDecoderMgr.cpp",
       "//third_party/skia/src/codec/SkJpegMetadataDecoderImpl.cpp",
