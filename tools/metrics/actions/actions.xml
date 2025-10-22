@@ -13888,6 +13888,303 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.Bind">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when a Glic instance is bound to a tab.</description>
+</action>
+
+<action name="Glic.Instance.BoundTabDestroyed">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when a bound tab is destroyed.</description>
+</action>
+
+<action name="Glic.Instance.Close">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when Close is called on an instance.</description>
+</action>
+
+<action name="Glic.Instance.Created">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when a Glic instance is created.</description>
+</action>
+
+<action name="Glic.Instance.CreatedInstanceWithoutWarming">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when an instance is created wihtout prewarming.
+  </description>
+</action>
+
+<action name="Glic.Instance.CreatedWarmedInstance">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when a warmed instance is created.</description>
+</action>
+
+<action name="Glic.Instance.CreateTab">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when the CreateTab API is used on an Instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.CreateTask">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when the CreateTask API is used on an Instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.Destroyed">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when a Glic instance is destroyed.</description>
+</action>
+
+<action name="Glic.Instance.Detach">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when the user detaches a Glic instance from its current context
+    (e.g., the side panel to a floating window).
+  </description>
+</action>
+
+<action name="Glic.Instance.Hide">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when a Glic instance is hidden from the user (e.g., the side panel is
+    closed, the tab is backgrounded, or the floaty is dismissed).
+  </description>
+</action>
+
+<action name="Glic.Instance.OnDaisyChain">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when daisy chaining is detected on an instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.PauseActorTask">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    User action to pause an actor task within the Glic instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.PerformActions">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    User action to perform a set of actions within the Glic instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.PromotedWarmedInstance">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when a pre-warmed Glic instance is promoted to become a live
+    instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.RegisterConversation">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when RegisterConversation is called on an instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.ResumeActorTask">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    User action to resume an actor task within the Glic instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.Show.Floaty">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when a Glic instance is shown in a floating window.
+  </description>
+</action>
+
+<action name="Glic.Instance.Show.FloatyViaHotkey">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when a Glic instance is shown in a floating window directly.
+  </description>
+</action>
+
+<action name="Glic.Instance.Show.SidePanel">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when a Glic instance is shown in the side panel.
+  </description>
+</action>
+
+<action name="Glic.Instance.Show.SidePanelViaHotkey">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when a Glic instance is shown in a side panel due to hotkey use.
+  </description>
+</action>
+
+<action name="Glic.Instance.StopActorTask">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    User action to stop an actor task within the Glic instance.
+  </description>
+</action>
+
+<action name="Glic.Instance.SwitchFromConversation.Floaty">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when SwitchConversation is called from Floaty on a Glic instance to
+    switch to a different conversation (eg. loading a chat from 'recent'
+    conversations in the three-dots menu).
+  </description>
+</action>
+
+<action name="Glic.Instance.SwitchFromConversation.SidePanel">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when SwitchConversation is called from Side Panel on a Glic instance
+    to switch to a different conversation (eg. loading a chat from 'recent'
+    conversations in the three-dots menu).
+  </description>
+</action>
+
+<action name="Glic.Instance.SwitchToConversation.Floaty">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged from SwitchConversation on the newly activated instance if it is in a
+    floaty.
+  </description>
+</action>
+
+<action name="Glic.Instance.SwitchToConversation.SidePanel">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged from SwitchConversation on the newly activated instance if it is in a
+    side panel.
+  </description>
+</action>
+
+<action name="Glic.Instance.Toggle">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when Toggle is called on an instance.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.BeginLoad">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI has begun to load.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.DisabledByAdmin">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI has been disabled by admin policy.
+  </description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.Error">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI has encountered an error.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.FinishLoading">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI has finished loading.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.GuestError">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI has encountered a guest error.
+  </description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.HoldLoading">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI is holding loading.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.Offline">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI is offline.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.Ready">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI is ready.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.ShowLoading">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI is showing a loading screen.
+  </description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.SignIn">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI is prompting the user to sign in.
+  </description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.Unavailable">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI is unavailable.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.Uninitialized">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI is uninitialized.</description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.Unresponsive">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The GLic instance WebUI is unresponsive.</description>
+</action>
+
 <action name="Glic.Pinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

@@ -175,6 +175,8 @@ source_set("impl") {
     "service/glic_instance_helper.cc",
     "service/glic_instance_impl.cc",
     "service/glic_instance_impl.h",
+    "service/glic_instance_metrics.cc",
+    "service/glic_instance_metrics.h",
     "service/glic_ui_embedder.h",
     "service/glic_ui_types.cc",
     "service/glic_ui_types.h",

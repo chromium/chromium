@@ -38,6 +38,7 @@ namespace glic {
 class GlicUiEmbedder;
 class EmptyEmbedderDelegate;
 class GlicTabContentsObserver;
+class GlicInstanceMetrics;
 class GlicZeroStateSuggestionsManager;
 
 // A GlicInstance owns a single host keeping any state that must exist for the
@@ -101,7 +102,8 @@ class GlicInstanceImpl : public GlicInstance,
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(const ShowOptions& options) override;
   void Close(EmbedderKey key);
-  void Toggle(ShowOptions&& options, bool prevent_close);
+  // Returns true when toggle shows the instance and false when it is closed.
+  bool Toggle(ShowOptions&& options, bool prevent_close);
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
@@ -181,6 +183,8 @@ class GlicInstanceImpl : public GlicInstance,
   void OnTabAddedToTask(actor::TaskId task_id,
                         const tabs::TabInterface::Handle& tab_handle) override;
 
+  raw_ptr<glic::GlicInstanceMetrics> metrics() { return metrics_.get(); }
+
  private:
   struct EmbedderEntry {
     EmbedderEntry();
@@ -251,6 +255,7 @@ class GlicInstanceImpl : public GlicInstance,
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
+  std::unique_ptr<glic::GlicInstanceMetrics> metrics_;
 
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.

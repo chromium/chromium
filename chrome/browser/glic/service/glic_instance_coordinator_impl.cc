@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
@@ -322,8 +324,11 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   auto* instance_ptr = warmed_instance_.get();
   instances_[instance_ptr->id()] = std::move(warmed_instance_);
   if (warming_enabled_) {
+    instance_ptr->metrics()->OnWarmedInstancePromoted();
     CreateWarmedInstance();
+    instance_ptr->metrics()->OnWarmedInstanceCreated();
   } else {
+    instance_ptr->metrics()->OnInstanceCreatedWithoutWarming();
     VLOG(1) << "Warming is disabled, skipping warming";
   }
   return instance_ptr;
@@ -402,10 +407,9 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       target_instance->RegisterConversation(std::move(info), base::DoNothing());
     }
   }
-
   CHECK(target_instance);
   target_instance->Show(options);
-
+  target_instance->metrics()->OnSwitchToConversation(options);
   std::move(callback).Run(std::nullopt);
 }
 
