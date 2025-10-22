@@ -146,22 +146,6 @@
             ]
         }
     ],
-    "AcceleratedVideoDecodeLinuxGL": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AcceleratedVideoDecodeLinuxGL",
-                        "AcceleratedVideoDecodeLinuxZeroCopyGL"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityDeprecateJavaNodeCache": [
         {
             "platforms": [
