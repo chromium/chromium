@@ -11566,22 +11566,6 @@
             ]
         }
     ],
-    "GlicScrollTo": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicScrollTo"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicTieredRollout": [
         {
             "platforms": [
