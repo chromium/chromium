@@ -175,7 +175,7 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   CHECK(type == SubCaptureTarget::Type::kCropTarget ||
         type == SubCaptureTarget::Type::kRestrictionTarget);
 
-  const std::string metric_name_prefix =
+  const String metric_name_prefix =
       (type == SubCaptureTarget::Type::kCropTarget)
           ? "Media.RegionCapture.CropTo"
           : "Media.ElementCapture.RestrictTo";

@@ -4799,16 +4799,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
-    expires_after="2026-03-08">
+<histogram name="Media.MediaDevices.GetDisplayMedia.Latency2" units="ms"
+    expires_after="2026-10-08">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The latency of calls to the navigator.mediaDevices.GetDisplayMedia() API
     which resolve, including both successes and failures. Note very long calls
     which record a GetDisplayMedia.Result of kTimedOut but do eventually resolve
-    will have their latency recorded.
+    will have their latency recorded. The suffix 2 was added in milestone 143,
+    after the kTimedOut interval was increased from 12s to 30s.
   </summary>
 </histogram>
 
@@ -4820,7 +4821,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The results of all calls to the navigator.mediaDevices.GetDisplayMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 6 seconds. The suffix 2 was added at
+    the promise was still pending after 30 seconds. The suffix 2 was added at
     milestone 138, after kNotAllowedByUserError was added.
   </summary>
 </histogram>

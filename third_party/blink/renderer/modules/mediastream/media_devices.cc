@@ -673,13 +673,17 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
   auto tracer =
       std::make_unique<ScopedMediaStreamTracer>("MediaDevices.GetDisplayMedia");
 
-  // Using timeout of base::Seconds(12) based on the
+  // Using timeout of base::Seconds(30) based on the
   // Media.MediaDevices.GetDisplayMedia.Latency values.
   // Records the `Media.MediaDevices.GetDisplayMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
-      script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(12));
+      script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(30),
+      /*min_latency_bucket=*/base::Seconds(1),
+      /*max_latency_bucket*/ base::Seconds(60), /*n_buckets=*/100);
   resolver->SetResultSuffix("Result2");
+  resolver->SetLatencySuffix("Latency2");
+
   auto promise = resolver->Promise();
 
   if (!window) {
