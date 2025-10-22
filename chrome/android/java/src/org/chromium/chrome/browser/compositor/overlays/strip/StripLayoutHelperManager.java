@@ -1590,6 +1590,20 @@ public class StripLayoutHelperManager
                 mContext, mIsIncognito, isAppInDesktopWindow(), mIsTopResumedActivity);
     }
 
+    /**
+     * Returns the tint color for a given media state.
+     *
+     * @param mediaState The {@link MediaState} for which to get the tint.
+     * @param defaultTint The default tint to use.
+     */
+    public @ColorInt int getMediaIndicatorTintColor(
+            @Tab.MediaState int mediaState, @ColorInt int defaultTint) {
+        if (mediaState == Tab.MediaState.RECORDING) {
+            return mContext.getColor(R.color.tab_recording_media_color);
+        }
+        return defaultTint;
+    }
+
     @Override
     public boolean updateOverlay(long time, long dt) {
         getInactiveStripLayoutHelper().finishAnimationsAndPushTabUpdates();

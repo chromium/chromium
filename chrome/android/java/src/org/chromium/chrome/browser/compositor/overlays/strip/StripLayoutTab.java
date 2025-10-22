@@ -123,7 +123,7 @@ public class StripLayoutTab extends StripLayoutView {
     private static final float FAVICON_WIDTH = 16.f;
     private static final float FAVICON_PADDING = 26.f;
     protected static final float MIN_WIDTH = FAVICON_WIDTH + (FOLIO_FOOT_LENGTH_DP * 2);
-    // TODO(crbug.com/430072416): Check media indicator constants with UX.
+    // TODO(crbug.com/454048975): Check media indicator constants with UX.
     private static final float MEDIA_INDICATOR_WIDTH = 16.f;
     private static final float WIDTH_TO_HIDE_ICON = 86.f;
     private static final float WIDTH_TO_HIDE_FAVICON_FOR_MEDIA_INDICATOR =

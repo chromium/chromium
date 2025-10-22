@@ -133,6 +133,7 @@ class TabStripSceneLayer : public SceneLayer {
                         jboolean should_hide_favicon,
                         jboolean should_show_media_indicator,
                         jint media_indicator_resource_id,
+                        jint media_indicator_tint,
                         jfloat media_indicator_width,
                         jfloat toolbar_width,
                         jfloat x,
