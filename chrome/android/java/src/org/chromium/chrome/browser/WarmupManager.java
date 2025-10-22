@@ -472,7 +472,8 @@ public class WarmupManager {
             ControlContainer controlContainer = mainView.findViewById(R.id.control_container);
 
             if (toolbarId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
-                controlContainer.initWithToolbar(toolbarId);
+                controlContainer.initWithToolbar(
+                        toolbarId, R.dimen.custom_tabs_control_container_height);
             }
             return mainView;
         } catch (InflateException e) {

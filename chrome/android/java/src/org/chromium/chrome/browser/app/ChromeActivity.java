@@ -815,7 +815,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // Inflate the correct toolbar layout for the device.
             int toolbarLayoutId = getToolbarLayoutId();
             if (toolbarLayoutId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
-                controlContainer.initWithToolbar(toolbarLayoutId);
+                controlContainer.initWithToolbar(toolbarLayoutId, getToolbarLayoutHeightResId());
             }
             onInitialLayoutInflationComplete();
         }
@@ -964,6 +964,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * @return The layout ID for the toolbar to use.
      */
     protected int getToolbarLayoutId() {
+        return ActivityUtils.NO_RESOURCE_ID;
+    }
+
+    /**
+     * @return The height resource that's used for the toolbar layout height.
+     */
+    protected int getToolbarLayoutHeightResId() {
         return ActivityUtils.NO_RESOURCE_ID;
     }
 

@@ -2959,6 +2959,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     @Override
+    protected int getToolbarLayoutHeightResId() {
+        return R.dimen.toolbar_height_no_shadow;
+    }
+
+    @Override
     public void performPostInflationStartup() {
         super.performPostInflationStartup();
 

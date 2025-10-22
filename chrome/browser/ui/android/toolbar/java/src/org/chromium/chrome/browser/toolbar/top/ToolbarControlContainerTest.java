@@ -587,7 +587,7 @@ public class ToolbarControlContainerTest {
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
                         mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
-        controlContainer.initWithToolbar(R.layout.toolbar_phone);
+        controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
                 mToolbarView,
@@ -659,7 +659,7 @@ public class ToolbarControlContainerTest {
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
                         mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
-        controlContainer.initWithToolbar(R.layout.toolbar_phone);
+        controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
                 mToolbarView,

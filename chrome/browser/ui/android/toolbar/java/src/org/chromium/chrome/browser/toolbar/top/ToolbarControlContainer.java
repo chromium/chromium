@@ -97,7 +97,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable OnDragListener mToolbarContainerDragListener;
 
     private boolean mIsAppInUnfocusedDesktopWindow;
-    private final int mToolbarLayoutHeight;
+    private int mToolbarLayoutHeight;
 
     private View mToolbarHairline;
     private ViewGroup mToolbarView;
@@ -121,8 +121,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      */
     public ToolbarControlContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mToolbarLayoutHeight =
-                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
     }
 
     @Override
@@ -173,9 +171,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     @Initializer
-    public void initWithToolbar(int toolbarLayoutId) {
+    public void initWithToolbar(int toolbarLayoutId, int toolbarLayoutHeightResId) {
         try (TraceEvent te = TraceEvent.scoped("ToolbarControlContainer.initWithToolbar")) {
             mToolbarContainer = findViewById(R.id.toolbar_container);
+            mToolbarLayoutHeight = getResources().getDimensionPixelSize(toolbarLayoutHeightResId);
             ViewStub toolbarStub = findViewById(R.id.toolbar_stub);
             toolbarStub.setLayoutResource(toolbarLayoutId);
             View toolbar = toolbarStub.inflate();
