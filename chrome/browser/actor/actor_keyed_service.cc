@@ -141,6 +141,8 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
+  // TODO(crbug.com/448383821): We shouldn't create a task if the actuation
+  // capability is disabled.
   base::UmaHistogramBoolean("Actor.Task.Created", true);
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
@@ -259,9 +261,8 @@ void ActorKeyedService::OnActuationCapabilityChanged(
   if (!has_actuation_capability) {
     FailAllTasks();
   }
-  // TODO(crbug.com/450525715): Depends on the shape of the Chrome API to signal
-  // the HostCapability (Set vs Observable), we might need to inform the web
-  // client about the capability change.
+  // TODO(crbug.com/450525715, crbug.com/452416162): The web client needs to be
+  // notified when the capability changes.
 }
 
 void ActorKeyedService::RequestTabObservation(

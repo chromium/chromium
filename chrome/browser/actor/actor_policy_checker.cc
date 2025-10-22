@@ -4,14 +4,20 @@
 
 #include "chrome/browser/actor/actor_policy_checker.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -22,15 +28,50 @@ namespace {
 bool HasActuationCapability(Profile* profile) {
   CHECK(profile);
   CHECK(profile->GetPrefs());
+
 #if !BUILDFLAG(ENABLE_GLIC)
   return true;
 #else
-  // TODO(crbug.com/450525715): Wire the up enterprise policy, and
-  // `BrowserManagementService::IsManaged()`.
 
-  return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) ==
-         static_cast<int>(glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
-#endif  // BUILDFLAG(ENABLE_GLIC)
+  auto* management_service_factory =
+      policy::ManagementServiceFactory::GetInstance();
+  auto* browser_management_service =
+      management_service_factory->GetForProfile(profile);
+
+  const bool is_managed =
+      browser_management_service && browser_management_service->IsManaged();
+  const bool is_managed_trial = base::FeatureList::IsEnabled(
+      features::kGlicActOnWebCapabilityForManagedTrials);
+  // M143-M145: Managed clients do not have the capability. The policy cannot be
+  // enabled the capability for managed clients.
+  if (!is_managed || is_managed_trial) {
+    // Non-managed clients or trial participants have the capability by
+    // default.
+    return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) !=
+           static_cast<int>(
+               glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+  }
+
+  const base::Version version = version_info::GetVersion();
+  if (version.IsValid() && version < base::Version("145")) {
+    return false;
+  }
+
+  // M145-M147: Managed clients defaults to no capability, but can be enabled by
+  // the policy.
+  if (version.IsValid() && version < base::Version("147")) {
+    return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) ==
+           static_cast<int>(
+               glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+  }
+
+  // M147: Managed clients have the capability by default. The policy can be
+  // used to disable the capability for managed clients.
+  // Invalid version also defaults to enabled.
+  return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) !=
+         static_cast<int>(
+             glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+#endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 
 }  // namespace
@@ -47,9 +88,8 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
       base::BindRepeating(&ActorPolicyChecker::OnPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/450525715): Depends on the shape of the Chrome API to signal
-  // the HostCapability (Set vs Observable), we might need to inform the web
-  // client about the capability at initialization.
+  // TODO(crbug.com/450525715, crbug.com/452416162): The web client needs to be
+  // informed of the initial capability value.
 }
 
 ActorPolicyChecker::~ActorPolicyChecker() = default;

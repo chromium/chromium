@@ -6,10 +6,15 @@
 
 #include "base/base_switches.h"
 #include "base/test/test_future.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,15 +32,21 @@ namespace actor {
 namespace {
 
 int ToInt(glic::prefs::GlicActuationOnWebPolicyState state) {
-  return static_cast<int>(state);
+  return base::to_underlying(state);
+}
+
+base::Value GetActuationOnWebPrefValue(bool enabled) {
+  return base::Value(
+      enabled ? ToInt(glic::prefs::GlicActuationOnWebPolicyState::kEnabled)
+              : ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
 }
 
 }  // namespace
 
-class ActorPolicyCheckerBrowserTest : public ActorToolsTest {
+class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
  public:
-  ActorPolicyCheckerBrowserTest() = default;
-  ~ActorPolicyCheckerBrowserTest() override = default;
+  ActorPolicyCheckerBrowserTestBase() = default;
+  ~ActorPolicyCheckerBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     content::SetupCrossSiteRedirector(embedded_test_server());
@@ -59,24 +70,49 @@ class ActorPolicyCheckerBrowserTest : public ActorToolsTest {
     policy_provider_.UpdateChromePolicy(policy_with_defaults);
   }
 
-  static base::Value GetActuationOnWebPrefValue(bool enabled) {
-    return base::Value(
-        enabled ? ToInt(glic::prefs::GlicActuationOnWebPolicyState::kEnabled)
-                : ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
-  }
-
  private:
   ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-class ActorPolicyCheckerBrowserTestAlternatingPolicyValue
-    : public ActorPolicyCheckerBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+// Tests that exercise the policy checker for non-managed clients.
+class ActorPolicyCheckerBrowserTestNonManaged
+    : public ActorPolicyCheckerBrowserTestBase {
  public:
-  ActorPolicyCheckerBrowserTestAlternatingPolicyValue() = default;
-  ~ActorPolicyCheckerBrowserTestAlternatingPolicyValue() override = default;
+  ActorPolicyCheckerBrowserTestNonManaged() = default;
+  ~ActorPolicyCheckerBrowserTestNonManaged() override = default;
 
   void SetUpOnMainThread() override {
+    ActorPolicyCheckerBrowserTestBase::SetUpOnMainThread();
+    auto* management_service_factory =
+        policy::ManagementServiceFactory::GetInstance();
+    auto* browser_management_service =
+        management_service_factory->GetForProfile(GetProfile());
+    ASSERT_TRUE(!browser_management_service ||
+                !browser_management_service->IsManaged());
+  }
+};
+
+// Tests that exercise the policy checker for managed clients.
+class ActorPolicyCheckerBrowserTestManaged
+    : public ActorPolicyCheckerBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ActorPolicyCheckerBrowserTestManaged() = default;
+  ~ActorPolicyCheckerBrowserTestManaged() override = default;
+
+  void SetUpOnMainThread() override {
+    const base::Version version = version_info::GetVersion();
+    bool enable_policy = GetParam();
+    // TODO(crbug.com/452629096): Remove this condition once we can enable the
+    // capability via the policy, after M145.
+    if (version.IsValid() && version < base::Version("145") && enable_policy) {
+      GTEST_SKIP() << "Between now to M145, act-on-web capability is strictly "
+                      "disabled on managed clients, and not even controllable "
+                      "via the policy. Skip those tests where we want to "
+                      "enable the policy.";
+    }
+    // Set up the policy so the profile becomes managed.
+    //
     // Note we need to set up the policy before calling the base class's
     // `SetUpOnMainThread()`. The base class's `SetUpOnMainThread()` will create
     // a Task. We don't want to change the policy value after the Task is
@@ -88,7 +124,14 @@ class ActorPolicyCheckerBrowserTestAlternatingPolicyValue
                  policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
                  GetActuationOnWebPrefValue(GetParam()), nullptr);
     UpdateProviderPolicy(policies);
-    ActorPolicyCheckerBrowserTest::SetUpOnMainThread();
+    ActorPolicyCheckerBrowserTestBase::SetUpOnMainThread();
+
+    auto* management_service_factory =
+        policy::ManagementServiceFactory::GetInstance();
+    auto* browser_management_service =
+        management_service_factory->GetForProfile(GetProfile());
+    ASSERT_TRUE(browser_management_service);
+    ASSERT_TRUE(browser_management_service->IsManaged());
   }
 
   static std::string DescribeParam(const ::testing::TestParamInfo<bool>& info) {
@@ -98,11 +141,11 @@ class ActorPolicyCheckerBrowserTestAlternatingPolicyValue
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ActorPolicyCheckerBrowserTestAlternatingPolicyValue,
+    ActorPolicyCheckerBrowserTestManaged,
     ::testing::Bool(),
-    ActorPolicyCheckerBrowserTestAlternatingPolicyValue::DescribeParam);
+    ActorPolicyCheckerBrowserTestManaged::DescribeParam);
 
-IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
                        TasksDroppedWhenActuationCapabilityIsDisabled) {
   PrefService* prefs = browser()->profile()->GetPrefs();
   ASSERT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
@@ -116,13 +159,13 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTest,
   actor_task().Pause(/*from_actor=*/true);
   EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
 
-  policy::PolicyMap policies;
-  policies.Set(
-      policy::key::kGeminiActOnWebSettings, policy::POLICY_LEVEL_MANDATORY,
-      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-      base::Value(ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled)),
-      nullptr);
-  UpdateProviderPolicy(policies);
+  // Since the profile is not managed, we can change the capability by changing
+  // the pref.
+  prefs->SetInteger(
+      glic::prefs::kGlicActuationOnWeb,
+      ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+  EXPECT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
+            ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
 
   // Note: because we explicitly paused the task, the result will be
   // `ActionResultCode::kError` instead of `ActionResultCode::kTaskWentAway`.
@@ -131,8 +174,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTest,
 }
 
 // Exercise `MayActOnUrl`, which is called by the `ActorNavigationThrottle`.
-IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestAlternatingPolicyValue,
-                       NavigateOnTab) {
+IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, NavigateOnTab) {
   const bool has_actuation_capability = GetParam();
   ASSERT_EQ(ActorKeyedService::Get(browser()->profile())
                 ->GetPolicyChecker()
@@ -155,8 +197,7 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestAlternatingPolicyValue,
 }
 
 // Exercise `MayActOnTab`, which is called by the `ExecutionEngine::Act`.
-IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestAlternatingPolicyValue,
-                       ActOnTab) {
+IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, ActOnTab) {
   const bool has_actuation_capability = GetParam();
   ASSERT_EQ(ActorKeyedService::Get(browser()->profile())
                 ->GetPolicyChecker()
