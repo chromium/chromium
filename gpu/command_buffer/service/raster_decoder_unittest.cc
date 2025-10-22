@@ -156,23 +156,6 @@ TEST_P(RasterDecoderTest, BeginEndQueryEXTCommandsIssuedCHROMIUM) {
   EXPECT_FALSE(query->IsActive());
 }
 
-TEST_P(RasterDecoderTest, QueryCounterEXTCommandsIssuedTimestampCHROMIUM) {
-  GenHelper<cmds::GenQueriesEXTImmediate>(kNewClientId);
-
-  cmds::QueryCounterEXT query_counter_cmd;
-  query_counter_cmd.Init(kNewClientId, GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM,
-                         shared_memory_id_, kSharedMemoryOffset, 1);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(query_counter_cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-
-  QueryManager* query_manager = decoder_->GetQueryManager();
-  ASSERT_TRUE(query_manager != nullptr);
-  QueryManager::Query* query = query_manager->GetQuery(kNewClientId);
-  ASSERT_TRUE(query != nullptr);
-  EXPECT_FALSE(query->IsPending());
-  EXPECT_FALSE(query->IsActive());
-}
-
 TEST_P(RasterDecoderManualInitTest, GetCapabilitiesHalfFloatLinear) {
   InitState init;
   init.extensions.push_back("GL_OES_texture_half_float_linear");

@@ -74,8 +74,7 @@ void TestRasterInterface::GetQueryObjectuivEXT(GLuint id,
 void TestRasterInterface::GetQueryObjectui64vEXT(GLuint id,
                                                  GLenum pname,
                                                  GLuint64* params) {
-  // This is used for testing GL_COMMANDS_ISSUED_TIMESTAMP_QUERY, so we return
-  // the maximum that base::TimeDelta()::InMicroseconds() could return.
+  // TODO(crbug.com/450466845): Determine whether this is dead code.
   if (pname == GL_QUERY_RESULT_EXT) {
     static_assert(std::is_same<decltype(base::TimeDelta().InMicroseconds()),
                                int64_t>::value,

@@ -318,10 +318,6 @@ QueryManager::Query* QueryManager::CreateQuery(
     case GL_COMMANDS_ISSUED_CHROMIUM:
       query = new CommandsIssuedQuery(this, target, std::move(buffer), sync);
       break;
-    case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
-      query = new CommandsIssuedTimestampQuery(this, target, std::move(buffer),
-                                               sync);
-      break;
     case GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM:
     case GL_COMMANDS_COMPLETED_CHROMIUM:
       query = new CommandsCompletedQuery(this, target, std::move(buffer), sync);

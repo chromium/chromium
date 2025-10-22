@@ -29,7 +29,6 @@ bool Validators::QueryObjectParameterValidator::IsValid(
 bool Validators::QueryTargetValidator::IsValid(const GLenum value) const {
   switch (value) {
     case GL_COMMANDS_ISSUED_CHROMIUM:
-    case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
     case GL_COMMANDS_COMPLETED_CHROMIUM:
       return true;
   }

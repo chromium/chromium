@@ -55,7 +55,6 @@ typedef double GLclampd;
 
 // GL_CHROMIUM_command_buffer_query
 #define GL_COMMANDS_ISSUED_CHROMIUM                      0x6004
-#define GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM            0x6005
 
 /* GL_CHROMIUM_get_error_query */
 #define GL_GET_ERROR_QUERY_CHROMIUM                      0x6003

@@ -577,7 +577,6 @@ struct QueryType {
 
 const QueryType kQueryTypes[] = {
     {GL_COMMANDS_ISSUED_CHROMIUM, false},
-    {GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM, true},
     {GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM, false},
     {GL_GET_ERROR_QUERY_CHROMIUM, false},
     {GL_COMMANDS_COMPLETED_CHROMIUM, false},
@@ -839,23 +838,6 @@ TEST_P(GLES2DecoderTest, BeginEndQueryEXTCommandsIssuedCHROMIUM) {
   end_cmd.Init(GL_COMMANDS_ISSUED_CHROMIUM, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(end_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_FALSE(query->IsPending());
-  EXPECT_FALSE(query->IsActive());
-}
-
-TEST_P(GLES2DecoderTest, QueryCounterEXTCommandsIssuedTimestampCHROMIUM) {
-  GenHelper<cmds::GenQueriesEXTImmediate>(kNewClientId);
-
-  cmds::QueryCounterEXT query_counter_cmd;
-  query_counter_cmd.Init(kNewClientId, GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM,
-                         shared_memory_id_, kSharedMemoryOffset, 1);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(query_counter_cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-
-  QueryManager* query_manager = decoder_->GetQueryManager();
-  ASSERT_TRUE(query_manager != nullptr);
-  QueryManager::Query* query = query_manager->GetQuery(kNewClientId);
-  ASSERT_TRUE(query != nullptr);
   EXPECT_FALSE(query->IsPending());
   EXPECT_FALSE(query->IsActive());
 }

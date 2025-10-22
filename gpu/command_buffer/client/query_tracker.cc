@@ -216,7 +216,6 @@ bool QueryTracker::Query::CheckResultsAvailable(CommandBufferHelper* helper,
     if (processed_all || helper->IsContextLost()) {
       switch (target()) {
         case GL_COMMANDS_ISSUED_CHROMIUM:
-        case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
         case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
         case GL_GET_ERROR_QUERY_CHROMIUM:
         case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM:

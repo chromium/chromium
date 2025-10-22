@@ -1076,24 +1076,9 @@ void RasterImplementation::QueryCounterEXT(GLuint id, GLenum target) {
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] QueryCounterEXT(" << id << ", "
                      << GLES2Util::GetStringQueryTarget(target) << ")");
 
-  if (target != GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM) {
-    SetGLError(GL_INVALID_ENUM, "glQueryCounterEXT", "unknown query target");
-    return;
-  }
-
-  if (id == 0) {
-    SetGLError(GL_INVALID_OPERATION, "glQueryCounterEXT", "id is 0");
-    return;
-  }
-
-  if (!GetIdAllocator(IdNamespaces::kQueries)->InUse(id)) {
-    SetGLError(GL_INVALID_OPERATION, "glQueryCounterEXT", "invalid id");
-    return;
-  }
-
-  if (query_tracker_->QueryCounter(id, target, this)) {
-    CheckGLError();
-  }
+  // TODO(crbug.com/450466845): Verify that this method is no longer invoked and
+  // remove it from RasterInterface.
+  SetGLError(GL_INVALID_ENUM, "glQueryCounterEXT", "unknown query target");
 }
 void RasterImplementation::GetQueryObjectuivEXT(GLuint id,
                                                 GLenum pname,

@@ -63,7 +63,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
 
   // Queries:
   // - GL_COMMANDS_ISSUED_CHROMIUM
-  // - GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM
   // - GL_COMMANDS_COMPLETED_CHROMIUM
   MOCK_METHOD2(GenQueriesEXT, void(GLsizei n, GLuint* queries));
   MOCK_METHOD2(DeleteQueriesEXT, void(GLsizei n, const GLuint* queries));
@@ -304,14 +303,6 @@ TEST_F(RasterImplementationGLESTest, EndQueryEXT) {
 
   EXPECT_CALL(*gl_, EndQueryEXT(kQueryTarget)).Times(1);
   ri_->EndQueryEXT(kQueryTarget);
-}
-
-TEST_F(RasterImplementationGLESTest, QueryCounterEXT) {
-  const GLenum kQueryTarget = GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM;
-  const GLuint kQueryId = 23;
-
-  EXPECT_CALL(*gl_, QueryCounterEXT(kQueryId, kQueryTarget)).Times(1);
-  ri_->QueryCounterEXT(kQueryId, kQueryTarget);
 }
 
 TEST_F(RasterImplementationGLESTest, GetQueryObjectuivEXT) {

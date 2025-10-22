@@ -3819,8 +3819,8 @@ error::Error GLES2DecoderPassthroughImpl::DoQueryCounterEXT(
   GLuint service_id = GetQueryServiceID(id, &query_id_map_);
 
   if (IsEmulatedQueryTarget(target)) {
-    DCHECK_EQ(target,
-              static_cast<GLenum>(GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM));
+    // TODO(crbug.com/450466845): Verify that this point is no longer reached
+    // and eliminate it.
   } else {
     // glQueryCounter is not loaded unless GL_EXT_disjoint_timer_query is present
     if (!feature_info_->feature_flags().ext_disjoint_timer_query) {
@@ -3852,8 +3852,6 @@ error::Error GLES2DecoderPassthroughImpl::DoQueryCounterEXT(
   pending_query.shm = std::move(buffer);
   pending_query.sync = sync;
   pending_query.submit_count = submit_count;
-  if (target == GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM)
-    pending_query.commands_issued_timestamp = base::TimeTicks::Now();
   pending_queries_.push_back(std::move(pending_query));
 
   return error::kNoError;

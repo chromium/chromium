@@ -49,7 +49,6 @@ _NAMED_TYPE_INFO = {
     'is_complete': True,
     'valid': [
       'GL_COMMANDS_ISSUED_CHROMIUM',
-      'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
     ],
   },

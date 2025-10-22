@@ -44,7 +44,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
 
   // Queries:
   // - GL_COMMANDS_ISSUED_CHROMIUM
-  // - GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM
   // - GL_COMMANDS_COMPLETED_CHROMIUM
   void GenQueriesEXT(GLsizei n, GLuint* queries) override;
   void DeleteQueriesEXT(GLsizei n, const GLuint* queries) override;
