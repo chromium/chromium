@@ -92,6 +92,8 @@ if (crashpad_is_android) {
 
 static_library("common") {
   sources = [
+    "crash_report_upload_rate_limit.cc",
+    "crash_report_upload_rate_limit.h",
     "crash_report_upload_thread.cc",
     "crash_report_upload_thread.h",
     "minidump_to_upload_parameters.cc",
@@ -125,7 +127,10 @@ static_library("common") {
 source_set("handler_test") {
   testonly = true
 
-  sources = [ "minidump_to_upload_parameters_test.cc" ]
+  sources = [
+    "crash_report_upload_rate_limit_test.cc",
+    "minidump_to_upload_parameters_test.cc",
+  ]
 
   if (crashpad_is_linux || crashpad_is_android) {
     sources += [ "linux/exception_handler_server_test.cc" ]
