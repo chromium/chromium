@@ -415,7 +415,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t max_pinned_image_bytes_;
 
   bool clear_frame_ = true;
-  FlushReason last_flush_reason_ = FlushReason::kNone;
   std::optional<cc::PaintRecord> last_recording_;
 };
 

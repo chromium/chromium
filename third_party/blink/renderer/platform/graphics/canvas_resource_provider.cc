@@ -1678,7 +1678,6 @@ void CanvasResourceProvider::RecordingCleared() {
   // is now safe to update `mode_` to discard the old copy of canvas content.
   mode_ = SkSurface::kDiscard_ContentChangeMode;
   clear_frame_ = true;
-  last_flush_reason_ = FlushReason::kNone;
 }
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas() {
@@ -1782,7 +1781,6 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   // If a previous flush rasterized some paint ops, we lost part of the
   // recording and must fallback to raster printing instead of vectorial
   // printing.
-  last_flush_reason_ = reason;
   clear_frame_ = false;
   if (reason == FlushReason::kClear) {
     clear_frame_ = true;
