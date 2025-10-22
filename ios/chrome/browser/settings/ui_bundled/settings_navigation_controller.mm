@@ -467,10 +467,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
 
-  // Make sure the cancel button is always present, as the Autofill screen
-  // isn't just shown from Settings.
-  [controller navigationItem].leftBarButtonItem =
-      [navigationController cancelButton];
   return navigationController;
 }
 
