@@ -845,8 +845,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       [self setOmniboxSafeTopConstraint:effectView];
 
       // Add padding under and on the sides of the keyboard accessory.
-      [self.bottomAnchor constraintEqualToAnchor:effectView.bottomAnchor
-                                        constant:kSurroundingPadding]
+      [self.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:effectView.bottomAnchor
+                                      constant:kSurroundingPadding]
           .active = YES;
 
       [self.trailingAnchor constraintEqualToAnchor:effectView.trailingAnchor
