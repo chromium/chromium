@@ -83,8 +83,8 @@ BASE_FEATURE(kNtpCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpChromeCartModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, customization of Chrome will be promoted on the NTP.
-BASE_FEATURE(kNtpCustomizeChromePromo,
-             "NtpCustomizeChromePromo",
+BASE_FEATURE(kNtpCustomizeChromeAutoOpen,
+             "NtpCustomizeChromeAutoOpen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(OFFICIAL_BUILD)
@@ -323,13 +323,13 @@ const char kNtpMobilePromoTargetUrlParam[] = "NtpMobilePromoTargetUrlParam";
 const base::FeatureParam<int> kMaxTilesBeforeShowMore{
     &ntp_features::kNtpNextFeatures, "max_tiles_before_show_more", 5};
 
-const base::FeatureParam<int> kNtpCustomizeChromePromoIPHMaxCount(
-    &ntp_features::kNtpCustomizeChromePromo,
-    "max_iph_count",
-    3);
-const base::FeatureParam<int> kNtpCustomizeChromePromoShownMaxCount(
-    &ntp_features::kNtpCustomizeChromePromo,
-    "max_customize_chrome_shown_count",
+const base::FeatureParam<int> kNtpCustomizeChromeAutoShownMaxCount(
+    &ntp_features::kNtpCustomizeChromeAutoOpen,
+    "max_customize_chrome_auto_shown_count",
+    5);
+const base::FeatureParam<int> kNtpCustomizeChromeAutoShownSessionMaxCount(
+    &ntp_features::kNtpCustomizeChromeAutoOpen,
+    "max_customize_chrome_auto_shown_session_count",
     5);
 
 const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(

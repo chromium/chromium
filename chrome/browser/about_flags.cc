@@ -4889,22 +4889,22 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-const FeatureEntry::FeatureParam kNtpCustomizeChromePromoOnEveryNTP[] = {
-    {"max_iph_count", "3"},
-    {"max_customize_chrome_shown_count", "5"}};
-const FeatureEntry::FeatureParam kNtpCustomizeChromePromoFirstNTPOnly[] = {
-    {"max_iph_count", "3"},
-    {"max_customize_chrome_shown_count", "1"}};
-const FeatureEntry::FeatureParam kNtpCustomizeChromePromoIPHOnly[] = {
-    {"max_iph_count", "3"},
-    {"max_customize_chrome_shown_count", "0"}};
-const FeatureEntry::FeatureVariation kNtpCustomizeChromePromoVariations[] = {
-    {"- On every NTP", kNtpCustomizeChromePromoOnEveryNTP,
-     std::size(kNtpCustomizeChromePromoOnEveryNTP), nullptr},
-    {"- First NTP only", kNtpCustomizeChromePromoFirstNTPOnly,
-     std::size(kNtpCustomizeChromePromoFirstNTPOnly), nullptr},
-    {"- IPH only", kNtpCustomizeChromePromoIPHOnly,
-     std::size(kNtpCustomizeChromePromoIPHOnly), nullptr},
+const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenOnEveryNTP[] = {
+    {"max_customize_chrome_auto_shown_count", "5"},
+    {"max_customize_chrome_auto_shown_session_count", "5"}};
+const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenOnFirstNTPOnly[] = {
+    {"max_customize_chrome_auto_shown_count", "5"},
+    {"max_customize_chrome_auto_shown_session_count", "1"}};
+const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenIPHOnly[] = {
+    {"max_customize_chrome_auto_shown_count", "0"},
+    {"max_customize_chrome_auto_shown_session_count", "0"}};
+const FeatureEntry::FeatureVariation kNtpCustomizeChromeAutoOpenVariations[] = {
+    {"- On every NTP", kNtpCustomizeChromeAutoOpenOnEveryNTP,
+     std::size(kNtpCustomizeChromeAutoOpenOnEveryNTP), nullptr},
+    {"- First NTP only", kNtpCustomizeChromeAutoOpenOnFirstNTPOnly,
+     std::size(kNtpCustomizeChromeAutoOpenOnFirstNTPOnly), nullptr},
+    {"- IPH only", kNtpCustomizeChromeAutoOpenIPHOnly,
+     std::size(kNtpCustomizeChromeAutoOpenIPHOnly), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpEnterpriseShortcutsWithFakeData[] = {
@@ -7604,12 +7604,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"ntp-customize-chrome-promo",
-     flag_descriptions::kNtpCustomizeChromePromoName,
-     flag_descriptions::kNtpCustomizeChromePromoDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCustomizeChromePromo,
-                                    kNtpCustomizeChromePromoVariations,
-                                    "NtpCustomizeChromePromo")},
+    {"ntp-customize-chrome-auto-open",
+     flag_descriptions::kNtpCustomizeChromeAutoOpenName,
+     flag_descriptions::kNtpCustomizeChromeAutoOpenDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCustomizeChromeAutoOpen,
+                                    kNtpCustomizeChromeAutoOpenVariations,
+                                    "NtpCustomizeChromeAutoOpen")},
 #endif
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,

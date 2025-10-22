@@ -7174,7 +7174,7 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ntp-customize-chrome-promo",
+    "name": "ntp-customize-chrome-auto-open",
     "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 160
   },

@@ -6093,10 +6093,10 @@ inline constexpr char kNtpComposeboxDescription[] =
     "Shows the Composebox on the New Tab Page Searchbox upon clicking the "
     "entrypoint.";
 
-inline constexpr char kNtpCustomizeChromePromoName[] =
-    "NTP Customize Chrome Promo";
-inline constexpr char kNtpCustomizeChromePromoDescription[] =
-    "Shows the Customize Chrome promo on the New Tab Page.";
+inline constexpr char kNtpCustomizeChromeAutoOpenName[] =
+    "NTP Customize Chrome Auto Promo";
+inline constexpr char kNtpCustomizeChromeAutoOpenDescription[] =
+    "Shows the Customize Chrome on the New Tab Page automatically.";
 
 inline constexpr char kNtpRealboxNextName[] = "NTP Realbox Next";
 inline constexpr char kNtpRealboxNextDescription[] =

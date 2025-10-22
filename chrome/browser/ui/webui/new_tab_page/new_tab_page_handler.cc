@@ -132,6 +132,32 @@ std::vector<std::string> GetSurveyEligibleModuleIds() {
       base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
+const void* const kCustomizeChromeAutoOpenedUserDataKey =
+    &kCustomizeChromeAutoOpenedUserDataKey;
+
+class CustomizeChromeAutoOpenedUserData : public base::SupportsUserData::Data {
+ public:
+  static CustomizeChromeAutoOpenedUserData* GetOrCreateForProfile(
+      Profile* profile) {
+    auto* data = static_cast<CustomizeChromeAutoOpenedUserData*>(
+        profile->GetUserData(kCustomizeChromeAutoOpenedUserDataKey));
+    if (!data) {
+      data = new CustomizeChromeAutoOpenedUserData();
+      profile->SetUserData(kCustomizeChromeAutoOpenedUserDataKey,
+                           base::WrapUnique(data));
+    }
+    return data;
+  }
+
+  int times_opened() const { return times_opened_; }
+  void IncrementTimesOpened() { times_opened_ += 1; }
+
+ private:
+  CustomizeChromeAutoOpenedUserData() = default;
+
+  int times_opened_ = 0;
+};
+
 // Returns true if we should force dark foreground colors for the Google logo
 // and the One Google Bar. This is done to fix specific GWS themes where the
 // always-light logo and OGB colors do not sufficiently contrast with lighter
@@ -1168,10 +1194,13 @@ void NewTabPageHandler::OnBrowserWindowInterfaceChanged() {
 
 void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
   if (!CanShowCustomizeChromePromo() ||
-      !base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeChromePromo)) {
+      !base::FeatureList::IsEnabled(
+          ntp_features::kNtpCustomizeChromeAutoOpen)) {
     return;
   }
 
+  CustomizeChromeAutoOpenedUserData::GetOrCreateForProfile(profile_)
+      ->IncrementTimesOpened();
   profile_->GetPrefs()->SetInteger(
       prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount,
       profile_->GetPrefs()->GetInteger(
@@ -1212,13 +1241,13 @@ bool NewTabPageHandler::CanShowCustomizeChromePromo() {
 
   if (profile_->GetPrefs()->GetInteger(
           prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount) >=
-      ntp_features::kNtpCustomizeChromePromoShownMaxCount.Get()) {
+      ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get()) {
     return false;
   }
 
-  // TODO(crbug.com/443742711): Add check for per-session openings for panel on
-  // only first NTP variation.
-  return true;
+  return CustomizeChromeAutoOpenedUserData::GetOrCreateForProfile(profile_)
+             ->times_opened() <
+         ntp_features::kNtpCustomizeChromeAutoShownSessionMaxCount.Get();
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {

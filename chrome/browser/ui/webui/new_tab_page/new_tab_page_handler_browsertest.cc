@@ -107,6 +107,8 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
   testing::NiceMock<MockPage> mock_page_;
 };
 
+// TODO(crbug.com/454014654): Check which tests can be ran in
+// new_tab_page_handler_unittest.cc and move them there.
 class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
     : public NewTabPageHandlerBaseBrowserTest {
  protected:
@@ -130,7 +132,7 @@ class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      ntp_features::kNtpCustomizeChromePromo};
+      ntp_features::kNtpCustomizeChromeAutoOpen};
 };
 
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
@@ -178,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
   for (size_t i = 0;
-       i < ntp_features::kNtpCustomizeChromePromoShownMaxCount.Get(); ++i) {
+       i < ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get(); ++i) {
     OpenNewTabPageInForeground();
     EXPECT_TRUE(IsCustomizeChromeEntryShowing());
   }
@@ -189,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome,
-      ntp_features::kNtpCustomizeChromePromoShownMaxCount.Get());
+      ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
@@ -214,6 +216,73 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kNtpCustomizeChromeButtonOpenCount),
             0);
+}
+
+class NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest
+    : public NewTabPageHandlerWithCustomizeChromePromoBrowserTest {
+ protected:
+  NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest() {
+    scoped_feature_list_first_ntp_only_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpCustomizeChromeAutoOpen,
+        {{"max_customize_chrome_auto_shown_count", "5"},
+         {"max_customize_chrome_auto_shown_session_count", "1"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_first_ntp_only_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest,
+    PRE_DontOpenPanelWhenPromoAutoopenedInTheSameSession) {
+  OpenNewTabPageInForeground();
+  EXPECT_TRUE(IsCustomizeChromeEntryShowing());
+
+  OpenNewTabPageInForeground();
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest,
+    DontOpenPanelWhenPromoAutoopenedInTheSameSession) {
+  OpenNewTabPageInForeground();
+  EXPECT_TRUE(IsCustomizeChromeEntryShowing());
+
+  OpenNewTabPageInForeground();
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
+}
+
+class NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest
+    : public NewTabPageHandlerWithCustomizeChromePromoBrowserTest {
+ protected:
+  NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest() {
+    scoped_feature_list_iph_only_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpCustomizeChromeAutoOpen,
+        {{"max_customize_chrome_auto_shown_count", "0"},
+         {"max_customize_chrome_auto_shown_session_count", "0"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_iph_only_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest,
+    DontOpenPanelWhenOnlyIPHShouldBeShown) {
+  OpenNewTabPageInForeground();
+  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
