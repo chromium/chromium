@@ -300,11 +300,6 @@ const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
     1);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

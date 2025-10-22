@@ -198,10 +198,6 @@ bool IsWebContentsForemost(Profile* profile,
   }
   return true;
 #elif BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          switches::kIgnoreMirrorHeadersInBackgoundTabs)) {
-    return true;
-  }
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
   return tab_model && tab_model->IsActiveModel() &&
          tab_model->GetActiveWebContents() == web_contents;
