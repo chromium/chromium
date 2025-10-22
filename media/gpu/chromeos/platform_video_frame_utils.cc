@@ -552,15 +552,15 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
     return nullptr;
   }
 
-  auto buffer_format =
-      VideoPixelFormatToGfxBufferFormat(video_frame->layout().format());
-  if (!buffer_format) {
+  auto si_format =
+      VideoPixelFormatToSharedImageFormat(video_frame->layout().format());
+  if (!si_format) {
     VLOGF(1) << "Unexpected video frame format";
     return nullptr;
   }
 
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      video_frame->coded_size(), *buffer_format,
+      video_frame->coded_size(), *si_format,
       std::move(gpu_memory_buffer_handle).native_pixmap_handle());
 
   DCHECK(native_pixmap->AreDmaBufFdsValid());
