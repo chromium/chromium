@@ -291,7 +291,7 @@ void StringBuilder::AppendNumber(float number) {
 
 void StringBuilder::AppendNumber(double number, unsigned precision) {
   NumberToStringBuffer buffer;
-  Append(NumberToFixedPrecisionString(number, precision, buffer));
+  Append(buffer.ToFixedPrecisionString(number, precision));
 }
 
 void StringBuilder::AppendFormat(const char* format, ...) {
