@@ -32,7 +32,7 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
   if (features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
     if (!include_site.has_value()) {
       return base::unexpected{
-          SessionError{SessionError::kInvalidScopeIncludeSite}};
+          SessionError{SessionError::kMissingScopeIncludeSite}};
     }
     scope.include_site = *include_site;
   } else {
@@ -49,15 +49,25 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
   for (const auto& specification : *specifications_list) {
     const base::Value::Dict* specification_dict = specification.GetIfDict();
     if (!specification_dict) {
-      return base::unexpected(SessionError{SessionError::kInvalidScopeRule});
+      return base::unexpected(
+          SessionError{SessionError::kInvalidScopeSpecification});
     }
 
     const std::string* type = specification_dict->FindString("type");
+    if (!type) {
+      return base::unexpected(
+          SessionError{SessionError::kMissingScopeSpecificationType});
+    }
     std::string domain =
         FindStringWithDefault(*specification_dict, "domain", "*");
+    if (domain.empty()) {
+      return base::unexpected(
+          SessionError{SessionError::kEmptyScopeSpecificationDomain});
+    }
     std::string path = FindStringWithDefault(*specification_dict, "path", "/");
-    if (!type || domain.empty() || path.empty()) {
-      return base::unexpected(SessionError{SessionError::kInvalidScopeRule});
+    if (path.empty()) {
+      return base::unexpected(
+          SessionError{SessionError::kEmptyScopeSpecificationPath});
     }
     SessionParams::Scope::Specification::Type rule_type =
         SessionParams::Scope::Specification::Type::kInclude;
@@ -66,7 +76,8 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
     } else if (*type == "exclude") {
       rule_type = SessionParams::Scope::Specification::Type::kExclude;
     } else {
-      return base::unexpected(SessionError{SessionError::kInvalidScopeRule});
+      return base::unexpected(
+          SessionError{SessionError::kInvalidScopeSpecificationType});
     }
 
     scope.specifications.push_back(SessionParams::Scope::Specification{
@@ -83,18 +94,21 @@ ParseCredentials(const base::Value::List& credentials_list) {
     SessionParams::Credential credential;
     const base::Value::Dict* credential_dict = json_credential.GetIfDict();
     if (!credential_dict) {
-      return base::unexpected(SessionError{SessionError::kInvalidCredentials});
+      return base::unexpected(
+          SessionError{SessionError::kInvalidCredentialsConfig});
     }
     const std::string* type = credential_dict->FindString("type");
     if (!type || *type != "cookie") {
-      return base::unexpected(SessionError{SessionError::kInvalidCredentials});
+      return base::unexpected(
+          SessionError{SessionError::kInvalidCredentialsType});
     }
     const std::string* name = credential_dict->FindString("name");
+    if (!name || name->empty()) {
+      return base::unexpected(
+          SessionError{SessionError::kInvalidCredentialsEmptyName});
+    }
     std::string attributes =
         FindStringWithDefault(*credential_dict, "attributes", "");
-    if (!name || name->empty()) {
-      return base::unexpected(SessionError{SessionError::kInvalidCredentials});
-    }
 
     cookie_credentials.push_back(
         SessionParams::Credential{*name, std::move(attributes)});
@@ -157,7 +171,7 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     for (base::Value& initiator : *initiator_list) {
       if (!initiator.is_string()) {
         return base::unexpected(
-            SessionError{SessionError::kInvalidRefreshInitiators});
+            SessionError{SessionError::kRefreshInitiatorNotString});
       }
 
       allowed_refresh_initiators.emplace_back(std::move(initiator.GetString()));

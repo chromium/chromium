@@ -245,13 +245,13 @@ SessionServiceImpl::GetFederatedProviderSessionIfValid(
 
   if (!provider_session) {
     // Provider session not found, fail the registration.
-    return base::unexpected(
-        SessionError(SessionError::kInvalidFederatedSession));
+    return base::unexpected(SessionError(
+        SessionError::kInvalidFederatedSessionProviderSessionMissing));
   }
 
   if (url::Origin::Create(provider_url) != provider_session->origin()) {
-    return base::unexpected(
-        SessionError(SessionError::kInvalidFederatedSession));
+    return base::unexpected(SessionError(
+        SessionError::kInvalidFederatedSessionWrongProviderOrigin));
   }
 
   unexportable_keys::ServiceErrorOr<

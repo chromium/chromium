@@ -386,14 +386,14 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     if (maybe_params->provider_origin.has_value()) {
-      return SessionError::kSessionProviderWellKnownMalformed;
+      return SessionError::kSessionProviderWellKnownHasProviderOrigin;
     }
 
     std::string target_origin =
         url::Origin::Create(fetcher_endpoint_).Serialize();
     if (!maybe_params->relying_origins.has_value() ||
         !base::Contains(*maybe_params->relying_origins, target_origin)) {
-      return SessionError::kFederatedNotAuthorized;
+      return SessionError::kFederatedNotAuthorizedByProvider;
     }
 
     if (!WithinOriginLabelLimit(*maybe_params->relying_origins,
@@ -441,13 +441,13 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     if (maybe_params->relying_origins.has_value()) {
-      return SessionError::kRelyingPartyWellKnownMalformed;
+      return SessionError::kRelyingPartyWellKnownHasRelyingOrigins;
     }
 
     if (!maybe_params->provider_origin.has_value() ||
         url::Origin::Create(provider_url_).Serialize() !=
             *maybe_params->provider_origin) {
-      return SessionError::kFederatedNotAuthorized;
+      return SessionError::kFederatedNotAuthorizedByRelyingParty;
     }
 
     return SessionError::kSuccess;
@@ -511,7 +511,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
       if (!session_identifier_.has_value()) {
         RunCallback(RegistrationResult(
-            SessionError{SessionError::kPersistentHttpError}));
+            SessionError{SessionError::kRegistrationAttemptedChallenge}));
         // `this` may be deleted.
         return;
       }
@@ -577,7 +577,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     } else if (response_code == 407) {
       // Proxy errors are treated as network errors
-      RunCallback(RegistrationResult(SessionError{SessionError::kNetError}));
+      RunCallback(RegistrationResult(SessionError{SessionError::kProxyError}));
       // `this` may be deleted.
       return;
     } else if (300 <= response_code && response_code < 500) {

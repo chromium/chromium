@@ -113,7 +113,8 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
         base::TrimWhitespaceASCII(params.scope.origin, base::TRIM_ALL);
     if ((scope_origin_as_url.has_path() && scope_origin_as_url.path() != "/") ||
         base::EndsWith(origin_view, "/")) {
-      return base::unexpected(SessionError{SessionError::kInvalidScopeOrigin});
+      return base::unexpected(
+          SessionError{SessionError::kScopeOriginContainsPath});
     }
   }
 
@@ -160,7 +161,8 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
     if (craving) {
       session->cookie_cravings_.push_back(*craving);
     } else {
-      return base::unexpected(SessionError{SessionError::kInvalidCredentials});
+      return base::unexpected(
+          SessionError{SessionError::kInvalidCredentialsCookie});
     }
   }
 
@@ -171,7 +173,7 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   for (const std::string& initiator : params.allowed_refresh_initiators) {
     if (!IsValidHostPattern(initiator)) {
       return base::unexpected(
-          SessionError{SessionError::kInvalidRefreshInitiators});
+          SessionError{SessionError::kRefreshInitiatorInvalidHostPattern});
     }
   }
   session->set_allowed_refresh_initiators(
@@ -475,7 +477,10 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kServerRequestedTermination:
     case kInvalidConfigJson:
     case kInvalidSessionId:
-    case kInvalidCredentials:
+    case kInvalidCredentialsConfig:
+    case kInvalidCredentialsType:
+    case kInvalidCredentialsEmptyName:
+    case kInvalidCredentialsCookie:
     case kInvalidChallenge:
     case kTooManyChallenges:
     case kInvalidFetcherUrl:
@@ -484,22 +489,32 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kScopeOriginSameSiteMismatch:
     case kRefreshUrlSameSiteMismatch:
     case kInvalidScopeOrigin:
+    case kScopeOriginContainsPath:
     case kMismatchedSessionId:
-    case kInvalidRefreshInitiators:
+    case kRefreshInitiatorNotString:
+    case kRefreshInitiatorInvalidHostPattern:
     case kInvalidScopeRule:
+    case kInvalidScopeSpecification:
+    case kMissingScopeSpecificationType:
+    case kEmptyScopeSpecificationDomain:
+    case kEmptyScopeSpecificationPath:
+    case kInvalidScopeSpecificationType:
     case kMissingScope:
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
+    case kMissingScopeIncludeSite:
     case kFederatedKeyThumbprintMismatch:
     case kInvalidFederatedSessionUrl:
-    case kInvalidFederatedSession:
+    case kInvalidFederatedSessionProviderSessionMissing:
+    case kInvalidFederatedSessionWrongProviderOrigin:
     case kInvalidFederatedKey:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum
     // backoff whenever the machine goes offline while the browser is
-    // running.
+    // running. Proxy errors (407) count as net errors.
     case kNetError:
+    case kProxyError:
       break;
     case kTransientHttpError:
     case kBoundCookieSetForbidden:
@@ -509,12 +524,17 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kSubdomainRegistrationWellKnownUnavailable:
     case kSubdomainRegistrationUnauthorized:
     case kSubdomainRegistrationWellKnownMalformed:
-    case kFederatedNotAuthorized:
+    case kFederatedNotAuthorizedByProvider:
+    case kFederatedNotAuthorizedByRelyingParty:
     case kSessionProviderWellKnownUnavailable:
     case kSessionProviderWellKnownMalformed:
+    case kSessionProviderWellKnownHasProviderOrigin:
     case kRelyingPartyWellKnownUnavailable:
     case kRelyingPartyWellKnownMalformed:
+    case kRelyingPartyWellKnownHasRelyingOrigins:
     case kTooManyRelyingOriginLabels:
+    case kEmptySessionConfig:
+    case kRegistrationAttemptedChallenge:
       NOTREACHED();
   }
 }
