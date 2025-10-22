@@ -367,7 +367,7 @@ IDNSpoofChecker::~IDNSpoofChecker() {
   uspoof_close(checker_);
 }
 
-IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
+IDNSpoofCheckerResult IDNSpoofChecker::SafeToDisplayAsUnicode(
     std::u16string_view label,
     std::string_view top_level_domain,
     std::u16string_view top_level_domain_unicode) {
@@ -378,7 +378,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // If uspoof_check fails (due to library failure), or if any of the checks
   // fail, treat the IDN as unsafe.
   if (U_FAILURE(status) || (result & USPOOF_ALL_CHECKS)) {
-    return Result::kICUSpoofChecks;
+    return IDNSpoofCheckerResult::kICUSpoofChecks;
   }
 
   icu::UnicodeString label_string(false /* isTerminated */, label.data(),
@@ -392,18 +392,18 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   if (label_string.length() > 1 && top_level_domain != "is" &&
       top_level_domain != "fo" &&
       icelandic_characters_.containsSome(label_string)) {
-    return Result::kTLDSpecificCharacters;
+    return IDNSpoofCheckerResult::kTLDSpecificCharacters;
   }
 
   // Disallow Latin Schwa (U+0259) for domains outside Azerbaijan's ccTLD (.az).
   if (label_string.length() > 1 && top_level_domain != "az" &&
       label_string.indexOf("ə") != -1) {
-    return Result::kTLDSpecificCharacters;
+    return IDNSpoofCheckerResult::kTLDSpecificCharacters;
   }
 
   // Disallow middle dot (U+00B7) when unsafe.
   if (HasUnsafeMiddleDot(label_string, top_level_domain)) {
-    return Result::kUnsafeMiddleDot;
+    return IDNSpoofCheckerResult::kUnsafeMiddleDot;
   }
 
   // If there's no script mixing, the input is regarded as safe without any
@@ -419,7 +419,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   //  - Korean: Hangul, Han, Common
   result &= USPOOF_RESTRICTION_LEVEL_MASK;
   if (result == USPOOF_ASCII) {
-    return Result::kSafe;
+    return IDNSpoofCheckerResult::kSafe;
   }
 
   if (result == USPOOF_SINGLE_SCRIPT_RESTRICTIVE &&
@@ -430,16 +430,16 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
           !IsWholeScriptConfusableAllowedForTLD(*script, top_level_domain,
                                                 top_level_domain_unicode) &&
           !base::Contains(kAllowedWholeScriptConfusableWords, label)) {
-        return Result::kWholeScriptConfusable;
+        return IDNSpoofCheckerResult::kWholeScriptConfusable;
       }
     }
     // Disallow domains that contain only numbers and number-spoofs.
     // This check is reached if domain characters come from single script.
     if (IsDigitLookalike(label_string)) {
-      return Result::kDigitLookalikes;
+      return IDNSpoofCheckerResult::kDigitLookalikes;
     }
 
-    return Result::kSafe;
+    return IDNSpoofCheckerResult::kSafe;
   }
 
   // Disallow domains that contain only numbers and number-spoofs.
@@ -448,7 +448,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // the domain contains Latin + Japanese characters that are also digit
   // lookalikes.
   if (IsDigitLookalike(label_string)) {
-    return Result::kDigitLookalikes;
+    return IDNSpoofCheckerResult::kDigitLookalikes;
   }
 
   // Additional checks for |label| with multiple scripts, one of which is Latin.
@@ -459,7 +459,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   if (non_ascii_latin_letters_.containsSome(label_string) &&
       !(skeleton_generator_ &&
         skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string))) {
-    return Result::kNonAsciiLatinCharMixedWithNonLatin;
+    return IDNSpoofCheckerResult::kNonAsciiLatinCharMixedWithNonLatin;
   }
 
   icu::RegexMatcher* dangerous_pattern =
@@ -560,9 +560,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   }
   dangerous_pattern->reset(label_string);
   if (dangerous_pattern->find()) {
-    return Result::kDangerousPattern;
+    return IDNSpoofCheckerResult::kDangerousPattern;
   }
-  return Result::kSafe;
+  return IDNSpoofCheckerResult::kSafe;
 }
 
 TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(

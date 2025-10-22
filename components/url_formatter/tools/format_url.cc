@@ -6,7 +6,7 @@
 // through the IDN decoding algorithm and prints out the result. The list can be
 // passed as a text file or via stdin. In both cases, the output is printed as
 // (input_domain, output_domain, spoof_check_result) tuples on separate lines.
-// spoof_check_result is the string representation of IDNSpoofChecker::Result
+// spoof_check_result is the string representation of IDNSpoofCheckerResult
 // enum with an additional kTopDomainLookalike value.
 
 #include <cstdlib>
@@ -27,6 +27,7 @@
 
 using url_formatter::IDNConversionResult;
 using url_formatter::IDNSpoofChecker;
+using url_formatter::IDNSpoofCheckerResult;
 
 void PrintUsage(const char* process_name) {
   std::cout << "Usage:" << std::endl;
@@ -41,31 +42,30 @@ void PrintUsage(const char* process_name) {
             << "are printed in punycode." << std::endl;
 }
 
-std::string SpoofCheckResultToString(IDNSpoofChecker::Result result) {
+std::string SpoofCheckResultToString(IDNSpoofCheckerResult result) {
   switch (result) {
-    case IDNSpoofChecker::Result::kNone:
+    case IDNSpoofCheckerResult::kNone:
       return "kNone";
-    case IDNSpoofChecker::Result::kSafe:
+    case IDNSpoofCheckerResult::kSafe:
       return "kSafe";
-    case IDNSpoofChecker::Result::kICUSpoofChecks:
+    case IDNSpoofCheckerResult::kICUSpoofChecks:
       return "kICUSpoofChecks";
-    case IDNSpoofChecker::Result::kDeviationCharacters:
+    case IDNSpoofCheckerResult::kDeviationCharacters:
       return "kDeviationCharacters";
-    case IDNSpoofChecker::Result::kTLDSpecificCharacters:
+    case IDNSpoofCheckerResult::kTLDSpecificCharacters:
       return "kTLDSpecificCharacters";
-    case IDNSpoofChecker::Result::kUnsafeMiddleDot:
+    case IDNSpoofCheckerResult::kUnsafeMiddleDot:
       return "kUnsafeMiddleDot";
-    case IDNSpoofChecker::Result::kWholeScriptConfusable:
+    case IDNSpoofCheckerResult::kWholeScriptConfusable:
       return "kWholeScriptConfusable";
-    case IDNSpoofChecker::Result::kDigitLookalikes:
+    case IDNSpoofCheckerResult::kDigitLookalikes:
       return "kDigitLookalikes";
-    case IDNSpoofChecker::Result::kNonAsciiLatinCharMixedWithNonLatin:
+    case IDNSpoofCheckerResult::kNonAsciiLatinCharMixedWithNonLatin:
       return "kNonAsciiLatinCharMixedWithNonLatin";
-    case IDNSpoofChecker::Result::kDangerousPattern:
+    case IDNSpoofCheckerResult::kDangerousPattern:
       return "kDangerousPattern";
-    default:
-      NOTREACHED();
-  };
+  }
+  NOTREACHED();
 }
 
 // Returns the spoof check result as a string. |ascii_domain| must contain
@@ -77,11 +77,11 @@ std::string GetSpoofCheckResult(const std::string& ascii_domain,
       url_formatter::UnsafeIDNToUnicodeWithDetails(ascii_domain);
   std::string spoof_check_result =
       SpoofCheckResultToString(result.spoof_check_result);
-  if (result.spoof_check_result == IDNSpoofChecker::Result::kNone) {
+  if (result.spoof_check_result == IDNSpoofCheckerResult::kNone) {
     // Input was not punycode.
     return spoof_check_result;
   }
-  if (result.spoof_check_result != IDNSpoofChecker::Result::kSafe) {
+  if (result.spoof_check_result != IDNSpoofCheckerResult::kSafe) {
     return spoof_check_result;
   }
   // If the domain passed all spoof checks but |unicode_domain| is still in

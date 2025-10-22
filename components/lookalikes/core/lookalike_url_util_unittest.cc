@@ -9,6 +9,7 @@
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_domains_trie.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "components/version_info/channel.h"

@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -47,7 +48,7 @@ struct ComponentResult {
   // Set to true if the component is IDN, even if it's not converted to unicode.
   bool has_idn_component = false;
   // Result of the IDN spoof check.
-  IDNSpoofChecker::Result spoof_check_result = IDNSpoofChecker::Result::kNone;
+  IDNSpoofCheckerResult spoof_check_result = IDNSpoofCheckerResult::kNone;
 };
 
 ComponentResult IDNToUnicodeOneComponent(
@@ -341,10 +342,9 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
           host16.substr(component_start, component_length), top_level_domain,
           top_level_domain_unicode, ignore_spoof_check_results, &out16);
       result.has_idn_component |= component_result.has_idn_component;
-      if (component_result.spoof_check_result !=
-              IDNSpoofChecker::Result::kNone &&
-          (result.spoof_check_result == IDNSpoofChecker::Result::kNone ||
-           result.spoof_check_result == IDNSpoofChecker::Result::kSafe)) {
+      if (component_result.spoof_check_result != IDNSpoofCheckerResult::kNone &&
+          (result.spoof_check_result == IDNSpoofCheckerResult::kNone ||
+           result.spoof_check_result == IDNSpoofCheckerResult::kSafe)) {
         result.spoof_check_result = component_result.spoof_check_result;
       }
     }
@@ -399,7 +399,7 @@ IDNConversionResult UnsafeIDNToUnicodeWithAdjustments(
 // user. Note that this function does not deal with pure ASCII domain labels at
 // all even though it's possible to make up look-alike labels with ASCII
 // characters alone.
-IDNSpoofChecker::Result SpoofCheckIDNComponent(
+IDNSpoofCheckerResult SpoofCheckIDNComponent(
     std::u16string_view label,
     std::string_view top_level_domain,
     std::u16string_view top_level_domain_unicode) {
@@ -505,9 +505,9 @@ ComponentResult IDNToUnicodeOneComponent(
         std::u16string_view(*out).substr(
             original_length, base::checked_cast<size_t>(output_length)),
         top_level_domain, top_level_domain_unicode);
-    DCHECK_NE(IDNSpoofChecker::Result::kNone, result.spoof_check_result);
+    DCHECK_NE(IDNSpoofCheckerResult::kNone, result.spoof_check_result);
     if (ignore_spoof_check_results ||
-        result.spoof_check_result == IDNSpoofChecker::Result::kSafe) {
+        result.spoof_check_result == IDNSpoofCheckerResult::kSafe) {
       result.converted = true;
       return result;
     }

@@ -25,7 +25,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_offset_string_conversions.h"
-#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker_types.h"
 
 class GURL;
 
@@ -39,8 +39,8 @@ namespace url_formatter {
 using Skeletons = base::flat_set<std::string>;
 
 // Used by FormatUrl to specify handling of certain parts of the url.
-typedef uint32_t FormatUrlType;
-typedef uint32_t FormatUrlTypes;
+using FormatUrlType = uint32_t;
+using FormatUrlTypes = uint32_t;
 
 // The result of an IDN to Unicode conversion.
 struct IDNConversionResult {
@@ -61,7 +61,7 @@ struct IDNConversionResult {
   // for the domain component (i.e. label) that failed the spoof checks. If
   // multiple labels fail the checks, this will be the result of the first
   // component that failed, counting from the left in the punycode form.
-  IDNSpoofChecker::Result spoof_check_result = IDNSpoofChecker::Result::kNone;
+  IDNSpoofCheckerResult spoof_check_result = IDNSpoofCheckerResult::kNone;
 };
 
 // Nothing is omitted.

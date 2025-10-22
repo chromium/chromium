@@ -30,6 +30,8 @@
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 
 using lookalikes::ComboSquattingParams;
 using lookalikes::DomainInfo;
@@ -1280,26 +1282,26 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
   // Here, only a subset of spoof checks that cause an IDN to fallback to
   // punycode are configured to show an interstitial.
   switch (navigated_domain.idn_result.spoof_check_result) {
-    case url_formatter::IDNSpoofChecker::Result::kNone:
-    case url_formatter::IDNSpoofChecker::Result::kSafe:
+    case url_formatter::IDNSpoofCheckerResult::kNone:
+    case url_formatter::IDNSpoofCheckerResult::kSafe:
       return false;
 
-    case url_formatter::IDNSpoofChecker::Result::kICUSpoofChecks:
+    case url_formatter::IDNSpoofCheckerResult::kICUSpoofChecks:
       // If the eTLD+1 contains only a mix of ASCII + Emoji, allow.
       return !IsASCIIAndEmojiOnly(navigated_domain.idn_result.result) &&
              IsPunycodeInterstitialCandidate(navigated_domain);
 
-    case url_formatter::IDNSpoofChecker::Result::kDeviationCharacters:
+    case url_formatter::IDNSpoofCheckerResult::kDeviationCharacters:
       // Failures because of deviation characters, especially ß, is common.
       return false;
 
-    case url_formatter::IDNSpoofChecker::Result::kTLDSpecificCharacters:
-    case url_formatter::IDNSpoofChecker::Result::kUnsafeMiddleDot:
-    case url_formatter::IDNSpoofChecker::Result::kWholeScriptConfusable:
-    case url_formatter::IDNSpoofChecker::Result::kDigitLookalikes:
-    case url_formatter::IDNSpoofChecker::Result::
+    case url_formatter::IDNSpoofCheckerResult::kTLDSpecificCharacters:
+    case url_formatter::IDNSpoofCheckerResult::kUnsafeMiddleDot:
+    case url_formatter::IDNSpoofCheckerResult::kWholeScriptConfusable:
+    case url_formatter::IDNSpoofCheckerResult::kDigitLookalikes:
+    case url_formatter::IDNSpoofCheckerResult::
         kNonAsciiLatinCharMixedWithNonLatin:
-    case url_formatter::IDNSpoofChecker::Result::kDangerousPattern:
+    case url_formatter::IDNSpoofCheckerResult::kDangerousPattern:
       return IsPunycodeInterstitialCandidate(navigated_domain);
   }
 }
