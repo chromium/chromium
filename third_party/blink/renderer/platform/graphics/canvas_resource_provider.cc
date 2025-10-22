@@ -599,8 +599,6 @@ bool CanvasResourceProviderSharedImage::WritePixels(
   // has a precondition that there should be no current write access on the
   // resource.
   EndWriteAccess();
-  WillDrawInternal();
-  EndWriteAccess();
 
   auto client_si = resource()->GetClientSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
