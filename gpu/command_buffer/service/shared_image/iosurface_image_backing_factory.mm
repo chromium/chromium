@@ -164,9 +164,7 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
   supported_formats_.insert(viz::MultiPlaneFormat::kNV12);
   supported_formats_.insert(viz::MultiPlaneFormat::kP210);
   supported_formats_.insert(viz::MultiPlaneFormat::kP410);
-  if (feature_info->feature_flags().chromium_image_ycbcr_p010) {
-    supported_formats_.insert(viz::MultiPlaneFormat::kP010);
-  }
+  supported_formats_.insert(viz::MultiPlaneFormat::kP010);
   supported_formats_.insert(viz::MultiPlaneFormat::kNV12A);
   supported_formats_.insert(viz::MultiPlaneFormat::kNV16);
   supported_formats_.insert(viz::MultiPlaneFormat::kNV24);
