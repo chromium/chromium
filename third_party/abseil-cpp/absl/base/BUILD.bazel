@@ -600,6 +600,22 @@ cc_test(
 )
 
 cc_test(
+    name = "casts_test",
+    size = "small",
+    srcs = [
+        "casts_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":base",
+        ":core_headers",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "no_destructor_test",
     srcs = ["no_destructor_test.cc"],
     copts = ABSL_TEST_COPTS,

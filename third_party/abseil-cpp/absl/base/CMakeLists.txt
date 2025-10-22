@@ -417,6 +417,19 @@ absl_cc_test(
 
 absl_cc_test(
   NAME
+    casts_test
+  SRCS
+    "casts_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::core_headers
+    GTest::gtest_main
+)
+
+absl_cc_test(
+  NAME
     errno_saver_test
   SRCS
     "internal/errno_saver_test.cc"

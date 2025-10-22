@@ -19,6 +19,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "absl/base/dynamic_annotations.h"
 #include "absl/log/absl_check.h"
 
 namespace {
@@ -45,7 +46,7 @@ TEST_P(StringResizeAndOverwriteTest, StringResizeAndOverwrite) {
           // Truncate case.
           p[param.final_size - 1] = 'b';
         }
-        p[param.final_size] = 'c';  // Should be overwritten with '\0';
+        p[param.final_size] = '\0';
         return param.final_size;
       });
 
@@ -76,7 +77,7 @@ TEST_P(StringResizeAndOverwriteTest, StringResizeAndOverwriteFallback) {
           // Truncate case.
           p[param.final_size - 1] = 'b';
         }
-        p[param.final_size] = 'c';  // Should be overwritten with '\0';
+        p[param.final_size] = '\0';
         return param.final_size;
       });
 
@@ -92,6 +93,39 @@ TEST_P(StringResizeAndOverwriteTest, StringResizeAndOverwriteFallback) {
 
   EXPECT_EQ(s, expected);
   EXPECT_EQ(s.c_str()[param.final_size], '\0');
+}
+
+#ifdef ABSL_HAVE_MEMORY_SANITIZER
+constexpr bool kMSan = true;
+#else
+constexpr bool kMSan = false;
+#endif
+
+TEST_P(StringResizeAndOverwriteTest, Initialized) {
+  if (!kMSan) {
+    GTEST_SKIP() << "Skipping test without MSan.";
+  }
+
+  const auto& param = GetParam();
+  std::string s(param.initial_size, 'a');
+
+  auto op = [&]() {
+    absl::StringResizeAndOverwrite(s, param.requested_capacity,
+                                   [&](char*, size_t) {
+                                     // Fail to initialize the buffer in full.
+                                     return param.final_size;
+                                   });
+  };
+
+  if (param.initial_size < param.final_size) {
+#ifndef NDEBUG
+    EXPECT_DEATH_IF_SUPPORTED(op(), "shadow == -1");
+#endif
+  } else {
+    // The string is fully initialized from the initial constructor, or we skip
+    // the check in optimized builds.
+    op();
+  }
 }
 
 // clang-format off

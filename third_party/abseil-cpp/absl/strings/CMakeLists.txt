@@ -77,6 +77,7 @@ absl_cc_library(
   DEPS
     absl::string_view
     absl::strings_internal
+    absl::strings_resize_and_overwrite
     absl::base
     absl::bits
     absl::charset
@@ -151,6 +152,7 @@ absl_cc_library(
   DEPS
     absl::config
     absl::core_headers
+    absl::dynamic_annotations
     absl::throw_delegate
 )
 
@@ -164,6 +166,7 @@ absl_cc_test(
   DEPS
     absl::strings_resize_and_overwrite
     absl::absl_check
+    absl::dynamic_annotations
     GTest::gmock_main
 )
 
@@ -871,6 +874,7 @@ absl_cc_library(
     absl::cordz_statistics
     absl::cordz_update_tracker
     absl::core_headers
+    absl::no_destructor
     absl::inlined_vector
     absl::span
     absl::raw_logging_internal
@@ -1026,6 +1030,7 @@ absl_cc_library(
     absl::raw_logging_internal
     absl::span
     absl::strings
+    absl::strings_resize_and_overwrite
     absl::type_traits
     absl::weakly_mixed_integer
   PUBLIC

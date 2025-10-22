@@ -378,6 +378,14 @@ absl_test("config_test") {
   ]
 }
 
+absl_test("casts_test") {
+  sources = [ "casts_test.cc" ]
+  deps = [
+    ":base",
+    ":core_headers",
+  ]
+}
+
 absl_test("no_destructor_test") {
   sources = [ "no_destructor_test.cc" ]
   deps = [
