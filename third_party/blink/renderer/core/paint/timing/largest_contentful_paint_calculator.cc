@@ -125,13 +125,13 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   if (!is_triggered_by_soft_navigation) {
     CHECK_EQ(kNavigationIdAbsentValue, navigation_id);
     window_performance_->OnLargestContentfulPaintUpdated(
-        std::make_optional(largest_image->PaintTimingInfo()),
+        largest_image->PaintTimingInfo(),
         /*paint_size=*/largest_image->RecordedSize(),
         /*load_time=*/largest_image->LoadTime(),
         /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
   } else {
     window_performance_->OnInteractionContentfulPaintUpdated(
-        std::make_optional(largest_image->PaintTimingInfo()),
+        largest_image->PaintTimingInfo(),
         /*paint_size=*/largest_image->RecordedSize(),
         /*load_time=*/largest_image->LoadTime(),
         /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,

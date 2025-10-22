@@ -123,7 +123,6 @@ class CORE_EXPORT ImageResourceContent final
   bool IsBroken() const override;
   bool IsAnimatedImage() const override;
   bool IsPaintedFirstFrame() const override;
-  bool TimingAllowPassed() const override;
   base::TimeTicks GetFirstVideoFrameTime() const override {
     // This returns a null time, which is currently used to signal that this is
     // an animated image, rather than a video, and we should use the

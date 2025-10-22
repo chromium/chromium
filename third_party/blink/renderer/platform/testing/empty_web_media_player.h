@@ -82,7 +82,6 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   }
   void RegisterFrameSinkHierarchy() override {}
   void UnregisterFrameSinkHierarchy() override {}
-  bool PassedTimingAllowOriginCheck() const override { return true; }
 
  private:
   base::WeakPtrFactory<EmptyWebMediaPlayer> weak_ptr_factory_{this};

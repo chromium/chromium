@@ -678,10 +678,6 @@ bool ImageResourceContent::IsPaintedFirstFrame() const {
   return IsAnimatedImage() && image_->FirstFrameIsComplete();
 }
 
-bool ImageResourceContent::TimingAllowPassed() const {
-  return GetResponse().TimingAllowPassed();
-}
-
 // TODO(hiroshige): Consider removing the following methods, or stopping
 // redirecting to ImageResource.
 const KURL& ImageResourceContent::Url() const {

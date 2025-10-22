@@ -4124,10 +4124,6 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
   }
 }
 
-bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
-  return demuxer_manager_->PassedDataSourceTimingAllowOriginCheck();
-}
-
 void WebMediaPlayerImpl::DidMediaMetadataChange() {
   media::MediaContentType content_type = GetMediaContentType();
   bool is_encrypted_media =

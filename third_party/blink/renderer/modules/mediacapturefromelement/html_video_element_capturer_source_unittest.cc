@@ -94,7 +94,6 @@ class MockWebMediaPlayer : public WebMediaPlayer {
           auto_picture_in_picture_info) override {}
 
   void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
-  bool PassedTimingAllowOriginCheck() const override { return true; }
 
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,

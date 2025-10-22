@@ -148,7 +148,6 @@ class MEDIA_EXPORT DemuxerManager {
   std::optional<GURL> GetDataSourceUrlAfterRedirects() const;
   bool DataSourceFullyBuffered() const;
   bool IsStreaming() const;
-  bool PassedDataSourceTimingAllowOriginCheck() const;
   bool IsLiveContent() const;
 
  private:
