@@ -25,4 +25,4 @@ android.webkit.WebView focusable focused
 ++android.view.MenuItem role_description='checkbox' checkable clickable collection_item disabled interesting content_description='Readonly menuitemcheckbox'
 ++android.view.MenuItem role_description='radio button' checkable clickable collection_item disabled interesting content_description='Readonly menuitemradio'
 ++android.widget.EditText role_description='search text field' clickable editable_text interesting hint='Readonly searchbox'
-++android.widget.ToggleButton role_description='switch' checkable clickable disabled interesting state_description='Off' content_description='Readonly switch'
+++android.widget.Switch checkable clickable disabled interesting content_description='Readonly switch'

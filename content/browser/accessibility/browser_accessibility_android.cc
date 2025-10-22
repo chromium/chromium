@@ -1151,10 +1151,8 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetMultiselectableStateDescription());
   }
 
-  if (GetRole() == ax::mojom::Role::kToggleButton ||
-      GetRole() == ax::mojom::Role::kSwitch) {
-    // For Toggle buttons and switches, we will append "on"/"off" in the state
-    // description.
+  if (GetRole() == ax::mojom::Role::kToggleButton) {
+    // For Toggle buttons, we will append "on"/"off" in the state description.
     state_descs.push_back(GetToggleStateDescription());
   }
 
@@ -1550,6 +1548,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuperscript:
+    case ax::mojom::Role::kSwitch:
     case ax::mojom::Role::kTable:
     case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kToggleButton:

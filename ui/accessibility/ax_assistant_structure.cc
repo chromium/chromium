@@ -417,6 +417,7 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
     case ax::mojom::Role::kRadioGroup:
       return kAXRadioGroupClassname;
     case ax::mojom::Role::kSwitch:
+      return kAXSwitchClassname;
     case ax::mojom::Role::kToggleButton:
       return kAXToggleButtonClassname;
     case ax::mojom::Role::kCanvas:
