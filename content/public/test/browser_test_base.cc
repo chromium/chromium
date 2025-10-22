@@ -345,7 +345,7 @@ void BrowserTestBase::SetUp() {
   // Don't overwrite any IP address overrides that test have already set.
   if (!command_line->HasSwitch(network::switches::kIpAddressSpaceOverrides)) {
     command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                    "127.0.0.1:0=public");
+                                    "127.0.0.1:0=public,[::1]:0=public");
   }
 
   if (use_fake_media_stream_devices_ &&

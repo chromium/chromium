@@ -15105,6 +15105,25 @@
             ]
         }
     ],
+    "LocalNetworkAccessChecksWebTransport": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalNetworkAccessChecksWebTransport"
+                    ]
+                }
+            ]
+        }
+    ],
     "LofnPermissiveUsbPassthrough": [
         {
             "platforms": [
