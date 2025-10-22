@@ -23674,6 +23674,7 @@
                         "ReloadSelectionModel",
                         "SideBySide",
                         "SideBySideDropTargetNudge",
+                        "SideBySideKeyboardShortcut",
                         "SideBySideLinkMenuNewBadge",
                         "SideBySideSessionRestore"
                     ]
