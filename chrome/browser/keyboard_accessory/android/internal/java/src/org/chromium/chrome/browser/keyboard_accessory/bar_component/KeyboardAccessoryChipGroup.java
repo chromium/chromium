@@ -25,6 +25,8 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  */
 @NullMarked
 class KeyboardAccessoryChipGroup extends LinearLayout {
+    // Keyboard accessory suggestions shouldn't lose more than 30% of their width.
+    private static final double WIDTH_LIMIT = 0.7;
 
     public KeyboardAccessoryChipGroup(Context context) {
         super(context);
@@ -88,11 +90,18 @@ class KeyboardAccessoryChipGroup extends LinearLayout {
         // the space between the chips.
         chipBuffer -= chipMargin;
         if (firstChip.getMeasuredWidth() + secondChip.getMeasuredWidth() > chipBuffer) {
-            // Proportionally decreases the width of both chips:
+            // Proportionally decrease the width of both chips:
             //
             // firstChip.getMeasuredWidth() = a,
             // secondChip.getMeasuredWidth() = b,
-            //
+            double reductionRatio =
+                    (double) chipBuffer
+                            / (firstChip.getMeasuredWidth() + secondChip.getMeasuredWidth());
+            if (reductionRatio < WIDTH_LIMIT) {
+                // Each chip should not loose more than 30% or its width, so chip_buffer / (a + b)
+                // should not be smaller than 0.7.
+                return;
+            }
             // firstWidth = chipBuffer * (a / (a + b)),
             // secondWidth = chipBuffer * (b / (a + b)).
             int firstWidth =

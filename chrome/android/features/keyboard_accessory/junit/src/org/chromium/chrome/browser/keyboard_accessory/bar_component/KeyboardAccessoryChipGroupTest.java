@@ -169,6 +169,27 @@ public class KeyboardAccessoryChipGroupTest {
         // The first chip doesn't exceed the screen width, but the first 2 chips exceed the screen
         // width, so their width should be limited so that the third ship can be shown on the
         // screen.
+        ChipView chip1 = new ChipViewWithFixedDimensions(getContext(), /* widthDp= */ 120);
+        ChipView chip2 = new ChipViewWithFixedDimensions(getContext(), /* widthDp= */ 240);
+        ChipView chip3 = new ChipViewWithFixedDimensions(getContext(), /* widthDp= */ 100);
+        mChipGroup.addView(chip1);
+        mChipGroup.addView(chip2);
+        mChipGroup.addView(chip3);
+        measureChipGroup();
+
+        // The chip width should be reduced proportionally.
+        final int firstChipWidth = getTwoChipsCombinedSize() / 3;
+        assertEquals(firstChipWidth, chip1.getMaxWidth());
+        final int secondChipWidth = (getTwoChipsCombinedSize() * 2) / 3;
+        assertEquals(secondChipWidth, chip2.getMaxWidth());
+        assertEquals(Integer.MAX_VALUE, chip3.getMaxWidth());
+    }
+
+    @Test
+    public void testChipWidthReductionRatio() {
+        // The first chip doesn't exceed the screen width, but the first 2 chips exceed the screen
+        // width. If the chip group tries to fit them into the chip buffer, both of them will loose
+        // a lot of information. Make sure their width is not limited in this case.
         ChipView chip1 = new ChipViewWithFixedDimensions(getContext(), /* widthDp= */ 100);
         ChipView chip2 = new ChipViewWithFixedDimensions(getContext(), /* widthDp= */ 500);
         ChipView chip3 = new ChipViewWithFixedDimensions(getContext(), /* widthDp= */ 100);
@@ -177,11 +198,9 @@ public class KeyboardAccessoryChipGroupTest {
         mChipGroup.addView(chip3);
         measureChipGroup();
 
-        // The chip width should be reduced proportionally.
-        final int firstChipWidth = getTwoChipsCombinedSize() / 6;
-        assertEquals(firstChipWidth, chip1.getMaxWidth());
-        final int secondChipWidth = (getTwoChipsCombinedSize() * 5) / 6;
-        assertEquals(secondChipWidth, chip2.getMaxWidth());
+        // The chip width should not be reduced.
+        assertEquals(Integer.MAX_VALUE, chip1.getMaxWidth());
+        assertEquals(Integer.MAX_VALUE, chip2.getMaxWidth());
         assertEquals(Integer.MAX_VALUE, chip3.getMaxWidth());
     }
 
