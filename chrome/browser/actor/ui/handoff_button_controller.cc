@@ -21,6 +21,8 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -51,6 +53,23 @@ constexpr int kHandoffButtonPreferredHeight = 44;
 constexpr float kHandoffButtonShadowMargin = 15.0f;
 constexpr float kHandoffButtonCornerRadius = 48.0f;
 constexpr int kHandoffButtonIconSize = 20;
+
+// A customized LabelButton that shows a hand cursor on hover.
+class HandoffLabelButton : public views::LabelButton {
+  METADATA_HEADER(HandoffLabelButton, views::LabelButton)
+
+ public:
+  using views::LabelButton::LabelButton;
+  ~HandoffLabelButton() override = default;
+
+  // views::View:
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return ui::mojom::CursorType::kHand;
+  }
+};
+
+BEGIN_METADATA(HandoffLabelButton)
+END_METADATA
 
 // A custom BubbleFrameView that paints a gradient border.
 class GradientBubbleFrameView : public views::BubbleFrameView {
@@ -237,7 +256,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   auto* tab_dialog_manager = GetTabDialogManager();
 
   // Create the button view.
-  auto button_view = std::make_unique<views::LabelButton>(
+  auto button_view = std::make_unique<HandoffLabelButton>(
       base::BindRepeating(&HandoffButtonController::OnButtonPressed,
                           weak_ptr_factory_.GetWeakPtr()),
       text);
