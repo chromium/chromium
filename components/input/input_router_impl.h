@@ -9,20 +9,21 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "components/input/gesture_event_queue.h"
-#include "components/input/mouse_wheel_event_queue.h"
-#include "components/input/passthrough_touch_event_queue.h"
-#include "components/input/touchpad_pinch_event_queue.h"
-#include "base/component_export.h"
 #include "components/input/input_event_stream_validator.h"
 #include "components/input/input_router.h"
 #include "components/input/input_router_client.h"
+#include "components/input/mouse_wheel_event_queue.h"
+#include "components/input/passthrough_touch_event_queue.h"
 #include "components/input/touch_action_filter.h"
+#include "components/input/touchpad_pinch_event_queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -53,6 +54,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
       public PassthroughTouchEventQueueClient,
       public TouchpadPinchEventQueueClient,
       public blink::mojom::WidgetInputHandlerHost {
+  // TODO(crbug.com/422044720): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   InputRouterImpl(InputRouterClient* client,
                   InputDispositionHandler* disposition_handler,
