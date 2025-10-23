@@ -185,6 +185,7 @@
   },
   "weidongliu@chromium.org": {
     affiliations: [
+      { start: "2025-10-21", domain: "citrolabs.ai" },
       { start: "2020-07-10", domain: "tencent.com" },
     ]
   },
