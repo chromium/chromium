@@ -127,9 +127,11 @@ using Error = SqlPersistentStore::Error;
 using ResId = SqlPersistentStore::ResId;
 using EntryInfoOrError = SqlPersistentStore::EntryInfoOrError;
 using OptionalEntryInfoOrError = SqlPersistentStore::OptionalEntryInfoOrError;
-using EntryInfoWithIdAndKey = SqlPersistentStore::EntryInfoWithIdAndKey;
-using OptionalEntryInfoWithIdAndKey =
-    SqlPersistentStore::OptionalEntryInfoWithIdAndKey;
+using EntryIterator = SqlPersistentStore::EntryIterator;
+using EntryInfoWithKeyAndIterator =
+    SqlPersistentStore::EntryInfoWithKeyAndIterator;
+using OptionalEntryInfoWithKeyAndIterator =
+    SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator;
 using IntOrError = SqlPersistentStore::IntOrError;
 using InitResultOrError = base::expected<InitResult, Error>;
 using ResIdList = std::vector<ResId>;
@@ -139,8 +141,8 @@ using InMemoryIndexAndDoomedResIdsOrError =
 using RangeResultOrError = base::expected<RangeResult, Error>;
 using Int64OrError = base::expected<int64_t, Error>;
 using EvictionUrgency = SqlPersistentStore::EvictionUrgency;
-using OptionalEntryInfoWithIdAndKeyOrError =
-    base::expected<OptionalEntryInfoWithIdAndKey, Error>;
+using OptionalEntryInfoWithKeyAndIteratorOrError =
+    base::expected<OptionalEntryInfoWithKeyAndIterator, Error>;
 
 // A helper struct to bundle an operation's result with a flag indicating
 // whether an eviction check is needed. This allows the background sequence,
@@ -216,14 +218,14 @@ void PopulateTraceDetails(const RangeResult& range_result,
   dict.Add("range_start", range_result.start);
   dict.Add("range_available_len", range_result.available_len);
 }
-void PopulateTraceDetails(const EntryInfoWithIdAndKey& result,
+void PopulateTraceDetails(const EntryInfoWithKeyAndIterator& result,
                           perfetto::TracedDictionary& dict) {
   PopulateTraceDetails(result.info, dict);
-  dict.Add("res_id", result.res_id);
+  dict.Add("iterator_res_id", result.iterator.res_id);
   dict.Add("key", result.key.string());
 }
 void PopulateTraceDetails(
-    const std::optional<EntryInfoWithIdAndKey>& entry_info,
+    const std::optional<EntryInfoWithKeyAndIterator>& entry_info,
     perfetto::TracedDictionary& dict) {
   if (entry_info) {
     PopulateTraceDetails(*entry_info, dict);
@@ -435,8 +437,8 @@ class Backend {
   Int64OrError CalculateSizeOfEntriesBetween(base::Time initial_time,
                                              base::Time end_time,
                                              base::TimeTicks start_time);
-  OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
-      ResId res_id_cursor,
+  OptionalEntryInfoWithKeyAndIterator OpenNextEntry(
+      const EntryIterator& iterator,
       base::TimeTicks start_time);
   ResIdListOrErrorAndStoreStatus RunEviction(
       int64_t size_to_be_removed,
@@ -515,8 +517,8 @@ class Backend {
                                                     int len);
   Int64OrError CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
                                                      base::Time end_time);
-  OptionalEntryInfoWithIdAndKeyOrError OpenLatestEntryBeforeResIdInternal(
-      ResId res_id_cursor,
+  OptionalEntryInfoWithKeyAndIteratorOrError OpenNextEntryInternal(
+      const EntryIterator& iterator,
       bool& corruption_detected);
   ResIdListOrError RunEvictionInternal(
       int64_t size_to_be_removed,
@@ -2253,24 +2255,23 @@ Int64OrError Backend::CalculateSizeOfEntriesBetweenInternal(
   return Int64OrError(total_size);
 }
 
-OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
-    ResId res_id_cursor,
+OptionalEntryInfoWithKeyAndIterator Backend::OpenNextEntry(
+    const EntryIterator& iterator,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
-                     "data", [&](perfetto::TracedValue trace_context) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenNextEntry", "data",
+                     [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("res_id_cursor", res_id_cursor);
+                       dict.Add("res_id_iterator", iterator.res_id);
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result =
-      OpenLatestEntryBeforeResIdInternal(res_id_cursor, corruption_detected);
+  auto result = OpenNextEntryInternal(iterator, corruption_detected);
   RecordTimeAndErrorResultHistogram(
-      "OpenLatestEntryBeforeResId", posting_delay, timer.Elapsed(),
+      "OpenNextEntry", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
-                   "result", [&](perfetto::TracedValue trace_context) {
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenNextEntry", "result",
+                   [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
@@ -2281,21 +2282,20 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
   return std::move(*result);
 }
 
-OptionalEntryInfoWithIdAndKeyOrError
-Backend::OpenLatestEntryBeforeResIdInternal(ResId res_id_cursor,
-                                            bool& corruption_detected) {
+OptionalEntryInfoWithKeyAndIteratorOrError Backend::OpenNextEntryInternal(
+    const EntryIterator& iterator,
+    bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return base::unexpected(db_error);
   }
 
   sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      GetQuery(Query::kOpenLatestEntryBeforeResId_SelectLiveResources)));
-  statement.BindInt64(0, res_id_cursor.value());
+      SQL_FROM_HERE, GetQuery(Query::kOpenNextEntry_SelectLiveResources)));
+  statement.BindInt64(0, iterator.res_id.value());
   while (statement.Step()) {
     const ResId res_id = ResId(statement.ColumnInt64(0));
-    EntryInfoWithIdAndKey result;
-    result.res_id = res_id;
+    EntryInfoWithKeyAndIterator result;
+    result.iterator.res_id = res_id;
     auto& entry_info = result.info;
     entry_info.res_id = res_id;
     entry_info.last_used = statement.ColumnTime(1);
@@ -2826,11 +2826,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .WithArgs(initial_time, end_time, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  void OpenLatestEntryBeforeResId(
-      ResId res_id_cursor,
-      OptionalEntryInfoWithIdAndKeyCallback callback) override {
-    backend_.AsyncCall(&Backend::OpenLatestEntryBeforeResId)
-        .WithArgs(res_id_cursor, base::TimeTicks::Now())
+  void OpenNextEntry(
+      const EntryIterator& iterator,
+      OptionalEntryInfoWithKeyAndIteratorCallback callback) override {
+    backend_.AsyncCall(&Backend::OpenNextEntry)
+        .WithArgs(iterator, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
   EvictionUrgency GetEvictionUrgency() override {
@@ -3096,12 +3096,24 @@ SqlPersistentStore::EntryInfo::EntryInfo(EntryInfo&&) = default;
 SqlPersistentStore::EntryInfo& SqlPersistentStore::EntryInfo::operator=(
     EntryInfo&&) = default;
 
-SqlPersistentStore::EntryInfoWithIdAndKey::EntryInfoWithIdAndKey() = default;
-SqlPersistentStore::EntryInfoWithIdAndKey::~EntryInfoWithIdAndKey() = default;
-SqlPersistentStore::EntryInfoWithIdAndKey::EntryInfoWithIdAndKey(
-    EntryInfoWithIdAndKey&&) = default;
-SqlPersistentStore::EntryInfoWithIdAndKey&
-SqlPersistentStore::EntryInfoWithIdAndKey::operator=(EntryInfoWithIdAndKey&&) =
+SqlPersistentStore::EntryIterator::EntryIterator() = default;
+SqlPersistentStore::EntryIterator::~EntryIterator() = default;
+SqlPersistentStore::EntryIterator::EntryIterator(const EntryIterator&) =
     default;
+SqlPersistentStore::EntryIterator& SqlPersistentStore::EntryIterator::operator=(
+    const EntryIterator&) = default;
+SqlPersistentStore::EntryIterator::EntryIterator(EntryIterator&&) = default;
+SqlPersistentStore::EntryIterator& SqlPersistentStore::EntryIterator::operator=(
+    EntryIterator&&) = default;
+
+SqlPersistentStore::EntryInfoWithKeyAndIterator::EntryInfoWithKeyAndIterator() =
+    default;
+SqlPersistentStore::EntryInfoWithKeyAndIterator::
+    ~EntryInfoWithKeyAndIterator() = default;
+SqlPersistentStore::EntryInfoWithKeyAndIterator::EntryInfoWithKeyAndIterator(
+    EntryInfoWithKeyAndIterator&&) = default;
+SqlPersistentStore::EntryInfoWithKeyAndIterator&
+SqlPersistentStore::EntryInfoWithKeyAndIterator::operator=(
+    EntryInfoWithKeyAndIterator&&) = default;
 
 }  // namespace disk_cache

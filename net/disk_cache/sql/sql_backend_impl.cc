@@ -279,22 +279,21 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
       // `handle` is destroyed here, but `backend_` is null, so it's a no-op.
       return;
     }
-    // Request the next entry from the persistent store. `res_id_iterator_`
-    // keeps track of the last `res_id` returned, allowing the store to fetch
-    // entries older than that.
-    // `handle` will be destroyed after executing
-    // `OnOpenLatestEntryBeforeResIdFinished()`, may be triggering queued
-    // operations.
-    backend_->store_->OpenLatestEntryBeforeResId(
-        res_id_iterator_,
-        base::BindOnce(&IteratorImpl::OnOpenLatestEntryBeforeResIdFinished,
+    // Request the next entry from the persistent store. `entry_iterator_` keeps
+    // track of the last entry returned, allowing the store to fetch the next
+    // entry.
+    // `handle` will be destroyed after executing`OnOpenNextEntryFinished()`,
+    // may be triggering queued operations.
+    backend_->store_->OpenNextEntry(
+        entry_iterator_,
+        base::BindOnce(&IteratorImpl::OnOpenNextEntryFinished,
                        weak_factory_.GetWeakPtr())
             .Then(OnceClosureWithBoundArgs(std::move(handle))));
   }
 
-  // Callback for `SqlPersistentStore::OpenLatestEntryBeforeResId`.
-  void OnOpenLatestEntryBeforeResIdFinished(
-      SqlPersistentStore::OptionalEntryInfoWithIdAndKey result) {
+  // Callback for `SqlPersistentStore::OpenNextEntry`.
+  void OnOpenNextEntryFinished(
+      SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator result) {
     CHECK(callback_);
     if (!backend_) {
       std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
@@ -305,11 +304,11 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
       std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
       return;
     }
-    SqlPersistentStore::EntryInfoWithIdAndKey& entry_info = *result;
+    SqlPersistentStore::EntryInfoWithKeyAndIterator& entry_info = *result;
 
-    // Update the iterator's cursor to the `res_id` of the current entry,
-    // so the next call to `OpenLatestEntryBeforeResId` starts from here.
-    res_id_iterator_ = entry_info.res_id;
+    // Update the `entry_iterator_` to the `iterator` of the result, so the next
+    // call to `OpenNextEntry` starts from here.
+    entry_iterator_ = entry_info.iterator;
 
     // Check if the entry is already active in `active_entries_`. If so,
     // reuse the existing `SqlEntryImpl` instance.
@@ -324,10 +323,9 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
     // maintained because iterator operations are "exclusive" and dooming
     // operations are "normal", and the `ExclusiveOperationCoordinator`
     // ensures they do not run concurrently. If a doom operation runs first,
-    // the entry is marked as doomed in the database and
-    // `OpenLatestEntryBeforeResId` will not return it. If the iterator
-    // operation runs first, any subsequent doom operation will be queued until
-    // the iteration step is complete.
+    // the entry is marked as doomed in the database and `OpenNextEntry` will
+    // not return it. If the iterator operation runs first, any subsequent doom
+    // operation will be queued until the iteration step is complete.
     DCHECK(std::none_of(backend_->doomed_entries_.begin(),
                         backend_->doomed_entries_.end(),
                         [&](const raw_ref<const SqlEntryImpl>& doomed_entry) {
@@ -358,10 +356,9 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
   }
 
   base::WeakPtr<SqlBackendImpl> backend_;
-  // The `res_id` of the last entry returned by the iterator. Used to fetch
-  // entries with smaller `res_id`s in subsequent calls.
-  SqlPersistentStore::ResId res_id_iterator_ =
-      SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max());
+  // The `entry_iterator` of the last entry returned by the iterator. Used to
+  // fetch the next entry in subsequent calls.
+  SqlPersistentStore::EntryIterator entry_iterator_;
   EntryResultCallback callback_;
   base::WeakPtrFactory<IteratorImpl> weak_factory_{this};
 };

@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GetEntryAvailableRange"/>
   <variant name="Initialize"/>
   <variant name="OpenEntry"/>
-  <variant name="OpenLatestEntryBeforeResId"/>
+  <variant name="OpenNextEntry"/>
   <variant name="OpenOrCreateEntry"/>
   <variant name="ReadEntryData"/>
   <variant name="RunEviction"/>

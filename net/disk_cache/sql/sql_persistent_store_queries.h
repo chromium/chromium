@@ -322,7 +322,7 @@ inline constexpr const char
         "doomed=0";
 // clang-format on
 
-inline constexpr const char kOpenLatestEntryBeforeResId_SelectLiveResources[] =
+inline constexpr const char kOpenNextEntry_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "res_id,"      // 0
@@ -407,7 +407,7 @@ enum class Query {
   kReadEntryData_SelectOverlapping,
   kGetEntryAvailableRange_SelectOverlapping,
   kCalculateSizeOfEntriesBetween_SelectLiveResources,
-  kOpenLatestEntryBeforeResId_SelectLiveResources,
+  kOpenNextEntry_SelectLiveResources,
   kRunEviction_SelectLiveResources,
   kRunEviction_DeleteFromResources,
   kCalculateResourceEntryCount_SelectCountFromLiveResources,
@@ -474,8 +474,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kGetEntryAvailableRange_SelectOverlapping;
     case Query::kCalculateSizeOfEntriesBetween_SelectLiveResources:
       return internal::kCalculateSizeOfEntriesBetween_SelectLiveResources;
-    case Query::kOpenLatestEntryBeforeResId_SelectLiveResources:
-      return internal::kOpenLatestEntryBeforeResId_SelectLiveResources;
+    case Query::kOpenNextEntry_SelectLiveResources:
+      return internal::kOpenNextEntry_SelectLiveResources;
     case Query::kRunEviction_SelectLiveResources:
       return internal::kRunEviction_SelectLiveResources;
     case Query::kRunEviction_DeleteFromResources:

@@ -194,7 +194,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "COVERING INDEX index_live_resources_last_used_bytes_usage "
             "(last_used>? AND last_used<?)"},
-           {Query::kOpenLatestEntryBeforeResId_SelectLiveResources,
+           {Query::kOpenNextEntry_SelectLiveResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid<?)"},
            {Query::kRunEviction_SelectLiveResources,

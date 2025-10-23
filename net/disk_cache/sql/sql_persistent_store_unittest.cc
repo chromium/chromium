@@ -253,12 +253,13 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Get();
   }
 
-  // Synchronous wrapper for OpenLatestEntryBeforeResId.
-  SqlPersistentStore::OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
-      SqlPersistentStore::ResId res_id) {
-    base::test::TestFuture<SqlPersistentStore::OptionalEntryInfoWithIdAndKey>
+  // Synchronous wrapper for OpenNextEntry.
+  SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator OpenNextEntry(
+      const SqlPersistentStore::EntryIterator& entry_coursor) {
+    base::test::TestFuture<
+        SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator>
         future;
-    store_->OpenLatestEntryBeforeResId(res_id, future.GetCallback());
+    store_->OpenNextEntry(entry_coursor, future.GetCallback());
     return future.Take();
   }
 
@@ -3162,22 +3163,20 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeMultipleBlobsStopsAtGap) {
   EXPECT_EQ(result.available_len, 150);
 }
 
-TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdEmptyCache) {
+TEST_F(SqlPersistentStoreTest, OpenNextEntryEmptyCache) {
   CreateAndInitStore();
-  auto result = OpenLatestEntryBeforeResId(
-      SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()));
+  auto result = OpenNextEntry(SqlPersistentStore::EntryIterator());
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSingleEntry) {
+TEST_F(SqlPersistentStoreTest, OpenNextEntrySingleEntry) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
 
   const auto created_res_id = CreateEntryAndGetResId(kKey);
 
   // Open the first (and only) entry.
-  auto next_result1 = OpenLatestEntryBeforeResId(
-      SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()));
+  auto next_result1 = OpenNextEntry(SqlPersistentStore::EntryIterator());
   ASSERT_TRUE(next_result1.has_value());
   EXPECT_EQ(next_result1->key, kKey);
   EXPECT_EQ(next_result1->info.res_id, created_res_id);
@@ -3187,11 +3186,11 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSingleEntry) {
   EXPECT_EQ(next_result1->info.head->size(), 0);
 
   // Try to open again, should be no more entries.
-  auto next_result2 = OpenLatestEntryBeforeResId(next_result1->res_id);
+  auto next_result2 = OpenNextEntry(next_result1->iterator);
   EXPECT_FALSE(next_result2.has_value());
 }
 
-TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdMultipleEntries) {
+TEST_F(SqlPersistentStoreTest, OpenNextEntryMultipleEntries) {
   CreateAndInitStore();
   const CacheEntryKey kKey1("key1");
   const CacheEntryKey kKey2("key2");
@@ -3203,30 +3202,26 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdMultipleEntries) {
 
   // Entries should be returned in reverse order of creation (descending
   // res_id).
-  auto next_result = OpenLatestEntryBeforeResId(
-      SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()));
+  auto next_result = OpenNextEntry(SqlPersistentStore::EntryIterator());
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey3);
   EXPECT_EQ(next_result->info.res_id, res_id3);
-  const auto res_id3_val = next_result->res_id;
 
-  next_result = OpenLatestEntryBeforeResId(res_id3_val);
+  next_result = OpenNextEntry(next_result->iterator);
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey2);
   EXPECT_EQ(next_result->info.res_id, res_id2);
-  const auto res_id2_val = next_result->res_id;
 
-  next_result = OpenLatestEntryBeforeResId(res_id2_val);
+  next_result = OpenNextEntry(next_result->iterator);
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey1);
   EXPECT_EQ(next_result->info.res_id, res_id1);
-  const auto res_id1_val = next_result->res_id;
 
-  next_result = OpenLatestEntryBeforeResId(res_id1_val);
+  next_result = OpenNextEntry(next_result->iterator);
   EXPECT_FALSE(next_result.has_value());
 }
 
-TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsDoomed) {
+TEST_F(SqlPersistentStoreTest, OpenNextEntrySkipsDoomed) {
   CreateAndInitStore();
   const CacheEntryKey kKey1("key1");
   const CacheEntryKey kKeyToDoom("key-to-doom");
@@ -3240,23 +3235,18 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsDoomed) {
   ASSERT_EQ(DoomEntry(kKeyToDoom, res_id_to_doom),
             SqlPersistentStore::Error::kOk);
 
-  // OpenLatestEntryBeforeResId should skip the doomed entry.
-  auto next_result = OpenLatestEntryBeforeResId(
-      SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()));
+  // OpenNextEntry should skip the doomed entry.
+  auto next_result = OpenNextEntry(SqlPersistentStore::EntryIterator());
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey3);  // Should be kKey3
-  const auto res_id3 = next_result->res_id;
 
-  next_result = OpenLatestEntryBeforeResId(res_id3);
+  next_result = OpenNextEntry(next_result->iterator);
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey1);  // Should skip kKeyToDoom and get kKey1
-  const auto res_id1 = next_result->res_id;
 
-  next_result = OpenLatestEntryBeforeResId(res_id1);
+  next_result = OpenNextEntry(next_result->iterator);
   EXPECT_FALSE(next_result.has_value());
 }
-
-
 
 TEST_F(SqlPersistentStoreTest, InitializeCallbackNotRunOnStoreDestruction) {
   CreateStore();
@@ -3383,15 +3373,14 @@ TEST_F(SqlPersistentStoreTest,
   EXPECT_FALSE(callback_run);
 }
 
-TEST_F(SqlPersistentStoreTest,
-       OpenLatestEntryBeforeResIdCallbackNotRunOnStoreDestruction) {
+TEST_F(SqlPersistentStoreTest, OpenNextEntryCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();
   bool callback_run = false;
 
-  store_->OpenLatestEntryBeforeResId(
-      SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()),
+  store_->OpenNextEntry(
+      SqlPersistentStore::EntryIterator(),
       base::BindLambdaForTesting(
-          [&](SqlPersistentStore::OptionalEntryInfoWithIdAndKey) {
+          [&](SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator) {
             callback_run = true;
           }));
   store_.reset();
@@ -4231,10 +4220,7 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
   EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
             SqlPersistentStore::Error::kOk);
 
-  EXPECT_FALSE(
-      OpenLatestEntryBeforeResId(
-          SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()))
-          .has_value());
+  EXPECT_FALSE(OpenNextEntry(SqlPersistentStore::EntryIterator()).has_value());
 
   EXPECT_TRUE(LoadInMemoryIndex(SqlPersistentStore::Error::kFailedForTesting));
 
@@ -4315,10 +4301,7 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
                 .error(),
             SqlPersistentStore::Error::kDatabaseClosed);
 
-  EXPECT_FALSE(
-      OpenLatestEntryBeforeResId(
-          SqlPersistentStore::ResId(std::numeric_limits<int64_t>::max()))
-          .has_value());
+  EXPECT_FALSE(OpenNextEntry(SqlPersistentStore::EntryIterator()).has_value());
 
   EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
             SqlPersistentStore::Error::kOk);

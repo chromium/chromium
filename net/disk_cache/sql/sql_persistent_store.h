@@ -103,17 +103,29 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     bool opened = false;
   };
 
-  // Holds information about a specific cache entry, including its `res_id` and
-  // `key`. This is used when iterating through entries.
-  struct NET_EXPORT_PRIVATE EntryInfoWithIdAndKey {
-    EntryInfoWithIdAndKey();
-    ~EntryInfoWithIdAndKey();
-    EntryInfoWithIdAndKey(EntryInfoWithIdAndKey&&);
-    EntryInfoWithIdAndKey& operator=(EntryInfoWithIdAndKey&&);
+  // Holds the position of an entry, used for iterating through entries.
+  struct NET_EXPORT_PRIVATE EntryIterator {
+    EntryIterator();
+    ~EntryIterator();
+    EntryIterator(const EntryIterator&);
+    EntryIterator& operator=(const EntryIterator&);
+    EntryIterator(EntryIterator&&);
+    EntryIterator& operator=(EntryIterator&&);
+
+    ResId res_id = ResId(std::numeric_limits<int64_t>::max());
+  };
+
+  // Holds information about a specific cache entry, including its `key` and
+  // an `iterator` which is used when iterating through entries.
+  struct NET_EXPORT_PRIVATE EntryInfoWithKeyAndIterator {
+    EntryInfoWithKeyAndIterator();
+    ~EntryInfoWithKeyAndIterator();
+    EntryInfoWithKeyAndIterator(EntryInfoWithKeyAndIterator&&);
+    EntryInfoWithKeyAndIterator& operator=(EntryInfoWithKeyAndIterator&&);
 
     EntryInfo info;
-    ResId res_id;
     CacheEntryKey key;
+    EntryIterator iterator;
   };
 
   using ErrorCallback = base::OnceCallback<void(Error)>;
@@ -125,9 +137,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       base::expected<std::optional<EntryInfo>, Error>;
   using OptionalEntryInfoOrErrorCallback =
       base::OnceCallback<void(OptionalEntryInfoOrError)>;
-  using OptionalEntryInfoWithIdAndKey = std::optional<EntryInfoWithIdAndKey>;
-  using OptionalEntryInfoWithIdAndKeyCallback =
-      base::OnceCallback<void(OptionalEntryInfoWithIdAndKey)>;
+  using OptionalEntryInfoWithKeyAndIterator =
+      std::optional<EntryInfoWithKeyAndIterator>;
+  using OptionalEntryInfoWithKeyAndIteratorCallback =
+      base::OnceCallback<void(OptionalEntryInfoWithKeyAndIterator)>;
   using IntOrError = base::expected<int, Error>;
   using IntOrErrorCallback = base::OnceCallback<void(IntOrError)>;
   using Int64OrError = base::expected<int64_t, Error>;
@@ -297,14 +310,13 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                              base::Time end_time,
                                              Int64OrErrorCallback callback) = 0;
 
-  // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
-  // than `res_id_cursor`. This method is used for iterating through entries
-  // in reverse `res_id` order. To fetch all entries, start with
-  // `res_id_cursor` set to `std::numeric_limits<int64_t>::max()`. `callback`
-  // receives the entry (or `std::nullopt` if no more entries exist).
-  virtual void OpenLatestEntryBeforeResId(
-      ResId res_id_cursor,
-      OptionalEntryInfoWithIdAndKeyCallback callback) = 0;
+  // Opens the next cache entry in reverse `res_id` order. This method is used
+  // for iterating through entries. To fetch all entries, start with a
+  // default-constructed `iterator`. `callback` receives the entry (or
+  // `std::nullopt` if no more entries exist).
+  virtual void OpenNextEntry(
+      const EntryIterator& iterator,
+      OptionalEntryInfoWithKeyAndIteratorCallback callback) = 0;
 
   // Checks if cache eviction should be initiated. This is typically called by
   // the backend after an operation that increases the cache size.
