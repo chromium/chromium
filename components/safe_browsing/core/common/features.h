@@ -294,6 +294,11 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMaliciousApkDownloadCheckTelemetryOnly);
 //  disabling user protection.
 BASE_DECLARE_FEATURE(kModifiedESBFetchErrorHandling);
 
+// When enabled, the Password Leak detection toggle is moved out from under the
+// 'Standard protection' Safe Browsing option to the top-level 'Privacy and
+// security' page.
+BASE_DECLARE_FEATURE(kMovePasswordLeakDetectionToggleIos);
+
 // Enable the collection of Notification Telemetry to track potentially abusive
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);

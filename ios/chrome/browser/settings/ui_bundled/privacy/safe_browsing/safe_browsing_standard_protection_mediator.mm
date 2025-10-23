@@ -192,7 +192,10 @@ const CGFloat kSymbolSize = 20;
         [items addObject:switchItem];
       }
     }
-    [items addObject:self.passwordLeakCheckItem];
+    if (!base::FeatureList::IsEnabled(
+            safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
+      [items addObject:self.passwordLeakCheckItem];
+    }
 
     _safeBrowsingStandardProtectionItems = items;
   }

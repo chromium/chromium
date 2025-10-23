@@ -19,9 +19,11 @@
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/handoff/pref_names_ios.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
@@ -39,6 +41,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_navigation_commands.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -78,6 +81,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPrivacyContent = kSectionIdentifierEnumZero,
   SectionIdentifierSafeBrowsing,
   SectionIdentifierHTTPSOnlyMode,
+  SectionIdentifierPasswordLeakCheck,
   SectionIdentifierWebServices,
   SectionIdentifierIncognitoAuth,
   SectionIdentifierIncognitoInterstitial,
@@ -96,6 +100,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoLock,
   ItemTypeIncognitoLockDisabled,
   ItemTypeHTTPSOnlyMode,
+  ItemTypePasswordLeakCheck,
   ItemTypeIncognitoInterstitial,
   ItemTypeIncognitoInterstitialDisabled,
   ItemTypeLockdownMode,
@@ -159,6 +164,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // The item related to the switch for the "HTTPS Only Mode" setting.
 @property(nonatomic, strong) TableViewSwitchItem* HTTPSOnlyModeItem;
 
+// Accessor for the Password leak check pref.
+@property(nonatomic, strong) PrefBackedBoolean* passwordLeakCheckPref;
+
+// The item related to the switch for the "Password leak check" setting.
+@property(nonatomic, strong) TableViewSwitchItem* passwordLeakCheckItem;
+
 // Accessor for the Incognito interstitial pref.
 @property(nonatomic, strong) PrefBackedBoolean* incognitoInterstitialPref;
 
@@ -189,7 +200,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _localStateChangeRegistrar.Init(GetApplicationContext()->GetLocalState());
 
     _prefObserverBridge.reset(new PrefObserverBridge(self));
-    // Register to observe any changes on Perf backed values displayed by the
+    // Register to observe any changes on pref-backed values displayed by the
     // screen.
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kIosHandoffToOtherDevices, &_prefChangeRegistrar);
@@ -217,6 +228,15 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         initWithPrefService:prefService
                    prefName:prefs::kHttpsOnlyModeEnabled];
     [_HTTPSOnlyModePref setObserver:self];
+
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
+      _passwordLeakCheckPref = [[PrefBackedBoolean alloc]
+          initWithPrefService:prefService
+                     prefName:password_manager::prefs::
+                                  kPasswordLeakDetectionEnabled];
+      [_passwordLeakCheckPref setObserver:self];
+    }
 
     _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
@@ -259,6 +279,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [_HTTPSOnlyModePref stop];
   _HTTPSOnlyModePref.observer = nil;
   _HTTPSOnlyModePref = nil;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
+    [_passwordLeakCheckPref stop];
+    _passwordLeakCheckPref.observer = nil;
+    _passwordLeakCheckPref = nil;
+  }
   [_incognitoInterstitialPref stop];
   _incognitoInterstitialPref.observer = nil;
   _incognitoInterstitialPref = nil;
@@ -296,7 +322,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
   [model addItem:self.HTTPSOnlyModeItem
       toSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
-
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
+    [model addSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
+    [model addItem:self.passwordLeakCheckItem
+        toSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
+  }
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
@@ -377,6 +408,26 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _HTTPSOnlyModeItem.accessibilityIdentifier = kSettingsHttpsOnlyModeCellId;
   }
   return _HTTPSOnlyModeItem;
+}
+
+- (TableViewSwitchItem*)passwordLeakCheckItem {
+  if (!_passwordLeakCheckItem) {
+    _passwordLeakCheckItem =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypePasswordLeakCheck];
+
+    _passwordLeakCheckItem.text = l10n_util::GetNSString(
+        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE);
+    _passwordLeakCheckItem.detailText = l10n_util::GetNSString(
+        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
+    _passwordLeakCheckItem.on = [self.passwordLeakCheckPref value];
+    _passwordLeakCheckItem.enabled = YES;
+    _passwordLeakCheckItem.target = self;
+    _passwordLeakCheckItem.selector =
+        @selector(PasswordLeakCheckSwitchToggled:);
+    _passwordLeakCheckItem.accessibilityIdentifier =
+        kSafeBrowsingStandardProtectionPasswordLeakCellId;
+  }
+  return _passwordLeakCheckItem;
 }
 
 - (TableViewSwitchItem*)incognitoInterstitialItem {
@@ -715,6 +766,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   self.HTTPSOnlyModeItem.on = self.HTTPSOnlyModePref.value;
   [self reconfigureCellsForItems:@[ self.HTTPSOnlyModeItem ]];
 
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
+    self.passwordLeakCheckItem.on = self.passwordLeakCheckPref.value;
+    [self reconfigureCellsForItems:@[ self.passwordLeakCheckItem ]];
+  }
+
   self.incognitoInterstitialItem.on = self.incognitoInterstitialPref.value;
   [self reconfigureCellsForItems:@[ self.incognitoInterstitialItem ]];
 }
@@ -845,6 +902,15 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   BOOL isOn = switchView.isOn;
   [_HTTPSOnlyModePref setValue:isOn];
   [self enhancedSafeBrowsingInlinePromoTriggerCriteriaMet];
+}
+
+// Called from the Password Leak toggle setting's UIControlEventValueChanged.
+// When this is called, `switchView` already has the updated value:
+// If the switch was off, and user taps it, when this method is called,
+// switchView.on is YES.
+- (void)PasswordLeakCheckSwitchToggled:(UISwitch*)switchView {
+  BOOL isOn = switchView.isOn;
+  [_passwordLeakCheckPref setValue:isOn];
 }
 
 // Called from the Incognito interstitial setting's UIControlEventValueChanged.

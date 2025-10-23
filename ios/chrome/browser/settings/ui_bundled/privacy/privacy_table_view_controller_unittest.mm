@@ -70,7 +70,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 class PrivacyTableViewControllerTest
     : public LegacyChromeTableViewControllerTest,
-      public testing::WithParamInterface<std::tuple<IncognitoModePrefs, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<IncognitoModePrefs, bool, bool>> {
  protected:
   PrivacyTableViewControllerTest() {}
 
@@ -105,7 +106,10 @@ class PrivacyTableViewControllerTest
             static_cast<int>(IncognitoModeAvailability())));
 
     feature_list_.InitWithFeatureStates(
-        {{kPrivacyGuideIos, YES}, {kIOSSoftLock, SoftLockEnabled()}});
+        {{kPrivacyGuideIos, YES},
+         {kIOSSoftLock, SoftLockEnabled()},
+         {safe_browsing::kMovePasswordLeakDetectionToggleIos,
+          PasswordLeakCheckMoveEnabled()}});
   }
 
   void TearDown() override {
@@ -153,6 +157,8 @@ class PrivacyTableViewControllerTest
 
   bool SoftLockEnabled() { return std::get<1>(GetParam()); }
 
+  bool PasswordLeakCheckMoveEnabled() { return std::get<2>(GetParam()); }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -168,7 +174,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  ASSERT_EQ(8, NumberOfSections());
+  int expectedNumberOfSections = 8;
+  if (PasswordLeakCheckMoveEnabled()) {
+    expectedNumberOfSections += 1;
+  }
+  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
 
   int currentSection = 0;
   // PrivacyContent section.
@@ -196,6 +206,15 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
   CheckSwitchCellStateAndTextWithId(NO, IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE,
                                     currentSection, 0);
+
+  // Password leak check section.
+  if (PasswordLeakCheckMoveEnabled()) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+    CheckSwitchCellStateAndTextWithId(
+        YES, IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE,
+        currentSection, 0);
+  }
 
   // WebServices section.
   currentSection++;
@@ -268,7 +287,13 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterSignedOut) {
   CreateController();
   CheckController();
-  ASSERT_EQ(8, NumberOfSections());
+
+  int expectedNumberOfSections = 8;
+  if (PasswordLeakCheckMoveEnabled()) {
+    expectedNumberOfSections += 1;
+  }
+  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
+
   // Testing section index and text of the privacy footer.
   CheckSectionFooter(l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
                      /* section= */ NumberOfSections() - 1);
@@ -306,5 +331,6 @@ INSTANTIATE_TEST_SUITE_P(
                          IncognitoModePrefs::kEnabled,
                          IncognitoModePrefs::kDisabled,
                          IncognitoModePrefs::kForced),
-                     /*softLockEnabled*/ testing::Bool()));
+                     /*softLockEnabled*/ testing::Bool(),
+                     /*passwordLeakCheckMoveEnabled*/ testing::Bool()));
 }  // namespace

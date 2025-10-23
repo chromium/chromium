@@ -173,6 +173,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                             IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
                      detailText:standardProtectionSummary
         accessibilityIdentifier:kSettingsSafeBrowsingStandardProtectionCellId];
+    safeBrowsingStandardProtectionItem.infoButtonIsHidden =
+        base::FeatureList::IsEnabled(
+            safe_browsing::kMovePasswordLeakDetectionToggleIos) &&
+        base::FeatureList::IsEnabled(
+            safe_browsing::kExtendedReportingRemovePrefDependencyIos);
     [items addObject:safeBrowsingStandardProtectionItem];
     NSInteger noProtectionSummary;
     noProtectionSummary =
