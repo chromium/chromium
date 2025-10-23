@@ -110,7 +110,7 @@ double GetScreenshotScaleFactor(const gfx::Size& original_size,
 
 int GetScreenshotJpegQuality() {
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
-    return 100;
+    return 40;
   }
   // Must be an int from 0 to 100.
   return std::max(0, std::min(100, kScreenshotQuality.Get()));
@@ -633,10 +633,10 @@ const base::FeatureParam<int> kMaxScreenshotHeightParam{
     &kGlicTabScreenshotExperiment, "max_screenshot_height", 0};
 
 const base::FeatureParam<int> kScreenshotQuality{&kGlicTabScreenshotExperiment,
-                                                 "screenshot_quality", 100};
+                                                 "screenshot_quality", 40};
 
-const base::FeatureParam<std::string> kScreenshotImageType{&kGlicTabScreenshotExperiment,
-                                                 "screenshot_image_type", "jpeg"};
+const base::FeatureParam<std::string> kScreenshotImageType{
+    &kGlicTabScreenshotExperiment, "screenshot_image_type", "jpeg"};
 
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};

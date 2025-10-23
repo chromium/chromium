@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(
   // bounds (due to lossy jpeg encoding/decoding).
   EXPECT_THAT(bitmap.getColor(10, 10),
               Conditional(use_paint_preview_backend(),
-                          IsColorWithinTolerance(SK_ColorRED, 0x10),
+                          IsColorWithinTolerance(SK_ColorRED, 0x20),
                           // TODO(b/438825957): add test coverage for the output
                           // of the CopyFromSurface screenshot.
                           _));
@@ -264,7 +264,8 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
-  EXPECT_THAT(bitmap.getColor(10, 10), IsColorWithinTolerance(SK_ColorRED, 10));
+  EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
 }
 
 IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
@@ -303,7 +304,8 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
-  EXPECT_THAT(bitmap.getColor(10, 10), IsColorWithinTolerance(SK_ColorRED, 10));
+  EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
 }
 
 IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
@@ -343,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
   EXPECT_THAT(bitmap.getColor(10, 10),
-              IsColorWithinTolerance(SK_ColorBLACK, 10));
+              IsColorWithinTolerance(SK_ColorBLACK, 0x20));
 }
 
 // Test class that sets png params and validates pngs are returned.
