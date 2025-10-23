@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/enterprise/device_trust/prefs.h"
@@ -22,7 +21,7 @@
 namespace enterprise_connectors {
 
 // Profile Prefs
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 const char kCacheEncryptionEnabledPref[] =
     "enterprise_connectors.cache_encryption_enabled";
 #endif
@@ -96,7 +95,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   registry->RegisterBooleanPref(kCacheEncryptionEnabledPref, false);
 #endif
 }

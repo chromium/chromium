@@ -6,12 +6,13 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_PREFS_H_
 
 #include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
 
 namespace enterprise_connectors {
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 // Pref that maps to the "CacheEncryptionEnabled" policy.
 extern const char kCacheEncryptionEnabledPref[];
 #endif

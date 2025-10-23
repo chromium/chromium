@@ -3,7 +3,9 @@
     "os": [
       "linux",
       "mac",
-      "win"
+      "win",
+      "chromeos",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "enterprise_connectors.cache_encryption_enabled",
