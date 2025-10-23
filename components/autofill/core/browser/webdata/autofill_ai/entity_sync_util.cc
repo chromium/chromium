@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
+#include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
 namespace autofill {
@@ -319,6 +320,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       return std::nullopt;
   }
   return std::nullopt;
+}
+
+EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
+    const sync_pb::AutofillValuableMetadataSpecifics& specifics) {
+  return EntityInstance::EntityMetadata{
+      .guid = EntityInstance::EntityId(specifics.valuable_id()),
+      .date_modified = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(specifics.last_modified_date_unix_epoch_micros())),
+      .use_count = static_cast<size_t>(specifics.use_count()),
+      .use_date = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(specifics.last_used_date_unix_epoch_micros()))};
 }
 
 }  // namespace autofill

@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -208,6 +209,29 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_IsEditable) {
                      EntityInstance::AreAttributesReadOnly(true)}));
     EXPECT_FALSE(specifics.is_editable());
   }
+}
+
+// Tests that the `CreateValuableMetadataFromSpecifics` function correctly
+// converts the proto to EntityTable::EntityMetadata.
+TEST(EntitySyncUtilTest, CreateValuableMetadataFromSpecifics) {
+  sync_pb::AutofillValuableMetadataSpecifics specifics;
+  specifics.set_valuable_id("test-valuable-id");
+  // Corresponds to Jan 1, 2025, 00:00:00 UTC
+  specifics.set_last_modified_date_unix_epoch_micros(13379000000000000u);
+  specifics.set_use_count(5);
+  // Corresponds to Jan 1, 2024, 00:00:00 UTC
+  specifics.set_last_used_date_unix_epoch_micros(13347400000000000u);
+
+  EntityInstance::EntityMetadata metadata =
+      CreateValuableMetadataFromSpecifics(specifics);
+
+  EXPECT_EQ(metadata.guid.value(), "test-valuable-id");
+  EXPECT_EQ(metadata.date_modified,
+            base::Time::FromDeltaSinceWindowsEpoch(
+                base::Microseconds(13379000000000000u)));
+  EXPECT_EQ(metadata.use_count, 5u);
+  EXPECT_EQ(metadata.use_date, base::Time::FromDeltaSinceWindowsEpoch(
+                                   base::Microseconds(13347400000000000u)));
 }
 
 }  // namespace

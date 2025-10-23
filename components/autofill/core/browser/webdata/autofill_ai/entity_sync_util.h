@@ -7,9 +7,13 @@
 
 #include <optional>
 
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+
 namespace sync_pb {
+class AutofillValuableMetadataSpecifics;
 class AutofillValuableSpecifics;
-}
+}  // namespace sync_pb
+
 namespace autofill {
 
 class EntityInstance;
@@ -23,6 +27,11 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
 // Converts the given valuable `specifics` into an equivalent EntityInstance.
 std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics);
+
+// Converts the given valuable metadata `specifics` into an equivalent
+// EntityInstance::EntityMetadata.
+EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
+    const sync_pb::AutofillValuableMetadataSpecifics& specifics);
 
 }  // namespace autofill
 
