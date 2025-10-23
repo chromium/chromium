@@ -147,12 +147,6 @@ void RasterImplementationGLES::GetQueryObjectuivEXT(GLuint id,
   gl_->GetQueryObjectuivEXT(id, pname, params);
 }
 
-void RasterImplementationGLES::GetQueryObjectui64vEXT(GLuint id,
-                                                      GLenum pname,
-                                                      GLuint64* params) {
-  gl_->GetQueryObjectui64vEXT(id, pname, params);
-}
-
 void RasterImplementationGLES::CopySharedImage(
     const gpu::Mailbox& source_mailbox,
     const gpu::Mailbox& dest_mailbox,

@@ -70,21 +70,6 @@ void TestRasterInterface::GetQueryObjectuivEXT(GLuint id,
   }
 }
 
-void TestRasterInterface::GetQueryObjectui64vEXT(GLuint id,
-                                                 GLenum pname,
-                                                 GLuint64* params) {
-  // TODO(crbug.com/450466845): Determine whether this is dead code.
-  if (pname == GL_QUERY_RESULT_EXT) {
-    static_assert(std::is_same<decltype(base::TimeDelta().InMicroseconds()),
-                               int64_t>::value,
-                  "Expected the return type of "
-                  "base::TimeDelta()::InMicroseconds() to be int64_t");
-    *params = std::numeric_limits<int64_t>::max();
-  } else {
-    NOTREACHED();
-  }
-}
-
 void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   // Don't return a valid sync token if context is lost. This matches behavior
   // of CommandBufferProxyImpl.

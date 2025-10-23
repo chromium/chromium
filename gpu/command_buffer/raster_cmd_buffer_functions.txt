@@ -13,7 +13,6 @@ GL_APICALL void         GL_APIENTRY glDeleteQueriesEXT (GLsizeiNotNegative n, co
 GL_APICALL void         GL_APIENTRY glBeginQueryEXT (GLenumQueryTarget target, GLidQuery id);
 GL_APICALL void         GL_APIENTRY glEndQueryEXT (GLenumQueryTarget target);
 GL_APICALL void         GL_APIENTRY glGetQueryObjectuivEXT (GLidQuery id, GLenumQueryObjectParameter pname, GLuint* params);
-GL_APICALL void         GL_APIENTRY glGetQueryObjectui64vEXT (GLidQuery id, GLenumQueryObjectParameter pname, GLuint64* params);
 
 // Non-GL commands.
 GL_APICALL void         GL_APIENTRY glLoseContextCHROMIUM (GLenumResetStatus current, GLenumResetStatus other);

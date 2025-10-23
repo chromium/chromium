@@ -65,9 +65,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void BeginQueryEXT(GLenum target, GLuint id) override;
   void EndQueryEXT(GLenum target) override;
   void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) override;
-  void GetQueryObjectui64vEXT(GLuint id,
-                              GLenum pname,
-                              GLuint64* params) override;
   void CopySharedImage(const gpu::Mailbox& source_mailbox,
                        const gpu::Mailbox& dest_mailbox,
                        GLint xoffset,

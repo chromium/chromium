@@ -50,9 +50,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void BeginQueryEXT(GLenum target, GLuint id) override;
   void EndQueryEXT(GLenum target) override;
   void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) override;
-  void GetQueryObjectui64vEXT(GLuint id,
-                              GLenum pname,
-                              GLuint64* params) override;
 
   // Copies SharedImage if `supports_yuv_rgb_conversion` else copies textures.
   void CopySharedImage(const gpu::Mailbox& source_mailbox,

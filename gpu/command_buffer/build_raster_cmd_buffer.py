@@ -260,10 +260,6 @@ _FUNCTION_INFO = {
     'type': 'NoCommand',
     'gl_test_func': 'glGetQueryObjectuiv',
   },
-  'GetQueryObjectui64vEXT': {
-    'type': 'NoCommand',
-    'gl_test_func': 'glGetQueryObjectui64v',
-  },
   'OrderingBarrierCHROMIUM': {
     'type': 'NoCommand',
   },

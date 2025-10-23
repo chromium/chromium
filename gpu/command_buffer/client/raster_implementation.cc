@@ -1081,16 +1081,6 @@ void RasterImplementation::GetQueryObjectuivEXT(GLuint id,
   }
 }
 
-void RasterImplementation::GetQueryObjectui64vEXT(GLuint id,
-                                                  GLenum pname,
-                                                  GLuint64* params) {
-  GLuint64 result = 0;
-  if (GetQueryObjectValueHelper("glGetQueryObjectui64vEXT", id, pname,
-                                &result)) {
-    *params = result;
-  }
-}
-
 void* RasterImplementation::MapRasterCHROMIUM(uint32_t size,
                                               uint32_t* size_allocated) {
   *size_allocated = 0u;

@@ -70,8 +70,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   MOCK_METHOD1(EndQueryEXT, void(GLenum target));
   MOCK_METHOD3(GetQueryObjectuivEXT,
                void(GLuint id, GLenum pname, GLuint* params));
-  MOCK_METHOD3(GetQueryObjectui64vEXT,
-               void(GLuint id, GLenum pname, GLuint64* params));
 
   // Texture objects.
   MOCK_METHOD2(GenTextures, void(GLsizei n, GLuint* textures));
@@ -312,16 +310,6 @@ TEST_F(RasterImplementationGLESTest, GetQueryObjectuivEXT) {
   EXPECT_CALL(*gl_, GetQueryObjectuivEXT(kQueryId, kQueryParam, &result))
       .Times(1);
   ri_->GetQueryObjectuivEXT(kQueryId, kQueryParam, &result);
-}
-
-TEST_F(RasterImplementationGLESTest, GetQueryObjectui64vEXT) {
-  const GLuint kQueryId = 23;
-  const GLsizei kQueryParam = GL_QUERY_RESULT_AVAILABLE_EXT;
-  GLuint64 result = 0;
-
-  EXPECT_CALL(*gl_, GetQueryObjectui64vEXT(kQueryId, kQueryParam, &result))
-      .Times(1);
-  ri_->GetQueryObjectui64vEXT(kQueryId, kQueryParam, &result);
 }
 
 }  // namespace raster
