@@ -21,8 +21,6 @@
 #include "content/public/common/referrer.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
@@ -45,22 +43,6 @@ bool SupervisedUserVerificationPage::ShouldShowPage(
       // In the transient case, an update to AUTHENTICATED state may shortly
       // follow, which will trigger this interstitial to be refreshed.
       return true;
-  }
-}
-
-// static
-FamilyLinkUserReauthenticationInterstitialState
-SupervisedUserVerificationPage::GetReauthenticationInterstitialStateFromStatus(
-    Status status) {
-  switch (status) {
-    case Status::SHOWN:
-      return FamilyLinkUserReauthenticationInterstitialState::kInterstitialShown;
-    case Status::REAUTH_STARTED:
-      return FamilyLinkUserReauthenticationInterstitialState::kReauthenticationStarted;
-    case Status::REAUTH_COMPLETED:
-      return FamilyLinkUserReauthenticationInterstitialState::kReauthenticationCompleted;
-    default:
-      NOTREACHED();
   }
 }
 
@@ -184,7 +166,6 @@ void SupervisedUserVerificationPage::CommandReceived(
 
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN: {
-      RecordReauthStatusMetrics(Status::REAUTH_STARTED);
       content::OpenURLParams params(reauth_url_, content::Referrer(),
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                     ui::PAGE_TRANSITION_LINK, false);

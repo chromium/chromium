@@ -9,7 +9,6 @@
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -33,7 +32,6 @@ class SupervisedUserVerificationPageForYouTube
       const std::string& email_to_reauth,
       const GURL& request_url,
       supervised_user::ChildAccountService* child_account_service,
-      ukm::SourceId source_id,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client,
@@ -44,7 +42,7 @@ class SupervisedUserVerificationPageForYouTube
   SupervisedUserVerificationPageForYouTube& operator=(
       const SupervisedUserVerificationPageForYouTube&) = delete;
 
-  ~SupervisedUserVerificationPageForYouTube() override;
+  ~SupervisedUserVerificationPageForYouTube() override = default;
 
   // SecurityInterstitialPage method:
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
@@ -54,9 +52,6 @@ class SupervisedUserVerificationPageForYouTube
   void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
 
  private:
-  void RecordReauthStatusMetrics(Status status) override;
-
-  ukm::SourceId source_id_;
   bool is_main_frame_;
 };
 

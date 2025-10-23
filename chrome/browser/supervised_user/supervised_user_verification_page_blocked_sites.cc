@@ -17,11 +17,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-constexpr char kBlockedSiteVerifyItsYouInterstitialStateHistogramName[] =
-    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
-}  // namespace
-
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
     SupervisedUserVerificationPageForBlockedSites::kTypeForTesting =
@@ -46,20 +41,7 @@ SupervisedUserVerificationPageForBlockedSites::
                                      std::move(controller_client)),
       block_reason_(block_reason),
       is_main_frame_(is_main_frame),
-      has_second_custodian_(has_second_custodian) {
-  // Demo interstitials are created without `child_account_service` and should
-  // not have metrics recorded.
-  if (child_account_service) {
-    RecordReauthStatusMetrics(Status::SHOWN);
-  }
-}
-
-SupervisedUserVerificationPageForBlockedSites::
-    ~SupervisedUserVerificationPageForBlockedSites() {
-  if (IsReauthCompleted()) {
-    RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
-  }
-}
+      has_second_custodian_(has_second_custodian) {}
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SupervisedUserVerificationPageForBlockedSites::GetTypeForTesting() {
@@ -98,18 +80,6 @@ void SupervisedUserVerificationPageForBlockedSites::PopulateInterstitialStrings(
   load_time_data.Set("primaryButtonText",
                      l10n_util::GetStringUTF16(
                          IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
-}
-
-void SupervisedUserVerificationPageForBlockedSites::RecordReauthStatusMetrics(
-    Status status) {
-  if (!is_main_frame_) {
-    // Do not record metrics for subframe interstitials.
-    return;
-  }
-
-  base::UmaHistogramEnumeration(
-      kBlockedSiteVerifyItsYouInterstitialStateHistogramName,
-      GetReauthenticationInterstitialStateFromStatus(status));
 }
 
 int SupervisedUserVerificationPageForBlockedSites::GetBlockMessageReasonId() {

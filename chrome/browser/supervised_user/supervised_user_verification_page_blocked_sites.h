@@ -48,7 +48,7 @@ class SupervisedUserVerificationPageForBlockedSites
   SupervisedUserVerificationPageForBlockedSites& operator=(
       const SupervisedUserVerificationPageForBlockedSites&) = delete;
 
-  ~SupervisedUserVerificationPageForBlockedSites() override;
+  ~SupervisedUserVerificationPageForBlockedSites() override = default;
 
   // SecurityInterstitialPage method:
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
@@ -58,7 +58,6 @@ class SupervisedUserVerificationPageForBlockedSites
   void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
 
  private:
-  void RecordReauthStatusMetrics(Status status) override;
   int GetBlockMessageReasonId();
   supervised_user::FilteringBehaviorReason block_reason_;
   bool is_main_frame_;

@@ -12,41 +12,7 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
-
-namespace {
-constexpr char kSubframeYoutubeReauthenticationInterstitiaHistogramName[] =
-    "FamilyLinkUser.SubframeYoutubeReauthenticationInterstitial";
-
-void RecordUkmForMainFrame(SupervisedUserVerificationPage::Status status,
-                           ukm::SourceId source_id) {
-  auto builder =
-      ukm::builders::FamilyLinkUser_ReauthenticationInterstitial(source_id);
-  switch (status) {
-    case SupervisedUserVerificationPage::Status::SHOWN:
-      builder.SetInterstitialShown(true);
-      break;
-    case SupervisedUserVerificationPage::Status::REAUTH_STARTED:
-      builder.SetReauthenticationStarted(true);
-      break;
-    case SupervisedUserVerificationPage::Status::REAUTH_COMPLETED:
-      builder.SetReauthenticationCompleted(true);
-      break;
-    default:
-      NOTREACHED();
-  }
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
-void RecordUmaForSubFrame(SupervisedUserVerificationPage::Status status) {
-  base::UmaHistogramEnumeration(
-      kSubframeYoutubeReauthenticationInterstitiaHistogramName,
-      SupervisedUserVerificationPage::
-          GetReauthenticationInterstitialStateFromStatus(status));
-}
-}  // namespace
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -59,7 +25,6 @@ SupervisedUserVerificationPageForYouTube::
         const std::string& email_to_reauth,
         const GURL& request_url,
         supervised_user::ChildAccountService* child_account_service,
-        ukm::SourceId source_id,
         std::unique_ptr<
             security_interstitials::SecurityInterstitialControllerClient>
             controller_client,
@@ -69,21 +34,7 @@ SupervisedUserVerificationPageForYouTube::
                                      request_url,
                                      child_account_service,
                                      std::move(controller_client)),
-      source_id_(source_id),
-      is_main_frame_(is_main_frame) {
-  // Demo interstitials are created without `child_account_service` and should
-  // not have metrics recorded.
-  if (child_account_service) {
-    RecordReauthStatusMetrics(Status::SHOWN);
-  }
-}
-
-SupervisedUserVerificationPageForYouTube::
-    ~SupervisedUserVerificationPageForYouTube() {
-  if (IsReauthCompleted()) {
-    RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
-  }
-}
+      is_main_frame_(is_main_frame) {}
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SupervisedUserVerificationPageForYouTube::GetTypeForTesting() {
@@ -118,11 +69,3 @@ void SupervisedUserVerificationPageForYouTube::PopulateInterstitialStrings(
                          IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
 }
 
-void SupervisedUserVerificationPageForYouTube::RecordReauthStatusMetrics(
-    Status status) {
-  if (is_main_frame_) {
-    RecordUkmForMainFrame(status, source_id_);
-  } else {
-    RecordUmaForSubFrame(status);
-  }
-}

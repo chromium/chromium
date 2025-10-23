@@ -412,7 +412,7 @@ CreateSupervisedUserVerificationPageForYouTube(
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
   return std::make_unique<SupervisedUserVerificationPageForYouTube>(
       web_contents, "first.last@gmail.com", kRequestUrl,
-      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
+      /*child_account_service*/ nullptr,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
