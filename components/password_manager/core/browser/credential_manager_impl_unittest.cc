@@ -103,6 +103,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                (base::span<const PasswordForm>),
                bool was_autofilled_on_pageload),
               (override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool, IsActorTaskActive, (), (override));
+#endif
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
@@ -1345,6 +1348,50 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_EQ(CredentialManagerError::SUCCESS, error_1);
   EXPECT_NE(CredentialType::CREDENTIAL_TYPE_EMPTY, credential_1->type);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(CredentialManagerImplTest, CredentialManagerRequestWhenActorIsActive) {
+  store_->AddLogin(form_);
+
+  std::vector<GURL> federations;
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
+  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
+  ON_CALL(*client_, IsActorTaskActive()).WillByDefault(Return(true));
+
+  bool call = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional, true, federations,
+          base::BindOnce(&GetCredentialCallback, &call, &error, &credential));
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(call);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+}
+
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerSucceedsWhenActorIsNotActive) {
+  store_->AddLogin(form_);
+
+  std::vector<GURL> federations;
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
+  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(1);
+  ON_CALL(*client_, IsActorTaskActive()).WillByDefault(Return(false));
+
+  bool call = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional, true, federations,
+          base::BindOnce(&GetCredentialCallback, &call, &error, &credential));
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(call);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_NE(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
   // Turn on the global zero-click flag, and add two credentials in separate

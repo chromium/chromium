@@ -113,6 +113,17 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
     CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogRequestCredential(GetOrigin(), mediation, federations);
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Return an empty credential if there is an active actor task.
+  if (client_->IsActorTaskActive()) {
+    std::move(callback).Run(CredentialManagerError::SUCCESS, CredentialInfo());
+    LogCredentialManagerGetResult(
+        metrics_util::CredentialManagerGetResult::kNone, mediation);
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   if (pending_request_ || !store) {
     // Callback error.
     std::move(callback).Run(
