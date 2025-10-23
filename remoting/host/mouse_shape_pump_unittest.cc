@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -25,6 +26,7 @@ using ::remoting::protocol::MockClientStub;
 
 using ::testing::_;
 using ::testing::InvokeWithoutArgs;
+using ::testing::SaveArg;
 
 namespace remoting {
 
@@ -62,6 +64,13 @@ class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
         webrtc::DesktopVector(kHotspotX, kHotspotY));
 
     callback_->OnMouseCursor(mouse_cursor.release());
+  }
+
+  void SendFractionalCursorPosition(
+      const protocol::FractionalCoordinate& position) {
+    ASSERT_TRUE(callback_);
+
+    callback_->OnMouseCursorFractionalPosition(position);
   }
 
   int get_capture_call_count() const { return capture_call_count_; }
@@ -156,6 +165,68 @@ TEST_F(MouseShapePumpTest, UpdatedCaptureInterval) {
 
   task_environment_.FastForwardBy(test_capture_interval);
   ASSERT_EQ(test_monitor->get_capture_call_count(), 2);
+}
+
+TEST_F(MouseShapePumpTest,
+       OnMouseCursorFractionalPosition_SendsPositionToClient) {
+  std::unique_ptr<TestMouseCursorMonitor> monitor =
+      std::make_unique<TestMouseCursorMonitor>();
+  TestMouseCursorMonitor* test_monitor = monitor.get();
+  protocol::FractionalCoordinate position;
+  position.set_screen_id(1);
+  position.set_x(0.5);
+  position.set_y(0.5);
+  protocol::HostCursorPosition captured_position;
+  EXPECT_CALL(client_stub_, SetHostCursorPosition(_))
+      .WillOnce(SaveArg<0>(&captured_position));
+
+  // Start the pump.
+  pump_ = std::make_unique<MouseShapePump>(std::move(monitor), &client_stub_);
+  pump_->SetSendCursorPositionToClient(true);
+
+  // Trigger a fractional position event.
+  test_monitor->SendFractionalCursorPosition(position);
+
+  ASSERT_TRUE(captured_position.has_fractional_coordinate());
+  ASSERT_EQ(captured_position.fractional_coordinate().screen_id(), 1);
+  ASSERT_EQ(captured_position.fractional_coordinate().x(), 0.5);
+  ASSERT_EQ(captured_position.fractional_coordinate().y(), 0.5);
+}
+
+TEST_F(MouseShapePumpTest,
+       OnMouseCursorFractionalPosition_Disabled_DoesNotSendPositionToClient) {
+  std::unique_ptr<TestMouseCursorMonitor> monitor =
+      std::make_unique<TestMouseCursorMonitor>();
+  TestMouseCursorMonitor* test_monitor = monitor.get();
+  protocol::FractionalCoordinate position;
+  position.set_screen_id(1);
+  position.set_x(0.5);
+  position.set_y(0.5);
+  EXPECT_CALL(client_stub_, SetHostCursorPosition(_)).Times(0);
+
+  // Start the pump.
+  pump_ = std::make_unique<MouseShapePump>(std::move(monitor), &client_stub_);
+  pump_->SetSendCursorPositionToClient(false);
+
+  // Trigger a fractional position event.
+  test_monitor->SendFractionalCursorPosition(position);
+}
+
+TEST_F(MouseShapePumpTest,
+       SetSendCursorPositionToClient_FromTrueToFalse_SendsEmptyPosition) {
+  // Start the pump.
+  pump_ = std::make_unique<MouseShapePump>(
+      std::make_unique<TestMouseCursorMonitor>(), &client_stub_);
+
+  EXPECT_CALL(client_stub_, SetHostCursorPosition(_)).Times(0);
+  pump_->SetSendCursorPositionToClient(true);
+
+  protocol::HostCursorPosition captured_position;
+  EXPECT_CALL(client_stub_, SetHostCursorPosition(_))
+      .WillOnce(SaveArg<0>(&captured_position));
+  pump_->SetSendCursorPositionToClient(false);
+
+  ASSERT_FALSE(captured_position.has_fractional_coordinate());
 }
 
 }  // namespace remoting

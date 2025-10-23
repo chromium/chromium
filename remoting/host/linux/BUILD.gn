@@ -173,6 +173,7 @@ source_set("platform_impls") {
     "gnome_interaction_strategy.h",
     "gnome_keyboard_layout_monitor.cc",
     "gnome_keyboard_layout_monitor.h",
+    "gnome_local_input_monitor.cc",
     "gnome_local_input_monitor.h",
     "gnome_remote_desktop_session.cc",
     "gnome_remote_desktop_session.h",

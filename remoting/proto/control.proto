@@ -276,8 +276,12 @@ message ActiveDisplay {
   optional int64 screen_id = 1;
 }
 
-// The position of the mouse cursor on the host. This is used for client side
-// rendering of the host's cursor in relative mouse mode.
+// The position of the mouse cursor on the host. If the client receives a
+// HostCursorPosition with the fractional_coordinate, it should render the
+// host's cursor at the specified position. This may happen if relative mouse
+// mode is enabled, or a local mouse input is detected. If a client receives a
+// HostCursorPosition without the fractional_coordinate, it should hide the
+// host's cursor and revert to tracking the cursor position locally.
 // Next ID: 2
 message HostCursorPosition {
   optional FractionalCoordinate fractional_coordinate = 1;

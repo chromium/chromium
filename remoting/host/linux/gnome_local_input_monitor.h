@@ -5,20 +5,34 @@
 #ifndef REMOTING_HOST_LINUX_GNOME_LOCAL_INPUT_MONITOR_H_
 #define REMOTING_HOST_LINUX_GNOME_LOCAL_INPUT_MONITOR_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
+#include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
 
-// TODO(jamiewalch): Implement
-class GnomeLocalInputMonitor : public LocalInputMonitor {
+class GnomeLocalInputMonitor : public LocalInputMonitor,
+                               public PipewireMouseCursorCapturer::Observer {
  public:
+  explicit GnomeLocalInputMonitor(PipewireMouseCursorCapturer& cursor_capturer);
+  ~GnomeLocalInputMonitor() override;
+  GnomeLocalInputMonitor(const GnomeLocalInputMonitor&) = delete;
+  GnomeLocalInputMonitor& operator=(const GnomeLocalInputMonitor&) = delete;
+
   void StartMonitoringForClientSession(
-      base::WeakPtr<ClientSessionControl> client_session_control) override {}
+      base::WeakPtr<ClientSessionControl> client_session_control) override;
   void StartMonitoring(PointerMoveCallback on_pointer_input,
                        KeyPressedCallback on_keyboard_input,
-                       base::RepeatingClosure on_error) override {}
+                       base::RepeatingClosure on_error) override;
+
+ private:
+  void OnCursorPositionChanged(PipewireMouseCursorCapturer* capturer) override;
+
+  base::WeakPtr<ClientSessionControl> client_session_control_;
+  PointerMoveCallback on_pointer_input_;
+  PipewireMouseCursorCapturer::Observer::Subscription cursor_subscription_;
 };
 
 }  // namespace remoting

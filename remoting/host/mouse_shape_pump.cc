@@ -49,7 +49,16 @@ void MouseShapePump::SetCursorCaptureInterval(base::TimeDelta new_interval) {
 
 void MouseShapePump::SetSendCursorPositionToClient(
     bool send_cursor_position_to_client) {
+  if (send_cursor_position_to_client == send_cursor_position_to_client_) {
+    return;
+  }
   send_cursor_position_to_client_ = send_cursor_position_to_client;
+  if (!send_cursor_position_to_client_) {
+    // Send an empty HostCursorPosition to the client to disable rendering of
+    // the host's cursor and revert to tracking the cursor position locally.
+    protocol::HostCursorPosition position;
+    cursor_shape_stub_->SetHostCursorPosition(position);
+  }
 }
 
 void MouseShapePump::SetMouseCursorMonitorCallback(

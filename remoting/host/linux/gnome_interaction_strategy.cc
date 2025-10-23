@@ -152,7 +152,11 @@ GnomeInteractionStrategy::CreateDisplayInfoMonitor() {
 
 std::unique_ptr<LocalInputMonitor>
 GnomeInteractionStrategy::CreateLocalInputMonitor() {
-  return std::make_unique<GnomeLocalInputMonitor>();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto capturer = remote_desktop_session_->mouse_cursor_capturer();
+  DCHECK(capturer);
+  return std::make_unique<GnomeLocalInputMonitor>(*capturer);
 }
 
 std::unique_ptr<CurtainMode> GnomeInteractionStrategy::CreateCurtainMode(
