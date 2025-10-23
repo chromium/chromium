@@ -1603,6 +1603,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="7" label="Angle"/>
   <int value="8" label="Length"/>
   <int value="9" label="Position fallback link"/>
+  <int value="10" label="Position try link"/>
+  <int value="11" label="Attribute link"/>
+  <int value="12" label="Masonry editor"/>
 </enum>
 
 <enum name="DevToolsSyncSetting">
