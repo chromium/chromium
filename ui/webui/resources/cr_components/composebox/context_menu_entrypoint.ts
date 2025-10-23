@@ -123,7 +123,8 @@ export class ContextMenuEntrypointElement extends
 
   // Checks if the create image item in the context menu should be disabled.
   protected get createImageDisabled_(): boolean {
-    return this.fileNum > 1 || ((this.fileNum === 1) && !this.hasImageFiles);
+    return this.inCreateImageMode || this.fileNum > 1 ||
+        ((this.fileNum === 1) && !this.hasImageFiles);
   }
 
   // Checks if a tab item in the context menu should be disabled.

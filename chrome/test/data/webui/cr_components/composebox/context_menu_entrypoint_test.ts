@@ -299,6 +299,7 @@ suite('ContextMenuEntrypoint', () => {
     // Assert buttons are enabled initially.
     assertFalse(fileUploadButton.disabled);
     assertFalse(deepSearchButton.disabled);
+    assertFalse(createImageButton.disabled);
 
     // Set `inCreateImageMode` to true.
     entrypoint.inCreateImageMode = true;
@@ -307,23 +308,16 @@ suite('ContextMenuEntrypoint', () => {
     // Assert buttons are disabled.
     assertTrue(fileUploadButton.disabled);
     assertTrue(deepSearchButton.disabled);
-
-    // Click create image.
-    const eventFired = eventToPromise('create-image-click', entrypoint);
-    createImageButton.click();
-    await eventFired;
-
-    // Assert menu is closed.
-    assertFalse(entrypoint.$.menu.open);
+    assertTrue(createImageButton.disabled);
 
     // Set `inCreateImageMode` to false.
-    await openContextMenuWithSuggestions([]);
     entrypoint.inCreateImageMode = false;
     await entrypoint.updateComplete;
 
     // Assert buttons are enabled again.
     assertFalse(fileUploadButton.disabled);
     assertFalse(deepSearchButton.disabled);
+    assertFalse(createImageButton.disabled);
   });
 
   test('deep search mode disables contextual inputs', async () => {
@@ -492,6 +486,14 @@ suite('ContextMenuEntrypoint', () => {
     entrypoint.hasImageFiles = true;
     await microtasksFinished();
     assertFalse(createImageButton.disabled);
+    entrypoint.fileNum = 0;
+    entrypoint.hasImageFiles = false;
+    await microtasksFinished();
+
+    // Disabled in create image mode.
+    entrypoint.inCreateImageMode = true;
+    await microtasksFinished();
+    assertTrue(createImageButton.disabled);
   });
 
   test('tabs are disabled based on state', async () => {
