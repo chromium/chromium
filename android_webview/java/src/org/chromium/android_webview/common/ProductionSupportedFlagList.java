@@ -802,6 +802,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(NetworkServiceFeatures.NETWORK_SERVICE_TASK_SCHEDULER),
         Flag.baseFeature(NetworkServiceFeatures.NETWORK_SERVICE_PER_PRIORITY_TASK_QUEUES),
         Flag.baseFeature(NetFeatures.NET_TASK_SCHEDULER),
+        Flag.baseFeature(NetFeatures.NET_TASK_SCHEDULER2),
         Flag.baseFeature("BrowserThreadPoolAdjustment"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_DISABLE_CHIPS,
