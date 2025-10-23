@@ -1202,8 +1202,9 @@ void PrefetchService::OnGotEligibilityForRedirect(
 
   if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
     if (!check_streaming_loader()) {
-      // TODO(crbug.com/400761083): CHECK that the prefetch is actually already
-      // aborted, e.g. by CHECKing `prefetch_container->GetLoadState()`.
+      // TODO(crbug.com/400761083): Turn this into `CHECK_EQ()`.
+      DUMP_WILL_BE_CHECK_EQ(prefetch_container->GetLoadState(),
+                            PrefetchContainer::LoadState::kFailed);
       return;
     }
   }
