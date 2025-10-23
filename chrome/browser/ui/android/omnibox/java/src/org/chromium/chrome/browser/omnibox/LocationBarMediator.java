@@ -1360,7 +1360,8 @@ class LocationBarMediator
         if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()
                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 || mPageZoomIndicatorCoordinator == null
-                || getWebContentsForCurrentTab() == null) {
+                || getWebContentsForCurrentTab() == null
+                || mPageZoomIndicatorCoordinator.isZoomLevelDefault()) {
             return false;
         }
         return !mPageZoomIndicatorCoordinator.isZoomLevelDefault();

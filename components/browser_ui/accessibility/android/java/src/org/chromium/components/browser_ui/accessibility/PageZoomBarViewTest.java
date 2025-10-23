@@ -147,6 +147,11 @@ public class PageZoomBarViewTest {
 
                     @Override
                     public void enterImmersiveMode() {}
+
+                    @Override
+                    public boolean isCurrentTabNull() {
+                        return false;
+                    }
                 };
 
         ThreadUtils.runOnUiThreadBlocking(

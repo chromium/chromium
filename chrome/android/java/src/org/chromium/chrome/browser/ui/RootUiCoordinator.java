@@ -618,6 +618,11 @@ public class RootUiCoordinator
                                                 /* displayId= */ display.getDisplayId()));
                                 mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
                             }
+
+                            @Override
+                            public boolean isCurrentTabNull() {
+                                return mActivityTabProvider.get() == null;
+                            }
                         });
 
         mPageZoomBarCoordinator =

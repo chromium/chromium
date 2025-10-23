@@ -84,6 +84,10 @@ class PageZoomIndicatorMediator {
         return mManager.getZoomLevel() == mManager.getDefaultZoomLevel();
     }
 
+    boolean isCurrentTabNull() {
+        return mManager.isCurrentTabNull();
+    }
+
     PopupWindow buildPopupWindow(View view, OnDismissListener onDismissListener) {
         PropertyModelChangeProcessor.create(mModel, view, PageZoomIndicatorViewBinder::bind);
         PopupWindow popupWindow =

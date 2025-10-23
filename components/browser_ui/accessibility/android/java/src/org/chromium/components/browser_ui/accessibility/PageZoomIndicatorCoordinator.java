@@ -134,6 +134,7 @@ public class PageZoomIndicatorCoordinator {
      *     otherwise.
      */
     public boolean isZoomLevelDefault() {
+        if (mMediator.isCurrentTabNull()) return true;
         return mMediator.isZoomLevelDefault();
     }
 

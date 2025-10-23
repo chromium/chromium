@@ -40,4 +40,6 @@ public interface PageZoomManagerDelegate {
 
     /** Fullscreen the current tab. */
     void enterImmersiveMode();
+
+    boolean isCurrentTabNull();
 }

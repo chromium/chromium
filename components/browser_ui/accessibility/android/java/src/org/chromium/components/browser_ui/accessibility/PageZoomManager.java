@@ -131,6 +131,10 @@ public class PageZoomManager {
         mDelegate.enterImmersiveMode();
     }
 
+    public boolean isCurrentTabNull() {
+        return mDelegate.isCurrentTabNull();
+    }
+
     // Snaps the zoom level of the current WebContents to the zoom factor at the given index in the
     // cached available values.
     @VisibleForTesting
