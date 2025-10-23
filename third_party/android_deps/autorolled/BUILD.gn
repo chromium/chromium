@@ -458,6 +458,7 @@ template("define_autorolled_targets") {
           "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
           "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
           "//third_party/androidx:androidx_core_core_java",
+          "//third_party/androidx:androidx_customview_customview_java",
           "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
           "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java",
           "//third_party/androidx:androidx_fragment_fragment_java",
