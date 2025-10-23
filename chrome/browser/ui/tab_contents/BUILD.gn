@@ -88,6 +88,9 @@ source_set("impl") {
       "//chrome/browser/ui/views/side_panel",
     ]
   }
+  if (!is_android || is_desktop_android) {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
   if (enable_extensions) {
     deps += [ "//components/guest_view/browser" ]
   }

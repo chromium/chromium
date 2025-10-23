@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -58,13 +59,17 @@ SplitTabMenuModel::CommandId GetCommandIdEnum(int command_id) {
       command_id - ExistingBaseSubMenuModel::kMinSplitTabMenuModelCommandId);
 }
 
-Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* GetBrowserWithTabStripModel(
+    TabStripModel* tab_strip_model) {
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [tab_strip_model, &result](BrowserWindowInterface* browser) {
+        if (browser->GetTabStripModel() == tab_strip_model) {
+          result = browser;
+        }
+        return !result;
+      });
+  return result;
 }
 
 }  // namespace
@@ -262,7 +267,8 @@ void SplitTabMenuModel::CloseTabAtIndex(int index) {
 }
 
 void SplitTabMenuModel::SendFeedback() {
-  Browser* const browser = GetBrowserWithTabStripModel(tab_strip_model_);
+  BrowserWindowInterface* const browser =
+      GetBrowserWithTabStripModel(tab_strip_model_);
   CHECK(browser);
   chrome::ShowFeedbackPage(browser, feedback::kFeedbackSourceSplitView, "", "",
                            "split_view", "");
