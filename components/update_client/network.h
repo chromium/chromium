@@ -79,6 +79,9 @@ class NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       DownloadToFileCompleteCallback download_to_file_complete_callback) = 0;
+
+ protected:
+  NetworkFetcher() = default;
 };
 
 class NetworkFetcherFactory
