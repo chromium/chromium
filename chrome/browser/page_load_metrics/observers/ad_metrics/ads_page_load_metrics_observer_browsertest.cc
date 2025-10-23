@@ -2730,7 +2730,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verify that UKM metrics are recorded correctly.
 // TODO(crbug.com/436944391): test is failing on Windows bots.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/454351799): test is failing on ChromeOS bots.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecordedUKMMetrics DISABLED_RecordedUKMMetrics
 #else
 #define MAYBE_RecordedUKMMetrics RecordedUKMMetrics
