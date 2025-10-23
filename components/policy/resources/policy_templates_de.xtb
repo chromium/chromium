@@ -8604,7 +8604,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
 <translation id="6895437634974956885">Der Akkuzustand kann durch Faktoren wie häufiges vollständiges Aufladen und längere Ladezeiten beeinträchtigt werden. Diese Richtlinie bietet drei Optionen, das Ladeverhalten zu optimieren sowie diese Beeinträchtigungen zu minimieren und so letztendlich die Lebensdauer des Akkus zu verlängern.
 
-Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Ein/Aus-Schaltfläche für das adaptive Laden verwenden, um es zu aktivieren oder zu deaktivieren.
+Wenn die Richtlinie nicht konfiguriert ist, können Nutzer den Ein/Aus-Button für das adaptive Laden verwenden, um es zu aktivieren oder zu deaktivieren.
 
 Wenn die Richtlinie auf „1“ (Standard) gesetzt oder nicht konfiguriert ist, wird der Akku ganz normal auf 100 % aufgeladen. Dadurch werden das adaptive und das begrenzte Laden deaktiviert.
 
