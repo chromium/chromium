@@ -171,8 +171,11 @@ DatabaseError CreateDefaultError() {
 }  // namespace
 
 // TODO(crbug.com/40253999): Move to blink when needed there.
-BASE_FEATURE(kSqliteBackingStore,
-             "IdbSqliteBackingStore",
+// This flag unconditionally enables the SQLite backing store. Used for testing.
+BASE_FEATURE(kIdbSqliteBackingStore, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This flag enables the SQLite backing store for in-memory contexts.
+BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BucketContext::Delegate::Delegate()
@@ -206,7 +209,9 @@ BucketContext::BucketContext(
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
   should_use_sqlite_ = g_should_use_sqlite_for_testing.value_or(
-      base::FeatureList::IsEnabled(kSqliteBackingStore));
+      base::FeatureList::IsEnabled(kIdbSqliteBackingStore) ||
+      (in_memory() &&
+       base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
 }
 
 BucketContext::~BucketContext() {
