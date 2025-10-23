@@ -865,7 +865,6 @@ export class ComposeboxElement extends I18nMixinLit
           this.queryAutocomplete(/* clearMatches= */ true);
         } else {
           this.showDropdown_ = false;
-          this.clearAutocompleteMatches_();
         }
       }
 
