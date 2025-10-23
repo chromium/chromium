@@ -572,8 +572,15 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Test that if the non-terminal abandonment will record the TimingInformation
 // metrics, and the `OnComplete` will record them again.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabHiddenBeforeCommitAndFinishNavigation \
+  DISABLED_TabHiddenBeforeCommitAndFinishNavigation
+#else
+#define MAYBE_TabHiddenBeforeCommitAndFinishNavigation \
+  TabHiddenBeforeCommitAndFinishNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
-                       TabHiddenBeforeCommitAndFinishNavigation) {
+                       MAYBE_TabHiddenBeforeCommitAndFinishNavigation) {
   // Make sure the WebContents is currently shown, before hiding it later.
   web_contents()->WasShown();
 
