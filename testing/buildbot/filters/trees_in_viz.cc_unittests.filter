@@ -63,6 +63,7 @@
 -LayerTreeHostTestImageAnimationSynchronousScheduling.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestVideoLayerInvalidate.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestPushPropertiesRemovingChildStopsRecursionWithPersistence.RunMultiThread_DelegatingRenderer
+-SoftwareTextureLayerLoseFrameSinkTest.RunMultiThread_DelegatingRenderer
 
 # TODO(crbug.com/448683984) These tests fails with TreesInViz because the
 # tiling removal optimization during pinch zoom is disabled which might impact
