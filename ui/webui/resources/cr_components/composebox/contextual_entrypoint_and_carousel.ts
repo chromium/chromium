@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import './context_menu_entrypoint.js';
 import './file_carousel.js';
+import './recent_tab_chip.js';
 import './icons.html.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 

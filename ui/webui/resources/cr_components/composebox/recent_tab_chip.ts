@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import './composebox_tab_favicon.js';
+
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -39,9 +43,9 @@ export class RecentTabChipElement extends RecentTabChipBase {
 
   protected addTabContext_(e: Event) {
     e.stopPropagation();
-    if (!this.recentTab || this.inputsDisabled) {
-      return;
-    }
+    assert(this.recentTab);
+    assert(!this.inputsDisabled);
+
     this.fire('add-tab-context', {
       id: this.recentTab.tabId,
       title: this.recentTab.title,
