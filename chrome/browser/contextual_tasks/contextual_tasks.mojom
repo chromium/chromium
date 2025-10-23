@@ -4,6 +4,7 @@
 
 module contextual_tasks.mojom;
 
+import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
 
 // The interface that defines the webui (typescript/renderer) to browser process
@@ -13,6 +14,11 @@ interface PageHandler {
   // Provides a URL for an AI thread (e.g. with Gemini or search AI mode) to
   // the WebUI to load in the hosted webview element.
   GetThreadUrl() => (url.mojom.Url url);
+
+  // Gets a URL for the provided task ID. This method should primarily be used
+  // in the init flow for the feature, after a query is intercepted from UI like
+  // the omnibox and we don't yet have a thread ID.
+  GetUrlForTask(mojo_base.mojom.Uuid uuid) => (url.mojom.Url url);
 
   // Notify the browser when the UI is ready to show.
   ShowUi();

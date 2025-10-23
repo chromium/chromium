@@ -11,6 +11,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace base {
+class Uuid;
+}
+
 namespace content {
 class WebUI;
 }
@@ -37,6 +41,9 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   // Provides a URL for an AI thread to be loaded as part of the WebUI. A thread
   // is a series of queries and responses with a fixed context.
   void GetThreadUrl(GetThreadUrlCallback callback) override;
+
+  void GetUrlForTask(const base::Uuid& uuid,
+                     GetUrlForTaskCallback callback) override;
 
   void ShowUi() override;
 

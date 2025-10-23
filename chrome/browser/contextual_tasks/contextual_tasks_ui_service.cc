@@ -5,11 +5,17 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
@@ -29,7 +35,9 @@ bool IsContextualTasksHost(const GURL& url) {
 
 }  // namespace
 
-ContextualTasksUiService::ContextualTasksUiService() {
+ContextualTasksUiService::ContextualTasksUiService(
+    ContextualTasksContextController* context_controller)
+    : context_controller_(context_controller) {
   ai_page_host_ = GURL(kAiPageHost);
 }
 
@@ -38,7 +46,41 @@ ContextualTasksUiService::~ContextualTasksUiService() = default;
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
     content::WebContents* source_contents,
-    bool is_to_new_tab) {}
+    bool is_to_new_tab) {
+  CHECK(context_controller_);
+
+  // Create a task for the URL that was just intercepted.
+  ContextualTask task = context_controller_->CreateTaskFromUrl(url);
+
+  // Map the task ID to the a new URL that uses the base AI page URL with the
+  // query from the one that was intercepted. This is done so the UI knows
+  // which URL to load initially in the embedded frame.
+  std::string query;
+  net::GetValueForKeyInQuery(url, "q", &query);
+  GURL stripped_query_url(kAiDefaultPageUrl);
+  if (!query.empty()) {
+    stripped_query_url =
+        net::AppendQueryParameter(stripped_query_url, "q", query);
+  }
+  task_id_to_creation_url_[task.GetTaskId()] = stripped_query_url;
+
+  // Build a URL for contextual tasks that includes the task ID.
+  GURL ui_url(kContextualTasksUiUrl);
+  ui_url = net::AppendQueryParameter(ui_url, "task",
+                                     task.GetTaskId().AsLowercaseString());
+
+  if (!is_to_new_tab) {
+    source_contents->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(ui_url));
+  } else {
+    auto* profile =
+        Profile::FromBrowserContext(source_contents->GetBrowserContext());
+    NavigateParams params(profile, ui_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+    Navigate(&params);
+  }
+}
 
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
@@ -77,20 +119,40 @@ bool ContextualTasksUiService::HandleNavigation(
     if (is_nav_to_ai) {
       return false;
     }
-    OnThreadLinkClicked(navigation_url, source_contents);
+    // This needs to be posted in case the called method triggers a navigation
+    // in the same WebContents, invalidating the nav handle used up the chain.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksUiService::OnThreadLinkClicked,
+                       weak_ptr_factory_.GetWeakPtr(), navigation_url,
+                       source_contents));
     return true;
   }
 
   // Navigations to the AI URL in the topmost frame should always be
   // intercepted.
   if (is_nav_to_ai) {
-    OnNavigationToAiPageIntercepted(navigation_url, source_contents,
-                                    is_to_new_tab);
+    // This needs to be posted in case the called method triggers a navigation
+    // in the same WebContents, invalidating the nav handle used up the chain.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ContextualTasksUiService::OnNavigationToAiPageIntercepted,
+            weak_ptr_factory_.GetWeakPtr(), navigation_url, source_contents,
+            is_to_new_tab));
     return true;
   }
 
   // Allow anything else.
   return false;
+}
+
+GURL ContextualTasksUiService::GetInitialUrlForTask(const base::Uuid& uuid) {
+  auto it = task_id_to_creation_url_.find(uuid);
+  if (it != task_id_to_creation_url_.end()) {
+    return it->second;
+  }
+  return GURL();
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {

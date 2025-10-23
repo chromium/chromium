@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
+#include "base/test/task_environment.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +28,7 @@ constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
 // implementation with the events being mocked.
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
-  MockUiServiceForUrlIntercept() = default;
+  MockUiServiceForUrlIntercept() : ContextualTasksUiService(nullptr) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
@@ -51,6 +52,7 @@ class ContextualTasksUiServiceTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
 };
 
@@ -65,6 +67,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       navigated_url, host_web_content_url, nullptr, false));
+  task_environment_.RunUntilIdle();
 }
 
 // Ensure we're not intercepting a link when it doesn't meet any of our
@@ -75,6 +78,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kTestUrl), GURL("https://example.com/foo"), nullptr, false));
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
@@ -83,6 +87,7 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kTestUrl), GURL("https://google.com/maps?udm=50"), nullptr, false));
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
@@ -94,6 +99,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
       .Times(1);
   EXPECT_TRUE(
       service_for_nav_->HandleNavigation(ai_url, tab_url, nullptr, false));
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
@@ -104,6 +110,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
       .Times(1);
   EXPECT_TRUE(
       service_for_nav_->HandleNavigation(ai_url, GURL(), nullptr, false));
+  task_environment_.RunUntilIdle();
 }
 
 // The AI page is allowed to load as long as it is part of the WebUI.
@@ -115,6 +122,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kAiPageUrl), GURL(webui_url), nullptr, false));
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace contextual_tasks

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './contextual_tasks.mojom-webui.js';
@@ -11,6 +12,7 @@ let instance: BrowserProxy|null = null;
 export interface BrowserProxy {
   getCallbackRouter(): PageCallbackRouter;
   getThreadUrl(): Promise<{url: Url}>;
+  getUrlForTask(uuid: Uuid): Promise<{url: Url}>;
   showUi(): void;
 }
 
@@ -34,6 +36,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getThreadUrl() {
     return this.handler.getThreadUrl();
+  }
+
+  getUrlForTask(uuid: Uuid) {
+    return this.handler.getUrlForTask(uuid);
   }
 
   showUi() {

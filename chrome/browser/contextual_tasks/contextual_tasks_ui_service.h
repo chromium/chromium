@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 
+#include <map>
+
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
+
+namespace base {
+class Uuid;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -15,12 +22,15 @@ class WebContents;
 
 namespace contextual_tasks {
 
+class ContextualTasksContextController;
+
 // A service used to coordinate all of the side panel instances showing an AI
 // thread. Events like tab switching and Intercepted navigations from both the
 // sidepanel and omnibox will be routed here.
 class ContextualTasksUiService : public KeyedService {
  public:
-  ContextualTasksUiService();
+  explicit ContextualTasksUiService(
+      ContextualTasksContextController* context_controller);
   ContextualTasksUiService(const ContextualTasksUiService&) = delete;
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
   ~ContextualTasksUiService() override;
@@ -50,6 +60,10 @@ class ContextualTasksUiService : public KeyedService {
                                 content::WebContents* navigating_contents,
                                 bool is_to_new_tab);
 
+  // Returns the URL that a task was created for. Once this is retrieved, the
+  // entry is removed from the cache.
+  virtual GURL GetInitialUrlForTask(const base::Uuid& uuid);
+
   // Returns the URL for the default AI page. This is the URL that should be
   // loaded in the absence of any other context.
   virtual GURL GetDefaultAiPageUrl();
@@ -58,8 +72,19 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
+  raw_ptr<contextual_tasks::ContextualTasksContextController>
+      context_controller_;
+
   // The host of the AI page that is loaded into the WebUI.
   GURL ai_page_host_;
+
+  // Map a task's ID to the URL that was used to create it, if it exists. This
+  // is primarily used in init flows where the contextual tasks UI is
+  // intercepting a query from some other surface like the omnibox. The entry
+  // in this map is removed once the UI is loaded with the correct thread.
+  std::map<base::Uuid, GURL> task_id_to_creation_url_;
+
+  base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_tasks

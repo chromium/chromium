@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "content/public/browser/web_ui.h"
@@ -26,6 +27,11 @@ ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
 
 void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
   std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
+}
+
+void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
+                                               GetUrlForTaskCallback callback) {
+  std::move(callback).Run(ui_service_->GetInitialUrlForTask(uuid));
 }
 
 void ContextualTasksPageHandler::ShowUi() {

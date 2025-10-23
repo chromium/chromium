@@ -19,6 +19,7 @@ class BrowserContext;
 }  // namespace content
 
 inline constexpr char kContextualTasksUiHost[] = "contextual-tasks";
+inline constexpr char kContextualTasksUiUrl[] = "chrome://contextual-tasks/";
 
 class ContextualTasksUI : public TopChromeWebUIController,
                           public contextual_tasks::mojom::PageHandlerFactory,

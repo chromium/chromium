@@ -31,8 +31,17 @@ export class ContextualTasksAppElement extends CrLitElement {
   override async connectedCallback() {
     super.connectedCallback();
 
-    const {url} = await this.browserProxy_.getThreadUrl();
-    this.threadUrl_ = url.url;
+    // Check if the URL that loaded this page has a task attached to it. If it
+    // does, we'll use the tasks URL to load the embedded page.
+    const params = new URLSearchParams(window.location.search);
+    const taskUuid = params.get('task');
+    if (taskUuid) {
+      const {url} = await this.browserProxy_.getUrlForTask({value: taskUuid});
+      this.threadUrl_ = url.url;
+    } else {
+      const {url} = await this.browserProxy_.getThreadUrl();
+      this.threadUrl_ = url.url;
+    }
 
     // Tell the browser the WebUI is loaded and ready to show in side panel. If
     // the WebUI is loadded in a tab it's an no-op.
