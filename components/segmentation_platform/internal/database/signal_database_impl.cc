@@ -32,8 +32,6 @@
 namespace segmentation_platform {
 namespace {
 
-BASE_FEATURE(kSegmentationCompactionFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(shaktisahu): May be make this a class member for ease of testing.
 bool FilterKeyBasedOnRange(proto::SignalType signal_type,
                            uint64_t name_hash,
@@ -88,9 +86,7 @@ SignalDatabaseImpl::SignalDatabaseImpl(
       task_runner_(task_runner),
       clock_(clock),
       enable_signal_cache_(base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformSignalDbCache)),
-      should_fix_compaction_(
-          base::FeatureList::IsEnabled(kSegmentationCompactionFix)) {}
+          features::kSegmentationPlatformSignalDbCache)) {}
 
 SignalDatabaseImpl::~SignalDatabaseImpl() = default;
 
@@ -324,8 +320,7 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
   TRACE_EVENT("segmentation_platform",
               "SignalDatabaseImpl::OnGetSamplesForCompaction");
-  if (!success || !entries || entries->empty() ||
-      (should_fix_compaction_ && entries->size() == 1)) {
+  if (!success || !entries || entries->empty() || entries->size() == 1) {
     std::move(callback).Run(success);
     return;
   }
@@ -344,7 +339,7 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
 
     // If the database was already compacted, and some entry was added with
     // older timestamp, then append signals, and do not delete the key.
-    if (!(should_fix_compaction_ && pair.first == compact_key)) {
+    if (pair.first != compact_key) {
       keys_to_delete->emplace_back(pair.first);
     }
   }

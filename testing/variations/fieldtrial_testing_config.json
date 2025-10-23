@@ -22828,21 +22828,6 @@
             ]
         }
     ],
-    "SegmentationCompactionFix": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SegmentationCompactionFix"
-                    ]
-                }
-            ]
-        }
-    ],
     "SegmentationPlatformURLVisitResumptionRanker": [
         {
             "platforms": [
