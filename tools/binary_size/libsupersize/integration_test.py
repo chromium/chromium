@@ -42,6 +42,8 @@ _TEST_APK_PAK_SUBPATH = 'assets/resources.pak'
 _TEST_APK_LOCALE_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR,
                                          _TEST_APK_LOCALE_PAK_SUBPATH)
 _TEST_APK_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, _TEST_APK_PAK_SUBPATH)
+_TEST_APK_ARSC_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'resources.arsc')
+_TEST_APK_RTXT_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'R.txt')
 _TEST_ON_DEMAND_MANIFEST_PATH = os.path.join(_TEST_DATA_DIR,
                                              'AndroidManifest_OnDemand.xml')
 _TEST_ALWAYS_INSTALLED_MANIFEST_PATH = os.path.join(
@@ -136,6 +138,7 @@ class IntegrationTest(unittest.TestCase):
       elf_file.write(IntegrationTest._CreateBlankData(27))
 
     with zipfile.ZipFile(_TEST_APK_PATH, 'w') as apk_file:
+      apk_file.write(_TEST_APK_ARSC_PATH, 'resources.arsc')
       apk_file.write(_TEST_ELF_PATH, _TEST_APK_SO_PATH)
       # Exactly 4MB of data (2^22), with some zipalign overhead.
       info = zipfile.ZipInfo(_TEST_APK_SMALL_SO_PATH)
@@ -190,12 +193,13 @@ class IntegrationTest(unittest.TestCase):
                      use_minimal_apks=False,
                      use_pak=False,
                      use_aux_elf=False,
+                     use_rtxt=False,
                      ignore_linker_map=False):
     assert not use_elf or use_output_directory
     assert not (use_apk and use_pak)
     assert not (use_apk and use_minimal_apks)
     cache_key = (use_output_directory, use_elf, use_apk, use_minimal_apks,
-                 use_pak, use_aux_elf, ignore_linker_map)
+                 use_pak, use_aux_elf, use_rtxt, ignore_linker_map)
     if cache_key not in IntegrationTest.cached_size_info:
       output_directory = _TEST_OUTPUT_DIR if use_output_directory else None
 
@@ -224,6 +228,8 @@ class IntegrationTest(unittest.TestCase):
           apk_spec.path_defaults = _TEST_PATH_DEFAULTS
           apk_spec.ignore_apk_paths.update(
               ['classes.dex', _TEST_APK_SO_PATH, _TEST_APK_SMALL_SO_PATH])
+          if use_rtxt:
+            apk_spec.rtxt_path = _TEST_APK_RTXT_PATH
           if output_directory:
             orig_path = _TEST_APK_PATH
             if use_minimal_apks:
@@ -288,6 +294,8 @@ class IntegrationTest(unittest.TestCase):
                 apk_path=apk_path,
                 split_name=split_name,
                 size_info_prefix=apk_spec.size_info_prefix)
+            if use_rtxt:
+              apk_spec.rtxt_path = _TEST_APK_RTXT_PATH
             container_name = 'Bundle.minimal.apks/%s.apk' % split_name
             if split_name == 'on_demand':
               container_name += '?'
@@ -321,6 +329,7 @@ class IntegrationTest(unittest.TestCase):
                  use_minimal_apks=False,
                  use_pak=False,
                  use_aux_elf=None,
+                 use_rtxt=False,
                  ignore_linker_map=False,
                  debug_measures=False):
     args = [
@@ -353,6 +362,8 @@ class IntegrationTest(unittest.TestCase):
       args += ['--pak-file', _TEST_APK_LOCALE_PAK_PATH,
                '--pak-file', _TEST_APK_PAK_PATH,
                '--pak-info-file', _TEST_PAK_INFO_PATH]
+    if use_rtxt:
+      args += ['--rtxt-file', _TEST_APK_RTXT_PATH]
 
     if ignore_linker_map:
       args += ['--no-map-file']
@@ -388,6 +399,7 @@ class IntegrationTest(unittest.TestCase):
                      use_minimal_apks=False,
                      use_pak=False,
                      use_aux_elf=False,
+                     use_rtxt=False,
                      ignore_linker_map=False,
                      debug_measures=False):
     with tempfile.NamedTemporaryFile(suffix='.size') as temp_file:
@@ -399,6 +411,7 @@ class IntegrationTest(unittest.TestCase):
                       use_minimal_apks=use_minimal_apks,
                       use_pak=use_pak,
                       use_aux_elf=use_aux_elf,
+                      use_rtxt=use_rtxt,
                       ignore_linker_map=ignore_linker_map,
                       debug_measures=debug_measures)
       size_info = archive.LoadAndPostProcessSizeInfo(temp_file.name)
@@ -410,6 +423,7 @@ class IntegrationTest(unittest.TestCase):
         use_minimal_apks=use_minimal_apks,
         use_pak=use_pak,
         use_aux_elf=use_aux_elf,
+        use_rtxt=use_rtxt,
         ignore_linker_map=ignore_linker_map)
     if use_minimal_apks:
       self._FixupExpectedSizeInfoForMinimalApks(expected_size_info)
@@ -451,6 +465,10 @@ class IntegrationTest(unittest.TestCase):
   @_CompareWithGolden()
   def test_Archive_Apk(self):
     return self._DoArchiveTest(use_apk=True, use_aux_elf=True)
+
+  @_CompareWithGolden()
+  def test_Archive_Apk_Rtxt(self):
+    return self._DoArchiveTest(use_apk=True, use_aux_elf=True, use_rtxt=True)
 
   @_CompareWithGolden()
   def test_Archive_MinimalApks(self):

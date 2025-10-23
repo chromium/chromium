@@ -17,6 +17,7 @@ import dataclasses
 import logging
 import functools
 import os
+import re
 import struct
 import sys
 import zipfile
@@ -725,17 +726,49 @@ class ArscFile:
         stack.pop()
 
 
-def _DumpArscChunks(arsc_data):
+def ParseRtxt(path):
+  """Given an R.txt file, returns {id -> name}."""
+  # Examples:
+  # int anim abc_popup_exit 0x7f020004
+  # int[] styleable ActionMode { 0x7f050099, 0x7f0500a0, 0x7f05018a, 0x7f050383, 0x7f0506b3, 0x7f050780 }
+  # int styleable ActionMode_background 0
+
+  # We care only about names and values (not styleables).
+  pattern = re.compile(r'^.*? (\w+) 0x(.+)', re.MULTILINE)
+  with open(path, encoding='utf-8') as f:
+    data = f.read()
+  return {int(m.group(2), 16): m.group(1) for m in pattern.finditer(data)}
+
+
+def _DumpArscChunks(arsc_data, names_by_id):
   arsc_file = ArscFile(arsc_data)
+  package_id = None
   for _, chunk in arsc_file.VisitPreOrder():
     print(str(chunk))
+    if isinstance(chunk, ArscResTablePackage):
+      package_id = chunk.id
+    elif isinstance(chunk, ArscResTableTypeSpec) and names_by_id:
+      for i in range(chunk.entry_count):
+        res_id = package_id << 24 | chunk.id << 16 | i
+        print(f'- {chunk.type_str}:', names_by_id.get(res_id, '<unnamed>'))
 
 
 def main():
   parser = argparse.ArgumentParser(description='Dump ARSC contents to stdout.')
+  parser.add_argument('--rtxt-path', help='R.txt that maps IDs -> names')
   parser.add_argument('input',
                       help='Input (.arsc, .apk, .jar, .zip) file path.')
   args = parser.parse_args()
+
+  if not args.rtxt_path:
+    candidate = f'{args.input}.R.txt'
+    if os.path.exists(candidate):
+      args.rtxt_path = candidate
+
+  names_by_id = None
+  if args.rtxt_path:
+    names_by_id = ParseRtxt(args.rtxt_path)
+
 
   if os.path.splitext(args.input)[1] in ('.apk', '.jar', '.zip'):
     with zipfile.ZipFile(args.input) as z:
@@ -746,11 +779,11 @@ def main():
         print('Error: {} does not contain .arsc files.'.format(args.input))
         sys.exit(1)
       for path in arsc_file_paths:
-        _DumpArscChunks(z.read(path))
+        _DumpArscChunks(z.read(path), names_by_id)
 
   else:
     with open(args.input, 'rb') as fh:
-      _DumpArscChunks(fh.read())
+      _DumpArscChunks(fh.read(), names_by_id)
 
 
 if __name__ == '__main__':
