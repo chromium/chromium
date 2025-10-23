@@ -13,6 +13,7 @@
 
 #include <utility>
 
+#include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -284,21 +285,28 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     }
   }
 
-  // If not (or if the SharedImage provider fails), fall back to software.
-  auto resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-      gfx::Size(dest_size.width(), dest_size.height()),
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
-      dest_alpha_type, SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
-      CanvasResourceProvider::ShouldInitialize::kNo);
-  if (!resource_provider) {
+  // If unable to create an accelerated snapshot, fall back to software. NOTE:
+  // The spec requires that any pixels not copied from the source be transparent
+  // black in the destination image. Thus, it is necessary that the destination
+  // here be premul (i.e., preserve the initial transparency of the destination
+  // image before the copy from the source), regardless of whether the source is
+  // premul or opaque.
+  SkSurfaceProps surface_props;
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(
+      SkImageInfo::Make(dest_size.width(), dest_size.height(), dest_color_type,
+                        kPremul_SkAlphaType, std::move(dest_color_space)),
+      &surface_props);
+  if (!surface) {
     return nullptr;
   }
 
   // Perform the blit and return the drawn resource.
-  BlitToCanvas(resource_provider->Canvas(), source_paint_image,
-               source_orientation, SkRect::Make(source_rect), dest_size,
-               options);
-  return resource_provider->Snapshot(flush_reason, source_orientation);
+  cc::SkiaPaintCanvas canvas(surface->getCanvas());
+  BlitToCanvas(canvas, source_paint_image, source_orientation,
+               SkRect::Make(source_rect), dest_size, options);
+  canvas.flush();
+  return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot(),
+                                                source_orientation);
 }
 
 // Apply the transformations indicated in `options` on `source`, and return the
