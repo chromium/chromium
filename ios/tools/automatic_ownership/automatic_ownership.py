@@ -4,30 +4,14 @@
 # found in the LICENSE file.
 """Automatic Ownership Calculator.
 
-This script analyzes the git history of a specified directory (by default,
-'ios/') to automatically determine potential code owners for each
-sub-directory.
+This script analyzes pre-collected git history and OWNERS data to automatically
+determine potential code owners for each sub-directory.
 
 Usage:
     python3 automatic_ownership.py [path]
 
     [path]: Optional. The root directory to start the analysis from.
             Defaults to 'ios'.
-
-The script works in two main phases:
-1. Data Collection: It fetches the last two years of git history and git blame
-   information for the specified path. This is done in parallel for efficiency.
-2. Analysis: It walks through each subdirectory and applies one of two
-   algorithms to determine ownership:
-    a) Z-Score Analysis: For directories with a rich commit history (more than
-       5 commits), it calculates a weighted score for each author/reviewer and
-       identifies statistical outliers as owners.
-    b) Git Blame Fallback: For directories with sparse history, it falls back
-       to analyzing `git blame` output to find the authors who have written the
-       most lines of code.
-
-The final output is a CSV file named `final_algo.csv` containing the suggested
-owners for each directory.
 """
 
 import argparse
@@ -40,61 +24,11 @@ import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from commit import Commit
 from filters import avoid_directory, avoid_file, avoid_username
-from gitutils import get_commits_in_folder_in_period, get_blame_for_file
+from gitutils import get_blame_for_file, split_log_into_commits
 
 MONTH = 30
 YEAR = 12 * MONTH
 TWO_YEARS = 2 * YEAR
-
-
-def get_dates_range() -> list[tuple[datetime.date, datetime.date]]:
-    """Generates a list of monthly date ranges spanning the last two years.
-
-    Returns:
-        A list of tuples, where each tuple contains the start and end date
-        for a one-month period.
-    """
-    dates_range = []
-    date_start = datetime.date.today()
-    date_end = date_start - datetime.timedelta(TWO_YEARS)
-    while date_start > date_end:
-        end = date_start
-        begin = date_start - datetime.timedelta(MONTH)
-        date_start = begin
-        dates_range.append((begin, end))
-    return dates_range
-
-
-def get_existing_owners(root_directory: str) -> dict[str, set[str]]:
-    """Walks a directory to find all OWNERS files and parse them.
-
-    Args:
-        root_directory: The directory to start the search from.
-
-    Returns:
-        A dictionary mapping directory paths to a set of owner usernames.
-        `per-file` entries in OWNERS files are ignored.
-        `file:` entries are ignored.
-        `set noparent` directives are ignored.
-    """
-    owners_map = {}
-    for root, _, files in os.walk(root_directory):
-        if 'OWNERS' in files:
-            owners_path = os.path.join(root, 'OWNERS')
-            with open(owners_path, 'r') as f:
-                owners = set()
-                for line in f:
-                    line = line.strip()
-                    if not line or line.startswith(('#', 'per-file', 'file:',
-                                                    'set noparent')):
-                        continue
-                    # Extract username from email format.
-                    if '@' in line:
-                        owners.add(line.split('@')[0])
-                if owners:
-                    owners_map[os.path.relpath(
-                        root, root_directory)] = owners
-    return owners_map
 
 
 def is_high_level_owner(reviewer: str, path: str,
@@ -123,41 +57,6 @@ def is_high_level_owner(reviewer: str, path: str,
 def progress_indicator(future) -> None:
     """Simple progress indicator callback function for multi-process calls."""
     print('.', end='', flush=True)
-
-
-def get_all_commits_of_folder(path: str, quiet: bool = False) -> list[str]:
-    """Retrieves all raw commit logs for a folder over the last two years.
-
-    This function parallelizes the git log calls by splitting the time period
-    into monthly chunks.
-
-    Args:
-        path: The directory to retrieve commit logs for.
-        quiet: If True, suppresses progress indicators.
-
-    Returns:
-        A list of raw commit description strings.
-    """
-    commits = []
-    executor = ProcessPoolExecutor()
-    # Dispatch tasks into the process pool and create a list of futures.
-    futures = [
-        executor.submit(get_commits_in_folder_in_period, path, dates)
-        for dates in get_dates_range()
-    ]
-    if not quiet:
-        # Register the progress indicator callback.
-        for future in futures:
-            future.add_done_callback(progress_indicator)
-    # Iterate over all submitted tasks and get results as they are available.
-    for future in as_completed(futures):
-        # Get the result for the next completed task.
-        result = future.result()  # blocks
-        if result:
-            commits += result
-    # Shutdown the process pool.
-    executor.shutdown(wait=True)  # blocks
-    return commits
 
 
 def extract_commits_informations(commits: list[str],
@@ -341,7 +240,6 @@ def determine_owners_from_git_blame_informations(
             owners.append(username)
     return owners
 
-
 def determine_owners_from_git_blame(root: str, files: list[str],
                                     last_update: datetime,
                                     quiet: bool = False) -> list[str]:
@@ -371,7 +269,6 @@ def determine_owners_from_git_blame(root: str, files: list[str],
     stats, lines_count = extract_blame_informations(lines)
     return determine_owners_from_git_blame_informations(stats, lines_count)
 
-
 def determine_owners_from_zscore(stats: dict) -> list[str]:
     """Determines owners from commit stats using Z-Score analysis.
 
@@ -400,7 +297,7 @@ def determine_owners_from_zscore(stats: dict) -> list[str]:
             total_commit_count) if total_commit_count > 0 else 0
         normalized_review_count = (
             individual_stats[username]['review_count'] /
-            total_review_count) if total_review_count > 0 else 0
+            total_review_count) if total_commit_count > 0 else 0
         individual_score[username] = (0.6 * normalized_commit_count) + (
             0.4 * normalized_review_count)
 
@@ -432,6 +329,16 @@ if __name__ == '__main__':
         default='ios',
         help="The root directory to start the analysis from. Default: 'ios'.")
     parser.add_argument(
+        '--commits-input-file',
+        default='commits.log',
+        help="The path to the input file for commit logs. "
+        "Defaults to 'commits.log'.")
+    parser.add_argument(
+        '--owners-input-file',
+        default='owners.json',
+        help="The path to the input file for the OWNERS map. "
+        "Defaults to 'owners.json'.")
+    parser.add_argument(
         '--output-file',
         default='final_algo.csv',
         help="The path to the output CSV file. Defaults to 'final_algo.csv'.")
@@ -442,15 +349,23 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     root_folder = args.root_directory
+    commits_input_file = args.commits_input_file
+    owners_input_file = args.owners_input_file
     output_file = args.output_file
     quiet_mode = args.quiet
     owner_exclusion = not args.disable_owner_exclusion
 
-    # Pre-computation: Build owners map
-    owners_map = get_existing_owners(root_folder)
+    # Load pre-collected data.
+    with open(owners_input_file, 'r') as f:
+        owners_map = json.load(f)
+    # Convert lists back to sets.
+    owners_map = {k: set(v) for k, v in owners_map.items()}
 
-    # Phase 1: Data Collection
-    commits = get_all_commits_of_folder(root_folder, quiet=quiet_mode)
+    with open(commits_input_file, 'r') as f:
+        commit_log = f.read()
+    commits = split_log_into_commits(commit_log)
+
+    # Phase 1: Data Analysis
     stats_per_folder = extract_commits_informations(commits,
                                                     owners_map,
                                                     owner_exclusion,
@@ -460,7 +375,7 @@ if __name__ == '__main__':
     with open(output_file, 'w') as f:
         pass
 
-    # Phase 2: Analysis and Ownership Calculation
+    # Phase 2: Ownership Calculation
     steps = len(stats_per_folder)
     step_count = 0
     for root, dirs, files in os.walk(root_folder):

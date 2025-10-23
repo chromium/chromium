@@ -4,7 +4,8 @@
 # found in the LICENSE file.
 
 import unittest
-from filters import avoid_file, avoid_directory, avoid_commit, avoid_username
+from filters import (avoid_file, avoid_directory, avoid_commit, avoid_username,
+                       avoid_owner_line)
 
 
 class FiltersTest(unittest.TestCase):
@@ -62,6 +63,24 @@ class FiltersTest(unittest.TestCase):
                         "Bot usernames should be avoided.")
         self.assertFalse(avoid_username('testuser'),
                          "Human usernames should not be avoided.")
+
+    def test_avoid_owner_line(self):
+        """Tests the avoid_owner_line function."""
+        self.assertTrue(avoid_owner_line('# This is a comment'),
+                        "Comment lines should be filtered.")
+        self.assertTrue(avoid_owner_line(''),
+                        "Empty lines should be filtered.")
+        self.assertTrue(avoid_owner_line('  '),
+                        "Whitespace-only lines should be filtered.")
+        self.assertTrue(avoid_owner_line('set noparent'),
+                        "'set noparent' lines should be filtered.")
+        self.assertTrue(
+            avoid_owner_line('per-file *.cc=user@chromium.org'),
+            "'per-file' lines should be filtered.")
+        self.assertFalse(avoid_owner_line('user@chromium.org'),
+                         "Valid owner lines should not be filtered.")
+        self.assertFalse(avoid_owner_line('  user@chromium.org  '),
+                         "Valid owner lines should not be filtered.")
 
 
 if __name__ == '__main__':

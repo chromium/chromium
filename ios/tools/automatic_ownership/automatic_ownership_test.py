@@ -8,8 +8,8 @@ import shutil
 import tempfile
 import unittest
 
+from data_collector import get_existing_owners
 from automatic_ownership import (
-    get_existing_owners,
     is_high_level_owner,
     extract_commits_informations,
     determine_owners_from_zscore

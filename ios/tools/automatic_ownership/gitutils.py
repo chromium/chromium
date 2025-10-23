@@ -7,6 +7,11 @@ import datetime
 import subprocess
 
 
+import datetime
+import re
+import subprocess
+
+
 def split_log_into_commits(log_output: str) -> list[str]:
     """Splits a raw git log output string into a list of individual commits.
 
@@ -17,13 +22,15 @@ def split_log_into_commits(log_output: str) -> list[str]:
         A list of strings, where each string is the raw text of a single
         commit. It filters out any empty strings that result from the split.
     """
-    # The log is split by 'commit', and the first element is often empty.
-    commits = log_output.split('commit')
+    # Split by the "commit <hash>" line, but keep the delimiter as part of the
+    # next commit. A positive lookahead `(?=^commit\s)` is used to split
+    # without consuming the delimiter. The `re.MULTILINE` flag is crucial.
+    commits = re.split(r'^(?=commit\s)', log_output.strip(), flags=re.MULTILINE)
     return [commit.strip() for commit in commits if commit.strip()]
 
 
 def get_commits_in_folder_in_period(path: str,
-                                    date_range: tuple[datetime]) -> list[str]:
+                                    date_range: tuple[datetime]) -> str:
     """Executes `git log` to retrieve commit descriptions for a given path.
 
     Args:
@@ -31,8 +38,8 @@ def get_commits_in_folder_in_period(path: str,
         date_range: A tuple containing the start and end datetime objects.
 
     Returns:
-        A list of strings, where each string is the raw text of a single
-        commit description. Returns None if the git command fails.
+        A raw string of the git log output. Returns None if the git command
+        fails.
     """
     try:
         begin, end = date_range
@@ -41,10 +48,9 @@ def get_commits_in_folder_in_period(path: str,
         print('Get commits from ' + begin + ' to ' + end)
         git_log_command = ('git log --stat=500 --after=' + begin +
                            ' --before=' + end + ' -- ' + path).split()
-        log_output = subprocess.check_output(
+        return subprocess.check_output(
             git_log_command,
             stderr=subprocess.STDOUT).decode("utf-8")
-        return split_log_into_commits(log_output)
     except subprocess.CalledProcessError as e:
         print("Exception on process, rc=", e.returncode, "output=", e.output)
         return None

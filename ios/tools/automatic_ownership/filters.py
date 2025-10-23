@@ -148,3 +148,20 @@ def avoid_username(username: str) -> bool:
         'skylab-test-cros-roller',
     ]
     return username in username_to_ignore
+
+
+def avoid_owner_line(line: str) -> bool:
+    """Checks if a line from an OWNERS file should be filtered out.
+
+    This function is used to filter out lines that are not relevant for
+    determining code ownership, such as comments, 'set noparent' directives,
+    and 'per-file' rules.
+
+    Args:
+        line: The line from the OWNERS file to check.
+
+    Returns:
+        True if the line should be filtered out, False otherwise.
+    """
+    line = line.strip()
+    return not line or line.startswith(('#', 'set noparent', 'per-file'))
