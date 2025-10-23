@@ -72,6 +72,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
                const GURL&,
                std::optional<size_t>));
   MOCK_METHOD(void,
+              AddUrl,
+              (const base::Uuid&, const std::u16string&, const GURL&));
+  MOCK_METHOD(void,
               NavigateTab,
               (const LocalTabGroupID&,
                const LocalTabID&,

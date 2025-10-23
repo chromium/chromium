@@ -41,6 +41,9 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
               const std::u16string& title,
               const GURL& url,
               std::optional<size_t> position) override;
+  void AddUrl(const base::Uuid& group_id,
+              const std::u16string& title,
+              const GURL& url) override;
   void NavigateTab(const LocalTabGroupID& group_id,
                    const LocalTabID& tab_id,
                    const GURL& url,

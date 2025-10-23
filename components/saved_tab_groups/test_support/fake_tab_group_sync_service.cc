@@ -144,6 +144,10 @@ void FakeTabGroupSyncService::AddTab(const LocalTabGroupID& group_id,
   NotifyObserversOfTabGroupUpdated(group);
 }
 
+void FakeTabGroupSyncService::AddUrl(const base::Uuid& group_id,
+                                     const std::u16string& title,
+                                     const GURL& url) {}
+
 void FakeTabGroupSyncService::NavigateTab(const LocalTabGroupID& group_id,
                                           const LocalTabID& tab_id,
                                           const GURL& url,

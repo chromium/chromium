@@ -99,6 +99,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
               const std::u16string& title,
               const GURL& url,
               std::optional<size_t> position) override;
+
+  void AddUrl(const base::Uuid& group_id,
+              const std::u16string& title,
+              const GURL& url) override;
+
   void NavigateTab(const LocalTabGroupID& group_id,
                    const LocalTabID& tab_id,
                    const GURL& url,
@@ -349,6 +354,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const SavedTabGroup& tab_group,
       OpeningSource opening_source,
       ClosingSource closing_source);
+
+  // Helper method for implementation shared by AddUrl and AddTab.
+  void AddTabInternal(SavedTabGroupTab tab, const SavedTabGroup* group);
 
   // Helper method called by NavigateTab() when UrlRestriction is retrieved.
   void NavigateTabInternal(

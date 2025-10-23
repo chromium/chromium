@@ -194,6 +194,13 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                       const std::u16string& title,
                       const GURL& url,
                       std::optional<size_t> position) = 0;
+
+  // Method to add a tab with the specified url and title
+  // to a saved tab group that is not open.
+  virtual void AddUrl(const base::Uuid& sync_id,
+                      const std::u16string& title,
+                      const GURL& url) = 0;
+
   virtual void RemoveTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id) = 0;
   virtual void MoveTab(const LocalTabGroupID& group_id,

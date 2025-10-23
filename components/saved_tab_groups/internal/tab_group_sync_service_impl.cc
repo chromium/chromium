@@ -529,22 +529,22 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
 
   SavedTabGroupTab new_tab(url, title, group->saved_guid(), position,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
-  new_tab.SetCreatorCacheGuid(
-      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
-  UpdateTabTitleIfNeeded(*group, new_tab, opt_guide_,
-                         stats::TitleSanitizationType::kAddTab);
+  AddTabInternal(std::move(new_tab), group);
+}
 
-  UpdateAttributions(group_id);
-  if (group->is_shared_tab_group()) {
-    std::optional<GaiaId> gaia_id =
-        sync_bridge_mediator_->GetTrackingGaiaIdForSharedBridge();
-    if (gaia_id.has_value()) {
-      new_tab.SetUpdatedByAttribution(std::move(gaia_id.value()));
-    }
+void TabGroupSyncServiceImpl::AddUrl(const base::Uuid& group_id,
+                                     const std::u16string& title,
+                                     const GURL& url) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  VLOG(2) << __func__;
+  const SavedTabGroup* group = model_->Get(group_id);
+  if (!group) {
+    return;
   }
-  model_->UpdateLastUserInteractionTimeLocally(group_id);
-  model_->AddTabToGroupLocally(group->saved_guid(), std::move(new_tab));
-  LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
+  SavedTabGroupTab new_tab(url, title, group->saved_guid(),
+                           /*position*/ std::nullopt);
+
+  AddTabInternal(std::move(new_tab), group);
 }
 
 void TabGroupSyncServiceImpl::NavigateTab(const LocalTabGroupID& group_id,
@@ -2015,6 +2015,40 @@ bool TabGroupSyncServiceImpl::TransitionOriginatingTabGroupToNewGroupIfNeeded(
   }
 
   return true;
+}
+
+void TabGroupSyncServiceImpl::AddTabInternal(SavedTabGroupTab tab,
+                                             const SavedTabGroup* group) {
+  tab.SetCreatorCacheGuid(
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+  UpdateTabTitleIfNeeded(*group, tab, opt_guide_,
+                         stats::TitleSanitizationType::kAddTab);
+
+  std::optional<LocalTabGroupID> local_group_id = group->local_group_id();
+
+  if (local_group_id) {
+    UpdateAttributions(*local_group_id);
+  }
+
+  if (group->is_shared_tab_group()) {
+    std::optional<GaiaId> gaia_id =
+        sync_bridge_mediator_->GetTrackingGaiaIdForSharedBridge();
+    if (gaia_id.has_value()) {
+      tab.SetUpdatedByAttribution(std::move(gaia_id.value()));
+    }
+  }
+
+  // TODO(crbug.com/454431783): Add support for these API calls with the
+  //  group sync ID. They currently only take local group IDs.
+  if (local_group_id) {
+    model_->UpdateLastUserInteractionTimeLocally(*local_group_id);
+  }
+
+  model_->AddTabToGroupLocally(group->saved_guid(), std::move(tab));
+
+  if (local_group_id) {
+    LogEvent(TabGroupEvent::kTabAdded, *local_group_id, std::nullopt);
+  }
 }
 
 void TabGroupSyncServiceImpl::NavigateTabInternal(

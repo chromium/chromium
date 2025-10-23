@@ -747,6 +747,35 @@ TEST_F(TabGroupSyncServiceImplTest, RemoveLocalTabGroupMapping) {
   // TODO
 }
 
+TEST_F(TabGroupSyncServiceImplTest, AddUrl) {
+  base::HistogramTester histogram_tester;
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_2_.saved_guid());
+
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(2u, group->saved_tabs().size());
+
+  std::u16string tab_title = u"testaddurl";
+  GURL tab_url = GURL("www.google.com");
+
+  tab_group_sync_service_->AddUrl(group_2_.saved_guid(), tab_title, tab_url);
+
+  group = tab_group_sync_service_->GetGroup(group_2_.saved_guid());
+  ASSERT_EQ(3u, group->saved_tabs().size());
+
+  const SavedTabGroupTab& tab = group->saved_tabs()[2];
+
+  EXPECT_EQ(tab.title(), tab_title);
+  EXPECT_EQ(tab.url(), tab_url);
+  EXPECT_EQ(tab.saved_group_guid(), group_2_.saved_guid());
+  EXPECT_EQ(tab.position(), 2);
+  histogram_tester.ExpectTotalCount(
+      "TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin", 0u);
+
+  VerifyCacheGuids(*group, nullptr, kTestCacheGuid, std::nullopt, std::nullopt,
+                   std::nullopt);
+}
+
 TEST_F(TabGroupSyncServiceImplTest, AddTab) {
   base::HistogramTester histogram_tester;
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
@@ -760,12 +789,10 @@ TEST_F(TabGroupSyncServiceImplTest, AddTab) {
 
   group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group.has_value());
-  EXPECT_EQ(2u, group->saved_tabs().size());
+  ASSERT_EQ(2u, group->saved_tabs().size());
+
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin", 1u);
-
-  VerifyCacheGuids(*group, nullptr, kTestCacheGuid, kTestCacheGuid,
-                   std::nullopt, std::nullopt);
 }
 
 // Tests that adding a tab to a shared group.
