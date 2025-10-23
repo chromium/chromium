@@ -1,0 +1,11 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/C/#the-sessionstorage-attribute
+[
+    ImplementedAs=DOMWindowStorage
+] interface mixin WindowSessionStorage {
+  [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage sessionStorage;
+};
+Window includes WindowSessionStorage;
