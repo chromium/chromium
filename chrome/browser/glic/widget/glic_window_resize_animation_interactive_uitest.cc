@@ -59,7 +59,9 @@ bool PlatformSupportsScreenCoordinates() {
 // these animations can be affected by the widget's minimum size (the same as
 // the initial size at the time of writing) and by logic that repositions the
 // widget to be entirely on screen.
-class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
+// Disabled due to high flake rate; see https://crbug.com/454354287.
+class DISABLED_GlicWindowResizeAnimationTest
+    : public test::InteractiveGlicTest {
  public:
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
@@ -114,7 +116,8 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
 };
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
+IN_PROC_BROWSER_TEST_F(DISABLED_GlicWindowResizeAnimationTest,
+                       ExpandsWidgetSize) {
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -137,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
   EXPECT_EQ(test_new_bounds.size(), GetWidgetBounds().size());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
+IN_PROC_BROWSER_TEST_F(DISABLED_GlicWindowResizeAnimationTest,
+                       ShrinksWidgetSize) {
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -165,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
   EXPECT_EQ(test_new_bounds, GetWidgetBounds());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_GlicWindowResizeAnimationTest,
                        MovesAndChangesWidgetSize) {
   if (!PlatformSupportsScreenCoordinates()) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
@@ -186,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
   EXPECT_EQ(test_new_bounds, GetWidgetBounds());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetPosition) {
+IN_PROC_BROWSER_TEST_F(DISABLED_GlicWindowResizeAnimationTest,
+                       UpdateTargetPosition) {
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -218,7 +223,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetPosition) {
             GetWidgetBounds());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetSize) {
+IN_PROC_BROWSER_TEST_F(DISABLED_GlicWindowResizeAnimationTest,
+                       UpdateTargetSize) {
   gfx::Rect initial_bounds = GetWidgetBounds();
   gfx::Rect target_bounds_1(100, 100, 400, 400);
 
@@ -240,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetSize) {
             GetWidgetBounds());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, AllCallbacksRunInOrder) {
+IN_PROC_BROWSER_TEST_F(DISABLED_GlicWindowResizeAnimationTest,
+                       AllCallbacksRunInOrder) {
   gfx::Rect initial_bounds = GetWidgetBounds();
   gfx::Rect target_bounds_1(initial_bounds.origin(), {400, 400});
 
