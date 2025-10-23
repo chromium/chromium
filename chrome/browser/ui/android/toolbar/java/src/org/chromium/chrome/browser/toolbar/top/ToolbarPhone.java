@@ -2055,8 +2055,8 @@ public class ToolbarPhone extends ToolbarLayout
             params.height =
                     hasFocus
                             ? LayoutParams.WRAP_CONTENT
-                            : getResources()
-                                    .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                            : getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                                    + mTopPaddingForEdgeToEdgeNtp;
             setLayoutParams(params);
         }
 
