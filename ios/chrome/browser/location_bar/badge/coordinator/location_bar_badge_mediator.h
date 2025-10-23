@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_visibility_delegate.h"
-#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 
 @protocol LocationBarBadgeConsumer;
@@ -18,7 +17,6 @@
 // TODO(crbug.com/445719031): Implement this.
 @interface LocationBarBadgeMediator
     : NSObject <BadgeViewVisibilityDelegate,
-                ContextualPanelEntrypointVisibilityDelegate,
                 IncognitoBadgeViewVisibilityDelegate,
                 ReaderModeChipVisibilityDelegate>
 

@@ -15,12 +15,6 @@
   [self.consumer setBadge:LocationBarBadgeType::kBadgeView hidden:hidden];
 }
 
-#pragma mark - ContextualPanelEntrypointVisibilityDelegate
-
-- (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
-  [self.consumer setBadge:LocationBarBadgeType::kContextualPanel hidden:hidden];
-}
-
 #pragma mark - IncognitoBadgeViewVisibilityDelegate
 
 - (void)setIncognitoBadgeViewHidden:(BOOL)hidden {

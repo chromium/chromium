@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 
 @interface LocationBarBadgeCoordinator () <
@@ -43,7 +44,9 @@
 - (void)start {
   _viewController = [[LocationBarBadgeViewController alloc] init];
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
-  [self createContextualPanelEntryPointMediator];
+  if (IsContextualPanelEnabled()) {
+    [self createContextualPanelEntryPointMediator];
+  }
   _locationBarBadgeMediator = [[LocationBarBadgeMediator alloc] init];
   _locationBarBadgeMediator.consumer = _viewController;
 }

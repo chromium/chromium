@@ -43,7 +43,9 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
@@ -114,6 +116,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @interface LocationBarCoordinator () <
     ContextualPanelEntrypointCoordinatorDelegate,
     LoadQueryCommands,
+    LocationBarBadgeCoordinatorDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarSteadyViewConsumer,
     LocationBarViewControllerDelegate,
@@ -268,7 +271,27 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
 
-  if (IsContextualPanelEnabled()) {
+  if (IsAskGeminiChipEnabled() || IsProactiveSuggestionsFrameworkEnabled()) {
+    self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    self.locationBarBadgeCoordinator.delegate = self;
+    [self.locationBarBadgeCoordinator start];
+    // TODO (crbug.com/429140788): Remove after migration when this view is
+    // permanently shown.
+    self.locationBarBadgeCoordinator.viewController.visibilityDelegate =
+        self.viewController.contextualEntrypointVisibilityDelegate;
+
+    [self.viewController
+        addChildViewController:self.locationBarBadgeCoordinator.viewController];
+    // TODO(crbug.com/450006763): After migration, refactor to
+    // setLocationBarBadgeView and set it in LocationBarSteadyView.
+    [self.viewController
+        setContextualPanelEntrypointView:self.locationBarBadgeCoordinator
+                                             .viewController.view];
+    [self.locationBarBadgeCoordinator.viewController
+        didMoveToParentViewController:self.viewController];
+  } else if (IsContextualPanelEnabled()) {
     self.contextualPanelEntrypointCoordinator =
         [[ContextualPanelEntrypointCoordinator alloc]
             initWithBaseViewController:self.viewController
@@ -349,20 +372,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
         fullscreenController, self.incognitoBadgeViewController);
   }
 
-  // TODO(crbug.com/445784670): Connect LocationBarViewController to
-  // BadgeContainerView.
   if (IsAskGeminiChipEnabled()) {
     // Overrides visibility delegates to use badge view from
     // LocationBarBadgeContainer.
-    self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
     LocationBarBadgeMediator* locationBarBadgeMediator =
         self.locationBarBadgeCoordinator.mediator;
     // TODO(crbug.com/445786272): Properly create mediator delegate.
     self.readerModeChipCoordinator.visibilityDelegate =
-        locationBarBadgeMediator;
-    self.contextualPanelEntrypointCoordinator.visibilityDelegate =
         locationBarBadgeMediator;
     self.incognitoBadgeViewController.visibilityDelegate =
         locationBarBadgeMediator;

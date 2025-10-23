@@ -519,7 +519,8 @@
   _locationBarBadgeShouldBeVisible = !hidden;
   self.view.hidden = hidden;
   [self updateViewsVisibility];
-  // TODO(crbug.com/429140788): Remove after migration.
+  // TODO(crbug.com/429140788): Remove after migration and BadgesContainerView
+  // is obsolete.
   [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
 }
 
