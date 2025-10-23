@@ -178,9 +178,16 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
         // Set left margin to align with the detailed pane.
         View view = mMultiColumnSettings.getHeaderView();
+        int headerViewWidth = view.getLayoutParams().width;
+        int dividerWidth =
+                view.getResources()
+                        .getDimensionPixelSize(R.dimen.settings_multi_column_divider_size);
+        int contentOffset =
+                view.getResources().getDimensionPixelSize(R.dimen.settings_detailed_title_offset);
+
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
-        params.setMargins(view.getLayoutParams().width, 0, 0, 0);
+        params.setMarginStart(headerViewWidth + dividerWidth + contentOffset);
         mContainer.setLayoutParams(params);
         mContainer.invalidate();
     }

@@ -355,6 +355,8 @@ found in the LICENSE file.
     <dimen name="settings_search_ui_horizontal_margin">16dp</dimen>
     <dimen name="settings_search_icon_padding">16dp</dimen>
     <dimen name="settings_detailed_title_padding">10dp</dimen>
+    <dimen name="settings_multi_column_divider_size">24dp</dimen>
+    <dimen name="settings_detailed_title_offset">16dp</dimen>
 
     <!-- Sharing Hub dimensions -->
     <dimen name="sharing_hub_preview_icon_padding">12dp</dimen>
