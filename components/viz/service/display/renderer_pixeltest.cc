@@ -4004,10 +4004,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::PrintToStringParamName());
 
 TEST_P(RendererPixelTestWithBackdropFilter, ZoomFilter) {
-  if (is_software_renderer()) {
-    GTEST_SKIP() << "SoftwareRenderer doesn't support zoom filter";
-  }
-
   backdrop_filters_.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 20));
   SetUpRenderPassList();
   EXPECT_TRUE(RunPixelTest(
@@ -4021,14 +4017,7 @@ TEST_P(RendererPixelTestWithBackdropFilter, OffsetFilter) {
       cc::FilterOperation::CreateOffsetFilter(gfx::Point(5, 5)));
   SetUpRenderPassList();
 
-  // TODO(crbug.com/41473761): See comment in
-  // LayerTreeHostFiltersPixelTest/BackdropFilterOffsetTest. The software
-  // compositor does not correctly apply clamping when accessing content outside
-  // of the layer.
-  base::FilePath expected_path(
-      is_software_renderer()
-          ? FILE_PATH_LITERAL("backdrop_filter_offset_sw.png")
-          : FILE_PATH_LITERAL("backdrop_filter_offset.png"));
+  base::FilePath expected_path(FILE_PATH_LITERAL("backdrop_filter_offset.png"));
 
   EXPECT_TRUE(
       RunPixelTest(&pass_list_, expected_path, cc::ExactPixelComparator()));
