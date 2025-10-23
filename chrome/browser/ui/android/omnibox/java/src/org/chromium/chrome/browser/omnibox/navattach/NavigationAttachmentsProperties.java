@@ -22,10 +22,6 @@ class NavigationAttachmentsProperties {
     public static final WritableBooleanPropertyKey ADD_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Whether the AI mode is enabled. */
-    public static final WritableBooleanPropertyKey AI_MODE_ENABLED =
-            new WritableBooleanPropertyKey();
-
     /** Whether the attachments toolbar is visible. */
     public static final WritableBooleanPropertyKey ATTACHMENTS_TOOLBAR_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -33,6 +29,10 @@ class NavigationAttachmentsProperties {
     /** Whether the attachments RecyclerView is visible. */
     public static final WritableBooleanPropertyKey ATTACHMENTS_VISIBLE =
             new WritableBooleanPropertyKey();
+
+    /** Tracks the {@link AutocompleteRequestType}. */
+    public static final WritableObjectPropertyKey<Integer> AUTOCOMPLETE_REQUEST_TYPE =
+            new WritableObjectPropertyKey<>();
 
     /** Action to perform when the user clicks the Add button. */
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
@@ -73,9 +73,9 @@ class NavigationAttachmentsProperties {
     public static final PropertyKey[] ALL_KEYS = {
         ADAPTER,
         ADD_BUTTON_VISIBLE,
-        AI_MODE_ENABLED,
         ATTACHMENTS_TOOLBAR_VISIBLE,
         ATTACHMENTS_VISIBLE,
+        AUTOCOMPLETE_REQUEST_TYPE,
         BUTTON_ADD_CLICKED,
         NAVIGATION_TYPE_VISIBLE,
         ON_USE_AI_MODE_CHANGED,

@@ -99,6 +99,11 @@ class NavigationAttachmentsMediator {
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
 
+        mAutocompleteRequestTypeSupplier.addObserver(
+                (type) ->
+                        mModel.set(
+                                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type));
+
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
         mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
@@ -122,7 +127,6 @@ class NavigationAttachmentsMediator {
         mAiModeSessionActive = enabled;
         mAutocompleteRequestTypeSupplier.set(
                 enabled ? AutocompleteRequestType.AI_MODE : AutocompleteRequestType.SEARCH);
-        mModel.set(NavigationAttachmentsProperties.AI_MODE_ENABLED, enabled);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
         if (enabled) {
             mComposeBoxQueryControllerBridge.notifySessionStarted();

@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
@@ -278,6 +279,8 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Test
     public void onUseAiModeChanged_off_clearsAttachmentsAndAbandonsSession() {
         ModelList modelList = new ModelList();
+        ObservableSupplierImpl<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier =
+                new ObservableSupplierImpl<>();
         mMediator =
                 new NavigationAttachmentsMediator(
                         mContext,
@@ -285,7 +288,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         modelList,
-                        new ObservableSupplierImpl<>(),
+                        autocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mTabAttachmentsModelList,
                         mComposeBoxQueryControllerBridge);
@@ -294,17 +297,26 @@ public class NavigationAttachmentsMediatorUnitTest {
 
         mMediator.onUseAiModeChanged(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
 
         mMediator.onUseAiModeChanged(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, modelList.size());
         verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        assertEquals(
+                AutocompleteRequestType.SEARCH,
+                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
     }
 
     @Test
     public void onUseAiModeChanged_on_startsSession() {
         mMediator.onUseAiModeChanged(true);
         verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
     }
 
     @Test

@@ -30,6 +30,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -99,10 +100,22 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public void attachmentsVisible_setsVisibilityAndTogglesSwitch() {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         verify(mRecyclerView).setVisibility(View.VISIBLE);
-        verify(mSwitch).setChecked(true);
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
         verify(mRecyclerView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void autocompleteRequestType_togglesSwitch() {
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.AI_MODE);
+        verify(mSwitch).setChecked(true);
+
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.SEARCH);
+        verify(mSwitch).setChecked(false);
     }
 
     @Test
