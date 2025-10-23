@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <memory>
 #import <string_view>
 
@@ -66,7 +61,7 @@ constexpr char kFormElementSubmit[] = "submit_profile";
 constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 
 // Email value used by the tests.
-constexpr char kEmail[] = "foo1@gmail.com";
+constexpr std::string_view kEmail = "foo1@gmail.com";
 
 // Histogram bucket representing renderer errors.
 constexpr int kRendererErrorHistogramBucket = 8;
@@ -436,15 +431,16 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   // Populate the email field.
   // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
-  for (int i = 0; kEmail[i] != '\0'; ++i) {
-    NSString* letter = base::SysUTF8ToNSString(std::string(1, kEmail[i]));
-    if (kEmail[i] == '@') {
-      [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter
+  for (char letter : kEmail) {
+    if (letter == '@') {
+      [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"@"
                                               flags:UIKeyModifierShift];
       continue;
     }
 
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter flags:0];
+    [ChromeEarlGrey
+        simulatePhysicalKeyboardEvent:[NSString stringWithFormat:@"%c", letter]
+                                flags:0];
   }
 
   // Submit the form.
@@ -481,7 +477,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   id<GREYMatcher> footerMatcher = grey_text(
       l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-                              base::UTF8ToUTF16(std::string(kEmail))));
+                              base::UTF8ToUTF16(kEmail)));
 
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -539,7 +535,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   id<GREYMatcher> footerMatcher = grey_text(
       l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-                              base::UTF8ToUTF16(std::string(kEmail))));
+                              base::UTF8ToUTF16(kEmail)));
 
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -583,7 +579,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   id<GREYMatcher> footerMatcher = grey_text(l10n_util::GetNSStringF(
       IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
-      base::UTF8ToUTF16(std::string(kEmail))));
+      base::UTF8ToUTF16(kEmail)));
   // Check if there is footer suggesting it's a migration prompt.
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -699,7 +695,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   id<GREYMatcher> footerMatcher = grey_text(
       l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-                              base::UTF8ToUTF16(std::string(kEmail))));
+                              base::UTF8ToUTF16(kEmail)));
 
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
