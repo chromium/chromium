@@ -543,6 +543,12 @@ void InitGpuPersistentCacheFileFactoryOnce() {
       !viz::PersistentCacheSandboxedFileFactory::GetInstance()) {
     base::FilePath cache_root_dir =
         GetContentClient()->browser()->GetShaderDiskCacheDirectory();
+    if (cache_root_dir.empty()) {
+      // GetShaderDiskCacheDirectory() can return empty string in tests.
+      // Disable caching in this case since PersistentCacheSandboxedFileFactory
+      // doesn't support relative paths.
+      return;
+    }
     viz::PersistentCacheSandboxedFileFactory::CreateInstance(
         cache_root_dir.AppendASCII("PersistentCache"));
   }

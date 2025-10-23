@@ -466,6 +466,10 @@ void GpuHostImpl::InitPersistentCache() {
     // TODO(crbug.com/399642827): Enable persistent cache for other cache types.
     auto* persistent_cache_file_factory =
         PersistentCacheSandboxedFileFactory::GetInstance();
+    if (!persistent_cache_file_factory) {
+      // This can happen in tests when the cache directory is not defined.
+      return;
+    }
     persistent_cache_file_factory->CreateFilesAsync(
         /*cache_id=*/GetGpuDiskCacheSubdir(
             gpu::GpuDiskCacheType::kDawnGraphite),

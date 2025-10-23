@@ -23754,9 +23754,7 @@
     "SkiaGraphite": [
         {
             "platforms": [
-                "android",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
@@ -23764,6 +23762,25 @@
                     "params": {
                         "dawn_backend_validation": "false",
                         "dawn_skip_validation": "true"
+                    },
+                    "enable_features": [
+                        "SkiaGraphite"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "dawn_backend_validation": "false",
+                        "dawn_skip_validation": "true",
+                        "dawn_use_persistent_cache": "true"
                     },
                     "enable_features": [
                         "SkiaGraphite"

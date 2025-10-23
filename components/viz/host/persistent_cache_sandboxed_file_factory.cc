@@ -122,6 +122,11 @@ PersistentCacheSandboxedFileFactory::PersistentCacheSandboxedFileFactory(
     : cache_root_dir_(cache_root_dir),
       background_task_runner_(std::move(background_task_runner)) {
   CHECK(!cache_root_dir_.empty());
+  // TODO(crbug.com/399642827): We don't support relative path yet. The flags
+  // that are added by AddFlagsForPassingToUntrustedProcess() don't work with
+  // relative paths on Windows. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:base/files/file_util_win.cc;drc=c99aa55ee638df4d6f0073c5d950acbda6ab4c6d;l=422
+  CHECK(cache_root_dir_.IsAbsolute());
 
   background_task_runner_->PostTask(
       FROM_HERE,
@@ -152,7 +157,7 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
   auto open_and_check_file = [](const base::FilePath& path) {
     const auto flags = base::File::AddFlagsForPassingToUntrustedProcess(
         base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-        base::File::FLAG_WRITE);
+        base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE);
     base::File file(path, flags);
     if (!file.IsValid()) {
       LOG(ERROR) << "Failed to open persistent cache file: " << path
