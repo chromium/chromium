@@ -508,6 +508,14 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_chromeos) {
+    sources += [ "profile_os_sync_unittest.cc" ]
+    deps += [
+      "//ash/constants",
+      "//components/live_caption:constants",
+    ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]

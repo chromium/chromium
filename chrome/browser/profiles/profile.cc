@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -46,6 +47,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -348,19 +350,29 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   base::PathService::Get(base::DIR_HOME, &home);
   registry->RegisterStringPref(prefs::kSelectFileLastDirectory,
                                home.MaybeAsASCII());
+#if BUILDFLAG(IS_CHROMEOS)
+  const uint32_t caption_registration_flags =
+      base::FeatureList::IsEnabled(
+          ash::features::kOsSyncAccessibilitySettingsBatch2)
+          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
+          : 0;
+#else
+  constexpr uint32_t caption_registration_flags = 0;
+#endif
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextSize,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextFont,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextColor,
-                               std::string());
-  registry->RegisterIntegerPref(prefs::kAccessibilityCaptionsTextOpacity, 100);
+                               std::string(), caption_registration_flags);
+  registry->RegisterIntegerPref(prefs::kAccessibilityCaptionsTextOpacity, 100,
+                                caption_registration_flags);
   registry->RegisterIntegerPref(prefs::kAccessibilityCaptionsBackgroundOpacity,
-                                100);
+                                100, caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsBackgroundColor,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextShadow,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterDictionaryPref(prefs::kPartitionDefaultZoomLevel);
   registry->RegisterDictionaryPref(prefs::kPartitionPerHostZoomLevels);
   registry->RegisterStringPref(prefs::kPreinstalledApps, "install");

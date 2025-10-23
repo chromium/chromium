@@ -1306,9 +1306,6 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAccessibilityFlashNotificationsEnabled,
                                 false);
 
-  registry->RegisterBooleanPref(prefs::kAccessibilityReducedAnimationsEnabled,
-                                false);
-
   // TODO(b/266816160): Make ChromeVox prefs are syncable, to so that ChromeOS
   // backs up users' ChromeVox settings and reflects across their devices.
   registry->RegisterBooleanPref(prefs::kAccessibilityChromeVoxAutoRead, false);
@@ -1603,6 +1600,13 @@ void AccessibilityController::RegisterProfilePrefs(
                                 syncable_registration_flag_batch1);
   registry->RegisterBooleanPref(prefs::kAccessibilityFocusHighlightEnabled,
                                 false, syncable_registration_flag_batch1);
+
+  const uint32_t registration_flags_batch2 =
+      base::FeatureList::IsEnabled(features::kOsSyncAccessibilitySettingsBatch2)
+          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
+          : 0;
+  registry->RegisterBooleanPref(prefs::kAccessibilityReducedAnimationsEnabled,
+                                false, registration_flags_batch2);
 
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,

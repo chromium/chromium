@@ -2710,11 +2710,14 @@ class AccessibilityControllerRegisterProfilePrefsTest
  public:
   AccessibilityControllerRegisterProfilePrefsTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kOsSyncAccessibilitySettingsBatch1);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kOsSyncAccessibilitySettingsBatch1,
+           features::kOsSyncAccessibilitySettingsBatch2},
+          {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kOsSyncAccessibilitySettingsBatch1);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kOsSyncAccessibilitySettingsBatch1,
+               features::kOsSyncAccessibilitySettingsBatch2});
     }
   }
 
@@ -2726,7 +2729,7 @@ class AccessibilityControllerRegisterProfilePrefsTest
     const bool expect_sync = GetParam();
     for (const char* pref_name : pref_names) {
       const auto* pref = prefs()->FindPreference(pref_name);
-      ASSERT_TRUE(pref);
+      ASSERT_TRUE(pref) << pref_name;
       const uint32_t flags = pref->registration_flags();
       if (expect_sync) {
         EXPECT_NE(0u,
@@ -2758,6 +2761,11 @@ TEST_P(AccessibilityControllerRegisterProfilePrefsTest,
       prefs::kAccessibilityFocusHighlightEnabled,
   });
   CheckPrefsSyncableFlags(kBatch1AccessibilitySyncPrefs);
+
+  constexpr auto kBatch2AccessibilitySyncPrefs = std::to_array<const char*>({
+      prefs::kAccessibilityReducedAnimationsEnabled,
+  });
+  CheckPrefsSyncableFlags(kBatch2AccessibilitySyncPrefs);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
