@@ -197,7 +197,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       webActuationFeatureEnabled_: {
         type: Boolean,
         value: () => {
-          return loadTimeData.getBoolean('glicWebActuationFeatureEnabled');
+          return loadTimeData.getBoolean('glicWebActuationFeatureEnabled') &&
+              loadTimeData.getBoolean('glicActorEnabled');
         },
       },
 

@@ -625,6 +625,17 @@ BASE_FEATURE_PARAM(std::string,
                    "glic-actuation-on-web-toggle-learn-more-url",
                    "");
 BASE_FEATURE_PARAM(std::string,
+                   kGlicWebActuationToggleConsiderSafelyURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-actuation-on-web-toggle-things-to-consider-safely-url",
+                   "");
+BASE_FEATURE_PARAM(
+    std::string,
+    kGlicWebActuationToggleConsiderUnexpectedResultsURL,
+    &kGlicLearnMoreURLConfig,
+    "glic-actuation-on-web-toggle-things-to-consider-unexpected-results-url",
+    "");
+BASE_FEATURE_PARAM(std::string,
                    kGlicExtensionsManagementUrl,
                    &kGlicLearnMoreURLConfig,
                    "glic-extensions-management-url",

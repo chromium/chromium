@@ -809,8 +809,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_2},
       {"glicWebActuationToggleConsider1",
        IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1},
-      {"glicWebActuationToggleConsider2",
-       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -844,6 +842,15 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
                          features::kGlicExtensionsManagementUrl.Get());
   html_source->AddString("glicWebActuationToggleLearnMoreUrl",
                          features::kGlicWebActuationToggleLearnMoreURL.Get());
+  html_source->AddString(
+      "glicWebActuationToggleConsider2",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2,
+          base::UTF8ToUTF16(
+              features::kGlicWebActuationToggleConsiderSafelyURL.Get()),
+          base::UTF8ToUTF16(
+              features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
+                  .Get())));
   html_source->AddBoolean(
       "glicClosedCaptionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
@@ -861,6 +868,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "glicWebActuationFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicWebActuationSetting));
+  html_source->AddBoolean("glicActorEnabled",
+                          base::FeatureList::IsEnabled(features::kGlicActor));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

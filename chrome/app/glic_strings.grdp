@@ -247,7 +247,7 @@
     The page content and URLs that Gemini uses during a task will be shared with Google until the task is done or stopped.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2" translateable="false" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands">
-    Use Gemini carefully and safely. You are responsible for Gemini's actions during a task, including mistakes and unexpected results like purchases.
+    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
   </message>
 
   <!-- Glic button and tab strip context menu -->
