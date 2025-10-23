@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 
+#include <algorithm>
 #include <numbers>
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -129,6 +131,49 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
     context.StrokePath(inner_path, auto_dark_mode);
   }
   return true;
+}
+
+// static
+std::optional<PhysicalBoxStrut> BorderShapePainter::VisualOutsets(
+    const ComputedStyle& style,
+    const PhysicalRect& border_rect,
+    const PhysicalRect& outer_reference_rect,
+    const PhysicalRect& inner_reference_rect) {
+  if (!style.HasBorderShape()) {
+    return std::nullopt;
+  }
+
+  std::optional<Path> outer_path = OuterPath(style, outer_reference_rect);
+  if (!outer_path) {
+    return std::nullopt;
+  }
+
+  gfx::RectF visual_bounds = outer_path->BoundingRect();
+  if (style.HasVisibleStroke()) {
+    StrokeData stroke_data =
+        GetBorderShapeStrokeData(outer_reference_rect, style);
+    visual_bounds.Union(outer_path->StrokeBoundingRect(stroke_data));
+
+    if (std::optional<Path> inner_path =
+            InnerPathIgnoringStroke(inner_reference_rect, style)) {
+      visual_bounds.Union(inner_path->BoundingRect());
+      visual_bounds.Union(inner_path->StrokeBoundingRect(stroke_data));
+    }
+  }
+
+  const float top_outset = std::max(0.0f, border_rect.Y() - visual_bounds.y());
+  const float left_outset = std::max(0.0f, border_rect.X() - visual_bounds.x());
+  const float right_outset =
+      std::max(0.0f, visual_bounds.right() - border_rect.Right());
+  const float bottom_outset =
+      std::max(0.0f, visual_bounds.bottom() - border_rect.Bottom());
+
+  if (!top_outset && !right_outset && !bottom_outset && !left_outset) {
+    return PhysicalBoxStrut();
+  }
+
+  return PhysicalBoxStrut::Enclosing(gfx::OutsetsF::TLBR(
+      top_outset, left_outset, bottom_outset, right_outset));
 }
 
 }  // namespace blink

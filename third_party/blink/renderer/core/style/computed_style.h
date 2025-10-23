@@ -2233,7 +2233,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // doesn't account for them.
   bool HasVisualOverflowingEffect() const {
     return BoxShadow() || HasBorderImageOutsets() || HasOutline() ||
-           HasMaskBoxImageOutsets() || HasGapRule();
+           HasMaskBoxImageOutsets() || HasGapRule() || HasBorderShape();
   }
 
   bool IsStackedWithoutContainment() const {

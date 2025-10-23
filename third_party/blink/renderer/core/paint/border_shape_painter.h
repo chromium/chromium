@@ -40,6 +40,12 @@ class BorderShapePainter {
   static std::optional<Path> OuterPath(
       const ComputedStyle&,
       const PhysicalRect& outer_reference_rect);
+
+  static std::optional<PhysicalBoxStrut> VisualOutsets(
+      const ComputedStyle&,
+      const PhysicalRect& border_rect,
+      const PhysicalRect& outer_reference_rect,
+      const PhysicalRect& inner_reference_rect);
 };
 
 }  // namespace blink

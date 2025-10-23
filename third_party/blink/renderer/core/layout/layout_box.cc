@@ -100,6 +100,8 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -3334,6 +3336,22 @@ PhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
   DCHECK(style.HasVisualOverflowingEffect());
 
   PhysicalBoxStrut outsets = style.BoxDecorationOutsets();
+
+  if (style.HasBorderShape()) {
+    PhysicalRect border_rect(PhysicalOffset(), StitchedSize());
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(border_rect, style, *this);
+    const PhysicalRect outer_reference_rect =
+        border_shape_rects ? border_shape_rects->outer : border_rect;
+    const PhysicalRect inner_reference_rect =
+        border_shape_rects ? border_shape_rects->inner : border_rect;
+    if (std::optional<PhysicalBoxStrut> border_shape_outsets =
+            BorderShapePainter::VisualOutsets(style, border_rect,
+                                              outer_reference_rect,
+                                              inner_reference_rect)) {
+      outsets.Unite(*border_shape_outsets);
+    }
+  }
 
   if (style.HasOutline()) {
     OutlineInfo info;
