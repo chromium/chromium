@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './action_chips.js';
+import './action_chips/action_chips.js';
 import './iframe.js';
 import './logo.js';
 import '/strings.m.js';

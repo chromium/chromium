@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
-  RunTest("new_tab_page/action_chips_test.js", "mocha.run()");
+  RunTest("new_tab_page/action_chips/action_chips_test.js", "mocha.run()");
 }
 
 using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
