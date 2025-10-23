@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** A ViewHolder for the NavigationAttachments component. */
@@ -25,6 +26,7 @@ class NavigationAttachmentsViewHolder {
     public final Group navigationTypeGroup;
     public final SwitchCompat navigationType;
     public final NavigationAttachmentsPopup popup;
+    public final ButtonCompat requestType;
 
     NavigationAttachmentsViewHolder(ViewGroup parent, NavigationAttachmentsPopup popup) {
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
@@ -33,6 +35,7 @@ class NavigationAttachmentsViewHolder {
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
         navigationTypeGroup = parent.findViewById(R.id.location_bar_navigation_type_group);
         navigationType = parent.findViewById(R.id.location_bar_navigation_type);
+        requestType = parent.findViewById(R.id.navigation_attachments_request_type);
         this.popup = popup;
 
         var outline =

@@ -177,6 +177,7 @@ android_library("java") {
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",

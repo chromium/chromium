@@ -35,6 +35,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Unit tests for {@link NavigationAttachmentsViewBinder}. */
@@ -52,6 +53,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock Button mFileButton;
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
     private @Mock SwitchCompat mSwitch;
+    private @Mock ButtonCompat mRequestType;
     private @Mock View mRecentTabsHeader;
 
     private Activity mActivity;
@@ -74,6 +76,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 .findViewById(R.id.location_bar_attachments_settings);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
         doReturn(mSwitch).when(mParent).findViewById(R.id.location_bar_navigation_type);
+        doReturn(mRequestType).when(mParent).findViewById(R.id.navigation_attachments_request_type);
         doReturn(mRecentTabsHeader)
                 .when(mParent)
                 .findViewById(R.id.navigation_attachments_recent_tabs_header);

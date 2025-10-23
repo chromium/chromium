@@ -89,4 +89,23 @@ found in the LICENSE file.
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"/>
 
+    <org.chromium.ui.widget.ButtonCompat
+        style="@style/OutlinedButton"
+        android:id="@+id/navigation_attachments_request_type"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:drawableStart="@drawable/search_spark_black_24dp"
+        android:drawableEnd="@drawable/btn_close"
+        android:drawablePadding="8dp"
+        android:visibility="gone"
+        android:singleLine="true"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.TextSmall"
+        app:buttonColor="@color/gm3_baseline_surface_container"
+        app:drawableTint="?attr/colorPrimary"
+        app:buttonTextColor="@macro/default_text_color"
+        app:layout_constraintStart_toEndOf="@id/location_bar_attachments_settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"/>
+
 </merge>

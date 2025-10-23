@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.omnibox.navattach;
 
 import android.view.View;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,6 +28,15 @@ class NavigationAttachmentsViewBinder {
             view.navigationType.setChecked(
                     model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
                             == AutocompleteRequestType.AI_MODE);
+            @StringRes
+            int res =
+                    switch (model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
+                        case AutocompleteRequestType.AI_MODE -> R.string.ai_mode_entrypoint_label;
+                        default -> 0;
+                    };
+
+            if (res != 0) view.requestType.setText(res);
+            view.requestType.setVisibility(res == 0 ? View.GONE : View.VISIBLE);
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
