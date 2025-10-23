@@ -255,9 +255,7 @@ class ExtractMetricsUnittest(fake_filesystem_unittest.TestCase):
                 ],
             },
         }
-        results_file = pathlib.Path('/results.json')
-        self.fs.create_file(results_file, contents=json.dumps(results_data))
-        metrics = workers._extract_metrics_from_promptfoo_results(results_file)
+        metrics = workers._extract_metrics_from_promptfoo_results(results_data)
         self.assertEqual(metrics, {
             'token_usage': {
                 'total_tokens': 10
@@ -282,9 +280,7 @@ class ExtractMetricsUnittest(fake_filesystem_unittest.TestCase):
                 ],
             },
         }
-        results_file = pathlib.Path('/results.json')
-        self.fs.create_file(results_file, contents=json.dumps(results_data))
-        metrics = workers._extract_metrics_from_promptfoo_results(results_file)
+        metrics = workers._extract_metrics_from_promptfoo_results(results_data)
         self.assertEqual(metrics, {'token_usage': {'total_tokens': 10}})
 
     def test_no_token_usage(self):
@@ -301,17 +297,97 @@ class ExtractMetricsUnittest(fake_filesystem_unittest.TestCase):
                 ],
             },
         }
-        results_file = pathlib.Path('/results.json')
-        self.fs.create_file(results_file, contents=json.dumps(results_data))
-        metrics = workers._extract_metrics_from_promptfoo_results(results_file)
+        metrics = workers._extract_metrics_from_promptfoo_results(results_data)
         self.assertEqual(metrics, {'token_usage': {}, 'score': 0.5})
 
     def test_empty_results(self):
         """Tests when the results file is empty."""
-        results_file = pathlib.Path('/results.json')
-        self.fs.create_file(results_file, contents='')
-        metrics = workers._extract_metrics_from_promptfoo_results(results_file)
+        metrics = workers._extract_metrics_from_promptfoo_results({})
         self.assertEqual(metrics, {})
+
+
+class ParseTestLogResultsTest(unittest.TestCase):
+
+    def test_empty_json(self):
+        self.assertEqual(workers._parse_test_log_results(None), '')
+        self.assertEqual(
+            workers._parse_test_log_results({}),
+            'Input prompt: None\nResponse: None\nAssertion results:\n')
+
+    def test_missing_keys(self):
+        json_data = {'results': {'results': [{}]}}
+        expected = ('Input prompt: None\n'
+                    'Response: None\n'
+                    'Assertion results:\n')
+        self.assertEqual(workers._parse_test_log_results(json_data), expected)
+
+        json_data = {'results': {'results': [{'gradingResult': {}}]}}
+        self.assertEqual(workers._parse_test_log_results(json_data), expected)
+
+        json_data = {
+            'results': {
+                'results': [{
+                    'gradingResult': {
+                        'componentResults': []
+                    }
+                }]
+            }
+        }
+        self.assertEqual(workers._parse_test_log_results(json_data), expected)
+
+    def test_full_json(self):
+        json_data = {
+            "results": {
+                "results": [{
+                    "gradingResult": {
+                        "componentResults": [{
+                            "pass": True,
+                            "reason": "Looks good",
+                            "score": 1.0
+                        }, {
+                            "pass": False,
+                            "reason": "Not so good",
+                            "score": 0.0
+                        }]
+                    },
+                    "response": {
+                        "metrics": {
+                            "user_prompt": "This is the prompt.",
+                            "full_output": "This is the output."
+                        }
+                    }
+                }]
+            }
+        }
+        expected_output = ("Input prompt: This is the prompt.\n"
+                           "Response: This is the output.\n"
+                           "Assertion results:\n"
+                           "pass: True\nreason: Looks good\nscore: 1.0\n\n"
+                           "pass: False\nreason: Not so good\nscore: 0.0\n\n")
+        self.assertEqual(workers._parse_test_log_results(json_data),
+                         expected_output)
+
+    def test_no_component_results(self):
+        json_data = {
+            "results": {
+                "results": [{
+                    "gradingResult": {
+                        "componentResults": []
+                    },
+                    "response": {
+                        "metrics": {
+                            "user_prompt": "This is the prompt.",
+                            "full_output": "This is the output."
+                        }
+                    }
+                }]
+            }
+        }
+        expected_output = ("Input prompt: This is the prompt.\n"
+                           "Response: This is the output.\n"
+                           "Assertion results:\n")
+        self.assertEqual(workers._parse_test_log_results(json_data),
+                         expected_output)
 
 
 class LoadPromptfooResultsUnittest(fake_filesystem_unittest.TestCase):
@@ -776,7 +852,10 @@ class RunOneConfigTest(WorkerThreadUnittest):
         self.assertEqual(result.successful_runs, 2)
         self.assertEqual(result.total_duration, 4.5)
         self.assertEqual(result.average_duration, 1.5)
-        self.assertEqual(result.combined_logs, 'log1\nlog2\nlog3')
+        self.assertEqual(
+            result.combined_logs, 'Iteration #0:\nlog1\n'
+            'Iteration #1:\nlog2\n'
+            'Iteration #2:\nlog3')
 
     def test_success_criteria_pass(self):
         """Tests that a test is marked as successful when it passes."""

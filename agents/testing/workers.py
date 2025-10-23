@@ -212,17 +212,43 @@ class WorkerPool:
                     t.native_id)
 
 
+def _parse_test_log_results(results_json) -> str:
+    """Extracts a summary of the test run for displaying
+
+    Args:
+        results_json: The decoded JSON from a promptfoo results file.
+
+    Returns:
+        A string summarizing the test/eval.
+    """
+    if results_json is None:
+        return ''
+
+    # Display the assertion failures
+    run_result = results_json.get('results', {}).get('results', [{}])[0]
+    assert_results = []
+    grading_result = run_result.get('gradingResult')
+    if grading_result:
+        for componentResult in grading_result.get('componentResults', []):
+            assert_results.append(f"pass: {componentResult['pass']}\n"
+                                  f"reason: {componentResult['reason']}\n"
+                                  f"score: {componentResult['score']}\n\n")
+    response = run_result.get('response', {})
+    return (f"Input prompt: {response.get('metrics', {}).get('user_prompt')}\n"
+            f"Response: {response.get('metrics', {}).get('full_output')}\n"
+            "Assertion results:\n" + ''.join(assert_results))
+
+
 def _extract_metrics_from_promptfoo_results(
-        results_file: pathlib.Path) -> dict[str, dict | float]:
+        results_json: dict) -> dict[str, dict | float]:
     """Extracts relevant metrics from promptfoo results.
 
     Args:
-        results_file: A path to a file containing promptfoo results for a test.
+        results_json: The decoded JSON from a promptfoo results file.
 
     Returns:
         A potentially empty dict of extracted metrics.
     """
-    results_json = _load_promptfoo_results(results_file)
     if not results_json:
         return {}
 
@@ -451,12 +477,12 @@ class WorkerThread(threading.Thread):
             proc = self._promptfoo.run(command, cwd=workdir.path / 'src')
             duration = time.time() - start_time
 
+            results_json = _load_promptfoo_results(promptfoo_output)
             return results.IterationResult(
                 success=not proc.returncode,
                 duration=duration,
-                test_log=proc.stdout,
-                metrics=_extract_metrics_from_promptfoo_results(
-                    promptfoo_output))
+                test_log=_parse_test_log_results(results_json),
+                metrics=_extract_metrics_from_promptfoo_results(results_json))
 
     def shutdown(self) -> None:
         """Tells the thread to shut down gracefully."""

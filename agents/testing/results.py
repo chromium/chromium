@@ -58,7 +58,11 @@ class TestResult:
 
     @property
     def combined_logs(self):
-        return '\n'.join(i.test_log for i in self.iteration_results)
+        if len(self.iteration_results) > 1:
+            return '\n'.join(
+                f'Iteration #{i}:\n{result.test_log}'
+                for i, result in enumerate(self.iteration_results))
+        return '\n'.join(result.test_log for result in self.iteration_results)
 
     @property
     def total_duration(self):

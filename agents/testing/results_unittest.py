@@ -99,7 +99,8 @@ class TestResultTest(unittest.TestCase):
                                         test_log='log2',
                                         metrics={})
             ])
-        self.assertEqual(result.combined_logs, 'log1\nlog2')
+        self.assertEqual(result.combined_logs,
+                         'Iteration #0:\nlog1\nIteration #1:\nlog2')
 
     def test_total_duration(self):
         result = results.TestResult(
