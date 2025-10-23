@@ -396,6 +396,13 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
+  if ((base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
+       base::FeatureList::IsEnabled(
+           features::kGlicDefaultToLastActiveConversation)) &&
+      std::holds_alternative<tabs::TabInterface*>(key)) {
+    auto* tab = std::get<tabs::TabInterface*>(key);
+    sharing_manager().UnpinTabs({tab->GetHandle()});
+  }
   embedders_.erase(key);
 }
 
