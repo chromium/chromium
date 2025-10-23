@@ -23,7 +23,7 @@ namespace {
 class ActorToolsTestScriptTool : public ActorToolsGeneralPageStabilityTest {
  public:
   ActorToolsTestScriptTool() {
-    features_.InitAndEnableFeature(blink::features::kScriptTools);
+    features_.InitAndEnableFeature(blink::features::kWebMCP);
   }
 
   void SetUpOnMainThread() override {

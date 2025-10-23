@@ -19,7 +19,7 @@ using apc::Actions;
 class GlicActorWithScriptToolsTest : public GlicActorUiTest {
  public:
   GlicActorWithScriptToolsTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kScriptTools);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
   }
   ~GlicActorWithScriptToolsTest() override = default;
 

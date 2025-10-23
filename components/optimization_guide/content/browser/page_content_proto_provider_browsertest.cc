@@ -1254,7 +1254,7 @@ class PageContentProtoProviderBrowserTestScriptTools
     : public PageContentProtoProviderBrowserTest {
  public:
   PageContentProtoProviderBrowserTestScriptTools() {
-    features_.InitAndEnableFeature(blink::features::kScriptTools);
+    features_.InitAndEnableFeature(blink::features::kWebMCP);
   }
 
  private:
