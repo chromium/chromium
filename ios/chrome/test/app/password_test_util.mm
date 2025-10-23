@@ -17,11 +17,11 @@ SetUpAndReturnMockReauthenticationModuleForPasswordManager() {
       mock_reauthentication_module);
 }
 
-std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
+std::unique_ptr<ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
 SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet() {
   MockReauthenticationModule* mock_reauthentication_module =
       [[MockReauthenticationModule alloc] init];
-  return ScopedPasswordSuggestionBottomSheetReauthModuleOverride::
+  return ScopedCredentialSuggestionBottomSheetReauthModuleOverride::
       MakeAndArmForTesting(mock_reauthentication_module);
 }
 

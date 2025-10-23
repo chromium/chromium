@@ -91,8 +91,8 @@ source_set("bottom_sheet_ui") {
 
 source_set("common") {
   sources = [
-    "scoped_password_suggestion_bottom_sheet_reauth_module_override.h",
-    "scoped_password_suggestion_bottom_sheet_reauth_module_override.mm",
+    "scoped_credential_suggestion_bottom_sheet_reauth_module_override.h",
+    "scoped_credential_suggestion_bottom_sheet_reauth_module_override.mm",
   ]
   deps = [
     "//base",

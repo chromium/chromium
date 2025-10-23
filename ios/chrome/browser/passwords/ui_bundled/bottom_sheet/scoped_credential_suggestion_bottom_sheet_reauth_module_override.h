@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_SCOPED_PASSWORD_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
-#define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_SCOPED_PASSWORD_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_SCOPED_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_SCOPED_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
 
 #import <memory>
 
@@ -12,9 +12,9 @@
 // Util class enabling a global override of the Reauthentication Module used in
 // newly-constructed CredentialSuggestionBottomSheetCoordinator, for testing
 // purposes only.
-class ScopedPasswordSuggestionBottomSheetReauthModuleOverride {
+class ScopedCredentialSuggestionBottomSheetReauthModuleOverride {
  public:
-  ~ScopedPasswordSuggestionBottomSheetReauthModuleOverride();
+  ~ScopedCredentialSuggestionBottomSheetReauthModuleOverride();
 
   // Returns the override module, if one exists.
   static id<ReauthenticationProtocol> Get();
@@ -26,14 +26,14 @@ class ScopedPasswordSuggestionBottomSheetReauthModuleOverride {
   // module until the override is destroyed. Any coordinator created while an
   // override is active will hold a strong ref to `module`.
   static std::unique_ptr<
-      ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
+      ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
   MakeAndArmForTesting(id<ReauthenticationProtocol> module);
 
   // The module to be used.
   id<ReauthenticationProtocol> module;
 
  private:
-  ScopedPasswordSuggestionBottomSheetReauthModuleOverride() = default;
+  ScopedCredentialSuggestionBottomSheetReauthModuleOverride() = default;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_SCOPED_PASSWORD_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_SCOPED_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_

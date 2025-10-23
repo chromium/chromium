@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_view_controller.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/scoped_credential_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -86,7 +86,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
             profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     self.reauthModule =
-        ScopedPasswordSuggestionBottomSheetReauthModuleOverride::Get();
+        ScopedCredentialSuggestionBottomSheetReauthModuleOverride::Get();
     if (!self.reauthModule) {
       self.reauthModule = [[ReauthenticationModule alloc] init];
     }
