@@ -185,8 +185,8 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
                 new TestStatusReceiver.TestRunCallback() {
                     @Override
                     public void testRunStarted(int pid) {
+                        mStartHandler.removeCallbacksAndMessages(null);
                         if (pid != Process.myPid()) {
-                            mStartHandler.removeCallbacksAndMessages(null);
                             ShardMonitor m =
                                     new ShardMonitor(pid, System.nanoTime() + mShardNanoTimeout);
                             mMonitors.put(pid, m);
