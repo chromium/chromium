@@ -41,6 +41,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/extensions/api/downloads/download_extension_errors.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -98,48 +99,6 @@ using content::DownloadManager;
 using download::DownloadItem;
 using download::DownloadPathReservationTracker;
 using extensions::mojom::APIPermissionID;
-
-namespace download_extension_errors {
-
-const char kEmptyFile[] = "Filename not yet determined";
-const char kFileAlreadyDeleted[] = "Download file already deleted";
-const char kFileNotRemoved[] = "Unable to remove file";
-const char kIconNotFound[] = "Icon not found";
-const char kInvalidDangerType[] = "Invalid danger type";
-const char kInvalidFilename[] = "Invalid filename";
-const char kInvalidFilter[] = "Invalid query filter";
-const char kInvalidHeaderName[] = "Invalid request header name";
-const char kInvalidHeaderUnsafe[] = "Unsafe request header name";
-const char kInvalidHeaderValue[] = "Invalid request header value";
-const char kInvalidId[] = "Invalid downloadId";
-const char kInvalidOrderBy[] = "Invalid orderBy field";
-const char kInvalidQueryLimit[] = "Invalid query limit";
-const char kInvalidState[] = "Invalid state";
-const char kInvalidURL[] = "Invalid URL";
-const char kInvisibleContext[] =
-    "Javascript execution context is not visible "
-    "(tab, window, popup bubble)";
-const char kNotComplete[] = "Download must be complete";
-const char kNotDangerous[] = "Download must be dangerous";
-const char kNotInProgress[] = "Download must be in progress";
-const char kNotResumable[] = "DownloadItem.canResume must be true";
-const char kOpenPermission[] = "The \"downloads.open\" permission is required";
-const char kShelfDisabled[] = "Another extension has disabled the shelf";
-const char kShelfPermission[] =
-    "downloads.setShelfEnabled requires the "
-    "\"downloads.shelf\" permission";
-const char kTooManyListeners[] =
-    "Each extension may have at most one "
-    "onDeterminingFilename listener between all of its renderer execution "
-    "contexts.";
-const char kUiDisabled[] = "Another extension has disabled the download UI";
-const char kUiPermission[] =
-    "downloads.setUiOptions requires the "
-    "\"downloads.ui\" permission";
-const char kUnexpectedDeterminer[] = "Unexpected determineFilename call";
-const char kUserGesture[] = "User gesture required";
-
-}  // namespace download_extension_errors
 
 namespace extensions {
 

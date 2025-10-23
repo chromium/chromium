@@ -35,40 +35,6 @@ class Profile;
 // controlling downloads from extensions. See the full API doc at
 // https://docs.google.com/document/d/12rNimeeGaA8jEV60PPKtT4pmJYmY9ae_edl3hJyoXYE/
 
-namespace download_extension_errors {
-
-// Errors that can be returned through chrome.runtime.lastError.message.
-extern const char kEmptyFile[];
-extern const char kFileAlreadyDeleted[];
-extern const char kFileNotRemoved[];
-extern const char kIconNotFound[];
-extern const char kInvalidDangerType[];
-extern const char kInvalidFilename[];
-extern const char kInvalidFilter[];
-extern const char kInvalidHeaderName[];
-extern const char kInvalidHeaderValue[];
-extern const char kInvalidHeaderUnsafe[];
-extern const char kInvalidId[];
-extern const char kInvalidOrderBy[];
-extern const char kInvalidQueryLimit[];
-extern const char kInvalidState[];
-extern const char kInvalidURL[];
-extern const char kInvisibleContext[];
-extern const char kNotComplete[];
-extern const char kNotDangerous[];
-extern const char kNotInProgress[];
-extern const char kNotResumable[];
-extern const char kOpenPermission[];
-extern const char kShelfDisabled[];
-extern const char kShelfPermission[];
-extern const char kTooManyListeners[];
-extern const char kUiDisabled[];
-extern const char kUiPermission[];
-extern const char kUnexpectedDeterminer[];
-extern const char kUserGesture[];
-
-}  // namespace download_extension_errors
-
 namespace extensions {
 
 class DownloadedByExtension : public base::SupportsUserData::Data {

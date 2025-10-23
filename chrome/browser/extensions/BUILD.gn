@@ -88,6 +88,7 @@ source_set("extensions") {
     "api/developer_private/inspectable_views_finder.h",
     "api/developer_private/profile_info_generator.cc",
     "api/developer_private/profile_info_generator.h",
+    "api/downloads/download_extension_errors.h",
     "api/downloads/downloads_api.cc",
     "api/downloads/downloads_api.h",
     "api/gcm/gcm_api.cc",

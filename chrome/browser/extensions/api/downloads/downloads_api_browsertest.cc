@@ -40,6 +40,7 @@
 #include "chrome/browser/download/download_open_prompt.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
+#include "chrome/browser/extensions/api/downloads/download_extension_errors.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/api/downloads_internal/downloads_internal_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
