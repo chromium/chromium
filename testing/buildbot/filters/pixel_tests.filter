@@ -85,6 +85,7 @@ LocalCardMigrationBrowserUiTest.*
 Mv2DeprecationReEnableDialogBrowserTest.*
 NewTabPageTest.*
 NtpPromoVisualUiTest.*
+NtpRealboxUiTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageActionPixelIconsHiddenTest.*
