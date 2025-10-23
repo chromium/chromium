@@ -91,43 +91,6 @@ void TabStripCollection::AddTabRecursive(
   AddTabImpl(std::move(tab), insertion_details);
 }
 
-void TabStripCollection::AddTabRecursiveImpl(
-    std::unique_ptr<TabInterface> tab,
-    size_t index,
-    std::optional<tab_groups::TabGroupId> new_group_id,
-    bool new_pinned_state) {
-  CHECK(tab);
-  // `index` can be equal to the tab count as at this point the tab has not yet
-  // been added.
-  CHECK(index >= 0 && index <= TabCountRecursive());
-
-  // First tab needs to be added to the group. In this case we need to create a
-  // group collection.
-  if (new_group_id.has_value() &&
-      !GetTabGroupCollection(new_group_id.value())) {
-    TabCollection::Position group_position =
-        GetInsertionDetails(index, false, std::nullopt);
-
-    // Attempt to create a new group for the tab.
-    AddTabCollectionImpl(PopDetachedGroupCollection(new_group_id.value()),
-                         group_position);
-
-    TabGroupTabCollection* group_collection =
-        GetTabGroupCollection(new_group_id.value());
-
-    // New empty group was attached, append tab to the group.
-    CHECK(group_collection->ChildCount() == 0);
-    TabInterface* inserted_tab = group_collection->AddTab(std::move(tab), 0);
-    CHECK(GetIndexOfTabRecursive(inserted_tab) == index);
-    return;
-  }
-
-  TabCollection::Position insertion_details =
-      GetInsertionDetails(index, new_pinned_state, new_group_id);
-  insertion_details.parent_handle.Get()->AddTab(std::move(tab),
-                                                insertion_details.index);
-}
-
 void TabStripCollection::MoveTabRecursive(
     size_t initial_index,
     size_t final_index,
@@ -566,7 +529,6 @@ void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
 }
 
 void TabStripCollection::ValidateData() const {
-  CHECK(detached_group_collections_.empty());
   for (const auto& [_, group] : group_mapping_) {
     CHECK(group->ChildCount() > 0);
   }
@@ -588,27 +550,6 @@ std::optional<const tab_groups::TabGroupId> TabStripCollection::FindGroupIdFor(
   }
 
   return std::nullopt;
-}
-
-std::unique_ptr<TabInterface> TabStripCollection::RemoveTabRecursiveImpl(
-    TabInterface* tab,
-    bool close_empty_group_collection) {
-  CHECK(tab);
-
-  TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
-  const std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
-
-  std::unique_ptr<TabInterface> removed_tab =
-      parent_collection->MaybeRemoveTab(tab);
-
-  CHECK(removed_tab);
-
-  if (group.has_value() && close_empty_group_collection &&
-      GetTabGroupCollection(group.value())->TabCountRecursive() == 0) {
-    RemoveTabCollectionImpl(GetTabGroupCollection(group.value()));
-  }
-
-  return removed_tab;
 }
 
 std::unique_ptr<tabs::TabGroupTabCollection>

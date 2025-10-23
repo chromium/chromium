@@ -122,19 +122,6 @@ class TabStripCollection : public TabCollection {
       base::PassKey<TabStripModel>) const;
 
  private:
-  // Adds a tab to a particular recursive index in the collection.
-  void AddTabRecursiveImpl(std::unique_ptr<TabInterface> tab,
-                           size_t index,
-                           std::optional<tab_groups::TabGroupId> new_group_id,
-                           bool new_pinned_state);
-
-  // Removes the tab from the collection. If `close_empty_group_collection` is
-  // true then group collection is closed when the last tab is removed from
-  // the group collection.
-  std::unique_ptr<TabInterface> RemoveTabRecursiveImpl(
-      TabInterface* tab,
-      bool close_empty_group_collection = true);
-
   // Removes the group collection with `group_id` from
   // `detached_group_collections_`.
   std::unique_ptr<tabs::TabGroupTabCollection> PopDetachedGroupCollection(
