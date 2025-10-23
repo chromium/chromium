@@ -24,12 +24,14 @@ namespace {
 
 constexpr int64_t kJan1st2024 = 1704085200;
 
-using base::SysNSStringToUTF8;
-using base::test::ios::kWaitForFileOperationTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
-using password_manager::MockPasswordStoreInterface;
-using password_manager::PasswordForm;
+using ::base::SysNSStringToUTF8;
+using ::base::test::ios::kWaitForFileOperationTimeout;
+using ::base::test::ios::WaitUntilConditionOrTimeout;
+using ::password_manager::MockPasswordStoreInterface;
+using ::password_manager::PasswordForm;
 using ::testing::_;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 NSData* StringToData(std::string str) {
   return [NSData dataWithBytes:str.data() length:str.length()];
@@ -113,7 +115,7 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
                                                            key:store_key_
                                                  passwordStore:mock_store_
                                                   passkeyStore:nil];
-  EXPECT_TRUE(migrator);
+  ASSERT_TRUE(migrator);
 
   // Start migration.
   PasswordForm expected = PasswordFormFromCredential(credential);
@@ -157,7 +159,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
                        key:store_key_
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
-  EXPECT_TRUE(migrator);
+  ASSERT_TRUE(migrator);
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyCreated, 0);
@@ -189,7 +191,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   // Verify that the credential is migrated.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       test_passkey_model_.GetAllPasskeys();
-  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].sync_id(), expected.sync_id());
   EXPECT_EQ(passkeys[0].credential_id(), expected.credential_id());
   EXPECT_EQ(passkeys[0].rp_id(), expected.rp_id());
@@ -236,7 +238,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   // Verify that we still have only 1 passkey and that its last used time was
   // updated.
   passkeys = test_passkey_model_.GetAllPasskeys();
-  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
             credential.lastUsedTime);
 }
@@ -262,7 +264,7 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
                        key:store_key_
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
-  EXPECT_TRUE(migrator);
+  ASSERT_TRUE(migrator);
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 0);
@@ -290,9 +292,7 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
   EXPECT_EQ(store.credentials.count, 0u);
 
   // Verify that the credential is not migrated.
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      test_passkey_model_.GetAllPasskeys();
-  EXPECT_EQ(passkeys.size(), 0u);
+  EXPECT_THAT(test_passkey_model_.GetAllPasskeys(), IsEmpty());
 }
 
 class CredentialProviderMigratorWithSignalAPITest
@@ -327,7 +327,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
                        key:store_key_
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
-  EXPECT_TRUE(migrator);
+  ASSERT_TRUE(migrator);
 
   // Start initial migration.
   __block BOOL blockWaitCompleted = false;
@@ -344,7 +344,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   // Verify the passkey was migrated and is not hidden.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       test_passkey_model_.GetAllPasskeys();
-  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_FALSE(passkeys[0].hidden());
 
   // Verify temporal store is empty.
@@ -382,8 +382,87 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
 
   // Verify we still have only 1 passkey, but it's hidden now.
   passkeys = test_passkey_model_.GetAllPasskeys();
-  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_TRUE(passkeys[0].hidden());
+}
+
+TEST_F(CredentialProviderMigratorWithSignalAPITest,
+       PasskeyMigrationUpdatesUsername) {
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ArchivableCredential* credential = TestPasskeyCredential();
+  [store addCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  // Create the migrator and start the initial migration.
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  ASSERT_TRUE(migrator);
+  __block BOOL blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  // Verify the passkey was migrated and has the initial names.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      test_passkey_model_.GetAllPasskeys();
+  EXPECT_THAT(passkeys, SizeIs(1));
+  EXPECT_EQ(passkeys[0].user_name(), "username");
+  EXPECT_EQ(passkeys[0].user_display_name(), "userDisplayName");
+
+  // Verify temporal store is empty.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Add the same credential with a new username.
+  credential.username = @"newUsername";
+  [store addCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  // Start migration again.
+  blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  // Verify temporal store is empty again.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Verify there is still 1 passkey, but with an updated username and the same
+  // user display name.
+  passkeys = test_passkey_model_.GetAllPasskeys();
+  EXPECT_THAT(passkeys, SizeIs(1));
+  EXPECT_EQ(passkeys[0].user_name(), "newUsername");
+  EXPECT_EQ(passkeys[0].user_display_name(), "userDisplayName");
 }
 
 }  // namespace

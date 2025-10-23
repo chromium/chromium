@@ -108,9 +108,11 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
         std::optional<sync_pb::WebauthnCredentialSpecifics>
             credential_specifics =
                 _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
+        if (!credential_specifics.has_value()) {
+          continue;
+        }
 
         if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
-            credential_specifics &&
             credential_specifics->hidden() != credential.hidden) {
           // TODO(crbug.com/432260316): Log metrics.
           // TODO(crbug.com/432260316): Pass hidden time as well.
@@ -118,9 +120,18 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
           _passkeyStore->SetPasskeyHidden(credentialId, credential.hidden);
         }
 
-        if (credential_specifics &&
-            (credential_specifics->last_used_time_windows_epoch_micros() <
-             credential.lastUsedTime)) {
+        std::string username = base::SysNSStringToUTF8(credential.username);
+        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
+            credential_specifics->user_name() != username) {
+          _passkeyStore->UpdatePasskey(
+              credentialId,
+              {.user_name = username,
+               .user_display_name = credential_specifics->user_display_name()},
+              /*updated_by_user=*/false);
+        }
+
+        if (credential_specifics->last_used_time_windows_epoch_micros() <
+            credential.lastUsedTime) {
           _passkeyStore->UpdatePasskeyTimestamp(
               credentialId, base::Time::FromDeltaSinceWindowsEpoch(
                                 base::Microseconds(credential.lastUsedTime)));

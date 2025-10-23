@@ -433,7 +433,31 @@ enum class PasskeyUserVerificationStatus {
 - (void)reportPublicKeyCredentialUpdateForRelyingParty:(NSString*)relyingParty
                                             userHandle:(NSData*)userHandle
                                                newName:(NSString*)newName {
-  // TODO(crbug.com/432260316): Implement.
+  if (!IsSignalAPIEnabled()) {
+    return;
+  }
+
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return [credential.rpId isEqualToString:relyingParty] &&
+               [credential.userId isEqualToData:userHandle];
+      }];
+  if (credentialIndex == NSNotFound) {
+    return;
+  }
+
+  id<Credential> credential = credentials[credentialIndex];
+
+  // Respect the user's choice and skip the update if the data was explicitly
+  // changed by the user previously.
+  if (credential.editedByUser) {
+    return;
+  }
+
+  credential.username = newName;
+  SavePasskeyCredential(credential);
 }
 
 - (void)reportAllAcceptedPublicKeyCredentialsForRelyingParty:

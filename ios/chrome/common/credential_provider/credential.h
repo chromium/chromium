@@ -22,7 +22,7 @@
 @property(nonatomic, readonly) NSString* gaia;
 
 // Username of the service. Used by passwords and passkeys.
-@property(nonatomic, readonly) NSString* username;
+@property(nonatomic, copy) NSString* username;
 
 // Plain text password. Used by passwords only.
 @property(nonatomic, readonly) NSString* password;
