@@ -21,5 +21,10 @@ void RecordActorTaskStateTransitionActionCount(size_t action_count,
 void RecordActorTaskStateTransitionDuration(base::TimeDelta duration,
                                             ActorTask::State state);
 
+// Records tool timings.
+void RecordToolTimings(std::string_view tool_name,
+                       base::TimeDelta execution_duration,
+                       base::TimeDelta page_stabilization_duration);
+
 }  // namespace actor
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_

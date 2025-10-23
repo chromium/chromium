@@ -24,6 +24,7 @@
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -613,15 +614,17 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
+  base::TimeTicks end_time = base::TimeTicks::Now();
   if (!IsOk(*result)) {
-    action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
-                                 result->Clone());
+    action_results_.emplace_back(action_start_time_, end_time, result->Clone());
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
   }
 
-  action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
-                               std::move(result));
+  CHECK(result->execution_end_time);
+  RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
+                    end_time - *result->execution_end_time);
+  action_results_.emplace_back(action_start_time_, end_time, std::move(result));
   SetState(State::kUiPostInvoke);
   ui_event_dispatcher_->OnPostTool(
       GetInProgressAction(),

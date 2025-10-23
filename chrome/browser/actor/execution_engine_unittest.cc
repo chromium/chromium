@@ -63,6 +63,8 @@ constexpr char kActorTaskCountCancelledHistogram[] =
     "Actor.Task.Count.Cancelled";
 constexpr char kActorTaskCountCompletedHistogram[] =
     "Actor.Task.Count.Completed";
+constexpr char kActorClickToolDurationSuccessHistogram[] =
+    "Actor.Tools.ExecutionDuration.Click";
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
@@ -283,6 +285,7 @@ TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
                                  mojom::ActionResultCode::kOk, 1);
+  histograms_.ExpectTotalCount(kActorClickToolDurationSuccessHistogram, 1);
 }
 
 TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {

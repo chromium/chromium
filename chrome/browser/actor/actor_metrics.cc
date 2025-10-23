@@ -25,4 +25,15 @@ void RecordActorTaskStateTransitionDuration(base::TimeDelta duration,
       duration);
 }
 
+void RecordToolTimings(std::string_view tool_name,
+                       base::TimeDelta execution_duration,
+                       base::TimeDelta page_stabilization_duration) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Actor.Tools.ExecutionDuration.", tool_name}),
+      execution_duration);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Actor.Tools.PageStabilization.", tool_name}),
+      page_stabilization_duration);
+}
+
 }  // namespace actor

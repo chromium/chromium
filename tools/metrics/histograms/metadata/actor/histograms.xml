@@ -36,6 +36,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
 
+<variants name="ToolRequest">
+  <variant name="AttemptLogin" summary="Attempt Login"/>
+  <variant name="Click" summary="Click"/>
+  <variant name="CloseTab" summary="Close Tab"/>
+  <variant name="CloseWindow" summary="Close Window"/>
+  <variant name="CreateTab" summary="Create Tab"/>
+  <variant name="CreateWindow" summary="Create Window"/>
+  <variant name="DragAndRelease" summary="Drag And Release"/>
+  <variant name="FakeTool" summary="Fake Tool"/>
+  <variant name="History" summary="History"/>
+  <variant name="MediaControl" summary="Media Control"/>
+  <variant name="MoveMouse" summary="MoveMouse"/>
+  <variant name="Navigate" summary="Navigate"/>
+  <variant name="ScriptTool" summary="ScriptTool"/>
+  <variant name="Scroll" summary="Scroll"/>
+  <variant name="ScrollTo" summary="Scroll To"/>
+  <variant name="Select" summary="Select"/>
+  <variant name="Type" summary="Type"/>
+  <variant name="Wait" summary="Wait"/>
+</variants>
+
 <!-- LINT.IfChange(UiEvent) -->
 
 <variants name="UiEvent">
@@ -299,6 +320,30 @@ chromium-metrics-reviews@google.com.
     time the task spent in the {ActorTaskState} state.
   </summary>
   <token key="ActorTaskState" variants="ActorTaskState"/>
+</histogram>
+
+<histogram name="Actor.Tools.ExecutionDuration.{ToolRequest}" units="ms"
+    expires_after="2026-09-17">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The duration of how long a given tool took to execute when it was
+    successful.
+  </summary>
+  <token key="ToolRequest" variants="ToolRequest"/>
+</histogram>
+
+<histogram name="Actor.Tools.PageStabilization.{ToolRequest}" units="ms"
+    expires_after="2026-09-17">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The duration of how long a given tool took to stabilize after execution when
+    it was successful.
+  </summary>
+  <token key="ToolRequest" variants="ToolRequest"/>
 </histogram>
 
 <histogram name="Actor.Tools.TimeOfUseValidation" enum="TimeOfUseResult"
