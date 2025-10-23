@@ -127,7 +127,7 @@ export function getHtml(this: HistoryAppElement) {
           <div id="syncedDevicesScroll" class="cr-scrollable" path="syncedTabs">
             <div class="cr-scrollable-top-shadow"></div>
             <history-synced-device-manager id="synced-devices"
-                .sessionList="${this.queryResult_.sessionList}"
+                .sessionList="${this.sessionList_}"
                 .searchTerm="${this.queryState_.searchTerm}"
                 .signInState="${this.signInState_}">
             </history-synced-device-manager>

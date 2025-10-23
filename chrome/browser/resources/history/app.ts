@@ -17,7 +17,7 @@ import '/strings.m.js';
 
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
-import type {HistoryEntry, HistoryQuery, PageCallbackRouter, PageHandlerRemote, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerRemote, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
@@ -128,12 +128,6 @@ export interface HistoryAppElement {
   };
 }
 
-export interface QueryResult {
-  info?: HistoryQuery;
-  value?: HistoryEntry[];
-  sessionList?: ForeignSession[];
-}
-
 const HistoryAppElementBase = HelpBubbleMixinLit(
     FindShortcutMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
@@ -161,6 +155,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       // The id of the currently selected page.
       selectedPage_: {type: String},
       queryResult_: {type: Object},
+      sessionList_: {type: Array},
       // Updated on synced-device-manager attach by chrome.sending
       // 'otherDevicesInitialized'.
       signInState_: {
@@ -217,10 +212,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor tabsContentPage_: string = Page.HISTORY;
   protected accessor pendingDelete_: boolean = false;
   protected accessor queryResult_: QueryResult = {
-    info: undefined,
+    info: null,
     value: [],
-    sessionList: [],
   };
+  protected accessor sessionList_: ForeignSession[] = [];
   protected accessor queryState_: QueryState = {
     incremental: false,
     querying: false,
@@ -477,7 +472,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   protected onQueryFinished_(e: CustomEvent<{result: QueryResult}>) {
     this.queryResult_ = e.detail.result;
-    this.$.history.historyResult(e.detail.result.info!, e.detail.result.value!);
+    this.$.history.historyResult(e.detail.result.info!, e.detail.result.value);
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
@@ -593,7 +588,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
    *     devices.
    */
   private setForeignSessions_(sessionList: ForeignSession[]) {
-    this.queryResult_ = Object.assign({}, this.queryResult_, {sessionList});
+    this.sessionList_ = sessionList;
   }
 
   /**
