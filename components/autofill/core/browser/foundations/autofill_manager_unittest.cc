@@ -771,7 +771,7 @@ TEST_F(
   std::move(run_loop).Run();
 }
 
-TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
+TEST_F(AutofillManagerTest, GetHeuristicPredictionForForm) {
   FormData seen_form = test::CreateTestAddressFormData();
   OnFormsSeenWithExpectations(autofill_manager(), {seen_form}, {}, {seen_form});
 
@@ -780,7 +780,7 @@ TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
 
   // Check that predictions are returned for the form that was seen.
   EXPECT_EQ(autofill_manager()
-                .GetHeursticPredictionForForm(
+                .GetHeuristicPredictionForForm(
                     autofill::HeuristicSource::kPasswordManagerMachineLearning,
                     seen_form.global_id(),
                     base::ToVector(seen_form.fields(),
@@ -791,7 +791,7 @@ TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
   // Check that no predictions are returned for the unseen form.
   EXPECT_TRUE(
       autofill_manager()
-          .GetHeursticPredictionForForm(
+          .GetHeuristicPredictionForForm(
               autofill::HeuristicSource::kPasswordManagerMachineLearning,
               unseen_form.global_id(),
               base::ToVector(unseen_form.fields(),

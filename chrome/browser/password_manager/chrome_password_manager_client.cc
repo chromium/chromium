@@ -1944,7 +1944,7 @@ void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
                 password_manager::features::
                     kApplyClientsideModelPredictionsForPasswordTypes) ||
             use_model_predictions_for_actor) {
-          auto model_predictions = manager.GetHeursticPredictionForForm(
+          auto model_predictions = manager.GetHeuristicPredictionForForm(
               autofill::HeuristicSource::kPasswordManagerMachineLearning,
               form_id, field_ids_for_renderer_form);
           password_manager_.ProcessClassificationModelPredictions(

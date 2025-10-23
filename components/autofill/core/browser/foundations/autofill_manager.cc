@@ -552,11 +552,11 @@ AutofillManager::GetServerPredictionsForForm(
 }
 
 base::flat_map<FieldGlobalId, FieldType>
-AutofillManager::GetHeursticPredictionForForm(
+AutofillManager::GetHeuristicPredictionForForm(
     HeuristicSource source,
     FormGlobalId form_id,
     const std::vector<FieldGlobalId>& field_ids) const {
-  FormStructure* cached_form = FindCachedFormById(form_id);
+  const FormStructure* const cached_form = FindCachedFormById(form_id);
   if (!cached_form) {
     return {};
   }

@@ -1221,7 +1221,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
                   kApplyClientsideModelPredictionsForPasswordTypes)) {
         _passwordManager->ProcessClassificationModelPredictions(
             driver, form,
-            manager.GetHeursticPredictionForForm(
+            manager.GetHeuristicPredictionForForm(
                 autofill::HeuristicSource::kPasswordManagerMachineLearning,
                 globalFormId, field_ids));
       }

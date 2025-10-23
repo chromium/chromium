@@ -334,7 +334,7 @@ class AutofillManager
   // Returns predictions from a heuristic source for fields identified by
   // `field_ids` in a form identified by `form_id`. Returns an empty map if the
   // manager has no data about the form.
-  base::flat_map<FieldGlobalId, FieldType> GetHeursticPredictionForForm(
+  base::flat_map<FieldGlobalId, FieldType> GetHeuristicPredictionForForm(
       HeuristicSource source,
       FormGlobalId form_id,
       const std::vector<FieldGlobalId>& field_ids) const;
