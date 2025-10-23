@@ -9,7 +9,7 @@ import {loadTimeData, ManageProfilesBrowserProxyImpl, navigateTo, NavigationMixi
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -86,6 +86,7 @@ suite('ProfilePickerMainViewTest', function() {
       isProfileCreationAllowed: true,
       isAskOnStartupAllowed: true,
       profilesReorderingEnabled: true,
+      showProfilePickerToAllUsersExperiment: false,
     });
   }
 
@@ -334,6 +335,35 @@ suite('ProfilePickerMainViewTest', function() {
     profileCards.forEach(profileCard => {
       assertFalse(profileCard.$.profileCardButton.disabled);
     });
+  });
+
+  test('AskOnStartupWithProfilePickerShownToAllUsers', async function() {
+    loadTimeData.overrideValues({
+      showProfilePickerToAllUsersExperiment: true,
+    });
+    resetTest();
+    await browserProxy.whenCalled('initializeMainView');
+    // Hidden while profiles list is not yet defined.
+    assertFalse(isChildVisible(mainViewElement, '#profilesWrapper'));
+    assertFalse(isChildVisible(mainViewElement, '#askOnStartup'));
+    let profiles = generateProfilesList(1);
+    await simulateProfilesListChanged(profiles);
+    await verifyProfileCard(
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
+    // The checkbox 'Ask when chrome opens' should be visible to all users and
+    // checked by default.
+    assertTrue(isChildVisible(mainViewElement, '#askOnStartup'));
+    assertTrue(mainViewElement.$.askOnStartup.checked);
+    // Add a second profile.
+    profiles = generateProfilesList(2);
+    await simulateProfilesListChanged(profiles);
+    await verifyProfileCard(
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
+    assertTrue(isChildVisible(mainViewElement, '#askOnStartup'));
+    assertTrue(mainViewElement.$.askOnStartup.checked);
+    mainViewElement.$.askOnStartup.click();
+    await browserProxy.whenCalled('askOnStartupChanged');
+    assertFalse(mainViewElement.$.askOnStartup.checked);
   });
 
   test('AskOnStartupSingleToMultipleProfiles', async function() {

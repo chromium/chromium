@@ -207,6 +207,7 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
     html_source->AddBoolean("isBrowserSigninAllowed", false);
     html_source->AddBoolean("isGuestModeEnabled", false);
     html_source->AddBoolean("isProfileCreationAllowed", false);
+    html_source->AddBoolean("showProfilePickerToAllUsersExperiment", false);
     return;
   }
 
@@ -231,6 +232,11 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
   html_source->AddBoolean("isGuestModeEnabled", profiles::IsGuestModeEnabled());
   html_source->AddBoolean("isProfileCreationAllowed",
                           profiles::IsProfileCreationAllowed());
+
+  html_source->AddBoolean(
+      "showProfilePickerToAllUsersExperiment",
+      base::FeatureList::IsEnabled(
+          switches::kShowProfilePickerToAllUsersExperiment));
 }
 
 void AddResourcePaths(content::WebUIDataSource* html_source,

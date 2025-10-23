@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -217,4 +218,22 @@ TEST_F(ProfilePickerParamsTest, CanReuse) {
   EXPECT_TRUE(glic_manager_params.CanReusePickerWindow(glic_manager_params));
   EXPECT_FALSE(params.CanReusePickerWindow(glic_manager_params));
   EXPECT_FALSE(glic_manager_params.CanReusePickerWindow(params));
+}
+
+class ProfilePickerShowAllUsersTest : public ProfilePickerTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kShowProfilePickerToAllUsersExperiment};
+};
+
+TEST_F(ProfilePickerShowAllUsersTest,
+       ShouldShowAtLaunch_SingleProfile_ShowProfilePickerToAllUsersExperiment) {
+  testing_profile_manager()->CreateTestingProfile("profile1");
+  ASSERT_TRUE(
+      local_state()->GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
+  ASSERT_EQ(
+      1u, testing_profile_manager()->profile_manager()->GetNumberOfProfiles());
+
+  EXPECT_EQ(ProfilePicker::GetStartupMode(),
+            StartupProfileMode::kProfilePicker);
 }

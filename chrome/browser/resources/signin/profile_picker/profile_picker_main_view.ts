@@ -112,6 +112,9 @@ export class ProfilePickerMainViewElement extends
   private accessor forceSigninErrorProfilePath_: string = '';
   protected accessor shouldShownSigninButton_: boolean = false;
 
+  private showProfilePickerToAllUsersExperiment_: boolean =
+      loadTimeData.getBoolean('showProfilePickerToAllUsersExperiment');
+
   private eventTracker_: EventTracker = new EventTracker();
 
   override firstUpdated() {
@@ -298,7 +301,11 @@ export class ProfilePickerMainViewElement extends
   }
 
   private computeHideAskOnStartup_(): boolean {
-    return !isAskOnStartupAllowed() || this.profilesList_.length < 2;
+    const shouldShowBasedOnProfilesCount = this.profilesList_.length >= 2 ||
+        (this.profilesList_.length >= 1 &&
+         this.showProfilePickerToAllUsersExperiment_);
+
+    return !isAskOnStartupAllowed() || !shouldShowBasedOnProfilesCount;
   }
 
   protected toggleDrag_(e: Event) {

@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 
@@ -176,7 +177,12 @@ StartupProfileMode ProfilePicker::GetStartupMode() {
 
   size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
   // Need to consider 0 profiles as this is what happens in some browser-tests.
-  if (number_of_profiles <= 1) {
+  if (number_of_profiles == 0) {
+    return StartupProfileMode::kBrowserWindow;
+  }
+  if (number_of_profiles == 1 &&
+      !base::FeatureList::IsEnabled(
+          switches::kShowProfilePickerToAllUsersExperiment)) {
     return StartupProfileMode::kBrowserWindow;
   }
 
