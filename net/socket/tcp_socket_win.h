@@ -59,14 +59,14 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Takes ownership of `socket`, which is known to already be connected to the
   // given peer address. However, peer address may be the empty address, for
   // compatibility. The given peer address will be returned by GetPeerAddress.
-  // `socket` must support overlapped I/O operations operations.
+  // `socket` must support overlapped I/O operations.
   int AdoptConnectedSocket(SocketDescriptor socket,
                            const IPEndPoint& peer_address);
   // Takes ownership of |socket|, which may or may not be open, bound, or
   // listening. The caller must determine the state of the socket based on its
   // provenance and act accordingly. The socket may have connections waiting to
   // be accepted, but must not be actually connected. `socket` must support
-  // overlapped I/O operations operations.
+  // overlapped I/O operations.
   int AdoptUnconnectedSocket(SocketDescriptor socket);
 
   int Bind(const IPEndPoint& address);

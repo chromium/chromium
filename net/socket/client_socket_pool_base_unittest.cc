@@ -5253,7 +5253,7 @@ TEST_F(ClientSocketPoolBaseTest,
 // issued, and the new request belongs to a group that was previously stalled.
 //
 // The two differences from the above test are that the stalled requests are not
-// in the same group as the layered pool's request, and the the fourth request
+// in the same group as the layered pool's request, and the fourth request
 // has a higher priority than the third one, so gets a socket first.
 TEST_F(ClientSocketPoolBaseTest,
        CloseIdleSocketsHeldByLayeredPoolInSameGroupWhenNeeded2) {

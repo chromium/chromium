@@ -977,7 +977,7 @@ void TransportClientSocketPool::CleanupIdleSocketsInGroup(
       reason_for_closing_socket = kIdleTimeLimitExpired;
     }
 
-    // Usability errors take precedence over over other errors.
+    // Usability errors take precedence over other errors.
     if (!idle_socket_it->IsUsable(&reason_for_closing_socket))
       should_clean_up = true;
 

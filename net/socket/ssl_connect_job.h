@@ -209,7 +209,7 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // Any DNS aliases for the remote endpoint. Includes all known aliases, e.g.
   // from A, AAAA, or HTTPS, not just from the address used for the connection,
   // in no particular order. Stored because `nested_connect_job_` has a limited
-  // lifetime and the aliases can no longer be retrieved from there by by the
+  // lifetime and the aliases can no longer be retrieved from there by the
   // time that the aliases are needed to be passed in SetSocket.
   std::set<std::string> dns_aliases_;
 

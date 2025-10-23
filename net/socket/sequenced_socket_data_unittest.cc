@@ -46,7 +46,7 @@ const char kMsg4[] = "supercalifragilisticexpialidocious";
 const int kLen4 = std::size(kMsg4);
 const auto kMsg4Span = base::byte_span_with_nul_from_cstring(kMsg4);
 
-// Helper class for starting the next operation operation reentrantly after the
+// Helper class for starting the next operation reentrantly after the
 // previous operation completed asynchronously. When OnIOComplete is called,
 // it will first verify that the previous operation behaved as expected. This is
 // specified by either SetExpectedRead or SetExpectedWrite. It will then invoke
@@ -151,7 +151,7 @@ class SequencedSocketDataTest : public TestWithTaskEnvironment {
 
   // This method is used as the completion callback for an async read
   // operation and when invoked, it verifies that the correct data was read,
-  // then reads from the socket and verifies that that it returns the correct
+  // then reads from the socket and verifies that it returns the correct
   // value.
   void ReentrantReadCallback(base::span<const uint8_t> data,
                              int len2,
@@ -167,7 +167,7 @@ class SequencedSocketDataTest : public TestWithTaskEnvironment {
   // This method is used as the completion callback for an async write
   // operation and when invoked, it verifies that the write returned correctly,
   // then
-  // attempts to write to the socket and verifies that that it returns the
+  // attempts to write to the socket and verifies that it returns the
   // correct value.
   void ReentrantWriteCallback(int expected_rv1,
                               base::span<const uint8_t> data,

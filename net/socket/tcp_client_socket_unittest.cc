@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file contains some tests for TCPClientSocket.
-// transport_client_socket_unittest.cc contans some other tests that
+// transport_client_socket_unittest.cc contains some other tests that
 // are common for TCP and other types of sockets.
 
 #include "net/socket/tcp_client_socket.h"
