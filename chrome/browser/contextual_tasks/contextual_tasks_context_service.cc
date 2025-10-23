@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace contextual_tasks {
@@ -130,8 +131,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
         AUTO_CONTEXT_LOG(
             base::StringPrintf("Similarity with passage %s and query %s: %f",
                                embedding.passage, query, similarity_score));
-        // TODO: crbug.com/452056256 - Make comparing score configurable.
-        if (similarity_score > 0.5) {
+        if (similarity_score > kMinEmbeddingSimilarityScore.Get()) {
           AUTO_CONTEXT_LOG(
               base::StringPrintf("Adding %s to relevant set",
                                  web_contents->GetLastCommittedURL().spec()));

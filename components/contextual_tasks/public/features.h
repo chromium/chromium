@@ -6,11 +6,15 @@
 #define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
+
+// The minimum score required for two embeddings to be considered similar.
+extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 
 namespace flag_descriptions {
 

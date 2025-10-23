@@ -12,6 +12,10 @@ BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
+    &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
+    0.5};
+
 namespace flag_descriptions {
 
 const char kContextualTasksName[] = "Contextual Tasks";
