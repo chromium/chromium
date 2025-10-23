@@ -234,8 +234,14 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // converter.
   HRESULT CreateFifoIfNeeded();
 
+  // Sets up `input_format_` and `output_format_` based on `params_`.
+  void UpdateFormats();
+
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
+
+  // AudioParameters used to configure the stream formats in UpdateFormats().
+  const AudioParameters params_;
 
   AmplitudePeakDetector peak_detector_;
 
