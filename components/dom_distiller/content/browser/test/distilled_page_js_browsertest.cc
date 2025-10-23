@@ -93,5 +93,9 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, IdentifyEmptySVGsTest) {
   LoadAndExecuteTestScript("identify_empty_svgs_tester.js");
 }
 
+IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, WrapTablesTest) {
+  LoadAndExecuteTestScript("wrap_tables_tester.js");
+}
+
 }  // namespace
 }  // namespace dom_distiller

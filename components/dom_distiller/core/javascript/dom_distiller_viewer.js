@@ -31,6 +31,9 @@ function $(id) {
  * @param {HTMLElement} element The container element of the article.
  */
 function postProcessElement(element) {
+  // Wrap tables to make them scrollable.
+  wrapTables(element);
+
   // Readability will leave iframes around, but they need the proper structure
   // and classes to be styled correctly.
   addClassesToYoutubeIFrames(element);
@@ -382,6 +385,28 @@ function embedYoutubeIFrame(element) {
   container.setAttribute('class', 'youtubeContainer');
   parent.replaceChild(container, element);
   container.appendChild(element);
+}
+
+/**
+ * Finds all tables within an element and wraps each in a div with the
+ * 'scrollable-container' class to enable horizontal scrolling.
+ * @param {HTMLElement} element The element to search for tables in.
+*/
+function wrapTables(element) {
+  const containerClass = 'distilled-scrollable-container';
+  const tables = element.querySelectorAll('table');
+  tables.forEach(table => {
+    const tableParent = table.parentElement;
+    if (!tableParent || tableParent.classList.contains(containerClass)) {
+      return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = containerClass;
+
+    tableParent.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
 }
 
 function showLoadingIndicator(isLastPage) {

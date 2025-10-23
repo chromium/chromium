@@ -143,3 +143,13 @@ ul, ol {
     padding: 0;
     margin: 0;
 }
+
+/* Table styling. */
+
+/* Styles for scrollable containers, e.g., for wide tables. */
+.distilled-scrollable-container {
+  overflow-x: auto;
+<if expr="is_ios">
+  -webkit-overflow-scrolling: touch;
+</if>
+}
