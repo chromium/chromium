@@ -421,7 +421,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // selectively pausing animations for a CC instance is difficult.
   class ScopedPauseRendering {
    public:
-    explicit ScopedPauseRendering(const Element&);
+    explicit ScopedPauseRendering(const Element&, bool has_document_scope);
     ~ScopedPauseRendering();
 
     bool ShouldThrottleRendering() const;

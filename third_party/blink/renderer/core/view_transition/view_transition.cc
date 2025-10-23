@@ -52,13 +52,14 @@
 namespace blink {
 
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
-    const Element& element) {
+    const Element& element,
+    bool has_document_scope) {
   const Document& document = element.GetDocument();
   if (!document.GetFrame() || !document.GetFrame()->IsLocalRoot()) {
     return;
   }
 
-  if (!element.IsDocumentElement()) {
+  if (!has_document_scope) {
     return;
   }
 
@@ -997,7 +998,7 @@ void ViewTransition::PauseRendering() {
   if (!document_->GetPage() || !document_->View())
     return;
 
-  rendering_paused_scope_.emplace(*scope_);
+  rendering_paused_scope_.emplace(*scope_, has_document_scope_);
   document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
 
   if (has_document_scope_ &&
