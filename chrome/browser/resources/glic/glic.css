@@ -50,11 +50,11 @@ webview:not([hidden]) {
   color: var(--color--on-surface);
 }
 
-.sidePanel {
+#localPanels {
   height: 100%;
 }
 
-.sidePanel .dialog {
+#localPanels .dialog {
   height: 100%;
 }
 
@@ -63,7 +63,7 @@ webview:not([hidden]) {
   color: var(--color--on-surface-variant);
 }
 
-.sidePanel .container {
+#localPanels .container {
   display: flex;
   flex-direction: column;
   background: var(--color--surface);
@@ -144,13 +144,12 @@ webview:not([hidden]) {
   text-align: center;
 }
 
-.sidePanel .notice {
+#localPanels .notice {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 50px;
 }
 
 .notice .icon {
@@ -186,6 +185,10 @@ webview:not([hidden]) {
   font-size: 14px;
   font-weight: 500;
   margin: 8px 0 4px;
+}
+
+.notice-message {
+  width: 300px;
 }
 
 /* Guest panel contains glic webview. If in the show-header state, a header

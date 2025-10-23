@@ -106,7 +106,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   private guestResizeEnabled: boolean = false;
 
   // Width for non-resizable panel.
-  private defaultWidth: number = 352;
+  private defaultWidth: number = 400;
+  private defaultHeight: number = 252;
 
   // Last seen width and height of guest panel.
   private lastWidth: number = 400;
@@ -548,7 +549,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       this.browserProxy.handler.resizeWidget(
           {
             width: this.defaultWidth,
-            height: $[id].getBoundingClientRect().height,
+            height: this.defaultHeight,
           },
           transitionDuration);
     }

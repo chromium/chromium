@@ -23,7 +23,7 @@
           <div class="notice">
             <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
             <p class="headline">$i18n{offlineNoticeHeader}</p>
-            <p>$i18n{offlineNoticeAction}</p>
+            <p class="notice-message">$i18n{offlineNoticeAction}</p>
             <cr-button class="tonal-button"
               id="retry"
               role="button">$i18n{offlineNoticeActionButton}</cr-button>
@@ -57,7 +57,7 @@
           <div class="notice">
             <div class="icon"><cr-icon icon="glic:error"></cr-icon></div>
             <p class="headline">$i18n{errorNoticeHeader}</p>
-            <p>$i18n{errorNotice}</p>
+            <p class="notice-message">$i18n{errorNotice}</p>
             <cr-button class="tonal-button"
               id="reload"
               role="button">$i18n{errorNoticeActionButton}</cr-button>
@@ -76,7 +76,7 @@
           <div class="notice">
             <div class="icon"><cr-icon icon="glic:person-alert"></cr-icon></div>
             <p class="headline">$i18n{ineligibleProfileNoticeHeader}</p>
-            <p>$i18n{ineligibleProfileNotice}</p>
+            <p class="notice-message">$i18n{ineligibleProfileNotice}</p>
             <cr-button class="tonal-button"
               id="profilePickerButton"
               role="button">$i18n{ineligibleProfileNoticeActionButton}
@@ -96,8 +96,12 @@
           <div class="notice">
             <div class="icon"><cr-icon icon="cr:domain"></cr-icon></div>
             <p class="headline">$i18n{disabledByAdminNoticeHeader}</p>
-            <p class="without-link">$i18n{disabledByAdminNotice}</p>
-            <p class="with-link">$i18nRaw{disabledByAdminNoticeWithLink}</p>
+            <p class="notice-message without-link">
+              $i18n{disabledByAdminNotice}
+            </p>
+            <p class="notice-message with-link">
+              $i18nRaw{disabledByAdminNoticeWithLink}
+            </p>
             <cr-button class="tonal-button"
               id="disabledByAdminCloseButton"
               role="button">$i18n{disabledByAdminNoticeCloseButton}</cr-button>
@@ -116,7 +120,7 @@
           <div class="notice">
             <div class="icon"><cr-icon icon="glic:person-alert"></cr-icon></div>
             <p class="headline">$i18n{signInNoticeHeader}</p>
-            <p>$i18n{signInNotice}</p>
+            <p class="notice-message">$i18n{signInNotice}</p>
             <cr-button class="tonal-button"
               id="signInButton"
               role="button">$i18n{signInNoticeActionButton}</cr-button>
