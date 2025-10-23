@@ -25,13 +25,11 @@ class ExtensionsMenuViewPlatformDelegate {
   // called by the model on its destructor.
   virtual void DetachFromModel() = 0;
 
-  // Notifies the delegate that a new host access request was added for
-  // `extension_id` on `web_contents`.
-  // TODO(crbug.com/449814184): Rename to `OnHostAccessRequestAdded` after we
-  // finish migrating all PermissionsManager::Observer method from the platform
-  // delegate to the model, since same name causes parameter type mismatch.
-  virtual void OnAccessRequestAdded(const extensions::ExtensionId& extension_id,
-                                    content::WebContents* web_contents) = 0;
+  // Notifies the delegate that a new host access request was added or updated
+  // for `extension_id` on `web_contents`.
+  virtual void OnHostAccessRequestAddedOrUpdated(
+      const extensions::ExtensionId& extension_id,
+      content::WebContents* web_contents) = 0;
 
   // Notifies the delegate that the host access request for
   // `extension_id` was removed.

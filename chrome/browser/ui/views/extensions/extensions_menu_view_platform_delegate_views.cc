@@ -308,7 +308,7 @@ void ExtensionsMenuViewPlatformDelegateViews::DetachFromModel() {
   menu_model_ = nullptr;
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestAdded(
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestAddedOrUpdated(
     const extensions::ExtensionId& extension_id,
     content::WebContents* web_contents) {
   CHECK(current_page_);
@@ -324,7 +324,6 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestAdded(
   int index = 0;
   AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
                                        web_contents);
-
   main_page->MaybeShowRequestsSection();
 }
 
@@ -795,42 +794,6 @@ void ExtensionsMenuViewPlatformDelegateViews::
     return;
   }
 
-  main_page->RemoveExtensionRequestingAccess(extension_id);
-  main_page->MaybeShowRequestsSection();
-}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestUpdated(
-    const extensions::ExtensionId& extension_id,
-    int tab_id) {
-  DCHECK(current_page_);
-
-  // Ignore requests for other tabs.
-  int current_tab_id =
-      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
-  if (tab_id != current_tab_id) {
-    return;
-  }
-
-  // Site access requests only affect the main page.
-  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page) {
-    return;
-  }
-
-  // Update the request iff it's an active one.
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser_->profile());
-  if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
-    // TODO(crbug.com/330588494): Add to correct index based on alphabetic
-    // order.
-    int index = 0;
-    AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
-                                         GetActiveWebContents());
-    main_page->MaybeShowRequestsSection();
-    return;
-  }
-
-  // Otherwise, remove the request if existent.
   main_page->RemoveExtensionRequestingAccess(extension_id);
   main_page->MaybeShowRequestsSection();
 }

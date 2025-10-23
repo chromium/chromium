@@ -261,7 +261,30 @@ void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
     return;
   }
 
-  platform_delegate_->OnAccessRequestAdded(extension_id, web_contents);
+  platform_delegate_->OnHostAccessRequestAddedOrUpdated(extension_id,
+                                                        web_contents);
+}
+
+void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  // Ignore requests for other tabs.
+  int current_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser_->GetProfile());
+  if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
+    // Update the request iff it's an active one.
+    platform_delegate_->OnHostAccessRequestAddedOrUpdated(
+        extension_id, GetActiveWebContents());
+  } else {
+    // Otherwise, remove the request if existent.
+    platform_delegate_->OnAccessRequestRemoved(extension_id);
+  }
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestRemoved(
