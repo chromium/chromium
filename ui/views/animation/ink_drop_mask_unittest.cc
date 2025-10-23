@@ -35,7 +35,7 @@ MATCHER_P(PointsAre, expected, "") {
   }
 
   std::vector<SkPoint> actual(expected_size);
-  if (arg.getPoints(&actual.front(), expected_size) != expected_size) {
+  if (arg.getPoints(actual) != static_cast<size_t>(expected_size)) {
     *result_listener << "Failed extracting " << expected.size()
                      << " points from path.";
     return false;

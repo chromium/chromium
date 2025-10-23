@@ -456,8 +456,7 @@ void PlatformFontSkia::ComputeMetricsIfNecessary() {
       // the letter 'x' when available, otherwise use the max character width.
       SkGlyphID glyph = typeface_->unicharToGlyph('x');
       if (glyph != kUnsupportedGlyph) {
-        SkScalar sk_width;
-        font.getWidths(&glyph, 1, &sk_width);
+        SkScalar sk_width = font.getWidth(glyph);
         average_width_pixels_ = SkScalarToDouble(sk_width);
       }
       if (!average_width_pixels_) {

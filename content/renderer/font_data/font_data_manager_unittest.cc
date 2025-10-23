@@ -52,13 +52,11 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     std::unique_ptr<SkStreamAsset> asset = typeface->openStream(&ttc_index);
     auto result = font_data_service::mojom::MatchFamilyNameResult::New();
     result->ttc_index = ttc_index;
-    const int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
+    const int axis_count = typeface->getVariationDesignPosition({});
     if (axis_count > 0) {
       std::vector<SkFontArguments::VariationPosition::Coordinate>
-          coordinate_list;
-      coordinate_list.resize(axis_count);
-      if (typeface->getVariationDesignPosition(coordinate_list.data(),
-                                               coordinate_list.size()) > 0) {
+          coordinate_list(axis_count);
+      if (typeface->getVariationDesignPosition(coordinate_list) > 0) {
         auto variation_position =
             font_data_service::mojom::VariationPosition::New();
         for (const auto& coordinate : coordinate_list) {

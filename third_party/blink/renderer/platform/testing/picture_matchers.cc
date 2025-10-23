@@ -30,8 +30,7 @@ class DrawsRectangleCanvas : public SkCanvas {
     SkPoint quad[4];
     getTotalMatrix().mapRectToQuad(quad, rect);
 
-    SkRect device_rect;
-    device_rect.setBounds(quad, 4);
+    SkRect device_rect = SkRect::BoundsOrEmpty(quad);
     SkIRect device_clip_bounds;
     gfx::RectF clipped_rect;
     if (getDeviceClipBounds(&device_clip_bounds) &&

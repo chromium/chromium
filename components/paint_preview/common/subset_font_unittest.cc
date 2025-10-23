@@ -91,7 +91,7 @@ TEST(PaintPreviewSubsetFontTest, TestVariantSubset) {
   auto typeface = base_typeface->makeClone(args);
   // Some older OS versions/platforms may not support variation font data and
   // they fallback. In these cases trying to get variation information may fail.
-  if (!typeface || typeface->getVariationDesignPosition(nullptr, 0) != 3) {
+  if (!typeface || typeface->getVariationDesignPosition({}) != 3) {
     return;
   }
 
@@ -110,15 +110,12 @@ TEST(PaintPreviewSubsetFontTest, TestVariantSubset) {
   ASSERT_NE(subset_typeface, nullptr);
 
   // Ensure the variants are the same before and after.
-  auto subset_axes_count =
-      subset_typeface->getVariationDesignPosition(nullptr, 0);
+  auto subset_axes_count = subset_typeface->getVariationDesignPosition({});
   ASSERT_GT(subset_axes_count, 0);
   EXPECT_EQ(static_cast<size_t>(subset_axes_count), axes.size());
   std::vector<SkFontArguments::VariationPosition::Coordinate> subset_axes;
   subset_axes.resize(subset_axes_count);
-  ASSERT_GT(subset_typeface->getVariationDesignPosition(subset_axes.data(),
-                                                        subset_axes.size()),
-            0);
+  ASSERT_GT(subset_typeface->getVariationDesignPosition(subset_axes), 0);
   struct {
     bool operator()(SkFontArguments::VariationPosition::Coordinate a,
                     SkFontArguments::VariationPosition::Coordinate b) {

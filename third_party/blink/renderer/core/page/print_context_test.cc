@@ -67,7 +67,7 @@ class MockPageContextCanvas : public SkCanvas {
     }
 
     if (rect.width() == 0 && rect.height() == 0) {
-      SkPoint point = getTotalMatrix().mapXY(rect.x(), rect.y());
+      SkPoint point = getTotalMatrix().mapPoint(rect.TL());
       Operation operation = {kDrawPoint,
                              SkRect::MakeXYWH(point.x(), point.y(), 0, 0)};
       recorded_operations_.push_back(operation);

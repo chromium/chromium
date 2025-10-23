@@ -296,13 +296,12 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
     return nullptr;
   }
 
-  const int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
+  const int axis_count = typeface->getVariationDesignPosition({});
   if (axis_count > 0) {
     auto coordinate_list =
         base::HeapArray<SkFontArguments::VariationPosition::Coordinate>::Uninit(
             axis_count);
-    if (typeface->getVariationDesignPosition(coordinate_list.data(),
-                                             coordinate_list.size()) > 0) {
+    if (typeface->getVariationDesignPosition(coordinate_list) > 0) {
       result->variation_position = mojom::VariationPosition::New();
       result->variation_position->coordinates.reserve(coordinate_list.size());
       result->variation_position->coordinateCount = axis_count;
