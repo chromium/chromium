@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -62,6 +63,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock Tab mTab1;
     private @Mock Tab mTab2;
     private @Mock Tab mTab3;
+    private @Mock WebContents mWebContents;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -192,6 +194,16 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
         mMediator.onToggleAttachmentsPopup();
         assertEquals(3, mTabAttachmentsModelList.size());
+
+        doReturn(mWebContents).when(mTab3).getWebContents();
+        doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab3);
+        mTabAttachmentsModelList
+                .get(2)
+                .model
+                .get(TabAttachmentPopupChoiceProperties.ON_CLICK_LISTENER)
+                .onClick(null);
+        verify(mComposeBoxQueryControllerBridge).addTabContext(mTab3);
+        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 
     @Test
@@ -228,7 +240,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                         "title",
                         "image",
                         byteArray);
-        mMediator.addAttachment(attachmentDetails);
+        mMediator.uploadAndAddAttachment(attachmentDetails);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
     }
@@ -245,7 +257,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                         "title",
                         "image",
                         byteArray);
-        mMediator.addAttachment(attachmentDetails);
+        mMediator.uploadAndAddAttachment(attachmentDetails);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 

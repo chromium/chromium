@@ -210,6 +210,9 @@ class NavigationAttachmentsMediator {
             PropertyModel tabProperties =
                     new PropertyModel.Builder(TabAttachmentPopupChoiceProperties.ALL_KEYS)
                             .with(
+                                    TabAttachmentPopupChoiceProperties.ON_CLICK_LISTENER,
+                                    (v) -> onTabAttachmentClicked(tab))
+                            .with(
                                     TabAttachmentPopupChoiceProperties.THUMBNAIL,
                                     new BitmapDrawable(
                                             mContext.getResources(),
@@ -225,6 +228,23 @@ class NavigationAttachmentsMediator {
         mModel.set(
                 NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE,
                 !mTabAttachmentsModelList.isEmpty());
+    }
+
+    private void onTabAttachmentClicked(Tab tab) {
+        if (mComposeBoxQueryControllerBridge == null) return;
+        mPopup.dismiss();
+        @Nullable String token = mComposeBoxQueryControllerBridge.addTabContext(tab);
+        if (TextUtils.isEmpty(token)) return;
+        AttachmentDetails attachmentDetails =
+                new AttachmentDetails(
+                        NavigationAttachmentItemType.ATTACHMENT_TAB,
+                        new BitmapDrawable(
+                                mContext.getResources(),
+                                OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
+                        tab.getTitle(),
+                        /* mimeType= */ "",
+                        /* data= */ new byte[] {});
+        addAttachment(attachmentDetails, token);
     }
 
     @VisibleForTesting
@@ -272,7 +292,7 @@ class NavigationAttachmentsMediator {
                                     "",
                                     "image/png",
                                     dataBytes);
-                    addAttachment(attachmentDetails);
+                    uploadAndAddAttachment(attachmentDetails);
                 },
                 R.string.low_memory_error);
     }
@@ -305,7 +325,7 @@ class NavigationAttachmentsMediator {
 
                     var uris = extractUrisFromResult(data);
                     for (var uri : uris) {
-                        fetchAttachmentDetails(uri, this::addAttachment);
+                        fetchAttachmentDetails(uri, this::uploadAndAddAttachment);
                     }
                 },
                 R.string.low_memory_error);
@@ -330,7 +350,7 @@ class NavigationAttachmentsMediator {
 
                     var uris = extractUrisFromResult(data);
                     for (var uri : uris) {
-                        fetchAttachmentDetails(uri, this::addAttachment);
+                        fetchAttachmentDetails(uri, this::uploadAndAddAttachment);
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
@@ -360,7 +380,7 @@ class NavigationAttachmentsMediator {
                                 "",
                                 "image/png",
                                 pngBytes);
-                addAttachment(attachmentDetails);
+                uploadAndAddAttachment(attachmentDetails);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -377,10 +397,15 @@ class NavigationAttachmentsMediator {
      *
      * @param attachmentDetails The details of the attachment to add.
      */
-    /* package */ void addAttachment(AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
+    /* package */ void uploadAndAddAttachment(
+            AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
         String token = uploadAttachment(attachmentDetails);
         if (TextUtils.isEmpty(token)) return;
+        addAttachment(attachmentDetails, token);
+    }
 
+    private void addAttachment(
+            AttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
         onUseAiModeChanged(true);
 
         PropertyModel model =

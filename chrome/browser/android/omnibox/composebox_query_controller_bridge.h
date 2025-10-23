@@ -10,9 +10,14 @@
 #include <memory>
 
 #include "base/android/jni_string.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "third_party/jni_zero/jni_zero.h"
+
+namespace content {
+class WebContents;
+}  //  namespace content
 
 class Profile;
 class GURL;
@@ -30,6 +35,9 @@ class ComposeboxQueryControllerBridge
       std::string& file_name,
       std::string& file_type,
       const jni_zero::JavaParamRef<jobject>& file_data);
+  base::android::ScopedJavaLocalRef<jobject> AddTabContext(
+      JNIEnv* env,
+      content::WebContents* web_contents);
   GURL GetAimUrl(JNIEnv* env, std::string& query_text);
   void RemoveAttachment(JNIEnv* env, const std::string& token);
 
@@ -41,8 +49,14 @@ class ComposeboxQueryControllerBridge
       const std::optional<FileUploadErrorType>& error_type) override;
 
  private:
+  void OnGetTabPageContext(
+      JNIEnv* env,
+      const base::UnguessableToken& context_token,
+      std::unique_ptr<lens::ContextualInputData> page_content_data);
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
+  base::WeakPtrFactory<ComposeboxQueryControllerBridge> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_COMPOSEBOX_QUERY_CONTROLLER_BRIDGE_H_

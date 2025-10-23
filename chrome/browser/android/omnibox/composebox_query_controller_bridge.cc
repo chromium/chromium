@@ -14,11 +14,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -118,6 +123,31 @@ ComposeboxQueryControllerBridge::AddFile(
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+ComposeboxQueryControllerBridge::AddTabContext(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  tabs::TabInterface* const tab =
+      tabs::TabInterface::GetFromContents(web_contents);
+
+  if (!tab) {
+    return {};
+  }
+
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::TabContextualizationController* tab_contextualization_controller =
+      lens::TabContextualizationController::From(tab);
+  if (!tab_contextualization_controller) {
+    return {};
+  }
+
+  tab_contextualization_controller->GetPageContext(
+      base::BindOnce(&ComposeboxQueryControllerBridge::OnGetTabPageContext,
+                     weak_ptr_factory_.GetWeakPtr(), env, file_token));
+
+  return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
+}
+
 GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
                                                 std::string& query_text) {
   // TODO(crbug.com/448149357): Update the bridge interface to take in
@@ -145,3 +175,18 @@ void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     lens::MimeType mime_type,
     composebox_query::mojom::FileUploadStatus file_upload_status,
     const std::optional<FileUploadErrorType>& error_type) {}
+
+void ComposeboxQueryControllerBridge::OnGetTabPageContext(
+    JNIEnv* env,
+    const base::UnguessableToken& context_token,
+    std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  std::optional<lens::ImageEncodingOptions> image_options =
+      lens::ImageEncodingOptions{.enable_webp_encoding = false,
+                                 .max_size = 1500000,
+                                 .max_height = 1600,
+                                 .max_width = 1600,
+                                 .compression_quality = 40};
+
+  query_controller_->StartFileUploadFlow(
+      context_token, std::move(page_content_data), std::move(image_options));
+}

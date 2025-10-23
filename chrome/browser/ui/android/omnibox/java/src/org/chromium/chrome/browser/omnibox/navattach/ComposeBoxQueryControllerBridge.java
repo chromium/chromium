@@ -11,6 +11,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
@@ -63,6 +65,16 @@ public class ComposeBoxQueryControllerBridge {
                 .addFile(mNativeInstance, fileName, fileType, byteBuffer);
     }
 
+    /**
+     * Uploads the given tab, adding it to the current session. If the upload can't be performed,
+     * null is returned.
+     */
+    @Nullable String addTabContext(Tab tab) {
+        if (tab.getWebContents() == null) return null;
+        return ComposeBoxQueryControllerBridgeJni.get()
+                .addTabContext(mNativeInstance, tab.getWebContents());
+    }
+
     GURL getAimUrl(String queryText) {
         return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, queryText);
     }
@@ -91,6 +103,10 @@ public class ComposeBoxQueryControllerBridge {
                 @JniType("std::string") String fileName,
                 @JniType("std::string") String fileType,
                 ByteBuffer fileData);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        @Nullable String addTabContext(
+                long nativeInstance, @JniType("content::WebContents*") WebContents webContents);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @JniType("GURL")

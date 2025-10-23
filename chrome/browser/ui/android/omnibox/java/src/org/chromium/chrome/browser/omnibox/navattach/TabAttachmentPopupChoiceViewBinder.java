@@ -17,7 +17,10 @@ public class TabAttachmentPopupChoiceViewBinder {
 
     public static void bind(PropertyModel propertyModel, View view, PropertyKey propertyKey) {
         ButtonCompat buttonCompat = (ButtonCompat) view;
-        if (propertyKey == TabAttachmentPopupChoiceProperties.THUMBNAIL) {
+        if (propertyKey == TabAttachmentPopupChoiceProperties.ON_CLICK_LISTENER) {
+            buttonCompat.setOnClickListener(
+                    propertyModel.get(TabAttachmentPopupChoiceProperties.ON_CLICK_LISTENER));
+        } else if (propertyKey == TabAttachmentPopupChoiceProperties.THUMBNAIL) {
             buttonCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     propertyModel.get(TabAttachmentPopupChoiceProperties.THUMBNAIL),
                     null,

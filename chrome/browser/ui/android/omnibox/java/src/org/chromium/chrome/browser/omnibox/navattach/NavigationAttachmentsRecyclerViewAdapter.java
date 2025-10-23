@@ -19,12 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
     @IntDef({
         NavigationAttachmentItemType.ATTACHMENT_ITEM,
-        NavigationAttachmentItemType.ATTACHMENT_IMAGE
+        NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+        NavigationAttachmentItemType.ATTACHMENT_TAB
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NavigationAttachmentItemType {
         int ATTACHMENT_ITEM = 0;
         int ATTACHMENT_IMAGE = 1;
+        int ATTACHMENT_TAB = 2;
     }
 
     NavigationAttachmentsRecyclerViewAdapter(ModelList data) {
@@ -39,6 +41,14 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
                 NavigationAttachmentItemViewBinder::bind);
         registerType(
                 NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                (parent) -> {
+                    return parent.getContext()
+                            .getSystemService(android.view.LayoutInflater.class)
+                            .inflate(R.layout.navigation_attachment_item, parent, false);
+                },
+                NavigationAttachmentItemViewBinder::bind);
+        registerType(
+                NavigationAttachmentItemType.ATTACHMENT_TAB,
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
