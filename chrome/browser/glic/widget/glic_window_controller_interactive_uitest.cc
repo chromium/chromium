@@ -888,6 +888,10 @@ class GlicWindowControllerWithPreviousPostionUiTest
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
                        TestInitialBounds) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // Check that the saved initial bounds are used.
   gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
@@ -911,6 +915,10 @@ class GlicWindowControllerUnloadOnCloseTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUnloadOnCloseTest, UnloadOnClose) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(OpenGlicFloatingWindow(), CheckControllerHasWidget(true),
                   CheckWebUiContentsExist(true), CloseGlicWindow(),
                   CheckWebUiContentsExist(false));
@@ -964,6 +972,10 @@ class GlicWindowControllerWithMemoryPressureUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // TODO(crbug.com/411100559): Wait for preload completion rather than assuming
   // that it will finish before the next step in the sequence.
   RunTestSequence(

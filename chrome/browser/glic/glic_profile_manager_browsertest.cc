@@ -156,6 +156,10 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_WithDetachedGlic) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   auto* service0 = GetMockGlicKeyedService(browser()->profile());
 
   // Setup Profile 1

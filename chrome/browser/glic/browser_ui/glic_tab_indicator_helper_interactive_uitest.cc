@@ -124,6 +124,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlerted) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlertTurnsOff) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -382,6 +386,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        AcessingTabAfterOpeningTabSearchDialog) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),

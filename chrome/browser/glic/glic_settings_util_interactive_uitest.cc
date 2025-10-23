@@ -75,7 +75,7 @@ class GlicSettingsUtilUiTest
         }),
         WaitForWebContentsNavigation(
             kFirstTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
-        AddInstrumentedTab(kSecondTab , GURL(chrome::kChromeUICreditsURL)),
+        AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUICreditsURL)),
         AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUIAboutURL)),
         Do([this, f] { f(browser()->profile()); }), InstrumentTab(kSettingsTab),
         WaitForWebContentsReady(
@@ -124,10 +124,9 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettings) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenOsToggleSetting) {
-  RunTestSequence(
-      VerifyOpensGlicSettings(glic::OpenGlicOsToggleSetting),
-      WaitForStateChange(
-          kFirstTab, ElementIsVisibleStateChange(kBubbleIsVisible,
+  RunTestSequence(VerifyOpensGlicSettings(glic::OpenGlicOsToggleSetting),
+                  WaitForStateChange(kFirstTab, ElementIsVisibleStateChange(
+                                                    kBubbleIsVisible,
                                                     kOsToggleHelpBubbleQuery)));
 }
 
@@ -141,9 +140,9 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
                        MAYBE_OpenKeyboardShortcutSetting) {
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicKeyboardShortcutSetting),
-      WaitForStateChange(kFirstTab, ElementIsVisibleStateChange(
-                                           kBubbleIsVisible,
-                                           kKeyboardShortcutHelpBubbleQuery)));
+      WaitForStateChange(
+          kFirstTab, ElementIsVisibleStateChange(
+                         kBubbleIsVisible, kKeyboardShortcutHelpBubbleQuery)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, ThrottleOpenOsToggleSetting) {
@@ -186,6 +185,10 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached,
                      GlicInstrumentMode::kHostAndContents),

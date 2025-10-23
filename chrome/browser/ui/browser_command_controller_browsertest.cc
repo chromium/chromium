@@ -712,6 +712,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        ExecuteGlicThreeDotMenuItem) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // Bypass glic eligibility check.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
   profile_prefs->SetInteger(

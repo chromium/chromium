@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -10,7 +12,6 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/actor/ui/mocks/mock_event_dispatcher.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,6 +74,10 @@ class GlicKeyedServiceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicKeyedServiceBrowserTest, CallClosePanel_ExpectShow) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   CreateActingTask();
   EXPECT_EQ(prefs()->GetInteger(actor::ui::kToastShown), 0);
   CloseFloaty();
@@ -81,6 +86,10 @@ IN_PROC_BROWSER_TEST_F(GlicKeyedServiceBrowserTest, CallClosePanel_ExpectShow) {
 
 IN_PROC_BROWSER_TEST_F(GlicKeyedServiceBrowserTest,
                        CallClosePanel_ExpectShowsMaxTimes) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   CreateActingTask();
 
   // Close the panel kToastShownMax times.

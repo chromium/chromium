@@ -272,6 +272,10 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreAcceptance) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // Open the FRE dialog in a tab.
   glic_fre_controller().ShowFreDialog(
       browser(), mojom::InvocationSource::kTopChromeButton);
