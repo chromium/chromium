@@ -1151,6 +1151,7 @@ const FeatureEntry::FeatureVariation kTextSafetyClassifierVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
+    {"ai_mode", "true"},
     {"autofill_address", "true"},
     {"cookie_controls", "true"},
     {"click_to_call", "true"},
