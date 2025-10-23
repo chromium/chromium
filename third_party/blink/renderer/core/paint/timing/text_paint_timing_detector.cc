@@ -62,17 +62,16 @@ std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   if (!largest_text_) {
     return {nullptr, false};
   }
-  const base::TimeTicks time = largest_text_->PaintTime();
-  const uint64_t size = largest_text_->RecordedSize();
   CHECK(paint_timing_detector_);
   CHECK(paint_timing_detector_->GetLargestContentfulPaintCalculator());
 
-  bool changed = paint_timing_detector_->GetLargestContentfulPaintCalculator()
-                     ->NotifyMetricsIfLargestTextPaintChanged(time, size);
+  bool changed =
+      paint_timing_detector_->GetLargestContentfulPaintCalculator()
+          ->NotifyMetricsIfLargestTextPaintChanged(*largest_text_.Get());
   if (changed) {
     // It is not possible for an update to happen with a candidate that has no
     // paint time.
-    DCHECK(!time.is_null());
+    DCHECK(largest_text_->HasPaintTime());
     ReportCandidateToTrace(*largest_text_);
   }
   return {largest_text_.Get(), changed};

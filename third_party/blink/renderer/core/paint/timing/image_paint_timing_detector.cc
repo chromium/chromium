@@ -129,20 +129,13 @@ void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
 std::pair<ImageRecord*, bool>
 ImagePaintTimingDetector::UpdateMetricsCandidate() {
   ImageRecord* largest_image_record = records_manager_.LargestImage();
-
-  base::TimeTicks time;
-  uint64_t size = 0;
-  double bpp = 0.0;
-  std::optional<WebURLRequest::Priority> priority = std::nullopt;
-
-  if (largest_image_record) {
-    time = largest_image_record->HasFirstAnimatedFrameTime()
-               ? largest_image_record->FirstAnimatedFrameTime()
-               : largest_image_record->PaintTime();
-    size = largest_image_record->RecordedSize();
-    bpp = largest_image_record->EntropyForLCP();
-    priority = largest_image_record->RequestPriority();
+  if (!largest_image_record) {
+    return {nullptr, false};
   }
+
+  base::TimeTicks time = largest_image_record->HasFirstAnimatedFrameTime()
+                             ? largest_image_record->FirstAnimatedFrameTime()
+                             : largest_image_record->PaintTime();
 
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
   // Calling NotifyMetricsIfLargestImagePaintChanged only has an impact on
@@ -150,10 +143,9 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
   //
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
-  bool changed =
-      detector.GetLargestContentfulPaintCalculator()
-          ->NotifyMetricsIfLargestImagePaintChanged(
-              time, size, largest_image_record, bpp, std::move(priority));
+  bool changed = detector.GetLargestContentfulPaintCalculator()
+                     ->NotifyMetricsIfLargestImagePaintChanged(
+                         time, *largest_image_record);
   if (changed) {
     if (!time.is_null() && largest_image_record->IsLoaded()) {
       ReportCandidateToTrace(*largest_image_record, time);

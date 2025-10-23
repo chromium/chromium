@@ -241,11 +241,13 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
     return false;
   }
 
-  // TODO(crbug.com/425398556): Consider updating `lcp_calculator_` to accept
-  // ImageRecord and TextRecord and to extract its own timings/sizes rather than
-  // passing them manually here-- similar to how
-  // `UpdateWebExposedLargestContentfulPaintIfNeeded` does it.
   bool latest_lcp_details_for_ukm_changed = false;
+  // TODO(crbug.com/449779010): Update `lcp_calculator_` to compute the
+  // timestamp rather than passing it here. This is currently done this way
+  // because hard LCP always uses first animated frame time for images for
+  // metrics, when available whereas we always use the same value as the
+  // web-exposed entry, which depends on ReportFirstFrameTimeAsRenderTime.
+  //
   // TODO(crbug.com/425989954): Guard on paint_time, because although this
   // TryUpdateLcpCandidate gets called after presentation feedback, it might not
   // be the right presentation time for this specific text/image record.
@@ -253,15 +255,13 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
     latest_lcp_details_for_ukm_changed =
         latest_lcp_details_for_ukm_changed ||
         lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged(
-            largest_text_->PaintTime(), largest_text_->RecordedSize());
+            *largest_text_.Get());
   }
   if (largest_image_ && largest_image_->HasPaintTime()) {
     latest_lcp_details_for_ukm_changed =
         latest_lcp_details_for_ukm_changed ||
         lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged(
-            largest_image_->PaintTime(), largest_image_->RecordedSize(),
-            largest_image_, largest_image_->EntropyForLCP(),
-            largest_image_->RequestPriority());
+            largest_image_->PaintTime(), *largest_image_.Get());
   }
   return latest_lcp_details_for_ukm_changed;
 }

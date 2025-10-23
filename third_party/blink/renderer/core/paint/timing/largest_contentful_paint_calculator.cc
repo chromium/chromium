@@ -213,87 +213,80 @@ bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
 
 bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
     base::TimeTicks image_paint_time,
-    uint64_t image_paint_size,
-    ImageRecord* image_record,
-    double image_bpp,
-    std::optional<WebURLRequest::Priority> priority) {
+    const ImageRecord& image_record) {
   if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
-                                             image_paint_size)) {
+                                             image_record.RecordedSize())) {
     return false;
   }
 
   latest_lcp_details_.largest_contentful_paint_type =
       blink::LargestContentfulPaintType::kNone;
-  if (image_record) {
-    // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
-    // default, we'd be able to use the value of
-    // largest_image_record->first_animated_frame_time directly.
-    if (image_record && image_record->GetMediaTiming()) {
-      if (!image_record->GetMediaTiming()->GetFirstVideoFrameTime().is_null()) {
-        // Set the video flag.
-        latest_lcp_details_.largest_contentful_paint_type |=
-            blink::LargestContentfulPaintType::kVideo;
-      } else if (image_record->GetMediaTiming()->IsPaintedFirstFrame()) {
-        // Set the animated image flag.
-        latest_lcp_details_.largest_contentful_paint_type |=
-            blink::LargestContentfulPaintType::kAnimatedImage;
-      }
-
-      // Set image type flag.
+  // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
+  // default, we'd be able to use the value of
+  // largest_image_record->first_animated_frame_time directly.
+  if (const MediaTiming* timing = image_record.GetMediaTiming()) {
+    if (!timing->GetFirstVideoFrameTime().is_null()) {
+      // Set the video flag.
       latest_lcp_details_.largest_contentful_paint_type |=
-          blink::LargestContentfulPaintType::kImage;
-
-      // Set specific type of the image.
+          blink::LargestContentfulPaintType::kVideo;
+    } else if (timing->IsPaintedFirstFrame()) {
+      // Set the animated image flag.
       latest_lcp_details_.largest_contentful_paint_type |=
-          GetLargestContentfulPaintTypeFromString(
-              image_record->GetMediaTiming()->MediaType());
+          blink::LargestContentfulPaintType::kAnimatedImage;
+    }
 
-      // Set DataURI type.
-      if (image_record->GetMediaTiming()->IsDataUrl()) {
-        latest_lcp_details_.largest_contentful_paint_type |=
-            blink::LargestContentfulPaintType::kDataURI;
-      }
+    // Set image type flag.
+    latest_lcp_details_.largest_contentful_paint_type |=
+        blink::LargestContentfulPaintType::kImage;
 
-      // Set cross-origin flag of the image.
-      if (auto* window = window_performance_->DomWindow()) {
-        auto image_url = image_record->GetMediaTiming()->Url();
-        if (!image_url.IsEmpty() && image_url.ProtocolIsInHTTPFamily() &&
-            window->GetFrame()->IsOutermostMainFrame()) {
-          auto image_origin = SecurityOrigin::Create(image_url);
-          if (!image_origin->IsSameOriginWith(window->GetSecurityOrigin())) {
-            latest_lcp_details_.largest_contentful_paint_type |=
-                blink::LargestContentfulPaintType::kCrossOrigin;
-          }
+    // Set specific type of the image.
+    latest_lcp_details_.largest_contentful_paint_type |=
+        GetLargestContentfulPaintTypeFromString(timing->MediaType());
+
+    // Set DataURI type.
+    if (timing->IsDataUrl()) {
+      latest_lcp_details_.largest_contentful_paint_type |=
+          blink::LargestContentfulPaintType::kDataURI;
+    }
+
+    // Set cross-origin flag of the image.
+    if (auto* window = window_performance_->DomWindow()) {
+      auto image_url = timing->Url();
+      if (!image_url.IsEmpty() && image_url.ProtocolIsInHTTPFamily() &&
+          window->GetFrame()->IsOutermostMainFrame()) {
+        auto image_origin = SecurityOrigin::Create(image_url);
+        if (!image_origin->IsSameOriginWith(window->GetSecurityOrigin())) {
+          latest_lcp_details_.largest_contentful_paint_type |=
+              blink::LargestContentfulPaintType::kCrossOrigin;
         }
       }
-
-      latest_lcp_details_.resource_load_timings.discovery_time =
-          image_record->GetMediaTiming()->DiscoveryTime();
-      latest_lcp_details_.resource_load_timings.load_start =
-          image_record->GetMediaTiming()->LoadStart();
-      latest_lcp_details_.resource_load_timings.load_end =
-          image_record->GetMediaTiming()->LoadEnd();
     }
+
+    latest_lcp_details_.resource_load_timings.discovery_time =
+        timing->DiscoveryTime();
+    latest_lcp_details_.resource_load_timings.load_start = timing->LoadStart();
+    latest_lcp_details_.resource_load_timings.load_end = timing->LoadEnd();
   }
   latest_lcp_details_.largest_image_paint_time = image_paint_time;
-  latest_lcp_details_.largest_image_paint_size = image_paint_size;
-  latest_lcp_details_.largest_contentful_paint_image_bpp = image_bpp;
+  latest_lcp_details_.largest_image_paint_size = image_record.RecordedSize();
+  latest_lcp_details_.largest_contentful_paint_image_bpp =
+      image_record.EntropyForLCP();
   latest_lcp_details_.largest_contentful_paint_image_request_priority =
-      std::move(priority);
+      image_record.RequestPriority();
   UpdateLatestLcpDetailsTypeIfNeeded();
   return true;
 }
 
 bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged(
-    base::TimeTicks text_paint_time,
-    uint64_t text_paint_size) {
-  if (!HasLargestTextPaintChangedForMetrics(text_paint_time, text_paint_size)) {
+    const TextRecord& text_record) {
+  if (!HasLargestTextPaintChangedForMetrics(text_record.PaintTime(),
+                                            text_record.RecordedSize())) {
     return false;
   }
 
-  DCHECK(!text_paint_time.is_null());
-  latest_lcp_details_.largest_text_paint_time = text_paint_time;
-  latest_lcp_details_.largest_text_paint_size = text_paint_size;
+  DCHECK(text_record.HasPaintTime());
+  latest_lcp_details_.largest_text_paint_time = text_record.PaintTime();
+  latest_lcp_details_.largest_text_paint_size = text_record.RecordedSize();
   UpdateLatestLcpDetailsTypeIfNeeded();
 
   return true;

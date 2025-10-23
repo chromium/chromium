@@ -41,15 +41,9 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
       base::TimeTicks largest_text_paint_time,
       uint64_t largest_text_paint_size) const;
 
-  bool NotifyMetricsIfLargestImagePaintChanged(
-      base::TimeTicks image_paint_time,
-      uint64_t image_paint_size,
-      ImageRecord* image_record,
-      double image_bpp,
-      std::optional<WebURLRequest::Priority> priority);
-
-  bool NotifyMetricsIfLargestTextPaintChanged(base::TimeTicks text_paint_time,
-                                              uint64_t text_paint_size);
+  bool NotifyMetricsIfLargestImagePaintChanged(base::TimeTicks image_paint_time,
+                                               const ImageRecord&);
+  bool NotifyMetricsIfLargestTextPaintChanged(const TextRecord&);
 
   const LargestContentfulPaintDetails& LatestLcpDetails() const {
     return latest_lcp_details_;
