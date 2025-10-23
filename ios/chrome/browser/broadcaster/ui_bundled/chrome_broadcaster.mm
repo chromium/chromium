@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 
 #import <objc/runtime.h>
@@ -15,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/compiler_specific.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/notreached.h"
 
@@ -37,7 +33,8 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   DCHECK(method.numberOfArguments == 3);
 
   // Methods should always return void.
-  DCHECK(strcmp(method.methodReturnType, @encode(void)) == 0);
+  DCHECK_EQ(std::string_view(method.methodReturnType),
+            std::string_view(@encode(void)));
 
   NSInvocation* invocation =
       [NSInvocation invocationWithMethodSignature:method];
@@ -163,17 +160,21 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
         [[NSMutableDictionary<NSString*, NSInvocation*> alloc] init];
 
     unsigned int methodCount;
-    objc_method_description* instanceMethods =
+    objc_method_description* instanceMethodsRaw =
         protocol_copyMethodDescriptionList(
             @protocol(ChromeBroadcastObserver), NO /* not required methods */,
             YES /* instance methods */, &methodCount);
 
-    for (unsigned int i = 0; i < methodCount; i++) {
-      struct objc_method_description method = instanceMethods[i];
+    // SAFETY: protocol_copyMethodDescriptionList(...) set &methodCount to the
+    // length of the buffer returned.
+    base::span<const objc_method_description> instanceMethods = UNSAFE_BUFFERS(
+        base::span<objc_method_description>(instanceMethodsRaw, methodCount));
+
+    for (const objc_method_description& method : instanceMethods) {
       NSString* name = NSStringFromSelector(method.name);
       observerInvocations[name] = InvocationForBroadcasterSelector(method.name);
     }
-    free(instanceMethods);
+    free(instanceMethodsRaw);
 
     _observerInvocations = [observerInvocations copy];
   }
