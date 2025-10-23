@@ -970,7 +970,11 @@ PaintOp* DrawPathOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
   reader.Read(&op->path);
   reader.Read(&op->sk_path_fill_type);
-  op->path.setFillType(op->sk_path_fill_type);
+  if (reader.valid()) {
+    // Only apply successfully-deserialized fill types, as SkPath has
+    // self-validation asserts that trip on invalid fill type values.
+    op->path.setFillType(op->sk_path_fill_type);
+  }
   return op;
 }
 
