@@ -21,6 +21,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id);
+
+  // Appends a solid-color quad with color `color`.
+  void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
+                       AppendQuadsData* append_quads_data,
+                       SkColor4f color);
 };
 
 }  // namespace cc
