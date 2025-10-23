@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -6624,6 +6625,694 @@ TEST_P(PrefetchServiceTest, CancelWhileBlockedOnHead) {
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get());
 }
+
+// For testing a comprehensive set of event sequences.
+// For possible sequences see `ValidInputEventSequences()` below.
+enum class Event {
+  // Eligibility check completion.
+  kInitialEligibilityCheckCompleteSuccess,
+  kInitialEligibilityCheckCompleteFailure,
+  kRedirectEligibilityCheckCompleteSuccess,
+  kRedirectEligibilityCheckCompleteFailure,
+
+  // `PrefetchStreamingURLLoader`'s `URLLoaderClient` callbacks.
+  // These shouldn't be confused with the corresponding `PrefetchContainer`
+  // calls or `PrefetchContainer::Observer` calls (== `kObserver*` events
+  // below).
+  kPrefetchURLLoaderOnReceiveRedirect,
+  kPrefetchURLLoaderOnReceiveRedirectCrossSite,
+  kPrefetchURLLoaderOnReceiveResponseSuccess,
+  kPrefetchURLLoaderOnReceiveResponseFailure,
+  kPrefetchURLLoaderOnCompleteSuccess,
+  kPrefetchURLLoaderOnCompleteFailure,
+
+  // `PrefetchStreamingURLLoader`'s mojo disconnection.
+  // `kPrefetchURLLoaderDisconnect` and `kPrefetchURLLoaderOnCompleteFailure`
+  // can happen anytime
+  // during the `URLLoaderClient` is working.
+  kPrefetchURLLoaderDisconnect,
+
+  // This is to test `PrefetchStreamingURLLoader::used_for_serving_`.
+  // Can happen anytime after `kPrefetchURLLoaderOnReceiveResponseSuccess`.
+  kStartServing,
+
+  // Destructing `PrefetchContainer`.
+  // Can happen anytime.
+  kResetPrefetchContainer,
+
+  // `PrefetchContainer::Observer` callbacks are called.
+  // These are not included in input event sequences.
+  kObserverOnWillBeDestroyed,
+  kObserverOnGotInitialEligibility,
+  kObserverOnDeterminedHead,
+  kObserverOnPrefetchCompletedOrFailed,
+};
+
+std::string GetEventName(Event event) {
+  switch (event) {
+    case Event::kInitialEligibilityCheckCompleteSuccess:
+      return "Event::kInitialEligibilityCheckCompleteSuccess";
+    case Event::kInitialEligibilityCheckCompleteFailure:
+      return "Event::kInitialEligibilityCheckCompleteFailure";
+    case Event::kRedirectEligibilityCheckCompleteSuccess:
+      return "Event::kRedirectEligibilityCheckCompleteSuccess";
+    case Event::kRedirectEligibilityCheckCompleteFailure:
+      return "Event::kRedirectEligibilityCheckCompleteFailure";
+    case Event::kPrefetchURLLoaderOnReceiveRedirect:
+      return "Event::kPrefetchURLLoaderOnReceiveRedirect";
+    case Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite:
+      return "Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite";
+    case Event::kPrefetchURLLoaderOnReceiveResponseSuccess:
+      return "Event::kPrefetchURLLoaderOnReceiveResponseSuccess";
+    case Event::kPrefetchURLLoaderOnReceiveResponseFailure:
+      return "Event::kPrefetchURLLoaderOnReceiveResponseFailure";
+    case Event::kPrefetchURLLoaderOnCompleteSuccess:
+      return "Event::kPrefetchURLLoaderOnCompleteSuccess";
+    case Event::kPrefetchURLLoaderOnCompleteFailure:
+      return "Event::kPrefetchURLLoaderOnCompleteFailure";
+    case Event::kPrefetchURLLoaderDisconnect:
+      return "Event::kPrefetchURLLoaderDisconnect";
+    case Event::kStartServing:
+      return "Event::kStartServing";
+    case Event::kResetPrefetchContainer:
+      return "Event::kResetPrefetchContainer";
+    case Event::kObserverOnWillBeDestroyed:
+      return "Event::kObserverOnWillBeDestroyed";
+    case Event::kObserverOnGotInitialEligibility:
+      return "Event::kObserverOnGotInitialEligibility";
+    case Event::kObserverOnDeterminedHead:
+      return "Event::kObserverOnDeterminedHead";
+    case Event::kObserverOnPrefetchCompletedOrFailed:
+      return "Event::kObserverOnPrefetchCompletedOrFailed";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, Event event) {
+  return os << GetEventName(event);
+}
+
+// For a single test run, we observe the `PrefetchContainer` callbacks.
+// As an output event sequence, we record both of the
+// `PrefetchContainer::Observer` callbacks AND the input event sequence, to
+// determine when the `PrefetchContainer::Observer` callbacks are called
+// relative to the input events. `ExpectedEvents()` returns the expected output
+// event sequence.
+//
+// This returns the current behavior, to anyway clarify the current behavior and
+// make tests pass for now. The deviations from the ideal expected behavior are
+// shown as the TODO comments below.
+std::vector<Event> CalculateOutputEventSequence(
+    const std::vector<Event>& input_event_sequence) {
+  std::vector<Event> output_event_sequence;
+  // Indicates whether the prefetching `URLLoader` completes or not. This is (at
+  // least currently) different from whether
+  // `PrefetchContainer::Observer::OnPrefetchCompletedOrFailed()` is called.
+  // TODO(https://crbug.com/400761083): Revisit this discrepancy if needed,
+  // after some bugs are fixed.
+  bool prefetch_completed = false;
+  bool determined_head_issued = false;
+  bool prefetch_container_destroyed = false;
+  bool during_redirect_eligibility_check = false;
+  for (const Event event : input_event_sequence) {
+    output_event_sequence.push_back(event);
+
+    if (prefetch_container_destroyed) {
+      // After the `PrefetchContainer` is destroyed, no further observer
+      // callbacks should be called.
+      continue;
+    }
+
+    switch (event) {
+      case Event::kInitialEligibilityCheckCompleteSuccess:
+      case Event::kInitialEligibilityCheckCompleteFailure:
+        output_event_sequence.push_back(
+            Event::kObserverOnGotInitialEligibility);
+        break;
+
+      case Event::kRedirectEligibilityCheckCompleteSuccess:
+      case Event::kRedirectEligibilityCheckCompleteFailure:
+        if (prefetch_completed) {
+          // Redirect eligibility check after disconnection or unexpected
+          // failing completion should be simply ignored and thus no
+          // notification should be made. We still have the
+          // `kRedirectEligibilityCheckComplete*` events to ensure the
+          // eligibility check results are ignored (e.g. doesn't crash).
+          break;
+        }
+        CHECK(during_redirect_eligibility_check);
+        during_redirect_eligibility_check = false;
+        if (event == Event::kRedirectEligibilityCheckCompleteFailure) {
+          // We reach `PrefetchResponseReader::kFailedRedirect`, so we
+          // currently issue `OnDeterminedHead()` observer call here.
+          CHECK(!determined_head_issued);
+          determined_head_issued = true;
+          output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
+
+          // Redirect failures are considered as prefetch failure and thus
+          // considered as completed.
+          prefetch_completed = true;
+
+          // TODO(https://crbug.com/400761083): Call
+          // `PrefetchContainer::Observer::OnPrefetchCompletedOrFailed`
+          // or another callback on redirect failures, if we want to ensure an
+          // observer call is made when reaching at the final state of
+          // `PrefetchContainer`.
+        }
+        break;
+
+      case Event::kPrefetchURLLoaderOnReceiveRedirect:
+      case Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite:
+        CHECK(!prefetch_completed);
+        CHECK(!during_redirect_eligibility_check);
+        during_redirect_eligibility_check = true;
+        break;
+
+      case Event::kPrefetchURLLoaderOnReceiveResponseSuccess:
+      case Event::kPrefetchURLLoaderOnReceiveResponseFailure:
+        CHECK(!prefetch_completed);
+        CHECK(!determined_head_issued);
+        determined_head_issued = true;
+        output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
+        break;
+
+      case Event::kPrefetchURLLoaderOnCompleteSuccess:
+        CHECK(!prefetch_completed);
+        CHECK(determined_head_issued);
+        prefetch_completed = true;
+        output_event_sequence.push_back(
+            Event::kObserverOnPrefetchCompletedOrFailed);
+        break;
+
+      case Event::kPrefetchURLLoaderDisconnect:
+        if (prefetch_completed) {
+          // Disconnection after `kPrefetchURLLoaderOnComplete*` is expected.
+          break;
+        }
+
+        // Otherwise, it's unexpected disconnection and should be considered as
+        // a failure and the observer should be notified of the failure.
+        prefetch_completed = true;
+
+        if (!during_redirect_eligibility_check) {
+          // TODO(https://crbug.com/400761083): However, currently no
+          // notifications are made if not during redirect eligibility check.
+          // Fix this.
+          break;
+        }
+
+        if (!determined_head_issued) {
+          determined_head_issued = true;
+          output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
+        }
+
+        // TODO(https://crbug.com/400761083): Disconnection during redirect
+        // eligibility check should be handled in the same way as
+        // `kPrefetchURLLoaderOnCompleteFailure` case below (because it should
+        // be handled as a general error), but currently we don't issue
+        // `PrefetchCompletedOrFailed()` observer call. Fix this.
+        break;
+
+      case Event::kPrefetchURLLoaderOnCompleteFailure:
+        CHECK(!prefetch_completed);
+        prefetch_completed = true;
+        during_redirect_eligibility_check = false;
+        if (!determined_head_issued) {
+          determined_head_issued = true;
+          output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
+        }
+        output_event_sequence.push_back(
+            Event::kObserverOnPrefetchCompletedOrFailed);
+        break;
+
+      case Event::kStartServing:
+        // Whether a `PrefetchContainer` started serving before its destruction
+        // affects the behavior but should not affect the observer callbacks.
+        // That is, at `PrefetchContainer` destruction, the prefetch is
+        // cancelled only if not started serving, but callbacks other than
+        // `OnWillBeDestroyed()` shouldn't be called.
+        break;
+
+      case Event::kResetPrefetchContainer:
+        prefetch_container_destroyed = true;
+        output_event_sequence.push_back(Event::kObserverOnWillBeDestroyed);
+
+        if (!prefetch_completed && during_redirect_eligibility_check) {
+          // TODO(https://crbug.com/400761083): Currently we issue
+          // `OnDeterminedHead()` upon `PrefetchStreamingURLLoader` cancellation
+          // during redirect eligibility check. Fix this, i.e. no observer call
+          // should be made after `OnWillBeDestroyed()` observer call. Note
+          // that, at the time of redirect eligibility check, serving must be
+          // not yet started, and thus the cancellation always occurs.
+          CHECK(!determined_head_issued);
+          determined_head_issued = true;
+          output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
+        }
+        break;
+
+      case Event::kObserverOnWillBeDestroyed:
+      case Event::kObserverOnGotInitialEligibility:
+      case Event::kObserverOnDeterminedHead:
+      case Event::kObserverOnPrefetchCompletedOrFailed:
+        NOTREACHED();
+    }
+  }
+  return output_event_sequence;
+}
+
+// Trims the events that no longer occur after a new event is inserted into the
+// sequence (e.g. events after `kResetPrefetchContainer`).
+std::vector<Event> TrimEventSequence(std::vector<Event> event_sequence) {
+  std::vector<Event> trimmed_event_sequence;
+  bool serving_started = false;
+  bool prefetch_completed = false;
+  // Indicates if a redirect is received (and thus redirect eligibility check
+  // has started) before the prefetch is terminated. Particularly, this remains
+  // false when this method trims redirect events.
+  bool redirect_received_before_terminated = false;
+
+  for (size_t index = 0; index < event_sequence.size(); ++index) {
+    switch (event_sequence[index]) {
+      case Event::kResetPrefetchContainer:
+        // `kResetPrefetchContainer` can happen anytime.
+        //
+        // All events after `kResetPrefetchContainer` are removed, except for
+        // `kPrefetchURLLoaderOnComplete*` that immediately follows
+        // `kResetPrefetchContainer`, if serving is started and the prefetch is
+        // not completed. In such cases, the prefetching continues and
+        // eventually completes.
+        trimmed_event_sequence.push_back(event_sequence[index]);
+        if (serving_started && !prefetch_completed &&
+            index + 1 < event_sequence.size() &&
+            (event_sequence[index + 1] ==
+                 Event::kPrefetchURLLoaderOnCompleteSuccess ||
+             event_sequence[index + 1] ==
+                 Event::kPrefetchURLLoaderOnCompleteFailure)) {
+          trimmed_event_sequence.push_back(event_sequence[index + 1]);
+        }
+        return trimmed_event_sequence;
+
+      case Event::kPrefetchURLLoaderDisconnect:
+        // Disconnection can happen anytime.
+        trimmed_event_sequence.push_back(event_sequence[index]);
+        break;
+
+      case Event::kRedirectEligibilityCheckCompleteSuccess:
+      case Event::kRedirectEligibilityCheckCompleteFailure:
+        // Eligibility check can be completed after prefetch completion, because
+        // `OnComplete()` or mojo disconnection themselves don't automatically
+        // cancels the pending eligibility check.
+        //
+        // If this method trimmed the preceding
+        // `kPrefetchURLLoaderOnReceiveRedirect*` (e.g. when we've inserted
+        // disconnection before that), we should also trim the eligiblity check
+        // events as well. We check `redirect_received_before_terminated` (which
+        // is `false` in such cases) for this purpose.
+        if (redirect_received_before_terminated) {
+          trimmed_event_sequence.push_back(event_sequence[index]);
+        }
+        break;
+
+      default:
+        // All other events after prefetch completion are removed.
+        if (!prefetch_completed) {
+          trimmed_event_sequence.push_back(event_sequence[index]);
+        }
+        break;
+    }
+
+    switch (event_sequence[index]) {
+      case Event::kPrefetchURLLoaderOnReceiveRedirect:
+      case Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite:
+        CHECK(!redirect_received_before_terminated);
+        if (!prefetch_completed) {
+          redirect_received_before_terminated = true;
+        }
+        break;
+
+      case Event::kPrefetchURLLoaderOnCompleteSuccess:
+      case Event::kPrefetchURLLoaderOnCompleteFailure:
+      case Event::kPrefetchURLLoaderDisconnect:
+      case Event::kRedirectEligibilityCheckCompleteFailure:
+        prefetch_completed = true;
+        break;
+
+      case Event::kStartServing:
+        CHECK(!serving_started);
+        serving_started = true;
+        break;
+
+      default:
+        break;
+    }
+  }
+  return trimmed_event_sequence;
+}
+
+// Inserts `event` to the event sequence after `event_sequence[index]`,
+// removes duplicated/unreachable events (e.g. some events after disconnection),
+// and adds the event sequence to `new_event_sequences`.
+// If `event` is already in `event_sequence`, then this method does nothing.
+void InsertToEventSequence(std::set<std::vector<Event>>& new_event_sequences,
+                           std::vector<Event> event_sequence,
+                           int index,
+                           Event event) {
+  if (std::find(event_sequence.begin(), event_sequence.end(), event) !=
+      event_sequence.end()) {
+    return;
+  }
+  event_sequence.insert(event_sequence.begin() + (index + 1), event);
+  new_event_sequences.insert(TrimEventSequence(std::move(event_sequence)));
+}
+
+// Returns a set of possible event sequences derived from `event_sequence`.
+std::set<std::vector<Event>> ExpandEventSequence(
+    std::vector<Event> event_sequence) {
+  // Assume that the first event is always
+  // `kInitialEligibilityCheckCompleteSuccess` and we always insert events after
+  // that first element, so that all other events occur after
+  // `PrefetchStreamingURLLoader` is already started. Cases not starting with
+  // `kInitialEligibilityCheckCompleteSuccess` will be added at the end of
+  // `ValidInputEventSequences()`.
+  CHECK_EQ(event_sequence[0], Event::kInitialEligibilityCheckCompleteSuccess);
+
+  std::set<std::vector<Event>> new_event_sequences;
+  CHECK_EQ(event_sequence[0], Event::kInitialEligibilityCheckCompleteSuccess);
+  for (size_t index = 0; index < event_sequence.size(); ++index) {
+    // Insert disconnection or `kResetPrefetchContainer` at any time.
+    InsertToEventSequence(new_event_sequences, event_sequence, index,
+                          Event::kPrefetchURLLoaderDisconnect);
+    InsertToEventSequence(new_event_sequences, event_sequence, index,
+                          Event::kResetPrefetchContainer);
+
+    // Insert an unexpected failure. If the inserted failure occurs after
+    // prefetch completion, it will be removed by `Trim()`.
+    InsertToEventSequence(new_event_sequences, event_sequence, index,
+                          Event::kPrefetchURLLoaderOnCompleteFailure);
+
+    // Insert an `kStartServing` event only immediately after
+    // `kPrefetchURLLoaderOnReceiveResponseSuccess`.
+    if (event_sequence[index] ==
+        Event::kPrefetchURLLoaderOnReceiveResponseSuccess) {
+      InsertToEventSequence(new_event_sequences, event_sequence, index,
+                            Event::kStartServing);
+    }
+  }
+
+  new_event_sequences.insert(event_sequence);
+  return new_event_sequences;
+}
+
+// For a single test run, we give an input event sequence, representing the
+// network-bound `URLLoaderClient` and other prefetch-related events affecting
+// `PrefetchContainer`s. `ValidInputEventSequences()` returns the valid input
+// event sequences for the parameterized tests below.
+std::set<std::vector<Event>> ValidInputEventSequences() {
+  // First, we focus on scenarios where prefetching is started (and thus there
+  // can be disconnect, timeout etc. at any time, which increases the number
+  // of possible scenarios). Scenarios where prefetching is not started are
+  // added manually at the bottom of this method.
+
+  // We start with a base event sequence that consists of ordinary
+  // `URLLoaderClient` events (except for disconnection) and eligibility checks.
+  std::set<std::vector<Event>> event_sequences = {
+      // Failure-on-redirect cases.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveRedirect,
+          Event::kRedirectEligibilityCheckCompleteFailure,
+      },
+      // Failure-on-redirect cases: cross-site redirect.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite,
+          Event::kRedirectEligibilityCheckCompleteFailure,
+      },
+      // Failure-on-response-received cases.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveResponseFailure,
+          Event::kPrefetchURLLoaderOnCompleteFailure,
+      },
+      // Failure-after-response-received cases.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveResponseSuccess,
+          Event::kPrefetchURLLoaderOnCompleteFailure,
+      },
+      // Successful cases.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveResponseSuccess,
+          Event::kPrefetchURLLoaderOnCompleteSuccess,
+      },
+      // Successful cases with a redirect.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveRedirect,
+          Event::kRedirectEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveResponseSuccess,
+          Event::kPrefetchURLLoaderOnCompleteSuccess,
+      },
+      // Successful cases with a cross-site redirect.
+      {
+          Event::kInitialEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite,
+          Event::kRedirectEligibilityCheckCompleteSuccess,
+          Event::kPrefetchURLLoaderOnReceiveResponseSuccess,
+          Event::kPrefetchURLLoaderOnCompleteSuccess,
+      }};
+
+  // Repeatedly call `ExpandEventSequence()` until converging.
+  while (true) {
+    std::set<std::vector<Event>> new_event_sequences;
+    for (const std::vector<Event>& event_sequence : event_sequences) {
+      new_event_sequences.merge(ExpandEventSequence(event_sequence));
+    }
+    if (new_event_sequences == event_sequences) {
+      break;
+    }
+    event_sequences.swap(new_event_sequences);
+  }
+
+  // Remove event sequences without `kResetPrefetchContainer`, as they are
+  // redundant because the corresponding sequence with `kResetPrefetchContainer`
+  // at the end should be included.
+  std::erase_if(event_sequences, [](const std::vector<Event>& event_sequence) {
+    return std::find(event_sequence.begin(), event_sequence.end(),
+                     Event::kResetPrefetchContainer) == event_sequence.end();
+  });
+
+  // Add event sequences where prefetching is not started.
+  event_sequences.insert(
+      std::vector<Event>({Event::kInitialEligibilityCheckCompleteFailure,
+                          Event::kResetPrefetchContainer}));
+  event_sequences.insert(std::vector<Event>({Event::kResetPrefetchContainer}));
+
+  return event_sequences;
+}
+
+class PrefetchServiceEventTest
+    : public PrefetchServiceTestBase,
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<
+          std::tuple<PrefetchRearchParam, std::vector<Event>>> {
+ public:
+  PrefetchServiceEventTest()
+      : WithPrefetchRearchParam(std::get<0>(GetParam())) {}
+
+  void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+  }
+};
+
+class RecordingPrefetchContainerObserver final
+    : public PrefetchContainer::Observer {
+ public:
+  explicit RecordingPrefetchContainerObserver(
+      PrefetchContainer& prefetch_container)
+      : prefetch_container_(prefetch_container.GetWeakPtr()) {
+    prefetch_container_->AddObserver(this);
+  }
+  ~RecordingPrefetchContainerObserver() override {
+    if (prefetch_container_) {
+      prefetch_container_->RemoveObserver(this);
+    }
+  }
+
+  const std::vector<Event>& actual_output_event_sequence() const {
+    return actual_output_event_sequence_;
+  }
+  void AddEvent(Event event) { actual_output_event_sequence_.push_back(event); }
+
+ private:
+  void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override {
+    AddEvent(Event::kObserverOnWillBeDestroyed);
+  }
+  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                               PreloadingEligibility eligibility) override {
+    AddEvent(Event::kObserverOnGotInitialEligibility);
+  }
+  void OnDeterminedHead(PrefetchContainer& prefetch_container) override {
+    switch (prefetch_container.GetLoadState()) {
+      case PrefetchContainer::LoadState::kNotStarted:
+      case PrefetchContainer::LoadState::kEligible:
+      case PrefetchContainer::LoadState::kFailedIneligible:
+      case PrefetchContainer::LoadState::kStarted:
+      case PrefetchContainer::LoadState::kFailedHeldback:
+        NOTREACHED();
+      case PrefetchContainer::LoadState::kDeterminedHead:
+      case PrefetchContainer::LoadState::kCompleted:
+      case PrefetchContainer::LoadState::kFailed:
+        break;
+    }
+    AddEvent(Event::kObserverOnDeterminedHead);
+  }
+  void OnPrefetchCompletedOrFailed(
+      PrefetchContainer& prefetch_container,
+      const network::URLLoaderCompletionStatus& completion_status,
+      const std::optional<int>& response_code) override {
+    CHECK(prefetch_container.GetLoadState() ==
+              PrefetchContainer::LoadState::kCompleted ||
+          prefetch_container.GetLoadState() ==
+              PrefetchContainer::LoadState::kFailed);
+    AddEvent(Event::kObserverOnPrefetchCompletedOrFailed);
+  }
+
+  base::WeakPtr<PrefetchContainer> prefetch_container_;
+  std::vector<Event> actual_output_event_sequence_;
+};
+
+// Check the actual `PrefetchContainer::Observer` callbacks.
+TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  GURL initial_url("https://example.com");
+
+  // Pause at the initial elibility check.
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(prefetch_service());
+
+  // Start a new `PrefetchContainer`, until the initial eligibility check.
+  MakePrefetchOnMainFrame(initial_url);
+
+  auto prefetches = prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+      PrefetchKey(MainDocumentToken(), initial_url));
+  ASSERT_EQ(1u, prefetches.size());
+  base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
+
+  // `prefetch_container` should be on a way of eligibility check.
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_EQ(prefetch_container->GetLoadState(),
+            PrefetchContainer::LoadState::kNotStarted);
+
+  RecordingPrefetchContainerObserver observer(*prefetch_container);
+
+  const bool use_prefetch_proxy = true;
+
+  const auto& input_event_sequence = std::get<1>(GetParam());
+  bool on_complete_failure_called = false;
+
+  for (const Event event : input_event_sequence) {
+    observer.AddEvent(event);
+    switch (event) {
+      case Event::kInitialEligibilityCheckCompleteSuccess:
+      case Event::kInitialEligibilityCheckCompleteFailure:
+      case Event::kRedirectEligibilityCheckCompleteSuccess:
+      case Event::kRedirectEligibilityCheckCompleteFailure: {
+        // Resume the initial or redirect eligibility check.
+        // The eligibility check should be already started and blocked by
+        // `eligibility_check_callback_future`.
+        ASSERT_TRUE(eligibility_check_callback_future->IsReady());
+        const bool is_eligible =
+            event == Event::kInitialEligibilityCheckCompleteSuccess ||
+            event == Event::kRedirectEligibilityCheckCompleteSuccess;
+        auto eligibility = is_eligible
+                               ? PreloadingEligibility::kEligible
+                               : PreloadingEligibility::kHostIsNonUnique;
+        if (!is_eligible && on_complete_failure_called) {
+          // TODO(https://crbug.com/433114485): Eligibility check is not
+          // cancelled on unexpected failed completion and causes crashes. Fix
+          // this.
+          EXPECT_DEATH(
+              eligibility_check_callback_future->Take().Run(eligibility), "");
+        } else {
+          eligibility_check_callback_future->Take().Run(eligibility);
+        }
+        // Wait for the remaining eligiblity check and subsequent network
+        // request to settle.
+        task_environment()->RunUntilIdle();
+        break;
+      }
+      case Event::kPrefetchURLLoaderOnReceiveRedirect:
+      case Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite:
+        ASSERT_FALSE(eligibility_check_callback_future->IsReady());
+        MakeSingleRedirectAndWait(
+            event == Event::kPrefetchURLLoaderOnReceiveRedirect
+                ? GURL("https://example.com/redirected")
+                : GURL("https://cross-site.example.org/redirected"));
+        // Wait for the redirect handling is paused at the redirect
+        // eligibility check.
+        ASSERT_TRUE(eligibility_check_callback_future->Wait());
+        break;
+      case Event::kPrefetchURLLoaderOnReceiveResponseSuccess:
+        SendHeadOfResponseAndWait(net::HTTP_OK, kHTMLMimeType,
+                                  use_prefetch_proxy, {}, std::size(kHTMLBody));
+        SendBodyContentOfResponseAndWait(kHTMLBody);
+        break;
+      case Event::kPrefetchURLLoaderOnReceiveResponseFailure:
+        SendHeadOfResponseAndWait(net::HTTP_NOT_FOUND, kHTMLMimeType,
+                                  use_prefetch_proxy, {}, std::size(kHTMLBody));
+        break;
+      case Event::kPrefetchURLLoaderOnCompleteSuccess:
+        CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
+        break;
+
+      case Event::kPrefetchURLLoaderOnCompleteFailure:
+        on_complete_failure_called = true;
+        CompleteResponseAndWait(net::ERR_FAILED, std::size(kHTMLBody));
+        break;
+
+      case Event::kStartServing:
+        ASSERT_TRUE(prefetch_container);
+        ASSERT_TRUE(prefetch_container->GetStreamingURLLoader());
+        prefetch_container->GetStreamingURLLoader()->OnStartServing();
+        break;
+
+      case Event::kPrefetchURLLoaderDisconnect:
+        // Disconnect URLLoader.
+        ASSERT_TRUE(prefetch_container);
+        if (auto loader = prefetch_container->GetStreamingURLLoader()) {
+          base::test::TestFuture<void> disconnect_future;
+          loader->SetOnDeletionScheduledForTests(
+              disconnect_future.GetCallback());
+          Disconnect();
+          ASSERT_TRUE(disconnect_future.Wait());
+        } else {
+          Disconnect();
+        }
+        break;
+      case Event::kResetPrefetchContainer:
+        ASSERT_TRUE(prefetch_container);
+        prefetch_service().MayReleasePrefetch(prefetch_container);
+        break;
+      case Event::kObserverOnWillBeDestroyed:
+      case Event::kObserverOnGotInitialEligibility:
+      case Event::kObserverOnDeterminedHead:
+      case Event::kObserverOnPrefetchCompletedOrFailed:
+        NOTREACHED();
+    }
+  }
+
+  EXPECT_EQ(observer.actual_output_event_sequence(),
+            CalculateOutputEventSequence(input_event_sequence));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrefetchServiceEventTest,
+    testing::Combine(testing::ValuesIn(PrefetchRearchParam::Params()),
+                     testing::ValuesIn(ValidInputEventSequences())));
 
 // Tests that the `PrefetchStreamingURLLoader` disconnection during
 // `PrefetchService`'s redirection handling (starts from
