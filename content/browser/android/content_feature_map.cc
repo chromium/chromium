@@ -38,6 +38,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityPopulateSupplementalDescriptionApi,
     &features::kAccessibilityUnifiedSnapshots,
     &features::kAccessibilityManageBroadcastReceiverOnBackground,
+    &features::kAndroidDesktopZoomScaling,
     &features::kAndroidFallbackToNextSlot,
     &features::kAndroidMediaInsertion,
     &features::kAndroidOpenPdfInline,

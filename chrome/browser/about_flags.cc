@@ -13407,7 +13407,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-desktop-zoom-scaling",
      flag_descriptions::kAndroidDesktopZoomScalingName,
      flag_descriptions::kAndroidDesktopZoomScalingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopZoomScaling)},
+     FEATURE_VALUE_TYPE(features::kAndroidDesktopZoomScaling)},
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
