@@ -33,12 +33,8 @@ constexpr auto kEventFlagFromModifiers = std::to_array<int>({
 
 }  // namespace
 
-EventModifiers::EventModifiers() {
-  UNSAFE_TODO(memset(modifiers_down_.data(), 0,
-                     (modifiers_down_.size() *
-                      sizeof(decltype(modifiers_down_)::value_type))));
-}
-EventModifiers::~EventModifiers() {}
+EventModifiers::EventModifiers() = default;
+EventModifiers::~EventModifiers() = default;
 
 void EventModifiers::UpdateModifier(unsigned int modifier, bool down) {
   DCHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS));
