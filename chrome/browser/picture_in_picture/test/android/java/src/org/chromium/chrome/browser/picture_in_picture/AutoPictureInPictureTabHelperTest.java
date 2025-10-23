@@ -81,6 +81,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 public class AutoPictureInPictureTabHelperTest {
     private static final String TAG = "AutoPipTest";
+    private static final long PIP_TIMEOUT_MS = 10000L;
 
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
@@ -112,6 +113,7 @@ public class AutoPictureInPictureTabHelperTest {
         if (mActivity != null) {
             ApplicationTestUtils.finishActivity(mActivity);
         }
+        waitForNoPictureInPictureActivity();
     }
 
     @Test
@@ -654,6 +656,7 @@ public class AutoPictureInPictureTabHelperTest {
         PictureInPictureActivity pipActivity = getPictureInPictureActivity();
         assertNotNull("PictureInPictureActivity not found.", pipActivity);
         CriteriaHelper.pollUiThread(pipActivity::isInPictureInPictureMode);
+        waitForRemoteActions(pipActivity);
         return pipActivity;
     }
 
@@ -677,6 +680,15 @@ public class AutoPictureInPictureTabHelperTest {
                 },
                 "Could not find PictureInPictureActivity.");
         return (PictureInPictureActivity) activityHolder[0];
+    }
+
+    /** Waits for the remote action lists to be initialized. */
+    private void waitForRemoteActions(PictureInPictureActivity pipActivity) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !pipActivity.getActionsForTesting().isEmpty();
+                },
+                "No remote action is loaded.");
     }
 
     /** Waits for the hide action to be present in the Picture-in-Picture window. */
@@ -729,5 +741,26 @@ public class AutoPictureInPictureTabHelperTest {
                 failureMessage,
                 expectedCount,
                 AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+    }
+
+    /** Closes any running {@link PictureInPictureActivity} and waits for it to be destroyed. */
+    private void waitForNoPictureInPictureActivity() {
+        PictureInPictureActivity pipActivity = null;
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (activity instanceof PictureInPictureActivity) {
+                pipActivity = (PictureInPictureActivity) activity;
+                break;
+            }
+        }
+
+        if (pipActivity != null) {
+            final PictureInPictureActivity activityToFinish = pipActivity;
+            ThreadUtils.runOnUiThreadBlocking(activityToFinish::finish);
+            CriteriaHelper.pollUiThread(
+                    activityToFinish::isDestroyed,
+                    "PictureInPictureActivity was not closed.",
+                    PIP_TIMEOUT_MS,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }
     }
 }
