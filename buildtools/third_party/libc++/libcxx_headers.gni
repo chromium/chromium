@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "f8e1c9b1a33a039c3c4a25d1bf61d0ecbc57b66b",
+    libcxx_revision == "cdb24138c1591d12b07d5147825ec7dfeb495276",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
