@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
@@ -992,7 +993,7 @@ suite('Modification', () => {
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
     assertFalse(actionMenu.open);
-    assertEquals('https://b/', (await deleteCalled).url);
+    assertEquals('https://b/', (await deleteCalled).url.url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
     assertTrue(isVisible($$(mostVisited, '#undo')));
@@ -1020,7 +1021,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
-    assertEquals('https://search-url/', (await deleteCalled).url);
+    assertEquals('https://search-url/', (await deleteCalled).url.url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
     assertTrue(isVisible($$(mostVisited, '#undo')));
@@ -1034,7 +1035,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
-    assertEquals('https://a/', (await deleteCalled).url);
+    assertEquals('https://a/', (await deleteCalled).url.url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
     assertTrue(isVisible($$(mostVisited, '#undo')));
@@ -1059,7 +1060,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
-    assertEquals('https://search-url/', (await deleteCalled).url);
+    assertEquals('https://search-url/', (await deleteCalled).url.url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are not visible.
     assertFalse(isVisible($$(mostVisited, '#undo')));
@@ -1078,7 +1079,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     keydown(tile, 'Delete');
-    assertEquals('https://a/', (await deleteCalled).url);
+    assertEquals('https://a/', (await deleteCalled).url.url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
   });
 
@@ -1200,8 +1201,8 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
       clientY: secondRect.y + 1,
     }));
     await mostVisited.updateComplete;
-    const [url, newPos] = await reorderCalled;
-    assertEquals('https://a/', url.url);
+    const [tile, newPos] = await reorderCalled;
+    assertEquals('https://a/', tile.url.url);
     assertEquals(1, newPos);
     const [newFirst, newSecond] = queryTiles();
     assertEquals('https://b/', newFirst!.querySelector('a')!.href);
@@ -1233,8 +1234,8 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
       clientY: firstRect.y + 1,
     }));
     await mostVisited.updateComplete;
-    const [url, newPos] = await reorderCalled;
-    assertEquals('https://b/', url.url);
+    const [tile, newPos] = await reorderCalled;
+    assertEquals('https://b/', tile.url.url);
     assertEquals(0, newPos);
     const [newFirst, newSecond] = queryTiles();
     assertEquals('https://b/', newFirst!.querySelector('a')!.href);
@@ -1410,7 +1411,7 @@ suite('EnterpriseShortcuts', () => {
       title: char,
       titleDirection: TextDirection.LEFT_TO_RIGHT,
       url: {url: `https://${char}/`},
-      source: i,
+      source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: i,
       isQueryTile: false,
       allowUserEdit: allowUserEdit,

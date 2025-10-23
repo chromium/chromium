@@ -28,13 +28,13 @@ export function getHtml(this: MostVisitedElement) {
           title="${this.getMoreActionText_(item.title)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"
           ?hidden="${!this.customLinksEnabled_ &&
-            !this.enterpriseShortcutsEnabled_}"
+            !this.isFromEnterpriseShortcut_(item.source)}"
           data-index="${index}"></cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.i18n('linkRemove')}"
           @click="${this.onTileRemoveButtonClick_}" tabindex="0"
           ?hidden="${this.customLinksEnabled_ ||
-            this.enterpriseShortcutsEnabled_}"
+            this.isFromEnterpriseShortcut_(item.source)}"
           data-index="${index}"></cr-icon-button>
       <div class="tile-icon">
         <img src="${this.getFaviconUrl_(item.url)}" draggable="false"
@@ -42,7 +42,7 @@ export function getHtml(this: MostVisitedElement) {
         <div class="query-tile-icon" draggable="false"
             ?hidden="${!item.isQueryTile}"></div>
         <div class="managed-tile-icon"
-          ?hidden="${!this.enterpriseShortcutsEnabled_}">
+          ?hidden="${!this.isFromEnterpriseShortcut_(item.source)}">
           <cr-policy-indicator indicator-type="userPolicy">
           </cr-policy-indicator>
         </div>
@@ -77,7 +77,7 @@ export function getHtml(this: MostVisitedElement) {
   <cr-dialog id="dialog" @close="${this.onDialogClose_}">
     <div slot="title">${this.dialogTitle_}</div>
     <div slot="body" id="dialogContent">
-      ${this.enterpriseShortcutsEnabled_ ? html`
+      ${this.isFromEnterpriseShortcut_(this.dialogSource_) ? html`
         <div id="policySubtitleContainer">
           <cr-icon icon="cr:domain"></cr-icon>
           <span class="secondary">
@@ -97,7 +97,7 @@ export function getHtml(this: MostVisitedElement) {
           type="url" @blur="${this.onDialogTileUrlBlur_}"
           @value-changed="${this.onDialogTileUrlChange_}"
           ?readonly="${this.dialogIsReadonly_ ||
-            this.enterpriseShortcutsEnabled_}">
+            this.isFromEnterpriseShortcut_(this.dialogSource_)}">
       </cr-input>
     </div>
     <div slot="button-container">
