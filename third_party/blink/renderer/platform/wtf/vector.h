@@ -1010,11 +1010,14 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   void VerifyInlinedBuffer() {
     // On heap allocations are always zero-initialized. Stack is anyway scanned
     // conservatively, stack-to-stack pointers are filtered out, so no need to
-    // clear out the inlined buffer.
+    // clear out the inlined buffer. The check reads uninitialized memory, so
+    // don't do it if msan is on.
     if constexpr (Allocator::kIsGarbageCollected) {
-      const bool is_zeroed =
-          std::ranges::all_of(inline_buffer_, [](char c) { return c == 0; });
-      DCHECK(is_zeroed || IsOnStack(inline_buffer_));
+      const auto IsZeroed = [this] {
+        return std::ranges::all_of(inline_buffer_,
+                                   [](char c) { return c == 0; });
+      };
+      DCHECK(IsOnStack(inline_buffer_) || IsZeroed());
     }
   }
 
