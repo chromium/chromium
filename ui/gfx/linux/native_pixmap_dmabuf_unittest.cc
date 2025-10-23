@@ -39,13 +39,6 @@ class NativePixmapDmaBufTest
 
     return handle;
   }
-
-  gfx::BufferFormat GetBufferFormat(viz::SharedImageFormat format) {
-    if (format == viz::SinglePlaneFormat::kRGBX_8888) {
-      return gfx::BufferFormat::RGBX_8888;
-    }
-    return gfx::BufferFormat::YVU_420;
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(ConvertTest,
@@ -65,8 +58,7 @@ TEST_P(NativePixmapDmaBufTest, Convert) {
 
   // NativePixmapHandle to NativePixmapDmabuf
   scoped_refptr<gfx::NativePixmap> native_pixmap_dmabuf(
-      new gfx::NativePixmapDmaBuf(image_size, GetBufferFormat(format),
-                                  std::move(handle)));
+      new gfx::NativePixmapDmaBuf(image_size, format, std::move(handle)));
   EXPECT_TRUE(native_pixmap_dmabuf->AreDmaBufFdsValid());
   EXPECT_EQ(native_pixmap_dmabuf->GetBufferFormatModifier(),
             handle_clone.modifier);
