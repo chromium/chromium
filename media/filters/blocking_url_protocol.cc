@@ -39,7 +39,7 @@ void BlockingUrlProtocol::Abort() {
   data_source_ = nullptr;
 }
 
-int BlockingUrlProtocol::Read(int size, uint8_t* data) {
+int BlockingUrlProtocol::Read(base::span<uint8_t> data) {
   {
     // Read errors are unrecoverable.
     base::AutoLock lock(data_source_lock_);
@@ -48,13 +48,9 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
       return AVERROR(EIO);
     }
 
-    // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
-    // against it.
-    if (size < 0)
-      return AVERROR(EIO);
-    if (!size)
+    if (data.empty()) {
       return 0;
-
+    }
     int64_t file_size;
     if (data_source_->GetSize(&file_size) && read_position_ >= file_size)
       return AVERROR_EOF;
@@ -62,7 +58,7 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
     // Blocking read from data source until either:
     //   1) |last_read_bytes_| is set and |read_complete_| is signalled
     //   2) |aborted_| is signalled
-    data_source_->Read(read_position_, size, data,
+    data_source_->Read(read_position_, data.size(), data.data(),
                        base::BindOnce(&BlockingUrlProtocol::SignalReadCompleted,
                                       base::Unretained(this)));
   }

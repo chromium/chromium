@@ -5,6 +5,7 @@
 #include "media/filters/ffmpeg_glue.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -24,7 +25,15 @@ namespace media {
 enum { kBufferSize = 32 * 1024 };
 
 static int AVIOReadOperation(void* opaque, uint8_t* buf, int buf_size) {
-  return reinterpret_cast<FFmpegURLProtocol*>(opaque)->Read(buf_size, buf);
+  // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
+  // against it.
+  if (buf_size < 0) {
+    return AVERROR(EIO);
+  }
+  // SAFETY: Buffer from FFMpeg. `buf` points to `buf_size` bytes.
+  auto buffer =
+      UNSAFE_BUFFERS(base::span(buf, base::checked_cast<size_t>(buf_size)));
+  return reinterpret_cast<FFmpegURLProtocol*>(opaque)->Read(buffer);
 }
 
 static int64_t AVIOSeekOperation(void* opaque, int64_t offset, int whence) {

@@ -32,7 +32,7 @@ class MEDIA_EXPORT InMemoryUrlProtocol : public FFmpegURLProtocol {
   virtual ~InMemoryUrlProtocol();
 
   // FFmpegURLProtocol methods.
-  int Read(int size, uint8_t* data) override;
+  int Read(base::span<uint8_t> data) override;
   bool GetPosition(int64_t* position_out) override;
   bool SetPosition(int64_t position) override;
   bool GetSize(int64_t* size_out) override;

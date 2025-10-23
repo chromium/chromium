@@ -4,7 +4,6 @@
 
 #include "media/filters/in_memory_url_protocol.h"
 
-#include "base/compiler_specific.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 
 namespace media {
@@ -15,29 +14,23 @@ InMemoryUrlProtocol::InMemoryUrlProtocol(base::span<const uint8_t> data,
 
 InMemoryUrlProtocol::~InMemoryUrlProtocol() = default;
 
-int InMemoryUrlProtocol::Read(int size, uint8_t* data) {
-  // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
-  // against it.
-  if (size < 0)
-    return AVERROR(EIO);
-  if (!size)
+int InMemoryUrlProtocol::Read(base::span<uint8_t> data) {
+  if (data.empty()) {
     return 0;
-
-  const int64_t available_bytes = data_.size() - position_;
-  if (available_bytes <= 0)
+  }
+  if (position_ >= base::checked_cast<int64_t>(data_.size())) {
     return AVERROR_EOF;
-
-  if (size > available_bytes)
-    size = available_bytes;
-
-  if (size > 0) {
-    UNSAFE_TODO(memcpy(
-        data, data_.subspan(base::checked_cast<size_t>(position_)).data(),
-        size));
-    position_ += size;
   }
 
-  return size;
+  const auto source = data_.subspan(base::checked_cast<size_t>(position_));
+  if (data.size() > source.size()) {
+    data = data.first(source.size());
+  }
+  if (!data.empty()) {
+    data.copy_from(source.first(data.size()));
+    position_ += data.size();
+  }
+  return data.size();
 }
 
 bool InMemoryUrlProtocol::GetPosition(int64_t* position_out) {
