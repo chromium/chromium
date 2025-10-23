@@ -701,7 +701,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             new BookmarkManagerOpenerImpl(),
                             () ->
                                     PriceDropNotificationManagerFactory.create(
-                                            mTabModelProfileSupplier.get()));
+                                            mTabModelProfileSupplier.get()),
+                            mRootUiCoordinator::getBookmarkBarVisibility);
             mTabBookmarkerSupplier.set(tabBookmarker);
 
             mShowContentRunnable =

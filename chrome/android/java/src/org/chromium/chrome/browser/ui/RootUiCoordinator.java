@@ -2179,6 +2179,10 @@ public class RootUiCoordinator
         return mTopControlsStacker;
     }
 
+    public boolean getBookmarkBarVisibility() {
+        return false;
+    }
+
     /**
      * Initializes a glue logic that suppresses Contextual Search and hides the Page Zoom slider
      * while a Bottom Sheet feature is in action.

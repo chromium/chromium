@@ -36,6 +36,7 @@ public class TabBookmarker {
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
     private final Supplier<PriceDropNotificationManager> mPriceDropNotificationManagerSupplier;
+    private final Supplier<Boolean> mBookmarkBarVisibilitySupplier;
 
     /**
      * Constructor.
@@ -55,13 +56,15 @@ public class TabBookmarker {
             @NonNull Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull BookmarkManagerOpener bookmarkManagerOpener,
-            @NonNull Supplier<PriceDropNotificationManager> priceDropNotificationManagerSupplier) {
+            @NonNull Supplier<PriceDropNotificationManager> priceDropNotificationManagerSupplier,
+            @NonNull Supplier<Boolean> bookmarkBarVisibilitySupplier) {
         mActivity = activity;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBookmarkManagerOpener = bookmarkManagerOpener;
         mPriceDropNotificationManagerSupplier = priceDropNotificationManagerSupplier;
+        mBookmarkBarVisibilitySupplier = bookmarkBarVisibilitySupplier;
     }
 
     /**
@@ -172,6 +175,7 @@ public class TabBookmarker {
                 },
                 fromExplicitTrackUi,
                 mBookmarkManagerOpener,
-                mPriceDropNotificationManagerSupplier.get());
+                mPriceDropNotificationManagerSupplier.get(),
+                mBookmarkBarVisibilitySupplier.get());
     }
 }

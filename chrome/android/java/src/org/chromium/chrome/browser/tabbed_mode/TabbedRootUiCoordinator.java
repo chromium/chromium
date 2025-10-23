@@ -1864,6 +1864,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    @Override
+    public boolean getBookmarkBarVisibility() {
+        return BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfileSupplier.get());
+    }
+
     public int getBookmarkBarHeight() {
         return mBookmarkBarCoordinator != null && mBookmarkBarCoordinator.isVisible()
                 ? mBookmarkBarCoordinator.getTopControlHeight()

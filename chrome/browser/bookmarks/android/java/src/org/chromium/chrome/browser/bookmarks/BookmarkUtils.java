@@ -90,7 +90,8 @@ public class BookmarkUtils {
             Callback<@Nullable BookmarkId> callback,
             boolean fromExplicitTrackUi,
             BookmarkManagerOpener bookmarkManagerOpener,
-            PriceDropNotificationManager priceDropNotificationManager) {
+            PriceDropNotificationManager priceDropNotificationManager,
+            boolean isBookmarkBarVisible) {
         assert bookmarkModel.isBookmarkModelLoaded();
         if (existingBookmarkItem != null) {
             bookmarkManagerOpener.startEditActivity(
@@ -104,6 +105,7 @@ public class BookmarkUtils {
             // If account bookmarks are enabled and active, they take precedence, otherwise fall
             // back to the local-or-syncable mobile folder, e.g. for users that have
             // sync-the-feature enabled.
+
             parent =
                     bookmarkModel.areAccountBookmarkFoldersActive()
                             ? bookmarkModel.getAccountMobileFolderId()
@@ -118,7 +120,8 @@ public class BookmarkUtils {
                         tab.getTitle(),
                         tab.getOriginalUrl(),
                         parent,
-                        bookmarkType);
+                        bookmarkType,
+                        isBookmarkBarVisible);
         showSaveFlow(
                 activity,
                 bottomSheetController,
@@ -241,6 +244,16 @@ public class BookmarkUtils {
                     snackbar =
                             Snackbar.make(
                                     activity.getString(R.string.bookmark_page_saved, packageLabel),
+                                    snackbarController,
+                                    Snackbar.TYPE_ACTION,
+                                    Snackbar.UMA_BOOKMARK_ADDED);
+                } else if (folderName != null && !folderName.isEmpty()) {
+                    // We may have a folderName even without a last used profile, since saving to
+                    // the default location doesn't update the last used parent automatically.
+                    snackbar =
+                            Snackbar.make(
+                                    activity.getString(
+                                            R.string.bookmark_page_saved_folder, folderName),
                                     snackbarController,
                                     Snackbar.TYPE_ACTION,
                                     Snackbar.UMA_BOOKMARK_ADDED);
@@ -449,6 +462,18 @@ public class BookmarkUtils {
                 BookmarkType.NORMAL);
     }
 
+    static @Nullable BookmarkId addBookmarkInternal(
+            Context context,
+            Profile profile,
+            BookmarkModel bookmarkModel,
+            String title,
+            GURL url,
+            @Nullable BookmarkId parent,
+            @BookmarkType int bookmarkType) {
+        return addBookmarkInternal(
+                context, profile, bookmarkModel, title, url, parent, bookmarkType, false);
+    }
+
     /**
      * Adds a bookmark with the given {@link Tab}. This will reset last used parent if it fails to
      * add a bookmark.
@@ -461,6 +486,7 @@ public class BookmarkUtils {
      * @param bookmarkType The {@link BookmarkType} of the bookmark.
      * @param parent The {@link BookmarkId} which is the parent of the bookmark. If this is null,
      *     then the default parent is used.
+     * @param isBookmarkBarVisible True when the user is currently showing the bookmark bar.
      */
     static @Nullable BookmarkId addBookmarkInternal(
             Context context,
@@ -469,8 +495,27 @@ public class BookmarkUtils {
             String title,
             GURL url,
             @Nullable BookmarkId parent,
-            @BookmarkType int bookmarkType) {
+            @BookmarkType int bookmarkType,
+            boolean isBookmarkBarVisible) {
         parent = parent == null ? getLastUsedParent() : parent;
+
+        // When the user did not have a last used parent, then we will usually save into a default
+        // folder, which for normal bookmarks is the default bookmark folder ("Mobile Bookmarks" on
+        // mobile devices). In the special case of the Bookmark Bar being visible, we will instead
+        // make this the default by setting the parent here. However, we don't want this choice to
+        // update the last used, because if the user hides the bookmark bar, we do not want to
+        // continue saving to it unless the user explicitly chose to from the Edit dialog.
+        boolean shouldSetAsLastUsed = true;
+        if (parent == null && bookmarkType == BookmarkType.NORMAL) {
+            if (isBookmarkBarVisible) {
+                parent =
+                        bookmarkModel.areAccountBookmarkFoldersActive()
+                                ? bookmarkModel.getAccountDesktopFolderId()
+                                : bookmarkModel.getDesktopFolderId();
+                shouldSetAsLastUsed = false;
+            }
+        }
+
         BookmarkItem parentItem = null;
         if (parent != null) {
             parentItem = bookmarkModel.getBookmarkById(parent);
@@ -484,6 +529,16 @@ public class BookmarkUtils {
                     bookmarkType == BookmarkType.READING_LIST
                             ? bookmarkModel.getDefaultReadingListFolder()
                             : bookmarkModel.getDefaultBookmarkFolder();
+
+            // When we had to fall back on a default item, we do not also want to set this as the
+            // last used location. Without setting this as the last used location, it will still be
+            // returned in future bookmark actions (same behavior as setting it). However, if we do
+            // set this as last used, then if in the future the user opens the bookmark bar, we
+            // would not save by default to the bookmark bar like desired. If the user explicitly
+            // picks the default location from then Edit dialog, then it it saved.
+            if (bookmarkType == BookmarkType.NORMAL) {
+                shouldSetAsLastUsed = false;
+            }
         }
         assumeNonNull(parent);
 
@@ -513,7 +568,9 @@ public class BookmarkUtils {
             BookmarkBridge.clearLastUsedParent();
         } else {
             BookmarkMetrics.recordBookmarkAdded(profile, bookmarkId);
-            setLastUsedParent(parent);
+            if (shouldSetAsLastUsed) {
+                setLastUsedParent(parent);
+            }
         }
         return bookmarkId;
     }
