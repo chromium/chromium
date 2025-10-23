@@ -15,6 +15,7 @@ namespace blink {
 
 class BlockBreakToken;
 class BlockNode;
+class FlexGapAccumulator;
 struct DevtoolsFlexInfo;
 struct FlexItemData;
 
@@ -71,12 +72,14 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void ApplyReversals(FlexLineVector* flex_lines);
   LayoutResult::EStatus GiveItemsFinalPositionAndSize(
       FlexLineVector* flex_lines,
-      Vector<EBreakBetween>* row_break_between_outputs);
+      Vector<EBreakBetween>* row_break_between_outputs,
+      std::optional<FlexGapAccumulator>& gap_accumulator);
   LayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       FlexLineVector* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
-      LayoutUnit* total_intrinsic_block_size);
+      LayoutUnit* total_intrinsic_block_size,
+      std::optional<FlexGapAccumulator>& gap_accumulator);
   LayoutResult::EStatus PropagateFlexItemInfo(
       const FlexItem&,
       const PhysicalBoxFragment&,

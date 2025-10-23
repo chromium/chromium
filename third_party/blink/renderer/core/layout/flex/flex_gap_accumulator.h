@@ -6,16 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_GAP_ACCUMULATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class BoxFragmentBuilder;
 class MainGap;
 class CrossGap;
 class GapGeometry;
-class BoxFragmentBuilder;
 struct LogicalOffset;
+struct FlexLine;
 
 // We build and populate the gap intersections within the flex container in an
 // item by item basis. The intersections that correspond to each item are
@@ -120,26 +121,27 @@ struct LogicalOffset;
 // TODO(javiercon): Consider refactoring this code to be able to be reused for
 // masonry, by abstracting away the flex-specific logic.
 class CORE_EXPORT FlexGapAccumulator {
-  STACK_ALLOCATED();
-
  public:
   explicit FlexGapAccumulator(LayoutUnit gap_between_items,
                               LayoutUnit gap_between_lines,
                               wtf_size_t num_lines,
                               wtf_size_t num_flex_items,
-                              const BoxFragmentBuilder* container_builder,
-                              bool is_column)
+                              bool is_column,
+                              LayoutUnit border_scrollbar_padding_block_start,
+                              LayoutUnit border_scrollbar_padding_inline_start)
       : gap_between_items_(gap_between_items),
         gap_between_lines_(gap_between_lines),
-        container_builder_(container_builder),
-        is_column_(is_column) {
-    CHECK(container_builder_);
-
+        is_column_(is_column),
+        border_scrollbar_padding_block_start_(
+            border_scrollbar_padding_block_start),
+        border_scrollbar_padding_inline_start_(
+            border_scrollbar_padding_inline_start) {
     cross_gaps_.ReserveInitialCapacity(num_flex_items);
     main_gaps_.ReserveInitialCapacity(num_lines - 1);
   }
 
-  const GapGeometry* BuildGapGeometry();
+  const GapGeometry* BuildGapGeometry(
+      const BoxFragmentBuilder& container_builder);
 
   // We populate the gap data structures within the flex container in an
   // item by item basis. The main and cross gaps that correspond to each item
@@ -196,14 +198,15 @@ class CORE_EXPORT FlexGapAccumulator {
   //
   // For more information on GapDecorations implementation see
   // `third_party/blink/renderer/core/layout/gap/README.md`.
-  void BuildGapsForCurrentItem(const FlexLineVector& flex_lines,
+  void BuildGapsForCurrentItem(const FlexLine& flex_line,
                                wtf_size_t flex_line_index,
-                               wtf_size_t item_index_in_line,
                                LogicalOffset item_offset,
-                               bool is_first_line,
+                               bool is_first_item,
+                               bool is_last_item,
                                bool is_last_line,
                                LayoutUnit line_cross_start,
-                               LayoutUnit line_cross_end);
+                               LayoutUnit line_cross_end,
+                               LayoutUnit container_main_end);
 
   void PopulateMainGapForFirstItem(LayoutUnit cross_end);
 
@@ -218,19 +221,48 @@ class CORE_EXPORT FlexGapAccumulator {
                                       LayoutUnit main_intersection_offset,
                                       LayoutUnit cross_start);
 
+  void SetContentMainEnd(LayoutUnit content_main_end) {
+    content_main_end_ = content_main_end;
+  }
+
+  const Vector<MainGap>& MainGaps() const { return main_gaps_; }
+
+  // In the flex algorithm, there are some cases where we need to suppress a row
+  // gap (i.e. if a row gap is the last content in a fragment). In such cases,
+  // we must then also remove the `MainGap` that was created for that row gap
+  // that will now be suppressed.
+  void SuppressLastMainGap(
+      std::optional<LayoutUnit> new_cross_end = std::nullopt);
+
  private:
+  // This must be done after we are done laying out, so that we know the final
+  // block size of the fragment. This only needs to be done for column
+  // flexboxes, since the main end in such cases will be the final block end
+  // of the fragment, which we will not know until  we are done laying out.
+  void FinalizeContentMainEndForColumnFlex(
+      const BoxFragmentBuilder& container_builder);
+
+  void SetContentStartOffsetsIfNeeded(LogicalOffset offset,
+                                      LayoutUnit line_cross_start);
+
   LayoutUnit gap_between_items_;
   LayoutUnit gap_between_lines_;
-  const BoxFragmentBuilder* container_builder_ = nullptr;
   bool is_column_ = false;
 
   Vector<MainGap> main_gaps_;
   Vector<CrossGap> cross_gaps_;
 
-  LayoutUnit content_cross_start_;
+  LayoutUnit border_scrollbar_padding_block_start_;
+  LayoutUnit border_scrollbar_padding_inline_start_;
+
+  LayoutUnit content_cross_start_ = LayoutUnit::Max();
   LayoutUnit content_cross_end_;
-  LayoutUnit content_main_start_;
+  LayoutUnit content_main_start_ = LayoutUnit::Max();
   LayoutUnit content_main_end_;
+
+  // Tracks the index of the first flex line procesesed within the current
+  // fragment.
+  wtf_size_t first_flex_line_processed_index_ = kNotFound;
 };
 
 }  // namespace blink

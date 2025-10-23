@@ -1192,10 +1192,20 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       GetConstraintSpace(), Node(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
 
+  std::optional<FlexGapAccumulator> gap_accumulator = std::nullopt;
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasGapRule() && !flex_lines.empty()) {
+    gap_accumulator = FlexGapAccumulator(
+        gap_between_items_, gap_between_lines_, flex_lines.size(),
+        flex_items_.size(), is_column_,
+        container_builder_.BorderScrollbarPadding().block_start,
+        container_builder_.BorderScrollbarPadding().inline_start);
+  }
+
   if (!IsBreakInside(GetBreakToken())) {
     ApplyReversals(&flex_lines);
-    LayoutResult::EStatus status =
-        GiveItemsFinalPositionAndSize(&flex_lines, &row_break_between_outputs);
+    LayoutResult::EStatus status = GiveItemsFinalPositionAndSize(
+        &flex_lines, &row_break_between_outputs, gap_accumulator);
     if (status != LayoutResult::kSuccess) {
       return container_builder_.Abort(status);
     }
@@ -1221,7 +1231,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     LayoutResult::EStatus status =
         GiveItemsFinalPositionAndSizeForFragmentation(
             &flex_lines, &row_break_between_outputs, &break_before_row,
-            &total_intrinsic_block_size);
+            &total_intrinsic_block_size, gap_accumulator);
     if (status != LayoutResult::kSuccess) {
       return container_builder_.Abort(status);
     }
@@ -1292,6 +1302,11 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   freeze_scrollbars.reset();
 
   container_builder_.HandleOofsAndSpecialDescendants();
+
+  if (gap_accumulator) {
+    container_builder_.SetGapGeometry(
+        gap_accumulator->BuildGapGeometry(container_builder_));
+  }
 
   return container_builder_.ToBoxFragment();
 }
@@ -1587,7 +1602,8 @@ LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
 
 LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     FlexLineVector* flex_lines,
-    Vector<EBreakBetween>* row_break_between_outputs) {
+    Vector<EBreakBetween>* row_break_between_outputs,
+    std::optional<FlexGapAccumulator>& gap_accumulator) {
   DCHECK(!IsBreakInside(GetBreakToken()));
 
   const bool should_propagate_row_break_values =
@@ -1662,15 +1678,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   BaselineAccumulator baseline_accumulator(style);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
-  std::optional<FlexGapAccumulator> gap_accumulator = std::nullopt;
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule() &&
-      !InvolvedInBlockFragmentation(container_builder_)) {
-    gap_accumulator = FlexGapAccumulator(gap_between_items_, gap_between_lines_,
-                                         flex_lines->size(), flex_items_.size(),
-                                         &container_builder_, is_column_);
-  }
-
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_lines->size();
        ++flex_line_idx) {
     if (layout_info_for_devtools_) [[unlikely]] {
@@ -1710,6 +1717,13 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                                      line_items_size, is_reverse_direction_);
 
     wtf_size_t item_index_in_line = 0;
+    LayoutUnit border_scrollbar_padding =
+        is_column_ ? container_builder_.BorderScrollbarPadding().block_end
+                   : container_builder_.BorderScrollbarPadding().inline_end;
+    LayoutUnit container_main_end =
+        is_column_ ? container_builder_.InitialBorderBoxSize().block_size -
+                         border_scrollbar_padding
+                   : container_builder_.InlineSize() - border_scrollbar_padding;
 
     for (wtf_size_t item_index : flex_line.item_indices) {
       const FlexItem& item = flex_items_[item_index];
@@ -1877,11 +1891,17 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
       }
 
-      if (gap_accumulator) {
+      if (gap_accumulator &&
+          !InvolvedInBlockFragmentation(container_builder_)) {
+        // These are relative to the current flex line.
+        const bool is_first_item = item_index_in_line == 0;
+        const bool is_last_item =
+            item_index_in_line == flex_line.item_indices.size() - 1;
+
         gap_accumulator->BuildGapsForCurrentItem(
-            *flex_lines, flex_line_idx, item_index_in_line, offset,
-            is_first_line, is_last_line, flex_line.cross_axis_offset,
-            flex_line.LineCrossEnd());
+            (*flex_lines)[flex_line_idx], flex_line_idx, offset, is_first_item,
+            is_last_item, is_last_line, flex_line.cross_axis_offset,
+            flex_line.LineCrossEnd(), container_main_end);
       }
 
       item_index_in_line++;
@@ -1902,10 +1922,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     container_builder_.ClearBaselines();
   }
 
-  if (gap_accumulator) {
-    container_builder_.SetGapGeometry(gap_accumulator->BuildGapGeometry());
-  }
-
   // Signal if we need to relayout with new child scrollbar information.
   return status;
 }
@@ -1915,7 +1931,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     FlexLineVector* flex_lines,
     Vector<EBreakBetween>* row_break_between_outputs,
     FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
-    LayoutUnit* total_intrinsic_block_size) {
+    LayoutUnit* total_intrinsic_block_size,
+    std::optional<FlexGapAccumulator>& gap_accumulator) {
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
   DCHECK(flex_lines);
   DCHECK(row_break_between_outputs);
@@ -1962,37 +1979,33 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   bool broke_before_row =
       *break_before_row != FlexBreakTokenData::kNotBreakBeforeRow;
 
-  wtf_size_t fragment_relative_line_index = 0;
-  // Used to keep track of the last line index we tracked in this fragment.
-  wtf_size_t last_line_tracked = kNotFound;
-
-  std::optional<FlexGapAccumulator> gap_accumulator = std::nullopt;
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule()) {
-    gap_accumulator = FlexGapAccumulator(gap_between_items_, gap_between_lines_,
-                                         flex_lines->size(), flex_items_.size(),
-                                         &container_builder_, is_column_);
-  }
+  LayoutUnit border_scrollbar_padding =
+      is_column_ ? container_builder_.BorderScrollbarPadding().block_end
+                 : container_builder_.BorderScrollbarPadding().inline_end;
 
   for (auto entry = item_iterator.NextItem(broke_before_row);
        FlexItemData* flex_item = entry.flex_item;
        entry = item_iterator.NextItem(broke_before_row)) {
     wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
-    if (last_line_tracked == kNotFound) {
-      last_line_tracked = flex_line_idx;
-    } else if (flex_line_idx > last_line_tracked) {
-      ++fragment_relative_line_index;
-      last_line_tracked = flex_line_idx;
-    }
 
     FlexLine& flex_line = (*flex_lines)[flex_line_idx];
     const auto* item_break_token = To<BlockBreakToken>(entry.token);
-    bool last_item_in_line =
+    bool is_last_item_in_line =
         flex_item_idx == flex_line.line_items_data.size() - 1;
 
     bool is_first_line = flex_line_idx == 0;
     bool is_last_line = flex_line_idx == flex_lines->size() - 1;
+
+    // `GapAccumulator` builds the gaps mainly by knowing whether the
+    // item/line currently being processed is the first or last
+    // item/line, but it does this relative to the current fragment.
+    // As such, we need to determine whether the current item/line is the last
+    // one in the fragment, because an item/line could be the first in the
+    // current fragment, but not when all of the fragments are considered.
+    bool is_first_item_in_line = !is_column_
+                                     ? flex_item_idx == 0
+                                     : item_break_token || flex_item_idx == 0;
 
     // A child break in a parallel flow doesn't affect whether we should
     // break here or not. But if the break happened in the same flow, we'll now
@@ -2013,8 +2026,9 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         early_break_ = nullptr;
 
       if (has_inflow_child_break_inside_line[flex_line_idx]) {
-        if (!last_item_in_line)
+        if (!is_last_item_in_line) {
           item_iterator.NextLine();
+        }
         continue;
       }
     }
@@ -2133,9 +2147,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         // continue until we've processed all items in the current row.
         has_inflow_child_break_inside_line[flex_line_idx] = true;
         if (is_column_) {
-          if (!last_item_in_line)
+          if (!is_last_item_in_line) {
             item_iterator.NextLine();
-        } else if (last_item_in_line) {
+          }
+        } else if (is_last_item_in_line) {
           DCHECK_EQ(status, LayoutResult::kSuccess);
           break;
         }
@@ -2217,6 +2232,12 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           if (row_break_status == BreakStatus::kBrokeBefore) {
             // If a gap overlaps a break, or is the last content before a break,
             // suppress it.
+            if (gap_accumulator) {
+              // Since we are suppressing the row gap, we must remove the last
+              // `MainGap` that was added for the row, since we don't want to
+              // paint it.
+              gap_accumulator->SuppressLastMainGap();
+            }
             if (flex_line_idx > 0) {
               // The available space should be dependent on previous row's block
               // end relative to this fragmentainer. This allows us to determine
@@ -2287,8 +2308,9 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         // Keep track of the early breaks for each column.
         AddColumnEarlyBreak(current_column_break_info->early_break,
                             flex_line_idx);
-        if (!last_item_in_line)
+        if (!is_last_item_in_line) {
           item_iterator.NextLine();
+        }
         continue;
       }
       status = LayoutResult::kNeedsEarlierBreak;
@@ -2309,9 +2331,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       // continue until we've processed all items in the current row.
       has_inflow_child_break_inside_line[flex_line_idx] = true;
       if (is_column_) {
-        if (!last_item_in_line)
+        if (!is_last_item_in_line) {
           item_iterator.NextLine();
-      } else if (last_item_in_line) {
+        }
+      } else if (is_last_item_in_line) {
         DCHECK_EQ(status, LayoutResult::kSuccess);
         break;
       }
@@ -2425,18 +2448,34 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
     container_builder_.AddResult(*layout_result, offset);
-    if (gap_accumulator.has_value()) {
-      const bool is_last_line_in_fragment =
-          item_block_end == fragmentainer_space ||
-          (item_block_end + gap_between_lines_ >= fragmentainer_space) ||
-          (flex_line_idx == flex_lines->size() - 1);
-      LayoutUnit line_cross_end = item_block_end;
-      LayoutUnit line_cross_start = offset.block_offset;
+    if (gap_accumulator) {
+      LayoutUnit container_main_end =
+          is_column_
+              ? fragmentainer_space
+              : container_builder_.InlineSize() - border_scrollbar_padding;
+
+      if (is_column_ && is_last_item_in_line) {
+        container_main_end = std::max(fragmentainer_space, item_block_end);
+      }
+
+      LayoutUnit line_cross_start =
+          !is_column_ ? offset.block_offset : offset.inline_offset;
+      LayoutUnit line_cross_end =
+          !is_column_ ? item_block_end
+                      : offset.inline_offset + flex_line.line_cross_size;
 
       gap_accumulator->BuildGapsForCurrentItem(
-          *flex_lines, fragment_relative_line_index, flex_item_idx, offset,
-          /*is_first_line=*/fragment_relative_line_index == 0,
-          is_last_line_in_fragment, line_cross_start, line_cross_end);
+          (*flex_lines)[flex_line_idx], flex_line_idx, offset,
+          is_first_item_in_line, is_last_item_in_line, is_last_line,
+          line_cross_start, line_cross_end, container_main_end);
+
+      if (!is_column_ && is_last_item_in_line &&
+          has_inflow_child_break_inside_line[flex_line_idx] && !is_last_line) {
+        // If there was a break inside the line, we may have added a main gap in
+        // cases where we shouldn't have, for example if the first item in a
+        // line did not break but a subsequent one did in the same row.
+        gap_accumulator->SuppressLastMainGap(line_cross_end);
+      }
     }
     if (current_column_break_info) {
       current_column_break_info->break_after =
@@ -2444,7 +2483,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
     baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
                                         is_first_line, is_last_line);
-    if (last_item_in_line) {
+    if (is_last_item_in_line) {
       if (!has_inflow_child_break_inside_line[flex_line_idx])
         flex_line.has_seen_all_children = true;
       if (!has_processed_first_line_)
@@ -2490,10 +2529,6 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   *total_intrinsic_block_size =
       std::max(*total_intrinsic_block_size,
                intrinsic_block_size_ + previously_consumed_block_size);
-
-  if (gap_accumulator) {
-    container_builder_.SetGapGeometry(gap_accumulator->BuildGapGeometry());
-  }
 
   return status;
 }

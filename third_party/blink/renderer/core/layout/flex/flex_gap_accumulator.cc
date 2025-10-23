@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_gap_accumulator.h"
 
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 
 namespace blink {
 
-const GapGeometry* FlexGapAccumulator::BuildGapGeometry() {
+const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
+    const BoxFragmentBuilder& container_builder) {
   const bool has_valid_main_axis_gaps =
       !main_gaps_.empty() && gap_between_lines_ > LayoutUnit();
   const bool has_valid_cross_axis_gaps =
@@ -17,6 +19,10 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry() {
   if (!has_valid_main_axis_gaps && !has_valid_cross_axis_gaps) {
     // `GapGeometry` requires at least one axis to be valid.
     return nullptr;
+  }
+
+  if (is_column_) {
+    FinalizeContentMainEndForColumnFlex(container_builder);
   }
 
   GapGeometry* gap_geometry =
@@ -42,9 +48,6 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry() {
     }
   }
 
-  // TODO(crbug.com/436140061): The following are for the optimized
-  // version of GapDecorations. Once the optimized version is implemented,
-  // we can remove all the parts of this function used for the old version.
   // TODO(crbug.com/440123087): Risky since they could in theory be used after
   // moved. Clean up to not move members. Change members to unique_ptrs
   if (!cross_gaps_.empty()) {
@@ -72,60 +75,52 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry() {
 }
 
 void FlexGapAccumulator::BuildGapsForCurrentItem(
-    const FlexLineVector& flex_lines,
+    const FlexLine& flex_line,
     wtf_size_t flex_line_index,
-    wtf_size_t item_index_in_line,
     LogicalOffset item_offset,
-    bool is_first_line,
+    bool is_first_item,
+    bool is_last_item,
     bool is_last_line,
     LayoutUnit line_cross_start,
-    LayoutUnit line_cross_end) {
-  CHECK_LT(flex_line_index, flex_lines.size());
-  const FlexLine& flex_line = flex_lines[flex_line_index];
+    LayoutUnit line_cross_end,
+    LayoutUnit container_main_end) {
+  if (first_flex_line_processed_index_ == kNotFound) {
+    first_flex_line_processed_index_ = flex_line_index;
+  }
 
-  // "first" and "last" here refers to the inline direction.
-  const bool is_first_item = item_index_in_line == 0;
-  const bool is_last_item =
-      item_index_in_line == flex_line.item_indices.size() - 1;
+  wtf_size_t fragment_relative_line_index =
+      flex_line_index - first_flex_line_processed_index_;
 
+  const bool need_to_add_main_gap =
+      (main_gaps_.empty() ||
+       main_gaps_.size() - 1 < fragment_relative_line_index) &&
+      !is_last_line;
+  const bool is_first_line = fragment_relative_line_index == 0;
   const bool single_line = is_first_line && is_last_line;
 
-  if (is_first_line && is_first_item) {
-    content_cross_start_ = line_cross_start;
-    content_main_start_ =
-        is_column_ ? container_builder_->BorderScrollbarPadding().block_start
-                   : container_builder_->BorderScrollbarPadding().inline_start;
-    const LayoutUnit main_offset =
-        is_column_ ? item_offset.block_offset : item_offset.inline_offset;
-    content_main_start_ = std::min(content_main_start_, main_offset);
+  if (single_line && is_first_item) {
+    CHECK(!need_to_add_main_gap);
+    SetContentStartOffsetsIfNeeded(item_offset, line_cross_start);
   }
 
   if (is_last_line && is_first_item) {
     content_cross_end_ = line_cross_end;
   }
 
-  // The first item in any line doesn't have any `CrossGap` associated with
-  // it.
-  if (is_first_item) {
+  if (need_to_add_main_gap) {
     // We set the `MainGap` start offset when we process the first item in a
     // line, and nothing else. The last line does not have any `MainGap`s.
-    if (!single_line && !is_last_line) {
-      PopulateMainGapForFirstItem(line_cross_end);
+    SetContentStartOffsetsIfNeeded(item_offset, line_cross_start);
+    PopulateMainGapForFirstItem(line_cross_end);
 
-      if (flex_line.item_indices.size() == 1) {
-        LayoutUnit border_scrollbar_padding =
-            is_column_
-                ? container_builder_->BorderScrollbarPadding().block_end
-                : container_builder_->BorderScrollbarPadding().inline_end;
-        LayoutUnit container_main_end =
-            is_column_
-                ? container_builder_->InitialBorderBoxSize().block_size -
-                      border_scrollbar_padding
-                : container_builder_->InlineSize() - border_scrollbar_padding;
-        content_main_end_ = container_main_end;
-      }
-      return;
+    if (is_last_item) {
+      content_main_end_ = container_main_end;
     }
+  }
+
+  // The first item in any line doesn't have any `CrossGap` associated with
+  // it, so we return early.
+  if (is_first_item) {
     return;
   }
 
@@ -134,20 +129,11 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   const LayoutUnit main_intersection_offset =
       main_offset - (gap_between_items_ / 2);
 
-  PopulateCrossGapForCurrentItem(flex_line, flex_line_index, is_first_line,
-                                 is_last_line, single_line,
+  PopulateCrossGapForCurrentItem(flex_line, fragment_relative_line_index,
+                                 is_first_line, is_last_line, single_line,
                                  main_intersection_offset, line_cross_start);
 
   if (is_last_item) {
-    LayoutUnit border_scrollbar_padding =
-        is_column_ ? container_builder_->BorderScrollbarPadding().block_end
-                   : container_builder_->BorderScrollbarPadding().inline_end;
-    LayoutUnit container_main_end =
-        is_column_
-            ? container_builder_->InitialBorderBoxSize().block_size -
-                  border_scrollbar_padding
-            : container_builder_->InlineSize() - border_scrollbar_padding;
-
     const LayoutUnit last_gap_offset =
         is_column_ ? cross_gaps_.back().GetGapOffset().block_offset
                    : cross_gaps_.back().GetGapOffset().inline_offset;
@@ -231,4 +217,71 @@ void FlexGapAccumulator::PopulateCrossGapForCurrentItem(
   HandleCrossGapRangesForCurrentItem(flex_line_index, cross_gaps_.size() - 1);
 }
 
+void FlexGapAccumulator::FinalizeContentMainEndForColumnFlex(
+    const BoxFragmentBuilder& container_builder) {
+  CHECK(is_column_);
+  LayoutUnit applicable_border_scrollbar_padding_block_end =
+      container_builder.ApplicableBorders().block_end +
+      container_builder.ApplicableScrollbar().block_end +
+      container_builder.ApplicablePadding().block_end;
+
+  SetContentMainEnd(container_builder.FragmentBlockSize() -
+                    applicable_border_scrollbar_padding_block_end);
+}
+
+void FlexGapAccumulator::SuppressLastMainGap(
+    std::optional<LayoutUnit> new_cross_end) {
+  if (main_gaps_.empty()) {
+    return;
+  }
+
+  wtf_size_t affected_cross_gaps_start_index =
+      main_gaps_.back().HasCrossGapsBefore()
+          ? main_gaps_.back().GetCrossGapBeforeStart()
+          : kNotFound;
+  wtf_size_t affected_cross_gaps_end_index =
+      main_gaps_.back().HasCrossGapsBefore()
+          ? main_gaps_.back().GetCrossGapBeforeEnd()
+          : kNotFound;
+  // Since we are removing the last `MainGap`, we must update the
+  // `content_cross_end_` to be just before the last `MainGap`.
+  content_cross_end_ =
+      new_cross_end.has_value()
+          ? new_cross_end.value()
+          : main_gaps_.back().GetGapOffset() - (gap_between_lines_ / 2);
+
+  main_gaps_.pop_back();
+
+  // Since we have removed the last `MainGap`, we must also update the edge
+  // intersection state of all the `CrossGap`s associated with that main gap,
+  // since now we know that they will be adjacent to the end of the container.
+  for (wtf_size_t i = affected_cross_gaps_start_index;
+       i != kNotFound && i <= affected_cross_gaps_end_index; ++i) {
+    CrossGap& cross_gap = cross_gaps_[i];
+    CrossGap::EdgeIntersectionState edge_state =
+        cross_gap.GetEdgeIntersectionState();
+    if (edge_state == CrossGap::EdgeIntersectionState::kStart) {
+      cross_gap.SetEdgeIntersectionState(
+          CrossGap::EdgeIntersectionState::kBoth);
+    } else if (edge_state == CrossGap::EdgeIntersectionState::kNone) {
+      cross_gap.SetEdgeIntersectionState(CrossGap::EdgeIntersectionState::kEnd);
+    }
+  }
+}
+
+void FlexGapAccumulator::SetContentStartOffsetsIfNeeded(
+    LogicalOffset offset,
+    LayoutUnit line_cross_start) {
+  if (content_main_start_ != LayoutUnit::Max() &&
+      content_cross_start_ != LayoutUnit::Max()) {
+    return;
+  }
+
+  content_cross_start_ = line_cross_start;
+  content_main_start_ = is_column_ ? border_scrollbar_padding_block_start_
+                                   : border_scrollbar_padding_inline_start_;
+  const LayoutUnit main_offset =
+      is_column_ ? offset.block_offset : offset.inline_offset;
+  content_main_start_ = std::min(content_main_start_, main_offset);
+}
 }  // namespace blink
