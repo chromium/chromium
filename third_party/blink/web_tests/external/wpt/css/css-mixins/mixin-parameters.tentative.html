@@ -30,7 +30,7 @@
 
   <style>
     @mixin --m2(--my-color) {
-      color: env(--my-color);
+      color: var(--my-color);
     }
     #e2 {
       @apply --m2(green);
@@ -47,7 +47,7 @@
 
   <style>
     @mixin --m2b(--my-color) {
-      color: env(--my-color);
+      color: var(--my-color);
     }
     #e2b {
       @apply --m2b(navy);
@@ -64,7 +64,7 @@
 
   <style>
     @mixin --m2c(--my-color) {
-      color: env(--my-color);
+      color: var(--my-color);
     }
     #e2c {
       color: fuchsia;
@@ -82,7 +82,7 @@
 
   <style>
     @mixin --m3(--my-color) {
-      color: env(--my-color);
+      color: var(--my-color);
     }
     #e3 {
       @apply --m3({green});
@@ -99,7 +99,7 @@
 
   <style>
     @mixin --m4(--my-color: green) {
-      color: env(--my-color);
+      color: var(--my-color);
     }
     #e4 {
       @apply --m4;
@@ -134,7 +134,7 @@
 
   <style>
     @mixin --m6(--my-color) {
-      color: env(--my-color, navy);
+      color: var(--my-color, navy);
     }
     #e6 {
       @apply --m6(green);
@@ -151,7 +151,7 @@
 
   <style>
     @mixin --m6b(--my-color) {
-      color: env(--my-color, navy);
+      color: var(--my-color, navy);
     }
     #e6b {
       @apply --m6b;
@@ -168,7 +168,7 @@
 
   <style>
     @mixin --m6c(--my-color) {
-      color: env(--my-color, navy);
+      color: var(--my-color, navy);
     }
     #e6c {
       @apply --m6c(invalid-color);
@@ -185,7 +185,7 @@
 
   <style>
     #e6d {
-      color: env(--not-within-mixin, green);
+      color: var(--not-within-mixin, green);
     }
   </style>
   <div><div id="e6d">This text should be green.</div></div>
@@ -199,7 +199,7 @@
 
   <style>
     #e6e {
-      color: env(--not-within-mixin);
+      color: var(--not-within-mixin);
     }
   </style>
   <div><div id="e6e">This text should be black.</div></div>
@@ -219,19 +219,19 @@
       @apply --m7(green);
     }
   </style>
-  <div><div id="e7" color-attr="env(--my-color)">This text should be green.</div></div>
+  <div><div id="e7" color-attr="var(--my-color)">This text should be green.</div></div>
   <script>
     test(() => {
       let target = document.getElementById('e7');
       assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
-    }, 'env() can be accessed from attributes');
+    }, 'var() can be accessed from attributes');
   </script>
 
 
   <style>
     @mixin --m8(--my-length type(<length>)) {
       font-size: 10px;
-      --some-length: env(--my-length);
+      --some-length: var(--my-length);
     }
     #e8 {
       @apply --m8(1.0em);
@@ -242,14 +242,14 @@
     test(() => {
       let target = document.getElementById('e8');
       assert_equals(getComputedStyle(target).getPropertyValue('--some-length'), '10px');
-    }, 'env() resolves typed parameters');
+    }, 'var() resolves typed parameters');
   </script>
 
 
   <style>
     @mixin --m9(--my-length type(length)) {  /* Note the syntax error. */
       font-size: 10px;
-      --some-length: env(--my-length);
+      --some-length: var(--my-length);
     }
     #e9 {
       @apply --m9(1.0em);
@@ -261,13 +261,13 @@
       let target = document.getElementById('e9');
       assert_equals(getComputedStyle(target).getPropertyValue('--some-length'), '');
       assert_equals(getComputedStyle(target).fontSize, '10px');
-    }, 'env() refuses illegal syntax parameters, but does not fail entire mixin');
+    }, 'var() refuses illegal syntax parameters, but does not fail entire mixin');
   </script>
 
 
   <style>
     @mixin --m10inner(--inner-color) {
-      color: env(--outer-color);
+      color: var(--outer-color);
     }
     @mixin --m10outer(--outer-color) {
       @apply --m10inner(red);
@@ -281,13 +281,13 @@
     test(() => {
       let target = document.getElementById('e10');
       assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
-    }, 'env() can access parameters from outer mixins');
+    }, 'var() can access parameters from outer mixins');
   </script>
 
 
   <style>
     @mixin --m11(--val, --true, --false) {
-      color: if(style(--x: env(--val)): env(--true); else: env(--false))
+      color: if(style(--x: var(--val)): var(--true); else: var(--false))
     }
     #e11 {
       --x: a;
@@ -299,13 +299,13 @@
     test(() => {
       let target = document.getElementById('e11');
       assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
-    }, 'env() works inside if, in condition and true branch');
+    }, 'var() works inside if, in condition and true branch');
   </script>
 
 
   <style>
     @mixin --m11b(--val, --true, --false) {
-      color: if(style(--x: env(--val)): env(--true); else: env(--false))
+      color: if(style(--x: var(--val)): var(--true); else: var(--false))
     }
     #e11b {
       --x: a;
@@ -317,13 +317,13 @@
     test(() => {
       let target = document.getElementById('e11b');
       assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
-    }, 'env() works inside if, in condition and false branch');
+    }, 'var() works inside if, in condition and false branch');
   </script>
 
 
   <style>
     @function --f() {
-      color: env(--my-color);
+      color: var(--my-color);
     }
     @mixin --m12(--my-color) {
       color: --f();
@@ -337,8 +337,62 @@
     test(() => {
       let target = document.getElementById('e12');
       assert_equals(getComputedStyle(target).color, 'rgb(0, 0, 0)');
-    }, 'env() within a function should not see parameters from a calling mixin');
+    }, 'var() within a function should not see parameters from a calling mixin');
   </script>
 
+  <style>
+  @mixin --m13-override-outer(--inner, --outer) {
+    color: var(--inner);
+  }
+  @mixin --m13-set-inner(--inner) {
+    @apply --m13-override-outer(var(--inner), red);
+  }
+  @mixin --m13(--outer) {
+    @apply --m13-set-inner(var(--outer));
+  }
+  #e13 {
+    @apply --m13(green);
+  }
+  </style>
+  <div><div id="e13">This text should be green.</div></div>
+  <script>
+    test(() => {
+      let target = document.getElementById('e13');
+      assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
+    }, 'Mixin arguments are resolved at call site, not at use');
+  </script>
+
+  <style>
+    @mixin --m14(--param: green) {
+      color: var(--param);
+    }
+    #e14 {
+      @apply --m14();
+    }
+  </style>
+  <div><div id="e14">This text should be green.</div></div>
+  <script>
+    test(() => {
+      let target = document.getElementById('e14');
+      assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
+    }, 'var() supports default parameters');
+  </script>
+
+  <style>
+    @mixin --m15(--my-length type(<length>): 1em) {
+      --some-length: var(--my-length);
+    }
+    #e15 {
+      font-size: 12px;
+      @apply --m15();
+    }
+  </style>
+  <div><div id="e15">This text does not matter.</div></div>
+  <script>
+    test(() => {
+      let target = document.getElementById('e15');
+      assert_equals(getComputedStyle(target).getPropertyValue('--some-length'), '12px');
+    }, 'var() typed default parameters are resolved against the element');
+  </script>
   </body>
 </html>

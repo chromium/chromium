@@ -183,23 +183,47 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
 // This will be converted to function context at the time of application.
 class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
  public:
-  MixinParameterBindings(
-      HashMap<String, std::pair<String, CSSSyntaxDefinition>> bindings,
-      const MixinParameterBindings* previous_in_env_chain)
+  struct Binding {
+    DISALLOW_NEW();
+
+    Member<CSSVariableData> value;
+    Member<CSSVariableData> default_value;
+    CSSSyntaxDefinition syntax;
+
+    bool operator==(const Binding& other) const {
+      return base::ValuesEquivalent(value, other.value) &&
+             base::ValuesEquivalent(default_value, other.default_value) &&
+             syntax == other.syntax;
+    }
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(value);
+      visitor->Trace(default_value);
+    }
+  };
+
+  MixinParameterBindings(HeapHashMap<String, Binding> bindings,
+                         const MixinParameterBindings* previous_in_env_chain)
       : bindings_(bindings),
         parent_mixin_(previous_in_env_chain),
         hash_(ComputeHash()) {}
 
-  const std::pair<String, CSSSyntaxDefinition>* Lookup(
-      const String& variable_name) const;
-  void Trace(Visitor* visitor) const { visitor->Trace(parent_mixin_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(parent_mixin_);
+    visitor->Trace(bindings_);
+  }
 
   // NOTE: Equality here is only used for the MPC, where false negatives
   // are OK. In particular, we compare bindings one level at a time;
   // if we have an entry for e.g. “--foo: bar;” and the other side
   // does not, we will return false even if a _parent_ of the other side
-  // does.
+  // does. Doing anything else would rapidly get very complicated when
+  // they can e.g. refer to each other with var().
   bool operator==(const MixinParameterBindings& other) const;
+
+  const HeapHashMap<String, Binding>& GetBindings() const { return bindings_; }
+
+  const MixinParameterBindings* GetParentMixin() const { return parent_mixin_; }
 
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
@@ -209,7 +233,7 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
  private:
   unsigned ComputeHash() const;
 
-  HashMap<String, std::pair<String, CSSSyntaxDefinition>> bindings_;
+  HeapHashMap<String, Binding> bindings_;
   Member<const MixinParameterBindings> parent_mixin_;
   unsigned hash_;
 };

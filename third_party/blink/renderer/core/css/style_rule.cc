@@ -1097,25 +1097,11 @@ void StyleRuleCustomMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   }
 }
 
-const std::pair<String, CSSSyntaxDefinition>* MixinParameterBindings::Lookup(
-    const String& variable_name) const {
-  auto it = bindings_.find(variable_name);
-  if (it != bindings_.end()) {
-    return &it->value;
-  }
-  if (parent_mixin_) {
-    return parent_mixin_->Lookup(variable_name);
-  } else {
-    return nullptr;
-  }
-}
-
 unsigned MixinParameterBindings::ComputeHash() const {
-  unsigned hash =
-      parent_mixin_ ? parent_mixin_->GetHash() : 1234;
+  unsigned hash = parent_mixin_ ? parent_mixin_->GetHash() : 1234;
   for (const auto& [key, value] : bindings_) {
-    hash = HashInts(
-        hash, HashInts(key.Impl()->GetHash(), value.first.Impl()->GetHash()));
+    hash = HashInts(hash, HashInts(key.Impl()->GetHash(),
+                                   value.value ? value.value->Hash() : 5678));
   }
   return hash;
 }
@@ -1125,8 +1111,7 @@ bool MixinParameterBindings::operator==(
   if (bindings_ != other.bindings_) {
     return false;
   }
-  return base::ValuesEquivalent(parent_mixin_,
-                                other.parent_mixin_);
+  return base::ValuesEquivalent(parent_mixin_, other.parent_mixin_);
 }
 
 }  // namespace blink
