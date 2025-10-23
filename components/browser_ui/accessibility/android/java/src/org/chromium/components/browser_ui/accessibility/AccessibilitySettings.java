@@ -138,12 +138,16 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     initialArguments.putString(
                             SingleCategorySettings.EXTRA_CATEGORY,
                             SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
+                    initialArguments.putString(
+                            AllSiteSettings.EXTRA_TITLE,
+                            getString(R.string.zoom_info_preference_title));
                     mDelegate
                             .getSiteSettingsNavigation()
                             .startSettings(
                                     ContextUtils.getApplicationContext(),
                                     AllSiteSettings.class,
-                                    initialArguments);
+                                    initialArguments,
+                                    /* addToBackStack= */ true);
                     return true;
                 });
 

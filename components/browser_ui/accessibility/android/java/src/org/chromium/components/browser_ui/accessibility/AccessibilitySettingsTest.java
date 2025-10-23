@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -223,7 +224,8 @@ public class AccessibilitySettingsTest {
                                 hasDescendant(withText(R.string.zoom_info_preference_title))));
         onView(withText(R.string.zoom_info_preference_title)).perform(click());
 
-        verify(mSettingsNavigationMock).startSettings(any(Context.class), any(), any(Bundle.class));
+        verify(mSettingsNavigationMock)
+                .startSettings(any(Context.class), any(), any(Bundle.class), eq(true));
     }
 
     // Tests related to Page Zoom V2 feature (OS-level adjustment experiments).
