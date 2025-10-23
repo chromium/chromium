@@ -129,13 +129,13 @@
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
-#include "chrome/browser/ui/views/frame/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/browser_view_layout_delegate_impl.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate_impl.h"
 #include "chrome/browser/ui/views/frame/main_container_view.h"
 #include "chrome/browser/ui/views/frame/main_region_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -5102,7 +5102,7 @@ void BrowserView::AddedToWidget() {
       right_aligned_side_panel_separator_;
   layout_views.side_panel_rounded_corner = side_panel_rounded_corner_;
   layout_views.top_container_separator = top_container_separator_;
-  // LINT.ThenChange(//chrome/browser/ui/views/frame/browser_view_layout.h:BrowserViewLayoutViews)
+  // LINT.ThenChange(//chrome/browser/ui/views/frame/layout/browser_view_layout.h:BrowserViewLayoutViews)
 
   SetLayoutManager(BrowserViewLayout::CreateLayout(
       BrowserViewLayoutDelegateImplBase::CreateDelegate(*this), browser(),

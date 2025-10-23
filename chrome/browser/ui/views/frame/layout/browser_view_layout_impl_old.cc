@@ -1,71 +1,36 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h"
 
 #include <algorithm>
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
-#include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
-#include "base/notimplemented.h"
-#include "base/numerics/safe_math.h"
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/find_bar/find_bar.h"
-#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
-#include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
-#include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
-#include "ui/views/view_utils.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
-#include "ui/views/window/client_view.h"
-#include "ui/views/window/hit_test_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #endif
-
-using views::View;
-using web_modal::ModalDialogHostObserver;
-using web_modal::WebContentsModalDialogHost;
 
 namespace {
 
@@ -92,7 +57,7 @@ bool ShouldUseBrowserContentMinimumSize(Browser* browser) {
 
 // The normal clipping created by `View::Paint()` may not cover the bottom of
 // the TopContainerView at certain scale factor because both of the position and
-// the height might be roudned down. This function sets the clip path that
+// the height might be rounded down. This function sets the clip path that
 // enlarges the height at 2 DPs to compensate this error (both origin and size)
 // that the canvas can cover the entire TopContainerView.  See
 // crbug.com/390669712 for more details.  TODO(crbug.com/41344902): Remove this
@@ -110,16 +75,7 @@ void SetClipPathWithBottomAllowance(views::View* view) {
 
 }  // namespace
 
-BrowserViewLayoutViews::BrowserViewLayoutViews() = default;
-BrowserViewLayoutViews::BrowserViewLayoutViews(
-    BrowserViewLayoutViews&&) noexcept = default;
-BrowserViewLayoutViews& BrowserViewLayoutViews::operator=(
-    BrowserViewLayoutViews&&) noexcept = default;
-BrowserViewLayoutViews::~BrowserViewLayoutViews() noexcept = default;
-
-constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
-
-struct BrowserViewLayout::ContentsContainerLayoutResult {
+struct BrowserViewLayoutImplOld::ContentsContainerLayoutResult {
   gfx::Rect contents_container_bounds;
   gfx::Rect side_panel_bounds;
   bool side_panel_visible;
@@ -127,193 +83,6 @@ struct BrowserViewLayout::ContentsContainerLayoutResult {
   bool contents_container_after_side_panel;
   gfx::Rect separator_bounds;
 };
-
-class BrowserViewLayout::BrowserModalDialogHostViews
-    : public WebContentsModalDialogHost,
-      public views::WidgetObserver {
- public:
-  explicit BrowserModalDialogHostViews(BrowserViewLayout* browser_view_layout)
-      : browser_view_layout_(browser_view_layout) {
-    // browser_view might be nullptr in unit tests.
-    if (browser_view_layout->views().browser_view) {
-      browser_widget_observation_.Observe(
-          browser_view_layout->views().browser_view->GetWidget());
-    }
-  }
-
-  BrowserModalDialogHostViews(const BrowserModalDialogHostViews&) = delete;
-  BrowserModalDialogHostViews& operator=(const BrowserModalDialogHostViews&) =
-      delete;
-
-  ~BrowserModalDialogHostViews() override {
-    observer_list_.Notify(&ModalDialogHostObserver::OnHostDestroying);
-  }
-
-  void NotifyPositionRequiresUpdate() {
-    observer_list_.Notify(&ModalDialogHostObserver::OnPositionRequiresUpdate);
-  }
-
-  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override {
-    return browser_view_layout_->GetDialogPosition(dialog_size);
-  }
-
-  bool ShouldActivateDialog() const override {
-    // The browser Widget may be inactive when showing a bubble, in which case
-    // the bubble should be shown active.
-    return !browser_view_layout_->views()
-                .browser_view->GetWidget()
-                ->ShouldPaintAsActive();
-  }
-
-  bool ShouldConstrainDialogBoundsByHost() override {
-    return !base::FeatureList::IsEnabled(features::kTabModalUsesDesktopWidget);
-  }
-
-  gfx::Size GetMaximumDialogSize() override {
-    // Modals use NativeWidget and cannot be rendered beyond the browser
-    // window boundaries. Restricting them to the browser window bottom
-    // boundary and let the dialog to figure out a good layout.
-    // WARNING: previous attempts to allow dialog to extend beyond the browser
-    // boundaries have caused regressions in a number of dialogs. See
-    // crbug.com/364463378, crbug.com/369739216, crbug.com/363205507.
-    // TODO(crbug.com/334413759, crbug.com/346974105): use desktop widgets
-    // universally.
-    views::View* view = browser_view_layout_->views().contents_container;
-    gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
-    const int top = browser_view_layout_->dialog_top_y();
-    return gfx::Size(content_area.width(), content_area.bottom() - top);
-  }
-
-  views::Widget* GetHostWidget() const {
-    return views::Widget::GetWidgetForNativeView(
-        browser_view_layout_->delegate().GetHostViewForAnchoring());
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* browser_widget) override {
-    browser_widget_observation_.Reset();
-  }
-  void OnWidgetBoundsChanged(views::Widget* browser_widget,
-                             const gfx::Rect& new_bounds) override {
-    // Update the modal dialogs' position when the browser window bounds change.
-    // This is used to adjust the modal dialog's position when the browser
-    // window is being dragged across screen boundaries. We avoid having the
-    // modal dialog partially visible as it may display security-sensitive
-    // information.
-    NotifyPositionRequiresUpdate();
-  }
-
- private:
-  gfx::NativeView GetHostView() const override {
-    views::Widget* const host_widget = GetHostWidget();
-    return host_widget ? host_widget->GetNativeView() : gfx::NativeView();
-  }
-
-  // Add/remove observer.
-  void AddObserver(ModalDialogHostObserver* observer) override {
-    observer_list_.AddObserver(observer);
-  }
-  void RemoveObserver(ModalDialogHostObserver* observer) override {
-    observer_list_.RemoveObserver(observer);
-  }
-
-  const raw_ptr<BrowserViewLayout> browser_view_layout_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      browser_widget_observation_{this};
-
-  base::ObserverList<ModalDialogHostObserver>::Unchecked observer_list_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// BrowserViewLayout, public:
-
-// static
-std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
-    std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    Browser* browser,
-    BrowserViewLayoutViews views) {
-  // TODO(http://crbug.com/453717426): Use a flag to switch between old and new
-  // layout.
-  return std::make_unique<BrowserViewLayoutImplOld>(std::move(delegate),
-                                                    browser, std::move(views));
-}
-
-BrowserViewLayout::BrowserViewLayout(
-    std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    Browser* browser,
-    BrowserViewLayoutViews views)
-    : delegate_(std::move(delegate)),
-      browser_(browser),
-      views_(std::move(views)),
-      dialog_host_(std::make_unique<BrowserModalDialogHostViews>(this)) {}
-
-BrowserViewLayout::~BrowserViewLayout() = default;
-
-WebContentsModalDialogHost* BrowserViewLayout::GetWebContentsModalDialogHost() {
-  return dialog_host_.get();
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// BrowserViewLayout, views::LayoutManager implementation:
-
-void BrowserViewLayout::UpdateBubbles() {
-  // This must be done _after_ we lay out the WebContents since this
-  // code calls back into us to find the bounding box the find bar
-  // must be laid out within, and that code depends on the
-  // TabContentsContainer's bounds being up to date.
-  //
-  // Because Find Bar can be repositioned to keep from hiding find results, we
-  // don't want to reset its position on every layout, however - only if the
-  // geometry of the contents pane actually changes in a way that could affect
-  // the positioning of the bar.
-  const gfx::Rect new_contents_bounds =
-      views().contents_container->GetBoundsInScreen();
-  if (delegate().HasFindBarController() &&
-      (new_contents_bounds.width() != latest_contents_bounds_.width() ||
-       (new_contents_bounds.y() != latest_contents_bounds_.y() &&
-        new_contents_bounds.height() != latest_contents_bounds_.height()))) {
-    delegate().MoveWindowForFindBarIfNecessary();
-  }
-  latest_contents_bounds_ = new_contents_bounds;
-
-  // Adjust the fullscreen exit bubble bounds for |views().top_container|'s new
-  // bounds. This makes the fullscreen exit bubble look like it animates with
-  // |views().top_container| in immersive fullscreen.
-  ExclusiveAccessBubbleViews* exclusive_access_bubble =
-      delegate().GetExclusiveAccessBubble();
-  if (exclusive_access_bubble) {
-    exclusive_access_bubble->RepositionIfVisible();
-  }
-
-  // Adjust any hosted dialogs if the browser's dialog hosting bounds changed.
-  const gfx::Rect dialog_bounds(dialog_host_->GetDialogPosition(gfx::Size()),
-                                dialog_host_->GetMaximumDialogSize());
-  const gfx::Rect host_widget_bounds =
-      dialog_host_->GetHostWidget()
-          ? dialog_host_->GetHostWidget()->GetClientAreaBoundsInScreen()
-          : gfx::Rect();
-  const gfx::Rect dialog_bounds_in_screen =
-      dialog_bounds + host_widget_bounds.OffsetFromOrigin();
-  if (latest_dialog_bounds_in_screen_ != dialog_bounds_in_screen) {
-    latest_dialog_bounds_in_screen_ = dialog_bounds_in_screen;
-    dialog_host_->NotifyPositionRequiresUpdate();
-  }
-}
-
-gfx::Size BrowserViewLayout::GetPreferredSize(
-    const views::View* host,
-    const views::SizeBounds& available_size) const {
-  return gfx::Size();
-}
-
-// Return the preferred size which is the size required to give each
-// children their respective preferred size.
-gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
-  return GetPreferredSize(host, {});
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// BrowserViewLayoutImplOld:
 
 BrowserViewLayoutImplOld::BrowserViewLayoutImplOld(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
@@ -326,7 +95,7 @@ BrowserViewLayoutImplOld::BrowserViewLayoutImplOld(
 BrowserViewLayoutImplOld::~BrowserViewLayoutImplOld() = default;
 
 void BrowserViewLayoutImplOld::Layout(views::View* browser_view) {
-  TRACE_EVENT0("ui", "BrowserViewLayout::Layout");
+  TRACE_EVENT0("ui", "BrowserViewLayoutImplOld::Layout");
   gfx::Rect available_bounds = browser_view->GetLocalBounds();
 
   // The window scrim covers the entire browser view.
@@ -436,13 +205,13 @@ int BrowserViewLayoutImplOld::GetMinWebContentsWidthForTesting() const {
   return GetMinWebContentsWidth();
 }
 
-BrowserViewLayout::ContentsContainerLayoutResult
+BrowserViewLayoutImplOld::ContentsContainerLayoutResult
 BrowserViewLayoutImplOld::CalculateContentsContainerLayout(
     const gfx::Rect& available_bounds) const {
   gfx::Rect contents_container_bounds = available_bounds;
   int vertical_tab_offset = 0;
   if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
-    vertical_tab_offset = BrowserView::kVerticalTabStripWidth;
+    vertical_tab_offset = kVerticalTabStripWidth;
     contents_container_bounds.set_width(available_bounds.width() -
                                         vertical_tab_offset);
   }
@@ -547,13 +316,12 @@ BrowserViewLayoutImplOld::CalculateContentsContainerLayout(
                              ? side_panel_bounds.right()
                              : contents_container_bounds.right());
 
-  return BrowserViewLayout::ContentsContainerLayoutResult{
-      contents_container_bounds,
-      side_panel_bounds,
-      side_panel_visible,
-      side_panel_right_aligned,
-      contents_container_after_side_panel,
-      separator_bounds};
+  return ContentsContainerLayoutResult{contents_container_bounds,
+                                       side_panel_bounds,
+                                       side_panel_visible,
+                                       side_panel_right_aligned,
+                                       contents_container_after_side_panel,
+                                       separator_bounds};
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
@@ -636,10 +404,9 @@ void BrowserViewLayoutImplOld::LayoutVerticalTabStrip(
   if (views().vertical_tab_strip_container &&
       views().vertical_tab_strip_container->GetVisible()) {
     views().vertical_tab_strip_container->SetBounds(
-        available_bounds.x(), available_bounds.y(),
-        BrowserView::kVerticalTabStripWidth, available_bounds.height());
-    available_bounds.set_x(available_bounds.x() +
-                           BrowserView::kVerticalTabStripWidth);
+        available_bounds.x(), available_bounds.y(), kVerticalTabStripWidth,
+        available_bounds.height());
+    available_bounds.set_x(available_bounds.x() + kVerticalTabStripWidth);
   }
 }
 
@@ -696,8 +463,7 @@ void BrowserViewLayoutImplOld::LayoutToolbar(gfx::Rect& available_bounds) {
     gfx::Rect toolbar_bounds(
         delegate().GetBoundsForToolbarInVerticalTabBrowserView());
     toolbar_bounds.set_x(available_bounds.x());
-    toolbar_bounds.set_width(toolbar_bounds.width() -
-                             BrowserView::kVerticalTabStripWidth);
+    toolbar_bounds.set_width(toolbar_bounds.width() - kVerticalTabStripWidth);
     views().toolbar->SetBoundsRect(toolbar_bounds);
   } else {
     int height =
@@ -794,8 +560,8 @@ void BrowserViewLayoutImplOld::LayoutBookmarkBar(gfx::Rect& available_bounds) {
   if (!features::IsPixelCanvasRecordingEnabled()) {
     // Make sure the contents separator is painted last as the background for
     // BookmarkVieBar/ToolbarView may paint over it otherwise.
-    // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on
-    // all aura platforms.
+    // TODO(https://crbug.com/41344902): Remove once the pixel canvas is enabled
+    // on all aura platforms.
     if (views().top_container == views().bookmark_bar->parent()) {
       views().top_container->ReorderChildView(
           views().top_container_separator,
@@ -846,7 +612,7 @@ void BrowserViewLayoutImplOld::LayoutContentsContainerView(
   // |main_contents_region_| contains web page contents, side panel and
   // devtools. See browser_view.h for details.
 
-  BrowserViewLayout::ContentsContainerLayoutResult layout_result =
+  ContentsContainerLayoutResult layout_result =
       CalculateContentsContainerLayout(available_bounds);
   views().contents_container->SetBoundsRect(
       layout_result.contents_container_bounds);
@@ -981,7 +747,7 @@ gfx::Point BrowserViewLayoutImplOld::GetDialogPosition(
   view_bounds.set_y(view->bounds().y());
   view_bounds.set_height(view->bounds().bottom());
 
-  BrowserViewLayout::ContentsContainerLayoutResult layout_result =
+  ContentsContainerLayoutResult layout_result =
       CalculateContentsContainerLayout(view_bounds);
 
   int leading_x;
@@ -1000,21 +766,4 @@ gfx::Point BrowserViewLayoutImplOld::GetDialogPosition(
   const int middle_x =
       leading_x + layout_result.contents_container_bounds.width() / 2;
   return gfx::Point(middle_x - dialog_size.width() / 2, dialog_top_y());
-}
-
-// BrowserViewLayoutImpl (New Implementation)
-
-BrowserViewLayoutImpl::BrowserViewLayoutImpl(
-    std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    Browser* browser,
-    BrowserViewLayoutViews views)
-    : BrowserViewLayout(std::move(delegate), browser, std::move(views)) {}
-BrowserViewLayoutImpl::~BrowserViewLayoutImpl() = default;
-
-void BrowserViewLayoutImpl::Layout(views::View* host) {
-  NOTIMPLEMENTED();
-}
-gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
-  NOTIMPLEMENTED();
-  return gfx::Size();
 }

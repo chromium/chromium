@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -70,6 +69,7 @@ class AccessibilityFocusHighlight;
 class BookmarkBarController;
 class BookmarkBarView;
 class Browser;
+class BrowserViewLayout;
 class ContentsContainerView;
 class ContentsLayoutManager;
 struct DropData;
@@ -135,9 +135,6 @@ class BrowserView : public BrowserWindow,
   METADATA_HEADER(BrowserView, views::ClientView)
 
  public:
-  // The width of the vertical tab strip.
-  static constexpr int kVerticalTabStripWidth = 240;
-
   // The name of a key to store on the window handle so that other code can
   // locate this object using just the handle.
   static constexpr char kBrowserViewKey[] = "__BROWSER_VIEW__";

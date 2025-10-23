@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_H_
 
 #include <memory>
 
@@ -96,6 +96,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // for popups.
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
 
+  // The width of the vertical tab strip.
+  static constexpr int kVerticalTabStripWidth = 240;
+
   BrowserViewLayout(const BrowserViewLayout&) = delete;
   BrowserViewLayout& operator=(const BrowserViewLayout&) = delete;
 
@@ -154,12 +157,6 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_dialog_top_y(int dialog_top_y) { dialog_top_y_ = dialog_top_y; }
   int dialog_top_y() const { return dialog_top_y_; }
 
-  // Helper struct and function for LayoutContentsContainerView that calculates
-  // bounds for `contents_container_` and `contents_height_side_panel_`.
-  struct ContentsContainerLayoutResult;
-  virtual ContentsContainerLayoutResult CalculateContentsContainerLayout(
-      const gfx::Rect& available_bounds) const = 0;
-
   virtual gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const = 0;
 
   // Returns the current pref for vertical tabs by accessing the vertical
@@ -202,75 +199,4 @@ class BrowserViewLayout : public views::LayoutManager {
   int dialog_top_y_ = -1;
 };
 
-// Original browser layout implementation.
-// TODO(http://crbug.com/453717426): Move this to impl file that is only used by
-// .cc file.
-class BrowserViewLayoutImplOld : public BrowserViewLayout {
- public:
-  BrowserViewLayoutImplOld(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                           Browser* browser,
-                           BrowserViewLayoutViews views);
-  ~BrowserViewLayoutImplOld() override;
-
-  // BrowserViewLayout overrides:
-  void Layout(views::View* host) override;
-  gfx::Size GetMinimumSize(const views::View* host) const override;
-  int GetMinWebContentsWidthForTesting() const override;
-
- protected:
-  // Helper struct and function for LayoutContentsContainerView that calculates
-  // bounds for `contents_container_` and `contents_height_side_panel_`.
-  ContentsContainerLayoutResult CalculateContentsContainerLayout(
-      const gfx::Rect& available_bounds) const override;
-  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, BrowserViewLayout);
-  FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, Layout);
-
-  // Layout the following controls, updating `available_bounds` to leave the
-  // remaining space available for future controls.
-  void LayoutTitleBarForWebApp(gfx::Rect& available_bounds);
-  void LayoutVerticalTabStrip(gfx::Rect& available_bounds);
-  void LayoutTabStripRegion(gfx::Rect& available_bounds);
-  void LayoutWebUITabStrip(gfx::Rect& available_bounds);
-  void LayoutToolbar(gfx::Rect& available_bounds);
-  void LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds);
-  void LayoutBookmarkBar(gfx::Rect& available_bounds);
-  void LayoutInfoBar(gfx::Rect& available_bounds);
-
-  // Returns the minimum acceptable width for the browser web contents. If split
-  // view is active, this includes the full split view.
-  int GetMinWebContentsWidth() const;
-
-  // Layout the `main_container_` within the available bounds.
-  // See browser_view.h for details of the relationship between
-  // `main_container_` and other views.
-  void LayoutContentsContainerView(const gfx::Rect& available_bounds);
-
-  // Updates `top_container_`'s bounds. The new bounds depend on the size of
-  // the bookmark bar and the toolbar.
-  void UpdateTopContainerBounds(const gfx::Rect& available_bounds);
-
-  bool IsImmersiveModeEnabledWithoutToolbar() const;
-
-  // Whether or not to use the browser based content minimum size.
-  const bool use_browser_content_minimum_size_ = false;
-};
-
-// New browser layout implementation.
-// TODO(http://crbug.com/453717426): Move this to impl file that is only used by
-// .cc file.
-class BrowserViewLayoutImpl : public BrowserViewLayout {
- public:
-  BrowserViewLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                        Browser* browser,
-                        BrowserViewLayoutViews views);
-  ~BrowserViewLayoutImpl() override;
-
-  // BrowserViewLayout overrides:
-  void Layout(views::View* host) override;
-  gfx::Size GetMinimumSize(const views::View* host) const override;
-};
-
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_H_
