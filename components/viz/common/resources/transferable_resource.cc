@@ -22,9 +22,10 @@ TransferableResource TransferableResource::Make(
   resource.memory_buffer_id_ = shared_image->mailbox();
   resource.sync_token_ = sync_token;
   resource.resource_source = source;
+  resource.format = shared_image->format();
+  resource.set_texture_target(shared_image->GetTextureTarget());
 
   resource.size = override.size.value_or(shared_image->size());
-  resource.format = override.format.value_or(shared_image->format());
   // Passed in format must be either single or multiplane and not default set.
   CHECK(resource.format.is_single_plane() || resource.format.is_multi_plane());
   resource.is_overlay_candidate = override.is_overlay_candidate.value_or(
@@ -35,8 +36,6 @@ TransferableResource TransferableResource::Make(
   SkAlphaType alpha_type =
       override.alpha_type.value_or(shared_image->alpha_type());
   resource.alpha_type = alpha_type;
-  resource.set_texture_target(
-      override.texture_target.value_or(shared_image->GetTextureTarget()));
 
   return resource;
 }
