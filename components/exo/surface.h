@@ -300,9 +300,6 @@ class Surface final : public ui::PropertyHandler {
   // Returns whether the surface has a committed acquire fence.
   bool HasAcquireFence() const;
 
-  // Whether the surface has an uncommitted per-commit buffer release callback.
-  bool HasPendingPerCommitBufferReleaseCallback() const;
-
   // Surface state (damage regions, attached buffers, etc.) is double-buffered.
   // A Commit() call atomically applies all pending state, replacing the
   // current state. Commit() is not guaranteed to be synchronous. See
@@ -594,12 +591,6 @@ class Surface final : public ui::PropertyHandler {
     // The acquire gpu fence to associate with the surface buffer.
     // Not persisted between commits.
     std::unique_ptr<gfx::GpuFence> acquire_fence;
-    // Callback to notify about the per-commit buffer release. The wayland
-    // Exo backend uses this callback to implement the immediate_release
-    // event of the explicit sync protocol.
-    // Not persisted between commits.
-    Buffer::PerCommitExplicitReleaseCallback
-        per_commit_explicit_release_callback_;
     // The hint for overlay prioritization
     // Persisted between commits.
     OverlayPriority overlay_priority_hint = OverlayPriority::REGULAR;
