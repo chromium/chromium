@@ -35,7 +35,6 @@ class AudioHelperChromeOsImpl
 
   // AudioHelperChromeOs:
   void StartAudioStream(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       OnDataCallback on_data_callback,
       OnErrorCallback on_error_callback) override;
 
@@ -50,8 +49,7 @@ class AudioHelperChromeOsImpl
   void StopAudioStream() override;
   void ReportError();
 
-  // Task runner for the main sequence (where AudioCapturerChromeOs lives).
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> audio_runner_;
   OnDataCallback on_data_callback_;
   OnErrorCallback on_error_callback_;
   const media::AudioParameters audio_params_;
@@ -60,7 +58,6 @@ class AudioHelperChromeOsImpl
   media::AudioDataS16Converter s16_converter_;
   std::optional<base::TimeTicks> first_capture_time_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

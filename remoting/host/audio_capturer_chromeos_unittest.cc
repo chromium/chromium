@@ -43,7 +43,6 @@ class FakeAudioHelperChromeOs : public AudioHelperChromeOs {
   FakeAudioHelperChromeOs& operator=(const FakeAudioHelperChromeOs&) = delete;
 
   void StartAudioStream(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       OnDataCallback on_data_callback,
       OnErrorCallback on_error_callback) override {
     on_data_callback_ = std::move(on_data_callback);

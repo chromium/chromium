@@ -168,7 +168,6 @@ class AudioHelperChromeOsImplTest : public testing::Test {
 
 TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithPackets) {
   audio_helper_chromeos_->StartAudioStream(
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnDataCallback,
                           base::Unretained(this)),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnErrorCallback,
@@ -191,9 +190,8 @@ TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithPackets) {
 }
 
 TEST_F(AudioHelperChromeOsImplTest, VerifyStreamParams) {
-  audio_helper_chromeos_->StartAudioStream(
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing(),
-      base::DoNothing());
+  audio_helper_chromeos_->StartAudioStream(base::DoNothing(),
+                                           base::DoNothing());
 
   EXPECT_EQ(media::AudioDeviceDescription::kLoopbackWithMuteDeviceId,
             audio_manager_->device_id());
@@ -208,7 +206,6 @@ TEST_F(AudioHelperChromeOsImplTest, VerifyStreamParams) {
 
 TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithStreamFailure) {
   audio_helper_chromeos_->StartAudioStream(
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnDataCallback,
                           base::Unretained(this)),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnErrorCallback,
@@ -225,7 +222,6 @@ TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotCreated) {
   audio_manager_->SetFailStreamCreation(/* fail= */ true);
 
   audio_helper_chromeos_->StartAudioStream(
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnDataCallback,
                           base::Unretained(this)),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnErrorCallback,
@@ -239,7 +235,6 @@ TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotOpened) {
   audio_manager_->SetFailStreamOpen(/* fail= */ true);
 
   audio_helper_chromeos_->StartAudioStream(
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnDataCallback,
                           base::Unretained(this)),
       base::BindRepeating(&AudioHelperChromeOsImplTest::OnErrorCallback,

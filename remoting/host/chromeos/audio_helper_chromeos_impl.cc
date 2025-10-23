@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
@@ -36,7 +35,8 @@ constexpr int kFramesPerBuffer = kSampleRate / 100;
 }  // namespace
 
 AudioHelperChromeOsImpl::AudioHelperChromeOsImpl()
-    : audio_params_(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+    : audio_runner_(media::AudioManager::Get()->GetTaskRunner()),
+      audio_params_(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                     media::ChannelLayoutConfig::Stereo(),
                     kSampleRate,
                     kFramesPerBuffer) {}
@@ -46,10 +46,9 @@ AudioHelperChromeOsImpl::~AudioHelperChromeOsImpl() {
 }
 
 void AudioHelperChromeOsImpl::StartAudioStream(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     OnDataCallback on_data_callback,
     OnErrorCallback on_error_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(audio_runner_->RunsTasksInCurrentSequence());
 
   // TODO(crbug.com/450048643): Figure out error handling
   if (stream_) {
@@ -57,7 +56,6 @@ void AudioHelperChromeOsImpl::StartAudioStream(
     return;
   }
 
-  main_task_runner_ = std::move(main_task_runner);
   on_data_callback_ = std::move(on_data_callback);
   on_error_callback_ = std::move(on_error_callback);
 
@@ -89,7 +87,7 @@ void AudioHelperChromeOsImpl::StartAudioStream(
 }
 
 void AudioHelperChromeOsImpl::StopAudioStream() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(audio_runner_->RunsTasksInCurrentSequence());
   if (stream_) {
     stream_->Stop();
     stream_->Close();
@@ -124,20 +122,17 @@ void AudioHelperChromeOsImpl::OnData(
   packet->set_timestamp(
       (capture_time - first_capture_time_.value()).InMilliseconds());
 
-  // Post the audio packet back to AudioCapturerChromeOs on the main sequence
-  // via the callback.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(on_data_callback_, std::move(packet)));
+  on_data_callback_.Run(std::move(packet));
 }
 
 void AudioHelperChromeOsImpl::OnError() {
+  DCHECK(audio_runner_->RunsTasksInCurrentSequence());
   LOG(ERROR) << "AudioInputStream Error encountered.";
   ReportError();
 }
 
 void AudioHelperChromeOsImpl::ReportError() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  main_task_runner_->PostTask(FROM_HERE, on_error_callback_);
+  on_error_callback_.Run();
 }
 
 }  // namespace remoting

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "media/audio/audio_manager.h"
@@ -23,7 +24,11 @@ namespace remoting {
 AudioCapturerChromeOs::AudioCapturerChromeOs(
     std::unique_ptr<AudioHelperChromeOs> audio_helper_chromeos)
     : audio_helper_chromeos_(media::AudioManager::Get()->GetTaskRunner(),
-                             std::move(audio_helper_chromeos)) {}
+                             std::move(audio_helper_chromeos)) {
+  // Allow rebinding |sequence_checker_| to the sequence that `Start()` is
+  // eventually called on.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 AudioCapturerChromeOs::~AudioCapturerChromeOs() = default;
 
@@ -32,20 +37,26 @@ bool AudioCapturerChromeOs::Start(const PacketCapturedCallback& callback) {
   packet_captured_callback_ = callback;
 
   // Post the StartAudioStream call to the audio thread, as all interactions
-  // with AudioManager must happen on that thread. We pass the current
-  // SequencedTaskRunner so the AudioHelperChromeos can post
-  // HandleAudioData and HandleAudioError callbacks back to this main sequence.
+  // with AudioManager must happen on that thread. Using `BindPostTask()`, when
+  // the AudioHelperChromeos executes the HandleAudioData and HandleAudioError
+  // callbacks, it automatically posts those tasks back to this "current"
+  // sequence.
   //
   // Note: AudioCapturerChromeOs currently runs on the main sequence. If we
   // observe performance issues like audio packet delays, we may need to
-  // revisit this and move AudioCapturerChromeOs to its own  higher-priority
+  // revisit this and move AudioCapturerChromeOs to its own higher-priority
   // thread.
   audio_helper_chromeos_.AsyncCall(&AudioHelperChromeOs::StartAudioStream)
-      .WithArgs(base::SequencedTaskRunner::GetCurrentDefault(),
-                base::BindRepeating(&AudioCapturerChromeOs::HandleAudioData,
-                                    weak_ptr_factory_.GetWeakPtr()),
-                base::BindRepeating(&AudioCapturerChromeOs::HandleAudioError,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      .WithArgs(
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindRepeating(&AudioCapturerChromeOs::HandleAudioData,
+                                  weak_ptr_factory_.GetWeakPtr())),
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindRepeating(&AudioCapturerChromeOs::HandleAudioError,
+                                  weak_ptr_factory_.GetWeakPtr())));
+
   return true;
 }
 

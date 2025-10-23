@@ -30,7 +30,6 @@ class AudioHelperChromeOs {
 
   // Methods to be called on the AudioManager's sequence.
   virtual void StartAudioStream(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       OnDataCallback on_data_callback,
       OnErrorCallback on_error_callback) = 0;
   virtual void StopAudioStream() = 0;
