@@ -37,6 +37,14 @@ class NavigationAttachmentsViewBinder {
 
             if (res != 0) view.requestType.setText(res);
             view.requestType.setVisibility(res == 0 ? View.GONE : View.VISIBLE);
+        } else if (propertyKey
+                == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
+            view.requestType.setOnClickListener(
+                    v ->
+                            model.get(
+                                            NavigationAttachmentsProperties
+                                                    .AUTOCOMPLETE_REQUEST_TYPE_CLICKED)
+                                    .run());
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);

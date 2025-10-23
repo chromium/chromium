@@ -78,12 +78,16 @@ public class NavigationAttachmentsMediatorUnitTest {
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
+    private ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            mAutocompleteRequestTypeSupplier;
     private final ModelList mTabAttachmentsModelList = new ModelList();
     private final List<Tab> mTabs = new ArrayList<>();
 
     @Before
     public void setUp() {
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
+        mAutocompleteRequestTypeSupplier = new ObservableSupplierImpl<>();
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mViewGroup = new ConstraintLayout(mActivity);
         mActivity.setContentView(mViewGroup);
@@ -102,7 +106,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mModel,
                                 mViewHolder,
                                 new ModelList(),
-                                new ObservableSupplierImpl<>(),
+                                mAutocompleteRequestTypeSupplier,
                                 mTabModelSelectorSupplier,
                                 mTabAttachmentsModelList,
                                 mComposeBoxQueryControllerBridge));
@@ -277,10 +281,10 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onUseAiModeChanged_off_clearsAttachmentsAndAbandonsSession() {
+    public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
         ModelList modelList = new ModelList();
-        ObservableSupplierImpl<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier =
-                new ObservableSupplierImpl<>();
+        mAutocompleteRequestTypeSupplier =
+                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
         mMediator =
                 new NavigationAttachmentsMediator(
                         mContext,
@@ -288,20 +292,20 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         modelList,
-                        autocompleteRequestTypeSupplier,
+                        mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mTabAttachmentsModelList,
                         mComposeBoxQueryControllerBridge);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
 
-        mMediator.onUseAiModeChanged(true);
+        mMediator.activateAiMode();
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
 
-        mMediator.onUseAiModeChanged(false);
+        mMediator.activateSearchMode();
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, modelList.size());
         verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
@@ -311,8 +315,8 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onUseAiModeChanged_on_startsSession() {
-        mMediator.onUseAiModeChanged(true);
+    public void activateAiMode_startsSession() {
+        mMediator.activateAiMode();
         verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
@@ -355,7 +359,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
         // Manually start a session to test the hiding part.
-        mMediator.onUseAiModeChanged(true);
+        mMediator.activateAiMode();
         verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
         Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
 
@@ -388,5 +392,12 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(false).when(mClipboard).hasImage();
         mMediator.onToggleAttachmentsPopup();
         assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void autocompleteRequestTypeClicked_activatesSearchMode() {
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
     }
 }

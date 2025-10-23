@@ -34,6 +34,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Integer> AUTOCOMPLETE_REQUEST_TYPE =
             new WritableObjectPropertyKey<>();
 
+    /** Action to perform when the user clicks the Autocomplete Request Type button. */
+    public static final WritableObjectPropertyKey<Runnable> AUTOCOMPLETE_REQUEST_TYPE_CLICKED =
+            new WritableObjectPropertyKey<>();
+
     /** Action to perform when the user clicks the Add button. */
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -76,6 +80,7 @@ class NavigationAttachmentsProperties {
         ATTACHMENTS_TOOLBAR_VISIBLE,
         ATTACHMENTS_VISIBLE,
         AUTOCOMPLETE_REQUEST_TYPE,
+        AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
         NAVIGATION_TYPE_VISIBLE,
         ON_USE_AI_MODE_CHANGED,

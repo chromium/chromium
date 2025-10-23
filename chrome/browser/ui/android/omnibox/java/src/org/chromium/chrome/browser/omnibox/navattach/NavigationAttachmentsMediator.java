@@ -73,7 +73,6 @@ class NavigationAttachmentsMediator {
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private boolean mAiModeSessionActive;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -113,27 +112,38 @@ class NavigationAttachmentsMediator {
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED, this::onClipboardClicked);
         mModel.set(
-                NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, this::onUseAiModeChanged);
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
+                this::activateSearchMode);
+        mModel.set(
+                NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED,
+                (checked) -> {
+                    if (checked) {
+                        activateAiMode();
+                    } else {
+                        activateSearchMode();
+                    }
+                });
     }
 
-    /**
-     * Called when the user toggles the AI mode.
-     *
-     * @param enabled Whether the AI mode is enabled.
-     */
-    void onUseAiModeChanged(boolean enabled) {
-        if (mAiModeSessionActive == enabled) return;
+    /** Activate Search as the Next Request fulfillment type. */
+    void activateSearchMode() {
+        mPopup.dismiss();
+        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH) return;
 
-        mAiModeSessionActive = enabled;
-        mAutocompleteRequestTypeSupplier.set(
-                enabled ? AutocompleteRequestType.AI_MODE : AutocompleteRequestType.SEARCH);
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
-        if (enabled) {
-            mComposeBoxQueryControllerBridge.notifySessionStarted();
-        } else {
-            mComposeBoxQueryControllerBridge.notifySessionAbandoned();
-            mModelList.clear();
-        }
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
+        mComposeBoxQueryControllerBridge.notifySessionAbandoned();
+        mModelList.clear();
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+    }
+
+    /** Activate AI Mode as the Next Request fulfillment type. */
+    void activateAiMode() {
+        mPopup.dismiss();
+        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
+
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        mComposeBoxQueryControllerBridge.notifySessionStarted();
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
     }
 
     /**
@@ -152,7 +162,7 @@ class NavigationAttachmentsMediator {
 
         mModel.set(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE, showNavigationType);
         if (!showNavigationType) {
-            onUseAiModeChanged(false);
+            activateSearchMode();
         }
     }
 
@@ -236,7 +246,7 @@ class NavigationAttachmentsMediator {
 
     private void onTabAttachmentClicked(Tab tab) {
         if (mComposeBoxQueryControllerBridge == null) return;
-        mPopup.dismiss();
+        activateAiMode();
         @Nullable String token = mComposeBoxQueryControllerBridge.addTabContext(tab);
         if (TextUtils.isEmpty(token)) return;
         AttachmentDetails attachmentDetails =
@@ -410,7 +420,7 @@ class NavigationAttachmentsMediator {
 
     private void addAttachment(
             AttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
-        onUseAiModeChanged(true);
+        activateAiMode();
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)

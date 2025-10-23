@@ -194,4 +194,11 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, false);
         verify(mPopup.mRecentTabsHeader).setVisibility(View.GONE);
     }
+
+    @Test
+    public void autocompleteRequestTypeClicked_setsListener() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED, runnable);
+        verify(mRequestType).setOnClickListener(any());
+    }
 }
