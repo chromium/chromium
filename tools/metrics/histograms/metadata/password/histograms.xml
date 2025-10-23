@@ -3773,43 +3773,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.RequirementsSpecFetcher.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2025-11-30">
-  <owner>kazinova@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    HTTP response code of fetching a password requirements file.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.RequirementsSpecFetcher.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2025-12-31">
-  <owner>kazinova@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Network error code of fetching a password requirements file.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.RequirementsSpecFetcher.NetworkDuration"
-    units="ms" expires_after="2025-12-31">
-  <owner>kazinova@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Time until the lookup for a password requirements file completed (or was
-    aborted).
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.RequirementsSpecFetcher.Result"
-    enum="PasswordRequirementsFetcherResult" expires_after="2025-11-30">
-  <owner>kazinova@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Result of fetching requirements for password during password generation.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.ReuseCheck.CheckedPasswords" units="passwords"
     expires_after="2026-01-11">
   <owner>vsemeniuk@google.com</owner>

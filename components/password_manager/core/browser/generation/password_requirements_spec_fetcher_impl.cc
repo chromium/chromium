@@ -9,8 +9,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -193,18 +191,6 @@ void PasswordRequirementsSpecFetcherImpl::OnFetchComplete(
   std::unique_ptr<LookupInFlight> lookup = RemoveLookupInFlight(hash_prefix);
 
   lookup->download_timer.Stop();
-  UMA_HISTOGRAM_TIMES("PasswordManager.RequirementsSpecFetcher.NetworkDuration",
-                      base::TimeTicks::Now() - lookup->start_of_request);
-  // Network error codes are negative. See: src/net/base/net_error_list.h.
-  base::UmaHistogramSparse(
-      "PasswordManager.RequirementsSpecFetcher.NetErrorCode",
-      -lookup->url_loader->NetError());
-  if (lookup->url_loader->ResponseInfo() &&
-      lookup->url_loader->ResponseInfo()->headers) {
-    base::UmaHistogramSparse(
-        "PasswordManager.RequirementsSpecFetcher.HttpResponseCode",
-        lookup->url_loader->ResponseInfo()->headers->response_code());
-  }
 
   if (!response_body || lookup->url_loader->NetError() != net::Error::OK) {
     VLOG(1) << "Fetch for " << hash_prefix << ": failed to fetch. Net Error: "
@@ -277,8 +263,6 @@ void PasswordRequirementsSpecFetcherImpl::OnFetchComplete(
 void PasswordRequirementsSpecFetcherImpl::OnFetchTimeout(
     const std::string& hash_prefix) {
   std::unique_ptr<LookupInFlight> lookup = RemoveLookupInFlight(hash_prefix);
-  UMA_HISTOGRAM_TIMES("PasswordManager.RequirementsSpecFetcher.NetworkDuration",
-                      base::TimeTicks::Now() - lookup->start_of_request);
   TriggerCallbackToAll(&lookup->callbacks, ResultCode::kErrorTimeout,
                        PasswordRequirementsSpec());
 }
@@ -296,8 +280,6 @@ void PasswordRequirementsSpecFetcherImpl::TriggerCallback(
     FetchCallback callback,
     ResultCode result,
     const PasswordRequirementsSpec& spec) {
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.RequirementsSpecFetcher.Result",
-                            result);
   std::move(callback).Run(spec);
 }
 
