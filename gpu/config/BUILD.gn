@@ -149,6 +149,7 @@ component("config") {
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//components/miracle_parameter/common",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",

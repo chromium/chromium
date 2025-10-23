@@ -27,6 +27,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -771,8 +772,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
             ->GetSurfaceFactoryOzone()
             ->GetSupportedFormatsForTexturing();
   }
-  std::vector<gfx::BufferFormat>
-      supported_buffer_formats_for_gl_native_pixmap_import =
+  std::vector<viz::SharedImageFormat>
+      supported_formats_for_gl_native_pixmap_import =
           ui::OzonePlatform::GetInstance()
               ->GetSurfaceFactoryOzone()
               ->GetSupportedFormatsForGLNativePixmapImport();
@@ -912,8 +913,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
-  gpu_feature_info_.supported_buffer_formats_for_gl_native_pixmap_import =
-      std::move(supported_buffer_formats_for_gl_native_pixmap_import);
+  gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
+      std::move(supported_formats_for_gl_native_pixmap_import);
   [[maybe_unused]] auto* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   bool filter_set = false;
@@ -1123,15 +1124,15 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetSupportedFormatsForTexturing();
-  const std::vector<gfx::BufferFormat>
-      supported_buffer_formats_for_gl_native_pixmap_import =
+  const std::vector<viz::SharedImageFormat>
+      supported_formats_for_gl_native_pixmap_import =
           ui::OzonePlatform::GetInstance()
               ->GetSurfaceFactoryOzone()
               ->GetSupportedFormatsForGLNativePixmapImport();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
-  gpu_feature_info_.supported_buffer_formats_for_gl_native_pixmap_import =
-      std::move(supported_buffer_formats_for_gl_native_pixmap_import);
+  gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
+      std::move(supported_formats_for_gl_native_pixmap_import);
 #endif  // BUILDFLAG(IS_OZONE)
 
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);

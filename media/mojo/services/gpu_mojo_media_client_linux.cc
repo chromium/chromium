@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
@@ -15,7 +16,6 @@
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/simple_video_frame_converter.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace media {
 
@@ -64,18 +64,16 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
       // capability through gpu_feature_info so we can selectively allow hw
       // accelerated formats.
       if (base::Contains(
-              gpu_feature_info
-                  .supported_buffer_formats_for_gl_native_pixmap_import,
-              gfx::BufferFormat::YUV_420_BIPLANAR)) {
+              gpu_feature_info.supported_formats_for_gl_native_pixmap_import,
+              viz::MultiPlaneFormat::kNV12)) {
         if (base::FeatureList::IsEnabled(kRenderableMM21)) {
           renderable_fourccs.emplace_back(Fourcc::MM21);
         }
         renderable_fourccs.emplace_back(Fourcc::NV12);
       }
       if (base::Contains(
-              gpu_feature_info
-                  .supported_buffer_formats_for_gl_native_pixmap_import,
-              gfx::BufferFormat::P010)) {
+              gpu_feature_info.supported_formats_for_gl_native_pixmap_import,
+              viz::MultiPlaneFormat::kP010)) {
         renderable_fourccs.emplace_back(Fourcc::P010);
       }
     }

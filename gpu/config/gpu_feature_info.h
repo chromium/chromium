@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_feature_type.h"
 
@@ -72,9 +73,9 @@ struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   std::vector<gfx::BufferFormat>
       supported_buffer_formats_for_allocation_and_texturing;
 #if BUILDFLAG(IS_OZONE)
-  // BufferFormats of native pixmaps that can be imported in GL context.
-  std::vector<gfx::BufferFormat>
-      supported_buffer_formats_for_gl_native_pixmap_import;
+  // SharedImageFormats of native pixmaps that can be imported in GL context.
+  std::vector<viz::SharedImageFormat>
+      supported_formats_for_gl_native_pixmap_import;
 #endif  // BUILDFLAG(IS_OZONE)
 };
 
