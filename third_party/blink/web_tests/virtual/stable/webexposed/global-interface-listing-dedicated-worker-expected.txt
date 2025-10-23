@@ -3622,6 +3622,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter datagrams
 [Worker]     getter incomingBidirectionalStreams
 [Worker]     getter incomingUnidirectionalStreams
+[Worker]     getter protocol
 [Worker]     getter ready
 [Worker]     method close
 [Worker]     method constructor

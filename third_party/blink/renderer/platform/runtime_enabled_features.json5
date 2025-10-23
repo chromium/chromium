@@ -5802,7 +5802,7 @@
     },
     {
       name: "WebTransportApplicationProtocol",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {
