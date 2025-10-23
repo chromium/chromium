@@ -34,6 +34,9 @@ BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicBlockNavigationToDangerousContentTypes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicBlockFileSystemAccessApiFilePicker,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

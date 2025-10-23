@@ -502,6 +502,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -1330,6 +1331,20 @@ bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
 
   return false;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool IsActorActingOnWebContents(WebContents* web_contents) {
+  auto* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  if (!actor_service) {
+    return false;
+  }
+
+  const auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
+}
+#endif
 
 }  // namespace
 
@@ -8774,16 +8789,20 @@ bool ChromeContentBrowserClient::UsePreloadServingMetrics() {
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromeContentBrowserClient::ShouldDisallowCredentialRequest(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin) ||
-      !web_contents) {
+  if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
     return false;
   }
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  const auto* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  auto* actor_service = actor::ActorKeyedService::Get(profile);
-  return tab_interface && actor_service &&
-         actor_service->IsActiveOnTab(*tab_interface);
+  return IsActorActingOnWebContents(web_contents);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+bool ChromeContentBrowserClient::IsFileSystemAccessApiFilePickerAllowed(
+    WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          actor::kGlicBlockFileSystemAccessApiFilePicker)) {
+    return !IsActorActingOnWebContents(web_contents);
+  }
+#endif
+  return true;
+}

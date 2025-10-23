@@ -1065,6 +1065,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       content::WebContents* web_contents) override;
+  bool IsFileSystemAccessApiFilePickerAllowed(
+      content::WebContents* web_contents) override;
 
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
 

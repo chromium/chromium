@@ -158,6 +158,16 @@ void ShowFilePickerOnUIThread(
 
   DCHECK(outermost_rfh->IsInPrimaryMainFrame());
 
+  if (!GetContentClient()->browser()->IsFileSystemAccessApiFilePickerAllowed(
+          content::WebContents::FromRenderFrameHost(rfh))) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kPermissionDenied,
+                                "File Picker for file system access APIs not "
+                                "allowed at this time."),
+                            {});
+    return;
+  }
+
   if (rfh->IsNestedWithinFencedFrame()) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(

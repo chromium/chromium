@@ -7,10 +7,12 @@
 #include <optional>
 #include <string_view>
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -22,8 +24,13 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -40,6 +47,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 using ::base::test::TestFuture;
 using ::optimization_guide::proto::ClickAction;
@@ -456,6 +464,78 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PromptToConfirmDownload) {
   EXPECT_TRUE(response->result->get_permission_granted());
 }
 
+class ExecutionEngineFileSystemAccessApiBrowserTest
+    : public ExecutionEngineBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineFileSystemAccessApiBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        kGlicBlockFileSystemAccessApiFilePicker, should_block_file_picker());
+  }
+
+  bool should_block_file_picker() { return GetParam(); }
+
+  void SetUp() override {
+    ASSERT_TRUE(
+        temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+    InProcessBrowserTest::SetUp();
+  }
+
+  base::FilePath CreateTestFile(const std::string& contents) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath result;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &result));
+    EXPECT_TRUE(base::WriteFile(result, contents));
+    return result;
+  }
+
+  bool IsUsageIndicatorVisible(Browser* browser) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    auto* icon_view =
+        browser_view->toolbar_button_provider()->GetPageActionView(
+            kActionShowFileSystemAccess);
+    return icon_view && icon_view->GetVisible();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineFileSystemAccessApiBrowserTest,
+                       FilePickerForFileSystemAccessApiBlocked) {
+  const base::FilePath test_file = CreateTestFile("");
+  const std::string file_contents = "file contents to write";
+
+  ::ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectPredeterminedFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/actor/file_system_access.html")));
+
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
+
+  ClickTarget("#save");
+
+  EXPECT_NE(IsUsageIndicatorVisible(browser()), should_block_file_picker());
+
+  // Now check that we can get access to file when not using actor
+  actor_keyed_service()->ResetForTesting();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            content::EvalJs(web_contents, "saveFile()"));
+
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()))
+      << "A save file dialog implicitly grants write access, so usage "
+         "indicator should be visible.";
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineFileSystemAccessApiBrowserTest,
+                         testing::Bool());
 class ExecutionEngineDangerousContentBrowserTest
     : public ExecutionEngineBrowserTest,
       public testing::WithParamInterface<bool> {

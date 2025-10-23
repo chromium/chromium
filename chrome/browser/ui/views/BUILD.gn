@@ -78,3 +78,15 @@ source_set("test_support") {
     "//ui/views:test_support",
   ]
 }
+
+source_set("file_system_access_test_support") {
+  testonly = true
+  sources = [
+    "file_system_access/file_system_access_test_utils.cc",
+    "file_system_access/file_system_access_test_utils.h",
+  ]
+  deps = [
+    "//ui/shell_dialogs",
+    "//url",
+  ]
+}

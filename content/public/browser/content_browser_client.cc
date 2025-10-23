@@ -1787,6 +1787,11 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::IsFileSystemAccessApiFilePickerAllowed(
+    WebContents* web_contents) {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {
   return false;
