@@ -1120,9 +1120,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   capture_time -= AudioTimestampHelper::FramesToTime(fifo_.GetAvailableFrames(),
                                                      format_.mSampleRate);
 
-  const int bytes_per_sample = format_.mBitsPerChannel / 8;
-
-  peak_detector_.FindPeak(audio_data_span, bytes_per_sample);
+  peak_detector_.FindPeak(audio_data_span, kSampleFormat);
 
   // Copy captured (and interleaved) data into FIFO.
   fifo_.Push(audio_data_span, number_of_frames, kSampleFormat);

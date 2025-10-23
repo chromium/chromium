@@ -1422,7 +1422,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
           base::CheckMul<size_t>(num_frames_to_read,
                                  input_format_.Format.nBlockAlign)
               .ValueOrDie()));
-      peak_detector_.FindPeak(audio_frames, bytes_per_sample);
+      peak_detector_.FindPeak(audio_frames, kSampleFormat);
       // TODO(crbug.com/354625679): For now, our pipeline is set for only
       // kSampleFormatS16 only. We plan to implement changes to take higher bit
       // depths such as 24bit or 32bit float.
