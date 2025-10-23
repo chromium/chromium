@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 8
+// Next ID: 9
 message AnnotatedPageContent {
   // The version of the proto. Each time a backwards incompatible change is made
   // to the proto, the version should be incremented.
@@ -226,6 +226,11 @@ message AnnotatedPageContent {
   // The id of the tab that the page content was extracted from. Guaranteed to
   // be unique within the browsing session.
   int32 tab_id = 7 [features = { field_presence: EXPLICIT }];
+
+  // A page can only have one popup window open at a time. If one is open, its
+  // details are populated here. The popup window draws on top of the tab and as
+  // such has a higher z order than the main frame's Document.
+  PopupWindow popup_window = 8 [features = { field_presence: EXPLICIT }];
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -873,6 +878,23 @@ message Point {
   int32 x = 1 [features = { field_presence: EXPLICIT }];
 
   int32 y = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Represents a popup window that is open on a web page.
+// Next ID: 5
+message PopupWindow {
+  // Root node for the document in the window.
+  ContentNode root_node = 1 [features = { field_presence: EXPLICIT }];
+
+  // Metadata for the document in the window.
+  FrameData frame_data = 2 [features = { field_presence: EXPLICIT }];
+
+  // Unique identifier for the document which opened this popup window.
+  DocumentIdentifier opener_document_id = 3 [features = { field_presence: EXPLICIT }];
+
+  // Unique identifier for the node which opened this popup window. Relies on
+  // opener_document_id to determine which document contains the node.
+  int32 opener_common_ancestor_dom_node_id = 4 [features = { field_presence: EXPLICIT }];
 }
 
 // Uniquely identifies a DOM elements across all frames.

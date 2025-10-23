@@ -226,6 +226,10 @@ ExperimentalActorPerformActionsFunction::Run() {
       case optimization_guide::proto::Action::kScrollTo:
         ConvertActionTabId(action.mutable_scroll_to(), browser_context());
         break;
+      case optimization_guide::proto::Action::kAttemptFormFilling:
+        ConvertActionTabId(action.mutable_attempt_form_filling(),
+                           browser_context());
+        break;
       case optimization_guide::proto::Action::kWait:
       case optimization_guide::proto::Action::kCreateTab:
       case optimization_guide::proto::Action::kCreateWindow:

@@ -257,6 +257,71 @@ message AttemptLoginAction {
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 
+// Specifies a form by a set of fields (from different autofill sections) and
+// the kind of data to fill in these sections. See AttemptFormFillingAction.
+//
+// If a form consists of multiple autofill sections, only fields from the
+// section corresponding to the trigger field will be filled.
+//
+// This FormFillingRequest in development and future changes are possible once
+// the model constraings/performance are understood.
+//
+// Next ID: 3
+message FormFillingRequest {
+  // Specifies a field that is part of the form. Autofill will be triggered from
+  // this field, but will fill other fields of the same autofill section with
+  // the available data.
+  //
+  // TODO(crbug.com/452946211): This field is repeated to be able to support a form that
+  // is spread over multiple autofill sections.
+  repeated ActionTarget trigger_fields = 1;
+
+  // Specifies which data is requested. The requested data type will be
+  // presented in the UI to the user (e.g. a user chooses an address for the
+  // "shipping address").
+  RequestedData requested_data = 2 [features = { field_presence: EXPLICIT }];
+
+  // Enumerates the purposes for forms. Note that although the type of data
+  // (address or credit card) is encoded that autofill already detects the type,
+  // but does not detect the purpose (e.g. shipping v.s. billing address)
+  // provide here.
+  enum RequestedData {
+    // The requested data is not specified.
+    REQUESTED_DATA_UNKNOWN = 0;
+
+    // An address should be filled. This value can be used as a catch-all when
+    // the more specific address options below do not fit.
+    ADDRESS = 1;
+
+    // A shipping address should be filled.
+    SHIPPING_ADDRESS = 2;
+
+    // A billing address should be filled.
+    BILLING_ADDRESS = 3;
+
+    // A home address should be filled.
+    HOME_ADDRESS = 4;
+
+    // A work address should be filled.
+    WORK_ADDRESS = 5;
+
+    // A credit card should be filled.
+    CREDIT_CARD = 6;
+  }
+}
+
+// Attempts to fill forms on the website.
+//
+// This AttemptFormFillingAction in development and future changes are possible
+// once the model constraings/performance are understood.
+//
+// Next ID: 3
+message AttemptFormFillingAction {
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+
+  repeated FormFillingRequest form_filling_requests = 2;
+}
+
 // Scrolls the DOM element into viewport.
 // Next ID: 5
 message ScrollToAction {
@@ -319,7 +384,7 @@ message MediaControlAction {
 
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 22
+// Next ID: 23
 message Action {
   oneof action {
     ClickAction click = 1;
@@ -363,6 +428,8 @@ message Action {
     ScriptToolAction script_tool = 20;
 
     MediaControlAction media_control = 21;
+
+    AttemptFormFillingAction attempt_form_filling = 22;
   }
 }
 
