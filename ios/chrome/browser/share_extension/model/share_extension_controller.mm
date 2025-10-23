@@ -107,6 +107,7 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
 @end
 
 @implementation ShareExtensionController {
+  NSMutableSet<NSString*>* _filesBeingProcessed;
   BOOL _isObservingReadingListFolder;
   BOOL _readingListFolderCreated;
   BOOL _shutdownCalled;
@@ -130,6 +131,7 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
   }
 
   if (self) {
+    _filesBeingProcessed = [[NSMutableSet alloc] init];
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   }
@@ -171,6 +173,11 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
 - (void)presentedSubitemDidChangeAtURL:(NSURL*)url {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_shutdownCalled) {
+    return;
+  }
+  // The files that already exists and are being processed should not be handled
+  // from NSFilePresenter observation.
+  if ([_filesBeingProcessed containsObject:[url absoluteString]]) {
     return;
   }
   [self handleFileAtURL:url];
@@ -243,6 +250,8 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(!_shutdownCalled);
   [self stopObservingReadingListFolder];
+  // Clear the _filesBeingProcessed set, since the observation is reset.
+  [_filesBeingProcessed removeAllObjects];
 }
 
 - (void)processExistingFiles {
@@ -279,6 +288,7 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
                              filesCount);
 
     for (NSURL* fileURL : files) {
+      [_filesBeingProcessed addObject:[fileURL absoluteString]];
       [self handleFileAtURL:fileURL];
     }
   }
