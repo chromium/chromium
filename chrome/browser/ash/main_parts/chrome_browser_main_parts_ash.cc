@@ -991,7 +991,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // |arc_service_launcher_| must be initialized before NoteTakingHelper.
   NoteTakingHelper::Initialize();
 
-  AccessibilityManager::Initialize(g_browser_process->local_state());
+  AccessibilityManager::Initialize(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
 
   // Initialize magnification manager before ash tray is created. And this
   // must be placed after UserManager initialization.

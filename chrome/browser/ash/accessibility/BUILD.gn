@@ -54,6 +54,7 @@ static_library("accessibility") {
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/dbus/power",
+    "//components/application_locale_storage",
     "//components/input",
     "//components/language/core/browser",
     "//components/language/core/common",
