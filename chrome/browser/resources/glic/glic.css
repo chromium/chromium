@@ -85,7 +85,12 @@ webview:not([hidden]) {
   justify-content: space-between;
 }
 
-#loadingPanel .p1 {
+#loadingPanel #sidePanelLoading .secondline {
+  flex-direction: column;
+  height: 100%;
+}
+
+#loadingPanel #floatingLoading .p1 {
   flex: 1;
   height: 17px;
   margin-right: 60px;
@@ -93,18 +98,65 @@ webview:not([hidden]) {
   border-radius: 5px;
 }
 
-#loadingPanel .p2 {
+#loadingPanel #floatingLoading .p2 {
   height: 16px;
   width: 76px;
   padding: 8px 2px;
   border-radius: 16px;
 }
 
-#loadingPanel .p3 {
+#loadingPanel #floatingLoading .p3 {
   height: 16px;
   width: 28px;
   padding: 8px 2px;
   border-radius: 8px;
+}
+
+#loadingPanel #sidePanelLoading .p1 {
+  height: 17px;
+  width: 78px;
+  margin-top: 4px;
+  border-radius: 12px;
+}
+
+.header-right-align {
+  display: flex;
+}
+
+#loadingPanel #sidePanelLoading .p2 {
+  height: 17px;
+  width: 78px;
+  margin-top: 4px;
+  border-radius: 12px;
+}
+
+.center-group {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#loadingPanel #sidePanelLoading .p3 {
+  height: 56px;
+  border-radius: 12px;
+  margin-bottom: 23px;
+}
+
+#loadingPanel #sidePanelLoading .p4 {
+  height: 32px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+#loadingPanel #sidePanelLoading .p5 {
+  height: 32px;
+  border-radius: 6px;
+}
+
+#loadingPanel #sidePanelLoading .p6 {
+  height: 132px;
+  border-radius: 12px;
 }
 
 .panel .header {
@@ -117,6 +169,14 @@ webview:not([hidden]) {
 
 #loadingPanel .header {
   padding-bottom: 8px;
+}
+
+.floating #sidePanelLoading {
+  display: none;
+}
+
+.sidePanel #floatingLoading {
+  display: none;
 }
 
 .panel .logo {

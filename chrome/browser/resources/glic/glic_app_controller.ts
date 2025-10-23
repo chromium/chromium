@@ -708,6 +708,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     const panelStateKindSection = getRequiredElement('localPanels');
     panelStateKindSection.classList.toggle(
         'sidePanel', this.panelStateKind === PanelStateKind.kAttached);
+    panelStateKindSection.classList.toggle(
+        'floating', this.panelStateKind === PanelStateKind.kDetached);
   }
 
   // Called before the WebUI is shown. If we're in an error state, automatically
