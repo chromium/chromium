@@ -213,6 +213,12 @@ interface CustomizeChromePageHandler {
   // Disables module with ID `module_id` if `disabled`. Enables otherwise.
   SetModuleDisabled(string module_id, bool disabled);
 
+  // If |visible| the NTP tool chips will be shown.
+  SetToolChipsVisible(bool visible);
+
+  // Triggers a call to |CustomizeChromePage.SetToolsSettings()|.
+  UpdateToolChipsSettings();
+
   // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
   UpdateScrollToSection();
 
@@ -239,6 +245,8 @@ interface CustomizeChromePage {
   // types that should be hidden in the customization menu.
   SetMostVisitedSettings(ntp_tiles.mojom.TileType shortcuts_type, bool visible,
     array<ntp_tiles.mojom.TileType> disabled_shortcuts);
+  // Sets the tools visibility settings of the NTP tool chips.
+  SetToolsSettings(bool visible);
   // Sets the visibility and disabled state of the NTP Footer.
   SetFooterSettings(bool visible,
                     bool extension_policy_enabled,

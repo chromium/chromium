@@ -136,6 +136,8 @@ class CustomizeChromePageHandler
   void OpenNtpManagedByPage() override;
   void SetMostVisitedSettings(ntp_tiles::TileType type, bool visible) override;
   void UpdateMostVisitedSettings() override;
+  void SetToolChipsVisible(bool visible) override;
+  void UpdateToolChipsSettings() override;
   void SetFooterVisible(bool visible) override;
   void UpdateFooterSettings() override;
   void SetModulesVisible(bool visible) override;

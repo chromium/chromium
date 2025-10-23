@@ -186,6 +186,7 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
   MOCK_METHOD(void,
               NtpManagedByNameUpdated,
               (const std::string&, const std::string&));
+  MOCK_METHOD(void, SetToolsSettings, (bool visible));
   MOCK_METHOD(
       void,
       SetFooterSettings,
@@ -963,6 +964,30 @@ TEST_F(CustomizeChromePageHandlerTest, UpdateScrollToSection) {
   mock_page_.FlushForTesting();
 
   EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
+}
+
+// Tests that SetToolChipsVisible sets the pref to the given value.
+TEST_F(CustomizeChromePageHandlerTest, SetToolChipsVisible) {
+  profile().GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, false);
+  handler().SetToolChipsVisible(true);
+  mock_page_.FlushForTesting();
+
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
+}
+
+// Tests that UpdateToolChipsSettings calls the page with SetToolsSettings
+TEST_F(CustomizeChromePageHandlerTest, UpdateToolChipsSettings) {
+  bool visible;
+
+  EXPECT_CALL(mock_page_, SetToolsSettings)
+      .Times(1)
+      .WillOnce([&visible](bool visible_arg) { visible = visible_arg; });
+
+  profile().GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, true);
+  mock_page_.FlushForTesting();
+
+  EXPECT_TRUE(visible);
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
 }
 
 class CustomizeChromePageHandlerWallpaperSearchTest

@@ -163,6 +163,10 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpHiddenModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNtpToolChipsVisible,
+      base::BindRepeating(&CustomizeChromePageHandler::UpdateToolChipsSettings,
+                          base::Unretained(this)));
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
@@ -525,6 +529,15 @@ void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
   auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
   CHECK(footer_controller);
   footer_controller_observation_.Observe(footer_controller);
+}
+
+void CustomizeChromePageHandler::SetToolChipsVisible(bool visible) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, visible);
+}
+
+void CustomizeChromePageHandler::UpdateToolChipsSettings() {
+  page_->SetToolsSettings(
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
 }
 
 void CustomizeChromePageHandler::SetFooterVisible(bool visible) {

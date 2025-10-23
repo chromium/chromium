@@ -58,6 +58,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Combobox) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Tools) {
+  RunTest("side_panel/customize_chrome/tools_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Footer) {
   RunTest("side_panel/customize_chrome/footer_test.js", "mocha.run()");
 }
