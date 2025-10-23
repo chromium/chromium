@@ -14,7 +14,7 @@ import {
     addRtcStatsEvent
 } from './dump_creator.js';
 import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
-import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
+import {drawSingleRtcStats, removeStatsReportGraphs} from './stats_graph_helper.js';
 import {StatsRatesCalculator} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
@@ -478,11 +478,11 @@ function addStandardStats(data) {
   }
   // Create a map from the stats entries so it behaves like a getStats maplike
   // and then sort it.
-  const stats = sortStatsReport(new Map(data.reports));
+  const rtcReport = sortStatsReport(new Map(data.reports));
   addRtcStatsEvent(
     'getStats',
     getPeerConnectionId(data),
-    stats.entries().reduce((o, [k, v]) => {
+    rtcReport.entries().reduce((o, [k, v]) => {
       o[k] = v;
       return o;
     }, {}),
@@ -490,20 +490,21 @@ function addStandardStats(data) {
   );
 
   // This augments stats with [delta] values.
-  statsRatesCalculator.addStatsReport(stats);
-  stats.forEach(report => {
-    statsTable.addStatsReport(peerConnectionElement, report);
-    drawSingleReport(peerConnectionElement, report);
+  statsRatesCalculator.addStatsReport(rtcReport);
+  rtcReport.forEach(rtcStats => {
+    statsTable.addRtcStats(peerConnectionElement, rtcStats);
+    drawSingleRtcStats(peerConnectionElement, rtcStats);
   });
 
   let ids = [];
-  stats.forEach(report => {
+  rtcReport.forEach(report => {
     if (!(report.type === 'transport' && report.selectedCandidatePairId)) {
       return;
     }
-    const activeCandidatePair = stats.get(report.selectedCandidatePairId);
-    const remoteCandidate = stats.get(activeCandidatePair.remoteCandidateId);
-    const localCandidate = stats.get(activeCandidatePair.localCandidateId);
+    const activeCandidatePair = rtcReport.get(report.selectedCandidatePairId);
+    const remoteCandidate =
+        rtcReport.get(activeCandidatePair.remoteCandidateId);
+    const localCandidate = rtcReport.get(activeCandidatePair.localCandidateId);
 
     const candidateElement = peerConnectionElement
       .getElementsByClassName('candidatepair')[0].firstElementChild;
@@ -571,17 +572,18 @@ function addStandardStats(data) {
     }
   }
 
-  updateIceCandidateGrid(peerConnectionElement, stats);
+  updateIceCandidateGrid(peerConnectionElement, rtcReport);
 
   // Mark inactive outbound-rtp in grey.
   const inactiveStatsIds = [];
   const inactiveRtpStatsClass = 'stats-table-rtp-inactive';
-  stats.forEach(report => {
-    if (!(report.type === 'outbound-rtp')) {
+  rtcReport.forEach(rtcStats => {
+    if (!(rtcStats.type === 'outbound-rtp')) {
       return;
     }
-    if (report.active === false) {
-      inactiveStatsIds.push(peerConnectionElement.id + '-details-' + report.id);
+    if (rtcStats.active === false) {
+      inactiveStatsIds.push(
+          peerConnectionElement.id + '-details-' + rtcStats.id);
     }
   });
   statsContainer.childNodes.forEach(node => {

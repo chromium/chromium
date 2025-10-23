@@ -20,24 +20,25 @@ import {TimelineGraphView} from './timeline_graph_view.js';
 
 const STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
 
-function isReportBlocklisted(report) {
+function isRtcStatsBlocklisted(rtcStats) {
   // Codec stats reflect what has been negotiated. They don't contain
   // information that is useful in graphs.
-  if (report.type === 'codec') {
+  if (rtcStats.type === 'codec') {
     return true;
   }
   // Unused data channels can stay in "connecting" indefinitely and their
   // counters stay zero.
-  if (report.type === 'data-channel' && report.state === 'connecting') {
+  if (rtcStats.type === 'data-channel' && rtcStats.state === 'connecting') {
     return true;
   }
   // The same is true for transports and "new".
-  if (report.type === 'transport' && report.dtlsState === 'new') {
+  if (rtcStats.type === 'transport' && rtcStats.dtlsState === 'new') {
     return true;
   }
   // Local and remote candidates don't change over time and there are several of
   // them.
-  if (report.type === 'local-candidate' || report.type === 'remote-candidate') {
+  if (rtcStats.type === 'local-candidate' ||
+      rtcStats.type === 'remote-candidate') {
     return true;
   }
   return false;
@@ -78,28 +79,24 @@ function getNumberFromValue(name, value) {
   return parseFloat(value);
 }
 
-// Adds the stats report |report| to the timeline graph for the given
+// Adds the stats object |rtcStats| to the timeline graph for the given
 // |peerConnectionElement|.
-export function drawSingleReport(
-    peerConnectionElement, report) {
-  const reportType = report.type;
-  const reportId = report.id;
-
+export function drawSingleRtcStats(peerConnectionElement, rtcStats) {
   const childrenBefore = peerConnectionElement.hasChildNodes() ?
       Array.from(peerConnectionElement.childNodes) :
       [];
 
-  Object.keys(report).forEach(property => {
+  Object.keys(rtcStats).forEach(property => {
     if (['timestamp', 'id'].includes(property)) return;
     const rawLabel = property;
-    const rawDataSeriesId = reportId + '-' + rawLabel;
-    const rawValue = getNumberFromValue(rawLabel, report[property]);
+    const rawDataSeriesId = rtcStats.id + '-' + rawLabel;
+    const rawValue = getNumberFromValue(rawLabel, rtcStats[property]);
     if (isNaN(rawValue)) {
       // We do not draw non-numerical values, but still want to record it in the
       // data series.
       addDataSeriesPoints(
-          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
-          [report.timestamp], [report[property]]);
+          peerConnectionElement, rtcStats.type, rawDataSeriesId, rawLabel,
+          [rtcStats.timestamp], [rtcStats[property]]);
       return;
     }
     let finalDataSeriesId = rawDataSeriesId;
@@ -108,10 +105,11 @@ export function drawSingleReport(
 
     // Updates the final dataSeries to draw.
     addDataSeriesPoints(
-        peerConnectionElement, reportType, finalDataSeriesId, finalLabel,
-        [report.timestamp], [finalValue]);
+        peerConnectionElement, rtcStats.type, finalDataSeriesId, finalLabel,
+        [rtcStats.timestamp], [finalValue]);
 
-    if (isReportBlocklisted(report) || isStatBlocklisted(report, rawLabel)) {
+    if (isRtcStatsBlocklisted(rtcStats) ||
+        isStatBlocklisted(rtcStats, rawLabel)) {
       // We do not want to draw certain reports but still want to
       // record them in the data series.
       return;
@@ -120,11 +118,11 @@ export function drawSingleReport(
     // Updates the graph.
     const graphType = finalLabel;
     const graphViewId =
-        peerConnectionElement.id + '-' + reportId + '-' + graphType;
+        peerConnectionElement.id + '-' + rtcStats.id + '-' + graphType;
 
     if (!graphViews[graphViewId]) {
-      graphViews[graphViewId] =
-          createStatsGraphView(peerConnectionElement, report, graphType);
+      graphViews[graphViewId] = createStatsGraphView(
+          peerConnectionElement, rtcStats, graphType);
       const searchParameters = new URLSearchParams(window.location.search);
       if (searchParameters.has('statsInterval')) {
         const statsInterval = Math.max(
@@ -134,11 +132,11 @@ export function drawSingleReport(
           graphViews[graphViewId].setScale(statsInterval);
         }
       }
-      const date = new Date(report.timestamp);
+      const date = new Date(rtcStats.timestamp);
       graphViews[graphViewId].setDateRange(date, date);
     }
     // Ensures the stats graph title is up-to-date.
-    ensureStatsGraphContainer(peerConnectionElement, report);
+    ensureStatsGraphContainer(peerConnectionElement, rtcStats);
     // Adds the new dataSeries to the graphView. We have to do it here to cover
     // both the simple and compound graph cases.
     const dataSeries =
@@ -151,8 +149,8 @@ export function drawSingleReport(
   });
   // Add a synthetic data series for the timestamp.
   addDataSeriesPoints(
-    peerConnectionElement, reportType, reportId + '-timestamp',
-    reportId + '-timestamp', [report.timestamp], [report.timestamp]);
+    peerConnectionElement, rtcStats.type, rtcStats.id + '-timestamp',
+    rtcStats.id + '-timestamp', [rtcStats.timestamp], [rtcStats.timestamp]);
 
   const childrenAfter = peerConnectionElement.hasChildNodes() ?
       Array.from(peerConnectionElement.childNodes) :
@@ -230,10 +228,10 @@ function ensureStatsGraphTopContainer(peerConnectionElement) {
 
 // Ensures a div container to the stats graph for a single set of data is
 // created as a child of the |peerConnectionElement|'s graph container.
-function ensureStatsGraphContainer(peerConnectionElement, report) {
+function ensureStatsGraphContainer(peerConnectionElement, rtcStats) {
   const topContainer = ensureStatsGraphTopContainer(peerConnectionElement);
-  const containerId = peerConnectionElement.id + '-' + report.type + '-' +
-      report.id + '-graph-container';
+  const containerId = peerConnectionElement.id + '-' + rtcStats.type + '-' +
+      rtcStats.id + '-graph-container';
   // Disable getElementById restriction here, since |containerId| is not always
   // a valid selector.
   // eslint-disable-next-line no-restricted-properties
@@ -242,7 +240,7 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
     container = document.createElement('details');
     container.id = containerId;
     container.className = 'stats-graph-container';
-    container.attributes['data-statsType'] = report.type;
+    container.attributes['data-statsType'] = rtcStats.type;
 
     peerConnectionElement.appendChild(container);
     container.appendChild($('summary-span-template').content.cloneNode(true));
@@ -252,18 +250,19 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
   }
   // Update the label all the time to account for new information.
   container.firstChild.firstChild.textContent = 'Stats graphs for ' +
-    generateStatsLabel(report);
+      generateStatsLabel(rtcStats);
   return container;
 }
 
 // Creates the container elements holding a timeline graph
 // and the TimelineGraphView object.
-function createStatsGraphView(peerConnectionElement, report, statsName) {
+function createStatsGraphView(
+    peerConnectionElement, rtcStats, statsName) {
   const topContainer =
-      ensureStatsGraphContainer(peerConnectionElement, report);
+      ensureStatsGraphContainer(peerConnectionElement, rtcStats);
 
   const graphViewId =
-      peerConnectionElement.id + '-' + report.id + '-' + statsName;
+      peerConnectionElement.id + '-' + rtcStats.id + '-' + statsName;
   const divId = graphViewId + '-div';
   const canvasId = graphViewId + '-canvas';
   const container = document.createElement('div');
