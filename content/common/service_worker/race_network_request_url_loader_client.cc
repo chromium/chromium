@@ -65,10 +65,10 @@ enum class DataTransferCompletionResult {
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ServiceWorkerRaceNetworkRequestURLLoaderClient(
-        const network::ResourceRequest& request,
+        const GURL& resource_request_url,
         base::WeakPtr<ServiceWorkerResourceLoader> owner,
         mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)
-    : request_(request),
+    : resource_request_url_(resource_request_url),
       owner_(std::move(owner)),
       forwarding_client_(std::move(forwarding_client)),
       is_main_resource_(owner_->IsMainResourceLoader()),
@@ -139,8 +139,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse",
       TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
-      "state", state_);
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      resource_request_url_, "state", state_);
   TransitionState(State::kResponseReceived);
 
   // Set the response received time, and record the time delta between the
@@ -199,8 +199,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect",
       TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
-      "state", state_);
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      resource_request_url_, "state", state_);
   TransitionState(State::kRedirect);
   // If redirect happened, we don't have to create another data pipe.
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
@@ -256,8 +256,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete",
       TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
-      "state", state_);
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      resource_request_url_, "state", state_);
   base::UmaHistogramBoolean(
       base::StrCat({owner_->IsMainResourceLoader()
                         ? kMainResourceHistogramForRaceNetworkFetchEvent
@@ -371,8 +371,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse",
       TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
-      "state", state_);
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      resource_request_url_, "state", state_);
   bool is_aborted = false;
   switch (state_) {
     case State::kAborted:
@@ -454,8 +454,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete",
       TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
-      "state", state_);
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      resource_request_url_, "state", state_);
   MaybeCommitResponse();
   TransitionState(State::kDataTransferFinished);
   MaybeCompleteResponse();
@@ -490,11 +490,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
   }
 
   auto [read_result, read_buffer] = read_buffer_manager_->ReadData();
-  TRACE_EVENT_WITH_FLOW2("ServiceWorker",
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", request_.url, "read_data_result", read_result);
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker", "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      resource_request_url_, "read_data_result", read_result);
   switch (read_result) {
     case MOJO_RESULT_OK:
       write_buffer_manager_for_race_network_request_.ArmOrNotify();

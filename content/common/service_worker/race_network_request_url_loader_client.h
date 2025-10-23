@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -107,7 +106,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   };
 
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
-      const network::ResourceRequest& request,
+      const GURL& resource_request_url,
       base::WeakPtr<ServiceWorkerResourceLoader> owner,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
@@ -227,7 +226,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   State state_ = State::kWaitForBody;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
-  const network::ResourceRequest request_;
+  const GURL resource_request_url_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 

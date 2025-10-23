@@ -240,7 +240,7 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
       network::SharedURLLoaderFactory::Create(fallback_factory_->Clone()));
 
   DCHECK(!race_network_request_loader_client_);
-  race_network_request_loader_client_.emplace(resource_request_,
+  race_network_request_loader_client_.emplace(resource_request_.url,
                                               weak_factory_.GetWeakPtr(),
                                               std::move(forwarding_client));
 

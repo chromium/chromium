@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/loading_params.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -258,7 +259,8 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
     client_for_fetch_handler_->Bind(&forwarding_client);
     client_ = std::make_unique<ServiceWorkerRaceNetworkRequestURLLoaderClient>(
-        *CreateRequest(), owner_->GetWeakPtr(), std::move(forwarding_client));
+        CreateRequest()->url, owner_->GetWeakPtr(),
+        std::move(forwarding_client));
     EXPECT_EQ(
         client_->state(),
         ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody);

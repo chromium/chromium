@@ -587,7 +587,7 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
           context->storage_partition(), resource_request_));
   CHECK(!race_network_request_url_loader_client_);
   race_network_request_url_loader_client_.emplace(
-      resource_request_, AsWeakPtr(), std::move(forwarding_client));
+      resource_request_.url, AsWeakPtr(), std::move(forwarding_client));
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.
