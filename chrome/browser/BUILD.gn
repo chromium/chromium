@@ -6893,7 +6893,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/clipboard_request_handler.h",
       "enterprise/connectors/analysis/content_analysis_delegate.cc",
       "enterprise/connectors/analysis/content_analysis_delegate.h",
-      "enterprise/connectors/analysis/content_analysis_delegate_base.h",
       "enterprise/connectors/analysis/content_analysis_dialog_controller.cc",
       "enterprise/connectors/analysis/content_analysis_dialog_controller.h",
       "enterprise/connectors/analysis/content_analysis_dialog_delegate.cc",

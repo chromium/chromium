@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONTENT_ANALYSIS_DELEGATE_BASE_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -53,4 +52,4 @@ class ContentAnalysisDelegateBase {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONTENT_ANALYSIS_DELEGATE_BASE_H_

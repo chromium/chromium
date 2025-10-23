@@ -23,6 +23,7 @@ source_set("core") {
     "connectors_prefs.h",
     "connectors_service_base.cc",
     "connectors_service_base.h",
+    "content_analysis_delegate_base.h",
     "content_analysis_info_base.h",
     "content_area_user_provider.cc",
     "content_area_user_provider.h",
