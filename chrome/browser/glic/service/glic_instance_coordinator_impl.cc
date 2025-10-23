@@ -236,6 +236,7 @@ GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
 void GlicInstanceCoordinatorImpl::Preload() {
   if (warming_enabled_) {
     CreateWarmedInstance();
+    warmed_instance_->metrics()->OnWarmedInstanceCreated();
   } else {
     VLOG(1) << "Warming is disabled, skipping warming";
   }
@@ -340,15 +341,20 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   if (!warmed_instance_) {
     CreateWarmedInstance();
+    // Records a just-in-time instance creation when warming is disabled or
+    // failed.
+    warmed_instance_->metrics()->OnInstanceCreatedWithoutWarming();
   }
   auto* instance_ptr = warmed_instance_.get();
   instances_[instance_ptr->id()] = std::move(warmed_instance_);
+  // Records the promotion of an instance to an active one.
+  instance_ptr->metrics()->OnInstancePromoted();
   if (warming_enabled_) {
-    instance_ptr->metrics()->OnWarmedInstancePromoted();
     CreateWarmedInstance();
-    instance_ptr->metrics()->OnWarmedInstanceCreated();
+    // Records the creation of a new warmed instance to replace the promoted
+    // one.
+    warmed_instance_->metrics()->OnWarmedInstanceCreated();
   } else {
-    instance_ptr->metrics()->OnInstanceCreatedWithoutWarming();
     VLOG(1) << "Warming is disabled, skipping warming";
   }
   return instance_ptr;

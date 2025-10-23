@@ -30,9 +30,8 @@ void GlicInstanceMetrics::OnBind() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Bind"));
 }
 
-void GlicInstanceMetrics::OnWarmedInstancePromoted() {
-  base::RecordAction(
-      base::UserMetricsAction("Glic.Instance.PromotedWarmedInstance"));
+void GlicInstanceMetrics::OnInstancePromoted() {
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.Promoted"));
 }
 
 void GlicInstanceMetrics::OnWarmedInstanceCreated() {

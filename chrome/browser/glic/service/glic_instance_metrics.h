@@ -35,8 +35,8 @@ class GlicInstanceMetrics {
   // Called when a new warmed GlicInstance is created.
   void OnWarmedInstanceCreated();
 
-  // Called when a warmed instance is promoted to a live instance.
-  void OnWarmedInstancePromoted();
+  // Called when an instance is promoted for subsequent use.
+  void OnInstancePromoted();
 
   // Called when an instance is created without warming.
   void OnInstanceCreatedWithoutWarming();

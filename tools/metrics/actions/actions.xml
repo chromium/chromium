@@ -14016,12 +14016,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Glic.Instance.PromotedWarmedInstance">
+<action name="Glic.Instance.Promoted">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <description>
-    Logged when a pre-warmed Glic instance is promoted to become a live
-    instance.
+    Logged when a Glic instance is promoted to become a live instance.
   </description>
 </action>
 
