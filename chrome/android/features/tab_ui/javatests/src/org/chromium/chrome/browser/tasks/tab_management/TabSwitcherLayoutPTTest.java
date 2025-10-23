@@ -19,7 +19,6 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,7 +35,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -103,7 +101,6 @@ import java.util.function.Supplier;
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
-@DisableIf.Build(sdk_equals = Build.VERSION_CODES.BAKLAVA, message = "crbug.com/424223727")
 public class TabSwitcherLayoutPTTest {
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
