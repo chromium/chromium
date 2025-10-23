@@ -284,6 +284,9 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
           features::kWebGPUEnableRangeAnalysisForRobustness);
     case dawn::platform::Features::kWebGPUUseSpirv14:
       return base::FeatureList::IsEnabled(features::kWebGPUUseSpirv14);
+    case dawn::platform::Features::kWebGPUDecomposeUniformBuffers:
+      return base::FeatureList::IsEnabled(
+          features::kWebGPUDecomposeUniformBuffers);
     default:
       return false;
   }
