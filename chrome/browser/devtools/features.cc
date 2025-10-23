@@ -183,6 +183,10 @@ BASE_FEATURE(kDevToolsIndividualRequestThrottling,
 // Whether the AI Prompt API (https://developer.chrome.com/docs/ai/prompt-api)
 // is available in DevTools.
 BASE_FEATURE(kDevToolsAiPromptApi, base::FEATURE_DISABLED_BY_DEFAULT);
+// Whether the Prompt API is allowed to run on devices without a dedicated GPU.
+const base::FeatureParam<bool> kDevToolsAiPromptApiAllowWithoutGpu{
+    &kDevToolsAiPromptApi, "allow_without_gpu",
+    /*default_value=*/false};
 
 // Whether showing animation styles in the styles tab is enabled.
 BASE_FEATURE(kDevToolsStartingStyleDebugging, base::FEATURE_ENABLED_BY_DEFAULT);

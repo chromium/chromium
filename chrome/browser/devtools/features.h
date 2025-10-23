@@ -111,6 +111,7 @@ BASE_DECLARE_FEATURE(kDevToolsLiveEdit);
 BASE_DECLARE_FEATURE(kDevToolsIndividualRequestThrottling);
 
 BASE_DECLARE_FEATURE(kDevToolsAiPromptApi);
+extern const base::FeatureParam<bool> kDevToolsAiPromptApiAllowWithoutGpu;
 
 BASE_DECLARE_FEATURE(kDevToolsStartingStyleDebugging);
 
