@@ -19,7 +19,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
-#include "cc/layers/layer_impl.h"
+#include "cc/layers/tile_based_layer_impl.h"
 #include "cc/layers/tile_size_calculator.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"
@@ -38,7 +38,7 @@ class MicroBenchmarkImpl;
 class Tile;
 
 class CC_EXPORT PictureLayerImpl
-    : public LayerImpl,
+    : public TileBasedLayerImpl,
       public PictureLayerTilingClient,
       public ImageAnimationController::AnimationDriver {
  public:

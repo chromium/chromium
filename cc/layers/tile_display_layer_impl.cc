@@ -134,7 +134,7 @@ TileDisplayLayerImpl::Tiling::Cover(const gfx::Rect& coverage_rect,
 }
 
 TileDisplayLayerImpl::TileDisplayLayerImpl(LayerTreeImpl& tree, int id)
-    : LayerImpl(&tree, id) {}
+    : TileBasedLayerImpl(&tree, id) {}
 
 TileDisplayLayerImpl::~TileDisplayLayerImpl() = default;
 

@@ -101,7 +101,7 @@ gfx::Rect SafeIntersectRects(const gfx::Rect& one, const gfx::Rect& two) {
 }  // namespace
 
 PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
-    : LayerImpl(tree_impl, id) {
+    : TileBasedLayerImpl(tree_impl, id) {
   layer_tree_impl()->RegisterPictureLayerImpl(this);
 }
 

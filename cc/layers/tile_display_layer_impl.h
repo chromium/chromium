@@ -14,7 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
-#include "cc/layers/layer_impl.h"
+#include "cc/layers/tile_based_layer_impl.h"
 #include "cc/mojom/missing_tile_reason.mojom.h"
 #include "cc/tiles/tile_index.h"
 #include "cc/tiles/tile_priority.h"
@@ -30,7 +30,7 @@ namespace cc {
 // Viz-side counterpart to a client-side PictureLayerImpl when TreesInViz is
 // enabled. Clients push tiling information and tile contents from a picture
 // layer down to Viz, and this layer uses that information to draw tile quads.
-class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
+class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
  public:
   struct NoContents {
     mojom::MissingTileReason reason =
