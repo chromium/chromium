@@ -912,11 +912,27 @@ void ChromePasswordManagerClient::PasswordWasAutofilled(
 void ChromePasswordManagerClient::AutofillHttpAuth(
     const PasswordForm& preferred_match,
     const password_manager::PasswordFormManagerForUI* form_manager) {
-  httpauth_manager_.Autofill(preferred_match, form_manager);
-  DCHECK(!form_manager->GetBestMatches().empty());
-  PasswordWasAutofilled(form_manager->GetBestMatches(),
-                        url::Origin::Create(form_manager->GetURL()), {},
-                        /*was_autofilled_on_pageload=*/false);
+  if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
+    // Do not autofill credentials if current tab is not visible.
+    return;
+  }
+
+  CHECK(!form_manager->GetBestMatches().empty());
+
+  // Make a copy of best matches as form_manager is not guaranteed to outlive
+  // authentication.
+  std::vector<PasswordForm> best_matches;
+  for (const auto& result : form_manager->GetBestMatches()) {
+    best_matches.emplace_back(result);
+  }
+
+  httpauth_manager_.Autofill(
+      preferred_match, form_manager,
+      base::BindOnce(&ChromePasswordManagerClient::PasswordWasAutofilled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(best_matches),
+                     url::Origin::Create(form_manager->GetURL()),
+                     base::span<const PasswordForm>(),
+                     /*was_autofilled_on_pageload=*/false));
 }
 
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
