@@ -173,6 +173,20 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
+                       ActOnTabWithActOnWebCapabilityDisabled) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      glic::prefs::kGlicActuationOnWeb,
+      ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+  EXPECT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
+            ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+
+  auto null_task_id =
+      ActorKeyedService::Get(browser()->profile())->CreateTask();
+  EXPECT_EQ(null_task_id, TaskId());
+}
+
 // Exercise `MayActOnUrl`, which is called by the `ActorNavigationThrottle`.
 IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, NavigateOnTab) {
   const bool has_actuation_capability = GetParam();
