@@ -616,6 +616,10 @@ void PrefetchContainer::CloseIdleConnections() {
 }
 
 void PrefetchContainer::SetLoadState(LoadState new_load_state) {
+  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
+    CHECK(!is_in_dtor_);
+  }
+
   switch (new_load_state) {
     case LoadState::kNotStarted:
       NOTREACHED();
