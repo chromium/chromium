@@ -145,8 +145,14 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
 
 // Test that `loginState.getProfileType()` returns `LOCK_PROFILE` for
 // extensions running in the lock profile.
+// TODO(crbug.com/454412467): Fix flakiness and re-enable.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_GetProfileType_LockProfile DISABLED_GetProfileType_LockProfile
+#else
+#define MAYBE_GetProfileType_LockProfile GetProfileType_LockProfile
+#endif
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
-                       GetProfileType_LockProfile) {
+                       MAYBE_GetProfileType_LockProfile) {
   chromeos::AuthenticationScreenExtensionsExternalLoader::
       SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
 

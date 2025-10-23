@@ -210,8 +210,15 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
 
 // Tests that sign-in screen extensions are unloaded when the session is locked
 // if the lock screen profile already exists and Badge Based Auth is enabled.
+// TODO(crbug.com/454402093): Fix flakiness and re-enable.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_UnloadedWhenLockProfileExists \
+  DISABLED_UnloadedWhenLockProfileExists
+#else
+#define MAYBE_UnloadedWhenLockProfileExists UnloadedWhenLockProfileExists
+#endif
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
-                       UnloadedWhenLockProfileExists) {
+                       MAYBE_UnloadedWhenLockProfileExists) {
   AuthenticationScreenExtensionsExternalLoader::
       SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
 
