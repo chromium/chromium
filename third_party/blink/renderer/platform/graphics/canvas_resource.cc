@@ -774,7 +774,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       },
       base::RetainedRef(this));
 
-  GetSyncToken();
+  DCHECK(sync_token_.verified_flush());
   scoped_refptr<StaticBitmapImage> image =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           back_buffer_shared_image_, sync_token(), GetAlphaType(),
@@ -795,10 +795,6 @@ void CanvasResourceSwapChain::WaitSyncToken(const gpu::SyncToken& sync_token) {
       interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
     }
   }
-}
-
-void CanvasResourceSwapChain::GetSyncToken() {
-  DCHECK(sync_token_.verified_flush());
 }
 
 void CanvasResourceSwapChain::PresentSwapChain() {
