@@ -1127,14 +1127,32 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
 
+    // Document markers are stored on the static text parent of an inline text
+    // box. If this node is an inline text box, create equivalent positions in
+    // its parent static text node so that the markers can be retrieved.
+    AXRange markersTextRange(leafTextRange.anchor()->Clone(),
+                             leafTextRange.focus()->Clone());
+    ui::AXNode* markers_anchor = leafTextRange.anchor()->GetAnchor();
+    if (leafTextRange.focus()->GetAnchor()->GetRole() ==
+        ax::mojom::Role::kInlineTextBox) {
+      markersTextRange = AXRange(leafTextRange.anchor()->CreateParentPosition(),
+                                 leafTextRange.focus()->CreateParentPosition());
+      markers_anchor = markersTextRange.anchor()->GetAnchor();
+
+      DCHECK(markersTextRange.anchor()->GetAnchor() ==
+             markersTextRange.focus()->GetAnchor());
+      DCHECK(markers_anchor) << "Markers anchor should not be null.";
+      DCHECK(markers_anchor->GetRole() == ax::mojom::Role::kStaticText);
+    }
+
     // Add misspelling information
     const std::vector<int32_t>& markerTypes =
-        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-    const std::vector<int>& markerStarts =
-        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
-    const std::vector<int>& markerEnds =
-        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
-
+        markers_anchor->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int>& markerStarts = markers_anchor->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerStarts);
+    const std::vector<int>& markerEnds = markers_anchor->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerEnds);
     DCHECK_EQ(markerTypes.size(), markerStarts.size());
     DCHECK_EQ(markerTypes.size(), markerEnds.size());
 
@@ -1144,16 +1162,30 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         continue;
       }
 
-      int misspellingStart = anchorStartOffset + markerStarts[i];
-      int misspellingEnd = anchorStartOffset + markerEnds[i];
-      int misspellingLength = misspellingEnd - misspellingStart;
-      DCHECK_LE(static_cast<unsigned long>(misspellingEnd),
-                [attributedString length]);
-      DCHECK_GT(misspellingLength, 0);
+      // Calculate the intersection of the marker range and the current text
+      // range. These offsets are relative to the static text node, not the leaf
+      // inline text.
+      int markerStartOffset =
+          std::max(markerStarts[i], markersTextRange.anchor()->text_offset());
+      int markerEndOffset =
+          std::min(markerEnds[i], markersTextRange.focus()->text_offset());
+      if (markerEndOffset <= markerStartOffset) {
+        continue;
+      }
+
+      // Convert the intersection so it's relative to the text range of the
+      // attributed string we're building.
+      int rangeStart = markerStartOffset -
+                       markersTextRange.anchor()->text_offset() +
+                       anchorStartOffset;
+      int rangeEnd = markerEndOffset -
+                     markersTextRange.anchor()->text_offset() +
+                     anchorStartOffset;
+      int rangeLength = rangeEnd - rangeStart;
       [attributedString
           addAttribute:NSAccessibilityMarkedMisspelledTextAttribute
                  value:@YES
-                 range:NSMakeRange(misspellingStart, misspellingLength)];
+                 range:NSMakeRange(rangeStart, rangeLength)];
     }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
