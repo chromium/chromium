@@ -525,7 +525,6 @@ void SupervisedUserExtensionsManager::
 
   auto unapproved_extensions_dict =
       GetExtensionsMissingApproval(*user_prefs_.get());
-  int installed_extensions_approvals_count = 0;
   for (auto extension_entry : unapproved_extensions_dict) {
     const Extension* extension =
         extension_registry_->GetInstalledExtension(extension_entry.first);
@@ -535,16 +534,12 @@ void SupervisedUserExtensionsManager::
           (state == ExtensionState::ALLOWED &&
            IsLocallyParentApprovedExtension(extension->id()))) {
         AddExtensionApproval(*extension);
-        installed_extensions_approvals_count += 1;
       }
       // If the extension id from the preferences has not been installed yet,
       // the approval will be granted at the end of installation.
       // See `OnExtensionInstalled`.
     }
   }
-  base::UmaHistogramCounts1000(
-      kExtensionApprovalsCountOnExtensionToggleHistogramName,
-      installed_extensions_approvals_count);
 }
 
 }  // namespace extensions

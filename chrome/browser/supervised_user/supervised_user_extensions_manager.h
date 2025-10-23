@@ -24,10 +24,6 @@ class ExtensionPrefs;
 class ExtensionSystem;
 class ExtensionRegistry;
 
-// UMA metrics for auto-approved extensions.
-inline constexpr char kExtensionApprovalsCountOnExtensionToggleHistogramName[] =
-    "SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle";
-
 // This class groups all the functionality to handle extensions
 // for supervised users.
 class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,

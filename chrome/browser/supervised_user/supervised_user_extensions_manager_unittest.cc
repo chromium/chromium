@@ -276,8 +276,6 @@ TEST_F(SupervisedUserExtensionsManagerTest,
   EXPECT_TRUE(
       manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason));
 
-  histogram_tester.ExpectTotalCount(
-      extensions::kExtensionApprovalsCountOnExtensionToggleHistogramName, 0);
   // Set the Extensions switch to ON. Install another extension which should be
   // granted parental approval by the end of the installation.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
@@ -290,10 +288,6 @@ TEST_F(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kApprovalGrantedByDefault,
-      approved_extensions_count);
-  // The number of auto-approved extensions is recorded.
-  histogram_tester.ExpectTotalCount(
-      extensions::kExtensionApprovalsCountOnExtensionToggleHistogramName,
       approved_extensions_count);
 
   // Install an extension.

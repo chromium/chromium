@@ -889,19 +889,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
-    units="Extensions" expires_after="2025-10-26">
-  <owner>anthie@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Records the number of extensions that will be granted parental approval at
-    the time of flipping the Family Link &quot;Extensions&quot; toggle to
-    Enabled. When this action happens, all the extensions missing parental
-    approval are granted it.
-  </summary>
-</histogram>
-
 <histogram name="SupervisedUsers.ExtensionEnablement"
     enum="SupervisedUserExtensionEnablement" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
