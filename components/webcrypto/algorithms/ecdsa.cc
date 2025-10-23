@@ -17,6 +17,8 @@
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/status.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "crypto/secure_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -73,29 +75,19 @@ Status ConvertDerSignatureToWebCryptoSignature(
     std::vector<uint8_t>* signature) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(signature->data(), signature->size()));
-  if (!ecdsa_sig.get())
-    return Status::ErrorUnexpected();
-
-  // Determine the maximum length of r and s.
-  size_t order_size_bytes;
-  Status status = GetEcGroupOrderSize(key, &order_size_bytes);
-  if (status.IsError())
-    return status;
-
-  signature->resize(order_size_bytes * 2);
-
-  if (!BN_bn2bin_padded(signature->data(), order_size_bytes,
-                        ecdsa_sig.get()->r)) {
+  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key);
+  if (!ec_key) {
     return Status::ErrorUnexpected();
   }
 
-  if (!BN_bn2bin_padded(&(*signature)[order_size_bytes], order_size_bytes,
-                        ecdsa_sig.get()->s)) {
+  std::optional<std::vector<uint8_t>> raw_signature =
+      crypto::ConvertEcdsaDerSignatureToRaw(EC_KEY_get0_group(ec_key),
+                                            *signature);
+  if (!raw_signature.has_value()) {
     return Status::ErrorUnexpected();
   }
 
+  *signature = std::move(raw_signature).value();
   return Status::Success();
 }
 

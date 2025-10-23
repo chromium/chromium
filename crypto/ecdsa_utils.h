@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "crypto/crypto_export.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
 
 namespace crypto {
 
@@ -27,6 +28,11 @@ class PublicKey;
 // This format is used in particular in JWT.
 CRYPTO_EXPORT std::optional<std::vector<uint8_t>> ConvertEcdsaDerSignatureToRaw(
     const keypair::PublicKey& public_key,
+    base::span<const uint8_t> der_signature);
+// The same as above but uses `EC_GROUP` to determine the length of the
+// signature.
+CRYPTO_EXPORT std::optional<std::vector<uint8_t>> ConvertEcdsaDerSignatureToRaw(
+    const EC_GROUP* group,
     base::span<const uint8_t> der_signature);
 
 }  // namespace crypto
