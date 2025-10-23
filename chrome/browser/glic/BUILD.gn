@@ -96,6 +96,9 @@ source_set("glic") {
     "//components/user_education/common",
     "//ui/base/interaction",
   ]
+  if (use_aura) {
+    public_deps += [ "//ui/wm" ]
+  }
 }
 
 source_set("enum") {

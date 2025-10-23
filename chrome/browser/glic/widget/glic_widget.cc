@@ -43,6 +43,10 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/wm/core/shadow_types.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -249,7 +253,30 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
     bool user_resizable) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET, GetWidgetType());
+
+  // -------------- Non Platform-Specific Parameters.
   params.bounds = initial_bounds;
+  params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
+  // Don't change this name. This is used by other code to identify the glic
+  // window. See b/404947780.
+  params.name = "GlicWidget";
+  // Support of rounded corners varies across platforms. See
+  // Widget::InitParams::rounded_corners. DO NOT apply this radius using
+  // views::Background or in the web client because it will mismatch with
+  // the window's actual corner radius. e.g. on win10 resizable windows
+  // do have rounded corners.
+  params.rounded_corners = gfx::RoundedCornersF(kGlicWidgetCornerRadius);
+  if (UseClientView()) {
+    params.remove_standard_frame = true;
+  }
+  auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size(),
+                                              accelerator_delegate);
+  auto delegate = std::make_unique<GlicWidgetDelegate>(
+      UseClientView() ? std::move(glic_view) : nullptr);
+  delegate->SetCanResize(user_resizable);
+  params.delegate = delegate.release();
+
+  // -------------- Platform-Specific Pre-Init Parameters.
 #if BUILDFLAG(IS_OZONE)
   // Some platforms don't allow accelerated widgets to be positioned from
   // client-side. Don't set an origin in that case.
@@ -258,10 +285,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
            .supports_global_screen_coordinates) {
     params.bounds.set_origin({});
   }
-#endif
-  if (user_resizable) {
-    params.bounds.Outset(GetTargetOutsets(initial_bounds));
-  }
+#endif  // BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_WIN)
   // If floaty won't be always on top, it should appear in the taskbar and
   // alt tab list.
@@ -271,38 +295,32 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   if (!base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
     params.force_system_menu_for_frameless = true;
   }
-#endif
-  params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
-  // Don't change this name. This is used by other code to identify the glic
-  // window. See b/404947780.
-  params.name = "GlicWidget";
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+  params.animation_enabled = true;
+#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_LINUX)
   params.wm_class_class = shell_integration_linux::GetProgramClassClass();
   params.wayland_app_id = params.wm_class_class + "-glic";
-#endif
-  // Support of rounded corners varies across platforms. See
-  // Widget::InitParams::rounded_corners. DO NOT apply this radius using
-  // views::Background or in the web client because it will mismatch with
-  // the window's actual corner radius. e.g. on win10 resizable windows
-  // do have rounded corners.
-  params.rounded_corners = gfx::RoundedCornersF(kGlicWidgetCornerRadius);
-#if BUILDFLAG(IS_MAC)
-  params.animation_enabled = true;
-#endif
-  if (UseClientView()) {
-    params.remove_standard_frame = true;
-  }
-  auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size(),
-                                              accelerator_delegate);
-  std::unique_ptr<GlicWidgetDelegate> delegate;
-  if (UseClientView()) {
-    delegate = std::make_unique<GlicWidgetDelegate>(std::move(glic_view));
-  } else {
-    delegate = std::make_unique<GlicWidgetDelegate>(nullptr);
-  }
-  delegate->SetCanResize(user_resizable);
-  params.delegate = delegate.release();
+#endif  // BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS)
+  // crbug.com/450670079: Shadows on ChromeOS are specified by the Ash WM (at
+  // Chrome level, natively), whereas on Windows and Mac, they are specified by
+  // the Desktop WM (OS level, as a user application).
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.shadow_elevation = wm::kShadowElevationActiveWindow;
 
+  // crbug.com/452137970: Rounded Corners conflict with the shadow backdrop so
+  // disable them for now. Since they need some more investigation work/special
+  // handling on ChromeOS, we'll fix them in the RoundedCorners bug.
+  params.rounded_corners = gfx::RoundedCornersF(0);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (user_resizable) {
+    params.bounds.Outset(GetTargetOutsets(initial_bounds));
+  }
+
+  // -------------- Initialize the Widget.
   auto widget = base::WrapUnique(new GlicWidget(
       ThemeServiceFactory::GetForProfile(profile), std::move(params)));
   widget->SetMinimumSize(GetInitialSize());
@@ -316,6 +334,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   widget->SetNativeWindowProperty(views::kWidgetIdentifierKey,
                                   kGlicWidgetIdentifier);
 
+  //  -------------- Platform-Specific Post-Init Properties.
 #if BUILDFLAG(IS_WIN)
   HWND hwnd = widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
   if (hwnd != nullptr) {
