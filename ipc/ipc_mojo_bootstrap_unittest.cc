@@ -151,28 +151,4 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   return 0;
 }
 
-// A long running process that connects to us.
-MULTIPROCESS_TEST_MAIN_WITH_SETUP(
-    IPCMojoBootstrapTestEmptyMessageTestChildMain,
-    ::mojo::core::test::MultiprocessTestHelper::ChildSetup) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  Connection connection(
-      IPC::MojoBootstrap::Create(
-          std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe),
-          IPC::Channel::MODE_CLIENT,
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::SingleThreadTaskRunner::GetCurrentDefault()),
-      kTestClientPid);
-
-  mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
-  connection.TakeReceiver(&receiver);
-  connection.GetSender()->SetPeerPid(1234);
-
-  base::RunLoop run_loop;
-  PeerPidReceiver impl(std::move(receiver), run_loop.QuitClosure());
-  run_loop.Run();
-
-  return 0;
-}
-
 }  // namespace
