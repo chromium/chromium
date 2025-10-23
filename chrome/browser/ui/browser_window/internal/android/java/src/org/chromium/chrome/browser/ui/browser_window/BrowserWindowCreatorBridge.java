@@ -25,6 +25,7 @@ final class BrowserWindowCreatorBridge {
         return task.getOrCreateNativeBrowserWindowPtr();
     }
 
+    @CalledByNative
     @VisibleForTesting
     static void createBrowserWindowAsync(
             AndroidBrowserWindowCreateParams createParams, JniOnceCallback<Long> callback) {

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_callback.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,8 +33,27 @@ BrowserWindowInterface* CreateBrowserWindow(
 void CreateBrowserWindow(
     BrowserWindowCreateParams create_params,
     base::OnceCallback<void(BrowserWindowInterface*)> callback) {
-  // TODO(http://crbug.com/424860292): Implement this on Android.
-  NOTIMPLEMENTED();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const gfx::Rect& bounds = create_params.initial_bounds;
+
+  base::android::ScopedJavaLocalRef<jobject> j_create_params =
+      Java_AndroidBrowserWindowCreateParamsImpl_create(
+          env, static_cast<int>(create_params.type),
+          create_params.profile->GetJavaObject(), bounds.x(), bounds.y(),
+          bounds.width(), bounds.height(),
+          static_cast<int>(create_params.initial_show_state));
+
+  // The callback will be invoked with the native pointer of the created browser
+  // window. The pointer is represented as a jlong in Java.
+  base::OnceCallback<void(jlong)> jlong_callback = base::BindOnce(
+      [](base::OnceCallback<void(BrowserWindowInterface*)> cb, jlong ptr) {
+        std::move(cb).Run(reinterpret_cast<BrowserWindowInterface*>(ptr));
+      },
+      std::move(callback));
+
+  Java_BrowserWindowCreatorBridge_createBrowserWindowAsync(
+      env, j_create_params,
+      base::android::ToJniCallback(env, std::move(jlong_callback)));
 }
 
 BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
