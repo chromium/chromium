@@ -94,6 +94,13 @@ bool HandleWriteTextToClipboard(content::WebContents* web_contents,
 // synchronously without popup window.
 bool DragAndDropForTextIsAllowed(content::WebContents* web_contents);
 
+// Checks if the user is allowed to populate the find bar with
+// the currently selected text in the given WebContents based on
+// DataControlsRules policies. This is used to prevent potential data
+// bypass through the find bar when copy/paste restrictions are in place.
+// Returns true if populating the find bar is allowed, false otherwise.
+bool CanPopulateFindBarFromSelection(content::WebContents* web_contents);
+
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_

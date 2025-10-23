@@ -2203,4 +2203,28 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_FALSE(DragAndDropForTextIsAllowed(contents()));
 }
 
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       StartFindBarWithSelectedText_Allowed) {
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectNoReport();
+
+  EXPECT_TRUE(CanPopulateFindBarFromSelection(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       StartFindBarWithSelectedText_Blocked) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "block",
+                                   "rule_id": "987",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+  EXPECT_FALSE(CanPopulateFindBarFromSelection(contents()));
+}
+
 }  // namespace enterprise_data_protection

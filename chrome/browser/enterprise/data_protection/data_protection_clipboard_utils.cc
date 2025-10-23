@@ -739,9 +739,13 @@ bool DragAndDropForTextIsAllowed(content::WebContents* web_contents) {
     return true;
   }
 
+  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return true;
+  }
+
   ui::DataTransferEndpoint dte(
-      rfh->GetMainFrame()->GetLastCommittedURL(),
-      {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
+      url, {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
 
   content::ClipboardEndpoint source = MakeClipboardEndpoint(dte, rfh);
 
@@ -753,6 +757,11 @@ bool DragAndDropForTextIsAllowed(content::WebContents* web_contents) {
                      ->GetForBrowserContext(source.browser_context())
                      ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
   return verdict.level() != data_controls::Rule::Level::kBlock;
+}
+
+bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
+  // Alias for DragAndDropForTextIsAllowed to avoid code duplication.
+  return DragAndDropForTextIsAllowed(web_contents);
 }
 
 }  // namespace enterprise_data_protection
