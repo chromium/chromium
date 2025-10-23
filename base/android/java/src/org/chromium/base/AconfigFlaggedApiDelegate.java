@@ -136,6 +136,11 @@ public interface AconfigFlaggedApiDelegate {
     default void rebindService(
             Context context, ServiceConnection connection, BindServiceFlags flags) {}
 
+    /** Returns the {@link BindingRequestQueue} if supported, otherwise returns {@code null}. */
+    default @Nullable BindingRequestQueue getBindingRequestQueue() {
+        return null;
+    }
+
     /**
      * Calls {@link android.view.View#requestRectangleOnScreen(Rect, boolean, int)} if supported,
      * with focus type of {@link android.view.View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_INPUT_FOCUS}.

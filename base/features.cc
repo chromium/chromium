@@ -152,6 +152,9 @@ BASE_FEATURE(kPostGetMyMemoryStateToBackground, FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRebindingChildServiceConnectionController,
              FEATURE_DISABLED_BY_DEFAULT);
 
+// Use a batch API to rebind service connections.
+BASE_FEATURE(kRebindServiceBatchApi, FEATURE_DISABLED_BY_DEFAULT);
+
 // Update child process binding state before unbinding.
 BASE_FEATURE(kUpdateStateBeforeUnbinding, FEATURE_ENABLED_BY_DEFAULT);
 

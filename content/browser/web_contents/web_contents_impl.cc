@@ -239,6 +239,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/android/scoped_service_binding_batch.h"
 #include "base/check.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
@@ -3149,6 +3150,10 @@ void WebContentsImpl::SetPrimaryPageImportance(
          "support and avoid using PERCEPTIBLE if "
          "IsPerceptibleImportanceSupported() is false";
   CHECK(main_frame_importance >= subframe_importance);
+
+  // Batch service binding updates for the renderer processes of the main frame
+  // and the subframes.
+  base::android::ScopedServiceBindingBatch scoped_service_binding_batch;
 
   if (base::FeatureList::IsEnabled(features::kSubframeImportance)) {
     CHECK(

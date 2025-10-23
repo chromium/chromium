@@ -1216,6 +1216,8 @@ component("base") {
       "android/requires_api.h",
       "android/scoped_input_event.cc",
       "android/scoped_input_event.h",
+      "android/scoped_service_binding_batch.cc",
+      "android/scoped_service_binding_batch.h",
       "android/self_compaction_manager.cc",
       "android/self_compaction_manager.h",
       "android/shared_preferences/shared_preferences_manager.cc",
@@ -4549,7 +4551,10 @@ if (is_android) {
   }
 
   generate_jni("process_launcher_jni") {
-    sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
+    sources = [
+      "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatch.java",
+    ]
   }
 
   generate_jni("clang_profiler_jni") {
@@ -4635,6 +4640,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/LegacyChildServiceConnectionController.java",
       "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
       "android/java/src/org/chromium/base/process_launcher/RebindingChildServiceConnectionController.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatch.java",
     ]
   }
 
@@ -5335,8 +5341,10 @@ if (is_android) {
 
   android_library("flagged_apis_java") {
     deps = [ ":service_loader_java" ]
-    sources =
-        [ "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java" ]
+    sources = [
+      "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
+      "android/java/src/org/chromium/base/BindingRequestQueue.java",
+    ]
   }
 
   # Most cached_flags code is in components/cached_flags. These classes are
@@ -5706,6 +5714,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",
+      "android/junit/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/KeyPrefixTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistriesTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/SharedPreferencesManagerTest.java",
@@ -5748,6 +5757,8 @@ if (is_android) {
       ":base_java_test_support_uncommon",
       ":base_junit_test_support",
       ":base_shared_preferences_java",
+      ":features_java",
+      ":flagged_apis_java",
       ":location_junit_tests",
       ":task_executor_java",
       "//base/test:public_transit_robolectric_tests_java",

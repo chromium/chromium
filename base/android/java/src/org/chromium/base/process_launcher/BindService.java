@@ -16,6 +16,9 @@ import android.os.UserHandle;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.BindingRequestQueue;
+import org.chromium.base.ContextUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,6 +34,7 @@ public final class BindService {
 
     public static final class BinderCallCounter {
         public int mBindServiceCount;
+        public int mRebindServiceCount;
         public int mUnbindServiceCount;
         public int mUpdateServiceGroupCount;
     }
@@ -73,9 +77,39 @@ public final class BindService {
         }
     }
 
+    @SuppressWarnings("NewApi")
+    static void doRebindService(Context context, ServiceConnection connection, int flags) {
+        if (sBinderCallCounter != null) {
+            sBinderCallCounter.mRebindServiceCount++;
+        }
+        Context.BindServiceFlags bindServiceFlags = Context.BindServiceFlags.of(flags);
+        if (context == ContextUtils.getApplicationContext()
+                && ScopedServiceBindingBatch.shouldBatchUpdate()) {
+            BindingRequestQueue queue = ScopedServiceBindingBatch.getBindingRequestQueue();
+            // This should never be null because shouldBatchUpdate() checks that the feature is
+            // enabled.
+            assert queue != null;
+            queue.rebind(connection, bindServiceFlags);
+            return;
+        }
+        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            delegate.rebindService(context, connection, bindServiceFlags);
+        }
+    }
+
     static void doUnbindService(Context context, ServiceConnection connection) {
         if (sBinderCallCounter != null) {
             sBinderCallCounter.mUnbindServiceCount++;
+        }
+        if (context == ContextUtils.getApplicationContext()
+                && ScopedServiceBindingBatch.shouldBatchUpdate()) {
+            BindingRequestQueue queue = ScopedServiceBindingBatch.getBindingRequestQueue();
+            // This should never be null because shouldBatchUpdate() checks that the feature is
+            // enabled.
+            assert queue != null;
+            queue.unbind(connection);
+            return;
         }
         context.unbindService(connection);
     }

@@ -13,6 +13,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.process_launcher.ScopedServiceBindingBatch;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -793,7 +794,10 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public void setIndex(int i, final @TabSelectionType int type) {
         if (mIsArchivedTabModel) return;
-        try {
+        // Batch service binding updates for the tabs becoming active and inactive. The activeness
+        // change usually causes visibility changes, which updates service bindings of subframes at
+        // the same time.
+        try (ScopedServiceBindingBatch scope = ScopedServiceBindingBatch.scoped()) {
             TraceEvent.begin("TabModelImpl.setIndex");
             int lastId =
                     mCurrentTabSupplier.get() != null

@@ -41,6 +41,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.process_launcher.ScopedServiceBindingBatch;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -1151,7 +1152,9 @@ class TabImpl implements Tab {
 
     @Override
     public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
-        try {
+        // Batch service binding updates for the tab including the subframes. TabImpl.show() is
+        // triggered not only on tab switch, but also when the window is shown.
+        try (ScopedServiceBindingBatch scope = ScopedServiceBindingBatch.scoped()) {
             TraceEvent.begin("Tab.show");
             if (!isHidden()) return;
             // Keep unsetting mIsHidden above loadIfNeeded(), so that we pass correct visibility
@@ -1207,7 +1210,9 @@ class TabImpl implements Tab {
 
     @Override
     public final void hide(@TabHidingType int type) {
-        try {
+        // Batch service binding updates for the tab including the subframes. TabImpl.hide() is
+        // triggered not only on tab switch, but also when the window is hidden.
+        try (ScopedServiceBindingBatch scope = ScopedServiceBindingBatch.scoped()) {
             TraceEvent.begin("Tab.hide");
             if (isHidden()) return;
             mIsHidden = true;
