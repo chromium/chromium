@@ -6,7 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
-import {PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
+import {PanelStateKind, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {PageType, WebviewDelegate} from './webview.js';
@@ -123,6 +123,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   // Loading stage, affects metrics only.
   private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
   private loadingStageStartTimestampMs?: DOMHighResTimeStamp;
+
+  private panelStateKind: PanelStateKind = PanelStateKind.kHidden;
 
   state: WebUiState|undefined;
 
@@ -534,6 +536,9 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     for (const panel of document.querySelectorAll<HTMLElement>('.panel')) {
       panel.hidden = panel.id !== id;
     }
+
+    const panelStateKindSection = getRequiredElement('localPanels');
+    panelStateKindSection.classList.toggle('hidden', id === 'guestPanel');
     // Resize widget to size of new panel.
     if (id === 'guestPanel') {
       // For the guest webview, use the most recently requested size.
@@ -693,6 +698,16 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   }
 
   // PageInterface implementation.
+  updatePageState(panelStateKind: PanelStateKind) {
+    if (this.panelStateKind === panelStateKind) {
+      return;
+    }
+    this.panelStateKind = panelStateKind;
+
+    const panelStateKindSection = getRequiredElement('localPanels');
+    panelStateKindSection.classList.toggle(
+        'sidePanel', this.panelStateKind === PanelStateKind.kAttached);
+  }
 
   // Called before the WebUI is shown. If we're in an error state, automatically
   // try to reload.

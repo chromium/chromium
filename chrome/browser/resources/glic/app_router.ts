@@ -7,7 +7,7 @@ import {FreAppController} from '/fre/fre_app_controller.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type PageInterface, ProfileReadyState} from './glic.mojom-webui.js';
+import {type PageInterface, type PanelStateKind, ProfileReadyState} from './glic.mojom-webui.js';
 import {GlicAppController} from './glic_app_controller.js';
 
 export enum AppView {
@@ -85,6 +85,10 @@ export class AppRouter implements PageInterface {
       this.switchToView(AppView.GLIC);
     }
     this.glicController?.setProfileReadyState(state);
+  }
+
+  updatePageState(panelStateKind: PanelStateKind) {
+    this.glicController?.updatePageState(panelStateKind);
   }
 
   close(): void {

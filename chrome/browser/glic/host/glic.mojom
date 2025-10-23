@@ -45,6 +45,9 @@ interface Page {
   // Called any time the ready state of the profile changes.
   // `ready_state` = `GlicEnabling::GetProfileReadyState()`.
   SetProfileReadyState(ProfileReadyState ready_state);
+
+  // Called to inform the page of the UI surface it is being rendered in.
+  UpdatePageState(PanelStateKind panelStateKind);
 };
 
 // Factory for PageHandler used in chrome://glic.

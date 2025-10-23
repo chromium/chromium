@@ -50,9 +50,24 @@ webview:not([hidden]) {
   color: var(--color--on-surface);
 }
 
+.sidePanel {
+  height: 100%;
+}
+
+.sidePanel .dialog {
+  height: 100%;
+}
+
 .dialog .container {
   background: var(--color--surface-container);
   color: var(--color--on-surface-variant);
+}
+
+.sidePanel .container {
+  display: flex;
+  flex-direction: column;
+  background: var(--color--surface);
+  height: 100%
 }
 
 #loadingPanel {
@@ -126,6 +141,16 @@ webview:not([hidden]) {
   color: var(--color--on-surface);
   border-radius: 10px;
   padding: 12px;
+  text-align: center;
+}
+
+.sidePanel .notice {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
 }
 
 .notice .icon {
@@ -205,7 +230,6 @@ webview:not([hidden]) {
 }
 
 .tonal-button {
-  width: 100%;
   background-color: var(--color--secondary-container);
   color: var(--color--on-secondary-container);
 }
