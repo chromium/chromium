@@ -315,7 +315,7 @@ void ContentWebState::SetDelegate(WebStateDelegate* delegate) {
 }
 
 bool ContentWebState::IsRealized() const {
-  return serialized_state_ != nullptr;
+  return serialized_state_ == nullptr;
 }
 
 WebState* ContentWebState::ForceRealizedWithPolicy(RealizationPolicy policy) {

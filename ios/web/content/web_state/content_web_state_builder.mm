@@ -141,7 +141,8 @@ void SerializeContentStorage(const ContentWebState* web_state,
     // these long URLs will not be serialized, so there is no point in keeping
     // referrer URL.
     const Referrer& referrer = item->GetReferrer();
-    if (referrer.url.spec().size() <= url::kMaxURLChars) {
+    if (referrer.url.is_valid() &&
+        referrer.url.spec().size() <= url::kMaxURLChars) {
       SerializeReferrerToProto(referrer, *item_storage.mutable_referrer());
     }
 
