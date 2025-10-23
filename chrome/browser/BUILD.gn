@@ -72,9 +72,6 @@ declare_args() {
   use_official_enterprise_connectors_api_keys = false
 }
 
-additional_modules_list_file =
-    "$root_gen_dir/chrome/browser/internal/additional_modules_list.txt"
-
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.
   # ldflags in GN aren't automatically inherited.
@@ -8891,13 +8888,7 @@ grit("resources") {
     "browser_resources.pak",
   ]
 
-  grit_flags = [
-    "-E",
-    "additional_modules_list_file=" +
-        rebase_path(additional_modules_list_file, root_build_dir),
-  ]
-
-  deps = [ ":chrome_internal_resources_gen" ]
+  deps = []
 
   if (is_win) {
     deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
@@ -8923,20 +8914,6 @@ grit("resources") {
 
   if (safe_browsing_mode == 1) {
     deps += [ "//chrome/browser/resources/reset_password:build_ts" ]
-  }
-}
-
-if (is_chrome_branded) {
-  action("chrome_internal_resources_gen") {
-    script = "internal/transform_additional_modules_list.py"
-    sources = [ "internal/resources/additional_modules_list.input" ]
-    outputs = [ additional_modules_list_file ]
-    args = rebase_path(sources, root_build_dir) +
-           rebase_path(outputs, root_build_dir)
-  }
-} else {
-  group("chrome_internal_resources_gen") {
-    # Empty placeholder.
   }
 }
 
