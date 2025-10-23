@@ -100,6 +100,8 @@ class GlicInstanceImpl : public GlicInstance,
   gfx::Size GetPanelSize() override;
 
   // These methods should only be called by the GlicInstanceCoordinator.
+  // This method will either show an embedder or create an inactive embedder and
+  // bind a tab to conversation.
   void Show(const ShowOptions& options) override;
   void Close(EmbedderKey key);
   // Returns true when toggle shows the instance and false when it is closed.
@@ -230,6 +232,8 @@ class GlicInstanceImpl : public GlicInstance,
 
   void MaybeActivateForegroundEmbedder();
   EmbedderEntry& BindTab(tabs::TabInterface* tab);
+  // For any pinned tab not already bound to a conversation bind it to this one.
+  void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool pinned);
 
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
@@ -270,6 +274,7 @@ class GlicInstanceImpl : public GlicInstance,
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
+  base::CallbackListSubscription pinned_tabs_change_subscription_;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

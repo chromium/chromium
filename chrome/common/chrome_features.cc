@@ -737,6 +737,8 @@ BASE_FEATURE(kGlicUnloadOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicApiActivationGating, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicBindPinnedUnboundTab, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, don't try to update the views background color based on the
 // glic client background color.
 BASE_FEATURE(kGlicExplicitBackgroundColor, base::FEATURE_ENABLED_BY_DEFAULT);

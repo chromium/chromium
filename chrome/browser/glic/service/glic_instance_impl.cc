@@ -152,6 +152,12 @@ GlicInstanceImpl::GlicInstanceImpl(
   // opening so that this can be set to `true`.
   host_.CreateContents(/*initially_hidden=*/false);
   host_observation_.Observe(&host_);
+  if (base::FeatureList::IsEnabled(features::kGlicBindPinnedUnboundTab)) {
+    pinned_tabs_change_subscription_ =
+        sharing_manager_.AddTabPinningStatusChangedCallback(
+            base::BindRepeating(&GlicInstanceImpl::OnTabPinningStatusChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 GlicInstanceImpl::~GlicInstanceImpl() {
@@ -737,4 +743,17 @@ void GlicInstanceImpl::OnTabAddedToTask(
   Show(ShowOptions::ForSidePanel(*tab));
 }
 
+void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
+                                                 bool pinned) {
+  if (!tab || !pinned) {
+    return;
+  }
+
+  if (auto* helper = GlicInstanceHelper::From(tab)) {
+    auto instance_id = helper->GetInstanceId();
+    if (!instance_id.has_value()) {
+      ShowInactiveSidePanelEmbedderFor(tab);
+    }
+  }
+}
 }  // namespace glic

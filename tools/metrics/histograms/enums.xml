@@ -10721,6 +10721,7 @@ from previous Chrome versions.
   <int value="-1277216823" label="ClearUndecryptablePasswords:disabled"/>
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
+  <int value="-1276254276" label="GlicBindPinnedUnboundTab:enabled"/>
   <int value="-1275598905" label="Compose:disabled"/>
   <int value="-1275552094" label="SpectreVariant2Mitigation:disabled"/>
   <int value="-1274502866" label="AllowDisableMouseAcceleration:enabled"/>
@@ -13731,6 +13732,7 @@ from previous Chrome versions.
   <int value="-198011028" label="AndroidAppIntegrationModule:enabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-197862414" label="PrivacyIndicators:enabled"/>
+  <int value="-197413324" label="GlicBindPinnedUnboundTab:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
   <int value="-195242003"
       label="PrivateNetworkAccessRespectPreflightResults:disabled"/>

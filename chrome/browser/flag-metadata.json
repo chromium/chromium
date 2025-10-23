@@ -5562,6 +5562,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-bind-pinned-unbound-tab",
+    "owners": [
+      "basiaz@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-capture-region",
     "owners": [ "gklassen@chromium.org" ],
     "expiry_milestone": 150

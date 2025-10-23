@@ -1396,6 +1396,11 @@ inline constexpr char kGlicEntrypointVariationsName[] =
     "Glic Entrypoint Variations";
 inline constexpr char kGlicEntrypointVariationsDescription[] =
     "Enables visual tweaks to the Glic entry button in the tab strip.";
+inline constexpr char kGlicBindPinnedUnboundTabName[] =
+    "Glic Bind a Shared Tab If Unbound";
+inline constexpr char kGlicBindPinnedUnboundTabDescription[] =
+    "When a tab is shared with conversation and not yet bound to any "
+    "conversation, bind it to the current one";
 inline constexpr char kGlicDefaultToLastActiveConversationName[] =
     "Glic Default To Last Active Conversation";
 inline constexpr char kGlicDefaultToLastActiveConversationDescription[] =
