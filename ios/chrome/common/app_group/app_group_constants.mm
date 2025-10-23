@@ -113,7 +113,10 @@ NSString* const kChromeLikelyDefaultBrowser = @"ChromeLikelyDefaultBrowser";
 NSString* const kChromeLikelyDefaultBrowserUpdateTimestamp =
     @"ChromeLikelyDefaultBrowserUpdateTimestamp";
 
-NSString* const kGMOSKOInstallAttribution = @"iGAStartedChromeInstall";
+NSString* const kGMOSKOInstallAttribution = @"GMOAndSKOInstallAttribution";
+
+NSString* const kAppPreviewInstallAttribution =
+    @"ChromeAppPreview_InstallAttribution";
 
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];

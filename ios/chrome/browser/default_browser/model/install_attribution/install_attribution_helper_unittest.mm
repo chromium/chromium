@@ -8,11 +8,79 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/time/time_override.h"
-#import "ios/chrome/browser/default_browser/model/install_attribution/gmo_sko_acceptance_data.h"
+#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_acceptance_data.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
+
+// Class representing the incoming data for the GMO Acceptance.
+// Do not use AcceptanceData directly to test class redirection.
+@interface GMOSKOAcceptanceData : NSObject <NSSecureCoding>
+
+// The placement ID of the promo that was accepted.
+@property(nonatomic, copy) NSNumber* placementID;
+
+// The timestamp of when the promo was accepted.
+@property(nonatomic, copy) NSDate* timestamp;
+
+@end
+
+@implementation GMOSKOAcceptanceData
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+  [coder encodeObject:self.placementID forKey:@"placementID"];
+  [coder encodeObject:self.timestamp forKey:@"timestamp"];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)coder {
+  if ((self = [super init])) {
+    _placementID = [coder decodeObjectOfClass:[NSNumber class]
+                                       forKey:@"placementID"];
+    _timestamp = [coder decodeObjectOfClass:[NSDate class] forKey:@"timestamp"];
+  }
+  return self;
+}
+
+@end
+
+// Class representing the incoming data for the App Preview Acceptance.
+// Do not use AcceptanceData directly to test class redirection.
+@interface GCRAppPreviewAcceptanceData : NSObject <NSSecureCoding>
+
+// The placement ID of the promo that was accepted.
+@property(nonatomic, copy) NSNumber* placementID;
+
+// The timestamp of when the promo was accepted.
+@property(nonatomic, copy) NSDate* timestamp;
+
+@end
+
+@implementation GCRAppPreviewAcceptanceData
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+  [coder encodeObject:self.placementID forKey:@"placementID"];
+  [coder encodeObject:self.timestamp forKey:@"timestamp"];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)coder {
+  if ((self = [super init])) {
+    _placementID = [coder decodeObjectOfClass:[NSNumber class]
+                                       forKey:@"placementID"];
+    _timestamp = [coder decodeObjectOfClass:[NSDate class] forKey:@"timestamp"];
+  }
+  return self;
+}
+
+@end
 
 namespace install_attribution {
 
@@ -27,20 +95,25 @@ const int kFakePlacementID = 42;
 class InstallAttributionHelperTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kIOSLogInstallAttribution);
+    scoped_feature_list_.InitWithFeatures(
+        {kIOSLogInstallAttribution, kIOSLogAppPreviewInstallAttribution}, {});
     NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
     [sharedDefaults removeObjectForKey:app_group::kGMOSKOInstallAttribution];
+    [sharedDefaults
+        removeObjectForKey:app_group::kAppPreviewInstallAttribution];
   }
 
   void TearDown() override {
     NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
     [sharedDefaults removeObjectForKey:app_group::kGMOSKOInstallAttribution];
+    [sharedDefaults
+        removeObjectForKey:app_group::kAppPreviewInstallAttribution];
   }
 
-  void VerifyAcceptanceDataCleared(bool should_be_cleared = true) {
+  void VerifyAcceptanceDataCleared(NSString* key,
+                                   bool should_be_cleared = true) {
     NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
-    NSObject* value =
-        [sharedDefaults objectForKey:app_group::kGMOSKOInstallAttribution];
+    NSObject* value = [sharedDefaults objectForKey:key];
     EXPECT_EQ(value == nil, should_be_cleared);
   }
 
@@ -70,7 +143,7 @@ TEST_F(InstallAttributionHelperTest, NoAcceptanceData) {
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // The helper should not crash nor record an attributable install if there is an
@@ -90,7 +163,7 @@ TEST_F(InstallAttributionHelperTest, UnrecognizedAcceptanceData) {
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // The helper should record an attributable install in the short attribution
@@ -100,9 +173,9 @@ TEST_F(InstallAttributionHelperTest, AttributableInstallShortWindow) {
   base::HistogramTester histogram_tester;
 
   NSDate* oneHourAgo = (base::Time::Now() - base::Hours(1)).ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:oneHourAgo];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = oneHourAgo;
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
   NSData* archivedData =
@@ -121,7 +194,7 @@ TEST_F(InstallAttributionHelperTest, AttributableInstallShortWindow) {
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // The helper should record an attributable install in the long attribution
@@ -131,9 +204,9 @@ TEST_F(InstallAttributionHelperTest, AttributableInstallLongWindow) {
   base::HistogramTester histogram_tester;
 
   NSDate* sevenDaysAgo = (base::Time::Now() - base::Days(7)).ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:sevenDaysAgo];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = sevenDaysAgo;
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
   NSData* archivedData =
@@ -152,7 +225,7 @@ TEST_F(InstallAttributionHelperTest, AttributableInstallLongWindow) {
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // The helper should not record anything if there is acceptance data but the
@@ -161,9 +234,9 @@ TEST_F(InstallAttributionHelperTest, ExpiredAcceptanceData) {
   base::HistogramTester histogram_tester;
 
   NSDate* thirtyDaysAgo = (base::Time::Now() - base::Days(30)).ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:thirtyDaysAgo];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = thirtyDaysAgo;
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
   NSData* archivedData =
@@ -180,7 +253,7 @@ TEST_F(InstallAttributionHelperTest, ExpiredAcceptanceData) {
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // Validates placement ID for "short attribution" installs is only recorded in
@@ -201,9 +274,9 @@ TEST_F(InstallAttributionHelperTest,
   SetNowOverride(now_override);
 
   NSDate* timestamp = acceptance_timestamp.ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:timestamp];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = timestamp;
 
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
@@ -223,7 +296,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Second, ensure there is still no placement ID recorded 2 weeks later.
   EXPECT_TRUE(base::Time::FromUTCString("2025-06-27", &now_override));
@@ -235,7 +308,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Finally, ensure placement ID is recorded after entering the next time
   // bucket.
@@ -255,7 +328,7 @@ TEST_F(InstallAttributionHelperTest,
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // Validates placement ID for "short attribution" installs is only recorded in
@@ -277,9 +350,9 @@ TEST_F(InstallAttributionHelperTest,
   SetNowOverride(now_override);
 
   NSDate* timestamp = acceptance_timestamp.ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:timestamp];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = timestamp;
 
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
@@ -299,7 +372,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Second, ensure there is still no placement ID recorded 2 weeks later.
   EXPECT_TRUE(base::Time::FromUTCString("2025-12-28", &now_override));
@@ -311,7 +384,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Finally, ensure placement ID is recorded after entering the next time
   // bucket.
@@ -331,7 +404,7 @@ TEST_F(InstallAttributionHelperTest,
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // Validates placement ID for "long attribution" installs is only recorded in
@@ -351,9 +424,9 @@ TEST_F(InstallAttributionHelperTest,
   SetNowOverride(now_override);
 
   NSDate* timestamp = acceptance_timestamp.ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:timestamp];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = timestamp;
 
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
@@ -373,7 +446,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Second, ensure there is still no placement ID recorded 2 weeks later.
   EXPECT_TRUE(base::Time::FromUTCString("2025-06-27", &now_override));
@@ -385,7 +458,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Finally, ensure placement ID is recorded after entering the next time
   // bucket.
@@ -402,7 +475,7 @@ TEST_F(InstallAttributionHelperTest,
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // Validates placement ID for "long attribution" installs is only recorded in
@@ -423,9 +496,9 @@ TEST_F(InstallAttributionHelperTest,
   SetNowOverride(now_override);
 
   NSDate* timestamp = acceptance_timestamp.ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:timestamp];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = timestamp;
 
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
@@ -445,7 +518,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Second, ensure there is still no placement ID recorded 2 weeks later.
   EXPECT_TRUE(base::Time::FromUTCString("2025-12-28", &now_override));
@@ -457,7 +530,7 @@ TEST_F(InstallAttributionHelperTest,
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 
   // Finally, ensure placement ID is recorded after entering the next time
   // bucket.
@@ -474,7 +547,7 @@ TEST_F(InstallAttributionHelperTest,
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
-  VerifyAcceptanceDataCleared();
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution);
 }
 
 // Validates that attribution data is not deleted if there is an error
@@ -493,9 +566,9 @@ TEST_F(InstallAttributionHelperTest, KeepAcceptanceDataIfTimeError) {
   SetNowOverride(now_override);
 
   NSDate* timestamp = acceptance_timestamp.ToNSDate();
-  GMOSKOAcceptanceData* acceptanceData =
-      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
-                                              timestamp:timestamp];
+  GMOSKOAcceptanceData* acceptanceData = [[GMOSKOAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = timestamp;
 
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSError* archiveError = nil;
@@ -512,7 +585,40 @@ TEST_F(InstallAttributionHelperTest, KeepAcceptanceDataIfTimeError) {
       "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
-  VerifyAcceptanceDataCleared(/*should_be_cleared=*/false);
+  VerifyAcceptanceDataCleared(app_group::kGMOSKOInstallAttribution,
+                              /*should_be_cleared=*/false);
+}
+
+// The helper should record an attributable install in the short attribution
+// window if there is acceptance data that is within the corresponding interval
+// for the App Preview source. The data should be deleted afterwards.
+TEST_F(InstallAttributionHelperTest, AppPreviewAttributableInstallShortWindow) {
+  base::HistogramTester histogram_tester;
+
+  NSDate* oneHourAgo = (base::Time::Now() - base::Hours(1)).ToNSDate();
+  GCRAppPreviewAcceptanceData* acceptanceData =
+      [[GCRAppPreviewAcceptanceData alloc] init];
+  acceptanceData.placementID = @(kFakePlacementID);
+  acceptanceData.timestamp = oneHourAgo;
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSError* archiveError = nil;
+  NSData* archivedData =
+      [NSKeyedArchiver archivedDataWithRootObject:acceptanceData
+                            requiringSecureCoding:YES
+                                            error:&archiveError];
+  [sharedDefaults setObject:archivedData
+                     forKey:app_group::kAppPreviewInstallAttribution];
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount("IOS.AppPreviewInstallAttribution",
+                                     InstallAttributionType::Within24Hours, 1);
+  histogram_tester.ExpectTotalCount("IOS.AppPreviewInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.AppPreviewAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.AppPreviewAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared(app_group::kAppPreviewInstallAttribution);
 }
 
 }  // namespace install_attribution

@@ -231,8 +231,12 @@ extern NSString* const kChromeLikelyDefaultBrowser;
 // Key used to store the timestamp when the default browser status was updated.
 extern NSString* const kChromeLikelyDefaultBrowserUpdateTimestamp;
 
-// Key to read promo data for the install attribution.
+// Key to store GMO/SKO install attribution data in shared user defaults.
 extern NSString* const kGMOSKOInstallAttribution;
+
+// Key to store install attribution data from the App Preview in shared user
+// defaults.
+extern NSString* const kAppPreviewInstallAttribution;
 
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);

@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_helper.h"
 
+#import <string>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/default_browser/model/install_attribution/gmo_sko_acceptance_data.h"
+#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_acceptance_data.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -48,55 +50,51 @@ bool GetNextCalendarMonthStart(base::Time* result) {
   return success;
 }
 
-}  // namespace
-
-void LogInstallAttribution() {
-  if (!IsInstallAttributionLoggingEnabled()) {
-    return;
-  }
-
-  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+void LogInstallAttributionForSource(NSString* incoming_class_name,
+                                    NSString* acceptance_data_key,
+                                    const std::string& next_log_date_pref,
+                                    const std::string& last_placement_id_pref,
+                                    const std::string& last_window_type_pref,
+                                    const std::string& long_window_histogram,
+                                    const std::string& short_window_histogram,
+                                    const std::string& attribution_histogram) {
+  NSUserDefaults* shared_defaults = app_group::GetCommonGroupUserDefaults();
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  if (!sharedDefaults || !local_state) {
+  if (!shared_defaults || !local_state) {
     return;
   }
 
-  bool shouldClearAcceptanceData = true;
+  bool should_clear_acceptance_data = true;
 
   // First, check for previously stored attribution data that needs to be
   // logged.
-  base::Time next_log_date =
-      local_state->GetTime(prefs::kIOSGMOSKOPlacementIDNextLogDate);
-  int placement_id =
-      local_state->GetInteger(prefs::kIOSGMOSKOLastAttributionPlacementID);
-  int attribution_window_type =
-      local_state->GetInteger(prefs::kIOSGMOSKOLastAttributionWindowType);
+  base::Time next_log_date = local_state->GetTime(next_log_date_pref);
+  int placement_id = local_state->GetInteger(last_placement_id_pref);
+  int attribution_window_type = local_state->GetInteger(last_window_type_pref);
 
   if (placement_id != 0 && attribution_window_type > 0 &&
       base::Time::Now() > next_log_date) {
     // The histogram for the long window also includes placement IDs from the
     // short window, otherwise it will undercount placement ID results and
     // misrepresent the performance of the different promo variants.
-    base::UmaHistogramSparse(
-        "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", placement_id);
+    base::UmaHistogramSparse(long_window_histogram, placement_id);
     if (attribution_window_type ==
         static_cast<int>(InstallAttributionType::Within24Hours)) {
-      base::UmaHistogramSparse(
-          "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow",
-          placement_id);
+      base::UmaHistogramSparse(short_window_histogram, placement_id);
     }
 
-    local_state->ClearPref(prefs::kIOSGMOSKOPlacementIDNextLogDate);
-    local_state->ClearPref(prefs::kIOSGMOSKOLastAttributionPlacementID);
-    local_state->ClearPref(prefs::kIOSGMOSKOLastAttributionWindowType);
+    local_state->ClearPref(next_log_date_pref);
+    local_state->ClearPref(last_placement_id_pref);
+    local_state->ClearPref(last_window_type_pref);
   } else {
     // Otherwise, check for new acceptance data from the shared defaults.
-    NSData* archivedData =
-        [sharedDefaults dataForKey:app_group::kGMOSKOInstallAttribution];
+    NSData* archivedData = [shared_defaults dataForKey:acceptance_data_key];
     if (archivedData) {
       NSError* unarchiveError = nil;
-      GMOSKOAcceptanceData* acceptanceData = [NSKeyedUnarchiver
-          unarchivedObjectOfClass:[GMOSKOAcceptanceData class]
+      [NSKeyedUnarchiver setClass:[InstallAttributionAcceptanceData class]
+                     forClassName:incoming_class_name];
+      InstallAttributionAcceptanceData* acceptanceData = [NSKeyedUnarchiver
+          unarchivedObjectOfClass:[InstallAttributionAcceptanceData class]
                          fromData:archivedData
                             error:&unarchiveError];
 
@@ -114,31 +112,56 @@ void LogInstallAttribution() {
                   ? InstallAttributionType::Within24Hours
                   : InstallAttributionType::Within15Days;
 
-          base::UmaHistogramEnumeration("IOS.GMOSKOInstallAttribution",
-                                        window_type);
+          base::UmaHistogramEnumeration(attribution_histogram, window_type);
 
           // The more specific placement ID must be stored and recorded in the
           // next time bucket (next calendar month).
           base::Time next_month_start;
           if (GetNextCalendarMonthStart(&next_month_start)) {
-            local_state->SetTime(prefs::kIOSGMOSKOPlacementIDNextLogDate,
-                                 next_month_start);
-            local_state->SetInteger(prefs::kIOSGMOSKOLastAttributionPlacementID,
+            local_state->SetTime(next_log_date_pref, next_month_start);
+            local_state->SetInteger(last_placement_id_pref,
                                     [acceptanceData.placementID intValue]);
-            local_state->SetInteger(prefs::kIOSGMOSKOLastAttributionWindowType,
+            local_state->SetInteger(last_window_type_pref,
                                     static_cast<int>(window_type));
           } else {
             // Could not determine next month start. Keep the acceptance data
             // and try again next launch.
-            shouldClearAcceptanceData = false;
+            should_clear_acceptance_data = false;
           }
         }
       }
     }
   }
 
-  if (shouldClearAcceptanceData) {
-    [sharedDefaults removeObjectForKey:app_group::kGMOSKOInstallAttribution];
+  if (should_clear_acceptance_data) {
+    [shared_defaults removeObjectForKey:acceptance_data_key];
+  }
+}
+
+}  // namespace
+
+void LogInstallAttribution() {
+  if (IsInstallAttributionLoggingEnabled()) {
+    LogInstallAttributionForSource(
+        @"GMOSKOAcceptanceData", app_group::kGMOSKOInstallAttribution,
+        prefs::kIOSGMOSKOPlacementIDNextLogDate,
+        prefs::kIOSGMOSKOLastAttributionPlacementID,
+        prefs::kIOSGMOSKOLastAttributionWindowType,
+        "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow",
+        "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow",
+        "IOS.GMOSKOInstallAttribution");
+  }
+
+  if (IsAppPreviewInstallAttributionLoggingEnabled()) {
+    LogInstallAttributionForSource(
+        @"GCRAppPreviewAcceptanceData",
+        app_group::kAppPreviewInstallAttribution,
+        prefs::kIOSAppPreviewPlacementIDNextLogDate,
+        prefs::kIOSAppPreviewLastAttributionPlacementID,
+        prefs::kIOSAppPreviewLastAttributionWindowType,
+        "IOS.AppPreviewAttributionPlacementID.LongAttributionWindow",
+        "IOS.AppPreviewAttributionPlacementID.ShortAttributionWindow",
+        "IOS.AppPreviewInstallAttribution");
   }
 }
 

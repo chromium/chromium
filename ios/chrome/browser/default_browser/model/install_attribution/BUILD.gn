@@ -4,8 +4,8 @@
 
 source_set("install_attribution") {
   sources = [
-    "gmo_sko_acceptance_data.h",
-    "gmo_sko_acceptance_data.mm",
+    "install_attribution_acceptance_data.h",
+    "install_attribution_acceptance_data.mm",
     "install_attribution_helper.h",
     "install_attribution_helper.mm",
   ]

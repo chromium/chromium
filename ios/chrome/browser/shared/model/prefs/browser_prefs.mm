@@ -635,6 +635,12 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kIOSGMOSKOPlacementIDNextLogDate,
                              base::Time());
   registry->RegisterIntegerPref(prefs::kIOSGMOSKOLastAttributionWindowType, 0);
+  registry->RegisterIntegerPref(prefs::kIOSAppPreviewLastAttributionPlacementID,
+                                0);
+  registry->RegisterTimePref(prefs::kIOSAppPreviewPlacementIDNextLogDate,
+                             base::Time());
+  registry->RegisterIntegerPref(prefs::kIOSAppPreviewLastAttributionWindowType,
+                                0);
 
   // Deprecated 02/2025.
   registry->RegisterIntegerPref(kNumberOfProfiles, 0);

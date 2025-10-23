@@ -842,6 +842,21 @@ inline constexpr char kIOSGMOSKOPlacementIDNextLogDate[] =
 inline constexpr char kIOSGMOSKOLastAttributionWindowType[] =
     "ios.gmosko_last_attribution_window_type";
 
+// An integer pref to store the placement ID of the acceptance data if the
+// install was attributable to the external promo from the App Preview.
+inline constexpr char kIOSAppPreviewLastAttributionPlacementID[] =
+    "ios.app_preview_last_attribution_placement_id";
+
+// A time pref to store the date after which the placement ID can be logged for
+// the App Preview.
+inline constexpr char kIOSAppPreviewPlacementIDNextLogDate[] =
+    "ios.app_preview_placement_id_next_log_date";
+
+// An integer storing whether the install attribution was attributable within
+// the short window or the long window for the App Preview.
+inline constexpr char kIOSAppPreviewLastAttributionWindowType[] =
+    "ios.app_preview_last_attribution_window_type";
+
 // A profile pref for storing a list of timestamps of days the user was active.
 inline constexpr char kCrossPlatformPromosActiveDays[] =
     "cross_platform_promos.active_days";

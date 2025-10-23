@@ -234,6 +234,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppPreviewAttributionPlacementID.LongAttributionWindow"
+    units="Placement ID" expires_after="2026-10-22">
+  <owner>olivierrobin@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    The placement ID associated with a App preview-attributed install. This is
+    recorded on the first launch of the calendar month following the install, at
+    startup, if the install happened within the long attribution window (15
+    days) of the promo acceptance time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.AppPreviewAttributionPlacementID.ShortAttributionWindow"
+    units="Placement ID" expires_after="2026-10-22">
+  <owner>olivierrobin@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    The placement ID associated with a App preview-attributed install. This is
+    recorded on the first launch of the calendar month following the install, at
+    startup, if the install happened within the short attribution window (24
+    hours) of the promo acceptance time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.AppPreviewInstallAttribution"
+    enum="IOSInstallAttributionType" expires_after="2026-10-22">
+  <owner>olivierrobin@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    For installs that can be attributed to the acceptance of a recent external
+    promo in App Preview, records whether the acceptance was within the lat 24
+    hours or the last 15 days. Recorded once at app startup, once per promo
+    acceptance.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppStoreRating.UserIsEligible" enum="Boolean"
     expires_after="2024-07-14">
   <owner>hiramahmood@google.com</owner>

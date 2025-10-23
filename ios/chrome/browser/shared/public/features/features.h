@@ -1088,6 +1088,11 @@ BASE_DECLARE_FEATURE(kIOSLogInstallAttribution);
 
 bool IsInstallAttributionLoggingEnabled();
 
+// Feature flag for logging the app install attribution from App Preview.
+BASE_DECLARE_FEATURE(kIOSLogAppPreviewInstallAttribution);
+
+bool IsAppPreviewInstallAttributionLoggingEnabled();
+
 // Feature flag for migrating all default browser promos to use the new Default
 // Apps iOS settings page.
 BASE_DECLARE_FEATURE(kIOSUseDefaultAppsDestinationForPromos);
