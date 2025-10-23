@@ -113,6 +113,16 @@ class StrongAlias {
   friend bool operator==(const StrongAlias& lhs,
                          const StrongAlias& rhs) = default;
 
+  // Make this type hashable by Abseil if the underlying type is hashable
+  // by Abseil.
+  template <typename H>
+    requires requires(H h, const StrongAlias& strong_alias) {
+      { H::combine(std::move(h), strong_alias.value()) } -> std::same_as<H>;
+    }
+  friend H AbslHashValue(H h, const StrongAlias& strong_alias) {
+    return H::combine(std::move(h), strong_alias.value_);
+  }
+
   // If UnderlyingType can be serialised into trace, its alias is also
   // serialisable.
   template <class U = UnderlyingType>

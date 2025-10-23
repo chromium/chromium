@@ -16,6 +16,7 @@
 
 #include "base/types/supports_ostream_operator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace base {
@@ -384,6 +385,15 @@ void StreamOperatorExists() {
 TEST(StrongAliasTest, TracedValueSupport) {
   using IntAlias = StrongAlias<class FooTag, int>;
   EXPECT_EQ(perfetto::TracedValueToString(IntAlias(42)), "42");
+}
+
+TYPED_TEST(StrongAliasTest, AbslHashValue) {
+  using FooAlias = StrongAlias<class FooTag, TypeParam>;
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
+      {FooAlias(GetExampleValue<TypeParam>(0)),
+       FooAlias(GetExampleValue<TypeParam>(0)),
+       FooAlias(GetExampleValue<TypeParam>(1))}));
 }
 
 }  // namespace base

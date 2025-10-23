@@ -130,6 +130,12 @@ group("absl_component_deps") {
   visibility = [ ":absl" ]
 }
 
+# Abseil testing utilities should only be included in test binaries.
+component("test_support") {
+  testonly = true
+  public_deps = [ "//third_party/abseil-cpp/absl/hash:hash_testing" ]
+}
+
 # Some third-party libraries use additional parts of absl that are banned in
 # Chrome (e.g. flags generates static initializers that are undesirable in
 # non-test binaries). These third-party libraries can depend on `absl_full`
