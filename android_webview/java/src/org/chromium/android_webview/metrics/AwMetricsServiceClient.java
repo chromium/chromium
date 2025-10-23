@@ -9,14 +9,19 @@ import android.content.pm.ApplicationInfo;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.io.File;
 
 /**
  * Determines user consent and app opt-out for metrics. See aw_metrics_service_client.h for more
@@ -26,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class AwMetricsServiceClient {
     private static final String PLAY_STORE_PACKAGE_NAME = "com.android.vending";
+    private static final String METRICS_SUBDIR = ".webview";
 
     private static @InstallerPackageType @Nullable Integer sInstallerPackageTypeForTesting;
 
@@ -82,6 +88,29 @@ public class AwMetricsServiceClient {
     public static void setInstallerPackageTypeForTesting(@InstallerPackageType int type) {
         ThreadUtils.assertOnUiThread();
         sInstallerPackageTypeForTesting = type;
+    }
+
+    @CalledByNative
+    @JniType("std::string")
+    private static String getNoBackupFilesDirForMetrics() {
+        if (AwBrowserProcess.isDataDirBasePathOverridden()) {
+            // If the base path has been overridden we shouldn't use the no-backup files directory,
+            // because there's no API for the host app to override that directory. Return an empty
+            // string as we have no directory to use.
+            return "";
+        }
+
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            File noBackupFilesDir = ContextUtils.getApplicationContext().getNoBackupFilesDir();
+            String dataDirSuffix = AwBrowserProcess.getProcessDataDirSuffix();
+            String subdir;
+            if (dataDirSuffix == null) {
+                subdir = METRICS_SUBDIR;
+            } else {
+                subdir = METRICS_SUBDIR + "_" + dataDirSuffix;
+            }
+            return new File(noBackupFilesDir, subdir).toString();
+        }
     }
 
     @NativeMethods

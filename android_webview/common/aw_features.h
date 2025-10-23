@@ -76,6 +76,8 @@ BASE_DECLARE_FEATURE(kWebViewCacheBoundaryInterfaceMethods);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);
 BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);
 BASE_DECLARE_FEATURE(kWebViewBypassProvisionalCookieManager);
+BASE_DECLARE_FEATURE(kWebViewPersistentMetricsInNoBackupDir);
+
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

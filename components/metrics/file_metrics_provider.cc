@@ -288,6 +288,9 @@ FileMetricsProvider::Params::Params(const base::FilePath& path,
                                     std::string_view prefs_key)
     : path(path), type(type), association(association), prefs_key(prefs_key) {}
 
+FileMetricsProvider::Params::Params(const FileMetricsProvider::Params&) =
+    default;
+
 FileMetricsProvider::Params::~Params() = default;
 
 FileMetricsProvider::FileMetricsProvider(PrefService* local_state, bool is_fre)

@@ -311,4 +311,9 @@ BASE_FEATURE(kWebViewMoveWorkToProviderInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewBypassProvisionalCookieManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, WebView stores the persistent metrics files in the
+// app's non-backed-up files directory instead of the app's data directory.
+BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

@@ -146,6 +146,7 @@ class FileMetricsProvider : public MetricsProvider,
            SourceType type,
            SourceAssociation association,
            std::string_view prefs_key = std::string_view());
+    Params(const Params&);
 
     ~Params();
 

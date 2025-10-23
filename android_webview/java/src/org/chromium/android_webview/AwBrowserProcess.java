@@ -114,6 +114,7 @@ public final class AwBrowserProcess {
     private static String sWebViewPackageName;
     private static @ApkType int sApkType;
     private static @Nullable String sProcessDataDirSuffix;
+    private static boolean sDataDirBasePathOverridden;
 
     /**
      * Loads the native library, and performs basic static construction of objects needed to run
@@ -145,6 +146,7 @@ public final class AwBrowserProcess {
             String processDataDirSuffix) {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
         sProcessDataDirSuffix = processDataDirSuffix;
+        sDataDirBasePathOverridden = (processDataDirBasePath != null);
         if (processDataDirSuffix == null) {
             PathUtils.setPrivateDirectoryPath(
                     processDataDirBasePath,
@@ -380,6 +382,10 @@ public final class AwBrowserProcess {
     @Nullable
     public static String getProcessDataDirSuffix() {
         return sProcessDataDirSuffix;
+    }
+
+    public static boolean isDataDirBasePathOverridden() {
+        return sDataDirBasePathOverridden;
     }
 
     public static void initializeApkType(ApplicationInfo info) {
