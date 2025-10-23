@@ -112,7 +112,7 @@ class ActorUiTabControllerInterface {
   RegisterActorTabIndicatorStateChangedCallback(
       ActorTabIndicatorStateChangedCallback callback) = 0;
   using ActorOverlayStateChangeCallback =
-      base::RepeatingCallback<void(bool, ActorOverlayState)>;
+      base::RepeatingCallback<void(bool, ActorOverlayState, base::OnceClosure)>;
   [[nodiscard]] virtual base::ScopedClosureRunner
   RegisterActorOverlayStateChange(ActorOverlayStateChangeCallback callback) = 0;
   using ActorOverlayBackgroundChangeCallback =

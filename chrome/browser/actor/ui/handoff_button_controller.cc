@@ -188,9 +188,11 @@ HandoffButtonController::HandoffButtonController(
 HandoffButtonController::~HandoffButtonController() = default;
 
 void HandoffButtonController::UpdateState(const HandoffButtonState& state,
-                                          bool is_visible) {
+                                          bool is_visible,
+                                          base::OnceClosure callback) {
   if (!state.is_active) {
     CloseButton(views::Widget::ClosedReason::kUnspecified);
+    std::move(callback).Run();
     return;
   }
   is_visible_ = is_visible;
@@ -224,6 +226,7 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   }
 
   UpdateVisibility();
+  std::move(callback).Run();
 }
 
 void HandoffButtonController::CreateAndShowButton(const std::u16string& text,

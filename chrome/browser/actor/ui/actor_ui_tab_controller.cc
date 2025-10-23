@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -166,23 +167,24 @@ ActorUiTabController::RegisterActorOverlayStateChange(
 }
 
 void ActorUiTabController::SetActorTabIndicatorVisibility(
-    bool should_show_tab_indicator) {
+    bool should_show_tab_indicator,
+    base::OnceClosure callback) {
   // When GLIC isn't enabled, we never set the tab indicator.
   // TODO(crbug.com/422538779) remove GLIC dependency once the ACTOR_ACCESSING
   // alert migrates away from the GLIC_ACCESSING resources.
 #if BUILDFLAG(ENABLE_GLIC)
-  if (should_show_actor_tab_indicator_ == should_show_tab_indicator) {
-    return;
-  }
-  should_show_actor_tab_indicator_ = should_show_tab_indicator;
-  if (on_actor_tab_indicator_changed_callback_) {
-    on_actor_tab_indicator_changed_callback_.Run(
-        should_show_actor_tab_indicator_);
-    // Notify tab strip model of state change.
-    tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
-        base::to_address(tab_), TabChangeType::kAll);
+  if (should_show_actor_tab_indicator_ != should_show_tab_indicator) {
+    should_show_actor_tab_indicator_ = should_show_tab_indicator;
+    if (on_actor_tab_indicator_changed_callback_) {
+      on_actor_tab_indicator_changed_callback_.Run(
+          should_show_actor_tab_indicator_);
+      // Notify tab strip model of state change.
+      tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
+          base::to_address(tab_), TabChangeType::kAll);
+    }
   }
 #endif
+  std::move(callback).Run();
   return;
 }
 
@@ -197,28 +199,36 @@ void ActorUiTabController::UpdateUi(UiResultCallback callback) {
   // TODO(crbug.com/447593256): Propagate errors when component update fails.
   // TODO(crbug.com/428216197): Only notify relevant UI components on change and
   // decouple visibility + state changes into 2 functions.
+  // TODO(crbug.com/454339982): Use ConcurrentCallback for each UI component to
+  // signal if their update was successful or not, rather than just signaling
+  // that the update is complete.
+  base::ConcurrentClosures concurrent_closures;
+  // Actor Overlay
   if (features::kGlicActorUiOverlay.Get() &&
       on_actor_overlay_state_changed_callback_) {
     on_actor_overlay_state_changed_callback_.Run(
-        ComputeActorOverlayVisibility(), current_ui_tab_state_.actor_overlay);
+        ComputeActorOverlayVisibility(), current_ui_tab_state_.actor_overlay,
+        concurrent_closures.CreateClosure());
   }
+  // Handoff Button
   if (features::kGlicActorUiHandoffButton.Get()) {
     handoff_button_controller_->UpdateState(
-        current_ui_tab_state_.handoff_button, ComputeHandoffButtonVisibility());
+        current_ui_tab_state_.handoff_button, ComputeHandoffButtonVisibility(),
+        concurrent_closures.CreateClosure());
   }
-
+  // Tab Indicator
   if (features::kGlicActorUiTabIndicator.Get()) {
-    SetActorTabIndicatorVisibility(current_ui_tab_state_.tab_indicator_visible);
+    SetActorTabIndicatorVisibility(current_ui_tab_state_.tab_indicator_visible,
+                                   concurrent_closures.CreateClosure());
   }
-
-  // Notify the TabGlow controllers.
+  // Border Glow
   if (features::kGlicActorUiBorderGlow.Get()) {
-    SetBorderGlowVisibility();
+    SetBorderGlowVisibility(concurrent_closures.CreateClosure());
   }
-  if (callback) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
-  }
+  // Once all UI components have been updated, we can run the final callback.
+  std::move(concurrent_closures)
+      .Done(callback ? base::BindOnce(std::move(callback), true)
+                     : base::DoNothing());
 }
 
 void ActorUiTabController::OnOmniboxFocusChanged(
@@ -260,13 +270,14 @@ void ActorUiTabController::OnImmersiveModeControllerDestroyed() {
   immersive_mode_observer_.Reset();
 }
 
-void ActorUiTabController::SetBorderGlowVisibility() {
+void ActorUiTabController::SetBorderGlowVisibility(base::OnceClosure callback) {
   if (auto* controller =
           ActorBorderViewController::From(tab_->GetBrowserWindowInterface())) {
     controller->SetGlowEnabled(
         base::to_address(tab_),
         current_ui_tab_state_.border_glow_visible && tab_->IsSelected());
   }
+  std::move(callback).Run();
 }
 
 bool ActorUiTabController::ComputeActorOverlayVisibility() {

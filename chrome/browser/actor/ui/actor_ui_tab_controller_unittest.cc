@@ -128,6 +128,9 @@ class ActorUiTabControllerTest : public testing::Test {
           loop.Quit();
         }));
     loop.Run();
+
+    SetUpDefaultHandoffButtonExpectations();
+    SetUpDefaultOverlayExpectations();
   }
 
   ActorKeyedServiceFake* actor_keyed_service() {
@@ -167,8 +170,43 @@ class ActorUiTabControllerTest : public testing::Test {
   }
 
  protected:
+  // Sets the default ON_CALL action for the mock handoff button controller.
+  // This ensures that any test calling UpdateState will automatically run the
+  // barrier closure, preventing timeouts.
+  void SetUpDefaultHandoffButtonExpectations() {
+    ON_CALL(*tab_controller_factory()->handoff_button_controller(),
+            UpdateState(_, _, _))
+        .WillByDefault(
+            [](const HandoffButtonState&, bool, base::OnceClosure callback) {
+              std::move(callback).Run();
+            });
+  }
+
+  // Subscribes a mock callback to overlay state changes and sets its default
+  // ON_CALL action. This ensures the barrier closure passed via the
+  // notification is always run, preventing timeouts.
+  void SetUpDefaultOverlayExpectations() {
+    overlay_subscription_ =
+        tab_controller()->RegisterActorOverlayStateChange(base::BindRepeating(
+            [](base::WeakPtr<ActorUiTabControllerTest> test, bool visibility,
+               ActorOverlayState state, base::OnceClosure callback) {
+              if (!test) {
+                return;
+              }
+              test->mock_overlay_callback_.Call(visibility, state,
+                                                std::move(callback));
+            },
+            weak_factory_.GetWeakPtr()));
+
+    ON_CALL(mock_overlay_callback_, Call(_, _, _))
+        .WillByDefault([](bool, ActorOverlayState, base::OnceClosure callback) {
+          std::move(callback).Run();
+        });
+  }
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  MockFunction<void(bool, ActorOverlayState, base::OnceClosure)>
+      mock_overlay_callback_;
 
  private:
   std::unique_ptr<TestingProfile> profile_;
@@ -187,6 +225,8 @@ class ActorUiTabControllerTest : public testing::Test {
   raw_ptr<MockActorUiTabControllerFactory> actor_ui_tab_controller_factory_ =
       nullptr;
   std::unique_ptr<ActorBorderViewController> border_view_controller_;
+  base::ScopedClosureRunner overlay_subscription_;
+  base::WeakPtrFactory<ActorUiTabControllerTest> weak_factory_{this};
 };
 
 TEST_F(ActorUiTabControllerTest, SetActorTaskStatePaused_SetsStateCorrectly) {
@@ -209,7 +249,7 @@ TEST_F(ActorUiTabControllerTest,
       true, HandoffButtonState::ControlOwnership::kActor);
   // Expect UpdateState to be called with is_visible set to true.
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
-              UpdateState(handoff_button_state, true));
+              UpdateState(handoff_button_state, true, _));
 
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
   tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
@@ -218,7 +258,7 @@ TEST_F(ActorUiTabControllerTest,
 TEST_F(ActorUiTabControllerTest,
        UpdateButtonVisibility_ButtonStaysVisibleWhenClientIsInControl) {
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
-              UpdateState(_, /*is_visible=*/true));
+              UpdateState(_, /*is_visible=*/true, _));
 
   HandoffButtonState client_control_state(
       true, HandoffButtonState::ControlOwnership::kClient);
@@ -263,7 +303,8 @@ TEST_F(ActorUiTabControllerTest, BorderGlowChangesOnUiTabStateChange) {
 
 TEST_F(ActorUiTabControllerTest, HandoffButtonHidesWhenInImmersiveMode) {
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
-              UpdateState(_, /*is_visible=*/false));
+              UpdateState(_, /*is_visible=*/false, _));
+
   ON_CALL(*immersive_mode_controller(), IsEnabled())
       .WillByDefault(Return(true));
   HandoffButtonState handoff_button_state(
@@ -283,7 +324,7 @@ TEST_F(ActorUiTabControllerTest,
   UiTabState ui_tab_state(actor_overlay_state, handoff_button_state);
 
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
-              UpdateState(handoff_button_state, /*is_visible=*/true));
+              UpdateState(handoff_button_state, /*is_visible=*/true, _));
 
   base::test::TestFuture<bool> future1;
   tab_controller()->OnUiTabStateChange(ui_tab_state, future1.GetCallback());
@@ -292,7 +333,7 @@ TEST_F(ActorUiTabControllerTest,
   // On second call, the callback should be run and the state shouldn't be
   // updated.
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
-              UpdateState(handoff_button_state, /*is_visible=*/true))
+              UpdateState(handoff_button_state, /*is_visible=*/true, _))
       .Times(0);
 
   base::test::TestFuture<bool> future2;
@@ -405,25 +446,26 @@ TEST_F(ActorUiTabControllerTest, RegisterNullCallbackDeathTest) {
 
 TEST_F(ActorUiTabControllerTest, RegisterCallbackWhileRegisteredDeathTest) {
   auto valid_overlay_state_cb =
-      base::BindRepeating([](bool, ActorOverlayState) {});
+      base::BindRepeating([](bool, ActorOverlayState, base::OnceClosure) {});
   auto valid_overlay_bg_cb = base::BindRepeating([](bool) {});
   auto valid_tab_indicator_cb = base::BindRepeating([](bool) {});
 
-  auto runner1 =
-      tab_controller()->RegisterActorOverlayStateChange(valid_overlay_state_cb);
+  // The test fixture's SetUpDefaultOverlayExpectations() method already
+  // registers a default overlay callback. This verifies that attempting to
+  // register a second callback triggers the CHECK failure.
   EXPECT_DEATH_IF_SUPPORTED(
       (void)tab_controller()->RegisterActorOverlayStateChange(
           valid_overlay_state_cb),
       "");
 
-  auto runner2 = tab_controller()->RegisterActorOverlayBackgroundChange(
+  auto runner1 = tab_controller()->RegisterActorOverlayBackgroundChange(
       valid_overlay_bg_cb);
   EXPECT_DEATH_IF_SUPPORTED(
       (void)tab_controller()->RegisterActorOverlayBackgroundChange(
           valid_overlay_bg_cb),
       "");
 
-  auto runner3 =
+  auto runner2 =
       tab_controller()->RegisterActorTabIndicatorStateChangedCallback(
           valid_tab_indicator_cb);
   EXPECT_DEATH_IF_SUPPORTED(
