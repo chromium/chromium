@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/component_updater/actor_safety_lists_component_installer.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
@@ -262,6 +263,8 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   RegisterProbabilisticRevealTokenComponent(cus);
+
+  RegisterActorSafetyListsComponent(cus, base::OnceClosure());
 }
 
 }  // namespace component_updater

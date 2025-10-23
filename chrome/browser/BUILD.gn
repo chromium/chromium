@@ -289,6 +289,8 @@ static_library("browser") {
     "command_updater_impl.h",
     "commerce/product_specifications/product_specifications_service_factory.cc",
     "commerce/product_specifications/product_specifications_service_factory.h",
+    "component_updater/actor_safety_lists_component_installer.cc",
+    "component_updater/actor_safety_lists_component_installer.h",
     "component_updater/afp_blocked_domain_list_component_installer.cc",
     "component_updater/afp_blocked_domain_list_component_installer.h",
     "component_updater/chrome_component_updater_configurator.cc",
