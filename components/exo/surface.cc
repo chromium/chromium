@@ -1531,11 +1531,8 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
         state_.per_commit_explicit_release_callback_) {
       state_.buffer->buffer()->SkipLegacyRelease();
     }
-    // TODO(crbug.com/421207623): These only two fields that might be preserved
-    // across calls. Preserving synchronization type is likely bug and we should
-    // move sync token inside.
-    auto prev_sync_token =
-        current_resource_.value_or(viz::TransferableResource()).sync_token();
+    // TODO(crbug.com/421207623): These only one field that might be preserved
+    // across calls and it's likely a bug.
     auto prev_synchronization_type =
         current_resource_.value_or(viz::TransferableResource())
             .synchronization_type;
@@ -1546,7 +1543,7 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
         window_->GetToplevelWindow()->GetProperty(
             kProtectedNativePixmapQueryDelegate),
         std::move(state_.per_commit_explicit_release_callback_),
-        prev_sync_token, prev_synchronization_type);
+        prev_synchronization_type);
 
     if (current_resource_) {
       current_resource_has_alpha_ =

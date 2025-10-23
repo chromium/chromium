@@ -74,10 +74,6 @@ const gfx::BufferUsage kDefaultBufferUsage = gfx::BufferUsage::GPU_READ;
 const gpu::SharedImageUsageSet kDefaultMappableSIUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-// Killswitch for fixing SyncToken issue.
-BASE_FEATURE(kExoAlwaysUseSyncTokenFromTexture,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Gets the color type of |format| for creating bitmap. If it returns
 // SkColorType::kUnknown_SkColorType, it means with this format, this buffer
 // contents should not be used to create bitmap.
@@ -590,7 +586,6 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     gfx::ColorSpace color_space,
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-    gpu::SyncToken prev_sync_token,
     viz::TransferableResource::SynchronizationType prev_synchronization_type) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
                GetBufferId());
@@ -630,13 +625,11 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   // Create a new image texture for |gpu_memory_buffer_handle_| if one doesn't
   // already exist. The contents of this buffer are copied to |texture| using a
   // call to CopyTexImage.
-  gpu::SyncToken sync_token = prev_sync_token;
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
         context_provider, &gpu_memory_buffer_handle_, format_, size_,
         color_space, query_type_, wait_for_release_delay_,
         is_overlay_candidate_);
-    sync_token = contents_texture_->sync_token();
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -682,18 +675,12 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     // raster/composite when the fence already signaled at this stage.
     if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
       contents_texture->UpdateSharedImage(std::move(acquire_fence));
-      sync_token = contents_texture->sync_token();
-    }
-
-    // TODO(crbug.com/369003507): Remove this post safe roll out and clean up
-    // `prev_sync_token` which will be not needed anymore.
-    if (base::FeatureList::IsEnabled(kExoAlwaysUseSyncTokenFromTexture)) {
-      sync_token = contents_texture->sync_token();
     }
 
     auto resource = viz::TransferableResource::Make(
         contents_texture_->shared_image(),
-        viz::TransferableResource::ResourceSource::kExoBuffer, sync_token,
+        viz::TransferableResource::ResourceSource::kExoBuffer,
+        contents_texture->sync_token(),
         {
             .is_overlay_candidate = is_overlay_candidate_,
         });
@@ -965,7 +952,6 @@ SolidColorBuffer::ProduceTransferableResource(
     gfx::ColorSpace color_space,
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-    gpu::SyncToken prev_sync_token,
     viz::TransferableResource::SynchronizationType prev_synchronization_type) {
   if (per_commit_explicit_release_callback) {
     std::move(per_commit_explicit_release_callback)

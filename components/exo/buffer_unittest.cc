@@ -98,7 +98,6 @@ TEST_F(BufferTest, ReleaseCallback) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               run_loop_2.QuitClosure()),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 
@@ -147,7 +146,6 @@ TEST_F(BufferTest, SolidColorReleaseCallback) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               base::DoNothing()),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   // Solid color buffer is immediately released after commit.
   EXPECT_EQ(release_resource_count, 1);
@@ -190,7 +188,6 @@ TEST_F(BufferTest, IsLost) {
             gfx::ColorSpace::CreateSRGB(), nullptr,
             test::CreateExplicitReleaseCallback(nullptr,
                                                 run_loop_1.QuitClosure()),
-            gpu::SyncToken(),
             viz::TransferableResource::SynchronizationType::kSyncToken);
     ASSERT_TRUE(resource);
 
@@ -222,7 +219,6 @@ TEST_F(BufferTest, IsLost) {
             gfx::ColorSpace::CreateSRGB(), nullptr,
             test::CreateExplicitReleaseCallback(nullptr,
                                                 run_loop_2.QuitClosure()),
-            gpu::SyncToken(),
             viz::TransferableResource::SynchronizationType::kSyncToken);
     ASSERT_TRUE(new_resource);
     buffer->OnDetach();
@@ -252,7 +248,6 @@ TEST_F(BufferTest, OnLostResources) {
       buffer->ProduceTransferableResource(
           frame_sink_holder->resource_manager(), nullptr, false,
           gfx::ColorSpace::CreateSRGB(), nullptr, base::DoNothing(),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 
@@ -300,7 +295,6 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               combined_quit_closure),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 
@@ -361,7 +355,6 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               combined_quit_closure),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 
@@ -473,7 +466,6 @@ TEST_F(BufferTest, SurfaceTreeHostNotReclaimCachedFrameResources) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               combined_quit_closure),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 
@@ -570,7 +562,6 @@ TEST_F(BufferTest, SurfaceTreeHostDiscardFrameNotReclaimNewFrameResources) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               combined_quit_closure),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 
@@ -649,7 +640,6 @@ TEST_F(BufferTest, SurfaceTreeHostDiscardFrameNotReclaimInUseResources) {
           gfx::ColorSpace::CreateSRGB(), nullptr,
           test::CreateExplicitReleaseCallback(&release_resource_count,
                                               combined_quit_closure),
-          gpu::SyncToken(),
           viz::TransferableResource::SynchronizationType::kSyncToken);
   ASSERT_TRUE(resource);
 

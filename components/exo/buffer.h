@@ -85,7 +85,6 @@ class Buffer {
       gfx::ColorSpace color_space,
       ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
       PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-      gpu::SyncToken prev_sync_token,
       viz::TransferableResource::SynchronizationType prev_synchronization_type);
 
   // This should be called when the buffer is attached to a Surface.
@@ -284,7 +283,6 @@ class SolidColorBuffer : public Buffer {
       gfx::ColorSpace color_space,
       ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
       PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-      gpu::SyncToken prev_sync_token,
       viz::TransferableResource::SynchronizationType prev_synchronization_type)
       override;
 
