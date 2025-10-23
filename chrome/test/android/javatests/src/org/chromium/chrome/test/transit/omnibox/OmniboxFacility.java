@@ -33,7 +33,6 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
             ACTION_CONTAINER.descendant(withId(R.id.delete_button));
     private final boolean mIncognito;
     private final FakeOmniboxSuggestions mFakeSuggestions;
-    public ViewElement<View> statusIconElement;
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> actionContainerElement;
     public ViewElement<View> micButtonElement;
@@ -49,10 +48,13 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
         declareView(instanceOf(ScrimView.class));
 
         // Unscoped elements exist in PageStations too.
+        //
         // Action buttons are 71% displayed in tablets (though the actual image is fully displayed).
+        //
+        // TODO(crbug.com/416324280): Add status icon back with id R.id.location_bar_status_icon as
+        // optional ViewElement.
         if (!mIncognito) {
             // Regular tab
-            statusIconElement = declareView(STATUS_ICON, ViewElement.unscopedOption());
             urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
             actionContainerElement =
                     declareView(
@@ -64,21 +66,11 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
                             ViewElement.newOptions().unscoped().displayingAtLeast(50).build());
             declareNoView(DELETE_BUTTON);
         } else {
-            if (mHostStation.getActivity().isTablet()) {
-                // Incognito tab in tablet
-                statusIconElement = declareView(STATUS_ICON, ViewElement.unscopedOption());
-                urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
-                declareNoView(ACTION_CONTAINER);
-                declareNoView(MIC_BUTTON);
-                declareNoView(DELETE_BUTTON);
-            } else {
-                // Incognito tab in phone
-                declareNoView(STATUS_ICON);
-                urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
-                declareNoView(ACTION_CONTAINER);
-                declareNoView(MIC_BUTTON);
-                declareNoView(DELETE_BUTTON);
-            }
+            // Incognito tab
+            urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
+            declareNoView(ACTION_CONTAINER);
+            declareNoView(MIC_BUTTON);
+            declareNoView(DELETE_BUTTON);
         }
     }
 
