@@ -41,7 +41,6 @@ class SharedURLLoaderFactory;
 
 namespace one_time_tokens {
 class OneTimeTokenService;
-class SmsOtpBackend;
 }  // namespace one_time_tokens
 
 namespace optimization_guide {
@@ -768,11 +767,6 @@ class AutofillClient {
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
-
-  // TODO(crbug.com/415273270) Remove this once the migration to the
-  // `OneTimeTokenService` is complete.
-  // May return null on platforms where no SmsOtpBackend is supported.
-  virtual one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const;
 
   // May return null on platforms where no OneTimeTokenService is supported.
   virtual one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const;

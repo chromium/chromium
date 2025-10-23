@@ -1352,18 +1352,6 @@ OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
   return otp_field_detector_.get();
 }
 
-one_time_tokens::SmsOtpBackend* ChromeAutofillClient::GetSmsOtpBackend() const {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAndroidSmsOtpFilling)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    return AndroidSmsOtpBackendFactory::GetForProfile(profile);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  return nullptr;
-}
-
 one_time_tokens::OneTimeTokenService*
 ChromeAutofillClient::GetOneTimeTokenService() const {
 #if BUILDFLAG(IS_ANDROID)

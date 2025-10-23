@@ -653,11 +653,10 @@ class TestAutofillClientTemplate : public T {
   }
 
   // Allows to return an injected SMS OTP backend which can be set using the
-  // `set_sms_otp_backend`. If no backend is injected, the test client will
-  // revert to the one provided by the real AutofillClient.
-  one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const override {
+  // `set_sms_otp_backend`. If no backend is injected, it'll return null.
+  one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const {
     return injected_sms_otp_backend_ ? injected_sms_otp_backend_.get()
-                                     : T::GetSmsOtpBackend();
+                                     : nullptr;
   }
 
   void set_sms_otp_backend(
