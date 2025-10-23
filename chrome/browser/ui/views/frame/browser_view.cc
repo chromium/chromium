@@ -4440,10 +4440,10 @@ void BrowserView::UpdateTabSearchBubbleHost() {
   if (features::HasTabSearchToolbarButton()) {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         toolbar_->tab_search_button(), browser_.get());
-    if (auto* controller = browser_->browser_window_features()
-                               ->tab_search_toolbar_button_controller()) {
-      controller->UpdateBubbleHost(tab_search_bubble_host_.get());
-    }
+    auto* controller = browser_->browser_window_features()
+                           ->tab_search_toolbar_button_controller();
+    CHECK(controller);
+    controller->UpdateBubbleHost(tab_search_bubble_host_.get());
   } else {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         BrowserElementsViews::From(browser_.get())
@@ -5272,6 +5272,13 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
       loading_bar_ = top_container_->AddChildView(
           std::make_unique<TopContainerLoadingBar>(browser_.get()));
       loading_bar_->SetWebContents(GetActiveWebContents());
+
+      // Do not show Tab Search toolbar button when WebUI Tab Strip is enabled.
+      if (auto* tab_search_toolbar_button_controller =
+              browser_->browser_window_features()
+                  ->tab_search_toolbar_button_controller()) {
+        tab_search_toolbar_button_controller->UpdateBubbleHost(nullptr);
+      }
     }
   } else if (webui_tab_strip_) {
     GetBrowserViewLayout()->set_webui_tab_strip(nullptr);
@@ -5281,18 +5288,19 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
     GetBrowserViewLayout()->set_loading_bar(nullptr);
     top_container_->RemoveChildView(loading_bar_);
     loading_bar_.ClearAndDelete();
+
+    // Show Tab Search pinned toolbar button when WebUI Tab Strip is disabled.
+    if (auto* tab_search_toolbar_button_controller =
+            browser_->browser_window_features()
+                ->tab_search_toolbar_button_controller()) {
+      tab_search_toolbar_button_controller->UpdateBubbleHost(
+          tab_search_bubble_host_.get());
+    }
   }
   GetBrowserViewLayout()->set_webui_tab_strip(webui_tab_strip_);
   GetBrowserViewLayout()->set_loading_bar(loading_bar_);
   if (toolbar_) {
     toolbar_->UpdateForWebUITabStrip();
-
-    // Do not show Tab Search bubble host when web ui tab strip is enabled.
-    if (auto* tab_search_toolbar_button_controller =
-            browser_->browser_window_features()
-                ->tab_search_toolbar_button_controller()) {
-      tab_search_toolbar_button_controller->UpdateBubbleHost(nullptr);
-    }
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }

@@ -505,17 +505,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       }
     }
 
-    if (features::HasTabSearchToolbarButton()) {
-      // TODO(crbug.com/360163254): We should really be using
-      // Browser::GetBrowserView, which always returns a non-null BrowserView
-      // in production, but this crashes during unittests using
-      // BrowserWithTestWindowTest; these should eventually be refactored.
-      if (browser_view) {
-        tab_search_toolbar_button_controller_ =
-            std::make_unique<TabSearchToolbarButtonController>(browser_view);
-      }
-    }
-
     if (browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
@@ -756,6 +745,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             .CreateInstance<
                 enterprise_data_protection::DataProtectionUIController>(
                 *browser_view->browser(), browser_view);
+
+    if (features::HasTabSearchToolbarButton()) {
+      tab_search_toolbar_button_controller_ =
+          std::make_unique<TabSearchToolbarButtonController>(browser_view);
+    }
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
