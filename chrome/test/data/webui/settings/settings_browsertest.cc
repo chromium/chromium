@@ -407,8 +407,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicPage) {
   RunTest("settings/glic_page_test.js", "runMochaSuite('GlicPage Default')");
 }
 
-// TODO(crbug.com/438908216): Flaky on at least Linux dbg.
-IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_GlicSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpage) {
   RunTest("settings/glic_subpage_test.js",
           "runMochaSuite('GlicSubpage Default')");
 }

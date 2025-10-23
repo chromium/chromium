@@ -239,17 +239,19 @@ suite('GlicSubpage', function() {
       assertFalse($<SettingsToggleButtonElement>('tabAccessToggle')!.checked);
     });
 
-    test('TabContextToggleChange', () => {
+    test('TabContextToggleChange', async () => {
       page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
       const tabAccessToggle = $<SettingsToggleButtonElement>('tabAccessToggle');
       assertTrue(!!tabAccessToggle);
 
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
+      await flushTasks();
       assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(tabAccessToggle.checked);
 
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
+      await flushTasks();
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(tabAccessToggle.checked);
     });
@@ -327,7 +329,7 @@ suite('GlicSubpage', function() {
       // Toggles should all have values from the real pref and be enabled.
       let toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(5, toggles.length);
+      assertEquals(6, toggles.length);
 
       await setDisallowedByAdminAndSimulateUpdate(true);
 
@@ -341,7 +343,7 @@ suite('GlicSubpage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button:not([checked])[disabled]');
-      assertEquals(4, toggles.length);
+      assertEquals(6, toggles.length);
 
       // Re-enable the policy, the page should go back to the initial state.
       await setDisallowedByAdminAndSimulateUpdate(false);
@@ -353,7 +355,7 @@ suite('GlicSubpage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(5, toggles.length);
+      assertEquals(6, toggles.length);
     });
 
     test('ManageActivityRow', async () => {
@@ -477,10 +479,13 @@ suite('GlicSubpage', function() {
             $<SettingsToggleButtonElement>('tabAccessToggle')!;
         assertTrue(!!tabAccessToggle);
 
-        tabAccessToggle.click();
+        tabAccessToggle.$.control.click();
+        await flushTasks();
         await verifyUserAction('Glic.Settings.TabContext.Enabled');
 
-        tabAccessToggle.click();
+
+        tabAccessToggle.$.control.click();
+        await flushTasks();
         await verifyUserAction('Glic.Settings.TabContext.Disabled');
       });
     });
