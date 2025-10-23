@@ -652,6 +652,18 @@ public class ProcessInitializationHandler {
      * the application.
      *
      * @param tasks The list where new tasks should be added.
+     * @param profile The profile associated with deferred tasks.
+     */
+    @CallSuper
+    protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks, Profile profile) {
+        addPerApplicationStartupDeferredTasks(tasks);
+    }
+
+    /**
+     * Adds all the deferred startup tasks that should be called exactly once for the lifetime of
+     * the application.
+     *
+     * @param tasks The list where new tasks should be added.
      */
     @CallSuper
     protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks) {
