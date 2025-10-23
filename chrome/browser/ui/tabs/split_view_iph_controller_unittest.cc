@@ -31,10 +31,13 @@ class SplitViewIphControllerTest : public ChromeRenderViewHostTestHarness {
         &mock_browser_window_interface_);
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &test_tab_strip_model_delegate_, profile());
+
     ON_CALL(mock_browser_window_interface_, GetTabStripModel())
         .WillByDefault(testing::Return(tab_strip_model_.get()));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(user_data_host_));
+    ON_CALL(mock_browser_window_interface_, GetProfile())
+        .WillByDefault(::testing::Return(profile()));
     user_education_.emplace(&mock_browser_window_interface_);
     ON_CALL(*user_education_, MaybeShowFeaturePromo(testing::_))
         .WillByDefault([](user_education::FeaturePromoParams params) {

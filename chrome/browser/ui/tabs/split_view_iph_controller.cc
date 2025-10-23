@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 DEFINE_USER_DATA(SplitViewIphController);
@@ -61,7 +63,16 @@ void SplitViewIphController::OnTabStripModelChanged(
       AddNewTabToTracker(active_tab);
     } else if (++tab_switch_count_ >=
                features::kSideBySideIphTabSwitchCount.Get()) {
-      MaybeShowPromo(feature_engagement::kIPHSideBySideTabSwitchFeature);
+      const bool is_split_view_pinned =
+          browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+              prefs::kPinSplitTabButton);
+
+      // Only attempt to show the promo when the split tabs toolbar button is
+      // not pinned, which would indicate the user has already used the split
+      // tabs feature.
+      if (!is_split_view_pinned) {
+        MaybeShowPromo(feature_engagement::kIPHSideBySideTabSwitchFeature);
+      }
     }
   }
 }
