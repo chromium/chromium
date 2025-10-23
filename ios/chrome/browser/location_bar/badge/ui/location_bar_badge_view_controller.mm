@@ -9,8 +9,11 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
@@ -171,6 +174,23 @@
       [self readerModeChipCoordinator:nil didSetReaderModeChipHidden:hidden];
       break;
   }
+}
+
+- (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  if (!config) {
+    return;
+  }
+
+  _buttonContainer.accessibilityLabel = config.accessibilityLabel;
+  if (config.accessibilityHint) {
+    _buttonContainer.accessibilityHint = config.accessibilityHint;
+  }
+
+  if (config.badgeText) {
+    _label.text = config.badgeText;
+  }
+
+  _badgeIcon.image = config.badgeImage;
 }
 
 #pragma mark - IncognitoBadgeViewVisibilityDelegate
@@ -527,34 +547,66 @@
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
-  if (!config) {
-    return;
+  if (IsAskGeminiChipEnabled()) {
+    NSString* accessibilityLabel =
+        base::SysUTF8ToNSString(config->accessibility_label);
+
+    UIImage* image;
+    switch (config->image_type) {
+      case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
+        image = DefaultSymbolWithPointSize(
+            base::SysUTF8ToNSString(config->entrypoint_image_name),
+            kBadgeSymbolPointSize);
+        break;
+      case ContextualPanelItemConfiguration::EntrypointImageType::Image:
+        image = CustomSymbolWithPointSize(
+            base::SysUTF8ToNSString(config->entrypoint_image_name),
+            kBadgeSymbolPointSize);
+        break;
+    }
+
+    LocationBarBadgeConfiguration* badgeConfig =
+        [[LocationBarBadgeConfiguration alloc]
+            initWithAccessibilityLabel:accessibilityLabel
+                            badgeImage:image];
+    badgeConfig.badgeText = base::SysUTF8ToNSString(config->entrypoint_message);
+
+    if (config->accessibility_hint.size() > 0) {
+      badgeConfig.accessibilityHint =
+          base::SysUTF8ToNSString(config->accessibility_hint);
+    }
+
+    [self setBadgeConfig:badgeConfig];
+  } else {
+    if (!config) {
+      return;
+    }
+
+    _buttonContainer.accessibilityLabel =
+        base::SysUTF8ToNSString(config->accessibility_label);
+    if (config->accessibility_hint.size() > 0) {
+      _buttonContainer.accessibilityHint =
+          base::SysUTF8ToNSString(config->accessibility_hint);
+    }
+
+    _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
+
+    UIImage* image;
+    switch (config->image_type) {
+      case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
+        image = DefaultSymbolWithPointSize(
+            base::SysUTF8ToNSString(config->entrypoint_image_name),
+            kBadgeSymbolPointSize);
+        break;
+      case ContextualPanelItemConfiguration::EntrypointImageType::Image:
+        image = CustomSymbolWithPointSize(
+            base::SysUTF8ToNSString(config->entrypoint_image_name),
+            kBadgeSymbolPointSize);
+        break;
+    }
+
+    _badgeIcon.image = image;
   }
-
-  _buttonContainer.accessibilityLabel =
-      base::SysUTF8ToNSString(config->accessibility_label);
-  if (config->accessibility_hint.size() > 0) {
-    _buttonContainer.accessibilityHint =
-        base::SysUTF8ToNSString(config->accessibility_hint);
-  }
-
-  _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
-
-  UIImage* image;
-  switch (config->image_type) {
-    case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
-      image = DefaultSymbolWithPointSize(
-          base::SysUTF8ToNSString(config->entrypoint_image_name),
-          kBadgeSymbolPointSize);
-      break;
-    case ContextualPanelItemConfiguration::EntrypointImageType::Image:
-      image = CustomSymbolWithPointSize(
-          base::SysUTF8ToNSString(config->entrypoint_image_name),
-          kBadgeSymbolPointSize);
-      break;
-  }
-
-  _badgeIcon.image = image;
 }
 
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {

@@ -17,6 +17,8 @@ source_set("ui") {
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/location_bar/ui_bundled:badges",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/location_bar/ui_bundled:metrics",

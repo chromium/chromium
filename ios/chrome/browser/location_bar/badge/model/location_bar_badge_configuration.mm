@@ -1,0 +1,25 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
+
+#import "base/check.h"
+
+@implementation LocationBarBadgeConfiguration
+
+#pragma mark - Public
+
+- (instancetype)initWithAccessibilityLabel:(NSString*)accessibilityLabel
+                                badgeImage:(UIImage*)image {
+  self = [super init];
+  if (self) {
+    CHECK(!self.accessibilityLabel);
+    CHECK(!self.badgeImage);
+    _accessibilityLabel = accessibilityLabel;
+    _badgeImage = image;
+  }
+  return self;
+}
+
+@end
