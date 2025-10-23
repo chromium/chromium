@@ -2371,6 +2371,9 @@ BASE_FEATURE(kStreamlineRendererInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSubSampleWindowProxyUsageMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSupportOpeningDraggedLinksInSameTab,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kThreadedBodyLoader, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreadedPreloadScanner, base::FEATURE_DISABLED_BY_DEFAULT);

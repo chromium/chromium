@@ -1753,6 +1753,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStreamlineRendererInit);
 // Subsample a very chatty UKM metric.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSubSampleWindowProxyUsageMetrics);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSupportOpeningDraggedLinksInSameTab);
+
 // If enabled, reads and decodes navigation body data off the main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 
