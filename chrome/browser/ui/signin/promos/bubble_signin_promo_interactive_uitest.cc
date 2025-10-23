@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -18,7 +15,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -30,11 +26,9 @@
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-#include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -61,7 +55,6 @@
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -73,9 +66,6 @@ using autofill::AddressSignInPromoView;
 using autofill::AutofillProfile;
 using autofill::ContentAutofillClient;
 using autofill::SaveAddressProfileView;
-
-using extensions::AccountExtensionTracker;
-using extensions::Extension;
 
 constexpr char kButton[] = "SignInButton";
 
@@ -98,8 +88,7 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kSyncEnableBookmarksInTransportMode,
-         switches::kChromeIdentitySurveySigninPromoBubbleDismissed,
-         syncer::kUnoPhase2FollowUp},
+         switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
         /*disabled_features=*/{});
   }
   void SetUpInProcessBrowserTestFixture() override {
@@ -145,9 +134,6 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
 
   // Trigger the address save bubble. This does not save the address yet.
   void TriggerSaveAddressBubble(const AutofillProfile& address);
-
-  // Add a local extension.
-  scoped_refptr<const Extension> InstallExtension();
 
   // Perform a sign in with the `access_point`.
   void SignIn(signin_metrics::AccessPoint access_point);
@@ -231,18 +217,6 @@ void BubbleSignInPromoInteractiveUITest::TriggerSaveAddressBubble(
       autofill::AutofillClient::SaveAddressBubbleType::kSave,
       base::BindOnce(&BubbleSignInPromoInteractiveUITest::SaveAddress,
                      base::Unretained(this)));
-}
-
-scoped_refptr<const Extension>
-BubbleSignInPromoInteractiveUITest::InstallExtension() {
-  base::FilePath test_data_dir;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-  test_data_dir = test_data_dir.AppendASCII("extensions");
-
-  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
-  extension_loader.set_pack_extension(true);
-  return extension_loader.LoadExtension(
-      test_data_dir.AppendASCII("simple_with_file"));
 }
 
 void BubbleSignInPromoInteractiveUITest::SignIn(
@@ -616,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       EnsureNotPresent(AddressSignInPromoView::kBubbleFrameViewId));
 
   // Check that there is no helper attached to the sign in tab, because the
-  // address was already moved.
+  // password was already moved.
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
                    *browser()->tab_strip_model()->GetActiveWebContents())
                    ->IsInitializedForTesting());
@@ -920,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       EnsureNotPresent(kBookmarkBubbleFrameViewId));
 
   // Check that there is no helper attached to the sign in tab, because the
-  // bookmark was already moved.
+  // password was already moved.
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
                    *browser()->tab_strip_model()->GetActiveWebContents())
                    ->IsInitializedForTesting());
@@ -1031,156 +1005,6 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
 }
-
-/////////////////////////////////////////////////////////////////
-///// Extension Sign in Promo
-
-IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
-                       ExtensionSignInPromoNoAccountPresent) {
-  base::HistogramTester histogram_tester;
-
-  // Install a local extension and trigger the extension bubble.
-  scoped_refptr<const Extension> extension = InstallExtension();
-  ASSERT_TRUE(extension);
-  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
-            AccountExtensionTracker::Get(browser()->profile())
-                ->GetAccountExtensionType(extension->id()));
-
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
-
-  // Click the sign in button.
-  RunTestSequence(
-      WaitForShow(kExtensionBubbleFrameViewId),
-      SetOnIncompatibleAction(
-          OnIncompatibleAction::kIgnoreAndContinue,
-          "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7068232"),
-      NameChildViewByType<views::MdTextButton>(
-          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
-      PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kExtensionBubbleFrameViewId));
-
-  // Check that clicking the sign in button navigated to a sign in page.
-  EXPECT_TRUE(IsSignInURL());
-
-  // Check that there is a helper attached to the sign in tab, because the
-  // extension still needs to be moved.
-  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
-                  *browser()->tab_strip_model()->GetActiveWebContents())
-                  ->IsInitializedForTesting());
-
-  // This would move the extension to account storage.
-  std::vector<syncer::LocalDataItemModel::DataId> items{extension->id()};
-  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::EXTENSIONS, items));
-
-  // Simulate a sign in event with the correct access point, which will move the
-  // extension to account storage.
-  SignIn(signin_metrics::AccessPoint::kExtensionInstallBubble);
-
-  // Check that the sign in was successful.
-  EXPECT_TRUE(IsSignedIn());
-
-  // Signin metrics - Offered/Started/Completed are recorded, but no values for
-  // WebSignin (WithDefault).
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Started",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
-
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
-                       ExtensionSignInPromoWithWebSignedInAccount) {
-  base::HistogramTester histogram_tester;
-
-  // Sign in with an account, but only on the web. The primary account is not
-  // set.
-  AccountInfo info = signin::MakeAccountAvailable(
-      identity_manager(),
-      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-          .WithCookie()
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build("test@email.com"));
-  ExtendAccountInfo(info);
-
-  // Install a local extension and trigger the extension bubble.
-  scoped_refptr<const Extension> extension = InstallExtension();
-  ASSERT_TRUE(extension);
-  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
-            AccountExtensionTracker::Get(browser()->profile())
-                ->GetAccountExtensionType(extension->id()));
-
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
-
-  // This would move the extension to account storage.
-  std::vector<syncer::LocalDataItemModel::DataId> items{extension->id()};
-  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::EXTENSIONS, items));
-
-  // Click the sign in button. This should directly sign the user in and move
-  // the extension to account storage.
-  ActivateSyncService();
-  RunTestSequence(
-      WaitForShow(kExtensionBubbleFrameViewId),
-      SetOnIncompatibleAction(
-          OnIncompatibleAction::kIgnoreAndContinue,
-          "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7068232"),
-      NameChildViewByType<views::MdTextButton>(
-          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
-      PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kExtensionBubbleFrameViewId));
-
-  // Check that there is no helper attached to the sign in tab, because the
-  // extension was already moved.
-  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
-                   *browser()->tab_strip_model()->GetActiveWebContents())
-                   ->IsInitializedForTesting());
-
-  // Check that the sign in was successful.
-  EXPECT_TRUE(IsSignedIn());
-
-  // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered.WithDefault",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
-  histogram_tester.ExpectBucketCount(
-      "Signin.WebSignin.SourceToChromeSignin",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-
-  histogram_tester.ExpectBucketCount(
-      "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
-}
-
-/////////////////////////////////////////////////////////////////
-///// Other tests
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        PasswordSignInPromoAccountDisallowedByPattern) {

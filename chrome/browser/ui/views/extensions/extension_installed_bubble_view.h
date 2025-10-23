@@ -16,8 +16,6 @@
 #include "extensions/common/extension.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
-
 // Provides feedback to the user upon successful installation of an
 // extension. Depending on the type of extension, the Bubble will
 // point to:

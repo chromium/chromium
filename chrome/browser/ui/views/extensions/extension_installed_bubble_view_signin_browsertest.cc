@@ -23,7 +23,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -35,11 +34,7 @@
 class ExtensionInstalledBubbleViewsSignInBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionInstalledBubbleViewsSignInBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
-  }
+  ExtensionInstalledBubbleViewsSignInBrowserTest() = default;
   ~ExtensionInstalledBubbleViewsSignInBrowserTest() override = default;
 
  protected:
@@ -104,9 +99,6 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
         syncer::LocalDataItemModel::DataId(extension->id()));
     delegate.OnSignIn(account_info);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that by default, signing in from the extension installed bubble will
