@@ -106,7 +106,7 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 }  // namespace
 
 struct FreezingPolicy::PageFreezingState
-    : public ExternalNodeAttachedDataImpl<PageFreezingState> {
+    : public NodeAttachedDataImpl<PageFreezingState> {
   explicit PageFreezingState(const PageNodeImpl*) {}
   ~PageFreezingState() override = default;
 

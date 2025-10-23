@@ -21,7 +21,7 @@ namespace performance_manager {
 namespace {
 
 class FakePageNodeDecoratorData
-    : public ExternalNodeAttachedDataImpl<FakePageNodeDecoratorData> {
+    : public NodeAttachedDataImpl<FakePageNodeDecoratorData> {
  public:
   explicit FakePageNodeDecoratorData(const PageNodeImpl* page_node) {}
 

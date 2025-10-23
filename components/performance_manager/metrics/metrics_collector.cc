@@ -60,7 +60,7 @@ void OnRendererDestroyed(const ProcessNode* process_node,
 }  // namespace
 
 class MetricsReportRecordHolder
-    : public ExternalNodeAttachedDataImpl<MetricsReportRecordHolder> {
+    : public NodeAttachedDataImpl<MetricsReportRecordHolder> {
  public:
   explicit MetricsReportRecordHolder(const PageNode* unused_page_node) {}
   ~MetricsReportRecordHolder() override = default;
@@ -68,7 +68,7 @@ class MetricsReportRecordHolder
 };
 
 class UkmCollectionStateHolder
-    : public ExternalNodeAttachedDataImpl<UkmCollectionStateHolder> {
+    : public NodeAttachedDataImpl<UkmCollectionStateHolder> {
  public:
   explicit UkmCollectionStateHolder(const PageNode* unused_page_node) {}
   ~UkmCollectionStateHolder() override = default;

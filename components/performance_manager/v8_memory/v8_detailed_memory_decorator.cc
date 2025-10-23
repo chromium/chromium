@@ -226,7 +226,7 @@ ExecutionContextAttachedData::GetOrCreateForTesting(
 // NodeAttachedProcessData
 
 class NodeAttachedProcessData
-    : public ExternalNodeAttachedDataImpl<NodeAttachedProcessData> {
+    : public NodeAttachedDataImpl<NodeAttachedProcessData> {
  public:
   explicit NodeAttachedProcessData(const ProcessNode* process_node);
   ~NodeAttachedProcessData() override = default;

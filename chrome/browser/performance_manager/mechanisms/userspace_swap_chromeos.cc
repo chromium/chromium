@@ -51,7 +51,7 @@ base::ByteCount g_swap_device_free_swap;
 // UserspaceSwapMechanismData contains process node specific details and
 // handles.
 class UserspaceSwapMechanismData
-    : public ExternalNodeAttachedDataImpl<UserspaceSwapMechanismData> {
+    : public NodeAttachedDataImpl<UserspaceSwapMechanismData> {
  public:
   explicit UserspaceSwapMechanismData(const ProcessNode* node) {}
   ~UserspaceSwapMechanismData() override = default;

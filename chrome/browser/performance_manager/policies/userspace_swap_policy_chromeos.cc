@@ -25,7 +25,7 @@ using ::ash::memory::userspace_swap::SwapFile;
 using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 
 class UserspaceSwapPolicyData
-    : public ExternalNodeAttachedDataImpl<UserspaceSwapPolicyData> {
+    : public NodeAttachedDataImpl<UserspaceSwapPolicyData> {
  public:
   explicit UserspaceSwapPolicyData(const ProcessNode* node) {}
   ~UserspaceSwapPolicyData() override = default;

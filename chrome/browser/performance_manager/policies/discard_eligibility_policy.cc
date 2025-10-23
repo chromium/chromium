@@ -31,8 +31,7 @@ BASE_FEATURE(kAllowDevtoolsConnectedDiscard, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // NodeAttachedData used to indicate that there's already been an attempt to
 // discard a PageNode.
-class DiscardAttemptMarker
-    : public ExternalNodeAttachedDataImpl<DiscardAttemptMarker> {
+class DiscardAttemptMarker : public NodeAttachedDataImpl<DiscardAttemptMarker> {
  public:
   explicit DiscardAttemptMarker(const PageNodeImpl* page_node) {}
   ~DiscardAttemptMarker() override = default;

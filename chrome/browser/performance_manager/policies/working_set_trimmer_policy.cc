@@ -27,8 +27,7 @@ namespace policies {
 
 namespace {
 
-class WorkingSetTrimData
-    : public ExternalNodeAttachedDataImpl<WorkingSetTrimData> {
+class WorkingSetTrimData : public NodeAttachedDataImpl<WorkingSetTrimData> {
  public:
   explicit WorkingSetTrimData(const ProcessNode* node) {}
   ~WorkingSetTrimData() override = default;
