@@ -20,11 +20,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -589,15 +589,20 @@ void RecordApiFunctions(DownloadsFunctionName function) {
                             DownloadsFunctionName::kDownloadsFunctionLast);
 }
 
+SortTypeMap& GetSortTypeMap() {
+  static base::NoDestructor<SortTypeMap> map;
+  return *map;
+}
+
 void CompileDownloadQueryOrderBy(const std::vector<std::string>& order_by_strs,
                                  std::string* error,
                                  DownloadQuery* query) {
-  // TODO(benjhayden): Consider switching from LazyInstance to explicit string
+  // TODO(benjhayden): Consider switching from NoDestructor to explicit string
   // comparisons.
-  static base::LazyInstance<SortTypeMap>::DestructorAtExit sorter_types =
-      LAZY_INSTANCE_INITIALIZER;
-  if (sorter_types.Get().empty())
-    InitSortTypeMap(sorter_types.Pointer());
+  SortTypeMap& sort_type_map = GetSortTypeMap();
+  if (sort_type_map.empty()) {
+    InitSortTypeMap(&sort_type_map);
+  }
 
   for (std::string_view term_str : order_by_strs) {
     if (term_str.empty())
@@ -607,8 +612,8 @@ void CompileDownloadQueryOrderBy(const std::vector<std::string>& order_by_strs,
       direction = DownloadQuery::DESCENDING;
       term_str = term_str.substr(1);
     }
-    SortTypeMap::const_iterator sorter_type = sorter_types.Get().find(term_str);
-    if (sorter_type == sorter_types.Get().end()) {
+    SortTypeMap::const_iterator sorter_type = sort_type_map.find(term_str);
+    if (sorter_type == sort_type_map.end()) {
       *error = download_extension_errors::kInvalidOrderBy;
       return;
     }
@@ -616,17 +621,22 @@ void CompileDownloadQueryOrderBy(const std::vector<std::string>& order_by_strs,
   }
 }
 
+FilterTypeMap& GetFilterTypeMap() {
+  static base::NoDestructor<FilterTypeMap> map;
+  return *map;
+}
+
 void RunDownloadQuery(const downloads::DownloadQuery& query_in,
                       DownloadManager* manager,
                       DownloadManager* incognito_manager,
                       std::string* error,
                       DownloadQuery::DownloadVector* results) {
-  // TODO(benjhayden): Consider switching from LazyInstance to explicit string
+  // TODO(benjhayden): Consider switching from NoDestructor to explicit string
   // comparisons.
-  static base::LazyInstance<FilterTypeMap>::DestructorAtExit filter_types =
-      LAZY_INSTANCE_INITIALIZER;
-  if (filter_types.Get().empty())
-    InitFilterTypeMap(filter_types.Pointer());
+  FilterTypeMap& filter_type_map = GetFilterTypeMap();
+  if (filter_type_map.empty()) {
+    InitFilterTypeMap(&filter_type_map);
+  }
 
   DownloadQuery query_out;
 
@@ -669,8 +679,8 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
 
   for (const auto query_json_field : query_in.ToValue()) {
     FilterTypeMap::const_iterator filter_type =
-        filter_types.Get().find(query_json_field.first);
-    if (filter_type != filter_types.Get().end()) {
+        filter_type_map.find(query_json_field.first);
+    if (filter_type != filter_type_map.end()) {
       if (!query_out.AddFilter(filter_type->second, query_json_field.second)) {
         *error = download_extension_errors::kInvalidFilter;
         return;
