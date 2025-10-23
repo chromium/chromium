@@ -59,7 +59,6 @@ class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
-class OnDeviceAssetManager;
 class OnDeviceModelAvailabilityObserver;
 class OptimizationGuideStore;
 class OptimizationGuideKeyedServiceBrowserTest;
@@ -399,13 +398,6 @@ class OptimizationGuideKeyedService
 
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
-
-  // Provides assets to optimization_guide_global_state_ from
-  // prediction_manager_. This *MUST* be destroyed before
-  // `optimization_guide_global_state_`, because it holds raw_ptrs to some of
-  // it's members.
-  std::unique_ptr<optimization_guide::OnDeviceAssetManager>
-      on_device_asset_manager_;
 
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>

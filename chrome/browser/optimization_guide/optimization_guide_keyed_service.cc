@@ -323,11 +323,6 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
         "HistorySearch");
   }
 
-  if (base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
-    on_device_asset_manager_ = GetGlobalState().CreateAssetManager(this);
-  }
-
   model_execution_manager_ =
       std::make_unique<optimization_guide::ModelExecutionManager>(
           url_loader_factory, IdentityManagerFactory::GetForProfile(profile),

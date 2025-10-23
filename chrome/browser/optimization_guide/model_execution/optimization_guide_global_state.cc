@@ -213,6 +213,8 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
   on_device_capability_.performance_classifier().ScheduleEvaluation();
+  asset_manager_ =
+      on_device_capability_.CreateAssetManager(&prediction_manager_);
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;

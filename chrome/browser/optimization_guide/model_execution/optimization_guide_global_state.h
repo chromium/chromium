@@ -54,17 +54,6 @@ class OptimizationGuideGlobalState final
 
   PredictionManager& prediction_manager() { return prediction_manager_; }
 
-  // Create a new asset manager to provide extra models/configs to the broker.
-  // TODO(holte): Make broker state own asset manager.
-  std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(
-      OptimizationGuideModelProvider* provider) {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return on_device_capability_.CreateAssetManager(provider);
-#else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return nullptr;
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
-
  private:
   friend base::RefCounted<OptimizationGuideGlobalState>;
 
@@ -80,6 +69,7 @@ class OptimizationGuideGlobalState final
   ModelBrokerState on_device_capability_;
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;
+  std::unique_ptr<OnDeviceAssetManager> asset_manager_;
 #elif BUILDFLAG(IS_ANDROID)
   ModelBrokerAndroid on_device_capability_;
 #else
