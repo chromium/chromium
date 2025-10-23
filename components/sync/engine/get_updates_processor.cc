@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
@@ -91,7 +92,9 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
   for (const sync_pb::SyncEntity& update : gu_response.entries()) {
     DataType type = GetDataTypeFromSpecifics(update.specifics());
     if (!IsRealDataType(type)) {
-      NOTREACHED() << "Received update with invalid type.";
+      DLOG(WARNING)
+          << "Received update for invalid or unspecified type, ignoring.";
+      continue;
     }
 
     auto it = updates_by_type->find(type);
@@ -319,8 +322,19 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   TypeToIndexMap progress_index_by_type;
   PartitionProgressMarkersByType(gu_response, gu_types,
                                  &progress_index_by_type);
+  // Verify that the response actually contained a progress marker for each
+  // requested data type. Note that `PartitionProgressMarkersByType()` will drop
+  // progress markers for types that weren't requested, so just comparing the
+  // counts is enough.
   if (gu_types.size() != progress_index_by_type.size()) {
-    NOTREACHED() << "Missing progress markers in GetUpdates response.";
+    for (DataType type : gu_types) {
+      if (progress_index_by_type.count(type) == 0) {
+        base::UmaHistogramEnumeration(
+            "Sync.MissingProgressMarkerInGetUpdatesResponse",
+            DataTypeHistogramValue(type));
+      }
+    }
+    return SyncerError::ProtocolViolationError();
   }
 
   TypeToIndexMap context_by_type;
