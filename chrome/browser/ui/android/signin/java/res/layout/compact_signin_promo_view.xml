@@ -17,7 +17,8 @@ found in the LICENSE file.
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="12dp">
 
     <RelativeLayout
       android:layout_width="match_parent"
@@ -101,7 +102,6 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
       android:layout_marginEnd="16dp"
-      android:layout_marginBottom="12dp"
       android:ellipsize="end"
       android:singleLine="true"
       android:text="@string/sync_promo_continue_as" />
