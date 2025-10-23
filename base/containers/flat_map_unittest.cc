@@ -14,6 +14,7 @@
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 // A flat_map is basically a interface to flat_tree. So several basic
 // operations are tested to make sure things are set up properly, but the bulk
@@ -474,6 +475,22 @@ TEST(FlatMap, DeductionGuides) {
     flat_map map(std::move(v));
     static_assert(std::is_same_v<decltype(map), flat_map<int, float>>);
   }
+}
+
+TEST(FlatMap, AbslHashValue) {
+  enum class Word { kCabbage, kLettuce, kKale };
+  using Map = flat_map<Word, std::string>;
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      // These two are identical.
+      Map({{Word::kCabbage, "green"}, {Word::kLettuce, "green"}}),
+      Map({{Word::kCabbage, "green"}, {Word::kLettuce, "green"}}),
+      // `flat_map` is ordered, so this is also identical.
+      Map({{Word::kLettuce, "green"}, {Word::kCabbage, "green"}}),
+      // Different content.
+      Map({{Word::kKale, "green"}, {Word::kLettuce, "green"}}),
+      Map({}),
+      Map({{Word::kCabbage, "purple"}, {Word::kLettuce, "green"}}),
+  }));
 }
 
 }  // namespace base

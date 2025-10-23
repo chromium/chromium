@@ -349,7 +349,7 @@ class flat_tree {
   // Implementation note: currently we use operator==() and operator<() on
   // std::vector, because they have the same contract we need, so we use them
   // directly for brevity and in case it is more optimal than calling equal()
-  // and lexicograhpical_compare(). If the underlying container type is changed,
+  // and lexicographical_compare(). If the underlying container type is changed,
   // this code may need to be modified.
 
   void swap(flat_tree& other) noexcept;
@@ -363,6 +363,28 @@ class flat_tree {
   }
 
   friend void swap(flat_tree& lhs, flat_tree& rhs) noexcept { lhs.swap(rhs); }
+
+  // This type should be hashable by Abseil if the contained type(s) are.
+  template <typename H>
+    requires requires(H h, const value_type& value) {
+      { H::combine(std::move(h), value) } -> std::same_as<H>;
+    }
+  friend H AbslHashValue(H h, const flat_tree& tree) {
+    // Usually Container is contiguous, which allows us to use a faster hash
+    // algorithm.
+    if constexpr (std::ranges::contiguous_range<Container>) {
+      auto size = std::ranges::size(tree.body_);
+      return H::combine(H::combine_contiguous(
+                            std::move(h), std::ranges::data(tree.body_), size),
+                        size);
+    }
+
+    for (const auto& value : tree) {
+      h = H::combine(std::move(h), value);
+    }
+    h = H::combine(std::move(h), tree.size());
+    return h;
+  }
 
  protected:
   // Emplaces a new item into the tree that is known not to be in it. This
