@@ -106,6 +106,7 @@ TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
   tampered_prefs.Append(prefs::kShowHomeButton);
   tampered_prefs.Append(prefs::kHomePage);
   tampered_prefs.Append(prefs::kPinnedTabs);
+  tampered_prefs.Append("extensions.settings.EXTENSIONTESTID789");
   profile()->GetPrefs()->SetList(user_prefs::kTrackedPreferencesReset,
                                  std::move(tampered_prefs));
 
@@ -121,21 +122,22 @@ TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
   const base::Value::List* result_list = call_data.arg3()->GetIfList();
   ASSERT_TRUE(result_list);
 
-  ASSERT_EQ(4U, result_list->size());
+  ASSERT_EQ(5U, result_list->size());
 
   std::set<std::string> results;
   for (const auto& value : *result_list) {
     results.insert(value.GetString());
   }
 
-  EXPECT_TRUE(
-      results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_SEARCH_ENGINES)));
+  EXPECT_TRUE(results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_RESET_DSE)));
   EXPECT_TRUE(
       results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_SHOW_HOME_BUTTON)));
   EXPECT_TRUE(
       results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_RESET_HOMEPAGE)));
   EXPECT_TRUE(
       results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_RESET_PINNED_TABS)));
+  EXPECT_TRUE(
+      results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_RESET_EXTENSIONS)));
 }
 
 TEST_F(ResetSettingsHandlerV2Test,

@@ -232,7 +232,7 @@ void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
     if (*pref_path ==
         DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
       changed_settings.insert(
-          l10n_util::GetStringUTF16(IDS_SETTINGS_SEARCH_ENGINES));
+          l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_DSE));
     } else if (*pref_path == prefs::kShowHomeButton) {
       changed_settings.insert(
           l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_HOME_BUTTON));
@@ -242,7 +242,8 @@ void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
     } else if (*pref_path == prefs::kPinnedTabs) {
       changed_settings.insert(
           l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_PINNED_TABS));
-    } else if (*pref_path == extensions::pref_names::kExtensions) {
+    } else if (base::StartsWith(*pref_path,
+                                extensions::pref_names::kExtensions)) {
       changed_settings.insert(
           l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_EXTENSIONS));
     }
