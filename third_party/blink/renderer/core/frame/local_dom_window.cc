@@ -719,7 +719,8 @@ void LocalDOMWindow::ReportPotentialPermissionsPolicyViolation(
     ReportingContext::From(this)->QueueReport(report);
   }
 
-  if (disposition == mojom::blink::PolicyDisposition::kEnforce) {
+  if (disposition == mojom::blink::PolicyDisposition::kEnforce &&
+      !reporting_endpoint.empty()) {
     GetFrame()->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kViolation,
         mojom::blink::ConsoleMessageLevel::kError, body->message()));
