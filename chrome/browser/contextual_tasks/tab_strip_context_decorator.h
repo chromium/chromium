@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_TAB_STRIP_CONTEXT_DECORATOR_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_TAB_STRIP_CONTEXT_DECORATOR_H_
 
+#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/contextual_tasks/public/context_decorator.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 
 class Profile;
 
@@ -21,6 +23,7 @@ struct ContextualTaskContext;
 // currently open in the tab strip.
 class TabStripContextDecorator : public ContextDecorator {
  public:
+  // Represents a tab in the tab strip.
   struct TabInfo {
     GURL url;
     std::u16string title;
@@ -39,6 +42,7 @@ class TabStripContextDecorator : public ContextDecorator {
           context_callback) override;
 
  protected:
+  // Virtual for testing.
   virtual std::vector<TabInfo> GetOpenTabUrls();
 
  private:

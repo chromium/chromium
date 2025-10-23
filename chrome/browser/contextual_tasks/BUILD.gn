@@ -81,6 +81,8 @@ source_set("impl") {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//components/url_deduplication",
+      "//components/visited_url_ranking/public",
     ]
   }
 }

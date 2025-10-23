@@ -71,4 +71,40 @@ TEST_F(TabStripContextDecoratorTest, DecorateContextWithOpenTabs) {
   EXPECT_TRUE(attachment2_data.title.empty());
 }
 
+TEST_F(TabStripContextDecoratorTest, DecorateContextWithDeduplicatedUrls) {
+  const GURL kOpenUrl("https://www.google.com");
+  const std::u16string kOpenTitle = u"Google";
+  const GURL kSemanticallySimilarUrl("https://google.com");
+  const GURL kClosedUrl("https://www.youtube.com");
+  const std::u16string kClosedTitle = u"YouTube";
+
+  TestTabStripContextDecorator decorator;
+  decorator.SetOpenTabUrls({{kOpenUrl, kOpenTitle}});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  task.AddUrlResource(
+      UrlResource(base::Uuid::GenerateRandomV4(), kSemanticallySimilarUrl));
+  task.AddUrlResource(UrlResource(base::Uuid::GenerateRandomV4(), kClosedUrl));
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
+  decorator.DecorateContext(std::move(context), future.GetCallback());
+
+  auto decorated_context = future.Take();
+  ASSERT_TRUE(decorated_context);
+
+  auto& attachments = decorated_context->GetMutableUrlAttachmentsForTesting();
+  ASSERT_EQ(attachments.size(), 2u);
+
+  auto& attachment1_data =
+      attachments[0].GetMutableDecoratorDataForTesting().tab_strip_data;
+  EXPECT_TRUE(attachment1_data.is_open_in_tab_strip);
+  EXPECT_EQ(attachment1_data.title, kOpenTitle);
+
+  auto& attachment2_data =
+      attachments[1].GetMutableDecoratorDataForTesting().tab_strip_data;
+  EXPECT_FALSE(attachment2_data.is_open_in_tab_strip);
+  EXPECT_TRUE(attachment2_data.title.empty());
+}
+
 }  // namespace contextual_tasks
