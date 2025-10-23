@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -102,12 +103,11 @@ Index& GetTrigramIndex() {
 }
 
 TrigramChar TrigramCharForChar(char c) {
-  static TrigramChar* trigram_chars = nullptr;
-  if (!trigram_chars) {
-    trigram_chars = new TrigramChar[256];
+  static const auto trigram_chars = []() {
+    std::array<TrigramChar, 256> chars;
     for (size_t i = 0; i < 256; ++i) {
       if (i > 127) {
-        UNSAFE_TODO(trigram_chars[i]) = kUndefinedTrigramChar;
+        chars[i] = kUndefinedTrigramChar;
         continue;
       }
       char ch = static_cast<char>(i);
@@ -118,12 +118,12 @@ TrigramChar TrigramCharForChar(char c) {
 
       bool is_binary_char = ch < 9 || (ch >= 14 && ch < 32) || ch == 127;
       if (is_binary_char) {
-        UNSAFE_TODO(trigram_chars[i]) = kBinaryTrigramChar;
+        chars[i] = kBinaryTrigramChar;
         continue;
       }
 
       if (ch < ' ') {
-        UNSAFE_TODO(trigram_chars[i]) = kUndefinedTrigramChar;
+        chars[i] = kUndefinedTrigramChar;
         continue;
       }
 
@@ -132,11 +132,12 @@ TrigramChar TrigramCharForChar(char c) {
       ch -= ' ';
       char signed_trigram_count = static_cast<char>(kTrigramCharacterCount);
       CHECK(ch >= 0 && ch < signed_trigram_count);
-      UNSAFE_TODO(trigram_chars[i]) = ch;
+      chars[i] = ch;
     }
-  }
+    return chars;
+  }();
   unsigned char uc = static_cast<unsigned char>(c);
-  return UNSAFE_TODO(trigram_chars[uc]);
+  return trigram_chars[uc];
 }
 
 Trigram TrigramAtIndex(const vector<TrigramChar>& trigram_chars, size_t index) {
@@ -199,11 +200,10 @@ void Index::SetTrigramsForFile(const FilePath& file_path,
 vector<FilePath> Index::Search(const string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureInitialized();
-  const char* data = query.c_str();
   vector<TrigramChar> trigram_chars;
   trigram_chars.reserve(query.size());
   for (size_t i = 0; i < query.size(); ++i) {
-    TrigramChar trigram_char = TrigramCharForChar(UNSAFE_TODO(data[i]));
+    TrigramChar trigram_char = TrigramCharForChar(query[i]);
     if (trigram_char == kBinaryTrigramChar)
       trigram_char = kUndefinedTrigramChar;
     trigram_chars.push_back(trigram_char);
