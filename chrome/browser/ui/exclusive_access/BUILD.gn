@@ -53,6 +53,7 @@ source_set("exclusive_access") {
     "//components/input",
     "//components/permissions:permissions_common",
     "//components/prefs",
+    "//components/safe_browsing/content/browser:safe_browsing_service",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
     "//services/metrics/public/cpp:gen_ukm_builders",
@@ -73,7 +74,6 @@ source_set("exclusive_access") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/ui/blocked_content",
-      "//components/safe_browsing/content/browser:safe_browsing_service",
     ]
   }
 }
