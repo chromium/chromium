@@ -1298,7 +1298,7 @@
     "owners": [
       "awillia@chromium.org"
     ],
-    "expiry_milestone": 143
+    "expiry_milestone": 147
   },
   {
     "name": "block-root-window-accessible-name-change-event",
