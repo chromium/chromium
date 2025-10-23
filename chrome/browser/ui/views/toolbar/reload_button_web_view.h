@@ -21,7 +21,7 @@ class BrowserWindowInterface;
 namespace views {
 class MenuRunner;
 class WebView;
-}
+}  // namespace views
 
 // A view that displays the reload button as a WebView.
 class ReloadButtonWebView : public views::View,
@@ -55,11 +55,15 @@ class ReloadButtonWebView : public views::View,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  void UpdateAccessibleHasPopup();
+  void SetReloadButtonUIState();
+
   raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;
   const raw_ptr<chrome::BrowserCommandController> controller_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   bool is_menu_enabled_ = false;
+  ReloadControl::Mode mode_ = ReloadControl::Mode::kReload;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_WEB_VIEW_H_

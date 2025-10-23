@@ -32,7 +32,11 @@ interface PageHandler {
 // Called from C++ side of chrome://reload-button.top-chrome
 // (Browser -> Renderer)
 interface Page {
-  // Sets the loading state in the renderer, the renderer is expected to make
-  // UI changes accordingly.
-  SetLoadingState(bool is_loading);
+  // Sets the reload button state in the renderer, the renderer is expected to
+  // make UI changes accordingly.
+  // `is_loading` indicates if the page is loading. If so, the button should be
+  // displayed as "stop loading"; otherwise the button should be "reload".
+  // `is_menu_enabled` indicates if the context menu is enabled for the reload
+  // button.
+  SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 };

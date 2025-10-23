@@ -7,23 +7,28 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 ReloadButtonWebView::ReloadButtonWebView(
@@ -54,13 +59,24 @@ ReloadButtonWebView::ReloadButtonWebView(
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  UpdateAccessibleHasPopup();
+  SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
+  SetID(VIEW_ID_RELOAD_BUTTON);
+  SetReloadButtonUIState();
 }
 
 ReloadButtonWebView::~ReloadButtonWebView() = default;
 
 void ReloadButtonWebView::ChangeMode(ReloadControl::Mode mode, bool force) {
-  CHECK(reload_button_ui_);
-  reload_button_ui_->SetLoadingState(mode == ReloadControl::Mode::kStop, force);
+  // TODO(crbug.com/444358999): Now the mode is always updated immediately from
+  // the browser side, then a mojo IPC is sent to the renderer to make the
+  // change accordingly. We may need to implement the timer/force updating logic
+  // in the future.
+  mode_ = mode;
+  SetReloadButtonUIState();
 }
 
 views::View* ReloadButtonWebView::GetAsViewClassForTesting() {
@@ -73,7 +89,8 @@ bool ReloadButtonWebView::GetMenuEnabled() const {
 
 void ReloadButtonWebView::SetMenuEnabled(bool is_menu_enabled) {
   is_menu_enabled_ = is_menu_enabled;
-  // TODO(crbug.com/444358999): implement tooltips and accessibility.
+  UpdateAccessibleHasPopup();
+  SetReloadButtonUIState();
 }
 
 bool ReloadButtonWebView::HandleContextMenu(
@@ -110,6 +127,18 @@ bool ReloadButtonWebView::GetAcceleratorForCommandId(
 void ReloadButtonWebView::ExecuteCommand(int command_id, int event_flags) {
   controller_->ExecuteCommandWithDisposition(
       command_id, ui::DispositionFromEventFlags(event_flags));
+}
+
+void ReloadButtonWebView::UpdateAccessibleHasPopup() {
+  GetViewAccessibility().SetHasPopup((is_menu_enabled_ && menu_model_)
+                                         ? ax::mojom::HasPopup::kMenu
+                                         : ax::mojom::HasPopup::kNone);
+}
+
+void ReloadButtonWebView::SetReloadButtonUIState() {
+  CHECK(reload_button_ui_);
+  reload_button_ui_->SetReloadButtonState(
+      /*is_loading=*/mode_ == ReloadControl::Mode::kStop, is_menu_enabled_);
 }
 
 BEGIN_METADATA(ReloadButtonWebView)

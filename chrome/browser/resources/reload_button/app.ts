@@ -5,19 +5,32 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 
+const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
+    'reloadButtonTooltipReloadWithMenu';
+const RELOAD_BUTTON_TOOLTIP_RELOAD = 'reloadButtonTooltipReload';
+const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
+
 export class ReloadButtonAppElement extends CrLitElement {
   constructor() {
     super();
-    BrowserProxyImpl.getInstance().callbackRouter.setLoadingState.addListener(
-        (isLoading: boolean) => {
+    const callbackRouter = BrowserProxyImpl.getInstance().callbackRouter;
+    callbackRouter.setReloadButtonState.addListener(
+        (isLoading: boolean, isMenuEnabled: boolean) => {
           this.isLoading_ = isLoading;
+          this.tooltip_ = loadTimeData.getString(
+              isLoading ?
+                  RELOAD_BUTTON_TOOLTIP_STOP :
+                  (isMenuEnabled ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
+                                   RELOAD_BUTTON_TOOLTIP_RELOAD));
         });
   }
 
@@ -36,10 +49,13 @@ export class ReloadButtonAppElement extends CrLitElement {
   static override get properties() {
     return {
       isLoading_: {state: true, type: Boolean},
+      tooltip_: {state: true, type: String},
     };
   }
 
   protected accessor isLoading_: boolean = false;
+  protected accessor tooltip_: string =
+      loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
 
   // TODO(crbug.com/444358999): implement the reload logic
   protected onReloadOrStopClick_(e: MouseEvent) {

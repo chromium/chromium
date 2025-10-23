@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/reload_button_resources.h"
 #include "chrome/grit/reload_button_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -21,6 +22,12 @@ ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIReloadButtonHost);
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"reloadButtonTooltipReloadWithMenu", IDS_TOOLTIP_RELOAD_WITH_MENU},
+      {"reloadButtonTooltipReload", IDS_TOOLTIP_RELOAD},
+      {"reloadButtonTooltipStop", IDS_TOOLTIP_STOP}};
+  source->AddLocalizedStrings(kStrings);
 
   webui::SetupWebUIDataSource(source, kReloadButtonResources,
                               IDR_RELOAD_BUTTON_RELOAD_BUTTON_HTML);
@@ -45,9 +52,10 @@ void ReloadButtonUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void ReloadButtonUI::SetLoadingState(bool is_loading, bool force) {
+void ReloadButtonUI::SetReloadButtonState(bool is_loading,
+                                          bool is_menu_enabled) {
   if (page_handler_) {
-    page_handler_->SetLoadingState(is_loading, force);
+    page_handler_->SetReloadButtonState(is_loading, is_menu_enabled);
   }
 }
 

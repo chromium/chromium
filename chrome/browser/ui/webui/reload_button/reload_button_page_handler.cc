@@ -34,8 +34,9 @@ void ReloadButtonPageHandler::StopReload() {
   command_updater_->ExecuteCommand(IDC_STOP);
 }
 
-void ReloadButtonPageHandler::SetLoadingState(bool is_loading, bool force) {
+void ReloadButtonPageHandler::SetReloadButtonState(bool is_loading,
+                                                   bool is_menu_enabled) {
   if (page_) {
-    page_->SetLoadingState(is_loading);
+    page_->SetReloadButtonState(is_loading, is_menu_enabled);
   }
 }
