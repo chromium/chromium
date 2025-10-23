@@ -34,7 +34,6 @@ SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceCodeIntegrity);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxNoFakeGdiInit);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(
     kWinSboxRestrictCoreSharingOnRenderer);
-SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxParallelProcessLaunch);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kEnableCsrssLockdown);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxStrictHandleChecks);
 #endif  // BUILDFLAG(IS_WIN)
@@ -70,10 +69,6 @@ SANDBOX_POLICY_EXPORT bool IsNetworkSandboxSupported();
 // calling ContentBrowserClient::ShouldSandboxNetworkService().
 SANDBOX_POLICY_EXPORT bool IsNetworkSandboxEnabled();
 
-#if BUILDFLAG(IS_WIN)
-// Returns whether parallel launching is enabled.
-SANDBOX_POLICY_EXPORT bool IsParallelLaunchEnabled();
-#endif  // BUILDFLAG(IS_WIN)
 }  // namespace sandbox::policy::features
 
 #endif  // SANDBOX_POLICY_FEATURES_H_

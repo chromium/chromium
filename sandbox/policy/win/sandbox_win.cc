@@ -816,10 +816,6 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
 
 class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
  public:
-  bool ParallelLaunchEnabled() override {
-    return features::IsParallelLaunchEnabled();
-  }
-
   void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,

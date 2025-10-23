@@ -59,8 +59,7 @@ class [[clang::lto_visibility_public]] BrokerServices {
       void(base::win::ScopedProcessInformation, DWORD, ResultCode)>;
 
   // Initializes the broker. Must be called before any other on this class.
-  // The `delegate` configures parallel or synchronous process launching, and
-  // implements tracing callbacks.
+  // The `delegate` configures parallel process launching callbacks.
   // returns ALL_OK if successful. All other return values imply failure. If the
   // return is ERROR_GENERIC, you can call ::GetLastError() to get more
   // information.
@@ -125,8 +124,7 @@ class [[clang::lto_visibility_public]] BrokerServices {
   //     process handle and PID just as if CreateProcess() had been called. The
   //     caller is responsible for closing the handles returned in this
   //     structure.
-  // Target creation happens on the thread pool when parallel launching is
-  // enabled (controlled by BrokerServicesDelegate).
+  // Target creation happens on the thread pool.
   virtual void SpawnTargetAsync(const wchar_t* exe_path,
                                 const wchar_t* command_line,
                                 std::unique_ptr<TargetPolicy> policy,
@@ -265,26 +263,21 @@ struct [[clang::lto_visibility_public]] CreateTargetResult {
   ResultCode result_code = SBOX_ALL_OK;
 };
 
-// This class configures BrokerServices to use parallel or synchronous process
-// launching, and provides callbacks for implementing tracing.
+// This class configures provides callbacks for implementing parallel launch.
 class [[clang::lto_visibility_public]] BrokerServicesDelegate {
  public:
-  // Returns true if parallel launching is enabled, otherwise synchronous
-  // launching is used.
-  virtual bool ParallelLaunchEnabled() = 0;
   // This method runs `task` on the thread pool, then runs `reply` on the
-  // calling sequence with the returned CreateTargetResult. This method must be
-  // implemented if ParallelLaunchEnabled() can return true.
+  // calling sequence with the returned CreateTargetResult.
   virtual void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
       base::OnceCallback<void(CreateTargetResult)> reply) = 0;
-  // Called before a target process is created. If parallel launching is
-  // enabled, this will be called on the thread pool.
+  // Called before a target process is created. This will be called on the
+  // thread pool.
   virtual void BeforeTargetProcessCreateOnCreationThread(
       const void* trace_id) = 0;
-  // Called after a target process is created. If parallel launching is enabled,
-  // this will be called on the thread pool.
+  // Called after a target process is created. This will be called on the thread
+  // pool.
   virtual void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                         DWORD process_id) = 0;
 

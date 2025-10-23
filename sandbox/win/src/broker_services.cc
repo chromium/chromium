@@ -8,10 +8,12 @@
 
 #include <optional>
 #include <utility>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/access_token.h"
 #include "base/win/current_module.h"
@@ -500,25 +502,15 @@ void BrokerServicesBase::SpawnTargetAsyncImpl(
     return;
   }
 
-  if (broker_services_delegate_->ParallelLaunchEnabled()) {
-    TargetProcess* target_ptr = target.get();
-    broker_services_delegate_->ParallelLaunchPostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&BrokerServicesBase::CreateTarget,
-                       base::Unretained(this), target_ptr,
-                       std::wstring(exe_path), std::wstring(command_line),
-                       std::move(startup_info)),
-        base::BindOnce(&BrokerServicesBase::FinishSpawnTarget,
-                       base::Unretained(this), std::move(policy_base),
-                       std::move(target), std::move(result_callback)));
-    return;
-  }
-
-  CreateTargetResult target_result = CreateTarget(
-      target.get(), exe_path, command_line, std::move(startup_info));
-
-  FinishSpawnTarget(std::move(policy_base), std::move(target),
-                    std::move(result_callback), std::move(target_result));
+  TargetProcess* target_ptr = target.get();
+  broker_services_delegate_->ParallelLaunchPostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&BrokerServicesBase::CreateTarget, base::Unretained(this),
+                     target_ptr, std::wstring(exe_path),
+                     std::wstring(command_line), std::move(startup_info)),
+      base::BindOnce(&BrokerServicesBase::FinishSpawnTarget,
+                     base::Unretained(this), std::move(policy_base),
+                     std::move(target), std::move(result_callback)));
 }
 
 CreateTargetResult BrokerServicesBase::CreateTarget(

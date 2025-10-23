@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -141,15 +142,15 @@ std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
 // to use synchronous launching.
 class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
  public:
-  bool ParallelLaunchEnabled() override { return false; }
-
   void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
       base::OnceCallback<void(CreateTargetResult)> reply) override {
-    // This function is only used for parallel launching and should not get
-    // called.
-    NOTREACHED();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        from_here,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        std::move(task), std::move(reply));
   }
 
   void BeforeTargetProcessCreateOnCreationThread(

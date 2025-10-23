@@ -80,10 +80,6 @@ BASE_FEATURE(kWinSboxNoFakeGdiInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWinSboxRestrictCoreSharingOnRenderer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables parallel process launching using the thread pool. Flag retained
-// as a kill-switch.
-BASE_FEATURE(kWinSboxParallelProcessLaunch, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Csrss lockdown in supported processes by closing all ALPC
 // ports before sandbox lockdown. See crbug.com/40408399 for details.
 BASE_FEATURE(kEnableCsrssLockdown, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -171,9 +167,4 @@ bool IsNetworkSandboxEnabled() {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 }
 
-#if BUILDFLAG(IS_WIN)
-bool IsParallelLaunchEnabled() {
-  return base::FeatureList::IsEnabled(kWinSboxParallelProcessLaunch);
-}
-#endif  // BUILDFLAG(IS_WIN)
 }  // namespace sandbox::policy::features
