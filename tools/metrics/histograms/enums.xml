@@ -11495,6 +11495,7 @@ from previous Chrome versions.
   <int value="-1002494650" label="WebviewTagMPArchBehavior:disabled"/>
   <int value="-1002421482"
       label="HoldingSpaceWallpaperNudgeForceEligibility:enabled"/>
+  <int value="-1002391016" label="LensOverlayOptimizationFilter:disabled"/>
   <int value="-1001837588" label="EnableAppReinstallZeroState:enabled"/>
   <int value="-1000695123"
       label="AccessibilitySelectToSpeakPageMigration:disabled"/>
@@ -16007,6 +16008,7 @@ from previous Chrome versions.
       label="CrOSLateBootChromeboxUsbPassthroughRestrictions:enabled"/>
   <int value="615733361" label="DiscardOccludedBitmaps:disabled"/>
   <int value="616141486" label="PasswordNotesWithBackup:disabled"/>
+  <int value="616245141" label="LensOverlayOptimizationFilter:enabled"/>
   <int value="616609955" label="ActionableContentSettings:enabled"/>
   <int value="616660621" label="ImeInputLogicFst:disabled"/>
   <int value="616717743" label="UIEnableSharedImageCacheForGpu:disabled"/>

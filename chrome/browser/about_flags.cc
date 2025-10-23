@@ -13433,6 +13433,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ProfilePickerTextVariations")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"lens-overlay-optimization-filter",
+     flag_descriptions::kLensOverlayOptimizationFilterName,
+     flag_descriptions::kLensOverlayOptimizationFilterDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayOptimizationFilter)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

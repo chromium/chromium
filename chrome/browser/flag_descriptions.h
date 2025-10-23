@@ -2636,6 +2636,11 @@ inline constexpr char kLensOverlayOmniboxEntryPointName[] =
 inline constexpr char kLensOverlayOmniboxEntryPointDescription[] =
     "Enables icon button for Lens entrypoint in the Omnibox.";
 
+inline constexpr char kLensOverlayOptimizationFilterName[] =
+    "Lens Overlay optimization filter";
+inline constexpr char kLensOverlayOptimizationFilterDescription[] =
+    "Enables using the optimization filter for triggering the action chip.";
+
 inline constexpr char kLensOverlaySidePanelOpenInNewTabName[] =
     "Lens overlay side panel open in new tab";
 inline constexpr char kLensOverlaySidePanelOpenInNewTabDescription[] =
