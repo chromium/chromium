@@ -242,7 +242,7 @@ TEST_F(
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{features::kAutofillAddressSuggestionsOnTyping,
                              {{"min_number_characters_to_match", "4"},
-                              {"field_types", "7,10"}}}},
+                              {"field_types", "7-10"}}}},
       /*disabled_features=*/{});
   AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
 

@@ -95,7 +95,7 @@ FieldTypeSet GetAutofillOnTypingPossibleTypes() {
             ADDRESS_HOME_ZIP};
   }
   std::vector<std::string> parts =
-      base::SplitString(features::kAutofillOnTypingFieldTypes.Get(), ",",
+      base::SplitString(features::kAutofillOnTypingFieldTypes.Get(), "-",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   FieldTypeSet types;
   for (const std::string& part : parts) {

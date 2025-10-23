@@ -62,7 +62,7 @@ const base::FeatureParam<int> kAutofillOnTypingMinMissingCharactersNumber{
 
 // This parameter enables updating the field types offered in Autofill on typing
 // suggestions. Field types are defined as enums, so this parameter should be a
-// string of integers separated by comma, such as "34,22,44,11". If the string
+// string of integers separated by dash, such as "34-22-44-11". If the string
 // cannot be parsed or some value is out of bound of the field types enum, the
 // param is ignored. When this param is an empty string (default value), a
 // default list of field types is used.
