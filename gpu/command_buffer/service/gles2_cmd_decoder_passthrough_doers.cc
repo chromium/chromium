@@ -4227,10 +4227,7 @@ error::Error GLES2DecoderPassthroughImpl::DoRequestExtensionCHROMIUM(
 
   // Make sure newly enabled extensions are exposed and usable.
   context_->ReinitializeDynamicBindings();
-  feature_info_->Initialize(feature_info_->context_type(),
-                            /*is_passthrough_cmd_decoder=*/true,
-                            feature_info_->disallowed_features(),
-                            /*force_reinitialize=*/true);
+  feature_info_->ForceReinitialize();
 
   return error::kNoError;
 }

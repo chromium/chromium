@@ -237,14 +237,12 @@ void FeatureInfo::InitializeBasicState(const base::CommandLine* command_line) {
 
 void FeatureInfo::Initialize(ContextType context_type,
                              bool is_passthrough_cmd_decoder,
-                             const DisallowedFeatures& disallowed_features,
-                             bool force_reinitialize) {
+                             const DisallowedFeatures& disallowed_features) {
   if (initialized_) {
     DCHECK_EQ(context_type, context_type_);
     DCHECK_EQ(is_passthrough_cmd_decoder, is_passthrough_cmd_decoder_);
     DCHECK(disallowed_features == disallowed_features_);
-    if (!force_reinitialize)
-      return;
+    return;
   }
 
   disallowed_features_ = disallowed_features;
@@ -252,6 +250,12 @@ void FeatureInfo::Initialize(ContextType context_type,
   is_passthrough_cmd_decoder_ = is_passthrough_cmd_decoder;
   InitializeFeatures();
   initialized_ = true;
+}
+
+void FeatureInfo::ForceReinitialize() {
+  CHECK(initialized_);
+  CHECK(is_passthrough_cmd_decoder_);
+  InitializeFeatures();
 }
 
 void FeatureInfo::InitializeForTesting(

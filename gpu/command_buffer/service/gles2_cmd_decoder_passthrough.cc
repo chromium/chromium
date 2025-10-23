@@ -925,7 +925,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   // be enabled dynamically.  Don't disallow any features, leave it up to ANGLE
   // to dynamically enable extensions.
   feature_info_->Initialize(context_type, /*is_passthrough_cmd_decoder=*/true,
-                            DisallowedFeatures(), /*force_reinitialize=*/false);
+                            DisallowedFeatures());
 
   // Check for required extensions
   // TODO(geofflang): verify

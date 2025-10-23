@@ -161,8 +161,10 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   // Initializes the feature information. Needs a current GL context.
   void Initialize(ContextType context_type,
                   bool is_passthrough_cmd_decoder,
-                  const DisallowedFeatures& disallowed_features,
-                  bool force_reinitialize = false);
+                  const DisallowedFeatures& disallowed_features);
+
+  // Same as above, but allows reinitialization.
+  void ForceReinitialize();
 
   // Helper that defaults to no disallowed features and a GLES2 context.
   void InitializeForTesting();
