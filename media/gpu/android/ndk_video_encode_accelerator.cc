@@ -26,6 +26,7 @@
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gl/gl_switches.h"
 
 #pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
     NDK_MEDIA_CODEC_MIN_API)
@@ -39,8 +40,15 @@ namespace {
 // the same default value we use on Windows.
 constexpr uint32_t kDefaultGOPLength = 3000;
 
-constexpr auto kSupportedSharedImagePixelFormats =
-    std::to_array({PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR});
+std::vector<VideoPixelFormat> GetSupportedSharedImagePixelFormats() {
+  if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+    // If kVulkanFromANGLE = true (e.g. Desktop Android)
+    // we we get shared images with AngleVulkanImageBacking, NDK VEA can't
+    // handle such shared images yet.
+    return {};
+  }
+  return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
+}
 
 // Deliberately breaking naming convention rules, to match names from
 // MediaCodec SDK.
@@ -517,10 +525,10 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
     profiles.push_back(info.profile);
     if (use_surface_as_input_) {
       auto& profile = profiles.back();
-      profile.supports_gpu_shared_images = true;
       profile.gpu_supported_pixel_formats =
-          std::vector(kSupportedSharedImagePixelFormats.begin(),
-                      kSupportedSharedImagePixelFormats.end());
+          GetSupportedSharedImagePixelFormats();
+      profile.supports_gpu_shared_images =
+          !profile.gpu_supported_pixel_formats.empty();
     }
   }
   return profiles;
@@ -596,9 +604,6 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
     }
   }
 
-  encoder_info_.implementation_name = base::StringPrintf(
-      "NdkVideoEncodeAccelerator(%s) input: %s", codec_name.c_str(),
-      use_surface_as_input_ ? "surface" : "buffer");
   encoder_info_.supports_native_handle = false;
   encoder_info_.has_trusted_rate_controller = false;
   encoder_info_.is_hardware_accelerated = IsHardwareCodec(codec_name);
@@ -609,14 +614,23 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
   }
   encoder_info_.supports_frame_size_change = false;
   if (use_surface_as_input_) {
-    encoder_info_.supports_gpu_shared_images = true;
     encoder_info_.gpu_supported_pixel_formats =
-        std::vector(kSupportedSharedImagePixelFormats.begin(),
-                    kSupportedSharedImagePixelFormats.end());
+        GetSupportedSharedImagePixelFormats();
+    encoder_info_.supports_gpu_shared_images =
+        !encoder_info_.gpu_supported_pixel_formats.empty();
   } else {
     encoder_info_.supports_gpu_shared_images = false;
     encoder_info_.gpu_supported_pixel_formats.clear();
   }
+  const char* input_type_str = "buffer";
+  if (use_surface_as_input_) {
+    input_type_str = encoder_info_.supports_gpu_shared_images
+                         ? "surface_with_shared_images"
+                         : "surface";
+  }
+  encoder_info_.implementation_name =
+      base::StringPrintf("NdkVideoEncodeAccelerator(%s) input: %s",
+                         codec_name.c_str(), input_type_str);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
