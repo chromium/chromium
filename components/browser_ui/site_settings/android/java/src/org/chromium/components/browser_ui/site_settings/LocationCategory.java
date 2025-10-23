@@ -8,43 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** A class for dealing with the Geolocation category. */
 @NullMarked
 public class LocationCategory extends SiteSettingsCategory {
-    @IntDef({GrantType.UNSPECIFIED, GrantType.APPROXIMATE, GrantType.PRECISE})
-    private @interface GrantType {
-        // Used for location grants without the precise/approximate option.
-        int UNSPECIFIED = 0;
-
-        // Used for location grants with the precise/approximate option.
-        int APPROXIMATE = 1;
-        int PRECISE = 2;
-    }
-
-    private final @GrantType int mGrantType;
-
-    /**
-     * Construct a LocationCategory.
-     *
-     * <p>This constructor does not specify whether precise or approximate location was granted, so
-     * the returned LocationCategory will not enable specific warnings on the mismatch of the
-     * granted granularity at the OS vs site level.
-     */
-    public LocationCategory(BrowserContextHandle browserContextHandle) {
-        super(
-                browserContextHandle,
-                SiteSettingsCategory.Type.DEVICE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        mGrantType = GrantType.UNSPECIFIED;
-    }
+    private final boolean mForPreciseGrant;
 
     /**
      * Construct a LocationCategory.
@@ -58,7 +33,7 @@ public class LocationCategory extends SiteSettingsCategory {
                 browserContextHandle,
                 SiteSettingsCategory.Type.DEVICE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        mGrantType = forPreciseLocation ? GrantType.PRECISE : GrantType.APPROXIMATE;
+        mForPreciseGrant = forPreciseLocation;
     }
 
     @Override
@@ -78,10 +53,18 @@ public class LocationCategory extends SiteSettingsCategory {
      * accuracy granted for the site and the accuracy granted at the OS level to Chrome.
      */
     public boolean hasPreciseOnlyBlockedWarning(Context context) {
-        return mGrantType == GrantType.PRECISE
+        return canShowPreciseOnlyBlockedWarning()
                 && enabledGlobally()
                 && enabledForChrome(context)
                 && isPreciseLocationBlockedInOs();
+    }
+
+    @Override
+    protected String getMessageForEnablingOsPerAppPermission(Context context, String appName) {
+        if (hasPreciseOnlyBlockedWarning(context)) {
+            return context.getString(R.string.android_turn_on_geo_precise_permission);
+        }
+        return super.getMessageForEnablingOsPerAppPermission(context, appName);
     }
 
     @Override
@@ -92,7 +75,7 @@ public class LocationCategory extends SiteSettingsCategory {
     @Override
     public boolean showPermissionBlockedMessage(Context context) {
         if (enabledForChrome(context) && enabledGlobally()) {
-            return false;
+            return canShowPreciseOnlyBlockedWarning() && isPreciseLocationBlockedInOs();
         }
 
         // The only time we don't want to show location as blocked in system is when Chrome also
@@ -102,6 +85,12 @@ public class LocationCategory extends SiteSettingsCategory {
                         getBrowserContextHandle(), ContentSettingsType.GEOLOCATION)
                 || WebsitePreferenceBridge.isContentSettingUserModifiable(
                         getBrowserContextHandle(), ContentSettingsType.GEOLOCATION);
+    }
+
+    @Override
+    protected boolean shouldShowPerAppWarning(Context context) {
+        return (!enabledForChrome(context)
+                || (canShowPreciseOnlyBlockedWarning() && isPreciseLocationBlockedInOs()));
     }
 
     @Override
@@ -117,5 +106,11 @@ public class LocationCategory extends SiteSettingsCategory {
             return resources.getString(R.string.android_location_off_globally);
         }
         return resources.getString(R.string.android_location_also_off_globally);
+    }
+
+    private boolean canShowPreciseOnlyBlockedWarning() {
+        return PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+                && mForPreciseGrant;
     }
 }

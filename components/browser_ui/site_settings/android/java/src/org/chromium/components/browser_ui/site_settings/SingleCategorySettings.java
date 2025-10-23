@@ -636,7 +636,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
 
-            if (assumeNonNull(websitePreference.getParent()).getKey().equals(MANAGED_GROUP)) {
+            if (assumeNonNull(websitePreference.getParent()).getKey() != null
+                    && assumeNonNull(websitePreference.getParent())
+                            .getKey()
+                            .equals(MANAGED_GROUP)) {
                 websitePreference.setFragment(SingleWebsiteSettings.class.getName());
                 websitePreference.putSiteAddressIntoExtras(
                         SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
@@ -1500,16 +1503,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         ChromeBasePreference osWarningExtra = new ChromeBasePreference(getStyledContext(), null);
 
         mCategory.configureWarningPreferences(
-                osWarning,
-                osWarningExtra,
-                getContext(),
-                true,
-                getSiteSettingsDelegate().getAppName());
+                osWarning, osWarningExtra, getContext(), getSiteSettingsDelegate().getAppName());
         if (osWarning.getTitle() != null) {
+            // Warnings should have no icon in site settings.
+            osWarning.setIcon(null);
             osWarning.setKey(SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING);
             screen.addPreference(osWarning);
         }
         if (osWarningExtra.getTitle() != null) {
+            // Warnings should have no icon in site settings.
+            osWarningExtra.setIcon(null);
             osWarningExtra.setKey(SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
             screen.addPreference(osWarningExtra);
         }

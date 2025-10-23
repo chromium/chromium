@@ -212,8 +212,14 @@ public class SiteSettingsTest {
             new String[] {"info_text", "binary_toggle", "add_exception"};
     private static final String[] BINARY_TOGGLE_WITH_EXCEPTION =
             new String[] {"binary_toggle", "add_exception"};
+    private static final String[] BINARY_TOGGLE_WITH_OS_WARNING =
+            new String[] {"binary_toggle", "os_permissions_warning"};
     private static final String[] BINARY_TOGGLE_WITH_OS_WARNING_EXTRA =
             new String[] {"binary_toggle", "os_permissions_warning_extra"};
+    private static final String[] BINARY_TOGGLE_WITH_OS_WARNING_AND_OS_WARNING_EXTRA =
+            new String[] {
+                "binary_toggle", "os_permissions_warning", "os_permissions_warning_extra"
+            };
     private static final String[] BINARY_RADIO_BUTTON_AND_INFO_TEXT =
             new String[] {"info_text", "binary_radio_button"};
     private static final String[] BINARY_RADIO_BUTTON = new String[] {"binary_radio_button"};
@@ -223,8 +229,18 @@ public class SiteSettingsTest {
             new String[] {"binary_radio_button", "add_exception"};
     private static final String[] BINARY_RADIO_BUTTON_WITH_OS_WARNING_EXTRA =
             new String[] {"binary_radio_button", "os_permissions_warning_extra"};
+    private static final String[] BINARY_RADIO_BUTTON_WITH_OS_WARNING_AND_INFO_TEXT =
+            new String[] {"info_text", "binary_radio_button", "os_permissions_warning"};
     private static final String[] BINARY_RADIO_BUTTON_WITH_OS_WARNING_EXTRA_AND_INFO_TEXT =
             new String[] {"info_text", "binary_radio_button", "os_permissions_warning_extra"};
+    private static final String[]
+            BINARY_RADIO_BUTTON_WITH_OS_WARNING_AND_OS_WARNING_EXTRA_AND_INFO_TEXT =
+                    new String[] {
+                        "info_text",
+                        "binary_radio_button",
+                        "os_permissions_warning",
+                        "os_permissions_warning_extra"
+                    };
     private static final String[] CLEAR_BROWSING_DATA_LINK =
             new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
     private static final String[] ANTI_ABUSE_PREF_KEYS = {
@@ -1989,24 +2005,60 @@ public class SiteSettingsTest {
         ChromeFeatureList.PERMISSION_DEDICATED_CPSS_SETTING_ANDROID,
         ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON
     })
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
     public void testOnlyExpectedPreferencesDeviceLocationWithToggle() {
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ true);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         testExpectedPreferences(
                 SiteSettingsCategory.Type.DEVICE_LOCATION, BINARY_TOGGLE, BINARY_TOGGLE);
 
         // Disable system location setting and check for the right preferences.
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ false,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ true);
         checkPreferencesForCategory(
                 SiteSettingsCategory.Type.DEVICE_LOCATION, BINARY_TOGGLE_WITH_OS_WARNING_EXTRA);
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+
+        // Disable android location permission and check for the right preferences.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ false,
+                /* androidFineEnabled= */ false);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION, BINARY_TOGGLE_WITH_OS_WARNING);
+
+        // Disable android fine location permission and check for the right preferences.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION, BINARY_TOGGLE_WITH_OS_WARNING);
+
+        // Disable system location setting and android location permission and check for the right
+        // preferences.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ false,
+                /* androidEnabled= */ false,
+                /* androidFineEnabled= */ false);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                BINARY_TOGGLE_WITH_OS_WARNING_AND_OS_WARNING_EXTRA);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.PERMISSION_DEDICATED_CPSS_SETTING_ANDROID)
-    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
     public void testOnlyExpectedPreferencesDeviceLocation() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
@@ -2016,11 +2068,41 @@ public class SiteSettingsTest {
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT);
 
         // Disable system location setting and check for the right preferences.
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ false,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ true);
         checkPreferencesForCategory(
                 SiteSettingsCategory.Type.DEVICE_LOCATION,
                 BINARY_RADIO_BUTTON_WITH_OS_WARNING_EXTRA_AND_INFO_TEXT);
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+
+        // Disable android location permission and check for the right preferences.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ false,
+                /* androidFineEnabled= */ false);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                BINARY_RADIO_BUTTON_WITH_OS_WARNING_AND_INFO_TEXT);
+
+        // Disable android fine location permission and check for the right preferences.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                BINARY_RADIO_BUTTON_WITH_OS_WARNING_AND_INFO_TEXT);
+
+        // Disable system location setting and android location permission and check for the right
+        // preferences.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ false,
+                /* androidEnabled= */ false,
+                /* androidFineEnabled= */ false);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                BINARY_RADIO_BUTTON_WITH_OS_WARNING_AND_OS_WARNING_EXTRA_AND_INFO_TEXT);
     }
 
     @Test
