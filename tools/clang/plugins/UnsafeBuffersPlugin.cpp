@@ -292,8 +292,12 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
         diag_id == clang::diag::note_unsafe_buffer_printf_call;
 
     const bool is_unique_ptr_diagnostic =
+#ifdef LLVM_FORCE_HEAD_REVISION
         diag_id ==
         clang::diag::warn_unsafe_buffer_usage_unique_ptr_array_access;
+#else
+        false;
+#endif
 
     const bool ignore_diagnostic =
         (is_buffers_diagnostic && !unsafe_buffers_config_.check_buffers) ||
