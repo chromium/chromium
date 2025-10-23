@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/single_file_tar_reader.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/lzma_sdk/C/7zCrc.h"
 #include "third_party/lzma_sdk/C/Xz.h"
 #include "third_party/lzma_sdk/C/XzCrc64.h"

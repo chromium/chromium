@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class ZeroStatePromoPageHandler : public zero_state_promo::mojom::PageHandler {
  public:

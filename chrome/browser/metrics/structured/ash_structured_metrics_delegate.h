@@ -8,7 +8,6 @@
 #include "chrome/browser/metrics/structured/structured_metrics_key_events_observer.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace metrics::structured {
 

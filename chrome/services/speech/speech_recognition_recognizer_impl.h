@@ -17,7 +17,6 @@
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace soda {

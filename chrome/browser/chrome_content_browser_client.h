@@ -40,7 +40,6 @@
 #include "media/base/picture_in_picture_events_info.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_handle.h"

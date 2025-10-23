@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 

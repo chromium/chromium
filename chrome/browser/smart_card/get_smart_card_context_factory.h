@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SMART_CARD_GET_SMART_CARD_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_SMART_CARD_GET_SMART_CARD_CONTEXT_FACTORY_H_
 
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/smart_card.mojom-forward.h"
 
 namespace content {

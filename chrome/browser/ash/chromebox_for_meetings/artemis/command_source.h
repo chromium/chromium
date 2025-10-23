@@ -7,8 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::cfm {
 

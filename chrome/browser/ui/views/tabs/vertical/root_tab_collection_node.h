@@ -10,8 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-forward.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/view.h"
 
 namespace tabs_api {

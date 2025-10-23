@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_NET_DHCP_WPAD_URL_CLIENT_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
 #include "url/gurl.h"
 

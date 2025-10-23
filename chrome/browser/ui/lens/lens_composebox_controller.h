@@ -14,8 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 

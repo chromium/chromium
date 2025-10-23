@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/preconnect_manager.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/origin.h"
 

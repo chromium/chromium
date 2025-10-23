@@ -9,8 +9,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/wifi_direct/wifi_direct_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 class Profile;

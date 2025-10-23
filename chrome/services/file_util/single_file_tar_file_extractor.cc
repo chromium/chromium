@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/single_file_tar_reader.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 

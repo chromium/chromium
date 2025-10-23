@@ -12,7 +12,6 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/renderer/actor/page_stability_monitor.h"
 #include "chrome/renderer/actor/tool_base.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 class RenderFrame;

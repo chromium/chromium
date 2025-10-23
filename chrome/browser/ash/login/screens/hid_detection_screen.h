@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 

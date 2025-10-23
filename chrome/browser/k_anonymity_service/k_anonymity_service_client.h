@@ -20,7 +20,6 @@
 #include "chrome/browser/k_anonymity_service/remote_trust_token_query_answerer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

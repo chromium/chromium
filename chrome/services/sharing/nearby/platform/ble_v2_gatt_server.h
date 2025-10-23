@@ -9,9 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
 

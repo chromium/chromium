@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 

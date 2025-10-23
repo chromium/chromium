@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/tabs/public/tab_interface.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor {

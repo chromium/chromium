@@ -11,9 +11,7 @@
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace performance_manager {
 class Graph;
