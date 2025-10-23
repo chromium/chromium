@@ -6,15 +6,18 @@
 #define REMOTING_HOST_LINUX_PIPEWIRE_MOUSE_CURSOR_CAPTURER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "remoting/host/linux/capture_stream.h"
+#include "remoting/host/linux/capture_stream_manager.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
-#include "remoting/protocol/mouse_cursor_monitor.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -24,56 +27,84 @@ namespace remoting {
 
 // A class that allows incarnations of PipewireMouseCursorMonitor to capture
 // mouse cursor shapes and positions, and get the latest cursor shape before
-// it is created. The interface of this class pretty much mirrors
-// MouseCursorMonitor.
-class PipewireMouseCursorCapturer {
+// it is created.
+class PipewireMouseCursorCapturer : public CaptureStreamManager::Observer,
+                                    public CaptureStream::CursorObserver {
  public:
-  using Callback = protocol::MouseCursorMonitor::Callback;
-  using Mode = protocol::MouseCursorMonitor::Mode;
+  class Observer : public base::CheckedObserver {
+   public:
+    using Subscription = base::ScopedClosureRunner;
+
+    virtual void OnCursorShapeChanged(PipewireMouseCursorCapturer* capturer) {}
+    virtual void OnCursorPositionChanged(
+        PipewireMouseCursorCapturer* capturer) {}
+  };
 
   explicit PipewireMouseCursorCapturer(
       base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
-      base::WeakPtr<PipewireCaptureStreamManager> stream_manager);
-  ~PipewireMouseCursorCapturer();
+      base::WeakPtr<CaptureStreamManager> stream_manager);
+  ~PipewireMouseCursorCapturer() override;
 
-  // Sets a callback and the monitor mode. Pass nullptr to prevent the
-  // previously set callback from being called.
-  void SetCallback(Callback* callback, Mode mode);
+  // Discarding the subscription object will remove the observer.
+  [[nodiscard]] Observer::Subscription AddObserver(Observer* observer);
 
-  // Attempts to capture the current mouse cursor and position and calls the
-  // corresponding methods on the callback. OnMouseCursor() will be called iff
-  // the cursor has changed, or, this is the first call of Capture() since
-  // SetCallback() and the latest cursor is available. No-op if callback is
-  // nullptr.
-  void Capture();
+  // Returns a shared copy of the latest cursor, or nullptr if it's not
+  // available.
+  std::unique_ptr<webrtc::MouseCursor> GetLatestCursor();
+
+  // Returns the latest global cursor position, or nullopt if it's not
+  // available.
+  const std::optional<webrtc::DesktopVector>& GetLatestGlobalCursorPosition();
+
+  // Returns the latest fractional cursor position, or nullopt if it's not
+  // available.
+  const std::optional<protocol::FractionalCoordinate>&
+  GetLatestFractionalCursorPosition();
 
   base::WeakPtr<PipewireMouseCursorCapturer> GetWeakPtr();
 
  private:
+  friend class PipewireMouseCursorCapturerTest;
+
   struct MonitorInfo {
-    int dpi;
+    double scale;
+    // These are in DIPs.
+    int left;
+    int top;
+    // These are in physical pixels.
     int width;
     int height;
   };
 
-  void OnDisplayConfig(const GnomeDisplayConfig& config);
-  std::unique_ptr<webrtc::MouseCursor> ShareLatestCursor();
+  // CaptureStreamManager::Observer implementation.
+  void OnPipewireCaptureStreamAdded(
+      base::WeakPtr<CaptureStream> stream) override;
+  void OnPipewireCaptureStreamRemoved(webrtc::ScreenId screen_id) override;
 
-  raw_ptr<Callback> callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  bool report_position_ GUARDED_BY_CONTEXT(sequence_checker_);
-  // If this is set to true, the Capture() call will supply the latest cursor
-  // when stream->CaptureCursor() returns nullptr (i.e. cursor is unchanged).
-  // This is set to true in SetCallback() and is set to false at the end of the
-  // Capture() call.
-  bool want_latest_cursor_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // CaptureStream::CursorObserver implementation.
+  void OnCursorShapeChanged(CaptureStream* stream) override;
+  void OnCursorPositionChanged(CaptureStream* stream) override;
+
+  void OnDisplayConfig(const GnomeDisplayConfig& config);
+  void RemoveObserver(Observer* observer);
+
+  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::unique_ptr<webrtc::SharedDesktopFrame> latest_cursor_frame_
       GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::DesktopVector latest_cursor_hotspot_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::WeakPtr<PipewireCaptureStreamManager> stream_manager_
+  std::optional<webrtc::DesktopVector> latest_global_cursor_position_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<protocol::FractionalCoordinate>
+      latest_fractional_cursor_position_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       display_config_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
+  CaptureStreamManager::Observer::Subscription stream_manager_subscription_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<webrtc::ScreenId, CaptureStream::CursorObserver::Subscription>
+      stream_subscriptions_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_map<webrtc::ScreenId, MonitorInfo> monitors_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

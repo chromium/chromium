@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -19,23 +20,53 @@ PipewireMouseCursorMonitor::PipewireMouseCursorMonitor(
     base::WeakPtr<PipewireMouseCursorCapturer> capturer)
     : capturer_(capturer) {}
 
-PipewireMouseCursorMonitor::~PipewireMouseCursorMonitor() {
-  if (capturer_) {
-    // Prevent `callback` from being called.
-    capturer_->SetCallback(nullptr, Mode::SHAPE_AND_POSITION);
-  }
-}
+PipewireMouseCursorMonitor::~PipewireMouseCursorMonitor() = default;
 
 void PipewireMouseCursorMonitor::Init(Callback* callback, Mode mode) {
-  if (capturer_) {
-    capturer_->SetCallback(callback, mode);
+  if (!capturer_) {
+    return;
   }
+  callback_ = callback;
+  mode_ = mode;
+  subscription_ = capturer_->AddObserver(this);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PipewireMouseCursorMonitor::ReportInitialCursorInfo,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PipewireMouseCursorMonitor::Capture() {
-  if (capturer_) {
-    capturer_->Capture();
+  // No-op since callback will be run once cursor is changed.
+}
+
+void PipewireMouseCursorMonitor::OnCursorShapeChanged(
+    PipewireMouseCursorCapturer* capturer) {
+  if (!callback_) {
+    return;
   }
+  auto cursor = capturer->GetLatestCursor();
+  if (cursor) {
+    callback_->OnMouseCursor(cursor.release());
+  }
+}
+
+void PipewireMouseCursorMonitor::OnCursorPositionChanged(
+    PipewireMouseCursorCapturer* capturer) {
+  if (!callback_ || mode_ != Mode::SHAPE_AND_POSITION) {
+    return;
+  }
+  auto position = capturer->GetLatestFractionalCursorPosition();
+  if (position) {
+    callback_->OnMouseCursorFractionalPosition(*position);
+  }
+}
+
+void PipewireMouseCursorMonitor::ReportInitialCursorInfo() {
+  if (!capturer_) {
+    return;
+  }
+  OnCursorShapeChanged(capturer_.get());
+  OnCursorPositionChanged(capturer_.get());
 }
 
 }  // namespace remoting

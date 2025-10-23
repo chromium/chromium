@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -28,7 +29,8 @@ namespace remoting {
 // on a separate thread. This class is responsible for bouncing them back to
 // the corresponding methods of `parent_` on `callback_sequence`.
 class PipewireCaptureStream::CallbackProxy
-    : public webrtc::DesktopCapturer::Callback {
+    : public webrtc::DesktopCapturer::Callback,
+      public webrtc::SharedScreenCastStream::Observer {
  public:
   explicit CallbackProxy(base::WeakPtr<PipewireCaptureStream> parent);
   ~CallbackProxy() override;
@@ -40,6 +42,17 @@ class PipewireCaptureStream::CallbackProxy
   void OnFrameCaptureStart() override;
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
+
+  // webrtc::SharedScreenCastStream::Observer implementation.
+  void OnCursorPositionChanged() override;
+  void OnCursorShapeChanged() override;
+  void OnDesktopFrameChanged() override;
+  void OnFailedToProcessBuffer() override;
+  void OnBufferCorruptedMetadata() override;
+  void OnBufferCorruptedData() override;
+  void OnEmptyBuffer() override;
+  void OnStreamConfigured() override;
+  void OnFrameRateChanged(uint32_t frame_rate) override;
 
  private:
   // Lock is needed since Initialize() and the callback methods are called
@@ -90,9 +103,39 @@ void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
                                 parent_, result, std::move(frame)));
 }
 
+void PipewireCaptureStream::CallbackProxy::OnCursorPositionChanged() {
+  base::AutoLock lock(lock_);
+  if (!started_) {
+    return;
+  }
+  callback_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PipewireCaptureStream::OnCursorPositionChanged, parent_));
+}
+
+void PipewireCaptureStream::CallbackProxy::OnCursorShapeChanged() {
+  base::AutoLock lock(lock_);
+  if (!started_) {
+    return;
+  }
+  callback_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PipewireCaptureStream::OnCursorShapeChanged, parent_));
+}
+
+void PipewireCaptureStream::CallbackProxy::OnDesktopFrameChanged() {}
+void PipewireCaptureStream::CallbackProxy::OnFailedToProcessBuffer() {}
+void PipewireCaptureStream::CallbackProxy::OnBufferCorruptedMetadata() {}
+void PipewireCaptureStream::CallbackProxy::OnBufferCorruptedData() {}
+void PipewireCaptureStream::CallbackProxy::OnEmptyBuffer() {}
+void PipewireCaptureStream::CallbackProxy::OnStreamConfigured() {}
+void PipewireCaptureStream::CallbackProxy::OnFrameRateChanged(
+    uint32_t frame_rate) {}
+
 PipewireCaptureStream::PipewireCaptureStream() {
   callback_proxy_ =
       std::make_unique<CallbackProxy>(weak_ptr_factory_.GetWeakPtr());
+  stream_->SetObserver(callback_proxy_.get());
 }
 
 PipewireCaptureStream::~PipewireCaptureStream() {
@@ -188,6 +231,15 @@ PipewireCaptureStream::CaptureCursorPosition() {
   return stream_->CaptureCursorPosition();
 }
 
+CaptureStream::CursorObserver::Subscription
+PipewireCaptureStream::AddCursorObserver(CursorObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cursor_observers_.AddObserver(observer);
+  return base::ScopedClosureRunner(
+      base::BindOnce(&PipewireCaptureStream::RemoveCursorObserver,
+                     weak_ptr_factory_.GetWeakPtr(), observer));
+}
+
 std::string_view PipewireCaptureStream::mapping_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return mapping_id_;
@@ -240,6 +292,11 @@ void PipewireCaptureStream::RecaptureLatestFrameAsDirty() {
   }
 }
 
+void PipewireCaptureStream::RemoveCursorObserver(CursorObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cursor_observers_.RemoveObserver(observer);
+}
+
 void PipewireCaptureStream::OnFrameCaptureStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_capturing_frame_ = true;
@@ -287,6 +344,16 @@ void PipewireCaptureStream::OnCaptureResult(
   if (callback_) {
     callback_->OnCaptureResult(result, std::move(frame));
   }
+}
+
+void PipewireCaptureStream::OnCursorPositionChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cursor_observers_.Notify(&CursorObserver::OnCursorPositionChanged, this);
+}
+
+void PipewireCaptureStream::OnCursorShapeChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cursor_observers_.Notify(&CursorObserver::OnCursorShapeChanged, this);
 }
 
 }  // namespace remoting

@@ -10,7 +10,9 @@
 #include <optional>
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -22,6 +24,14 @@ namespace remoting {
 // Wraps a capture stream representing a logical monitor.
 class CaptureStream {
  public:
+  class CursorObserver : public base::CheckedObserver {
+   public:
+    using Subscription = base::ScopedClosureRunner;
+
+    virtual void OnCursorShapeChanged(CaptureStream* stream) {}
+    virtual void OnCursorPositionChanged(CaptureStream* stream) {}
+  };
+
   virtual ~CaptureStream() = default;
 
   // Specifies the |pipewire_node| from which to capture and the
@@ -83,6 +93,11 @@ class CaptureStream {
   // Returns a copy of the most recent mouse cursor location received from
   // PipeWire, if any.
   virtual std::optional<webrtc::DesktopVector> CaptureCursorPosition() = 0;
+
+  // Adds a cursor observer. Discarding the returned subscription will result in
+  // the removal of the observer.
+  [[nodiscard]] virtual CursorObserver::Subscription AddCursorObserver(
+      CursorObserver* observer) = 0;
 
   // Retrieves the mapping ID previously stored by set_mapping_id().
   virtual std::string_view mapping_id() const = 0;

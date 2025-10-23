@@ -18,6 +18,7 @@
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/capture_stream.h"
 #include "remoting/host/linux/capture_stream_manager.h"
+#include "remoting/host/linux/fake_capture_stream.h"
 #include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/test_util.h"
 #include "remoting/proto/control.pb.h"
@@ -49,121 +50,6 @@ webrtc::DesktopVector GetDpiForScale(double scale) {
   int dpi_number = GetDpiNumberForScale(scale);
   return {dpi_number, dpi_number};
 }
-
-class FakeCaptureStream : public CaptureStream {
- public:
-  FakeCaptureStream() = default;
-  ~FakeCaptureStream() override = default;
-
-  MOCK_METHOD(void,
-              SetPipeWireStream,
-              (std::uint32_t pipewire_node,
-               const webrtc::DesktopSize& initial_resolution,
-               std::string_view mapping_id,
-               int pipewire_fd),
-              (override));
-  MOCK_METHOD(void, StartVideoCapture, (), (override));
-  MOCK_METHOD(void,
-              SetCallback,
-              (base::WeakPtr<webrtc::DesktopCapturer::Callback> callback),
-              (override));
-  MOCK_METHOD(void, SetUseDamageRegion, (bool use_damage_region), (override));
-  MOCK_METHOD(void, SetMaxFrameRate, (std::uint32_t frame_rate), (override));
-  MOCK_METHOD(std::unique_ptr<webrtc::MouseCursor>,
-              CaptureCursor,
-              (),
-              (override));
-  MOCK_METHOD(std::optional<webrtc::DesktopVector>,
-              CaptureCursorPosition,
-              (),
-              (override));
-  MOCK_METHOD(std::string_view, mapping_id, (), (const, override));
-
-  void SetResolution(const webrtc::DesktopSize& new_resolution) override {
-    resolution_ = new_resolution;
-  }
-
-  const webrtc::DesktopSize& resolution() const override { return resolution_; }
-
-  void set_screen_id(webrtc::ScreenId screen_id) override {
-    screen_id_ = screen_id;
-  }
-
-  webrtc::ScreenId screen_id() const override { return screen_id_; }
-
-  base::WeakPtr<CaptureStream> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  webrtc::DesktopSize resolution_;
-  webrtc::ScreenId screen_id_;
-  base::WeakPtrFactory<FakeCaptureStream> weak_ptr_factory_{this};
-};
-
-class FakeCaptureStreamManager : public CaptureStreamManager {
- public:
-  FakeCaptureStreamManager() = default;
-  ~FakeCaptureStreamManager() override = default;
-
-  MOCK_METHOD(Observer::Subscription,
-              AddObserver,
-              (Observer * observer),
-              (override));
-
-  void AddVirtualStream(const ScreenResolution& initial_resolution,
-                        AddStreamCallback callback) override {
-    ASSERT_TRUE(next_screen_id.has_value());
-    auto stream =
-        AddVirtualStream(*next_screen_id, initial_resolution.dimensions());
-    std::move(callback).Run(base::ok(stream));
-    next_screen_id.reset();
-  }
-
-  base::WeakPtr<CaptureStream> AddVirtualStream(
-      webrtc::ScreenId screen_id,
-      const webrtc::DesktopSize& resolution) {
-    auto stream = std::make_unique<FakeCaptureStream>();
-    stream->set_screen_id(screen_id);
-    stream->SetResolution(resolution);
-    auto weak_stream = stream->GetWeakPtr();
-    streams_[screen_id] = std::move(stream);
-    return weak_stream;
-  }
-
-  void RemoveVirtualStream(webrtc::ScreenId screen_id) override {
-    streams_.erase(screen_id);
-  }
-
-  base::WeakPtr<CaptureStream> GetStream(webrtc::ScreenId screen_id) override {
-    const auto& it = streams_.find(screen_id);
-    if (it == streams_.end()) {
-      return nullptr;
-    }
-    return it->second->GetWeakPtr();
-  }
-
-  base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
-  GetActiveStreams() override {
-    base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>> output;
-    for (auto& [screen_id, stream] : streams_) {
-      output[screen_id] = stream->GetWeakPtr();
-    }
-    return output;
-  }
-
-  base::WeakPtr<CaptureStreamManager> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  // The screen ID to be assigned for the new stream added via the overridden
-  // AddStream method.
-  std::optional<webrtc::ScreenId> next_screen_id;
-
- private:
-  base::flat_map<webrtc::ScreenId, std::unique_ptr<FakeCaptureStream>> streams_;
-  base::WeakPtrFactory<FakeCaptureStreamManager> weak_ptr_factory_{this};
-};
 
 }  // namespace
 

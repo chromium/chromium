@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -52,6 +53,8 @@ class PipewireCaptureStream : public CaptureStream {
   void SetMaxFrameRate(std::uint32_t frame_rate) override;
   std::unique_ptr<webrtc::MouseCursor> CaptureCursor() override;
   std::optional<webrtc::DesktopVector> CaptureCursorPosition() override;
+  CursorObserver::Subscription AddCursorObserver(
+      CursorObserver* observer) override;
   std::string_view mapping_id() const override;
 
   const webrtc::DesktopSize& resolution() const override;
@@ -74,11 +77,14 @@ class PipewireCaptureStream : public CaptureStream {
   // Note: Do not access class members after this method is called, since `this`
   // may potentially be deleted at that point.
   void RecaptureLatestFrameAsDirty();
+  void RemoveCursorObserver(CursorObserver* observer);
 
   // Called by the callback proxy.
   void OnFrameCaptureStart();
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
+  void OnCursorPositionChanged();
+  void OnCursorShapeChanged();
 
   int pipewire_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::uint32_t pipewire_node_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -92,6 +98,8 @@ class PipewireCaptureStream : public CaptureStream {
       GUARDED_BY_CONTEXT(sequence_checker_) =
           webrtc::SharedScreenCastStream::CreateDefault();
   std::unique_ptr<CallbackProxy> callback_proxy_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ObserverList<CaptureStream::CursorObserver> cursor_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_capturing_frame_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool should_mark_current_frame_dirty_ GUARDED_BY_CONTEXT(sequence_checker_) =
