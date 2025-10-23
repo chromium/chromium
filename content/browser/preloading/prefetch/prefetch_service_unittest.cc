@@ -7232,7 +7232,9 @@ TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
         auto eligibility = is_eligible
                                ? PreloadingEligibility::kEligible
                                : PreloadingEligibility::kHostIsNonUnique;
-        if (!is_eligible && on_complete_failure_called) {
+        if (!base::FeatureList::IsEnabled(
+                features::kPrefetchGracefulNotification) &&
+            !is_eligible && on_complete_failure_called) {
           // TODO(https://crbug.com/433114485): Eligibility check is not
           // cancelled on unexpected failed completion and causes crashes. Fix
           // this.

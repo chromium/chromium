@@ -1179,6 +1179,35 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
+  // Returns `false` if `OnGotEligibilityForRedirect()` should be early-returned
+  // because the prefetch was already terminated during the eligiblity check.
+  const auto check_streaming_loader = [&]() {
+    // TODO(crbug.com/396133768): Consider setting appropriate PrefetchStatus.
+    auto streaming_url_loader = prefetch_container->GetStreamingURLLoader();
+    if (streaming_url_loader) {
+      return true;
+    }
+    if (!UsePrefetchScheduler()) {
+      if (active_prefetch_ == prefetch_container->key()) {
+        active_prefetch_ = std::nullopt;
+        Prefetch();
+      }
+    } else {
+      // TODO(crbug.com/400761083): Use
+      // `ResetPrefetchContainerAndProgressAsync()` instead.
+      RemoveFromSchedulerAndProgressAsync(*prefetch_container);
+    }
+    return false;
+  };
+
+  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
+    if (!check_streaming_loader()) {
+      // TODO(crbug.com/400761083): CHECK that the prefetch is actually already
+      // aborted, e.g. by CHECKing `prefetch_container->GetLoadState()`.
+      return;
+    }
+  }
+
   const bool eligible = eligibility == PreloadingEligibility::kEligible;
   RecordRedirectResult(eligible
                            ? PrefetchRedirectResult::kSuccessRedirectFollowed
@@ -1210,21 +1239,13 @@ void PrefetchService::OnGotEligibilityForRedirect(
     }
   }
 
-  // TODO(crbug.com/396133768): Consider setting appropriate PrefetchStatus.
-  auto streaming_url_loader = prefetch_container->GetStreamingURLLoader();
-  if (!streaming_url_loader) {
-    if (!UsePrefetchScheduler()) {
-      if (active_prefetch_ == prefetch_container->key()) {
-        active_prefetch_ = std::nullopt;
-        Prefetch();
-      }
-    } else {
-      // TODO(crbug.com/400761083): Use
-      // `ResetPrefetchContainerAndProgressAsync()` instead.
-      RemoveFromSchedulerAndProgressAsync(*prefetch_container);
+  if (!base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
+    if (!check_streaming_loader()) {
+      return;
     }
-    return;
   }
+  auto streaming_url_loader = prefetch_container->GetStreamingURLLoader();
+  CHECK(streaming_url_loader);
 
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
