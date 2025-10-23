@@ -421,9 +421,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   GlicInstanceImpl* target_instance = nullptr;
-  if (!info) {
-    target_instance = CreateGlicInstance();
-  } else {
+  if (info) {
     for (const auto& [id, instance] : instances_) {
       if (instance->conversation_id().has_value() &&
           instance->conversation_id().value() == info->conversation_id) {
@@ -431,14 +429,16 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
         break;
       }
     }
-    if (!target_instance) {
-      // No instance exists for this conversation. If the current instance
-      // already has a conversation, create a new instance. Otherwise, reuse
-      // the current instance.
-      target_instance = source_instance.conversation_id() ? CreateGlicInstance()
-                                                          : &source_instance;
-      target_instance->RegisterConversation(std::move(info), base::DoNothing());
-    }
+  }
+  if (!target_instance) {
+    // No instance exists for this conversation. If the current instance
+    // already has a conversation, create a new instance. Otherwise, reuse
+    // the current instance.
+    target_instance = source_instance.conversation_id() ? CreateGlicInstance()
+                                                        : &source_instance;
+  }
+  if (info) {
+    target_instance->RegisterConversation(std::move(info), base::DoNothing());
   }
   CHECK(target_instance);
   target_instance->Show(options);
@@ -470,8 +470,7 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() const {
   return nullptr;
 }
 
-void GlicInstanceCoordinatorImpl::OnDetachRequested(GlicInstance* instance,
-                                                    tabs::TabInterface* tab) {
+void GlicInstanceCoordinatorImpl::OnWillCreateFloaty() {
   CloseFloaty();
 }
 

@@ -74,8 +74,7 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void UnbindTabFromAnyInstance(tabs::TabInterface* tab) = 0;
 
     // Called by an instance when user requests to undock to Floaty.
-    virtual void OnDetachRequested(GlicInstance* instance,
-                                   tabs::TabInterface* tab) = 0;
+    virtual void OnWillCreateFloaty() = 0;
   };
 
   GlicInstanceImpl(

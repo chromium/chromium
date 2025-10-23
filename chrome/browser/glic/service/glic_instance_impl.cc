@@ -218,9 +218,6 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
 void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
   instance_metrics_.OnDetach();
-  if (coordinator_delegate_) {
-    coordinator_delegate_->OnDetachRequested(this, tab);
-  }
   auto show_options =
       ShowOptions::ForFloating(tab->GetBrowserWindowInterface());
   show_options.focus_on_show = true;
@@ -547,6 +544,9 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
     const gfx::Rect& initial_bounds) {
+  if (coordinator_delegate_) {
+    coordinator_delegate_->OnWillCreateFloaty();
+  }
   EmbedderKey key = FloatingEmbedderKey();
   auto [entry_iter, _] = embedders_.try_emplace(key);
   entry_iter->second.embedder = std::make_unique<GlicFloatingUi>(
