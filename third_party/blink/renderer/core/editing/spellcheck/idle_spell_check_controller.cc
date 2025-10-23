@@ -165,6 +165,21 @@ void IdleSpellCheckController::RespondToChangedEnablement() {
     return;
   }
 
+  // We can skip this pass as it must be the result of a script if
+  // and `kRestrictSpellingAndGrammarHighlightsChangedEnablement` is enabled.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedEnablement.Get()) {
+    Deactivate();
+    base::UmaHistogramBoolean(
+        "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Enablement", true);
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Enablement", false);
+
   if (IsInInvocation())
     return;
 

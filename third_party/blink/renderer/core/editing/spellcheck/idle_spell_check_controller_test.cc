@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
+#include "third_party/blink/renderer/core/keywords.h"
 
 namespace blink {
 
@@ -263,6 +264,41 @@ TEST_P(IdleSpellCheckControllerTest,
   // Should not crash
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+}
+
+TEST_P(IdleSpellCheckControllerTest, SpellcheckAttribute) {
+  SetBodyContent("<div contenteditable=\"true\" spellcheck=\"true\">foo</div>");
+
+  // Focus element and track lifecycle
+  QuerySelector("div")->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
+  IdleChecker().ForceInvocationForTesting();
+  IdleChecker().SkipColdModeTimerForTesting();
+  ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+  IdleChecker().ForceInvocationForTesting();
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+
+  // Disable spellcheck attribute and track lifecycle
+  QuerySelector("div")->setAttribute(html_names::kSpellcheckAttr,
+                                     keywords::kFalse);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+
+  // Re-enable spellcheck attribute and track lifecycle
+  QuerySelector("div")->setAttribute(html_names::kSpellcheckAttr,
+                                     keywords::kTrue);
+  UpdateAllLifecyclePhasesForTest();
+  if (IsRestrictionActiveForEnablement()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  } else {
+    EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
+    IdleChecker().ForceInvocationForTesting();
+    IdleChecker().SkipColdModeTimerForTesting();
+    ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+    IdleChecker().ForceInvocationForTesting();
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  }
 }
 
 TEST_P(IdleSpellCheckControllerTest, UserActivation) {
