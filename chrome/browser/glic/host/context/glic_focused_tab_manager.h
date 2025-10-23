@@ -237,5 +237,85 @@ class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
   base::CallbackListSubscription active_tab_subscription_;
 };
 
+// Applies the proxy pattern to focused tab manager to inject pinning as the
+// source of truth for context-sharing.
+//
+// Behaves just like the default detached focused tab manager above, with one
+// caveat: if the would-be focused tab is not currently pinned for sharing, then
+// it is returned as the focus candidate instead of the focused tab.
+//
+// Useful for multi-instance, where we want the signal approximating "active
+// tab", but without turning on actual context sharing (controlled by pinning).
+class GlicPinAwareDetachedFocusedTabManager
+    : public GlicFocusedTabManagerInterface {
+ public:
+  explicit GlicPinAwareDetachedFocusedTabManager(
+      GlicSharingManager* sharing_manager,
+      GlicFocusedBrowserManager* focused_browser_manager);
+  ~GlicPinAwareDetachedFocusedTabManager() override;
+
+  // GlicFocusedTabManagerInterface implementation.
+  using FocusedTabChangedCallback =
+      base::RepeatingCallback<void(const FocusedTabData&)>;
+  base::CallbackListSubscription AddFocusedTabChangedCallback(
+      FocusedTabChangedCallback callback) override;
+  FocusedTabData GetFocusedTabData() override;
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) override;
+  bool IsTabFocused(tabs::TabHandle tab_handle) const override;
+
+ private:
+  // Returns the focused_tab_data unless there is a focused tab that isn't also
+  // pinned -- in which case it moves the focused tab to the candidate.
+  FocusedTabData GetPinAwareFocusedTabData(
+      const FocusedTabData& focused_tab_data);
+
+  // Callback for our real focused tab manager changes to be proxied.
+  void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
+
+  // Callback for our real focused tab manager data changes to be proxied.
+  void OnFocusedTabDataChanged(const glic::mojom::TabData* focused_tab_data);
+
+  // Callback for pinning status changes.
+  void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool status);
+
+  // Register internal subscription callbacks.
+  void InitializeSubscriptions();
+
+  // Notifies subscribers of a change to the focused tab.
+  void NotifyFocusedTabChanged(const FocusedTabData& focused_tab);
+
+  // Notifies subscribers of a change to the focused tab data.
+  void NotifyFocusedTabDataChanged(
+      const glic::mojom::TabData* focused_tab_data);
+
+  // Subscription for changes to focused tab.
+  base::CallbackListSubscription focused_tab_changed_subscription_;
+
+  // Subscription for changes to focused tab data.
+  base::CallbackListSubscription focused_tab_data_changed_subscription_;
+
+  // Subscription for changes to tab pinning status.
+  base::CallbackListSubscription tab_pinning_status_changed_subscription_;
+
+  // List of callbacks to fire when the focused tab changes.
+  base::RepeatingCallbackList<void(const FocusedTabData&)>
+      focused_tab_changed_callback_list_;
+
+  // List of callbacks to fire when the focused tab data changes.
+  base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
+      focused_tab_data_changed_callback_list_;
+
+  // Source of truth for pinned tabs.
+  // TODO(crbug.com/452150693): Split up the sharing manager interface so we can
+  // specify just the pinning portion here.
+  raw_ptr<GlicSharingManager> sharing_manager_;
+
+  // Proxied focused tab manager.
+  GlicFocusedTabManager focused_tab_manager_;
+};
+
 }  // namespace glic
 #endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_FOCUSED_TAB_MANAGER_H_
