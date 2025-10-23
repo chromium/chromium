@@ -215,7 +215,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Updates the `last_used` timestamp for the entry with the specified
   // `res_id`. `callback` is invoked with `kOk` on success, or `kNotFound` if
   // the entry does not exist or is already doomed.
-  virtual void UpdateEntryLastUsedByResId(ResId res_id,
+  virtual void UpdateEntryLastUsedByResId(const CacheEntryKey& key,
+                                          ResId res_id,
                                           base::Time last_used,
                                           ErrorCallback callback) = 0;
 
@@ -282,7 +283,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // starting offset and length of the first contiguous block of data found
   // within the requested range `[offset, offset + len)`. If no data is found
   // in the requested range, the `available_len` in the result will be 0.
-  virtual void GetEntryAvailableRange(ResId res_id,
+  virtual void GetEntryAvailableRange(const CacheEntryKey& key,
+                                      ResId res_id,
                                       int64_t offset,
                                       int len,
                                       RangeResultCallback callback) = 0;

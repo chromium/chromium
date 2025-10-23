@@ -2782,7 +2782,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .WithArgs(key, last_used, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  void UpdateEntryLastUsedByResId(ResId res_id,
+  void UpdateEntryLastUsedByResId(const CacheEntryKey& key,
+                                  ResId res_id,
                                   base::Time last_used,
                                   ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::UpdateEntryLastUsedByResId)
@@ -2827,7 +2828,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                   sparse_reading, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  void GetEntryAvailableRange(ResId res_id,
+  void GetEntryAvailableRange(const CacheEntryKey& key,
+                              ResId res_id,
                               int64_t offset,
                               int len,
                               RangeResultCallback callback) override {

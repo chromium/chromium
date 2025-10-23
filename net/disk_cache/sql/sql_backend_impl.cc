@@ -976,7 +976,7 @@ void SqlBackendImpl::HandleUpdateEntryLastUsedOperation(
     return;
   }
   store_->UpdateEntryLastUsedByResId(
-      *optional_res_id, last_used,
+      key, *optional_res_id, last_used,
       base::BindOnce([](SqlPersistentStore::Error error) {})
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1257,18 +1257,19 @@ RangeResult SqlBackendImpl::GetEntryAvailableRange(
       base::MakeRefCounted<SyncResultReceiver<const RangeResult&>>(
           std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key,
-      base::BindOnce(&SqlBackendImpl::HandleGetEntryAvailableRangeOperation,
-                     weak_factory_.GetWeakPtr(), res_id_or_error, offset, len,
-                     WrapCallbackWithAbortError<const RangeResult&>(
-                         sync_result_receiver->GetCallback(),
-                         RangeResult(net::ERR_ABORTED))));
+      key, base::BindOnce(
+               &SqlBackendImpl::HandleGetEntryAvailableRangeOperation,
+               weak_factory_.GetWeakPtr(), key, res_id_or_error, offset, len,
+               WrapCallbackWithAbortError<const RangeResult&>(
+                   sync_result_receiver->GetCallback(),
+                   RangeResult(net::ERR_ABORTED))));
   auto sync_result = sync_result_receiver->FinishSyncCall();
   return sync_result ? std::move(*sync_result)
                      : RangeResult(net::ERR_IO_PENDING);
 }
 
 void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
+    const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t offset,
     int len,
@@ -1283,7 +1284,7 @@ void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
     std::move(callback).Run(RangeResult(net::ERR_FAILED));
     return;
   }
-  store_->GetEntryAvailableRange(*optional_res_id, offset, len,
+  store_->GetEntryAvailableRange(key, *optional_res_id, offset, len,
                                  std::move(callback));
 }
 

@@ -291,10 +291,12 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Synchronous wrapper for UpdateEntryLastUsedByResId.
   SqlPersistentStore::Error UpdateEntryLastUsedByResId(
+      const CacheEntryKey& key,
       SqlPersistentStore::ResId res_id,
       base::Time last_used) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->UpdateEntryLastUsedByResId(res_id, last_used, future.GetCallback());
+    store_->UpdateEntryLastUsedByResId(key, res_id, last_used,
+                                       future.GetCallback());
     return future.Get();
   }
 
@@ -388,11 +390,13 @@ class SqlPersistentStoreTest : public testing::Test {
   }
 
   // Synchronous wrapper for GetEntryAvailableRange.
-  RangeResult GetEntryAvailableRange(SqlPersistentStore::ResId res_id,
+  RangeResult GetEntryAvailableRange(const CacheEntryKey& key,
+                                     SqlPersistentStore::ResId res_id,
                                      int64_t offset,
                                      int len) {
     base::test::TestFuture<const RangeResult&> future;
-    store_->GetEntryAvailableRange(res_id, offset, len, future.GetCallback());
+    store_->GetEntryAvailableRange(key, res_id, offset, len,
+                                   future.GetCallback());
     return future.Get();
   }
 
@@ -1908,11 +1912,11 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByResIdSuccess) {
   const base::Time kNewTime = base::Time::Now();
   ASSERT_NE(kNewTime, create_time);
 
-  ASSERT_EQ(UpdateEntryLastUsedByResId(res_id, kNewTime),
+  ASSERT_EQ(UpdateEntryLastUsedByResId(kKey, res_id, kNewTime),
             SqlPersistentStore::Error::kOk);
 
   // Setting the same time should succeed.
-  ASSERT_EQ(UpdateEntryLastUsedByResId(res_id, kNewTime),
+  ASSERT_EQ(UpdateEntryLastUsedByResId(kKey, res_id, kNewTime),
             SqlPersistentStore::Error::kOk);
 
   // Open again to verify the updated time.
@@ -1923,7 +1927,8 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByResIdSuccess) {
 
 TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByResIdOnNonExistentEntry) {
   CreateAndInitStore();
-  ASSERT_EQ(UpdateEntryLastUsedByResId(SqlPersistentStore::ResId(123),
+  const CacheEntryKey kKey("key");
+  ASSERT_EQ(UpdateEntryLastUsedByResId(kKey, SqlPersistentStore::ResId(123),
                                        base::Time::Now()),
             SqlPersistentStore::Error::kNotFound);
   EXPECT_EQ(GetEntryCount(), 0);
@@ -1938,7 +1943,7 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedByResIdOnDoomedEntry) {
   ASSERT_EQ(DoomEntry(kKey, res_id), SqlPersistentStore::Error::kOk);
 
   // Attempting to update a doomed entry should fail as if it's not found.
-  ASSERT_EQ(UpdateEntryLastUsedByResId(res_id, base::Time::Now()),
+  ASSERT_EQ(UpdateEntryLastUsedByResId(kKey, res_id, base::Time::Now()),
             SqlPersistentStore::Error::kNotFound);
 }
 
@@ -3021,7 +3026,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeNoData) {
   const CacheEntryKey kKey("my-key");
   const auto res_id = CreateEntryAndGetResId(kKey);
 
-  auto result = GetEntryAvailableRange(res_id, 0, 100);
+  auto result = GetEntryAvailableRange(kKey, res_id, 0, 100);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 0);
   EXPECT_EQ(result.available_len, 0);
@@ -3037,13 +3042,13 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeNoOverlap) {
                             kData, /*truncate=*/false);
 
   // Query before the data.
-  auto result1 = GetEntryAvailableRange(res_id, 0, 50);
+  auto result1 = GetEntryAvailableRange(kKey, res_id, 0, 50);
   EXPECT_EQ(result1.net_error, net::OK);
   EXPECT_EQ(result1.start, 0);
   EXPECT_EQ(result1.available_len, 0);
 
   // Query after the data.
-  auto result2 = GetEntryAvailableRange(res_id, 200, 50);
+  auto result2 = GetEntryAvailableRange(kKey, res_id, 200, 50);
   EXPECT_EQ(result2.net_error, net::OK);
   EXPECT_EQ(result2.start, 200);
   EXPECT_EQ(result2.available_len, 0);
@@ -3056,7 +3061,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeFullOverlap) {
 
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 100, 100, 'a');
 
-  auto result = GetEntryAvailableRange(res_id, 100, 100);
+  auto result = GetEntryAvailableRange(kKey, res_id, 100, 100);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 100);
   EXPECT_EQ(result.available_len, 100);
@@ -3071,7 +3076,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeQueryEndsInData) {
 
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 100, 100, 'a');
 
-  auto result = GetEntryAvailableRange(res_id, 50, 100);
+  auto result = GetEntryAvailableRange(kKey, res_id, 50, 100);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 100);
   EXPECT_EQ(result.available_len, 50);
@@ -3086,7 +3091,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeQueryStartsInData) {
 
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 100, 100, 'a');
 
-  auto result = GetEntryAvailableRange(res_id, 150, 100);
+  auto result = GetEntryAvailableRange(kKey, res_id, 150, 100);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 150);
   EXPECT_EQ(result.available_len, 50);
@@ -3101,7 +3106,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeQueryContainsData) {
 
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 100, 100, 'a');
 
-  auto result = GetEntryAvailableRange(res_id, 50, 200);
+  auto result = GetEntryAvailableRange(kKey, res_id, 50, 200);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 100);
   EXPECT_EQ(result.available_len, 100);
@@ -3114,7 +3119,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeContained) {
 
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 50, 200, 'a');
 
-  auto result = GetEntryAvailableRange(res_id, 100, 100);
+  auto result = GetEntryAvailableRange(kKey, res_id, 100, 100);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 100);
   EXPECT_EQ(result.available_len, 100);
@@ -3128,7 +3133,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeContiguousBlobs) {
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 100, 100, 'a');
   FillDataInRange(kKey, res_id, /*old_body_end=*/200, 200, 100, 'b');
 
-  auto result = GetEntryAvailableRange(res_id, 100, 200);
+  auto result = GetEntryAvailableRange(kKey, res_id, 100, 200);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 100);
   EXPECT_EQ(result.available_len, 200);
@@ -3142,7 +3147,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeNonContiguousBlobs) {
   FillDataInRange(kKey, res_id, /*old_body_end=*/0, 100, 100, 'a');
   FillDataInRange(kKey, res_id, /*old_body_end=*/200, 300, 100, 'b');
 
-  auto result = GetEntryAvailableRange(res_id, 100, 300);
+  auto result = GetEntryAvailableRange(kKey, res_id, 100, 300);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 100);
   EXPECT_EQ(result.available_len, 100);
@@ -3159,7 +3164,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeMultipleBlobsStopsAtGap) {
   FillDataInRange(kKey, res_id, 300, 400, 100, 'a');
 
   // Query for [150, 450). Should return [150, 300), which has length 150.
-  auto result = GetEntryAvailableRange(res_id, 150, 300);
+  auto result = GetEntryAvailableRange(kKey, res_id, 150, 300);
   EXPECT_EQ(result.net_error, net::OK);
   EXPECT_EQ(result.start, 150);
   EXPECT_EQ(result.available_len, 150);
@@ -3443,7 +3448,7 @@ TEST_F(SqlPersistentStoreTest,
 
   bool callback_run = false;
   store_->UpdateEntryLastUsedByResId(
-      res_id, base::Time::Now(),
+      kKey, res_id, base::Time::Now(),
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::Error) { callback_run = true; }));
   store_.reset();
@@ -3663,7 +3668,7 @@ TEST_F(SqlPersistentStoreTest,
   const auto res_id = CreateEntryAndGetResId(kKey);
   bool callback_run = false;
   store_->GetEntryAvailableRange(
-      res_id, 0, 100, base::BindLambdaForTesting([&](const RangeResult&) {
+      kKey, res_id, 0, 100, base::BindLambdaForTesting([&](const RangeResult&) {
         callback_run = true;
       }));
 
@@ -4200,7 +4205,7 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
   EXPECT_EQ(UpdateEntryLastUsedByKey(kKey, base::Time::Now()),
             SqlPersistentStore::Error::kFailedForTesting);
 
-  EXPECT_EQ(UpdateEntryLastUsedByResId(SqlPersistentStore::ResId(1),
+  EXPECT_EQ(UpdateEntryLastUsedByResId(kKey, SqlPersistentStore::ResId(1),
                                        base::Time::Now()),
             SqlPersistentStore::Error::kFailedForTesting);
 
@@ -4222,9 +4227,9 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
   EXPECT_EQ(read_data_result.error(),
             SqlPersistentStore::Error::kFailedForTesting);
 
-  EXPECT_EQ(
-      GetEntryAvailableRange(SqlPersistentStore::ResId(1), 0, 100).net_error,
-      net::Error::ERR_FAILED);
+  EXPECT_EQ(GetEntryAvailableRange(kKey, SqlPersistentStore::ResId(1), 0, 100)
+                .net_error,
+            net::Error::ERR_FAILED);
 
   EXPECT_EQ(CalculateSizeOfEntriesBetween(base::Time::Now(),
                                           base::Time::Now() + base::Seconds(1))
@@ -4287,7 +4292,7 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
   EXPECT_EQ(UpdateEntryLastUsedByKey(kKey, base::Time::Now()),
             SqlPersistentStore::Error::kDatabaseClosed);
 
-  EXPECT_EQ(UpdateEntryLastUsedByResId(SqlPersistentStore::ResId(1),
+  EXPECT_EQ(UpdateEntryLastUsedByResId(kKey, SqlPersistentStore::ResId(1),
                                        base::Time::Now()),
             SqlPersistentStore::Error::kDatabaseClosed);
 
@@ -4309,9 +4314,9 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
   EXPECT_EQ(read_data_result.error(),
             SqlPersistentStore::Error::kDatabaseClosed);
 
-  EXPECT_EQ(
-      GetEntryAvailableRange(SqlPersistentStore::ResId(1), 0, 100).net_error,
-      net::Error::ERR_FAILED);
+  EXPECT_EQ(GetEntryAvailableRange(kKey, SqlPersistentStore::ResId(1), 0, 100)
+                .net_error,
+            net::Error::ERR_FAILED);
 
   EXPECT_EQ(CalculateSizeOfEntriesBetween(base::Time::Now(),
                                           base::Time::Now() + base::Seconds(1))
