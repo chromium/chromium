@@ -17,6 +17,7 @@
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
@@ -150,6 +151,9 @@ void HandleOnPerformingDrop(
     content::WebContentsViewDelegate::DropCompletionCallback callback) {
   CHECK(callback);
   absl::Cleanup cleanup = [&] {
+    if (web_contents->GetDelegate()) {
+      web_contents->GetDelegate()->HandleDragEnded();
+    }
     std::move(callback).Run(std::move(drop_data));
   };
 
