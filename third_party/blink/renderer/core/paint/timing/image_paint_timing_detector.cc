@@ -28,8 +28,6 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -82,50 +80,6 @@ ImageRecord* ImageRecordsManager::LargestImage() const {
   return largest_painted_image_.Get();
 }
 
-void ImagePaintTimingDetector::PopulateTraceValue(
-    TracedValue& value,
-    const ImageRecord& first_image_paint) {
-  first_image_paint.PopulateTraceValue(value);
-
-  value.SetInteger("candidateIndex", ++count_candidates_);
-  value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
-  value.SetBoolean("isOutermostMainFrame",
-                   frame_view_->GetFrame().IsOutermostMainFrame());
-  value.SetBoolean("isEmbeddedFrame",
-                   !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame() ||
-                       frame_view_->GetFrame().IsInFencedFrameTree());
-}
-
-void ImagePaintTimingDetector::ReportCandidateToTrace(
-    ImageRecord& largest_image_record,
-    base::TimeTicks time) {
-  if (!PaintTimingDetector::IsTracing())
-    return;
-  DCHECK(!time.is_null());
-  auto value = std::make_unique<TracedValue>();
-  PopulateTraceValue(*value, largest_image_record);
-  // TODO(yoav): Report first animated frame times as well.
-  TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-      "loading", "LargestImagePaint::Candidate", time, "data", std::move(value),
-      "frame", GetFrameIdForTracing(&frame_view_->GetFrame()));
-}
-
-void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
-  if (!PaintTimingDetector::IsTracing())
-    return;
-  auto value = std::make_unique<TracedValue>();
-  value->SetInteger("candidateIndex", ++count_candidates_);
-  value->SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
-  value->SetBoolean("isOutermostMainFrame",
-                    frame_view_->GetFrame().IsOutermostMainFrame());
-  value->SetBoolean("isEmbeddedFrame",
-                    !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame() ||
-                        frame_view_->GetFrame().IsInFencedFrameTree());
-  TRACE_EVENT2("loading", "LargestImagePaint::NoCandidate", "data",
-               std::move(value), "frame",
-               GetFrameIdForTracing(&frame_view_->GetFrame()));
-}
-
 std::pair<ImageRecord*, bool>
 ImagePaintTimingDetector::UpdateMetricsCandidate() {
   ImageRecord* largest_image_record = records_manager_.LargestImage();
@@ -133,26 +87,15 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
     return {nullptr, false};
   }
 
-  base::TimeTicks time = largest_image_record->HasFirstAnimatedFrameTime()
-                             ? largest_image_record->FirstAnimatedFrameTime()
-                             : largest_image_record->PaintTime();
-
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
   // Calling NotifyMetricsIfLargestImagePaintChanged only has an impact on
   // PageLoadMetrics, and not on the web exposed metrics.
   //
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
-  bool changed = detector.GetLargestContentfulPaintCalculator()
-                     ->NotifyMetricsIfLargestImagePaintChanged(
-                         time, *largest_image_record);
-  if (changed) {
-    if (!time.is_null() && largest_image_record->IsLoaded()) {
-      ReportCandidateToTrace(*largest_image_record, time);
-    } else {
-      ReportNoCandidateToTrace();
-    }
-  }
+  bool changed =
+      detector.GetLargestContentfulPaintCalculator()
+          ->NotifyMetricsIfLargestImagePaintChanged(*largest_image_record);
   return {largest_image_record, changed};
 }
 

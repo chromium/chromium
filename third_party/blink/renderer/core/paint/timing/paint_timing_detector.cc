@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -169,8 +171,7 @@ void PaintTimingDetector::NotifyPaintFinished() {
     visualizer_.reset();
   }
 
-  LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
-  if (window) {
+  if (LocalDOMWindow* window = DomWindow()) {
     DOMWindowPerformance::performance(*window)->OnPaintFinished();
 
     if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
@@ -299,7 +300,7 @@ void PaintTimingDetector::NotifyImageRemoved(
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  if (LocalDOMWindow* window = frame_view_->GetFrame().DomWindow()) {
+  if (LocalDOMWindow* window = DomWindow()) {
     if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
       heuristics->OnInputOrScroll();
     }
@@ -359,14 +360,14 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
     return largest_contentful_paint_calculator_.Get();
   }
 
-  auto* dom_window = frame_view_->GetFrame().DomWindow();
+  auto* dom_window = DomWindow();
   if (!dom_window) {
     return nullptr;
   }
 
   largest_contentful_paint_calculator_ =
       MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          DOMWindowPerformance::performance(*dom_window));
+          DOMWindowPerformance::performance(*dom_window), this);
   return largest_contentful_paint_calculator_.Get();
 }
 
@@ -469,8 +470,7 @@ void PaintTimingDetector::UpdateLcpCandidate() {
   }
 
   lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      text_update_result.first, image_update_result.first,
-      /*is_triggered_by_soft_navigation=*/false, kNavigationIdAbsentValue);
+      text_update_result.first, image_update_result.first);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
@@ -483,6 +483,18 @@ void PaintTimingDetector::ReportIgnoredContent() {
 const LargestContentfulPaintDetails&
 PaintTimingDetector::LatestLcpDetailsForTest() {
   return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
+}
+
+void PaintTimingDetector::EmitPerformanceEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t paint_size,
+    base::TimeTicks load_time,
+    const AtomicString& id,
+    const String& url,
+    Element* element) {
+  DOMWindowPerformance::performance(CHECK_DEREF(DomWindow()))
+      ->OnLargestContentfulPaintUpdated(paint_timing_info, paint_size,
+                                        load_time, id, url, element);
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*
@@ -542,6 +554,10 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(image_paint_timing_detector_);
   visitor->Trace(frame_view_);
   visitor->Trace(largest_contentful_paint_calculator_);
+}
+
+LocalDOMWindow* PaintTimingDetector::DomWindow() const {
+  return frame_view_->GetFrame().DomWindow();
 }
 
 }  // namespace blink

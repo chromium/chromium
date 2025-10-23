@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 
 namespace blink {
 
@@ -22,10 +23,11 @@ SoftNavigationContext::SoftNavigationContext(
     LocalDOMWindow& window,
     features::SoftNavigationHeuristicsMode mode)
     : paint_attribution_mode_(mode),
+      window_(&window),
       lcp_calculator_(MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          DOMWindowPerformance::performance(window))),
-      heuristics_(window.GetSoftNavigationHeuristics()) {
-  heuristics_->ForEachInteractionEffectsMonitor(
+          DOMWindowPerformance::performance(window),
+          this)) {
+  window_->GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
       [&](InteractionEffectsMonitor& monitor) {
         monitor.OnSoftNavigationContextCreated();
       });
@@ -173,7 +175,7 @@ bool SoftNavigationContext::OnPaintFinished() {
   }
 
   if (new_painted_area > 0) {
-    heuristics_->ForEachInteractionEffectsMonitor(
+    window_->GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
         [&](InteractionEffectsMonitor& monitor) {
           monitor.OnContentfulPaint(this, new_painted_area);
         });
@@ -230,7 +232,7 @@ void SoftNavigationContext::OnInputOrScroll() {
 // Presentation.
 void SoftNavigationContext::UpdateWebExposedLargestContentfulPaintIfNeeded() {
   lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      largest_text_, largest_image_, true, NavigationId());
+      largest_text_, largest_image_);
 }
 
 bool SoftNavigationContext::TryUpdateLcpCandidate() {
@@ -242,12 +244,6 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
   }
 
   bool latest_lcp_details_for_ukm_changed = false;
-  // TODO(crbug.com/449779010): Update `lcp_calculator_` to compute the
-  // timestamp rather than passing it here. This is currently done this way
-  // because hard LCP always uses first animated frame time for images for
-  // metrics, when available whereas we always use the same value as the
-  // web-exposed entry, which depends on ReportFirstFrameTimeAsRenderTime.
-  //
   // TODO(crbug.com/425989954): Guard on paint_time, because although this
   // TryUpdateLcpCandidate gets called after presentation feedback, it might not
   // be the right presentation time for this specific text/image record.
@@ -261,7 +257,7 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
     latest_lcp_details_for_ukm_changed =
         latest_lcp_details_for_ukm_changed ||
         lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged(
-            largest_image_->PaintTime(), *largest_image_.Get());
+            *largest_image_.Get());
   }
   return latest_lcp_details_for_ukm_changed;
 }
@@ -296,7 +292,7 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(largest_text_);
   visitor->Trace(largest_image_);
   visitor->Trace(first_image_or_text_);
-  visitor->Trace(heuristics_);
+  visitor->Trace(window_);
 }
 
 void SoftNavigationContext::Shutdown() {
@@ -306,7 +302,29 @@ void SoftNavigationContext::Shutdown() {
   largest_text_ = nullptr;
   largest_image_ = nullptr;
   first_image_or_text_ = nullptr;
-  heuristics_ = nullptr;
+  window_ = nullptr;
+}
+
+void SoftNavigationContext::EmitPerformanceEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t paint_size,
+    base::TimeTicks load_time,
+    const AtomicString& id,
+    const String& url,
+    Element* element) {
+  // TODO(crbug.com/454082771): We currently only expect this to be called once
+  // the soft nav entry has been emitted, but it's possible for some of the info
+  // to be lost if the node is removed before all the conditions are met.
+  // Instead, we should buffer the most recent candidate and emit it along with
+  // the soft nav entry, which avoids hanging onto the PaintTimingRecord
+  // indefinitely.
+  CHECK(WasEmitted());
+  // This should not be called after we've been shut down.
+  CHECK(window_);
+  DOMWindowPerformance::performance(*window_)
+      ->OnInteractionContentfulPaintUpdated(paint_timing_info, paint_size,
+                                            load_time, id, url, element,
+                                            NavigationId());
 }
 
 }  // namespace blink

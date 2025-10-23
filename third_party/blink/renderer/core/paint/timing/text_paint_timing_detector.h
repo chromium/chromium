@@ -22,7 +22,6 @@ class LocalFrameView;
 class PaintTimingCallbackManager;
 class PropertyTreeStateOrAlias;
 class TextElementTiming;
-class TracedValue;
 struct DOMPaintTimingInfo;
 class SoftNavigationContext;
 
@@ -45,9 +44,6 @@ class CORE_EXPORT LargestTextPaintManager final
 
   // Return the text LCP candidate and whether the candidate has changed.
   std::pair<TextRecord*, bool> UpdateMetricsCandidate();
-
-  void ReportCandidateToTrace(const TextRecord&);
-  void PopulateTraceValue(TracedValue&, const TextRecord& first_text_paint);
 
   Member<TextRecord> PopLargestIgnoredText() {
     return std::move(largest_ignored_text_);

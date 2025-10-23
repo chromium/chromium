@@ -15,9 +15,12 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -34,6 +37,13 @@ constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
 // TODO: Remove this once we introduce new trace events for soft-navs.
 constexpr const char kFixedNavigationIdForSoftNavs[] =
     "deadbeef-dead-beef-dead-beefdeadbeef";
+
+void PopulateFrameTraceData(TracedValue& value, const LocalFrame& frame) {
+  value.SetBoolean("isMainFrame", frame.IsMainFrame());
+  value.SetBoolean("isOutermostMainFrame", frame.IsOutermostMainFrame());
+  value.SetBoolean("isEmbeddedFrame", !frame.LocalFrameRoot().IsMainFrame() ||
+                                          frame.IsInFencedFrameTree());
+}
 
 }  // namespace
 
@@ -64,38 +74,34 @@ LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
 }
 
 LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
-    WindowPerformance* window_performance)
-    : window_performance_(window_performance) {}
+    WindowPerformance* window_performance,
+    Delegate* delegate)
+    : window_performance_(window_performance), delegate_(delegate) {
+  CHECK(delegate_);
+}
 
 void LargestContentfulPaintCalculator::
     UpdateWebExposedLargestContentfulPaintIfNeeded(
         const TextRecord* largest_text,
-        const ImageRecord* largest_image,
-        bool is_triggered_by_soft_navigation,
-        uint32_t navigation_id) {
+        const ImageRecord* largest_image) {
   uint64_t text_size = largest_text ? largest_text->RecordedSize() : 0u;
   uint64_t image_size = largest_image ? largest_image->RecordedSize() : 0u;
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ && largest_image->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulImage(
-          largest_image, is_triggered_by_soft_navigation, navigation_id);
+      UpdateWebExposedLargestContentfulImage(*largest_image);
     }
   } else {
     if (text_size > largest_reported_size_ && largest_text->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulText(
-          *largest_text, is_triggered_by_soft_navigation, navigation_id);
+      UpdateWebExposedLargestContentfulText(*largest_text);
     }
   }
 }
 
 void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
-    const ImageRecord* largest_image,
-    bool is_triggered_by_soft_navigation,
-    uint32_t navigation_id) {
+    const ImageRecord& largest_image) {
   DCHECK(window_performance_);
-  DCHECK(largest_image);
-  const MediaTiming* media_timing = largest_image->GetMediaTiming();
-  Node* image_node = largest_image->GetNode();
+  const MediaTiming* media_timing = largest_image.GetMediaTiming();
+  Node* image_node = largest_image.GetNode();
 
   // |media_timing| is a weak pointer, so it may be null. This can only happen
   // if the image has been removed, which means that the largest image is not
@@ -108,8 +114,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
     return;
   }
 
-  largest_image_bpp_ = largest_image->EntropyForLCP();
-  largest_reported_size_ = largest_image->RecordedSize();
+  largest_image_bpp_ = largest_image.EntropyForLCP();
+  largest_reported_size_ = largest_image.RecordedSize();
   const KURL& url = media_timing->Url();
   const String& image_string = url.GetString();
   const String& image_url =
@@ -122,35 +128,22 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
-  if (!is_triggered_by_soft_navigation) {
-    CHECK_EQ(kNavigationIdAbsentValue, navigation_id);
-    window_performance_->OnLargestContentfulPaintUpdated(
-        largest_image->PaintTimingInfo(),
-        /*paint_size=*/largest_image->RecordedSize(),
-        /*load_time=*/largest_image->LoadTime(),
-        /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
-  } else {
-    window_performance_->OnInteractionContentfulPaintUpdated(
-        largest_image->PaintTimingInfo(),
-        /*paint_size=*/largest_image->RecordedSize(),
-        /*load_time=*/largest_image->LoadTime(),
-        /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,
-        /*navigation_id=*/navigation_id);
-  }
+  delegate_->EmitPerformanceEntry(largest_image.PaintTimingInfo(),
+                                  /*paint_size=*/largest_image.RecordedSize(),
+                                  /*load_time=*/largest_image.LoadTime(),
+                                  /*id=*/image_id, /*url=*/image_url,
+                                  /*element=*/image_element);
 
-  // TODO: update trace value with animated frame data
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        kTraceCategories, kLCPCandidate, largest_image->PaintTime(), "data",
-        ImageCandidateTraceData(largest_image, is_triggered_by_soft_navigation),
-        "frame", GetFrameIdForTracing(window->GetFrame()));
+        kTraceCategories, kLCPCandidate, largest_image.PaintTime(), "data",
+        CreateWebExposedCandidateTraceData(largest_image), "frame",
+        GetFrameIdForTracing(window->GetFrame()));
   }
 }
 
 void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
-    const TextRecord& largest_text,
-    bool is_triggered_by_soft_navigation,
-    uint32_t navigation_id) {
+    const TextRecord& largest_text) {
   DCHECK(window_performance_);
   Node* text_node = largest_text.GetNode();
   // |text_node| could be null and |largest_text| should be ignored in this
@@ -168,29 +161,18 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       text_element ? text_element->GetIdAttribute() : AtomicString();
 
   // Always use paint time as start time for text LCP candidate.
-  if (!is_triggered_by_soft_navigation) {
-    CHECK_EQ(kNavigationIdAbsentValue, navigation_id);
-    window_performance_->OnLargestContentfulPaintUpdated(
-        largest_text.PaintTimingInfo(),
-        /*paint_size=*/largest_text.RecordedSize(),
-        /*load_time=*/base::TimeTicks(),
-        /*id=*/text_id,
-        /*url=*/g_empty_string, /*element=*/text_element);
-  } else {
-    window_performance_->OnInteractionContentfulPaintUpdated(
-        largest_text.PaintTimingInfo(),
-        /*paint_size=*/largest_text.RecordedSize(),
-        /*load_time=*/base::TimeTicks(),
-        /*id=*/text_id,
-        /*url=*/g_empty_string, /*element=*/text_element,
-        /*navigation_id=*/navigation_id);
-  }
+  delegate_->EmitPerformanceEntry(largest_text.PaintTimingInfo(),
+                                  /*paint_size=*/largest_text.RecordedSize(),
+                                  /*load_time=*/base::TimeTicks(),
+                                  /*id=*/text_id,
+                                  /*url=*/g_empty_string,
+                                  /*element=*/text_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
         kTraceCategories, kLCPCandidate, largest_text.PaintTime(), "data",
-        TextCandidateTraceData(largest_text, is_triggered_by_soft_navigation),
-        "frame", GetFrameIdForTracing(window->GetFrame()));
+        CreateWebExposedCandidateTraceData(largest_text), "frame",
+        GetFrameIdForTracing(window->GetFrame()));
   }
 }
 
@@ -212,8 +194,13 @@ bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
 }
 
 bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
-    base::TimeTicks image_paint_time,
     const ImageRecord& image_record) {
+  // TODO(crbug.com/449779010): Unify these.
+  base::TimeTicks image_paint_time =
+      delegate_->IsHardNavigation() && image_record.HasFirstAnimatedFrameTime()
+          ? image_record.FirstAnimatedFrameTime()
+          : image_record.PaintTime();
+
   if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
                                              image_record.RecordedSize())) {
     return false;
@@ -274,6 +261,20 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
   latest_lcp_details_.largest_contentful_paint_image_request_priority =
       image_record.RequestPriority();
   UpdateLatestLcpDetailsTypeIfNeeded();
+
+  // TODO(crbug.com/449779010): Consider removing this IsLoaded(), since we
+  // having presentation time is the only thing that matters for metrics.  When
+  // ReportFirstFrameTimeAsRenderTime ships, we will emit some performance
+  // entries before they are considered fully loaded, so this should probably be
+  // removed along with shipping that feature.
+  if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
+    if (!image_paint_time.is_null() && image_record.IsLoaded()) {
+      ReportMetricsCandidateToTrace(image_record, image_paint_time);
+    } else {
+      ReportNoMetricsImageCandidateToTrace();
+    }
+  }
+
   return true;
 }
 
@@ -288,6 +289,10 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged(
   latest_lcp_details_.largest_text_paint_time = text_record.PaintTime();
   latest_lcp_details_.largest_text_paint_size = text_record.RecordedSize();
   UpdateLatestLcpDetailsTypeIfNeeded();
+
+  if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
+    ReportMetricsCandidateToTrace(text_record);
+  }
 
   return true;
 }
@@ -315,82 +320,113 @@ void LargestContentfulPaintCalculator::UpdateLatestLcpDetailsTypeIfNeeded() {
 }
 void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
+  visitor->Trace(delegate_);
 }
 
 std::unique_ptr<TracedValue>
-LargestContentfulPaintCalculator::TextCandidateTraceData(
-    const TextRecord& largest_text,
-    bool is_triggered_by_soft_navigation) {
-  auto value = std::make_unique<TracedValue>();
+LargestContentfulPaintCalculator::CreateWebExposedCandidateTraceData(
+    const TextRecord& largest_text) {
+  std::unique_ptr<TracedValue> value =
+      CreateWebExposedCandidateTraceDataCommon(largest_text);
   value->SetString("type", "text");
-  value->SetInteger("nodeId", largest_text.NodeIdForTracing());
-  value->SetInteger("size", static_cast<int>(largest_text.RecordedSize()));
-  value->SetInteger("candidateIndex", ++count_candidates_);
-  auto* window = window_performance_->DomWindow();
-  value->SetBoolean("isOutermostMainFrame",
-                    window->GetFrame()->IsOutermostMainFrame());
-  value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
-  // Set navigationId to this fixed string for soft navs, to avoid that the
-  // event gets associated with the hard navigation (e.g., in DevTools).
-  value->SetString("navigationId", is_triggered_by_soft_navigation
-                                       ? kFixedNavigationIdForSoftNavs
-                                       : IdentifiersFactory::LoaderId(
-                                             window->document()->Loader()));
-  // TODO(crbug.com/426595418): Clean up this field once we support an
-  // event for soft lcp to be issued (Interaction Contentful Paint).
-  value->SetInteger("performanceTimelineNavigationId",
-                    window_performance_->NavigationId());
-
-  if (Node* node = largest_text.GetNode()) {
-    value->SetString("nodeName", node->DebugName());
-  }
-
   return value;
 }
 
 std::unique_ptr<TracedValue>
-LargestContentfulPaintCalculator::ImageCandidateTraceData(
-    const ImageRecord* largest_image,
-    bool is_triggered_by_soft_navigation) {
-  auto value = std::make_unique<TracedValue>();
+LargestContentfulPaintCalculator::CreateWebExposedCandidateTraceData(
+    const ImageRecord& largest_image) {
+  std::unique_ptr<TracedValue> value =
+      CreateWebExposedCandidateTraceDataCommon(largest_image);
   value->SetString("type", "image");
-  value->SetInteger("nodeId", largest_image->NodeIdForTracing());
-  value->SetInteger("size", static_cast<int>(largest_image->RecordedSize()));
-  value->SetInteger("candidateIndex", ++count_candidates_);
-  auto* window = window_performance_->DomWindow();
-  value->SetBoolean("isOutermostMainFrame",
-                    window->GetFrame()->IsOutermostMainFrame());
-  value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
-  // Set navigationId to this fixed string for soft navs, to avoid that the
-  // event gets associated with the hard navigation (e.g., in DevTools).
-  value->SetString("navigationId", is_triggered_by_soft_navigation
-                                       ? kFixedNavigationIdForSoftNavs
-                                       : IdentifiersFactory::LoaderId(
-                                             window->document()->Loader()));
-  // TODO(crbug.com/426595418): Clean up this field once we support an
-  // event for soft lcp to be issued (Interaction Contentful Paint).
-  value->SetInteger("performanceTimelineNavigationId",
-                    window_performance_->NavigationId());
   value->SetDouble("imageDiscoveryTime",
                    window_performance_->MonotonicTimeToDOMHighResTimeStamp(
-                       largest_image->GetMediaTiming()->DiscoveryTime()));
+                       largest_image.GetMediaTiming()->DiscoveryTime()));
   value->SetDouble("imageLoadStart",
                    window_performance_->MonotonicTimeToDOMHighResTimeStamp(
-                       largest_image->GetMediaTiming()->LoadStart()));
+                       largest_image.GetMediaTiming()->LoadStart()));
   value->SetDouble("imageLoadEnd",
                    window_performance_->MonotonicTimeToDOMHighResTimeStamp(
-                       largest_image->GetMediaTiming()->LoadEnd()));
-
-  if (Node* node = largest_image->GetNode()) {
-    value->SetString("nodeName", node->DebugName());
-    if (auto* html_image_element = DynamicTo<HTMLImageElement>(node)) {
-      const AtomicString& loadingAttr =
-          html_image_element->FastGetAttribute(html_names::kLoadingAttr);
-      value->SetString("loadingAttr", loadingAttr);
-    }
+                       largest_image.GetMediaTiming()->LoadEnd()));
+  if (auto* html_image_element =
+          DynamicTo<HTMLImageElement>(largest_image.GetNode())) {
+    const AtomicString& loadingAttr =
+        html_image_element->FastGetAttribute(html_names::kLoadingAttr);
+    value->SetString("loadingAttr", loadingAttr);
   }
-
   return value;
+}
+
+std::unique_ptr<TracedValue>
+LargestContentfulPaintCalculator::CreateWebExposedCandidateTraceDataCommon(
+    const PaintTimingRecord& record) {
+  auto value = std::make_unique<TracedValue>();
+  value->SetInteger("nodeId", record.NodeIdForTracing());
+  value->SetInteger("size", static_cast<int>(record.RecordedSize()));
+  value->SetInteger("candidateIndex", ++web_exposed_candidate_count_);
+  auto* window = window_performance_->DomWindow();
+  value->SetBoolean("isOutermostMainFrame",
+                    window->GetFrame()->IsOutermostMainFrame());
+  value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
+  // Set navigationId to this fixed string for soft navs, to avoid that the
+  // event gets associated with the hard navigation (e.g., in DevTools).
+  value->SetString("navigationId", delegate_->IsHardNavigation()
+                                       ? IdentifiersFactory::LoaderId(
+                                             window->document()->Loader())
+                                       : kFixedNavigationIdForSoftNavs);
+  // TODO(crbug.com/426595418): Clean up this field once we support an
+  // event for soft lcp to be issued (Interaction Contentful Paint).
+  value->SetInteger("performanceTimelineNavigationId",
+                    window_performance_->NavigationId());
+  if (Node* node = record.GetNode()) {
+    value->SetString("nodeName", node->DebugName());
+  }
+  return value;
+}
+
+void LargestContentfulPaintCalculator::ReportMetricsCandidateToTrace(
+    const ImageRecord& record,
+    base::TimeTicks time) {
+  CHECK(!time.is_null());
+
+  auto value = std::make_unique<TracedValue>();
+  record.PopulateTraceValue(*value);
+  value->SetInteger("candidateIndex", ++ukm_largest_image_candidate_count_);
+
+  LocalFrame* frame = window_performance_->DomWindow()->GetFrame();
+  CHECK(frame);
+  PopulateFrameTraceData(*value, *frame);
+
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestImagePaint::Candidate",
+                                   time, "data", std::move(value), "frame",
+                                   GetFrameIdForTracing(frame));
+}
+
+void LargestContentfulPaintCalculator::ReportMetricsCandidateToTrace(
+    const TextRecord& record) {
+  auto value = std::make_unique<TracedValue>();
+  record.PopulateTraceValue(*value);
+  value->SetInteger("candidateIndex", ++ukm_largest_text_candidate_count_);
+
+  LocalFrame* frame = window_performance_->DomWindow()->GetFrame();
+  CHECK(frame);
+  PopulateFrameTraceData(*value, *frame);
+
+  CHECK(record.HasPaintTime());
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestTextPaint::Candidate",
+                                   record.PaintTime(), "data", std::move(value),
+                                   "frame", GetFrameIdForTracing(frame));
+}
+
+void LargestContentfulPaintCalculator::ReportNoMetricsImageCandidateToTrace() {
+  auto value = std::make_unique<TracedValue>();
+  value->SetInteger("candidateIndex", ++ukm_largest_image_candidate_count_);
+
+  LocalFrame* frame = window_performance_->DomWindow()->GetFrame();
+  CHECK(frame);
+  PopulateFrameTraceData(*value, *frame);
+
+  TRACE_EVENT2("loading", "LargestImagePaint::NoCandidate", "data",
+               std::move(value), "frame", GetFrameIdForTracing(frame));
 }
 
 }  // namespace blink

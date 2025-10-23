@@ -16,8 +16,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -30,34 +28,6 @@ TextPaintTimingDetector::TextPaintTimingDetector(
           frame_view,
           paint_timing_detector)) {}
 
-void LargestTextPaintManager::PopulateTraceValue(
-    TracedValue& value,
-    const TextRecord& first_text_paint) {
-  first_text_paint.PopulateTraceValue(value);
-
-  value.SetInteger("candidateIndex", ++count_candidates_);
-  value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
-  value.SetBoolean("isOutermostMainFrame",
-                   frame_view_->GetFrame().IsOutermostMainFrame());
-  value.SetBoolean("isEmbeddedFrame",
-                   !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame() ||
-                       frame_view_->GetFrame().IsInFencedFrameTree());
-}
-
-void LargestTextPaintManager::ReportCandidateToTrace(
-    const TextRecord& largest_text_record) {
-  if (!PaintTimingDetector::IsTracing() ||
-      frame_view_->GetFrame().IsDetached()) {
-    return;
-  }
-  auto value = std::make_unique<TracedValue>();
-  PopulateTraceValue(*value, largest_text_record);
-  TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-      "loading", "LargestTextPaint::Candidate", largest_text_record.PaintTime(),
-      "data", std::move(value), "frame",
-      GetFrameIdForTracing(&frame_view_->GetFrame()));
-}
-
 std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   if (!largest_text_) {
     return {nullptr, false};
@@ -68,12 +38,6 @@ std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   bool changed =
       paint_timing_detector_->GetLargestContentfulPaintCalculator()
           ->NotifyMetricsIfLargestTextPaintChanged(*largest_text_.Get());
-  if (changed) {
-    // It is not possible for an update to happen with a candidate that has no
-    // paint time.
-    DCHECK(largest_text_->HasPaintTime());
-    ReportCandidateToTrace(*largest_text_);
-  }
   return {largest_text_.Get(), changed};
 }
 

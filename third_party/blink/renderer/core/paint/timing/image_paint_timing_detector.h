@@ -37,7 +37,6 @@ namespace blink {
 class LayoutObject;
 class LocalFrameView;
 class PropertyTreeStateOrAlias;
-class TracedValue;
 class Image;
 class PaintTimingCallbackManager;
 class StyleImage;
@@ -270,10 +269,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
                            LargestImagePaint_Detached_Frame);
 
-  void PopulateTraceValue(TracedValue&, const ImageRecord& first_image_paint);
   void RegisterNotifyPresentationTime();
-  void ReportCandidateToTrace(ImageRecord&, base::TimeTicks);
-  void ReportNoCandidateToTrace();
   // Computes the size of an image for the purpose of LargestContentfulPaint,
   // downsizing the size of images with low intrinsic size. Images that occupy
   // the full viewport are special-cased and this method returns 0 for them so
@@ -284,9 +280,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,
                                 const MediaTiming&);
-
-  // Used to find the last candidate.
-  unsigned count_candidates_ = 0;
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;

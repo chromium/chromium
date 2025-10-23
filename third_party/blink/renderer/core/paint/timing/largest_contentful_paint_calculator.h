@@ -9,19 +9,48 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class TextRecord;
 class ImageRecord;
+class PaintTimingRecord;
+class TextRecord;
 
-// LargestContentfulPaintCalculator is responsible for tracking the largest
-// image paint and the largest text paint and notifying WindowPerformance
-// whenever a new LatestLargestContentfulPaint entry should be dispatched.
+// `LargestContentfulPaintCalculator` is responsible for tracking the largest
+// image and the largest text paints and notifying its `Delegate` whenever a new
+// PerformanceEntry entry should be dispatched, as well as maintaintaining the
+// data sent to metrics.
 class CORE_EXPORT LargestContentfulPaintCalculator final
     : public GarbageCollected<LargestContentfulPaintCalculator> {
  public:
-  explicit LargestContentfulPaintCalculator(WindowPerformance*);
+  class Delegate : public GarbageCollectedMixin {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called when a PerformanceEntry for a new largest paint candidate should
+    // be emitted. The `Delegate` is responsible for emitting an entry of the
+    // appropriate type.
+    virtual void EmitPerformanceEntry(
+        const DOMPaintTimingInfo& paint_timing_info,
+        uint64_t paint_size,
+        base::TimeTicks load_time,
+        const AtomicString& id,
+        const String& url,
+        Element* element) = 0;
+
+    // Returns true iff the calculator is associated with a hard navigation.
+    //
+    // TODO(crbug.com/454082771): This exists because there are some differences
+    // between hard LCP and ICP, e.g. the paint timestamp used for metrics for
+    // animated images and whether or not traces are emitted for metrics
+    // candidates. This should eventually be removed or replaced with more
+    // specific methods.
+    virtual bool IsHardNavigation() const = 0;
+  };
+
+  LargestContentfulPaintCalculator(WindowPerformance*, Delegate*);
+
   LargestContentfulPaintCalculator(const LargestContentfulPaintCalculator&) =
       delete;
   LargestContentfulPaintCalculator& operator=(
@@ -29,20 +58,9 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   void UpdateWebExposedLargestContentfulPaintIfNeeded(
       const TextRecord* largest_text,
-      const ImageRecord* largest_image,
-      bool is_triggered_by_soft_navigation,
-      uint32_t navigation_id);
+      const ImageRecord* largest_image);
 
-  bool HasLargestImagePaintChangedForMetrics(
-      base::TimeTicks largest_image_paint_time,
-      uint64_t largest_image_paint_size) const;
-
-  bool HasLargestTextPaintChangedForMetrics(
-      base::TimeTicks largest_text_paint_time,
-      uint64_t largest_text_paint_size) const;
-
-  bool NotifyMetricsIfLargestImagePaintChanged(base::TimeTicks image_paint_time,
-                                               const ImageRecord&);
+  bool NotifyMetricsIfLargestImagePaintChanged(const ImageRecord&);
   bool NotifyMetricsIfLargestTextPaintChanged(const TextRecord&);
 
   const LargestContentfulPaintDetails& LatestLcpDetails() const {
@@ -54,21 +72,27 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
-  void UpdateWebExposedLargestContentfulImage(
-      const ImageRecord* largest_image,
-      bool is_triggered_by_soft_navigation,
-      uint32_t navigation_id);
-  void UpdateWebExposedLargestContentfulText(
-      const TextRecord& largest_text,
-      bool is_triggered_by_soft_navigation,
-      uint32_t navigation_id);
+  void UpdateWebExposedLargestContentfulImage(const ImageRecord& largest_image);
+  void UpdateWebExposedLargestContentfulText(const TextRecord& largest_text);
 
-  std::unique_ptr<TracedValue> TextCandidateTraceData(
-      const TextRecord& largest_text,
-      bool is_triggered_by_soft_navigation);
-  std::unique_ptr<TracedValue> ImageCandidateTraceData(
-      const ImageRecord* largest_image,
-      bool is_triggered_by_soft_navigation);
+  std::unique_ptr<TracedValue> CreateWebExposedCandidateTraceData(
+      const TextRecord&);
+  std::unique_ptr<TracedValue> CreateWebExposedCandidateTraceData(
+      const ImageRecord&);
+  std::unique_ptr<TracedValue> CreateWebExposedCandidateTraceDataCommon(
+      const PaintTimingRecord&);
+
+  bool HasLargestImagePaintChangedForMetrics(
+      base::TimeTicks largest_image_paint_time,
+      uint64_t largest_image_paint_size) const;
+
+  bool HasLargestTextPaintChangedForMetrics(
+      base::TimeTicks largest_text_paint_time,
+      uint64_t largest_text_paint_size) const;
+
+  void ReportMetricsCandidateToTrace(const ImageRecord&, base::TimeTicks);
+  void ReportMetricsCandidateToTrace(const TextRecord&);
+  void ReportNoMetricsImageCandidateToTrace();
 
   void UpdateLatestLcpDetailsTypeIfNeeded();
 
@@ -76,12 +100,16 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   uint64_t largest_reported_size_ = 0u;
   double largest_image_bpp_ = 0.0;
-  unsigned count_candidates_ = 0;
+  unsigned web_exposed_candidate_count_ = 0;
+  unsigned ukm_largest_image_candidate_count_ = 0;
+  unsigned ukm_largest_text_candidate_count_ = 0;
 
   // The |latest_lcp_details_| struct is just for internal accounting purposes
   // and is not reported anywhere (neither to metrics, nor to the web exposed
   // API).
   LargestContentfulPaintDetails latest_lcp_details_;
+
+  Member<Delegate> delegate_;
 };
 
 }  // namespace blink

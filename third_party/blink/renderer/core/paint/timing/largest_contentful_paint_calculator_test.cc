@@ -99,7 +99,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   uint64_t CountCandidates() {
-    return GetLargestContentfulPaintCalculator()->count_candidates_;
+    return GetLargestContentfulPaintCalculator()->web_exposed_candidate_count_;
   }
 
   void InvokePresentationPromise(
