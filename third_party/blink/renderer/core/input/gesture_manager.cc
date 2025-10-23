@@ -24,8 +24,10 @@
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -59,7 +61,8 @@ GestureManager::GestureManager(LocalFrame& frame,
                                MouseEventManager& mouse_event_manager,
                                PointerEventManager& pointer_event_manager,
                                SelectionController& selection_controller)
-    : frame_(frame),
+    : FocusChangedObserver(frame.GetPage()),
+      frame_(frame),
       scroll_manager_(scroll_manager),
       mouse_event_manager_(mouse_event_manager),
       pointer_event_manager_(pointer_event_manager),
@@ -70,6 +73,7 @@ GestureManager::GestureManager(LocalFrame& frame,
 void GestureManager::Clear() {
   suppress_mouse_events_from_gestures_ = false;
   suppress_selection_on_repeated_tap_down_ = false;
+  lost_focus_during_drag_ = false;
   ResetLongTapContextMenuStates();
 }
 
@@ -185,6 +189,7 @@ WebInputEventResult GestureManager::HandleGestureTapDown(
   suppress_mouse_events_from_gestures_ =
       pointer_event_manager_->PrimaryPointerdownCanceled(
           gesture_event.unique_touch_event_id);
+  lost_focus_during_drag_ = false;
 
   if (!RuntimeEnabledFeatures::TouchTextEditingRedesignEnabled() ||
       suppress_mouse_events_from_gestures_ ||
@@ -507,32 +512,51 @@ WebInputEventResult GestureManager::HandleGestureTwoFingerTap(
   return SendContextMenuEventForGesture(targeted_event);
 }
 
-void GestureManager::HandleTouchDragEnd(const WebMouseEvent& mouse_event) {
+void GestureManager::HandleTouchDragEnd(
+    const WebMouseEvent& event,
+    ui::mojom::blink::DragOperation operation) {
   if (!drag_in_progress_) {
     return;
   }
   drag_in_progress_ = false;
   if (DragEndOpensContextMenu()) {
-    SendContextMenuEventTouchDragEnd(mouse_event);
+    SendContextMenuEventTouchDragEnd(event, operation);
   }
 }
 
 void GestureManager::SendContextMenuEventTouchDragEnd(
-    const WebMouseEvent& mouse_event) {
+    const WebMouseEvent& mouse_event,
+    ui::mojom::blink::DragOperation operation) {
   if (!gesture_context_menu_deferred_ || suppress_mouse_events_from_gestures_) {
     return;
   }
 
   const gfx::PointF& positon_in_root_frame = mouse_event.PositionInWidget();
 
-  // Don't send contextmenu event if tap position is not within a slop region.
-  //
+  // There are three conditions that need to be met for the context menu to be
+  // open after a drag end:
+  // 1) The drop happened inside the `kTouchDragSlop` region.
+  // 2) The drop happened the same page that initiated the drag and the page
+  // never lost focus.
+  // 3) The drop did not have an effect (drag operation result was `kNone`).
+  // TODO(crbug.com/417245719): Ideally a CM wouldn't open if the drag was moved
+  // drastically outside of the slop region before being dropped; but the way
+  // mouse translation works for touch drag and drop right now makes the pointer
+  // lag behind a few frames when being synced, which causes the drag move
+  // events to always start far away from the original drag position. This makes
+  // tracking the drag to ensure it never left the slop region very difficult.
+  // When crbug.com/418025705 is implemented we will see if this sync issue is
+  // fixed and we can enforce this restriction.
   // TODO(mustaq): We should be reusing gesture touch-slop region here but it
   // seems non-trivial because this code path is called at drag-end, and the
   // drag controller does not sync well with gesture recognizer.  See the
   // blocked-on bugs in https://crbug.com/1096189.
-  if ((positon_in_root_frame - long_press_position_in_root_frame_).Length() >
-      kTouchDragSlop) {
+  const bool should_open_context_menu =
+      (positon_in_root_frame - long_press_position_in_root_frame_).Length() <=
+          kTouchDragSlop &&
+      !lost_focus_during_drag_ &&
+      operation == ui::mojom::blink::DragOperation::kNone;
+  if (!should_open_context_menu) {
     ResetLongTapContextMenuStates();
     return;
   }

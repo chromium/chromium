@@ -3182,6 +3182,8 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
 
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -3223,6 +3225,8 @@ TEST_F(WebViewTest, TouchDragContextMenuAtDragEnd) {
 
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -3256,6 +3260,79 @@ TEST_F(WebViewTest, TouchDragContextMenuAtDragEnd) {
           web_view->MainFrameImpl()->GetFrame()));
 }
 
+// Tests the conditions that make a touch drag not open a context menu, when
+// `TouchDragEndContextMenu` is enabled. The conditions are three:
+// 1) The drop happened far away from the initial drag point.
+// 2) The drop happened in a different window than the browser's.
+// 3) The drop had an effect (move, copy).
+TEST_F(WebViewTest, TouchDragContextMenuConditions) {
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  const WebString target_id = WebString::FromUTF8("target");
+  Element* target_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById(target_id);
+  const gfx::PointF center = gfx::PointF(
+      web_view->MainFrameImpl()
+          ->GetFrameView()
+          ->FrameToScreen(
+              target_element->GetLayoutObject()->AbsoluteBoundingBoxRect())
+          .CenterPoint());
+  pointer_down.SetPositionInWidget(center.x(), center.y());
+  pointer_down.SetPositionInScreen(center.x(), center.y());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  // 1) Initiate drag and drop it far away from the initial drag point.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      center + gfx::Vector2dF(30, 30), center + gfx::Vector2dF(30, 30),
+      ui::mojom::blink::DragOperation::kNone, base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+
+  // 2) Initiate a drag and make it end with an action.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      center, center, ui::mojom::blink::DragOperation::kMove,
+      base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+
+  // 3) Initiate a drag and make it end in a different window.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->GetPage()->GetFocusController().SetActive(false);
+  web_view->GetPage()->GetFocusController().SetFocused(false);
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      center, center, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+}
+
 TEST_P(WebViewTestTouchDragEndContextMenuWithPointerType,
        ContextMenuOnLinkAndImageLongPress) {
   ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(false);
@@ -3271,6 +3348,8 @@ TEST_P(WebViewTestTouchDragEndContextMenuWithPointerType,
   const bool set_touch_drag_end_context_menu = std::get<0>(GetParam());
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(
       set_touch_drag_end_context_menu);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -6287,6 +6366,8 @@ TEST_P(WebViewTestTouchDragEndContextMenuWithPointerType,
   const bool set_touch_drag_end_context_menu = std::get<0>(GetParam());
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(
       set_touch_drag_end_context_menu);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -6616,6 +6697,8 @@ TEST_F(WebViewTest, TouchDragSetsDragPointerId) {
 
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();

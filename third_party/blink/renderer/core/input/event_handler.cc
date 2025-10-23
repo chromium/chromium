@@ -2426,7 +2426,7 @@ void EventHandler::DragSourceEndedAt(
   }
 
   mouse_event_manager_->DragSourceEndedAt(event, operation);
-  gesture_manager_->HandleTouchDragEnd(event);
+  gesture_manager_->HandleTouchDragEnd(event, operation);
 }
 
 void EventHandler::UpdateDragStateAfterEditDragIfNeeded(
