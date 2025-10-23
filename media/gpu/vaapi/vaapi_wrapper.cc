@@ -2586,26 +2586,26 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
                          nullptr);
   }
 
-  // Translate the pixel format to a gfx::BufferFormat.
-  gfx::BufferFormat buffer_format;
+  // Translate the pixel format to a viz::SharedImageFormat.
+  viz::SharedImageFormat si_format;
   switch (descriptor.fourcc) {
     case VA_FOURCC_IMC3:
       // IMC3 is like I420 but all the planes have the same stride. This is used
-      // for decoding 4:2:0 JPEGs in the Intel i965 driver. We don't currently
-      // have a gfx::BufferFormat for YUV420. Instead, we reuse YVU_420 and
+      // for decoding 4:2:0 JPEGs in the Intel i965 driver. We reuse YVU_420 and
       // later swap the U and V planes.
       //
-      // TODO(andrescj): revisit this once crrev.com/c/1573718 lands.
-      buffer_format = gfx::BufferFormat::YVU_420;
+      // TODO(andrescj): Determine whether it's feasible to change this to use
+      // viz::MultiPlaneFormat::kI420.
+      si_format = viz::MultiPlaneFormat::kYV12;
       break;
     case VA_FOURCC_NV12:
-      buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+      si_format = viz::MultiPlaneFormat::kNV12;
       break;
     case VA_FOURCC_P010:
-      buffer_format = gfx::BufferFormat::P010;
+      si_format = viz::MultiPlaneFormat::kP010;
       break;
     case VA_FOURCC_ARGB:
-      buffer_format = gfx::BufferFormat::BGRA_8888;
+      si_format = viz::SinglePlaneFormat::kBGRA_8888;
       break;
     default:
       LOG(ERROR) << "Cannot export a surface with FOURCC "
@@ -2680,7 +2680,7 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
     return nullptr;
   }
   exported_pixmap->pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      va_surface_size, buffer_format, std::move(handle));
+      va_surface_size, si_format, std::move(handle));
   return exported_pixmap;
 }
 
