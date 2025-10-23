@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "scheduler_config_unittest.cc",
     "scheduler_utils_unittest.cc",
     "stats_unittest.cc",
+    "tips_client_unittest.cc",
   ]
 
   deps = [

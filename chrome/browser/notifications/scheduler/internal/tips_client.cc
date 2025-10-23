@@ -31,6 +31,11 @@ void TipsClient::OnSchedulerInitialized(
 }
 
 void TipsClient::OnUserAction(const UserActionData& action_data) {
+  // Early exit if the action is a dismissal.
+  if (action_data.action_type == UserActionType::kDismiss) {
+    return;
+  }
+
   // Check that a valid feature type for tips notifications is requested.
   auto it = action_data.custom_data.find(kTipsNotificationsFeatureType);
   if (it != action_data.custom_data.end()) {
