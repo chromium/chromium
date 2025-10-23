@@ -2574,10 +2574,10 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 String Node::DebugName() const {
   StringBuilder name;
   name.Append(nodeName());
-  if (const auto* vt_pseudo =
-          DynamicTo<ViewTransitionPseudoElementBase>(this)) {
+  if (const auto* pseudo = DynamicTo<PseudoElement>(this);
+      pseudo && !pseudo->GetPseudoArgument().IsNull()) {
     name.Append("(");
-    name.Append(vt_pseudo->view_transition_name());
+    name.Append(pseudo->GetPseudoArgument());
     name.Append(")");
   } else if (const auto* this_element = DynamicTo<Element>(this)) {
     if (this_element->HasID()) {
@@ -2589,8 +2589,9 @@ String Node::DebugName() const {
     if (this_element->HasClass()) {
       name.Append(" class=\'");
       for (wtf_size_t i = 0; i < this_element->ClassNames().size(); ++i) {
-        if (i > 0)
+        if (i > 0) {
           name.Append(' ');
+        }
         name.Append(this_element->ClassNames()[i]);
       }
       name.Append('\'');
@@ -2644,16 +2645,16 @@ String Node::ToString() const {
     builder.Append(" ");
     builder.Append(nodeValue().EncodeForDebugging());
     return builder.ReleaseString();
-  } else if (const auto* vt_pseudo =
-                 DynamicTo<ViewTransitionPseudoElementBase>(this)) {
+  } else if (const auto* pseudo = DynamicTo<PseudoElement>(this);
+             pseudo && !pseudo->GetPseudoArgument().IsNull()) {
     builder.Append("(");
-    builder.Append(vt_pseudo->view_transition_name());
+    builder.Append(pseudo->GetPseudoArgument());
     builder.Append(")");
   } else if (const auto* element = DynamicTo<Element>(this)) {
-    const AtomicString& pseudo = element->ShadowPseudoId();
-    if (!pseudo.empty()) {
+    const AtomicString& pseudo_id = element->ShadowPseudoId();
+    if (!pseudo_id.empty()) {
       builder.Append(" ::");
-      builder.Append(pseudo);
+      builder.Append(pseudo_id);
     }
     DumpAttributeDesc(*this, html_names::kIdAttr, builder);
     DumpAttributeDesc(*this, html_names::kClassAttr, builder);
