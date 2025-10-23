@@ -1079,9 +1079,9 @@ device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
         << path_string;
   }
   device::ControllerFrameData data;
-  for (uint32_t i = 0; i < data_arr_.size(); i++) {
-    if (data_arr_[i].role == role) {
-      data = data_arr_[i];
+  for (const auto& controller : controllers_) {
+    if (controller.role == role) {
+      data = controller;
     }
   }
   return data;
@@ -1284,8 +1284,8 @@ std::string OpenXrTestHelper::PathToString(XrPath path) const {
 bool OpenXrTestHelper::UpdateData() {
   base::AutoLock auto_lock(lock_);
   if (test_hook_) {
-    for (uint32_t i = 0; i < device::kMaxTrackedDevices; i++) {
-      data_arr_[i] = test_hook_->WaitGetControllerData(i);
+    for (uint32_t i = 0; i < controllers_.size(); i++) {
+      controllers_[i] = test_hook_->WaitGetControllerData(i);
     }
     return true;
   }

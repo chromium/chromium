@@ -70,9 +70,7 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
   return ret;
 }
 
-MockXRDeviceHookBase::MockXRDeviceHookBase()
-    : tracked_classes_{
-          device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd} {
+MockXRDeviceHookBase::MockXRDeviceHookBase() {
   thread_ = std::make_unique<base::Thread>("MockXRDeviceHookThread");
   thread_->Start();
 
@@ -189,7 +187,7 @@ void MockXRDeviceHookBase::WaitGetMagicWindowPose(
 }
 
 void MockXRDeviceHookBase::WaitGetControllerRoleForTrackedDeviceIndex(
-    unsigned int index,
+    uint32_t index,
     device_test::mojom::XRTestHook::
         WaitGetControllerRoleForTrackedDeviceIndexCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
@@ -206,32 +204,15 @@ void MockXRDeviceHookBase::WaitGetControllerRoleForTrackedDeviceIndex(
   std::move(callback).Run(role);
 }
 
-void MockXRDeviceHookBase::WaitGetTrackedDeviceClass(
-    unsigned int index,
-    device_test::mojom::XRTestHook::WaitGetTrackedDeviceClassCallback
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  DCHECK(index < device::kMaxTrackedDevices);
-  device_test::mojom::TrackedDeviceClass tracked_class =
-      device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid;
-  {
-    base::AutoLock lock(lock_);
-    tracked_class = tracked_classes_[index];
-  }
-  std::move(callback).Run(tracked_class);
-}
-
 void MockXRDeviceHookBase::WaitGetControllerData(
-    unsigned int index,
+    uint32_t index,
     device_test::mojom::XRTestHook::WaitGetControllerDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   device::ControllerFrameData data;
   {
     base::AutoLock lock(lock_);
-    if (tracked_classes_[index] ==
-        device_test::mojom::TrackedDeviceClass::kTrackedDeviceController) {
-      auto iter = controller_data_map_.find(index);
-      CHECK(iter != controller_data_map_.end());
+    auto iter = controller_data_map_.find(index);
+    if (iter != controller_data_map_.end()) {
       data = iter->second;
     } else {
       // Default to not being valid so that controllers aren't connected unless
@@ -259,22 +240,14 @@ void MockXRDeviceHookBase::WaitGetEventData(
   std::move(callback).Run(std::move(ret));
 }
 
-unsigned int MockXRDeviceHookBase::ConnectController(
+uint32_t MockXRDeviceHookBase::ConnectController(
     const device::ControllerFrameData& initial_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   base::AutoLock lock(lock_);
-  // Find the first open tracked device slot and fill that.
-  for (unsigned int i = 0; i < device::kMaxTrackedDevices; ++i) {
-    if (tracked_classes_[i] ==
-        device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid) {
-      tracked_classes_[i] =
-          device_test::mojom::TrackedDeviceClass::kTrackedDeviceController;
-      controller_data_map_.insert(std::make_pair(i, initial_data));
-      return i;
-    }
-  }
-  // We shouldn't be running out of slots during a test.
-  NOTREACHED();
+  auto index = next_controller_id_++;
+  CHECK_LT(index, device::kMaxControllers);
+  controller_data_map_.insert_or_assign(index, initial_data);
+  return index;
 }
 
 void MockXRDeviceHookBase::TerminateDeviceServiceProcessForTesting() {
@@ -284,7 +257,7 @@ void MockXRDeviceHookBase::TerminateDeviceServiceProcessForTesting() {
 }
 
 void MockXRDeviceHookBase::UpdateController(
-    unsigned int index,
+    uint32_t index,
     const device::ControllerFrameData& updated_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   base::AutoLock lock(lock_);
@@ -293,16 +266,12 @@ void MockXRDeviceHookBase::UpdateController(
   iter->second = updated_data;
 }
 
-void MockXRDeviceHookBase::DisconnectController(unsigned int index) {
+void MockXRDeviceHookBase::DisconnectController(uint32_t index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   base::AutoLock lock(lock_);
-  DCHECK(tracked_classes_[index] ==
-         device_test::mojom::TrackedDeviceClass::kTrackedDeviceController);
   auto iter = controller_data_map_.find(index);
   CHECK(iter != controller_data_map_.end());
   controller_data_map_.erase(iter);
-  tracked_classes_[index] =
-      device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid;
 }
 
 device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(

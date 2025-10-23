@@ -46,15 +46,11 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
       device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback)
       override;
   void WaitGetControllerRoleForTrackedDeviceIndex(
-      unsigned int index,
+      uint32_t index,
       device_test::mojom::XRTestHook::
           WaitGetControllerRoleForTrackedDeviceIndexCallback callback) override;
-  void WaitGetTrackedDeviceClass(
-      unsigned int index,
-      device_test::mojom::XRTestHook::WaitGetTrackedDeviceClassCallback
-          callback) override;
   void WaitGetControllerData(
-      unsigned int index,
+      uint32_t index,
       device_test::mojom::XRTestHook::WaitGetControllerDataCallback callback)
       override;
   void WaitGetEventData(device_test::mojom::XRTestHook::WaitGetEventDataCallback
@@ -69,11 +65,10 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
 
   // MockXRDeviceHookBase
   void TerminateDeviceServiceProcessForTesting();
-  unsigned int ConnectController(
-      const device::ControllerFrameData& initial_data);
-  void UpdateController(unsigned int index,
+  uint32_t ConnectController(const device::ControllerFrameData& initial_data);
+  void UpdateController(uint32_t index,
                         const device::ControllerFrameData& updated_data);
-  void DisconnectController(unsigned int index);
+  void DisconnectController(uint32_t index);
   device::ControllerFrameData CreateValidController(
       device::ControllerRole role);
   void PopulateEvent(device_test::mojom::EventData data);
@@ -98,9 +93,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   base::Lock lock_;
   std::unique_ptr<base::Thread> thread_;
 
-  std::array<device_test::mojom::TrackedDeviceClass, device::kMaxTrackedDevices>
-      tracked_classes_ GUARDED_BY(lock_);
-  base::flat_map<unsigned int, device::ControllerFrameData> controller_data_map_
+  base::flat_map<uint32_t, device::ControllerFrameData> controller_data_map_
       GUARDED_BY(lock_);
   std::queue<device_test::mojom::EventData> event_data_queue_ GUARDED_BY(lock_);
   absl::flat_hash_map<uint32_t, device_test::mojom::XRVisibilityMaskPtr>
@@ -112,6 +105,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   std::atomic_bool can_create_session_ = true;
   std::atomic_uint32_t frame_count_ = 0;
   std::atomic_uint32_t target_frame_count_ = 0;
+  uint32_t next_controller_id_ GUARDED_BY(lock_) = 0;
 
   // Used to track both if `wait_loop_` is valid in a thread-safe manner or if
   // it has already had quit signaled on it, since `AnyQuitCalled` won't update

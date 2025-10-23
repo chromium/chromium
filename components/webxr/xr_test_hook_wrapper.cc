@@ -119,8 +119,7 @@ std::optional<gfx::Transform> XRTestHookWrapper::WaitGetMagicWindowPose() {
 }
 
 device::ControllerRole
-XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(
-    unsigned int index) {
+XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(uint32_t index) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::ControllerRole role;
@@ -131,35 +130,8 @@ XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(
   return device::kControllerRoleInvalid;
 }
 
-device::TrackedDeviceClass XRTestHookWrapper::WaitGetTrackedDeviceClass(
-    unsigned int index) {
-  if (hook_) {
-    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::TrackedDeviceClass device_class;
-    hook_->WaitGetTrackedDeviceClass(index, &device_class);
-    switch (device_class) {
-      case device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid:
-        return device::kTrackedDeviceInvalid;
-      case device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd:
-        return device::kTrackedDeviceHmd;
-      case device_test::mojom::TrackedDeviceClass::kTrackedDeviceController:
-        return device::kTrackedDeviceController;
-      case device_test::mojom::TrackedDeviceClass::kTrackedDeviceGenericTracker:
-        return device::kTrackedDeviceGenericTracker;
-      case device_test::mojom::TrackedDeviceClass::
-          kTrackedDeviceTrackingReference:
-        return device::kTrackedDeviceTrackingReference;
-      case device_test::mojom::TrackedDeviceClass::
-          kTrackedDeviceDisplayRedirect:
-        return device::kTrackedDeviceDisplayRedirect;
-    }
-  }
-
-  return device::kTrackedDeviceInvalid;
-}
-
 device::ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
-    unsigned int index) {
+    uint32_t index) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::ControllerFrameDataPtr data;
@@ -173,7 +145,7 @@ device::ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
       ret.pose_data = data->pose_data;
       ret.role = MojoToDeviceControllerRole(data->role);
       ret.is_valid = data->is_valid;
-      for (unsigned int i = 0; i < device::kMaxNumAxes; ++i) {
+      for (uint32_t i = 0; i < device::kMaxNumAxes; ++i) {
         ret.axis_data[i].x = data->axis_data[i]->x;
         ret.axis_data[i].y = data->axis_data[i]->y;
         ret.axis_data[i].axis_type = data->axis_data[i]->axis_type;

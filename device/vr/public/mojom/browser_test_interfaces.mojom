@@ -50,15 +50,6 @@ struct ControllerAxisData {
   uint8 axis_type; // Corresponds to OpenVR's EVRControllerAxisType
 };
 
-enum TrackedDeviceClass {
-  kTrackedDeviceInvalid,
-  kTrackedDeviceHmd,
-  kTrackedDeviceController,
-  kTrackedDeviceGenericTracker,
-  kTrackedDeviceTrackingReference,
-  kTrackedDeviceDisplayRedirect
-};
-
 enum ControllerRole {
   kControllerRoleInvalid, // Test hook should ignore this controller.
   kControllerRoleLeft,
@@ -131,12 +122,6 @@ interface XRTestHook {
   // controller is mapped to.
   [Sync] WaitGetControllerRoleForTrackedDeviceIndex(uint32 index) =>
       (ControllerRole role);
-
-  // Called by the XR runtime to retrieve the class of the device that the test
-  // has registered at the given index, e.g. whether it is a controller or
-  // headset.
-  [Sync] WaitGetTrackedDeviceClass(uint32 index) =>
-      (TrackedDeviceClass device_class);
 
   // Called by the XR runtime anytime it updates its controller data to retrieve
   // the controller data of the device that the test has registered at the

@@ -16,7 +16,7 @@
 
 namespace device {
 
-constexpr unsigned int kMaxTrackedDevices = 64;
+inline constexpr uint32_t kMaxControllers = 5;
 constexpr unsigned int kMaxNumAxes = 5;
 constexpr unsigned int kNumJointsForTest =
     static_cast<unsigned int>(device::mojom::XRHandJoint::kMaxValue) + 1;
@@ -101,15 +101,6 @@ struct ControllerAxisData {
   unsigned int axis_type = 0;
 };
 
-enum TrackedDeviceClass {
-  kTrackedDeviceInvalid,
-  kTrackedDeviceHmd,
-  kTrackedDeviceController,
-  kTrackedDeviceGenericTracker,
-  kTrackedDeviceTrackingReference,
-  kTrackedDeviceDisplayRedirect
-};
-
 enum ControllerRole {
   kControllerRoleInvalid,  // Test hook should ignore this controller.
   kControllerRoleLeft,
@@ -164,9 +155,8 @@ class VRTestHook {
   virtual std::optional<gfx::Transform> WaitGetPresentingPose() = 0;
   virtual std::optional<gfx::Transform> WaitGetMagicWindowPose() = 0;
   virtual ControllerRole WaitGetControllerRoleForTrackedDeviceIndex(
-      unsigned int index) = 0;
-  virtual TrackedDeviceClass WaitGetTrackedDeviceClass(unsigned int index) = 0;
-  virtual ControllerFrameData WaitGetControllerData(unsigned int index) = 0;
+      uint32_t index) = 0;
+  virtual ControllerFrameData WaitGetControllerData(uint32_t index) = 0;
   virtual device_test::mojom::EventData WaitGetEventData() = 0;
   virtual bool WaitGetCanCreateSession() = 0;
   virtual std::optional<VisibilityMaskData> WaitGetVisibilityMask(

@@ -312,7 +312,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   std::unordered_map<XrViewConfigurationType, device::OpenXrViewConfiguration>
       secondary_configs_supported_;
 
-  std::array<device::ControllerFrameData, device::kMaxTrackedDevices> data_arr_;
+  std::array<device::ControllerFrameData, device::kMaxControllers> controllers_;
 
   std::queue<XrEventDataBuffer> event_queue_;
 
