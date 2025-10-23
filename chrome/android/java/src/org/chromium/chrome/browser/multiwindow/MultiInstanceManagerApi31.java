@@ -488,15 +488,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    protected void openNewWindow(String umaAction, boolean incognito) {
+    public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
         Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
-        onMultiInstanceModeStarted();
+
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(
                 intent, mActivity, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
         IntentUtils.addTrustedIntentExtras(intent);
         if (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
@@ -510,6 +510,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
 
+        return intent;
+    }
+
+    @Override
+    protected void openNewWindow(String umaAction, boolean incognito) {
+        Intent intent = createNewWindowIntent(incognito);
+        assert intent != null : "The Intent to open a new window must not be null";
+
+        onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
         Log.i(TAG_MULTI_INSTANCE, "Opening new window from action: " + umaAction);
         RecordUserAction.record(umaAction);

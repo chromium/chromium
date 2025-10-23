@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -2104,57 +2105,95 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testOpenNewWindow_RemovesAdjacentFlag_NonMultiWindowMode() {
+    public void testCreateNewWindowIntent_Incognito_OpenNewIncognitoWindowExtraIsTrue() {
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+
+        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ true);
+
+        assertNotNull(intent);
+        assertTrue(
+                intent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ false));
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_NotIncognito_OpenNewIncognitoWindowExtraIsFalse() {
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+
+        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+
+        assertNotNull(intent);
+        assertFalse(
+                intent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ true));
+    }
+
+    @Test
+    public void
+            testCreateNewWindowIntent_NonMultiWindowMode_ShouldNotOpenInAdjacentWindow_NoLaunchAdjacentFlag() {
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+
+        // Non-multi-window mode
+        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
+        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
+
+        // The new window shouldn't be opened as an adjacent window.
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 false);
 
-        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
-        when(mCurrentActivity.getPackageName())
-                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
 
-        mMultiInstanceManager.openNewWindow("", false);
-
-        verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        Intent intent = intentCaptor.getValue();
-        int flags = intent.getFlags();
-        assertFalse(
-                "FLAG_ACTIVITY_LAUNCH_ADJACENT should be removed.",
-                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+        assertNotNull(intent);
+        assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
     }
 
     @Test
-    public void testOpenNewWindow_KeepsAdjacentFlag_NonMultiWindowMode() {
+    public void
+            testCreateNewWindowIntent_NonMultiWindowMode_ShouldOpenInAdjacentWindow_AddLaunchAdjacentFlag() {
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+
+        // Non-multi-window mode
+        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
+        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
+
+        // The new window should be opened as an adjacent window.
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 true);
 
-        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
-        when(mCurrentActivity.getPackageName())
-                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
 
-        mMultiInstanceManager.openNewWindow("", false);
-
-        verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        Intent intent = intentCaptor.getValue();
-        int flags = intent.getFlags();
-        assertTrue(
-                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be removed.",
-                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+        assertNotNull(intent);
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
     }
 
     @Test
-    public void testOpenNewWindow_KeepsAdjacentFlag_MultiWindowMode() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
+    public void testCreateNewWindowIntent_MultiWindowMode_AddLaunchAdjacentFlag() {
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
 
+        // multi-window mode
+        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
         when(mCurrentActivity.isInMultiWindowMode()).thenReturn(true);
+
+        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+
+        assertNotNull(intent);
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testOpenNewWindow_launchesIntentForChromeTabbedActivity() {
         when(mCurrentActivity.getPackageName())
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -2163,10 +2202,10 @@ public class MultiInstanceManagerApi31UnitTest {
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
         Intent intent = intentCaptor.getValue();
-        int flags = intent.getFlags();
-        assertTrue(
-                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be removed.",
-                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+        assertNotNull(intent.getComponent());
+        assertEquals(
+                "org.chromium.chrome.browser.ChromeTabbedActivity",
+                intent.getComponent().getClassName());
     }
 
     @Test

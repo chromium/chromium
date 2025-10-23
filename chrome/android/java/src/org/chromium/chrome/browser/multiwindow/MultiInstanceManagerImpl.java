@@ -461,13 +461,19 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
-    protected void openNewWindow(String umaAction, boolean incognito) {
+    @Override
+    public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
+        assert !isIncognito : "Opening an incognito window isn't supported";
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
+                        || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                        || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()
+                : "Current windowing mode doesn't support opening a new window";
 
         Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
-        if (intent == null) return;
+        if (intent == null) {
+            return null;
+        }
+
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
@@ -475,6 +481,15 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         // is in a full screen window.
         if (!mActivity.isInMultiWindowMode() && !MultiWindowUtils.shouldOpenInAdjacentWindow()) {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        }
+
+        return intent;
+    }
+
+    protected void openNewWindow(String umaAction, boolean incognito) {
+        Intent intent = createNewWindowIntent(incognito);
+        if (intent == null) {
+            return;
         }
 
         onMultiInstanceModeStarted();
