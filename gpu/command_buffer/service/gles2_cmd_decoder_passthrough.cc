@@ -924,7 +924,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   // Each context initializes its own feature info because some extensions may
   // be enabled dynamically.  Don't disallow any features, leave it up to ANGLE
   // to dynamically enable extensions.
-  InitializeFeatureInfo(context_type, DisallowedFeatures(), false);
+  feature_info_->Initialize(context_type, /*is_passthrough_cmd_decoder=*/true,
+                            DisallowedFeatures(), /*force_reinitialize=*/false);
 
   // Check for required extensions
   // TODO(geofflang): verify
@@ -1711,14 +1712,6 @@ const char* GLES2DecoderPassthroughImpl::GetCommandName(
 void GLES2DecoderPassthroughImpl::SetOptionalExtensionsRequestedForTesting(
     bool request_extensions) {
   request_optional_extensions_ = request_extensions;
-}
-
-void GLES2DecoderPassthroughImpl::InitializeFeatureInfo(
-    ContextType context_type,
-    const DisallowedFeatures& disallowed_features,
-    bool force_reinitialize) {
-  feature_info_->Initialize(context_type, true /* is_passthrough_cmd_decoder */,
-                            disallowed_features, force_reinitialize);
 }
 
 template <typename T>

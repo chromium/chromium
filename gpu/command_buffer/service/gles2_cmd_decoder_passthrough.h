@@ -385,10 +385,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   void SetOptionalExtensionsRequestedForTesting(bool request_extensions);
 
-  void InitializeFeatureInfo(ContextType context_type,
-                             const DisallowedFeatures& disallowed_features,
-                             bool force_reinitialize);
-
   template <typename T, typename GLGetFunction>
   error::Error GetNumericHelper(GLenum pname,
                                 GLsizei bufsize,
