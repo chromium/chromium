@@ -11119,6 +11119,10 @@ const FeatureEntry kFeatureEntries[] = {
          kStandardBoundSessionCredentialsFederatedSessionsVariations,
          "standard-device-bound-sessions-federated-sessions")},
 
+    {"responsive-iframes", flag_descriptions::kResponsiveIframesName,
+     flag_descriptions::kResponsiveIframesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kResponsiveIframes)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"replace-sync-promos-with-sign-in-promos-desktop",
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,

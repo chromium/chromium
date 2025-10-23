@@ -8904,6 +8904,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "responsive-iframes",
+    "owners": [ "kojii@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 96

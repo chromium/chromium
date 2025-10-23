@@ -3755,6 +3755,10 @@ inline constexpr char kResetShortcutCustomizationsName[] =
 inline constexpr char kResetShortcutCustomizationsDescription[] =
     "Resets all shortcut customizations on startup.";
 
+inline constexpr char kResponsiveIframesName[] = "Responsive Iframes";
+inline constexpr char kResponsiveIframesDescription[] =
+    "Enable responsively-sized iframes.";
+
 inline constexpr char kRobustWindowManagementName[] =
     "Robust window management";
 inline constexpr char kRobustWindowManagementDescription[] =
