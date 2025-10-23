@@ -3755,20 +3755,6 @@ void LocalFrameView::AddScrollbar(Scrollbar* scrollbar) {
   scrollbars_.insert(scrollbar);
 }
 
-bool LocalFrameView::VisualViewportSuppliesScrollbars() {
-  // On desktop, we always use the layout viewport's scrollbars.
-  if (!frame_->GetSettings() || !frame_->GetSettings()->GetViewportEnabled() ||
-      !frame_->GetDocument() || !frame_->GetPage())
-    return false;
-
-  if (!LayoutViewport())
-    return false;
-
-  const TopDocumentRootScrollerController& controller =
-      frame_->GetPage()->GlobalRootScrollerController();
-  return controller.RootScrollerArea() == LayoutViewport();
-}
-
 AXObjectCache* LocalFrameView::ExistingAXObjectCache() const {
   if (GetFrame().GetDocument())
     return GetFrame().GetDocument()->ExistingAXObjectCache();
