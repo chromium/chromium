@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
@@ -22,6 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -34,6 +39,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -45,8 +51,13 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Integration tests for {@link MultiInstanceManagerApi31}. */
 @DoNotBatch(reason = "This class tests creating, destroying and managing multiple windows.")
@@ -54,15 +65,27 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(VERSION_CODES.S)
 public class MultiInstanceManagerApi31Test {
+    private static final int TAB1_ID = 456;
+    private static final Token TAB_GROUP_ID1 = new Token(2L, 2L);
+    private static final String TAB_GROUP_TITLE = "Regrouped tabs";
+    private static final ArrayList<Map.Entry<Integer, String>> TAB_IDS_TO_URLS =
+            new ArrayList<>(List.of(Map.entry(TAB1_ID, "https://www.youtube.com/")));
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private WebPageStation mPage;
+    private ModalDialogManager mModalDialogManager;
+    private MultiInstanceManagerApi31 mMultiInstanceManager;
 
     @Before
     public void setup() throws InterruptedException {
         mPage = mActivityTestRule.startOnBlankPage();
+        mModalDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
+        mMultiInstanceManager =
+                (MultiInstanceManagerApi31)
+                        mActivityTestRule.getActivity().getMultiInstanceMangerForTesting();
     }
 
     @After
@@ -174,6 +197,98 @@ public class MultiInstanceManagerApi31Test {
                 });
     }
 
+    @Test
+    @SmallTest
+    public void moveTabsToOtherWindow_multipleWindowsOpen() {
+        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+        List<Tab> tabs = new ArrayList<>();
+        var activity = mActivityTestRule.getActivity();
+        var activeTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
+        tabs.add(activeTab);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.moveTabsToOtherWindow(tabs);
+                });
+        assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void moveTabsToOtherWindow_singleWindowOpen() {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        List<Tab> tabs = new ArrayList<>();
+        var activity = mActivityTestRule.getActivity();
+        var activeTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
+        tabs.add(activeTab);
+
+        verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.moveTabsToOtherWindow(tabs);
+                });
+        assertFalse(
+                "Target selector dialog should not be visible with only one window open",
+                mModalDialogManager.isShowing());
+        // A new instance should be created because of the new window opened.
+        verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 2);
+    }
+
+    @Test
+    @SmallTest
+    public void moveTabGroupToOtherWindow_singleWindowOpen() {
+        TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
+                });
+        assertFalse(
+                "Target selector dialog should not be visible with only one window open",
+                mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void moveTabGroupToOtherWindow_multipleWindowsOpen() {
+        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+        TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
+                });
+        assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void openUrlInSelectedWindow_multipleWindowsOpen() {
+        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.openUrlInSelectedWindow(urlParams, /* parentTabId= */ 1);
+                });
+        assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void openUrlInSelectedWindow_singleWindowOpen() {
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.openUrlInSelectedWindow(urlParams, /* parentTabId= */ 1);
+                });
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+    }
+
     private ChromeTabbedActivity[] createNewWindows(Context context, int numWindows) {
         ChromeTabbedActivity[] activities = new ChromeTabbedActivity[numWindows];
         for (int i = 0; i < numWindows; i++) {
@@ -239,5 +354,19 @@ public class MultiInstanceManagerApi31Test {
                                             .MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
                     return !messages.isEmpty();
                 });
+    }
+
+    private TabGroupMetadata getTabGroupMetaData() {
+        return new TabGroupMetadata(
+                /* selectedTabId= */ TAB1_ID,
+                /* sourceWindowId= */ 1,
+                TAB_GROUP_ID1,
+                TAB_IDS_TO_URLS,
+                /* tabGroupColor= */ 0,
+                TAB_GROUP_TITLE,
+                /* mhtmlTabTitle= */ null,
+                /* tabGroupCollapsed= */ true,
+                /* isGroupShared= */ false,
+                /* isIncognito= */ false);
     }
 }
