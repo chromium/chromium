@@ -541,7 +541,8 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
   switch (GetLoadState()) {
     case LoadState::kStarted:
     case LoadState::kDeterminedHead:
-    case LoadState::kCompletedOrFailed:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
       SetTriggeringOutcomeAndFailureReasonFromStatus(prefetch_status);
       break;
     case LoadState::kNotStarted:
@@ -633,7 +634,8 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
       CHECK_EQ(load_state_, LoadState::kStarted);
       break;
 
-    case LoadState::kCompletedOrFailed:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
       CHECK_EQ(load_state_, LoadState::kDeterminedHead);
       break;
   }
@@ -1024,9 +1026,14 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
   }
 }
 
+// TODO(https://crbug.com/432518638): We should be able to calculate
+// `is_success` and `completion_status` from the last `PrefetchResponseReader`.
+// Before https://crbug.com/432518638 is fixed, we explicitly plumb them here to
+// ensure the correct `PrefetchResponseReader`'s states are used.
 void PrefetchContainer::OnPrefetchComplete(
+    bool is_success,
     const network::URLLoaderCompletionStatus& completion_status) {
-  SetLoadState(LoadState::kCompletedOrFailed);
+  SetLoadState(is_success ? LoadState::kCompleted : LoadState::kFailed);
   OnPrefetchCompleteInternal(completion_status);
 
   std::optional<int> response_code = std::nullopt;
@@ -1083,7 +1090,8 @@ PrefetchServableState PrefetchContainer::GetServableState(
       case LoadState::kFailedIneligible:
       case LoadState::kStarted:
       case LoadState::kDeterminedHead:
-      case LoadState::kCompletedOrFailed:
+      case LoadState::kCompleted:
+      case LoadState::kFailed:
       case LoadState::kFailedHeldback:
         // nop
         break;
@@ -1574,8 +1582,10 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "Started";
     case PrefetchContainer::LoadState::kDeterminedHead:
       return ostream << "DeterminedHead";
-    case PrefetchContainer::LoadState::kCompletedOrFailed:
-      return ostream << "CompletedOrFailed";
+    case PrefetchContainer::LoadState::kCompleted:
+      return ostream << "Completed";
+    case PrefetchContainer::LoadState::kFailed:
+      return ostream << "Failed";
     case PrefetchContainer::LoadState::kFailedHeldback:
       return ostream << "FailedHeldback";
   }

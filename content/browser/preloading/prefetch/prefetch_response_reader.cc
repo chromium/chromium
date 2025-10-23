@@ -712,7 +712,8 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
       CHECK(on_prefetch_response_completed_callback_);
       CHECK(completion_status_);
       std::move(on_prefetch_response_completed_callback_)
-          .Run(*completion_status_);
+          .Run(/*is_success=*/load_state() == LoadState::kCompleted,
+               *completion_status_);
       break;
   }
 }

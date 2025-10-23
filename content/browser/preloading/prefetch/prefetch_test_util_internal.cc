@@ -89,6 +89,7 @@ CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
     base::TimeDelta timeout_duration) {
   auto on_complete_callback = base::BindOnce(
       [](NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
+         bool is_success,
          const network::URLLoaderCompletionStatus& completion_status) {
         if (std::holds_alternative<NotReachedTagForTests>(on_complete)) {
           NOTREACHED();

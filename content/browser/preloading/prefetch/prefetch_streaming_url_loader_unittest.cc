@@ -731,7 +731,12 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   // `final_response_reader`.
   auto final_response_reader = base::MakeRefCounted<PrefetchResponseReader>(
       on_head_received_loop.QuitClosure(),
-      on_complete.GetCallback<const network::URLLoaderCompletionStatus&>());
+      base::BindOnce(
+          [](OnPrefetchCompleteTestFuture* on_complete, bool is_success,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_complete->SetValue(completion_status);
+          },
+          &on_complete));
   ASSERT_TRUE(streaming_loader);
   streaming_loader->SetResponseReader(final_response_reader->GetWeakPtr());
 

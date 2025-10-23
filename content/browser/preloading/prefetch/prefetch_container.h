@@ -233,17 +233,12 @@ class CONTENT_EXPORT PrefetchContainer {
     // - `kDeterminedHead`: `PrefetchContainer::OnDeterminedHead()` is called.
     //   `Observer::OnDeterminedHead()` is called after transitioning to this
     //   state.
-    // - [Final state] `kCompletedOrFailed`:
-    //   `PrefetchContainer::OnPrefetchComplete()` is called.
+    // - [Final state] `kCompleted` or `kFailed`:
+    //   `PrefetchContainer::OnPrefetchComplete()` is called, and its
+    //   `PrefetchResponseReader::LoadState` is `kCompleted` or `kFailed`,
+    //   respectively.
     //   `Observer::OnPrefetchCompletedOrFailed()` is called after transitioning
     //   to this state.
-    //
-    // Currently the distinction between these three states is introduced for
-    // CHECK()ing the calling order of `OnDeterminedHead()` and
-    // `OnPrefetchComplete()` (for https://crbug.com/400761083) and shouldn't be
-    // used for
-    // other purposes (i.e. these three enum values should behave in the same
-    // way).
     //
     // TODO(https://crbug.com/432518638): Make more strict association with
     // `PrefetchContainer::LoadState` and `PrefetchResponseReader::LoadState`
@@ -258,7 +253,8 @@ class CONTENT_EXPORT PrefetchContainer {
     // `kServable` even if `request().attempt()` has a failure).
     kStarted,
     kDeterminedHead,
-    kCompletedOrFailed,
+    kCompleted,
+    kFailed,
 
     // [Final state] Heldback due to `PreloadingAttempt::ShouldHoldback()`.
     kFailedHeldback,
@@ -353,10 +349,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // navigations.
   bool HasPrefetchBeenConsideredToServe() const;
 
-  // Called when |PrefetchService::OnPrefetchComplete| is called for the
-  // prefetch. This happens when |loader_| fully downloads the requested
-  // resource.
+  // See `OnPrefetchResponseCompletedCallback`.
   void OnPrefetchComplete(
+      bool is_success,
       const network::URLLoaderCompletionStatus& completion_status);
 
   // Note: Even if this returns `kServable`, `CreateRequestHandler()` can still

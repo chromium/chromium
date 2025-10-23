@@ -1268,7 +1268,8 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
   AddRedirectHop(prefetch_container.get(), GURL("https://redirect1.com"));
   AddRedirectHop(prefetch_container.get(), GURL("https://redirect2.com"));
   prefetch_container->OnDeterminedHead();
-  prefetch_container->OnPrefetchComplete(network::URLLoaderCompletionStatus());
+  prefetch_container->OnPrefetchComplete(/*is_success=*/true,
+                                         network::URLLoaderCompletionStatus());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.RedirectChainSize", 3, 1);
