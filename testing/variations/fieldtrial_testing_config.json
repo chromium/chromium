@@ -1212,6 +1212,21 @@
             ]
         }
     ],
+    "AndroidZoomIndicator": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidZoomIndicator"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnimatedDefaultBrowserPromoInFRE": [
         {
             "platforms": [
