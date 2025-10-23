@@ -13,8 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -64,7 +67,10 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicURLConfig,
              {{features::kGlicGuestURL.name, "about:blank"}}},
+            // Enable kGlic and kTabstripComboButton to allow glic service to be
+            // created for testing.
             {features::kGlic, {}},
+            {features::kTabstripComboButton, {}},
 #endif
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
@@ -75,7 +81,7 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
         },
         /*disabled_features=*/{
 #if BUILDFLAG(ENABLE_GLIC)
-            features::kGlicMultiInstance, features::kGlicDetached
+            features::kGlicDetached
 #endif
         });
     InteractiveBrowserTest::SetUp();
@@ -262,7 +268,10 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
-                       DISABLED_GlicSidePanelTogglesOnWhenButtonClicked) {
+                       GlicSidePanelTogglesOnWhenButtonClicked) {
+  SidePanelCoordinator* const coordinator =
+      browser()->GetFeatures().side_panel_coordinator();
+  coordinator->SetNoDelaysForTesting(true);
   StartActingOnTab();
   RunTestSequence(
       ClearOmniboxFocus(), EnsureNotPresent(kSidePanelElementId),

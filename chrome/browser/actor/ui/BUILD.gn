@@ -278,6 +278,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/actor:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
