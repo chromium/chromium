@@ -318,7 +318,7 @@ result.links = linksArray;
                         [weakSelf onTimeout];
                       }));
 
-  if (_asyncTasksToComplete == 0) {
+  if (_asyncTasksToComplete == 0 || !_webState) {
     [self asyncWorkCompletedForPageContext];
     return;
   }
@@ -547,7 +547,10 @@ result.links = linksArray;
 
   // Construct the response and completion status, either with the expected
   // value or an error.
-  if (_forceDetachPageContext) {
+  if (!_webState) {
+    response = base::unexpected(PageContextWrapperError::kGenericError);
+    completionStatus = PageContextCompletionStatus::kFailure;
+  } else if (_forceDetachPageContext) {
     response = base::unexpected(PageContextWrapperError::kForceDetachError);
     completionStatus = PageContextCompletionStatus::kProtected;
   } else if (_shouldGetAnnotatedPageContent &&
@@ -560,11 +563,9 @@ result.links = linksArray;
   } else if (_shouldGetSnapshot && !_pageContext->has_tab_screenshot()) {
     response = base::unexpected(PageContextWrapperError::kScreenshotError);
     completionStatus = PageContextCompletionStatus::kFailure;
-
   } else if (_shouldGetFullPagePDF && !_pageContext->has_pdf_data()) {
     response = base::unexpected(PageContextWrapperError::kPDFDataError);
     completionStatus = PageContextCompletionStatus::kFailure;
-
   } else {
     response = base::ok(std::move(_pageContext));
     completionStatus = PageContextCompletionStatus::kSuccess;
