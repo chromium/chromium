@@ -585,7 +585,7 @@ message FormInfo {
   string form_name = 1 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 9
+// Next ID: 11
 message FormControlData {
   // The name for the field.
   string field_name = 1 [features = { field_presence: EXPLICIT }];
@@ -611,6 +611,18 @@ message FormControlData {
 
   // Redaction decision for form fields.
   RedactionDecision redaction_decision = 8 [features = { field_presence: EXPLICIT }];
+
+  // The types of data that can be autofilled this field. This does not imply
+  // that the user has data to fill of this type on file.
+  repeated CoarseAutofillFieldType coarse_autofill_field_type = 9;
+
+  // Global identifier (across one AnnotatedPageContent) of an autofillable
+  // section. Fields that belong to the same section are filled in one fill
+  // operation. These fields share the same `autofill_section_id`.
+  // The value may change over time if the page changes (IDs are generated
+  // in AnnotatedPageContent traversal order according to Autofill's
+  // understanding of forms).
+  uint32 autofill_section_id = 10 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents an option in a select field. See below for example.
@@ -2116,6 +2128,15 @@ enum RedactionDecision {
 
   // Is a password input or was in the past.
   REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD = 2;
+}
+
+// The type of data that can be autofilled into a form.
+enum CoarseAutofillFieldType {
+  COARSE_AUTOFILL_FIELD_TYPE_UNSUPPORTED = 0;
+
+  COARSE_AUTOFILL_FIELD_TYPE_ADDRESS = 1;
+
+  COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD = 2;
 }
 
 // Indicates the type of media in the media data.
