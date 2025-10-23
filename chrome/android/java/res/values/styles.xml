@@ -577,6 +577,8 @@ found in the LICENSE file.
     <style name="ModernToolbarPopupTheme">
         <item name="android:listChoiceIndicatorSingle">@drawable/checkmark_selection_drawable</item>
         <item name="android:itemTextAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:lineSpacingExtra">0dp</item>
         <item name="listPreferredItemHeightSmall">?attr/listItemHeight</item>
     </style>
 
