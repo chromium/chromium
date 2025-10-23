@@ -251,9 +251,11 @@ void BookmarkModelViewUsingAccountNodes::RemoveAllSyncableNodes() {
 void BookmarkModelViewUsingAccountNodes::
     MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  BeginExtensiveChanges();
   InitialAccountBookmarkDeduplicator initial_account_bookmark_deduplicator(
       underlying_model());
   initial_account_bookmark_deduplicator.Deduplicate();
+  EndExtensiveChanges();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
