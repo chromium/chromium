@@ -59,7 +59,7 @@ class CORE_EXPORT StyleRecalcContext {
  public:
   // Set to the nearest container (for size container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
-  Element* container = nullptr;
+  Element* size_container = nullptr;
 
   // Used to evaluate anchor() and anchor-size() queries.
   //

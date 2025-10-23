@@ -182,7 +182,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // descendant explicitly inherits insets or other valid @position-try
   // properties from the element with position-try-fallbacks. This applies to
   // descendants of elements with anchor queries as well.
-  return (style_recalc_context.container ||
+  return (style_recalc_context.size_container ||
           style_recalc_context.has_anchored_container ||
           state.StyleBuilder().HasAnchorFunctions() ||
           state.StyleBuilder().PositionAnchor() ||

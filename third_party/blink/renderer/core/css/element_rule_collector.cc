@@ -221,7 +221,7 @@ bool EvaluateAndAddContainerQueries(
     Element* starting_element =
         ContainerQueryEvaluator::DetermineStartingElement(
             element, pseudo_id, container_query.Selector(),
-            /*nearest_size_container=*/style_recalc_context.container);
+            /*nearest_size_container=*/style_recalc_context.size_container);
     if (!ContainerQueryEvaluator::EvalAndAdd(
             starting_element, style_recalc_context, *current,
             container_selector_cache, result)) {

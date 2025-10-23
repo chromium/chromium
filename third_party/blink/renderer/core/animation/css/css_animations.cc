@@ -3059,7 +3059,7 @@ const ComputedStyle& CSSAnimations::EnsureAfterChangeStyle(
       layout_parent_style = parent_style;
     }
     if (after_change_style.IsContainerForSizeContainerQueries()) {
-      context.container = ancestor;
+      context.size_container = ancestor;
     }
   }
   context = style_recalc_context;

@@ -191,7 +191,7 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
 
 Element* StyleResolverState::ContainerUnitContext() const {
   // TODO(crbug.com/396016391): Always provide a StyleRecalcContext.
-  return style_recalc_context_ ? style_recalc_context_->container
+  return style_recalc_context_ ? style_recalc_context_->size_container
                                : FlatTreeTraversal::ParentElement(GetElement());
 }
 

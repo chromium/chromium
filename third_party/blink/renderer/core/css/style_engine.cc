@@ -3541,11 +3541,11 @@ StyleInitialData* StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_.Get();
 }
 
-bool StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
+bool StyleEngine::RecalcHighlightStylesForSizeContainer(Element& container) {
   const ComputedStyle& style = container.ComputedStyleRef();
   // If we depend on container queries we need to update styles, and also
   // the styles for dependents. Hence we return this value, which is used
-  // in RecalcStyleForContainer to set the flag for child recalc.
+  // in RecalcStyleForSizeContainer to set the flag for child recalc.
   bool depends_on_container_queries =
       style.HighlightData().DependsOnSizeContainerQueries() ||
       style.HighlightsDependOnSizeContainerQueries();
@@ -3558,7 +3558,7 @@ bool StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
   // styles depend on size container queries. Make sure we update those styles
   // based on the changed container size.
   StyleRecalcContext recalc_context;
-  recalc_context.container = &container;
+  recalc_context.size_container = &container;
   if (const ComputedStyle* new_style = container.RecalcHighlightStyles(
           recalc_context, nullptr /* old_style */, style,
           container.ParentComputedStyle());
@@ -3619,8 +3619,8 @@ bool ContainerStyleChangesAllowed(Element& container,
 }  // namespace
 #endif  // DCHECK_IS_ON()
 
-void StyleEngine::RecalcStyleForContainer(Element& container,
-                                          StyleRecalcChange change) {
+void StyleEngine::RecalcStyleForSizeContainer(Element& container,
+                                              StyleRecalcChange change) {
   // The container node must not need recalc at this point.
   DCHECK(!StyleRecalcChange().ShouldRecalcStyleFor(container));
 
@@ -3641,7 +3641,7 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
   container.SetChildNeedsStyleRecalc();
   style_recalc_root_.Update(nullptr, &container);
 
-  if (RecalcHighlightStylesForContainer(container)) {
+  if (RecalcHighlightStylesForSizeContainer(container)) {
     change = change.ForceRecalcDescendantSizeContainers();
   }
 
@@ -3693,7 +3693,7 @@ void StyleEngine::UpdateStyleForNonEligibleSizeContainer(Element& container) {
 
   AllowMarkForReattachFromRebuildLayoutTreeScope allow_reattach(*this);
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
-  RecalcStyleForContainer(container, change);
+  RecalcStyleForSizeContainer(container, change);
 }
 
 void StyleEngine::PostInterleavedRecalcUpdate(
@@ -3776,7 +3776,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
   NthIndexCache nth_index_cache(GetDocument());
 
   UpdateViewportSize();
-  RecalcStyleForContainer(container, change);
+  RecalcStyleForSizeContainer(container, change);
 
   if (container.NeedsReattachLayoutTree()) {
     ReattachContainerSubtree(container);

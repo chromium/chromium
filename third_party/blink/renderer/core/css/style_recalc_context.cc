@@ -18,7 +18,7 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
   for (Element* element = &start_element; element;
        element = FlatTreeTraversal::ParentElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (result.container == nullptr &&
+      if (result.size_container == nullptr &&
           style->IsContainerForSizeContainerQueries() &&
           (element != start_element ||
            !PseudoElement::IsLayoutSiblingOfOriginatingElement(start_element,
@@ -32,7 +32,7 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
         // many failures in the wild to keep around (would upload too many crash
         // reports). Consider adding UMA stats back if we want to track this or
         // land a strategy to figure it out and fix what's going on.
-        result.container = element;
+        result.size_container = element;
       }
       if (!result.has_scroller_ancestor_with_scroll_marker_group_property &&
           !style->ScrollMarkerGroupNone() &&

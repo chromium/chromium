@@ -918,8 +918,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void PropagateWritingModeAndDirectionToHTMLRoot();
 
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
-  void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
-  bool RecalcHighlightStylesForContainer(Element& container);
+  void RecalcStyleForSizeContainer(Element& container,
+                                   StyleRecalcChange change);
+  bool RecalcHighlightStylesForSizeContainer(Element& container);
   void RecalcPositionTryStyleForPseudoElement(PseudoElement& pseudo_element,
                                               const StyleRecalcChange,
                                               const StyleRecalcContext&);

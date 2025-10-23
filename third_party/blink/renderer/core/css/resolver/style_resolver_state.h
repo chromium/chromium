@@ -271,7 +271,8 @@ class CORE_EXPORT StyleResolverState {
 
   // The element to start the search from, when looking for a CQ size container.
   Element* NearestSizeContainer() const {
-    return style_recalc_context_ ? style_recalc_context_->container : nullptr;
+    return style_recalc_context_ ? style_recalc_context_->size_container
+                                 : nullptr;
   }
 
   // See StyleRequest.pseudo_id.

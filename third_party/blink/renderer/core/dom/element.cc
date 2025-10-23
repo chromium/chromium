@@ -4782,7 +4782,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       }
     }
     if (style->IsContainerForSizeContainerQueries()) {
-      child_recalc_context.container = this;
+      child_recalc_context.size_container = this;
     }
     if (style->IsContainerForAnchoredContainerQueries()) {
       child_recalc_context.has_anchored_container = true;
@@ -4827,8 +4827,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     //
     // Use the same start size query container candidate as the originating
     // element to allow querying container further up the ancestor chain.
-    layout_sibling_recalc_context.container =
-        local_style_recalc_context.container;
+    layout_sibling_recalc_context.size_container =
+        local_style_recalc_context.size_container;
   }
   if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
@@ -5121,7 +5121,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         NotifyAXOfAttachedSubtree();
       }
       if (new_style->IsContainerForSizeContainerQueries()) {
-        new_style_recalc_context.container = this;
+        new_style_recalc_context.size_container = this;
       }
       new_style = RecalcHighlightStyles(new_style_recalc_context, old_style,
                                         *new_style, parent_style);
@@ -6443,7 +6443,7 @@ void Element::RecalcCustomHighlightPseudoStyle(
                           : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
                                          originating_style,
-                                         style_recalc_context.container)) {
+                                         style_recalc_context.size_container)) {
       const ComputedStyle* highlight_style = StyleForHighlightPseudoElement(
           style_recalc_context, highlight_parent, originating_style,
           kPseudoIdHighlight, highlight_name);
@@ -6481,7 +6481,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
         parent_highlights ? parent_highlights->Selection() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
                                          new_style,
-                                         style_recalc_context.container)) {
+                                         style_recalc_context.size_container)) {
       builder.AccessHighlightData().SetSelection(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdSelection));
@@ -6494,7 +6494,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
         parent_highlights ? parent_highlights->SearchTextCurrent() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc,
                                          highlight_parent_current, new_style,
-                                         style_recalc_context.container)) {
+                                         style_recalc_context.size_container)) {
       builder.AccessHighlightData().SetSearchTextCurrent(
           StyleForSearchTextPseudoElement(style_recalc_context,
                                           highlight_parent_current, new_style,
@@ -6504,7 +6504,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
         parent_highlights ? parent_highlights->SearchTextNotCurrent() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(
             highlight_recalc, highlight_parent_not_current, new_style,
-            style_recalc_context.container)) {
+            style_recalc_context.size_container)) {
       builder.AccessHighlightData().SetSearchTextNotCurrent(
           StyleForSearchTextPseudoElement(
               style_recalc_context, highlight_parent_not_current, new_style,
@@ -6517,7 +6517,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
         parent_highlights ? parent_highlights->TargetText() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
                                          new_style,
-                                         style_recalc_context.container)) {
+                                         style_recalc_context.size_container)) {
       builder.AccessHighlightData().SetTargetText(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdTargetText));
@@ -6529,7 +6529,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
         parent_highlights ? parent_highlights->SpellingError() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
                                          new_style,
-                                         style_recalc_context.container)) {
+                                         style_recalc_context.size_container)) {
       builder.AccessHighlightData().SetSpellingError(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdSpellingError));
@@ -6541,7 +6541,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
         parent_highlights ? parent_highlights->GrammarError() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
                                          new_style,
-                                         style_recalc_context.container)) {
+                                         style_recalc_context.size_container)) {
       builder.AccessHighlightData().SetGrammarError(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdGrammarError));
@@ -9204,7 +9204,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
       filter.PushParent(*ancestor);
     }
     if (style->IsContainerForSizeContainerQueries()) {
-      style_recalc_context.container = ancestor;
+      style_recalc_context.size_container = ancestor;
     }
   }
 
@@ -9321,7 +9321,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   if (element_style->IsContainerForSizeContainerQueries() &&
       !PseudoElement::IsLayoutSiblingOfOriginatingElement(
           *this, pseudo_element_specifier)) {
-    child_recalc_context.container = this;
+    child_recalc_context.size_container = this;
   }
 
   const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
