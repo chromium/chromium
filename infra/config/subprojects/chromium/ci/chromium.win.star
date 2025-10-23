@@ -570,6 +570,11 @@ ci.thin_tester(
             "components_browsertests_no_field_trial": targets.remove(
                 reason = "crbug/40630866",
             ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
             "interactive_ui_tests_no_field_trial": targets.remove(
                 reason = "crbug/40630866",
             ),
