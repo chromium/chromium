@@ -420,7 +420,7 @@ try_.orchestrator_builder(
         # crbug/940930
         "chromium.enable_cleandead": 100,
         # TODO(crbug.com/442618066): ramp experiment and apply to more builders
-        "siso.keep_going_limited": 20,
+        "siso.keep_going_limited": 50,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
