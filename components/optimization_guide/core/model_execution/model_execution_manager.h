@@ -35,15 +35,12 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
-class OnDeviceModelServiceController;
 
 class ModelExecutionManager final {
  public:
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      base::WeakPtr<OnDeviceModelServiceController>
-          on_device_model_service_controller,
       OptimizationGuideLogger* optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
           model_quality_uploader_service);
@@ -63,32 +60,6 @@ class ModelExecutionManager final {
       std::optional<base::TimeDelta> timeout,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback);
-
-  // Returns the eligibility status of the on device model for `feature`, which
-  // indicates if the on-device session can be created.
-  optimization_guide::OnDeviceModelEligibilityReason
-  GetOnDeviceModelEligibility(
-      optimization_guide::ModelBasedCapabilityKey feature);
-
-  // Returns the `SamplingParamsConfig` for `feature`.
-  std::optional<optimization_guide::SamplingParamsConfig>
-  GetSamplingParamsConfig(optimization_guide::ModelBasedCapabilityKey feature);
-  // Returns the metadata proto for `feature`.
-  std::optional<const proto::Any> GetFeatureMetadata(
-      optimization_guide::ModelBasedCapabilityKey feature);
-
-  // Starts a new session for `feature`.
-  std::unique_ptr<OnDeviceSession> StartSession(
-      ModelBasedCapabilityKey feature,
-      const SessionConfigParams& config_params);
-
-  // Returns the capabilities for the on-device model, or empty capabilities if
-  // no model is available.
-  on_device_model::Capabilities GetOnDeviceCapabilities();
-
-  OnDeviceModelServiceController* GetOnDeviceModelServiceController() {
-    return on_device_model_service_controller_.get();
-  }
 
   // Records a fake model execution response to be returned when ExecuteModel is
   // called for the given feature.
@@ -148,10 +119,6 @@ class ModelExecutionManager final {
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
   const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // Controller for the on-device service.
-  base::WeakPtr<OnDeviceModelServiceController>
-      on_device_model_service_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

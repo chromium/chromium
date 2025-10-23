@@ -8,10 +8,11 @@
 #include <map>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "base/feature_list.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -32,18 +33,18 @@ BASE_DECLARE_FEATURE(kRequirePersistentModeForScamDetection);
 
 class ModelBrokerAndroid;
 
-// A implementation of ModelBroker for Android.
-// This object is analogous to ModelBrokerState.
-// TODO(crbug.com/442912443) - Instantiate this in chrome/browser.
-class ModelBrokerAndroid final {
+// A implementation of OnDeviceCapability for Android.
+class ModelBrokerAndroid final : public OnDeviceCapability {
  public:
   class SolutionFactory;
 
   explicit ModelBrokerAndroid(PrefService& local_state,
                               OptimizationGuideModelProvider& model_provider);
-  ~ModelBrokerAndroid();
+  ~ModelBrokerAndroid() override;
 
-  void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver);
+  // OptimizationGuideOnDeviceCapabilityProvider:
+  void BindModelBroker(
+      mojo::PendingReceiver<mojom::ModelBroker> receiver) override;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
       proto::ModelExecutionFeature feature);

@@ -347,9 +347,11 @@ ModelBrokerAndroid::ModelBrokerAndroid(
                                 base::Unretained(this))) {}
 ModelBrokerAndroid::~ModelBrokerAndroid() = default;
 
-void ModelBrokerAndroid::BindBroker(
+void ModelBrokerAndroid::BindModelBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
-  impl_.BindBroker(std::move(receiver));
+  if (features::IsOnDeviceExecutionEnabled()) {
+    impl_.BindBroker(std::move(receiver));
+  }
 }
 
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&

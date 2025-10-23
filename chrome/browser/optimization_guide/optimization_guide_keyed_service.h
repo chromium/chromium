@@ -115,9 +115,7 @@ class OptimizationGuideKeyedService
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
 
-  // Allow models to be subscribed via the broker.
-  void BindModelBroker(
-      mojo::PendingReceiver<optimization_guide::mojom::ModelBroker> receiver);
+  // Constructs a ModelBrokerClient with remote fallback capability.
   virtual std::unique_ptr<optimization_guide::ModelBrokerClient>
   CreateModelBrokerClient();
 
@@ -154,6 +152,9 @@ class OptimizationGuideKeyedService
 
   // optimization_guide::OnDeviceCapability
   // implementation:
+  void BindModelBroker(
+      mojo::PendingReceiver<optimization_guide::mojom::ModelBroker> receiver)
+      override;
   std::unique_ptr<optimization_guide::OnDeviceSession> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
       const optimization_guide::SessionConfigParams& config_params) override;
@@ -370,21 +371,6 @@ class OptimizationGuideKeyedService
   void RecordModelExecutionFeatureSyntheticFieldTrial(
       optimization_guide::UserVisibleFeatureKey feature,
       std::string_view feature_name);
-
-  // Ensures the performance class will be up to date and available when
-  // `complete` runs.
-  void EnsurePerformanceClassAvailable(base::OnceClosure complete);
-
-  void FinishGetOnDeviceModelEligibility(
-      optimization_guide::ModelBasedCapabilityKey feature,
-      const on_device_model::Capabilities& capabilities,
-      base::OnceCallback<
-          void(optimization_guide::OnDeviceModelEligibilityReason)> callback);
-
-  // Gets the possible capabilities that this device can support. This can be
-  // used to get all the capabilities this device supports before downloading
-  // the model. This will be a superset of GetOnDeviceCapabilities().
-  on_device_model::Capabilities GetPossibleOnDeviceCapabilities();
 
   raw_ptr<content::BrowserContext> browser_context_;
 

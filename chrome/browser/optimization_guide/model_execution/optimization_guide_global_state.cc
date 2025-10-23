@@ -185,19 +185,17 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
                           g_browser_process->local_state(),
                           g_browser_process->GetApplicationLocale(),
                           OptimizationGuideLogger::GetInstance(),
-                          base::BindRepeating(&unzip::LaunchUnzipper))
+                          base::BindRepeating(&unzip::LaunchUnzipper)),
+      on_device_capability_(
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-      ,
-      model_broker_state_(
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
-          base::BindRepeating(&LaunchService))
+          base::BindRepeating(&LaunchService)
 #elif BUILDFLAG(IS_ANDROID)
-      ,
-      model_broker_android_(*g_browser_process->local_state(),
-                            prediction_manager_)
+          *g_browser_process->local_state(),
+          prediction_manager_
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-{
+      ) {
   prediction_model_store_.Initialize(GetBaseStoreDir());
   prediction_manager_.MaybeInitializeModelDownloads(
       profile_download_service_tracker_, g_browser_process->local_state());
@@ -207,14 +205,14 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
   // before it has start up.
   component_state_manager_observer_ =
       std::make_unique<ChromeModelComponentStateManagerObserver>(
-          model_broker_state_.component_state_manager().GetWeakPtr());
+          on_device_capability_.component_state_manager().GetWeakPtr());
 
-  model_broker_state_.Init();
-  model_broker_state_.performance_classifier()
+  on_device_capability_.Init();
+  on_device_capability_.performance_classifier()
       .ListenForPerformanceClassAvailable(
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
-  model_broker_state_.performance_classifier().ScheduleEvaluation();
+  on_device_capability_.performance_classifier().ScheduleEvaluation();
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;

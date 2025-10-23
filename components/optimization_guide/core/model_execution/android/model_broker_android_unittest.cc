@@ -109,7 +109,7 @@ class ModelBrokerAndroidTest : public testing::Test {
 
   mojo::PendingRemote<mojom::ModelBroker> BindAndPassRemote() {
     mojo::PendingRemote<mojom::ModelBroker> remote;
-    EnsureBroker().BindBroker(remote.InitWithNewPipeAndPassReceiver());
+    EnsureBroker().BindModelBroker(remote.InitWithNewPipeAndPassReceiver());
     return remote;
   }
 

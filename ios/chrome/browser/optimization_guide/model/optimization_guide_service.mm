@@ -88,7 +88,7 @@ OptimizationGuideService::OptimizationGuideService(
   if (!off_the_record_) {
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, identity_manager, nullptr,
+            url_loader_factory, identity_manager,
             optimization_guide_logger_.get(), nullptr);
   }
 

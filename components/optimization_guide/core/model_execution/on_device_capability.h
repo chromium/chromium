@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -295,6 +296,9 @@ class OnDeviceCapability {
  public:
   OnDeviceCapability();
   virtual ~OnDeviceCapability();
+
+  virtual void BindModelBroker(
+      mojo::PendingReceiver<mojom::ModelBroker> receiver) {}
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

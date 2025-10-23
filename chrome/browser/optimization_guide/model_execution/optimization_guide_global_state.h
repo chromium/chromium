@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 
@@ -42,18 +43,10 @@ class OptimizationGuideGlobalState final
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   // This accessor is mainly for the chrome://on-device-internals page and
   // tests.
-  ModelBrokerState& model_broker_state() { return model_broker_state_; }
+  ModelBrokerState& model_broker_state() { return on_device_capability_; }
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
-  // This is supporting remote fallback for the OnDeviceCapability API.
-  // TODO(holte): Remove this once the remote fallback path is not needed.
-  base::WeakPtr<OnDeviceModelServiceController> GetServiceControllerWeakPtr() {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return model_broker_state_.service_controller().GetWeakPtr();
-#else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return nullptr;
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
+  OnDeviceCapability& on_device_capability() { return on_device_capability_; }
 
   PredictionModelStore& prediction_model_store() {
     return prediction_model_store_;
@@ -66,58 +59,9 @@ class OptimizationGuideGlobalState final
   std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(
       OptimizationGuideModelProvider* provider) {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return model_broker_state_.CreateAssetManager(provider);
+    return on_device_capability_.CreateAssetManager(provider);
 #else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
     return nullptr;
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
-
-  // This is supporting availability for the OnDeviceCapability API.
-  // TODO(holte): Remove after migration to ModelBroker API.
-  void EnsurePerformanceClassAvailable(base::OnceClosure complete) {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    model_broker_state_.performance_classifier()
-        .EnsurePerformanceClassAvailable(std::move(complete));
-#else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    std::move(complete).Run();
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
-
-  // This is supporting availability for the OnDeviceCapability API.
-  // TODO(holte): Remove after migration to ModelBroker API.
-  on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return model_broker_state_.GetPossibleOnDeviceCapabilities();
-#else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    return {};
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
-
-  void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    model_broker_state_.service_controller().BindBroker(std::move(receiver));
-#elif BUILDFLAG(IS_ANDROID)
-    if (features::IsOnDeviceExecutionEnabled()) {
-      model_broker_android_.BindBroker(std::move(receiver));
-    }
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
-
-  void AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey feature,
-      OnDeviceModelAvailabilityObserver* observer) {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    model_broker_state_.service_controller()
-        .AddOnDeviceModelAvailabilityChangeObserver(feature, observer);
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  }
-
-  void RemoveOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey feature,
-      OnDeviceModelAvailabilityObserver* observer) {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-    model_broker_state_.service_controller()
-        .RemoveOnDeviceModelAvailabilityChangeObserver(feature, observer);
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   }
 
@@ -133,11 +77,13 @@ class OptimizationGuideGlobalState final
   PredictionManager prediction_manager_;
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  ModelBrokerState model_broker_state_;
+  ModelBrokerState on_device_capability_;
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;
 #elif BUILDFLAG(IS_ANDROID)
-  ModelBrokerAndroid model_broker_android_;
+  ModelBrokerAndroid on_device_capability_;
+#else
+  OnDeviceCapability on_device_capability_;
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
