@@ -13,8 +13,6 @@ component("cpp") {
   sources = [
     "assistant_browser_delegate.cc",
     "assistant_browser_delegate.h",
-    "features.cc",
-    "features.h",
   ]
 
   public_deps = [

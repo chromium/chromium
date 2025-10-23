@@ -46,7 +46,6 @@
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -205,22 +204,8 @@ void RecordCycleForwardMru(const ui::Accelerator& accelerator) {
 }
 
 void RecordToggleAssistant(const ui::Accelerator& accelerator) {
-  if (assistant::features::IsNewEntryPointEnabled()) {
-    base::RecordAction(
-        base::UserMetricsAction("Assistant.NewEntryPoint.AssistantKey"));
-    return;
-  }
-
-  if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_SPACE) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Search_Space"));
-  } else if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Search_A"));
-  } else if (accelerator.key_code() == ui::VKEY_ASSISTANT) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Assistant"));
-  }
+  base::RecordAction(
+      base::UserMetricsAction("Assistant.NewEntryPoint.AssistantKey"));
 }
 
 void RecordToggleAppList(const ui::Accelerator& accelerator) {

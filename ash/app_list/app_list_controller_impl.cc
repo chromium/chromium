@@ -83,7 +83,6 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"

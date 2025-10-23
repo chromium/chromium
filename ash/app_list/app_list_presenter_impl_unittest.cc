@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"

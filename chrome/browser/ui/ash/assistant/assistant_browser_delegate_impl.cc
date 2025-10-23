@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
@@ -192,11 +191,6 @@ AssistantBrowserDelegateImpl::GetWebAppRegistrarForNewEntryPoint() {
   if (!on_is_new_entry_point_eligible_ready_.is_signaled()) {
     return base::unexpected(
         AssistantBrowserDelegate::Error::kWebAppProviderNotReadyToRead);
-  }
-
-  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
-    return base::unexpected(
-        AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled);
   }
 
   web_app::WebAppProvider* provider =

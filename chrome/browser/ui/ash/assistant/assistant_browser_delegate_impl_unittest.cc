@@ -32,7 +32,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
@@ -176,9 +175,6 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
 };
 
 TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointOpensApp) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::assistant::features::kEnableNewEntryPoint);
-
   InstallNewEntryPointApp();
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -199,9 +195,6 @@ TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointOpensApp) {
 
 TEST_F(AssistantBrowserDelegateImplTest, EligibleToNewEntryPoint) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::assistant::features::kEnableNewEntryPoint);
-
   InstallNewEntryPointApp();
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -215,29 +208,7 @@ TEST_F(AssistantBrowserDelegateImplTest, EligibleToNewEntryPoint) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AssistantBrowserDelegateImplTest, NotEligibleBecauseOfFlagOff) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ash::assistant::features::kEnableNewEntryPoint);
-
-  InstallNewEntryPointApp();
-  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-
-  base::expected<bool, ash::assistant::AssistantBrowserDelegate::Error>
-      maybe_eligibility = delegate_->IsNewEntryPointEligibleForPrimaryProfile();
-  ASSERT_TRUE(maybe_eligibility.has_value());
-  EXPECT_FALSE(maybe_eligibility.value());
-  // sample=3 is kNotEligibleFlagOff.
-  histogram_tester.ExpectUniqueSample("Assistant.NewEntryPoint.Eligibility",
-                                      /*sample=*/3,
-                                      /*expected_bucket_count=*/1);
-}
-
 TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointDoNotOpenIfNotInstalled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::assistant::features::kEnableNewEntryPoint);
-
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
@@ -260,9 +231,6 @@ TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointDoNotOpenIfNotInstalled) {
 
 TEST_F(AssistantBrowserDelegateImplTest, NotEligibleBecauseOfNoEntryPointApp) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::assistant::features::kEnableNewEntryPoint);
-
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   base::expected<bool, ash::assistant::AssistantBrowserDelegate::Error>
@@ -276,9 +244,6 @@ TEST_F(AssistantBrowserDelegateImplTest, NotEligibleBecauseOfNoEntryPointApp) {
 }
 
 TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointName) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::assistant::features::kEnableNewEntryPoint);
-
   InstallNewEntryPointApp();
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -287,9 +252,6 @@ TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointName) {
 
 TEST_F(AssistantBrowserDelegateImplTest,
        NoEntryPointNameBecauseOfNoEntryPointApp) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::assistant::features::kEnableNewEntryPoint);
-
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   EXPECT_EQ(std::nullopt, delegate_->GetNewEntryPointName());

@@ -11,7 +11,6 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace ash::assistant {
 
@@ -37,11 +36,6 @@ void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
 
 base::expected<bool, AssistantBrowserDelegate::Error>
 ScopedAssistantBrowserDelegate::IsNewEntryPointEligibleForPrimaryProfile() {
-  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
-    return base::unexpected(
-        AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled);
-  }
-
   return true;
 }
 

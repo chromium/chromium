@@ -96,7 +96,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"

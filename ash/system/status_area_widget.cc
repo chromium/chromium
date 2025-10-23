@@ -52,7 +52,6 @@
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
