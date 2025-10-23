@@ -647,6 +647,10 @@ const char kChromeAppStoreUrl[] =
 @property(nonatomic, strong)
     NonModalSignInPromoCoordinator* nonModalSignInPromoCoordinator;
 
+// Coordinator for the AIM prototype.
+@property(nonatomic, strong)
+    AIMPrototypeContainerCoordinator* aimPrototypeCoordinator;
+
 @end
 
 @implementation BrowserCoordinator {
@@ -698,9 +702,6 @@ const char kChromeAppStoreUrl[] =
   // Callback to remove the activity overlay started by the browser coordinator
   // itself.
   base::ScopedClosureRunner _activityOverlayCallback;
-
-  // Coordinator for the AIM prototype.
-  AIMPrototypeContainerCoordinator* _aimPrototypeCoordinator;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -992,7 +993,7 @@ const char kChromeAppStoreUrl[] =
 
   // The aim prototype replaces the omnibox.
   if (dismissOmnibox) {
-    [self hideAIMPrototype];
+    [self hideAIMPrototypeImmediately:NO];
   }
 
   [self.viewController clearPresentedStateWithCompletion:completion
@@ -1792,7 +1793,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
-  [self hideAIMPrototype];
+  [self hideAIMPrototypeImmediately:YES];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2619,12 +2620,25 @@ const char kChromeAppStoreUrl[] =
   [_aimPrototypeCoordinator start];
 }
 
-- (void)hideAIMPrototype {
+- (void)hideAIMPrototypeImmediately:(BOOL)immediately {
   if (!_aimPrototypeCoordinator) {
     return;
   }
-  [_aimPrototypeCoordinator stop];
-  _aimPrototypeCoordinator = nil;
+  __weak __typeof__(self) weakSelf = self;
+  base::OnceClosure completion = base::BindOnce(^{
+    [weakSelf.aimPrototypeCoordinator stop];
+    weakSelf.aimPrototypeCoordinator = nil;
+  });
+  if (immediately) {
+    std::move(completion).Run();
+  } else {
+    // Stop the prototoype on the next run loop as this might be called while
+    // the prototype's omnibox is loading a query. TODO(crbug.com/454302076):
+    // Remove this workaround once the omnibox can be safely dismissed while
+    // openMatch.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(completion));
+  }
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

@@ -388,7 +388,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)dismissAIMPrototype {
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [commands hideAIMPrototype];
+  [commands hideAIMPrototypeImmediately:NO];
 }
 
 @end

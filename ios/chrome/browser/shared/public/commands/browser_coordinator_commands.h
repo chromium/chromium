@@ -59,8 +59,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showAIMPrototypeFromEntrypoint:(AIMPrototypeEntrypoint)entryPoint
                              withQuery:(NSString*)query;
 
-// Hides the AIM prototype.
-- (void)hideAIMPrototype;
+// Hides the AIM prototype. If not `immediately`, the prototype will be stopped
+// on the next run loop.
+- (void)hideAIMPrototypeImmediately:(BOOL)immediately;
 
 // Shows the activity indicator overlay that appears over the view to prevent
 // interaction with the web page until the returned value is destructed.

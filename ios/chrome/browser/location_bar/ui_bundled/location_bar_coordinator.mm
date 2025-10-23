@@ -591,7 +591,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (base::FeatureList::IsEnabled(kAIMPrototype)) {
     id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-    [commands hideAIMPrototype];
+    [commands hideAIMPrototypeImmediately:NO];
   }
   if (self.isCancellingOmniboxEdit) {
     return;

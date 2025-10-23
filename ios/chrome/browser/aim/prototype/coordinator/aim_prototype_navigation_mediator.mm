@@ -152,16 +152,7 @@
 
 // Asks the delegate to dismiss the AIM prototype.
 - (void)dismissAIMPrototype {
-  // TODO(crbug.com/442371203): Dismissing the view directly here may lead to a
-  // crash because some calls made after pressing the return key are still being
-  // performed, for example. This hack postpones the dismiss action.
-  __weak __typeof(self) weakSelf = self;
-  base::OnceClosure completion = base::BindOnce(^{
-    [weakSelf.delegate navigationMediatorDidFinish:weakSelf];
-  });
-  constexpr base::TimeDelta kDelay = base::Seconds(0.5);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, std::move(completion), kDelay);
+  [self.delegate navigationMediatorDidFinish:self];
 }
 
 @end

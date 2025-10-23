@@ -119,23 +119,25 @@
 
 - (void)aimPrototypeContainerViewControllerDidTapCloseButton:
     (AIMPrototypeComposeboxViewController*)viewController {
-  [self dismissAIMPrototype];
+  [self dismissAIMPrototypeImmediately:YES];
 }
 
 #pragma mark - AIMPrototypeNavigationMediatorDelegate
 
 - (void)navigationMediatorDidFinish:
     (AIMPrototypeNavigationMediator*)navigationMediator {
-  [self dismissAIMPrototype];
+  [self dismissAIMPrototypeImmediately:NO];
 }
 
 #pragma mark - Private
 
-// Sends the command to get the AIM prototype dismissed.
-- (void)dismissAIMPrototype {
+// Sends the command to get the AIM prototype dismissed. If not `immediately`,
+// stop the prototoype on the next run loop as this might be called while the
+// prototype's omnibox is loading a query.
+- (void)dismissAIMPrototypeImmediately:(BOOL)immediately {
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [commands hideAIMPrototype];
+  [commands hideAIMPrototypeImmediately:immediately];
 }
 
 @end
