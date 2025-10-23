@@ -4700,6 +4700,7 @@ test("ash_unittests") {
     "//components/onc",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/peripherals/logging",
+    "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/quirks",

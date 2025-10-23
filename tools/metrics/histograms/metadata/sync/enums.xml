@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
   <int value="100033" label="AccessibilityAutoclickRevertToLeftClick"/>
   <int value="100034" label="AccessibilityAutoclickStabilizePosition"/>
   <int value="100035"
-      label="(obsolete, no longer synced) AccessibilityCursorColor"/>
+      label="(obsolete, synced as 100340 now) AccessibilityCursorColor"/>
   <int value="100036"
       label="AccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="100037" label="AccessibilityFloatingMenuPosition"/>
@@ -763,6 +763,17 @@ chromium-metrics-reviews@google.com.
   <int value="100336" label="iOSLensPromoImpressionsCounter"/>
   <int value="100337" label="iOSLensPromoOptOut"/>
   <int value="100338" label="SubscriptionEligibilityAiSubscriptionTier"/>
+  <int value="100339" label="AccessibilityCursorHighlightEnabled"/>
+  <int value="100340" label="AccessibilityCursorColorEnabled"/>
+  <int value="100341" label="AccessibilityCursorColor"/>
+  <int value="100342" label="AccessibilityLargeCursorEnabled"/>
+  <int value="100343" label="AccessibilityLargeCursorDipSize"/>
+  <int value="100344" label="AccessibilityHighContrastEnabled"/>
+  <int value="100345" label="AccessibilityCaretHighlightEnabled"/>
+  <int value="100346" label="AccessibilityCaretBlinkInterval"/>
+  <int value="100347" label="AccessibilityFocusHighlightEnabled"/>
+  <int value="100348" label="AccessibilityColorCorrectionHasBeenSetup"/>
+  <int value="100349" label="HighContrastAcceleratorDialogHasBeenAccepted"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

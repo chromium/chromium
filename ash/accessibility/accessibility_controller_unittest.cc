@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -37,6 +38,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -45,6 +47,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/live_caption/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -2700,5 +2703,65 @@ TEST_F(AccessibilityControllerBounceKeysTest, UpdateBounceKeysDelayPref) {
                       expected_delta.InMilliseconds());
   EXPECT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(), expected_delta);
 }
+
+class AccessibilityControllerRegisterProfilePrefsTest
+    : public AccessibilityControllerTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  AccessibilityControllerRegisterProfilePrefsTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kOsSyncAccessibilitySettingsBatch1);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kOsSyncAccessibilitySettingsBatch1);
+    }
+  }
+
+  ~AccessibilityControllerRegisterProfilePrefsTest() override = default;
+
+ protected:
+  template <size_t N>
+  void CheckPrefsSyncableFlags(const std::array<const char*, N>& pref_names) {
+    const bool expect_sync = GetParam();
+    for (const char* pref_name : pref_names) {
+      const auto* pref = prefs()->FindPreference(pref_name);
+      ASSERT_TRUE(pref);
+      const uint32_t flags = pref->registration_flags();
+      if (expect_sync) {
+        EXPECT_NE(0u,
+                  flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF)
+            << pref_name;
+      } else {
+        EXPECT_EQ(0u,
+                  flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF)
+            << pref_name;
+      }
+    }
+  }
+};
+
+TEST_P(AccessibilityControllerRegisterProfilePrefsTest,
+       RegistersVisualPrefsWithExpectedSyncFlags) {
+  constexpr auto kBatch1AccessibilitySyncPrefs = std::to_array<const char*>({
+      prefs::kAccessibilityColorCorrectionEnabled,
+      prefs::kAccessibilityColorCorrectionHasBeenSetup,
+      prefs::kAccessibilityCursorHighlightEnabled,
+      prefs::kAccessibilityCursorColorEnabled,
+      prefs::kAccessibilityCursorColor,
+      prefs::kAccessibilityLargeCursorEnabled,
+      prefs::kAccessibilityLargeCursorDipSize,
+      prefs::kAccessibilityHighContrastEnabled,
+      prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
+      prefs::kAccessibilityCaretHighlightEnabled,
+      prefs::kAccessibilityCaretBlinkInterval,
+      prefs::kAccessibilityFocusHighlightEnabled,
+  });
+  CheckPrefsSyncableFlags(kBatch1AccessibilitySyncPrefs);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AccessibilityControllerRegisterProfilePrefsTest,
+                         ::testing::Values(true, false));
 
 }  // namespace ash

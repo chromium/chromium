@@ -1510,6 +1510,11 @@ BASE_FEATURE(kOnDeviceGrammarCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 // Forwarded to LaCrOS as BrowserInitParams::is_ondevice_speech_supported.
 BASE_FEATURE(kOnDeviceSpeechRecognition, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Gates syncing of the first batch of visual accessibility settings so the
+// rollout can be staged and rolled back independently if issues surface.
+BASE_FEATURE(kOsSyncAccessibilitySettingsBatch1,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the OneDrive upload flow should immediately prompt the user to
 // re-authenticate without first showing a notification.
 BASE_FEATURE(kOneDriveUploadImmediateReauth, base::FEATURE_ENABLED_BY_DEFAULT);
