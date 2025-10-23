@@ -49,8 +49,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE = 31;
     public static final int BACKGROUND_SAFETY_HUB = 32;
     public static final int BACKGROUND_AUXILIARY_SEARCH_DONATE = 33;
+    public static final int BACKGROUND_CHROME_SIGNALS_REPORTING = 34;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 34;
+    public static final int BACKGROUND_TASK_COUNT = 35;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -138,6 +139,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_SAFETY_HUB;
             case TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID:
                 return BACKGROUND_AUXILIARY_SEARCH_DONATE;
+            case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
+                return BACKGROUND_CHROME_SIGNALS_REPORTING;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;
@@ -207,6 +210,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "SafetyHub";
             case TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID:
                 return "AuxiliarySearchDonate";
+            case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
+                return "ChromeSignalsReporting";
         }
         assert false;
         return null;

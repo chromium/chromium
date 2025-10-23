@@ -781,6 +781,8 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Download auto-resumption any network task"/>
   <int value="31" label="Notification pre-unsubscribe action"/>
   <int value="32" label="Safety Hub fetch task"/>
+  <int value="33" label="Auxiliary search donate task"/>
+  <int value="34" label="Chrome signals reporting task"/>
 </enum>
 
 <enum name="BackPressConsumer">

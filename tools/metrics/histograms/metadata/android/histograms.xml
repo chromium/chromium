@@ -292,6 +292,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AuxiliarySearchDonate" summary="AuxiliarySearchDonate"/>
   <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
   <variant name="ChromeMinidumpUploading" summary="ChromeMinidumpUploading"/>
+  <variant name="ChromeSignalsReporting" summary="ChromeSignalsReporting"/>
   <variant name="ComponentUpdate" summary="ComponentUpdate"/>
   <variant name="DeprecatedDownloadResumption"
       summary="DeprecatedDownloadResumption"/>

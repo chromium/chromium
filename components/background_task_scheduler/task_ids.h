@@ -13,7 +13,8 @@ namespace background_task {
 // When adding your job id to the list below, update:
 // 1. BackgroundTaskSchedulerExternalUma for metrics, specifically:
 // toUmaEnumValueFromTaskId() and getHistogramPatternForTaskId().
-// 2. Enum BackgroundTaskId in tools/metrics/histograms/enums.xml.
+// 2. Enum BackgroundTaskId in
+// tools/metrics/histograms/metadata/android/enums.xml.
 // 3. Variant TaskType in
 // tools/metrics/histograms/metadata/android/histograms.xml.
 // 4. ChromeBackgroundTaskFactory#createBackgroundTaskFromTaskId in java.
@@ -147,6 +148,10 @@ enum class TaskIds {
   // team_email: clank-start@google.com
   // owner:hanxi@chromium.org
   AUXILIARY_SEARCH_DONATE_JOB_ID = 113,
+  // component: Enterprise
+  // team_email: cbe-device-trust-eng@google.com
+  // owner:xzonghan@chromium.org
+  CHROME_SIGNALS_REPORTING_JOB_ID = 114,
 };
 
 }  // namespace background_task
