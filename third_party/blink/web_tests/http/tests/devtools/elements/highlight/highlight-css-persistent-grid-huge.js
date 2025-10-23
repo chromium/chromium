@@ -38,7 +38,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   // Now check that the highlight data for a 10000x10000 grid can be generated.
   // But don't dump it since that would make the test time out.
   const node = await ElementsTestRunner.nodeWithIdPromise('huge-grid');
-  await TestRunner.OverlayAgent.getGridHighlightObjectsForTest([node.id]);
+  await TestRunner.OverlayAgent.invoke_getGridHighlightObjectsForTest({nodeIds: [node.id]});
 
   TestRunner.completeTest();
 })();

@@ -16,18 +16,18 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   const innerUrl = 'https://127.0.0.1:8443/loading/sxg/resources/inner-url.html';
 
   await TestRunner.showPanel('network');
-  await TestRunner.NetworkAgent.setCacheDisabled(false);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false});
 
   // Load the test signed exchange first, to cache the certificate file.
   await TestRunner.addIframe(outerUrl);
 
   NetworkTestRunner.networkLog().reset();
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
   await TestRunner.addIframe(outerUrl + '?iframe-1');
   await addPrefetchAndWait(outerUrl + '?prefetch-1', innerUrl);
 
-  await TestRunner.NetworkAgent.setCacheDisabled(false);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false});
   // With the cache re-enabled `iframe-2` should have a cached request.
   await TestRunner.addIframe(outerUrl + '?iframe-2');
   // The prefetch has a different cache partition key and so will not be cached.

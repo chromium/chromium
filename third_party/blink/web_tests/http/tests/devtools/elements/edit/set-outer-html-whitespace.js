@@ -20,7 +20,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   async function setChildTextContent(textContent) {
     var text = ElementsTestRunner.containerText.replace(/<child id="identity">.*<\/child>/, `<child id="identity">${textContent}</child>`);
     TestRunner.addResult(`Setting textContent to "${textContent}"`)
-    await TestRunner.DOMAgent.setOuterHTML(ElementsTestRunner.containerId, text);
+    await TestRunner.DOMAgent.invoke_setOuterHTML({nodeId: ElementsTestRunner.containerId, outerHTML: text});
     dumpEvents();
   }
 

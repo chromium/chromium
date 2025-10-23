@@ -54,7 +54,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.completeTest();
   };
 
-  await TestRunner.DebuggerAgent.disable();
+  await TestRunner.DebuggerAgent.invoke_disable();
   for (var message of messages)
     InspectorFrontendHost.sendMessageToBackend(message);
 })();

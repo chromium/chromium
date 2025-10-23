@@ -27,15 +27,19 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function matchedStylesCallback(matchedResult) {
     styleSheetId = matchedResult.nodeStyles()[1].styleSheetId;
     TestRunner.CSSAgent
-        .setStyleSheetText(
-            styleSheetId, '@import url("import-pseudoclass-crash-empty.css");\n\n:last-child { color: #000001; }\n')
+        .invoke_setStyleSheetText({
+          styleSheetId: styleSheetId,
+          text: '@import url("import-pseudoclass-crash-empty.css");\n\n:last-child { color: #000001; }\n'
+        })
         .then(modifiedCallback);
   }
 
   function modifiedCallback() {
     TestRunner.CSSAgent
-        .setStyleSheetText(
-            styleSheetId, '@import url("import-pseudoclass-crash-empty.css");\n\n:last-child { color: #002001; }\n')
+        .invoke_setStyleSheetText({
+          styleSheetId: styleSheetId,
+          text: '@import url("import-pseudoclass-crash-empty.css");\n\n:last-child { color: #002001; }\n'
+        })
         .then(modifiedCallback2);
   }
 

@@ -14,7 +14,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   await TestRunner.showPanel('resources');
 
   TestRunner.addSniffer(SDK.ResourceTreeModel.ResourceTreeFrame.prototype, 'addRequest', requestAdded, true);
-  TestRunner.addSniffer(TestRunner.PageAgent, 'getResourceContent', pageAgentGetResourceContentCalled, true);
+  TestRunner.addSniffer(TestRunner.PageAgent, 'invoke_getResourceContent', pageAgentGetResourceContentCalled, true);
   TestRunner.evaluateInPageAsync(`
     (function loadStylesheet() {
       var styleElement = document.createElement("link");

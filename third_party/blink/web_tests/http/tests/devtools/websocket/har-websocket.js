@@ -11,7 +11,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult('Verifies that HAR exports contain websocket messages');
   await TestRunner.showPanel('network');
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
 
   const lastMessagePromise = new Promise(resolve => {
     TestRunner.networkManager.addEventListener(SDK.NetworkManager.Events.RequestUpdated, event => {

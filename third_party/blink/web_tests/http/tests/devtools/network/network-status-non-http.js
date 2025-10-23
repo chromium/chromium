@@ -29,7 +29,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       }
   `);
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
   var requestsToWatch = /\/network-status-non-http\.js$|\/non-existent-file.js$|^data:application\/javascript,|/;
   var seenRequests = 0;
 

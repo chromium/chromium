@@ -22,6 +22,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   const node = await domModel.pushObjectAsNodeToFrontend(remoteObject);
   node.highlight();
 
-  await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id);
+  await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: node.id});
   TestRunner.completeTest();
 })();

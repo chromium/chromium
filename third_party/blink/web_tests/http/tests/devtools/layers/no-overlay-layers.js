@@ -33,7 +33,7 @@ import {LayersTestRunner} from 'layers_test_runner';
   LayersTestRunner.layerTreeModel().layerTree().forEachLayer(function(layer) {
     layersBeforeHighlight.push(layer.id());
   });
-  TestRunner.OverlayAgent.highlightRect(0, 0, 200, 200, {r: 255, g: 0, b: 0});
+  TestRunner.OverlayAgent.invoke_highlightRect({x: 0, y: 0, width: 200, height: 200, color: {r: 255, g: 0, b: 0}});
 
   await LayersTestRunner.evaluateAndWaitForTreeChange('updateGeometry()');
 

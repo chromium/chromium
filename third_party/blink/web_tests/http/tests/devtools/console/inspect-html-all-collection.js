@@ -8,7 +8,8 @@ import {TestRunner} from 'test_runner';
   TestRunner.addResult(`Tests that HTMLAllCollection properties can be inspected.\n`);
   await TestRunner.showPanel('console');
 
-  var result = await TestRunner.RuntimeAgent.evaluate('document.all', 'console', false);
+  var {result, error} = await TestRunner.RuntimeAgent.invoke_evaluate(
+      {expression: 'document.all', objectGroup: 'console', includeCommandLineAPI: false});
   if (!result) {
     TestRunner.addResult('FAILED: ' + error);
     TestRunner.completeTest();

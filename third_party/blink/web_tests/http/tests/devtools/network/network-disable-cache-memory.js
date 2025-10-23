@@ -49,7 +49,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   function step3({ status, content, error, isEncoded }) {
     content2 = content;
     status2 = status;
-    TestRunner.NetworkAgent.setCacheDisabled(true).then(step4);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true}).then(step4);
   }
 
   function step4() {
@@ -68,7 +68,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
     TestRunner.assertEquals(status2, 304, 'Second script load should be from cache');
     TestRunner.assertTrue(content1 !== content3, 'First and third scripts should differ.');
     TestRunner.assertEquals(status3, 200, 'Third script load should be from network');
-    TestRunner.NetworkAgent.setCacheDisabled(false).then(step7);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false}).then(step7);
   }
 
   function step7() {

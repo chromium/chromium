@@ -61,11 +61,11 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   }
 
   function step4(msg) {
-    TestRunner.NetworkAgent.setCacheDisabled(true).then(step5);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true}).then(step5);
   }
 
   function step5() {
-    TestRunner.NetworkAgent.setCacheDisabled(false).then(step6);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false}).then(step6);
   }
 
   function step6() {

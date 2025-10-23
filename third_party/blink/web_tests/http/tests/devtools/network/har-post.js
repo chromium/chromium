@@ -11,7 +11,7 @@ import * as Common from 'devtools/core/common/common.js';
   TestRunner.addResult('Verifies that HAR exports have correct POST data');
   await TestRunner.showPanel('network');
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
 
   async function doPost(data) {
     await new Promise(

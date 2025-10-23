@@ -67,8 +67,8 @@ import {ElementsTestRunner} from 'elements_test_runner';
     const node = await ElementsTestRunner.nodeWithIdPromise(elementId);
     nodeIds.push(node.id);
   }
-  const {gridHighlights} =
-      await TestRunner.OverlayAgent.getGridHighlightObjectsForTest(nodeIds);
+  const {highlights: {gridHighlights}} =
+      await TestRunner.OverlayAgent.invoke_getGridHighlightObjectsForTest({nodeIds});
   TestRunner.assertEquals(2, gridHighlights.length);
   const grid1HighlightExpected = JSON.stringify({
     'rotationAngle': -90,

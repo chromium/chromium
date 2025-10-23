@@ -10,7 +10,7 @@ import {TestRunner} from 'test_runner';
       localStorage.testProperty = "testPropertyValue";
   `);
 
-  var result = await TestRunner.RuntimeAgent.evaluate('localStorage');
+  var {result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'localStorage'});
   var localStorageHandle = TestRunner.runtimeModel.createRemoteObject(result);
   localStorageHandle.getOwnProperties(false).then(step2);
 

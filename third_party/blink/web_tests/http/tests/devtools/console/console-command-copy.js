@@ -36,5 +36,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   InspectorFrontendHost.copyText = copyText;
-  for (var i = 0; i < testCases.length; ++i) TestRunner.RuntimeAgent.evaluate(testCases[i], '', true);
+  for (var i = 0; i < testCases.length; ++i)
+    TestRunner.RuntimeAgent.invoke_evaluate({expression: testCases[i], objectGroup: '', includeCommandLineAPI: true});
 })();

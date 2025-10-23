@@ -38,15 +38,20 @@ import {TestRunner} from 'test_runner';
 
   TestRunner.runTestSuite([
     async function testSetUp(next) {
-      var result = await TestRunner.RuntimeAgent.evaluate('window', 'get-event-listeners-test');
+      var {result} = await TestRunner.RuntimeAgent.invoke_evaluate(
+          {expression: 'window', objectGroup: 'get-event-listeners-test'});
 
       windowObject = TestRunner.runtimeModel.createRemoteObject(result);
-      result = await TestRunner.RuntimeAgent.evaluate(
-          'document.getElementById("with-handlers")', 'get-event-listeners-test');
+      ({result} = await TestRunner.RuntimeAgent.invoke_evaluate({
+        expression: 'document.getElementById("with-handlers")',
+        objectGroup: 'get-event-listeners-test'
+      }));
 
       divWithHandlers = TestRunner.runtimeModel.createRemoteObject(result);
-      result = await TestRunner.RuntimeAgent.evaluate(
-          'document.getElementById("without-handlers")', 'get-event-listeners-test');
+      ({result} = await TestRunner.RuntimeAgent.invoke_evaluate({
+        expression: 'document.getElementById("without-handlers")',
+        objectGroup: 'get-event-listeners-test'
+      }));
 
       divWithoutHandlers = TestRunner.runtimeModel.createRemoteObject(result);
       next();

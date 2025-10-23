@@ -70,7 +70,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   async function printStyleSheetAndCall(next) {
     var section = ElementsTestRunner.firstMatchedStyleSection();
     var id = section.style().styleSheetId;
-    var styleSheetText = await TestRunner.CSSAgent.getStyleSheetText(id);
+    var styleSheetText = (await TestRunner.CSSAgent.invoke_getStyleSheetText({styleSheetId: id})).text;
     TestRunner.addResult('===== Style sheet text: =====');
     TestRunner.addResult(styleSheetText);
     TestRunner.addResult('=============================');
