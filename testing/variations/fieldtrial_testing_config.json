@@ -21098,6 +21098,112 @@
             ]
         }
     ],
+    "RestrictSpellingAndGrammarHighlights": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ContentsAndEnablementAndSelection",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "true"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                },
+                {
+                    "name": "ContentsAndEnablement",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "false"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                },
+                {
+                    "name": "ContentsAndSelection",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "false",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "true"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                },
+                {
+                    "name": "EnablementAndSelection",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "false",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "true"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                },
+                {
+                    "name": "Contents",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "false",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "false"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                },
+                {
+                    "name": "Enablement",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "false",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "true",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "false"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                },
+                {
+                    "name": "Selection",
+                    "params": {
+                        "RestrictSpellingAndGrammarHighlightsChangedContents": "false",
+                        "RestrictSpellingAndGrammarHighlightsChangedEnablement": "false",
+                        "RestrictSpellingAndGrammarHighlightsChangedSelection": "true"
+                    },
+                    "enable_features": [
+                        "RestrictSpellingAndGrammarHighlights"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RetrieveTrustedVaultKeyKeyboardAccessoryAction": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RetrieveTrustedVaultKeyKeyboardAccessoryAction"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [

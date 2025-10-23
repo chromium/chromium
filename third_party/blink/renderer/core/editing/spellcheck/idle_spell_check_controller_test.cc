@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 
+#include <gtest/gtest.h>
+
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/features.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -17,13 +20,38 @@ namespace blink {
 
 using State = IdleSpellCheckController::State;
 
-class IdleSpellCheckControllerTest : public SpellCheckTestBase {
+class IdleSpellCheckControllerTest
+    : public SpellCheckTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  protected:
   IdleSpellCheckController& IdleChecker() {
     return GetSpellChecker().GetIdleSpellCheckController();
   }
 
   void SetUp() override {
+    if (IsRestrictionActiveForContents() ||
+        IsRestrictionActiveForEnablement() ||
+        IsRestrictionActiveForSelection()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kRestrictSpellingAndGrammarHighlights,
+          {
+              {
+                  "changed_contents",
+                  IsRestrictionActiveForContents() ? "true" : "false",
+              },
+              {
+                  "changed_enablement",
+                  IsRestrictionActiveForEnablement() ? "true" : "false",
+              },
+              {
+                  "changed_selection",
+                  IsRestrictionActiveForSelection() ? "true" : "false",
+              },
+          });
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kRestrictSpellingAndGrammarHighlights);
+    }
     SpellCheckTestBase::SetUp();
 
     // The initial cold mode request is on on document startup. This doesn't
@@ -50,22 +78,38 @@ class IdleSpellCheckControllerTest : public SpellCheckTestBase {
         NOTREACHED();
     }
   }
+
+  bool IsRestrictionActiveForContents() { return std::get<0>(GetParam()); }
+
+  bool IsRestrictionActiveForEnablement() { return std::get<1>(GetParam()); }
+
+  bool IsRestrictionActiveForSelection() { return std::get<2>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IdleSpellCheckControllerTest,
+    ::testing::Combine(/*restrict_contents=*/::testing::Bool(),
+                       /*restrict_enablement=*/::testing::Bool(),
+                       /*restrict_selection=*/::testing::Bool()));
 
 // Test cases for lifecycle state transitions.
 
-TEST_F(IdleSpellCheckControllerTest, InitializationWithColdMode) {
+TEST_P(IdleSpellCheckControllerTest, InitializationWithColdMode) {
   EXPECT_EQ(State::kColdModeTimerStarted, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, RequestWhenInactive) {
+TEST_P(IdleSpellCheckControllerTest, RequestWhenInactive) {
   TransitTo(State::kInactive);
   IdleChecker().RespondToChangedContents();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
 
-TEST_F(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
+TEST_P(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
   TransitTo(State::kHotModeRequested);
   int handle = IdleChecker().IdleCallbackHandle();
   IdleChecker().RespondToChangedContents();
@@ -74,14 +118,14 @@ TEST_F(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
 
-TEST_F(IdleSpellCheckControllerTest, RequestWhenColdModeTimerStarted) {
+TEST_P(IdleSpellCheckControllerTest, RequestWhenColdModeTimerStarted) {
   TransitTo(State::kColdModeTimerStarted);
   IdleChecker().RespondToChangedContents();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
 
-TEST_F(IdleSpellCheckControllerTest, RequestWhenColdModeRequested) {
+TEST_P(IdleSpellCheckControllerTest, RequestWhenColdModeRequested) {
   TransitTo(State::kColdModeRequested);
   int handle = IdleChecker().IdleCallbackHandle();
   IdleChecker().RespondToChangedContents();
@@ -90,58 +134,58 @@ TEST_F(IdleSpellCheckControllerTest, RequestWhenColdModeRequested) {
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
 
-TEST_F(IdleSpellCheckControllerTest, HotModeTransitToColdMode) {
+TEST_P(IdleSpellCheckControllerTest, HotModeTransitToColdMode) {
   TransitTo(State::kHotModeRequested);
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kColdModeTimerStarted, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, ColdModeTimerStartedToRequested) {
+TEST_P(IdleSpellCheckControllerTest, ColdModeTimerStartedToRequested) {
   TransitTo(State::kColdModeTimerStarted);
   IdleChecker().SkipColdModeTimerForTesting();
   EXPECT_EQ(State::kColdModeRequested, IdleChecker().GetState());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
 
-TEST_F(IdleSpellCheckControllerTest, ColdModeStayAtColdMode) {
+TEST_P(IdleSpellCheckControllerTest, ColdModeStayAtColdMode) {
   TransitTo(State::kColdModeRequested);
   IdleChecker().SetNeedsMoreColdModeInvocationForTesting();
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kColdModeTimerStarted, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, ColdModeToInactive) {
+TEST_P(IdleSpellCheckControllerTest, ColdModeToInactive) {
   TransitTo(State::kColdModeRequested);
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, DetachWhenInactive) {
+TEST_P(IdleSpellCheckControllerTest, DetachWhenInactive) {
   TransitTo(State::kInactive);
   GetFrame().DomWindow()->FrameDestroyed();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, DetachWhenHotModeRequested) {
+TEST_P(IdleSpellCheckControllerTest, DetachWhenHotModeRequested) {
   TransitTo(State::kHotModeRequested);
   GetFrame().DomWindow()->FrameDestroyed();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, DetachWhenColdModeTimerStarted) {
+TEST_P(IdleSpellCheckControllerTest, DetachWhenColdModeTimerStarted) {
   TransitTo(State::kColdModeTimerStarted);
   GetFrame().DomWindow()->FrameDestroyed();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest, DetachWhenColdModeRequested) {
+TEST_P(IdleSpellCheckControllerTest, DetachWhenColdModeRequested) {
   TransitTo(State::kColdModeRequested);
   GetFrame().DomWindow()->FrameDestroyed();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
 
 // https://crbug.com/863784
-TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
+TEST_P(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
   SetBodyContent(
       "<div contenteditable style=\"width:800px\">"
       "foo"
@@ -164,7 +208,7 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
 
-TEST_F(IdleSpellCheckControllerTest,
+TEST_P(IdleSpellCheckControllerTest,
        HotModeRangeDoesNotIncludeVisiblePosition) {
   SetBodyContent(
       "<form contenteditable='true'>"

@@ -99,6 +99,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebCore.Editing.SpellCheckUserActionLimitation.{Source}.{Action}"
+    enum="Boolean" expires_after="2026-01-23">
+  <owner>arichiv@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    Counts the number of invocations by the {Source}SpellChecker related to
+    {Action} actions and whether they were allowed or denied. For more see:
+    https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  </summary>
+  <token key="Source">
+    <variant name="Cold"/>
+    <variant name="Hot"/>
+  </token>
+  <token key="Action">
+    <variant name="Contents"/>
+    <variant name="Enablement"/>
+    <variant name="Selection"/>
+  </token>
+</histogram>
+
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
     expires_after="2023-05-07">
   <owner>rakina@chromium.org</owner>

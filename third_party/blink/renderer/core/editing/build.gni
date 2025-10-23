@@ -310,6 +310,8 @@ blink_core_sources_editing = [
   "set_selection_options.h",
   "spellcheck/cold_mode_spell_check_requester.cc",
   "spellcheck/cold_mode_spell_check_requester.h",
+  "spellcheck/features.cc",
+  "spellcheck/features.h",
   "spellcheck/hot_mode_spell_check_requester.cc",
   "spellcheck/hot_mode_spell_check_requester.h",
   "spellcheck/idle_spell_check_controller.cc",
