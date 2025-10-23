@@ -373,21 +373,16 @@ class WorkerThread(threading.Thread):
             config: The TestConfig object for the test to run.
         """
         successful_runs = 0
-        total_duration = 0
-        all_logs = []
-        first_iteration_metrics = None
+        all_iteration_results = []
 
         for i in range(config.runs_per_test):
-            logging.info('Running test %s (iteration %d of %d)',
+            logging.info('Running test %s (iteration %d of up to %d)',
                          config.test_file, i + 1, config.runs_per_test)
             iteration_result = self._run_single_iteration(config)
-            if first_iteration_metrics is None:
-                first_iteration_metrics = iteration_result.metrics
+            all_iteration_results.append(iteration_result)
 
             if iteration_result.success:
                 successful_runs += 1
-            total_duration += iteration_result.duration
-            all_logs.append(iteration_result.test_log)
 
             # Exit early if the test has already passed.
             if successful_runs >= config.pass_k_threshold:
@@ -401,19 +396,14 @@ class WorkerThread(threading.Thread):
                 break
 
         success = successful_runs >= config.pass_k_threshold
-        # TODO(crbug.com/449818513): Report per-iteration metrics instead of
-        # just the first.
-        r = results.TestResult(success=success,
-                               duration=total_duration,
-                               test_log='\n'.join(all_logs),
-                               metrics=first_iteration_metrics or {},
-                               successful_runs=successful_runs,
-                               config=config)
+        r = results.TestResult(config=config,
+                               success=success,
+                               iteration_results=all_iteration_results)
         self._test_result_queue.put(r)
 
     def _run_single_iteration(
-            self, config: eval_config.TestConfig) -> results.TestResult:
-        """Runs a single iteration of a test and returns a TestResult.
+            self, config: eval_config.TestConfig) -> results.IterationResult:
+        """Runs a single iteration of a test and returns an IterationResult.
 
         Args:
             config: The TestConfig object for the test to run.
@@ -461,8 +451,7 @@ class WorkerThread(threading.Thread):
             proc = self._promptfoo.run(command, cwd=workdir.path / 'src')
             duration = time.time() - start_time
 
-            return results.TestResult(
-                config=config,
+            return results.IterationResult(
                 success=not proc.returncode,
                 duration=duration,
                 test_log=proc.stdout,

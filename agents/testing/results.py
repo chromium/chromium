@@ -21,15 +21,13 @@ _RESULT_THREAD_POLLING_SLEEP_DURATION = 0.5
 
 
 @dataclasses.dataclass
-class TestResult:
-    """Represents the result of a single test run."""
-    # The config used for this test.
-    config: eval_config.TestConfig
-    # Whether the test ran successfully.
+class IterationResult:
+    """Stores per-iteration data for a single pass@k iteration."""
+    # Whether this iteration ran successfully.
     success: bool
-    # The duration of the test run in seconds.
+    # The duration of the iteration in seconds.
     duration: float
-    # Stdout/stderr of the test.
+    # Stdout/stderr of the iteration.
     test_log: str
     # A mapping of metric name to value. Metric names can be nested, e.g.
     # {
@@ -39,11 +37,40 @@ class TestResult:
     #   },
     # }
     metrics: dict[str, dict | float]
-    # The number of successful runs for this test.
-    successful_runs: int | None = None
+
+
+@dataclasses.dataclass
+class TestResult:
+    """Represents the result of a single test run.
+
+    This encapsulates data from one or more underlying iterations used for
+    pass@k functionality.
+    """
+    # The config used for this test.
+    config: eval_config.TestConfig
+    # Whether the test ran successfully.
+    success: bool
+    # IterationResults for each iteration of this test.
+    iteration_results: list[IterationResult]
 
     def __lt__(self, other: 'TestResult') -> bool:
         return self.config.test_file < other.config.test_file
+
+    @property
+    def combined_logs(self):
+        return '\n'.join(i.test_log for i in self.iteration_results)
+
+    @property
+    def total_duration(self):
+        return sum(i.duration for i in self.iteration_results)
+
+    @property
+    def average_duration(self):
+        return self.total_duration / len(self.iteration_results)
+
+    @property
+    def successful_runs(self):
+        return sum(i.success for i in self.iteration_results)
 
 
 @dataclasses.dataclass
@@ -87,8 +114,8 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
     result_sink_client.Post(
         test_id=str(posix_path),
         status=result_types.PASS if test_result.success else result_types.FAIL,
-        duration=test_result.duration * 1000,
-        test_log=test_result.test_log,
+        duration=test_result.total_duration * 1000,
+        test_log=test_result.combined_logs,
         test_id_structured={
             'coarseName': '',  # Leave blank for scheme 'flat'.
             'fineName': '',  # Leave blank for scheme 'flat'.
@@ -133,19 +160,20 @@ class ResultThread(threading.Thread):
             # dashboard or to ResultDB, whichever we end up using for tracking
             # token usage and test scores.
             pp = pprint.PrettyPrinter(indent=2)
-            logging.debug('Metrics: %s', pp.pformat(test_result.metrics))
+            logging.debug('Metrics: %s',
+                          pp.pformat(test_result.iteration_results[0].metrics))
             if (not test_result.success
                     or self._result_options.print_output_on_success):
-                sys.stdout.write(test_result.test_log)
+                sys.stdout.write(test_result.combined_logs)
             if self._result_sink_client:
                 report_result(self._result_sink_client, test_result)
             if test_result.success:
                 logging.info('Test passed in %.2f seconds: %s',
-                             test_result.duration,
+                             test_result.total_duration,
                              str(test_result.config.test_file))
             else:
                 logging.warning('Test failed in %.2f seconds: %s',
-                                test_result.duration,
+                                test_result.total_duration,
                                 str(test_result.config.test_file))
                 self.failed_result_output_queue.put(test_result)
 
