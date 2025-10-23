@@ -43,4 +43,6 @@ bool IsProtectedUrl(std::string url) {
   return false;
 }
 
+void UpdatePageContext(GeminiPageContext* gemini_page_context) {}
+
 }  // namespace ios::provider

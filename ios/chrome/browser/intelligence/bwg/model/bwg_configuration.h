@@ -11,6 +11,7 @@
 #import <memory>
 
 class AuthenticationService;
+@class GeminiPageContext;
 @protocol SingleSignOnService;
 
 namespace ios::provider {
@@ -32,6 +33,9 @@ class PageContext;
 
 // The base view controller to present the UI on.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// The page context and states necessary to include context in the floaty.
+@property(nonatomic, strong) GeminiPageContext* pageContext;
 
 // The PageContext for the current WebState. This is a unique_ptr, so subsequent
 // calls to the getter will return a nullptr.

@@ -14,6 +14,7 @@
 
 class AuthenticationService;
 @class BWGConfiguration;
+@class GeminiPageContext;
 @protocol BWGGatewayProtocol;
 
 using BWGEligibilityCallback = void (^)(BOOL eligible);
@@ -109,6 +110,9 @@ void SetZeroStateSuggestions(NSArray<NSString*>* suggestions);
 
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);
+
+// Updates the page context of the floaty.
+void UpdatePageContext(GeminiPageContext* gemini_page_context);
 
 }  // namespace ios::provider
 

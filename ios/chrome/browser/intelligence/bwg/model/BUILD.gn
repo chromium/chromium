@@ -129,6 +129,17 @@ source_set("config") {
   ]
 }
 
+source_set("page_context") {
+  sources = [
+    "gemini_page_context.h",
+    "gemini_page_context.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
 source_set("snapshot_utils") {
   sources = [
     "bwg_snapshot_utils.h",
