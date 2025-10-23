@@ -338,7 +338,6 @@ enum class ReauthenticationState {
 
 // Closes the UI and open the support page on setting up a passcode.
 - (void)openPasscodeHelpPage {
-  // TODO(crbug.com/40274927): Move to LocalReauthenticationCoordinatorDelegate.
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
   [_dispatcher closePresentedViewsAndOpenURL:command];
