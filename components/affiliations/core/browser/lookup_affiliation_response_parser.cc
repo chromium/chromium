@@ -56,10 +56,12 @@ GroupedFacets ParseEqClass(const affiliation_pb::FacetGroup& grouping) {
 }
 
 void AddSingleFacet(std::vector<AffiliatedFacets>& affiliations, Facet facet) {
+  facet.is_facet_synthesized = true;
   affiliations.push_back({facet});
 }
 
 void AddSingleFacet(std::vector<GroupedFacets>& groups, Facet facet) {
+  facet.is_facet_synthesized = true;
   GroupedFacets group;
   group.facets = {facet};
   groups.push_back(std::move(group));

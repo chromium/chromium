@@ -52,9 +52,10 @@ enum class GetChangePasswordUrlMetric {
   kUrlOverrideUsed = 1,
   // Used when no override url was available.
   kNoUrlOverrideAvailable = 2,
-  // Used when a url was used, which corresponds to a site from within same
-  // FacetGroup.
-  kGroupUrlOverrideUsed = 3,
+
+  // Fallback to arbitrary facet causes more bugs than good.
+  // Deprecated: kGroupUrlOverrideUsed = 3,
+
   // Used when change password info was available for the main domain only.
   kMainDomainUsed = 4,
   kMaxValue = kMainDomainUsed,
@@ -64,7 +65,6 @@ class AffiliationServiceImpl : public AffiliationService {
  public:
   struct ChangePasswordUrlMatch {
     GURL change_password_url;
-    bool group_url_override;
     bool main_domain_override;
   };
 

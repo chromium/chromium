@@ -335,10 +335,12 @@ TEST_F(HashAffiliationFetcherTest, MissingEquivalenceClassesAreCreated) {
   ASSERT_NO_FATAL_FAILURE(
       VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
 
+  Facet expected_result(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
+  expected_result.is_facet_synthesized = true;
+
   ASSERT_EQ(1u, result.affiliations.size());
   EXPECT_THAT(result.affiliations[0],
-              testing::UnorderedElementsAre(
-                  Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)}));
+              testing::UnorderedElementsAre(expected_result));
 }
 
 TEST_F(HashAffiliationFetcherTest, DuplicateEquivalenceClassesAreIgnored) {

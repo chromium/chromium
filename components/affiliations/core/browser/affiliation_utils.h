@@ -198,6 +198,9 @@ struct Facet {
   FacetBrandingInfo branding_info;
   GURL change_password_url;
   std::string main_domain;
+  // Whether the facet was synthesized during affiliation response parsing. True
+  // means affiliation service didn't actually include it in the response.
+  bool is_facet_synthesized = false;
 };
 
 // A collection of facets affiliated with each other, i.e. an equivalence class.

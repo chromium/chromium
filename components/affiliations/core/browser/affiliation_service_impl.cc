@@ -43,23 +43,13 @@ CreateFacetUriToChangePasswordUrlMap(
     const std::vector<GroupedFacets>& groupings) {
   std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch> uri_to_url;
   for (const auto& grouped_facets : groupings) {
-    std::vector<FacetURI> uris_without_urls;
-    GURL fallback_url;
     for (const auto& facet : grouped_facets.facets) {
-      if (!facet.change_password_url.is_valid()) {
-        uris_without_urls.push_back(facet.uri);
+      // Affiliation server didn't generate it. Such facets can be skipped.
+      if (facet.is_facet_synthesized) {
         continue;
       }
       uri_to_url[facet.uri] = AffiliationServiceImpl::ChangePasswordUrlMatch{
-          .change_password_url = facet.change_password_url,
-          .group_url_override = false};
-      fallback_url = facet.change_password_url;
-    }
-    if (fallback_url.is_valid()) {
-      for (const auto& uri : uris_without_urls) {
-        uri_to_url[uri] = AffiliationServiceImpl::ChangePasswordUrlMatch{
-            .change_password_url = fallback_url, .group_url_override = true};
-      }
+          .change_password_url = facet.change_password_url};
     }
   }
   return uri_to_url;
@@ -100,9 +90,7 @@ FacetURI GetFacetForTopLevelDomain(FacetURI facet) {
 
 void LogChangePasswordURLTypeUsed(
     const AffiliationServiceImpl::ChangePasswordUrlMatch& match) {
-  if (match.group_url_override) {
-    LogFetchResult(GetChangePasswordUrlMetric::kGroupUrlOverrideUsed);
-  } else if (match.main_domain_override) {
+  if (match.main_domain_override) {
     LogFetchResult(GetChangePasswordUrlMetric::kMainDomainUsed);
   } else {
     LogFetchResult(GetChangePasswordUrlMetric::kUrlOverrideUsed);
@@ -225,7 +213,8 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   FacetURI uri = ConvertGURLToFacet(url);
 
   auto it = change_password_urls_.find(uri);
-  if (it != change_password_urls_.end()) {
+  if (it != change_password_urls_.end() &&
+      it->second.change_password_url.is_valid()) {
     LogChangePasswordURLTypeUsed(it->second);
     return it->second.change_password_url;
   }
