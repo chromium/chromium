@@ -12,6 +12,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.view.View;
@@ -30,16 +33,30 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 import java.util.function.Supplier;
 
 /** Unit tests for {@link PinnedTabStripItemTouchHelperCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        instrumentedPackages = {
+            "androidx.recyclerview.widget.RecyclerView" // required to mock final
+        })
 public class PinnedTabStripItemTouchHelperCallbackTest {
+    private static final int POSITION1 = 0;
+    private static final int POSITION2 = 1;
+    private static final int TAB_ID1 = 10;
+    private static final int TAB_ID2 = 20;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static class TestViewHolder extends RecyclerView.ViewHolder {
@@ -53,6 +70,12 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private OnLongPressTabItemEventListener mOnLongPressListener;
     @Mock private Canvas mCanvas;
+    @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private View mItemView1;
+    @Mock private View mItemView2;
+    private ViewHolder mMockViewHolder1;
+    private ViewHolder mMockViewHolder2;
     private RecyclerView.ViewHolder mViewHolder;
     private PinnedTabStripItemTouchHelperCallback mCallback;
 
@@ -62,9 +85,25 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         mViewHolder = spy(new TestViewHolder(new View(context)));
 
         when(mRecyclerViewSupplier.get()).thenReturn(mRecyclerView);
+        when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
+        mMockViewHolder1 = prepareMockViewHolder(TAB_ID1, mItemView1, POSITION1);
+        mMockViewHolder2 = prepareMockViewHolder(TAB_ID2, mItemView2, POSITION2);
+
         mCallback =
                 new PinnedTabStripItemTouchHelperCallback(
-                        context, mTabListModel, mRecyclerViewSupplier, mOnLongPressListener);
+                        context,
+                        mTabGroupModelFilterSupplier,
+                        mTabListModel,
+                        mRecyclerViewSupplier,
+                        mOnLongPressListener);
+    }
+
+    @Test
+    public void testOnMove() {
+        mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2);
+
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB_ID1, POSITION2);
+        verify(mTabListModel).move(POSITION1, POSITION2);
     }
 
     @Test
@@ -114,5 +153,17 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         mCallback.onChildDraw(mCanvas, mRecyclerView, mViewHolder, threshold, 1f, 0, true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mOnLongPressListener, never()).onLongPressEvent(anyInt(), any());
+    }
+
+    private ViewHolder prepareMockViewHolder(int tabId, View itemView, int position) {
+        ViewHolder viewHolder = spy(new ViewHolder(itemView, /* binder= */ null));
+        when(viewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
+        when(viewHolder.getBindingAdapterPosition()).thenReturn(position);
+        viewHolder.model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, tabId)
+                        .with(CARD_TYPE, TAB)
+                        .build();
+        return viewHolder;
     }
 }

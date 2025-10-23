@@ -108,6 +108,7 @@ public class PinnedTabStripCoordinator {
         PinnedTabStripItemTouchHelperCallback callback =
                 new PinnedTabStripItemTouchHelperCallback(
                         activity,
+                        tabGroupModelFilterSupplier,
                         pinnedTabsModelList,
                         () -> mPinnedTabsRecyclerView,
                         mMediator::onLongPress);

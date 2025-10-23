@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.view.ViewConfiguration;
@@ -11,12 +13,17 @@ import android.view.ViewConfiguration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
 import java.util.function.Supplier;
@@ -28,8 +35,11 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallback {
-    private final TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
     private static final long LONGPRESS_DURATION_MS = ViewConfiguration.getLongPressTimeout();
+    private final TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
+    private final TabListModel mModel;
+    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
 
     /**
      * @param model The model representing the data in the RecyclerView.
@@ -39,6 +49,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
      */
     public PinnedTabStripItemTouchHelperCallback(
             Context context,
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilter,
             TabListModel model,
             Supplier<RecyclerView> recyclerViewSupplier,
             OnLongPressTabItemEventListener onLongPress) {
@@ -47,6 +58,8 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
 
+        mCurrentTabGroupModelFilterSupplier = tabGroupModelFilter;
+        mModel = model;
         mTabGridItemLongPressOrchestrator =
                 new TabGridItemLongPressOrchestrator(
                         recyclerViewSupplier,
@@ -66,7 +79,18 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
             RecyclerView recyclerView,
             RecyclerView.ViewHolder fromViewHolder,
             RecyclerView.ViewHolder toViewHolder) {
-        return false;
+        @TabId
+        int currentTabId =
+                assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder).model)
+                        .get(TabProperties.TAB_ID);
+
+        int destinationIndex = toViewHolder.getBindingAdapterPosition();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        if (filter == null) return false;
+
+        filter.moveRelatedTabs(currentTabId, destinationIndex);
+        mModel.move(fromViewHolder.getBindingAdapterPosition(), destinationIndex);
+        return true;
     }
 
     @Override
