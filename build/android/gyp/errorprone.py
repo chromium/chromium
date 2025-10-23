@@ -173,7 +173,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'MissingBraces',
     # Does not seem to take into account R8 backports. Redundant with Android
     # Lint anyways.
-    'AndroidJdkLibsChecker',
     'Java8ApiChecker',
     # Style guide difference between google3 & chromium.
     'UnnecessaryTestMethodPrefix',
