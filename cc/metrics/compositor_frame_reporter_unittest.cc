@@ -851,6 +851,93 @@ TEST_F(CompositorFrameReporterTest,
               IsEmpty());
 }
 
+// Tests that event metrics whose `EventMetrics::caused_frame_update()` returns
+// false don't count towards EventLatency.* metrics.
+TEST_F(CompositorFrameReporterTest,
+       EventLatencyTotalExcludesEventMetricsWhichDidNotCauseFrameUpdate) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
+      CreateEventMetrics(ui::EventType::kTouchPressed),
+      CreateEventMetrics(ui::EventType::kTouchPressed),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
+  };
+  event_metrics_ptrs[0]->set_caused_frame_update(false);
+  event_metrics_ptrs[4]->set_caused_frame_update(false);
+  EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
+  std::vector<base::TimeTicks> event_times = GetEventTimestamps(events_metrics);
+
+  AdvanceNowByUs(3);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  AdvanceNowByUs(3);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(3);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitCompositorFrameToPresentationCompositorFrame,
+      Now());
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
+
+  const base::TimeTicks presentation_time = AdvanceNowByUs(3);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame,
+      presentation_time);
+
+  pipeline_reporter_ = nullptr;
+
+  struct {
+    const char* name;
+    const base::HistogramBase::Count32 count;
+  } expected_counts[] = {
+      {"EventLatency.TouchPressed.TotalLatency", 1},
+      {"EventLatency.TouchMoved.TotalLatency", 2},
+      {"EventLatency.TotalLatency", 3},
+  };
+  for (const auto& expected_count : expected_counts) {
+    histogram_tester.ExpectTotalCount(expected_count.name,
+                                      expected_count.count);
+  }
+
+  struct {
+    const char* name;
+    const base::HistogramBase::Sample32 latency_ms;
+  } expected_latencies[] = {
+      {"EventLatency.TouchPressed.TotalLatency",
+       static_cast<base::HistogramBase::Sample32>(
+           (presentation_time - event_times[1]).InMicroseconds())},
+      {"EventLatency.TouchMoved.TotalLatency",
+       static_cast<base::HistogramBase::Sample32>(
+           (presentation_time - event_times[2]).InMicroseconds())},
+      {"EventLatency.TouchMoved.TotalLatency",
+       static_cast<base::HistogramBase::Sample32>(
+           (presentation_time - event_times[3]).InMicroseconds())},
+      {"EventLatency.TotalLatency",
+       static_cast<base::HistogramBase::Sample32>(
+           (presentation_time - event_times[1]).InMicroseconds())},
+      {"EventLatency.TotalLatency",
+       static_cast<base::HistogramBase::Sample32>(
+           (presentation_time - event_times[2]).InMicroseconds())},
+      {"EventLatency.TotalLatency",
+       static_cast<base::HistogramBase::Sample32>(
+           (presentation_time - event_times[3]).InMicroseconds())},
+  };
+  for (const auto& expected_latency : expected_latencies) {
+    histogram_tester.ExpectBucketCount(expected_latency.name,
+                                       expected_latency.latency_ms, 1);
+  }
+}
+
 // Verifies that partial update dependent queues are working as expected when
 // they reach their maximum capacity.
 TEST_F(CompositorFrameReporterTest, PartialUpdateDependentQueues) {
@@ -1321,6 +1408,7 @@ class FrameJankReportingStageTest : public testing::Test {
         CreateScrollEventMetrics(timestamp, ui::EventType::kGestureScrollEnd,
                                  /* is_inertial= */ false);
     EXPECT_EQ(event->type(), EventMetrics::EventType::kGestureScrollEnd);
+    event->set_caused_frame_update(false);
     return event;
   }
 

@@ -3685,10 +3685,8 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   // results in a 0 delta scroll, which has no damage. We drop the metrics here
   // so that they are terminated now. This prevents them from being incorrectly
   // associated with a future produced frame. So that jank measurements have
-  // accurate deltas. The only exception are scroll end metrics, which we keep
-  // around to  ensure `ScrollJankDroppedFrameReporter` emits per-scroll
-  // metrics.
-  events_metrics_manager_.DropSavedEventMetricsExceptScrollEnds();
+  // accurate deltas.
+  events_metrics_manager_.DropSavedEventMetricsForNoFrameUpdate();
 }
 
 void LayerTreeHostImpl::OnBeginImplFrameDeadline() {

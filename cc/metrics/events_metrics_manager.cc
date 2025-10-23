@@ -35,8 +35,15 @@ class EventsMetricsManager::ScopedMonitorImpl
       const bool handled = save_metrics_;
       metrics = std::move(done_callback_).Run(handled);
 
-      // If `handled` is false, the callback should return nullptr.
-      DCHECK(handled || !metrics);
+      // If `handled` is false and the metrics don't need to be kept around even
+      // though handling the event didn't cause a frame update, the callback
+      // should return nullptr unless .
+      DCHECK(handled || !metrics ||
+             EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+                 metrics->type()));
+      if (metrics && !handled) {
+        metrics->set_caused_frame_update(false);
+      }
     }
     manager_->OnScopedMonitorEnded(std::move(metrics));
     manager_ = nullptr;
@@ -87,20 +94,24 @@ EventMetrics::List EventsMetricsManager::TakeSavedEventsMetrics() {
   return result;
 }
 
-void EventsMetricsManager::DropSavedEventMetricsExceptScrollEnds() {
+void EventsMetricsManager::DropSavedEventMetricsForNoFrameUpdate() {
   // First re-arrange `saved_events_` so that:
   //   1. [`saved_events_.begin()`, `first_to_erase`) only contains metrics
-  //      corresponding to the end of a scroll (regular or inertial).
+  //      which we should keep around even if handling them didn't cause a frame
+  //      update.
   //   2. [`first_to_erase`, `saved_events_.end()`) contains all other metrics.
   auto first_to_erase = std::remove_if(
       saved_events_.begin(), saved_events_.end(),
       [](const std::unique_ptr<EventMetrics>& metrics) {
-        const auto type = metrics->type();
-        return type != EventMetrics::EventType::kGestureScrollEnd &&
-               type != EventMetrics::EventType::kInertialGestureScrollEnd;
+        return !EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+            metrics->type());
       });
   // Then delete the other metrics.
   saved_events_.erase(first_to_erase, saved_events_.end());
+  // Finally, mark that the metrics we kept didn't cause a frame update.
+  for (auto& kept_event : saved_events_) {
+    kept_event->set_caused_frame_update(false);
+  }
 }
 
 void EventsMetricsManager::OnScopedMonitorEnded(

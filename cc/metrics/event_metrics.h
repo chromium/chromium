@@ -131,6 +131,10 @@ class CC_EXPORT EventMetrics {
   const char* GetTypeName() const;
   static const char* GetTypeName(EventType type);
 
+  // Whether `EventMetrics` with `type` should be kept around even if handling
+  // the event didn't cause a frame update.
+  static bool ShouldKeepEvenWithoutCausingFrameUpdate(EventType type);
+
   // Returns custom histogram bucketing for the metric. If returns `nullopt`,
   // default bucketing will be used.
   struct HistogramBucketing {
@@ -179,6 +183,11 @@ class CC_EXPORT EventMetrics {
   void set_requires_main_thread_update() {
     DCHECK(!requires_main_thread_update_);
     requires_main_thread_update_ = true;
+  }
+
+  bool caused_frame_update() const { return caused_frame_update_; }
+  void set_caused_frame_update(bool caused_frame_update) {
+    caused_frame_update_ = caused_frame_update;
   }
 
  protected:
@@ -247,6 +256,10 @@ class CC_EXPORT EventMetrics {
   // have a corresponding input, for example a generated event based on existing
   // event.
   std::optional<TraceId> trace_id_;
+
+  // Whether handling the event caused a frame update. See
+  // `EventsMetricsManager::ScopedMonitor`.
+  bool caused_frame_update_ = true;
 };
 
 class CC_EXPORT ScrollEventMetrics : public EventMetrics {

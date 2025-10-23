@@ -1109,12 +1109,14 @@ void CompositorFrameReporter::SetVizBreakdown(
 
 void CompositorFrameReporter::AddEventsMetrics(
     EventMetrics::List events_metrics) {
+  DCHECK(!dropped_non_damaging_events_metrics_);
   events_metrics_.insert(events_metrics_.end(),
                          std::make_move_iterator(events_metrics.begin()),
                          std::make_move_iterator(events_metrics.end()));
 }
 
 EventMetrics::List CompositorFrameReporter::TakeEventsMetrics() {
+  DCHECK(!dropped_non_damaging_events_metrics_);
   EventMetrics::List result = std::move(events_metrics_);
   events_metrics_.clear();
   return result;
@@ -1126,6 +1128,7 @@ void CompositorFrameReporter::set_normalized_invalidated_area(
 }
 
 EventMetrics::List CompositorFrameReporter::TakeMainBlockedEventsMetrics() {
+  DCHECK(!dropped_non_damaging_events_metrics_);
   auto mid = std::partition(events_metrics_.begin(), events_metrics_.end(),
                             [](std::unique_ptr<EventMetrics>& metrics) {
                               DCHECK(metrics);
@@ -1145,6 +1148,14 @@ void CompositorFrameReporter::DidSuccessfullyPresentFrame() {
 }
 
 void CompositorFrameReporter::TerminateReporter() {
+  // Remove all `EventMetrics` which didn't cause a frame update so that they
+  // wouldn't affect UMA metrics like EventLatency.TotalLatency. It's safe to do
+  // here because the scroll jank metric, which needs to be informed about
+  // non-damaging `EventMetrics`, has already been reported in
+  // `ReportScrollJankMetrics()`, so there's no more need to keep the
+  // non-damaging event metrics around.
+  DropEventMetricsWhichDidNotCauseFrameUpdate();
+
   if (frame_termination_status_ == FrameTerminationStatus::kUnknown)
     TerminateFrame(FrameTerminationStatus::kUnknown, Now());
 
@@ -1491,9 +1502,27 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
           base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
+void CompositorFrameReporter::DropEventMetricsWhichDidNotCauseFrameUpdate() {
+  DCHECK(!dropped_non_damaging_events_metrics_);
+  // First re-arrange `events_metrics_` so that:
+  //   1. [`events_metrics_.begin()`, `first_to_erase`) only contains metrics
+  //      which caused a frame update.
+  //   2. [`first_to_erase`, `events_metrics_.end()`) contains metrics which
+  //      didn't cause a frame update.
+  auto first_to_erase =
+      std::remove_if(events_metrics_.begin(), events_metrics_.end(),
+                     [](const std::unique_ptr<EventMetrics>& metrics) {
+                       return !metrics->caused_frame_update();
+                     });
+  // Then delete the metrics which didn't cause a frame update.
+  events_metrics_.erase(first_to_erase, events_metrics_.end());
+  dropped_non_damaging_events_metrics_ = true;
+}
+
 void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   const StageData& total_latency_stage = stage_history_.back();
   DCHECK_EQ(StageType::kTotalLatency, total_latency_stage.stage_type);
+  DCHECK(dropped_non_damaging_events_metrics_);
 
   if (global_trackers_.latency_ukm_reporter) {
     global_trackers_.latency_ukm_reporter->ReportEventLatencyUkm(
@@ -1505,6 +1534,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
 
   for (const auto& event_metrics : events_metrics_) {
     DCHECK(event_metrics);
+    DCHECK(event_metrics->caused_frame_update());
     auto* scroll_metrics = event_metrics->AsScroll();
     auto* pinch_metrics = event_metrics->AsPinch();
 
@@ -1753,7 +1783,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
             HasCompositorThreadAnimation(active_trackers_));
 
         bool has_smooth_input_main = false;
+        DCHECK(dropped_non_damaging_events_metrics_);
         for (const auto& event_metrics : events_metrics_) {
+          DCHECK(event_metrics->caused_frame_update());
           has_smooth_input_main |= event_metrics->HasSmoothInputEvent();
         }
         reporter->set_has_smooth_input_main(has_smooth_input_main);
@@ -1882,6 +1914,10 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
 }
 
 void CompositorFrameReporter::ReportScrollJankMetrics() {
+  // In order for the fast scroll and fling continuity rules of the scroll jank
+  // v4 metric to work correctly, they need to be informed about `EventMetrics`
+  // that didn't cause frame updates.
+  DCHECK(!dropped_non_damaging_events_metrics_);
   FrameJankReportingStage::List stages =
       FrameJankReportingStage::CalculateStages(events_metrics_);
   for (FrameJankReportingStage& stage : stages) {
@@ -2003,8 +2039,9 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
     EventMetrics::EventType event_type = event->type();
     base::TimeTicks generation_ts = event->GetDispatchStageTimestamp(
         EventMetrics::DispatchStage::kGenerated);
+    bool caused_frame_update = event->caused_frame_update();
     TRACE_EVENT("input", "GestureType", "gesture", event_type, "generation_ts",
-                generation_ts);
+                generation_ts, "caused_frame_update", caused_frame_update);
     if (event_type == EventMetrics::EventType::kGestureScrollEnd ||
         event_type == EventMetrics::EventType::kInertialGestureScrollEnd) {
       if (scroll_end_ts) {
@@ -2013,6 +2050,11 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
             "ProcessFrameEventMetrics: Multiple scroll ends in a frame");
       }
       scroll_end_ts = generation_ts;
+      continue;
+    }
+    if (!caused_frame_update) {
+      // TODO(crbug.com/444183591): Handle non-damaging inputs in the scroll
+      // jank metrics.
       continue;
     }
     auto* scroll_update = event->AsScrollUpdate();
@@ -2146,7 +2188,9 @@ void CompositorFrameReporter::ReportPaintMetric() const {
 
 // TODO(crbug.com/454006102): Report EventLatency for TreesInViz mode
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
+  DCHECK(dropped_non_damaging_events_metrics_);
   for (const auto& event_metrics : events_metrics_) {
+    DCHECK(event_metrics->caused_frame_update());
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         event_metrics.get(), frame_termination_time_, &args_, &stage_history_,
         processed_viz_breakdown_.get(),

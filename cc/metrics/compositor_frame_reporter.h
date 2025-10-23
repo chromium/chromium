@@ -607,6 +607,8 @@ class CC_EXPORT CompositorFrameReporter {
       std::optional<TreesInVizBreakdown> trees_in_viz_breakdown,
       base::TimeDelta time_delta) const;
 
+  void DropEventMetricsWhichDidNotCauseFrameUpdate();
+
   void ReportEventLatencyMetrics() const;
   void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
@@ -666,6 +668,12 @@ class CC_EXPORT CompositorFrameReporter {
 
   // List of metrics for events affecting this frame.
   EventMetrics::List events_metrics_;
+
+  // Whether metrics which didn't cause a frame update have already been removed
+  // from `events_metrics_`. This should only become true at the very end of a
+  // reporter's lifetime when it's being terminated so that these metrics
+  // wouldn't affect UMA metrics like EventLatency.TotalLatency.
+  bool dropped_non_damaging_events_metrics_ = false;
 
   // Total invalidated (repainted) area of a frame, normalized by the frame's
   // output size.

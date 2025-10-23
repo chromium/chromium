@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
@@ -3720,17 +3721,7 @@ class MockInputHandlerWithEventMetricsManager : public cc::MockInputHandler {
   cc::EventsMetricsManager events_metrics_manager;
 };
 
-struct InputHandlerProxyEventMetricsTestCase {
-  WebGestureEvent::InertialPhaseState inertial_phase;
-  bool is_inertial;
-  cc::EventMetrics::EventType expected_event_type;
-  std::string test_name;
-};
-
-class InputHandlerProxyEventMetricsTest
-    : public testing::Test,
-      public testing::WithParamInterface<
-          InputHandlerProxyEventMetricsTestCase> {
+class InputHandlerProxyEventMetricsTest : public testing::Test {
  public:
   InputHandlerProxyEventMetricsTest()
       : input_handler_proxy_(mock_input_handler_, &mock_client_) {
@@ -3748,13 +3739,27 @@ class InputHandlerProxyEventMetricsTest
   TestInputHandlerProxy input_handler_proxy_;
 };
 
-TEST_P(InputHandlerProxyEventMetricsTest, SavesScrollEndMetrics) {
+struct InputHandlerProxyScrollEventMetricsTestCase {
+  WebGestureEvent::InertialPhaseState inertial_phase;
+  bool is_inertial;
+  cc::EventMetrics::EventType expected_event_type;
+  std::string test_name;
+};
+
+class InputHandlerProxyScrollEventMetricsTest
+    : public InputHandlerProxyEventMetricsTest,
+      public testing::WithParamInterface<
+          InputHandlerProxyScrollEventMetricsTestCase> {};
+
+TEST_P(InputHandlerProxyScrollEventMetricsTest, SavesScrollEndMetrics) {
+  const InputHandlerProxyScrollEventMetricsTestCase& param = GetParam();
+
   std::unique_ptr<WebGestureEvent> gesture_event =
       std::make_unique<WebGestureEvent>(
           WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
           WebInputEvent::GetStaticTimeStampForTests(),
           WebGestureDevice::kTouchscreen);
-  gesture_event->data.scroll_end.inertial_phase = GetParam().inertial_phase;
+  gesture_event->data.scroll_end.inertial_phase = param.inertial_phase;
   std::unique_ptr<WebCoalescedInputEvent> coalesced_event =
       std::make_unique<WebCoalescedInputEvent>(std::move(gesture_event),
                                                ui::LatencyInfo());
@@ -3766,7 +3771,7 @@ TEST_P(InputHandlerProxyEventMetricsTest, SavesScrollEndMetrics) {
   std::unique_ptr<cc::EventMetrics> metrics =
       cc::ScrollEventMetrics::CreateForTesting(
           ui::EventType::kGestureScrollEnd, ui::ScrollInputType::kTouchscreen,
-          GetParam().is_inertial, timestamp, arrived_in_browser_main_timestamp,
+          param.is_inertial, timestamp, arrived_in_browser_main_timestamp,
           &tick_clock_);
 
   input_handler_proxy_.HandleInputEventWithLatencyInfo(
@@ -3776,13 +3781,13 @@ TEST_P(InputHandlerProxyEventMetricsTest, SavesScrollEndMetrics) {
   EXPECT_THAT(
       mock_input_handler_.events_metrics_manager.TakeSavedEventsMetrics(),
       testing::ElementsAre(testing::Pointee(testing::Property(
-          &cc::EventMetrics::type, GetParam().expected_event_type))));
+          &cc::EventMetrics::type, param.expected_event_type))));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InputHandlerProxyEventMetricsTest,
-    InputHandlerProxyEventMetricsTest,
-    testing::ValuesIn<InputHandlerProxyEventMetricsTestCase>(
+    InputHandlerProxyScrollEventMetricsTest,
+    InputHandlerProxyScrollEventMetricsTest,
+    testing::ValuesIn<InputHandlerProxyScrollEventMetricsTestCase>(
         {{.inertial_phase = WebGestureEvent::InertialPhaseState::kNonMomentum,
           .is_inertial = false,
           .expected_event_type = cc::EventMetrics::EventType::kGestureScrollEnd,
@@ -3793,7 +3798,87 @@ INSTANTIATE_TEST_SUITE_P(
               cc::EventMetrics::EventType::kInertialGestureScrollEnd,
           .test_name = "InertialScroll"}}),
     [](const testing::TestParamInfo<
-        InputHandlerProxyEventMetricsTest::ParamType>& info) {
+        InputHandlerProxyScrollEventMetricsTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+struct InputHandlerProxyScrollUpdateEventMetricsTestCase {
+  WebGestureEvent::InertialPhaseState inertial_phase;
+  bool is_inertial;
+  cc::ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type;
+  cc::EventMetrics::EventType expected_event_type;
+  std::string test_name;
+};
+
+class InputHandlerProxyScrollUpdateEventMetricsTest
+    : public InputHandlerProxyEventMetricsTest,
+      public testing::WithParamInterface<
+          InputHandlerProxyScrollUpdateEventMetricsTestCase> {};
+
+TEST_P(InputHandlerProxyScrollUpdateEventMetricsTest,
+       SavesScrollUpdateMetrics) {
+  const InputHandlerProxyScrollUpdateEventMetricsTestCase& param = GetParam();
+
+  std::unique_ptr<WebGestureEvent> gesture_event =
+      std::make_unique<WebGestureEvent>(
+          WebInputEvent::Type::kGestureScrollUpdate,
+          WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests(),
+          WebGestureDevice::kTouchscreen);
+  gesture_event->data.scroll_update.inertial_phase = param.inertial_phase;
+  std::unique_ptr<WebCoalescedInputEvent> coalesced_event =
+      std::make_unique<WebCoalescedInputEvent>(std::move(gesture_event),
+                                               ui::LatencyInfo());
+
+  base::TimeTicks timestamp = tick_clock_.NowTicks();
+  tick_clock_.Advance(base::Microseconds(10));
+  base::TimeTicks arrived_in_browser_main_timestamp = tick_clock_.NowTicks();
+  tick_clock_.Advance(base::Microseconds(10));
+  std::unique_ptr<cc::EventMetrics> metrics =
+      cc::ScrollUpdateEventMetrics::CreateForTesting(
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen, param.is_inertial,
+          param.scroll_update_type,
+          /* delta= */ 1.0f, timestamp, arrived_in_browser_main_timestamp,
+          &tick_clock_, /* trace_id= */ std::nullopt);
+
+  input_handler_proxy_.HandleInputEventWithLatencyInfo(
+      std::move(coalesced_event), std::move(metrics),
+      /* callback= */ base::DoNothing());
+
+  EXPECT_THAT(
+      mock_input_handler_.events_metrics_manager.TakeSavedEventsMetrics(),
+      testing::ElementsAre(testing::Pointee(testing::Property(
+          &cc::EventMetrics::type, param.expected_event_type))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InputHandlerProxyScrollUpdateEventMetricsTest,
+    InputHandlerProxyScrollUpdateEventMetricsTest,
+    testing::ValuesIn<InputHandlerProxyScrollUpdateEventMetricsTestCase>(
+        {{.inertial_phase = WebGestureEvent::InertialPhaseState::kNonMomentum,
+          .is_inertial = false,
+          .scroll_update_type =
+              cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+          .expected_event_type =
+              cc::EventMetrics::EventType::kFirstGestureScrollUpdate,
+          .test_name = "FirstScroll"},
+         {.inertial_phase = WebGestureEvent::InertialPhaseState::kNonMomentum,
+          .is_inertial = false,
+          .scroll_update_type =
+              cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          .expected_event_type =
+              cc::EventMetrics::EventType::kGestureScrollUpdate,
+          .test_name = "RegularScroll"},
+         {.inertial_phase = WebGestureEvent::InertialPhaseState::kMomentum,
+          .is_inertial = true,
+          .scroll_update_type =
+              cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          .expected_event_type =
+              cc::EventMetrics::EventType::kInertialGestureScrollUpdate,
+          .test_name = "InertialScroll"}}),
+    [](const testing::TestParamInfo<
+        InputHandlerProxyScrollUpdateEventMetricsTest::ParamType>& info) {
       return info.param.test_name;
     });
 

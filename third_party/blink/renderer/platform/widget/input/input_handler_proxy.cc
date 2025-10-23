@@ -830,8 +830,12 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     done_callback = base::BindOnce(
         [](EventWithCallback* event, bool handled) {
           event->DidCompleteProcessingForMetrics();
+          bool keep_metrics =
+              handled ||
+              cc::EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+                  event->metrics()->type());
           std::unique_ptr<cc::EventMetrics> result =
-              handled ? event->TakeMetrics() : nullptr;
+              keep_metrics ? event->TakeMetrics() : nullptr;
           return result;
         },
         event_with_callback);
@@ -866,12 +870,6 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
           event_with_callback->latency_info().trace_id());
 
     case WebInputEvent::Type::kGestureScrollEnd:
-      if (scoped_event_monitor) {
-        // Always save scroll end metrics to ensure
-        // `ScrollJankDroppedFrameReporter` emits per-scroll metrics at the end
-        // of a scroll.
-        scoped_event_monitor->SetSaveMetrics();
-      }
       return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event));
 
     case WebInputEvent::Type::kGesturePinchBegin: {

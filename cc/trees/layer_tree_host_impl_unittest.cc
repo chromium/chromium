@@ -122,6 +122,7 @@ using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Mock;
 using ::testing::Pointee;
+using ::testing::Pointer;
 using ::testing::Property;
 using ::testing::Range;
 using ::testing::Return;
@@ -19470,10 +19471,14 @@ TEST_P(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
   EXPECT_TRUE(layer->has_been_in_invisible_layer_tree());
 }
 
-TEST_P(LayerTreeHostImplTest, DidNotProduceFramePreservesMetricsForScrollEnds) {
+TEST_P(LayerTreeHostImplTest,
+       DidNotProduceFramePreservesMetricsForScrollUpdatesAndEnds) {
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
 
-  // Frame 1 which emits GSU and GSE metrics but doesn't end up being produced.
+  EventMetrics* scroll_update_ptr;
+  EventMetrics* scroll_end_ptr;
+
+  // Frame 1 which emits multiple metrics but doesn't end up being produced.
   {
     TestFrameData frame;
     auto args = viz::CreateBeginFrameArgsForTesting(
@@ -19483,14 +19488,13 @@ TEST_P(LayerTreeHostImplTest, DidNotProduceFramePreservesMetricsForScrollEnds) {
 
     base::SimpleTestTickClock tick_clock;
     auto metrics_array = std::to_array<std::unique_ptr<EventMetrics>>(
-        {ScrollEventMetrics::CreateForTesting(
-             ui::EventType::kGestureScrollEnd,
-             ui::ScrollInputType::kTouchscreen,
-             /* is_inertial= */ false,
+        {EventMetrics::CreateForTesting(
+             ui::EventType::kTouchMoved,
              /* timestamp= */ base::TimeTicks() + base::Milliseconds(11),
              /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(12),
-             &tick_clock),
+             &tick_clock,
+             /* trace_id= */ std::nullopt),
          ScrollUpdateEventMetrics::CreateForTesting(
              ui::EventType::kGestureScrollUpdate,
              ui::ScrollInputType::kTouchscreen, /* is_inertial= */ false,
@@ -19500,14 +19504,35 @@ TEST_P(LayerTreeHostImplTest, DidNotProduceFramePreservesMetricsForScrollEnds) {
              /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(14),
              &tick_clock,
-             /* trace_id= */ std::nullopt)});
+             /* trace_id= */ std::nullopt),
+         EventMetrics::CreateForTesting(
+             ui::EventType::kTouchReleased,
+             /* timestamp= */ base::TimeTicks() + base::Milliseconds(15),
+             /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
+                 base::Milliseconds(16),
+             &tick_clock,
+             /* trace_id= */ std::nullopt),
+         ScrollEventMetrics::CreateForTesting(
+             ui::EventType::kGestureScrollEnd,
+             ui::ScrollInputType::kTouchscreen,
+             /* is_inertial= */ false,
+             /* timestamp= */ base::TimeTicks() + base::Milliseconds(17),
+             /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
+                 base::Milliseconds(18),
+             &tick_clock)});
+    scroll_update_ptr = metrics_array[1].get();
+    scroll_end_ptr = metrics_array[3].get();
     for (auto& metrics : metrics_array) {
       EXPECT_NE(metrics, nullptr);
       auto scoped_monitor =
           host_impl_->GetScopedEventMetricsMonitor(base::BindOnce(
               [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+                bool keep_metrics =
+                    handled ||
+                    EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+                        metrics->type());
                 std::unique_ptr<EventMetrics> result =
-                    handled ? std::move(metrics) : nullptr;
+                    keep_metrics ? std::move(metrics) : nullptr;
                 return result;
               },
               std::move(metrics)));
@@ -19519,11 +19544,8 @@ TEST_P(LayerTreeHostImplTest, DidNotProduceFramePreservesMetricsForScrollEnds) {
                                    FrameSkippedReason::kNoDamage);
   }
 
-  // Frame 2 should submit the GSE metrics from frame 1 so that Chrome would
-  // emit per-scroll jank metrics for the scroll that's just ended. However,
-  // frame 2 should NOT submit the GSU metrics from frame 1 because the GSU
-  // didn't cause any damage and thus shouldn't be associated with any frame for
-  // the purposes of measuring scroll jank.
+  // Frame 2 should submit the GSU and GSE metrics from frame 1 mark as not
+  // having caused a frame update.
   {
     TestFrameData frame;
     auto args = viz::CreateBeginFrameArgsForTesting(
@@ -19534,8 +19556,9 @@ TEST_P(LayerTreeHostImplTest, DidNotProduceFramePreservesMetricsForScrollEnds) {
     std::optional<SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
     EXPECT_THAT(
         submit_info->events_metrics.impl_event_metrics,
-        ElementsAre(Pointee(Property(
-            &EventMetrics::type, EventMetrics::EventType::kGestureScrollEnd))));
+        AllOf(ElementsAre(Pointer(scroll_update_ptr), Pointer(scroll_end_ptr)),
+              Each(Pointee(
+                  Property(&EventMetrics::caused_frame_update, false)))));
   }
 }
 

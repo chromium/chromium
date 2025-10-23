@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
+#include "ui/events/types/event_type.h"
 
 namespace cc {
 namespace {
@@ -353,6 +354,27 @@ const char* EventMetrics::GetTypeName() const {
 // static
 const char* EventMetrics::GetTypeName(EventMetrics::EventType type) {
   return kInterestingEvents[static_cast<int>(type)].name;
+}
+
+// static
+bool EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+    EventMetrics::EventType type) {
+  switch (type) {
+    // `CompositorFrameReporter::ReportScrollJankMetrics()` needs to know about
+    // all gesture scroll updates, so that the scroll jank metric could
+    // correctly evaluate the fast scroll and fling continuity rules.
+    case EventType::kGestureScrollUpdate:
+    case EventType::kInertialGestureScrollUpdate:
+    case EventType::kFirstGestureScrollUpdate:
+    // `CompositorFrameReporter::ReportScrollJankMetrics()` needs to know about
+    // all gesture scroll ends, so that it could correctly report per-scroll
+    // jank metrics at the end of each scroll.
+    case EventType::kGestureScrollEnd:
+    case EventType::kInertialGestureScrollEnd:
+      return true;
+    default:
+      return false;
+  }
 }
 
 const std::optional<EventMetrics::HistogramBucketing>&

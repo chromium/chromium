@@ -40,9 +40,12 @@ EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
 
 }  // namespace
 
+using ::testing::Each;
 using ::testing::IsEmpty;
 using ::testing::Message;
+using ::testing::Pointee;
 using ::testing::Pointwise;
+using ::testing::Property;
 
 class EventsMetricsManagerTest : public testing::Test {
  public:
@@ -160,6 +163,45 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(), IsEmpty());
 }
 
+// Tests that the manager will save `kGestureScrollUpdate` and
+// `kGestureScrollEnd` events even if there are no `SaveActiveEventsMetrics()`
+// calls.
+TEST_F(EventsMetricsManagerTest, ScrollUpdateAndEndSavedEvenWithoutCall) {
+  auto events = std::to_array<std::unique_ptr<EventMetrics>>(
+      {CreateScrollUpdateEventMetrics(
+           ui::EventType::kGestureScrollUpdate,
+           /* is_inertial= */ false,
+           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+       CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
+                                /* is_inertial= */ false)});
+  EXPECT_EQ(events[0]->type(), EventMetrics::EventType::kGestureScrollUpdate);
+  EXPECT_EQ(events[1]->type(), EventMetrics::EventType::kGestureScrollEnd);
+
+  const EventMetrics* expected_saved_events[] = {events[0].get(),
+                                                 events[1].get()};
+
+  for (auto& metrics : events) {
+    metrics->set_caused_frame_update(true);
+    {
+      auto monitor = manager_.GetScopedMonitor(
+          // A `DoneCallback` which ignores `handled` and always returns
+          // `metrics`.
+          base::BindOnce([](std::unique_ptr<EventMetrics> metrics,
+                            bool handled) { return metrics; },
+                         std::move(metrics)));
+    }
+  }
+
+  // Check saved event metrics are as expected and that they were marked as not
+  // having caused a frame update.
+  auto saved_events_metrics = manager_.TakeSavedEventsMetrics();
+  EXPECT_THAT(saved_events_metrics,
+              Pointwise(UniquePtrMatches(), expected_saved_events));
+  EXPECT_THAT(
+      saved_events_metrics,
+      Each(Pointee(Property(&EventMetrics::caused_frame_update, false))));
+}
+
 // Tests that metrics for nested event loops are handled properly in a few
 // different configurations.
 TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
@@ -273,69 +315,43 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 }
 
 TEST_F(EventsMetricsManagerTest,
-       DropSavedEventMetricsExceptScrollEndsPreservesRegularScrollEnd) {
+       DropSavedEventMetricsForNoFrameUpdatePreservesScrollUpdateAndEnd) {
   auto events = std::to_array<std::unique_ptr<EventMetrics>>(
-      {CreateScrollUpdateEventMetrics(
+      {CreateEventMetrics(ui::EventType::kTouchMoved),
+       CreateScrollUpdateEventMetrics(
            ui::EventType::kGestureScrollUpdate,
            /* is_inertial= */ false,
            ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+       CreateEventMetrics(ui::EventType::kTouchReleased),
        CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
                                 /* is_inertial= */ false)});
-  EXPECT_EQ(events[0]->type(), EventMetrics::EventType::kGestureScrollUpdate);
-  EXPECT_EQ(events[1]->type(), EventMetrics::EventType::kGestureScrollEnd);
+  EXPECT_EQ(events[0]->type(), EventMetrics::EventType::kTouchMoved);
+  EXPECT_EQ(events[1]->type(), EventMetrics::EventType::kGestureScrollUpdate);
+  EXPECT_EQ(events[2]->type(), EventMetrics::EventType::kTouchReleased);
+  EXPECT_EQ(events[3]->type(), EventMetrics::EventType::kGestureScrollEnd);
 
-  // Out of the above events, only `kGestureScrollEnd` should be preserved. This
-  // is to ensure that Chrome emits per-scroll metrics.
-  const EventMetrics* scroll_end_ptr = events[1].get();
+  // Out of the above events, only `kGestureScrollUpdate` and
+  // `kGestureScrollEnd` should be preserved.
+  const EventMetrics* expected_saved_events[] = {events[1].get(),
+                                                 events[3].get()};
 
   for (auto& event : events) {
+    event->set_caused_frame_update(true);
     auto monitor =
         manager_.GetScopedMonitor(CreateSimpleDoneCallback(std::move(event)));
     manager_.SaveActiveEventMetrics();
   }
 
-  manager_.DropSavedEventMetricsExceptScrollEnds();
+  manager_.DropSavedEventMetricsForNoFrameUpdate();
 
-  // Check that only `kGestureScrollEnd` was preserved.
+  // Check that only `kGestureScrollUpdate` and `kGestureScrollEnd` were
+  // preserved and that they were marked as not having caused a frame update.
   auto preserved_metrics = manager_.TakeSavedEventsMetrics();
-  EXPECT_THAT(preserved_metrics, testing::SizeIs(1));
-  EXPECT_EQ(preserved_metrics[0].get(), scroll_end_ptr);
-  EXPECT_EQ(preserved_metrics[0]->type(),
-            EventMetrics::EventType::kGestureScrollEnd);
-}
-
-TEST_F(EventsMetricsManagerTest,
-       DropSavedEventMetricsExceptScrollEndsPreservesInertialScrollEnd) {
-  auto events = std::to_array<std::unique_ptr<EventMetrics>>(
-      {CreateScrollUpdateEventMetrics(
-           ui::EventType::kGestureScrollUpdate,
-           /* is_inertial= */ true,
-           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
-       CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
-                                /* is_inertial= */ true)});
-  EXPECT_EQ(events[0]->type(),
-            EventMetrics::EventType::kInertialGestureScrollUpdate);
-  EXPECT_EQ(events[1]->type(),
-            EventMetrics::EventType::kInertialGestureScrollEnd);
-
-  // Out of the above events, only `kInertialGestureScrollEnd` should be
-  // preserved. This is to ensure that Chrome emits per-scroll metrics.
-  const EventMetrics* scroll_end_ptr = events[1].get();
-
-  for (auto& event : events) {
-    auto monitor =
-        manager_.GetScopedMonitor(CreateSimpleDoneCallback(std::move(event)));
-    manager_.SaveActiveEventMetrics();
-  }
-
-  manager_.DropSavedEventMetricsExceptScrollEnds();
-
-  // Check that only `kInertialGestureScrollEnd` was preserved.
-  auto preserved_metrics = manager_.TakeSavedEventsMetrics();
-  EXPECT_THAT(preserved_metrics, testing::SizeIs(1));
-  EXPECT_EQ(preserved_metrics[0].get(), scroll_end_ptr);
-  EXPECT_EQ(preserved_metrics[0]->type(),
-            EventMetrics::EventType::kInertialGestureScrollEnd);
+  EXPECT_THAT(preserved_metrics,
+              Pointwise(UniquePtrMatches(), expected_saved_events));
+  EXPECT_THAT(
+      preserved_metrics,
+      Each(Pointee(Property(&EventMetrics::caused_frame_update, false))));
 }
 
 }  // namespace cc
