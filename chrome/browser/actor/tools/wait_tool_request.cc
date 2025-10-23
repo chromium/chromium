@@ -29,7 +29,7 @@ void WaitToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string WaitToolRequest::JournalEvent() const {
+std::string WaitToolRequest::Name() const {
   return "Wait";
 }
 

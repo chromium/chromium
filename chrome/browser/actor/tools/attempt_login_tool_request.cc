@@ -38,7 +38,7 @@ void AttemptLoginToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string AttemptLoginToolRequest::JournalEvent() const {
+std::string AttemptLoginToolRequest::Name() const {
   return "AttemptLogin";
 }
 

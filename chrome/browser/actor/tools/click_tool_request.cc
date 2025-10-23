@@ -28,7 +28,7 @@ void ClickToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ClickToolRequest::JournalEvent() const {
+std::string ClickToolRequest::Name() const {
   return "Click";
 }
 

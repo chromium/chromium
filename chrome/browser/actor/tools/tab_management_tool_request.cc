@@ -36,7 +36,7 @@ void CreateTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string CreateTabToolRequest::JournalEvent() const {
+std::string CreateTabToolRequest::Name() const {
   return "CreateTab";
 }
 
@@ -64,7 +64,7 @@ void ActivateTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ActivateTabToolRequest::JournalEvent() const {
+std::string ActivateTabToolRequest::Name() const {
   return "ActivateTab";
 }
 
@@ -92,7 +92,7 @@ void CloseTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string CloseTabToolRequest::JournalEvent() const {
+std::string CloseTabToolRequest::Name() const {
   return "CloseTab";
 }
 

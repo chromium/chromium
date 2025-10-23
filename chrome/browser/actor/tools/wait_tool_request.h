@@ -27,7 +27,7 @@ class WaitToolRequest : public ToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 
  private:
   base::TimeDelta wait_duration_;

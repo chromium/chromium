@@ -42,6 +42,10 @@ tabs::TabHandle ToolRequest::GetTabHandle() const {
   return tabs::TabHandle();
 }
 
+std::string ToolRequest::JournalEvent() const {
+  return Name();
+}
+
 bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
   // By default, tab scoped tools require current tab URL checks but individual
   // tools can override this.

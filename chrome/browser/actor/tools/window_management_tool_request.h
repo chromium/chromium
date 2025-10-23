@@ -23,7 +23,7 @@ class CreateWindowToolRequest : public ToolRequest {
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 };
 
 // Brings the specified window to the foreground.
@@ -37,7 +37,7 @@ class ActivateWindowToolRequest : public ToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 
  private:
   int32_t window_id_;
@@ -54,7 +54,7 @@ class CloseWindowToolRequest : public ToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 
  private:
   int32_t window_id_;

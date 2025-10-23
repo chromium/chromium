@@ -21,7 +21,7 @@ void MoveMouseToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string MoveMouseToolRequest::JournalEvent() const {
+std::string MoveMouseToolRequest::Name() const {
   return "MoveMouse";
 }
 

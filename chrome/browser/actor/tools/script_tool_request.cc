@@ -26,7 +26,7 @@ ScriptToolRequest::ScriptToolRequest(tabs::TabHandle tab_handle,
 
 ScriptToolRequest::~ScriptToolRequest() = default;
 
-std::string ScriptToolRequest::JournalEvent() const {
+std::string ScriptToolRequest::Name() const {
   return "ScriptTool";
 }
 

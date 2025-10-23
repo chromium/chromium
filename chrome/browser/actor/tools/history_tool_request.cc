@@ -42,7 +42,7 @@ void HistoryToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string HistoryToolRequest::JournalEvent() const {
+std::string HistoryToolRequest::Name() const {
   return "History";
 }
 

@@ -58,9 +58,13 @@ class ToolRequest {
 
   // Returns the name to use for the journal when recording entries for this
   // request.
-  virtual std::string JournalEvent() const = 0;
+  virtual std::string JournalEvent() const;
 
-  // TODO(bokan): What does this do?
+  // Returns the name of the ToolRequest.
+  virtual std::string Name() const = 0;
+
+  // Used by ConvertToVariantFn to convert a polymorphic ToolRequest object into
+  // the proper ToolRequestVariant type.
   virtual void Apply(ToolRequestVisitorFunctor&) const = 0;
 
   struct CreateToolResult {

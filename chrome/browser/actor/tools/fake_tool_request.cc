@@ -26,7 +26,7 @@ ToolRequest::CreateToolResult FakeToolRequest::CreateTool(
 
 void FakeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {}
 
-std::string FakeToolRequest::JournalEvent() const {
+std::string FakeToolRequest::Name() const {
   return "FakeTool";
 }
 

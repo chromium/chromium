@@ -28,7 +28,7 @@ void ScrollToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ScrollToolRequest::JournalEvent() const {
+std::string ScrollToolRequest::Name() const {
   return "Scroll";
 }
 

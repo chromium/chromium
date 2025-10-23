@@ -26,7 +26,7 @@ class NavigateToolRequest : public TabToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 
   std::optional<url::Origin> AssociatedOriginGrant() const override;
 

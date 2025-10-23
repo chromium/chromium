@@ -22,7 +22,7 @@ void SelectToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string SelectToolRequest::JournalEvent() const {
+std::string SelectToolRequest::Name() const {
   return "Select";
 }
 

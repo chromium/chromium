@@ -19,7 +19,7 @@ class FakeToolRequest : public ToolRequest {
                               ToolDelegate& tool_delegate) const override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 
  private:
   mutable base::OnceClosure on_invoke_;

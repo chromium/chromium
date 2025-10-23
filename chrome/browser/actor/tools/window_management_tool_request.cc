@@ -27,7 +27,7 @@ void CreateWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string CreateWindowToolRequest::JournalEvent() const {
+std::string CreateWindowToolRequest::Name() const {
   return "CreateWindow";
 }
 
@@ -49,7 +49,7 @@ void ActivateWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ActivateWindowToolRequest::JournalEvent() const {
+std::string ActivateWindowToolRequest::Name() const {
   return "ActivateWindow";
 }
 
@@ -71,7 +71,7 @@ void CloseWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string CloseWindowToolRequest::JournalEvent() const {
+std::string CloseWindowToolRequest::Name() const {
   return "CloseWindow";
 }
 

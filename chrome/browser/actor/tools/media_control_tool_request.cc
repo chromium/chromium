@@ -51,8 +51,12 @@ void MediaControlToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
+std::string MediaControlToolRequest::Name() const {
+  return "MediaControl";
+}
+
 std::string MediaControlToolRequest::JournalEvent() const {
-  return absl::StrFormat("MediaControl[%s]", MediaControlName(media_control_));
+  return absl::StrFormat("%s[%s]", Name(), MediaControlName(media_control_));
 }
 
 std::optional<ObservationDelayController::PageStabilityConfig>

@@ -28,7 +28,7 @@ class DragAndReleaseToolRequest : public PageToolRequest {
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
-  std::string JournalEvent() const override;
+  std::string Name() const override;
 
   // PageToolRequest
   mojom::ToolActionPtr ToMojoToolAction(

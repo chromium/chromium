@@ -45,7 +45,7 @@ void NavigateToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string NavigateToolRequest::JournalEvent() const {
+std::string NavigateToolRequest::Name() const {
   return "Navigate";
 }
 

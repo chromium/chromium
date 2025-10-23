@@ -41,7 +41,7 @@ void TypeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string TypeToolRequest::JournalEvent() const {
+std::string TypeToolRequest::Name() const {
   return "Type";
 }
 

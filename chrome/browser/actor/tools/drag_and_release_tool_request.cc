@@ -32,7 +32,7 @@ void DragAndReleaseToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string DragAndReleaseToolRequest::JournalEvent() const {
+std::string DragAndReleaseToolRequest::Name() const {
   return "DragAndRelease";
 }
 
