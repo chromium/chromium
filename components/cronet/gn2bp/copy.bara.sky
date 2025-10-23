@@ -249,6 +249,16 @@ origin_files = glob([
     "**/BUILD.gn",
     "**/*.gni",
 
+    # Exclude aconfig files that may be present in some subprojects (e.g.
+    # Perfetto). These files are dead code as far as the import is concerned,
+    # and they can confuse linters on the AOSP file as they incorrectly assume
+    # they will be used.
+    "**/*.aconfig",
+
+    # Exclude Typescript files. Realistically Cronet will never use Typescript,
+    # and they tend to create a lot of diff noise, especially from Perfetto.
+    "**/*.ts",
+
     # These files may be generated when running local Python scripts locally -
     # make sure we don't accidentally import them.
     "**/__pycache__/**",
