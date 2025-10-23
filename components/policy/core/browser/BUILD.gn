@@ -76,6 +76,7 @@ source_set("internal") {
 
   public_deps = [ "//base" ]
   deps = [
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//components/google/core/common",
     "//components/keyed_service/core",
@@ -182,6 +183,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//build:android_buildflags",
     "//components/policy:generated",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",

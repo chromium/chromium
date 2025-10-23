@@ -230,6 +230,7 @@ source_set("internal") {
 
   deps = [
     "//base:i18n",
+    "//build:android_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",
     "//components/enterprise/common/proto:chrome_reporting_entity",

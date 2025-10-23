@@ -39,6 +39,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kCustomPolicyRegistrationDelay);
 POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kPolicyRegistrationDelay;
 
+// Used to enable future_on policies on Desktop Android.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kFuturePoliciesOnDesktopAndroid);
+
 // Used to add a captive portal check in SafeSitesNavigationThrottle.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kSafeSitesCaptivePortalCheck);
 
