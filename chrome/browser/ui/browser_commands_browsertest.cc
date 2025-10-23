@@ -857,10 +857,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   auto* side_panel_coordinator =
       browser()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntryId::kReadingList);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_coordinator->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadingList));
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
   chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
   EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }

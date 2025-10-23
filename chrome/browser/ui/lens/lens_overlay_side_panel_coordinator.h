@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -104,8 +103,6 @@ class LensOverlaySidePanelCoordinator
   // Registers the side panel entry in the side panel if it doesn't already
   // exist and then shows it.
   void RegisterEntryAndShow();
-
-  SidePanelEntry::PanelType GetPanelType() const;
 
   // Cleans up the side panel entry and closes the side panel.
   void DeregisterEntryAndCleanup();

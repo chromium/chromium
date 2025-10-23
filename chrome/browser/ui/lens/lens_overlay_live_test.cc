@@ -263,8 +263,9 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOverlayAndResults; }));
     auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-    ASSERT_TRUE(coordinator->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults)));
+    ASSERT_TRUE(coordinator->IsSidePanelShowing());
+    ASSERT_EQ(coordinator->GetCurrentEntryId(),
+              SidePanelEntry::Id::kLensOverlayResults);
 
     // Wait for the panel to finish loading.
     EXPECT_TRUE(content::WaitForLoadStop(

@@ -52,7 +52,7 @@ class SidePanelUI {
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.
-  virtual bool IsSidePanelShowing(SidePanelEntry::PanelType type) const = 0;
+  virtual bool IsSidePanelShowing() const = 0;
 
   // Returns whether `entry_key` is currently being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually

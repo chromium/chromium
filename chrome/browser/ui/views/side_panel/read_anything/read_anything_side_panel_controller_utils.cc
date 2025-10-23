@@ -23,6 +23,7 @@ bool IsReadAnythingEntryShowing(Browser* browser) {
   if (!side_panel_ui) {
     return false;
   }
-  return side_panel_ui->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  return side_panel_ui->IsSidePanelShowing() &&
+         (side_panel_ui->GetCurrentEntryId() ==
+          SidePanelEntryId::kReadAnything);
 }

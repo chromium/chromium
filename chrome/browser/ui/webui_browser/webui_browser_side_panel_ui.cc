@@ -164,9 +164,7 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).
   std::optional<UniqueKey> unique_key =
-      IsSidePanelShowing(SidePanelEntry::PanelType::kContent)
-          ? GetNewActiveKeyOnTabChanged()
-          : std::nullopt;
+      IsSidePanelShowing() ? GetNewActiveKeyOnTabChanged() : std::nullopt;
   if (!unique_key.has_value() && new_contextual_registry &&
       new_contextual_registry
           ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)

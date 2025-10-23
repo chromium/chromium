@@ -71,12 +71,13 @@ void SidePanelCoordinator::Toggle(
   // If the entry is the loading entry and is toggled,
   // it should also be closed. This handles quick double clicks
   // to close the sidepanel.
-  SidePanelEntry* entry = GetEntryForKey(key);
-  if (entry && IsSidePanelShowing(entry->type()) &&
-      waiter(entry->type())->loading_entry() == entry) {
-    waiter(entry->type())->ResetLoadingEntryIfNecessary();
-    Close();
-    return;
+  if (IsSidePanelShowing()) {
+    SidePanelEntry* entry = GetEntryForKey(key);
+    if (entry && waiter(entry->type())->loading_entry() == entry) {
+      waiter(entry->type())->ResetLoadingEntryIfNecessary();
+      Close();
+      return;
+    }
   }
 
   std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(key);
@@ -127,7 +128,7 @@ void SidePanelCoordinator::Show(
 
   SidePanelEntry* entry = GetEntryForUniqueKey(input);
 
-  if (!IsSidePanelShowing(entry->type())) {
+  if (!IsSidePanelShowing()) {
     SetOpenedTimestamp(base::TimeTicks::Now());
     SidePanelUtil::RecordSidePanelOpen(open_trigger);
     // Record usage for side panel promo.
@@ -194,7 +195,7 @@ void SidePanelCoordinator::Show(
 //   a window-scoped side-panel entry, and the window is closed via any
 //   mechanism, this method is not called.
 void SidePanelCoordinator::Close(bool suppress_animations) {
-  if (!IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
+  if (!IsSidePanelShowing() ||
       (!suppress_animations &&
        browser_view_->contents_height_side_panel()->IsClosing())) {
     return;
@@ -316,7 +317,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* new_contextual_registry) {
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).
-  if (IsSidePanelShowing(SidePanelEntry::PanelType::kContent) &&
+  if (IsSidePanelShowing() &&
       !browser_view_->contents_height_side_panel()->IsClosing()) {
     // Attempt to find a suitable entry to be shown after the tab switch and if
     // one is found, show it.

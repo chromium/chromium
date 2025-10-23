@@ -949,7 +949,7 @@ void LensOverlayController::ShowUI(
   // Setup observer to be notified of side panel opens and closes.
   side_panel_shown_subscription_ =
       side_panel_coordinator_->RegisterSidePanelShown(
-          GetLensOverlaySidePanelCoordinator()->GetPanelType(),
+          SidePanelEntry::PanelType::kContent,
           base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
                               weak_factory_.GetWeakPtr()));
 
@@ -999,8 +999,7 @@ void LensOverlayController::ShowUI(
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
-  if (side_panel_coordinator_->IsSidePanelShowing(
-          GetLensOverlaySidePanelCoordinator()->GetPanelType()) &&
+  if (side_panel_coordinator_->IsSidePanelShowing() &&
       !results_side_panel_coordinator_->IsEntryShowing()) {
     // Close the currently opened side panel synchronously if it's not the Lens
     // panel. Postpone the screenshot for a fixed time to allow reflow.
@@ -2948,8 +2947,7 @@ void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
     lens_overlay_blur_layer_delegate_->Hide();
   }
 
-  state_ = side_panel_coordinator_->IsSidePanelShowing(
-               GetLensOverlaySidePanelCoordinator()->GetPanelType())
+  state_ = side_panel_coordinator_->IsSidePanelShowing()
                ? State::kOverlayAndResults
                : State::kOverlay;
   ShowOverlay();

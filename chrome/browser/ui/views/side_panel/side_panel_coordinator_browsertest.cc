@@ -855,9 +855,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ShowOpensSidePanel) {
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        ChangesTitleWhenActionItemChanges) {
   Init();
-  SidePanelEntry* entry = global_registry()->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
-  EXPECT_FALSE(coordinator()->IsSidePanelShowing(entry->type()));
+  EXPECT_FALSE(coordinator()->IsSidePanelShowing());
 
   coordinator()->Show(SidePanelEntry::Id::kBookmarks);
   // Bookmarks is showing and selected.
@@ -866,6 +864,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   EXPECT_EQ(GetTitleText(),
             l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE));
 
+  SidePanelEntry* entry = global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionSidePanelShowBookmarks,
       browser()->GetActions()->root_action_item());
@@ -2126,7 +2126,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Switch to the second tab. Since there is no active contextual/global entry
   // and no global entry with `extension_key`, the side panel should close.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_FALSE(coordinator()->IsSidePanelEntryShowing(extension_key));
+  EXPECT_FALSE(coordinator()->IsSidePanelShowing());
 }
 
 // Test that an extension with both contextual and global entries should behave
@@ -2349,14 +2349,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        ExtensionSidePanelHasPinButton) {
   Init();
   SetUpPinningTest();
+  EXPECT_FALSE(coordinator()->IsSidePanelShowing());
 
   scoped_refptr<const extensions::Extension> extension =
       AddExtensionWithSidePanel("extension", std::nullopt);
-  SidePanelEntryKey extension_key = GetKeyForExtension(extension->id());
 
-  EXPECT_FALSE(coordinator()->IsSidePanelEntryShowing(extension_key));
-  coordinator()->Show(extension_key);
-  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(extension_key));
+  coordinator()->Show(GetKeyForExtension(extension->id()));
+  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
+      GetKeyForExtension(extension->id())));
 
   views::ToggleImageButton* pin_button = GetHeader()->header_pin_button();
   EXPECT_TRUE(pin_button->GetVisible());

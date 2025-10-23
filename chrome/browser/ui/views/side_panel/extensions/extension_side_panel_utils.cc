@@ -80,7 +80,7 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
 
   // If the side panel isn't showing on the active tab, we can show the new
   // entry directly (since it's a global entry).
-  if (!side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kContent)) {
+  if (!side_panel_ui->IsSidePanelShowing()) {
     side_panel_ui->Show(extension_key);
     return;
   }

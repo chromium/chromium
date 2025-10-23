@@ -62,8 +62,8 @@ SidePanelControllerViews::~SidePanelControllerViews() = default;
 
 bool SidePanelControllerViews::IsCustomizeChromeEntryShowing() const {
   auto* side_panel_ui = GetSidePanelUI();
-  return side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(
-                              SidePanelEntryKey(kSidePanelEntryId));
+  return side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
+         (side_panel_ui->GetCurrentEntryId() == kSidePanelEntryId);
 }
 
 bool SidePanelControllerViews::IsCustomizeChromeEntryAvailable() const {
