@@ -7,7 +7,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -22,6 +24,10 @@ class WebContents;
 }  // namespace content
 
 namespace optimization_guide {
+
+namespace features {
+BASE_DECLARE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations);
+}  // namespace features
 
 struct RenderFrameInfo {
  public:
@@ -57,6 +63,14 @@ using FrameOrRedaction =
 using GetRenderFrameInfo =
     base::RepeatingCallback<std::optional<RenderFrameInfo>(int child_process_id,
                                                            blink::FrameToken)>;
+
+// Struct to provide session state across multiple nodes in a
+// ConvertAIPageContentToProto conversion;
+class ConvertAIPageContentToProtoSession : public base::SupportsUserData {
+ public:
+  ConvertAIPageContentToProtoSession();
+  ~ConvertAIPageContentToProtoSession() override;
+};
 
 // Converts the mojom data structure for AIPageContent to its equivalent proto
 // mapping. If conversion fails, the returned base::expected contains a

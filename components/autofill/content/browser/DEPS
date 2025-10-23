@@ -1,7 +1,10 @@
 include_rules = [
   "+content/public/browser",
+  "+content/test",
   "+components/keyed_service/content",
   "+components/version_info",
+  "+components/optimization_guide/content/browser",
+  "+components/optimization_guide/proto",
   "+components/profile_metrics",
   "+components/services/storage",
   "+components/webauthn",

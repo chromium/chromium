@@ -13,7 +13,9 @@
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "components/optimization_guide/content/browser/autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -28,7 +30,31 @@
 
 namespace optimization_guide {
 
+namespace features {
+// Killswitch to adding autofill information to form controls.
+BASE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 namespace {
+
+void AddAutofillAnnotations(
+    content::GlobalRenderFrameHostToken source_frame_token,
+    ConvertAIPageContentToProtoSession& session,
+    optimization_guide::proto::ContentAttributes* proto_attributes) {
+  if (base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentWithAutofillAnnotations)) {
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromFrameToken(source_frame_token);
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    if (auto* autofill_annotations_provider =
+            AutofillAnnotationsProvider::GetFor(web_contents)) {
+      autofill_annotations_provider->AddAutofillAnnotations(
+          *render_frame_host, session, proto_attributes);
+    }
+  }
+}
 
 optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
     blink::mojom::AIPageContentClickabilityReason reason) {
@@ -506,6 +532,8 @@ void ConvertTableRowData(
 }
 
 base::expected<void, std::string> ConvertAttributes(
+    content::GlobalRenderFrameHostToken source_frame_token,
+    ConvertAIPageContentToProtoSession& session,
     const blink::mojom::AIPageContentAttributes& mojom_attributes,
     optimization_guide::proto::ContentAttributes* proto_attributes) {
   if (mojom_attributes.dom_node_id.has_value()) {
@@ -583,6 +611,7 @@ base::expected<void, std::string> ConvertAttributes(
     }
     ConvertFormControlData(*mojom_attributes.form_control_data,
                            proto_attributes->mutable_form_control_data());
+    AddAutofillAnnotations(source_frame_token, session, proto_attributes);
   } else if (mojom_attributes.table_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kTable) {
@@ -745,8 +774,9 @@ class Converter {
       const blink::mojom::AIPageContentNode& mojom_node,
       optimization_guide::proto::ContentNode* proto_node) {
     const auto& mojom_attributes = *mojom_node.content_attributes;
-    RETURN_IF_ERROR(ConvertAttributes(
-        mojom_attributes, proto_node->mutable_content_attributes()));
+    RETURN_IF_ERROR(
+        ConvertAttributes(source_frame_token, session_, mojom_attributes,
+                          proto_node->mutable_content_attributes()));
 
     std::optional<RenderFrameInfo> render_frame_info;
     if (mojom_attributes.attribute_type ==
@@ -883,6 +913,7 @@ class Converter {
   GetRenderFrameInfo get_render_frame_info_;
   raw_ref<FrameTokenSet> frame_token_set_;
   raw_ref<blink::mojom::PageMetadata> page_metadata_;
+  ConvertAIPageContentToProtoSession session_;
 };
 
 // Private helper template to handle both mutable and const traversals for
@@ -919,6 +950,11 @@ void VisitContentNodesImpl(ContentNodeType& node,
 }
 
 }  // namespace
+
+ConvertAIPageContentToProtoSession::ConvertAIPageContentToProtoSession() =
+    default;
+ConvertAIPageContentToProtoSession::~ConvertAIPageContentToProtoSession() =
+    default;
 
 base::expected<void, std::string> ConvertAIPageContentToProto(
     blink::mojom::AIPageContentOptionsPtr main_frame_options,

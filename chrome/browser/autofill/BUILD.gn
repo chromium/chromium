@@ -196,6 +196,7 @@ source_set("browser_tests") {
     sources += [
       "autocomplete_browsertest.cc",
       "autofill_across_iframes_browsertest.cc",
+      "autofill_annotations_provider_browsertest.cc",
       "autofill_browsertest.cc",
       "autofill_metrics_browsertest.cc",
       "autofill_server_browsertest.cc",
@@ -213,6 +214,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/common:test_support",
+    "//components/optimization_guide/content/browser",
     "//components/password_manager/content/browser:test_support",
     "//components/ukm:test_support",
     "//testing/data_driven_testing",
