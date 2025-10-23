@@ -1,0 +1,48 @@
+buffers {
+  size_kb: 524288
+  fill_policy: DISCARD
+}
+buffers {
+  size_kb: 256
+  fill_policy: DISCARD
+}
+buffers {
+  size_kb: 8192
+  fill_policy: DISCARD
+}
+
+data_sources {
+  config {
+    name: "linux.ftrace"
+    ftrace_config {
+      atrace_categories: "gfx"
+      atrace_categories: "ss"
+      atrace_categories: "view"
+      atrace_categories: "wm"
+      symbolize_ksyms: true
+      disable_generic_events: true
+    }
+  }
+}
+data_sources {
+  config {
+    name: "android.log"
+    android_log_config {
+    }
+  }
+}
+data_sources {
+  config {
+    name: "android.surfaceflinger.frametimeline"
+  }
+}
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 2
+    process_stats_config {
+      scan_all_processes_on_start: true
+    }
+  }
+}
+duration_ms: 10000

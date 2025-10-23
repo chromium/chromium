@@ -51,6 +51,22 @@ async def measure_cold_start(app, url, trace_file=None, trace_config=None):
 
 
 async def _measure_cold_start(app, url, trace_file, trace_config):
+    return await _measure_startup(
+        app, url, trace_file, trace_config, _STARTUP_TIME_QUERY,
+        "Could not find histogram sample for "
+        "Startup.Android.Cold.TimeToFirstVisibleContent4 in the trace.")
+
+
+async def _measure_first_frame(app, url, trace_file, trace_config):
+    return await _measure_startup(
+        app, url, trace_file, trace_config, _FIRST_FRAME_TIME_QUERY,
+        "Could not find logcat message for "
+        "'Displayed com.google.android.apps.chrome/"
+        "org.chromium.chrome.browser.ChromeTabbedActivity' in the trace.")
+
+
+async def _measure_startup(app, url, trace_file, trace_config, query,
+                           error_message):
     # Stop the app before recording the trace so that the trace cleanly shows
     # the cold start
     await app.stop()
@@ -64,18 +80,12 @@ async def _measure_cold_start(app, url, trace_file, trace_config):
         await asyncio.sleep(5)  # Startup should not take more than 5 seconds
         await app.stop()
 
-    df = await trace_file.query(_STARTUP_TIME_QUERY)
+    df = await trace_file.query(query)
     try:
-        return int(df["sample_value"].iloc[0])
+        return int(df.iloc[0, 0])
     except IndexError:
-        # The trace event for Startup.Android.Cold.TimeToFirstVisibleContent4 is
-        # not present in the trace. This can happen when the trace config does
-        # not enable the histogram category or if a Chrome internal page was
-        # launched.
-        raise LookupError(
-            "Could not find histogram sample for "
-            "Startup.Android.Cold.TimeToFirstVisibleContent4 in the trace."
-        )
+        raise LookupError(error_message)
+
 
 
 _STARTUP_TIME_QUERY = r"""
@@ -99,4 +109,57 @@ args_name.display_value = 'Startup.Android.Cold.TimeToFirstVisibleContent4'
 AND args_name.key = 'chrome_histogram_sample.name'
 -- Use the second join to specify which key's value you want to select.
 AND args_sample.key = 'chrome_histogram_sample.sample'
+"""
+
+
+async def measure_first_frame(app, url, trace_file=None, trace_config=None):
+    """Measures Chrome's time to first frame.
+
+    This function ensures the app is stopped, performs a cold start, while
+    recording a trace and then queries the trace for the first frame time.
+    The display time is reported by android in logcat.
+
+    Args:
+        app: The chrome.App object with which to start and stop chrome
+        url: The URL to launch the Chrome with.
+        trace_file: An optional `trace.TraceFile` object to store the trace.
+                    If not provided, a temporary file will be created.
+        trace_config: An optional path to a Perfetto trace config file.
+                      If not provided, a default config is used.
+
+    Returns:
+        The time to first frame in milliseconds.
+    """
+    if trace_config is None:
+        # This assumes the current working directory is the chromium src root.
+        trace_config = os.path.join(
+            os.getcwd(), "tools", "android", "colabutils", "res",
+            "cold_start_trace_with_logcat_timing_cfg.pbtxt")
+
+    if not os.path.exists(trace_config):
+        raise FileNotFoundError(f"Trace config not found at {trace_config}")
+
+    with ExitStack() as stack:
+        # If no trace file is provided, create a temporary one that will be
+        # cleaned up upon exiting the context.
+        if trace_file is None:
+            temporary_recorded_trace = stack.enter_context(
+                tempfile.NamedTemporaryFile(mode='w'))
+            trace_file = trace.TraceFile(temporary_recorded_trace.name)
+
+        return await _measure_first_frame(app, url, trace_file, trace_config)
+
+
+_FIRST_FRAME_TIME_QUERY = r"""
+SELECT
+  CAST(
+    REGEXP_EXTRACT(
+      msg,
+      'Displayed com.google.android.apps.chrome/org.chromium.chrome.browser.ChromeTabbedActivity[^+]+\+(.+)ms'
+    ) AS INT
+  ) AS launch_time
+FROM
+  android_logs
+WHERE
+  msg LIKE 'Displayed %'
 """
