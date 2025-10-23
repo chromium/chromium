@@ -76,6 +76,89 @@ class LayerContextImplPropertyTreesTestBase : public LayerContextImplTest {
   }
 };
 
+TEST_F(LayerContextImplPropertyTreesTestBase,
+       AnyTreeChangedTriggersResetCachedDataAndNeedsUpdateDrawProperties) {
+  // Initial update to set up the tree.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  auto* active_tree = layer_context_impl_->host_impl()->active_tree();
+
+  // --- Test Transform Node Change ---
+  // Clear needs_update_draw_properties_for_testing after initial setup.
+  active_tree->clear_needs_update_draw_properties_for_testing();
+  active_tree->property_trees()->ResetAllChangeTracking();
+
+  // Modify an existing transform node to trigger any_tree_changed.
+  auto update_transform = CreateDefaultUpdate();
+  auto transform_node_update = CreateDefaultSecondaryRootTransformNode();
+  transform_node_update->local =
+      gfx::Transform::MakeScale(1.5f);  // Change a property
+  update_transform->transform_nodes.push_back(std::move(transform_node_update));
+
+  auto result_transform =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_transform));
+  ASSERT_TRUE(result_transform.has_value());
+
+  // Verify that needs_update_draw_properties is set.
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  // Verify that property_trees.changed() is true, indicating ResetCachedData
+  // was implicitly called.
+  EXPECT_TRUE(active_tree->property_trees()->changed());
+
+  // --- Test Effect Node Change ---
+  active_tree->clear_needs_update_draw_properties_for_testing();
+  active_tree->property_trees()->ResetAllChangeTracking();
+
+  // Modify an existing effect node.
+  auto update_effect = CreateDefaultUpdate();
+  auto effect_node_update = CreateDefaultSecondaryRootEffectNode();
+  effect_node_update->opacity = 0.7f;  // Change a property
+  update_effect->effect_nodes.push_back(std::move(effect_node_update));
+
+  auto result_effect =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_effect));
+  ASSERT_TRUE(result_effect.has_value());
+
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  EXPECT_TRUE(active_tree->property_trees()->changed());
+
+  // --- Test Clip Node Change ---
+  active_tree->clear_needs_update_draw_properties_for_testing();
+  active_tree->property_trees()->ResetAllChangeTracking();
+
+  // Modify an existing clip node.
+  auto update_clip = CreateDefaultUpdate();
+  auto clip_node_update = CreateDefaultSecondaryRootClipNode();
+  clip_node_update->clip = gfx::RectF(1.f, 2.f, 3.f, 4.f);  // Change a property
+  update_clip->clip_nodes.push_back(std::move(clip_node_update));
+
+  auto result_clip =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_clip));
+  ASSERT_TRUE(result_clip.has_value());
+
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  EXPECT_TRUE(active_tree->property_trees()->changed());
+
+  // --- Test Scroll Node Change ---
+  active_tree->clear_needs_update_draw_properties_for_testing();
+  active_tree->property_trees()->ResetAllChangeTracking();
+
+  // Modify an existing scroll node.
+  auto update_scroll = CreateDefaultUpdate();
+  auto scroll_node_update = CreateDefaultSecondaryRootScrollNode();
+  scroll_node_update->container_bounds =
+      gfx::Size(100, 100);  // Change a property
+  update_scroll->scroll_nodes.push_back(std::move(scroll_node_update));
+
+  auto result_scroll =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_scroll));
+  ASSERT_TRUE(result_scroll.has_value());
+
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  EXPECT_TRUE(active_tree->property_trees()->changed());
+}
+
 class LayerContextImplUpdateDisplayTreeTransformNodeTest
     : public LayerContextImplPropertyTreesTestBase {
  protected:
