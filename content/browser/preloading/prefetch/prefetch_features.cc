@@ -90,4 +90,7 @@ BASE_FEATURE(kPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchGracefulNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchAsyncCancelOnCookiesChange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -129,6 +129,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadServingMetrics);
 // TODO(crbug.com/400761083): Remove it after confirming stability.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchGracefulNotification);
 
+// Kill switch for making the cancelling of `PrefetchStreamingURLLoader` async.
+// TODO(crbug.com/400761083): Remove it after confirming stability.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncCancelOnCookiesChange);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
