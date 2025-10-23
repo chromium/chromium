@@ -92,6 +92,10 @@ BASE_DECLARE_FEATURE(kDebugUiForOtps);
 // classifications.
 BASE_DECLARE_FEATURE(kDownloadModelForPasswordChange);
 
+// This feature disables filling on page load for leaked credentials on some
+// sites. Filling on page load interferes with password change feature.
+BASE_DECLARE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables Actor Login permissions UI in Password Manager settings
 BASE_DECLARE_FEATURE(kEnableActorLoginPermissions);
