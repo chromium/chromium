@@ -472,6 +472,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(IS_WIN)
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
+#if !BUILDFLAG(IS_ANDROID)
+    "WaapUIMetricsService",
+#endif  // !BUILDFLAG(IS_ANDROID)
     "sct_reporting::Factory",
 
     "BtmBrowserSigninDetector",

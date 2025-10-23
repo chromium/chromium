@@ -1715,8 +1715,9 @@ BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables logging InitialWebUI-related metrics. The metrics are not necessary
 // comes from WebUI but can also come from the C++ version of them.
+// Defaults to enabled to also collect metrics for the C++ group.
 // See crbug.com/448794588.
-BASE_FEATURE(kInitialWebUIMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInitialWebUIMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 // When enable, the reload button will be replaced with the a WebView, and
 // chrome://reload-button.top-chrome will be loaded as the content.
 // crbug.com/444358999
