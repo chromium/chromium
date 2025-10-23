@@ -944,6 +944,11 @@ BASE_FEATURE(kAutoPictureInPictureForVideoPlayback,
 BASE_FEATURE(kAutoPictureInPicturePageInfoDetails,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables sending provisioning requests in the body of the POST request rather
+// than encoding it inside the URL.
+BASE_FEATURE(kUsePostBodyForUrlProvisionFetcher,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether we should show a setting to disable autoplay policy.
 BASE_FEATURE(kAutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
