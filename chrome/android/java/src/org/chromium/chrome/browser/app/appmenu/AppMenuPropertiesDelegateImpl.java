@@ -873,7 +873,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     /** Return whether the given {@link MenuItem} is managed by policy. */
     protected boolean isMenuItemManaged(@IdRes int itemId) {
-        if (itemId == R.id.new_incognito_tab_menu_id) {
+        if (itemId == R.id.new_incognito_tab_menu_id
+                || itemId == R.id.new_incognito_window_menu_id) {
             return IncognitoUtils.isIncognitoModeManaged(
                     assumeNonNull(mTabModelSelector.getCurrentModel().getProfile()));
         }

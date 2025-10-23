@@ -95,7 +95,7 @@ import java.util.function.Supplier;
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     @IntDef({
         TabbedAppMenuItemType.UPDATE_ITEM,
-        TabbedAppMenuItemType.NEW_INCOGNITO_TAB,
+        TabbedAppMenuItemType.NEW_INCOGNITO,
         TabbedAppMenuItemType.ZOOM_ITEM
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -107,7 +107,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
          * Menu item that has two buttons, the first one is a title and the second one is an icon.
          * It is different from the regular menu item because it contains two separate buttons.
          */
-        int NEW_INCOGNITO_TAB = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 1;
+        int NEW_INCOGNITO = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 1;
 
         /** Menu item that has a title and two buttons. */
         int ZOOM_ITEM = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 2;
@@ -183,7 +183,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 TabbedAppMenuItemType.UPDATE_ITEM, UpdateMenuItemViewBinder::getPixelHeight);
 
         modelListAdapter.registerType(
-                TabbedAppMenuItemType.NEW_INCOGNITO_TAB,
+                TabbedAppMenuItemType.NEW_INCOGNITO,
                 new LayoutViewBuilder(R.layout.custom_view_menu_item),
                 IncognitoMenuItemViewBinder::bind);
 
@@ -548,7 +548,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.new_incognito_tab_menu_id, R.string.menu_new_incognito_tab, iconRes);
         model.set(
                 AppMenuItemProperties.ENABLED, isIncognitoEnabled() && !isIncognitoReauthShowing());
-        return new MVCListAdapter.ListItem(TabbedAppMenuItemType.NEW_INCOGNITO_TAB, model);
+        return new MVCListAdapter.ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
     }
 
     private boolean shouldShowAddToGroup() {
@@ -610,7 +610,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_incognito : 0);
         model.set(
                 AppMenuItemProperties.ENABLED, isIncognitoEnabled() && !isIncognitoReauthShowing());
-        return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
+        return new MVCListAdapter.ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
     }
 
     private MVCListAdapter.ListItem buildMoveToOtherWindowItem() {
