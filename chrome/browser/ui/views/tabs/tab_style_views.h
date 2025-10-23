@@ -29,6 +29,12 @@ namespace gfx {
 class Canvas;
 }
 
+struct TabPathFlags {
+  bool force_active = false;
+  TabStyle::RenderUnits render_units = TabStyle::RenderUnits::kPixels;
+  bool should_paint_extension = true;
+};
+
 // Holds Views-specific logic for rendering and sizing tabs.
 class TabStyleViews {
  public:
@@ -45,9 +51,7 @@ class TabStyleViews {
   //  tab.
   virtual SkPath GetPath(TabStyle::PathType path_type,
                          float scale,
-                         bool force_active = false,
-                         TabStyle::RenderUnits render_units =
-                             TabStyle::RenderUnits::kPixels) const = 0;
+                         const TabPathFlags& flags) const = 0;
 
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;

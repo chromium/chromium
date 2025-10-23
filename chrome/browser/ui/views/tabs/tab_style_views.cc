@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -68,8 +69,7 @@ class TabStyleViewsImpl : public TabStyleViews {
   // TabStyle:
   SkPath GetPath(TabStyle::PathType path_type,
                  float scale,
-                 bool force_active,
-                 TabStyle::RenderUnits render_units) const override;
+                 const TabPathFlags& flags) const override;
   gfx::Insets GetContentsInsets() const override;
   float GetZValue() const override;
   float GetCurrentActiveOpacity() const override;
@@ -204,10 +204,9 @@ TabStyleViewsImpl::TabStyleViewsImpl(Tab* tab)
 
 SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
                                   float scale,
-                                  bool force_active,
-                                  TabStyle::RenderUnits render_units) const {
+                                  const TabPathFlags& flags) const {
   CHECK(tab());
-  const int stroke_thickness = GetStrokeThickness(force_active);
+  const int stroke_thickness = GetStrokeThickness(flags.force_active);
 
   const TabStyle::TabSelectionState state = GetSelectionState();
 
@@ -323,7 +322,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     path.offset(-origin.x(), -origin.y());
 
     // Possibly convert back to DIPs.
-    if (render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
+    if (flags.render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
       path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
     }
 
@@ -413,7 +412,11 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     //   │ Content │
     // ┏─╯         ╰─┐
     if (tab_bottom != extended_bottom) {
-      path.lineTo(left, tab_bottom);
+      if (flags.should_paint_extension) {
+        path.lineTo(left, tab_bottom);
+      } else {
+        path.moveTo(left, tab_bottom);
+      }
     }
 
     // Draw the bottom-left corner.
@@ -472,7 +475,9 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     //   ╭─────────╮
     //   │ Content │
     // ┌─╯         ╰─┓
-    path.lineTo(right, extended_bottom);
+    if (flags.should_paint_extension) {
+      path.lineTo(right, extended_bottom);
+    }
   }
 
   if (path_type != TabStyle::PathType::kBorder) {
@@ -485,7 +490,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   path.offset(-origin.x(), -origin.y());
 
   // Possibly convert back to DIPs.
-  if (render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
+  if (flags.render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
     path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
   }
 
@@ -965,8 +970,8 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
     int y_inset) const {
   const SkPath fill_path =
       GetPath(TabStyle::PathType::kFill, canvas->image_scale(),
-              selection_state == TabStyle::TabSelectionState::kActive,
-              TabStyle::RenderUnits::kPixels);
+              {.force_active =
+                   selection_state == TabStyle::TabSelectionState::kActive});
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float scale = canvas->UndoDeviceScaleFactor();
 
@@ -999,8 +1004,8 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
 void TabStyleViewsImpl::PaintBackgroundHover(gfx::Canvas* canvas,
                                              float scale) const {
   const SkPath fill_path =
-      GetPath(TabStyle::PathType::kHighlight, canvas->image_scale(), true,
-              TabStyle::RenderUnits::kPixels);
+      GetPath(TabStyle::PathType::kHighlight, canvas->image_scale(),
+              {.force_active = true});
   canvas->ClipPath(fill_path, true);
 
   const SkColor hover_color =
@@ -1025,8 +1030,8 @@ void TabStyleViewsImpl::PaintBackgroundStroke(
   }
 
   SkPath outer_path =
-      GetPath(TabStyle::PathType::kBorder, canvas->image_scale(), is_active,
-              TabStyle::RenderUnits::kPixels);
+      GetPath(TabStyle::PathType::kBorder, canvas->image_scale(),
+              {.force_active = is_active, .should_paint_extension = false});
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
   cc::PaintFlags flags;

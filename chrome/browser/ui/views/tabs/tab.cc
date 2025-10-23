@@ -159,7 +159,7 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
 
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
-    return tab_style_views_->GetPath(TabStyle::PathType::kHighlight, 1.0);
+    return tab_style_views_->GetPath(TabStyle::PathType::kHighlight, 1.0, {});
   }
 
  private:
@@ -342,7 +342,7 @@ bool Tab::GetHitTestMask(SkPath* mask) const {
   *mask = tab_style_views()->GetPath(
       TabStyle::PathType::kHitTest,
       GetWidget()->GetCompositor()->device_scale_factor(),
-      /* force_active */ false, TabStyle::RenderUnits::kDips);
+      {.render_units = TabStyle::RenderUnits::kDips});
   return true;
 }
 
@@ -814,7 +814,7 @@ void Tab::PaintChildren(const views::PaintInfo& info) {
   const float paint_recording_scale = info.paint_recording_scale_x();
 
   const SkPath clip_path = tab_style_views()->GetPath(
-      TabStyle::PathType::kInteriorClip, paint_recording_scale);
+      TabStyle::PathType::kInteriorClip, paint_recording_scale, {});
 
   clip_recorder.ClipPathWithAntiAliasing(clip_path);
   View::PaintChildren(info);
