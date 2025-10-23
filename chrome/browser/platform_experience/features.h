@@ -28,6 +28,11 @@ BASE_DECLARE_FEATURE(kShouldUseSpecificPEHNotificationText);
 inline constexpr base::FeatureParam<int> kUseNotificationTextIndex{
     &kShouldUseSpecificPEHNotificationText, "UseNotificationTextIndex", 0};
 
+// This may block.
+// Reflects field trial activations from the PEH by forcing them to activate
+// in Chrome.
+void ActivateFieldTrials();
+
 }  // namespace platform_experience::features
 
 #endif  // CHROME_BROWSER_PLATFORM_EXPERIENCE_FEATURES_H_
