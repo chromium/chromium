@@ -265,20 +265,19 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
 
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
-  // If `source` is accelerated, then use a SharedImage provider.
-  if (source_paint_image.IsTextureBacked()) {
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider =
-        source->ContextProviderWrapper();
-    if (context_provider) {
-      const gpu::SharedImageUsageSet shared_image_usage_flags =
-          source->GetSharedImage()->usage();
-      resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-          gfx::Size(dest_size.width(), dest_size.height()),
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
-          dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
-          CanvasResourceProvider::ShouldInitialize::kNo, context_provider,
-          RasterMode::kGPU, shared_image_usage_flags);
-    }
+  // If `source` is accelerated and there is a context provider, try to use an
+  // accelerated SharedImage provider.
+  if (source_paint_image.IsTextureBacked() &&
+      source->ContextProviderWrapper()) {
+    const gpu::SharedImageUsageSet shared_image_usage_flags =
+        source->GetSharedImage()->usage();
+    resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+        gfx::Size(dest_size.width(), dest_size.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
+        dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
+        CanvasResourceProvider::ShouldInitialize::kNo,
+        source->ContextProviderWrapper(), RasterMode::kGPU,
+        shared_image_usage_flags);
   }
   // If not (or if the SharedImage provider fails), fall back to software.
   if (!resource_provider) {
