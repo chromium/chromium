@@ -10,10 +10,11 @@
  * #css_wrapper_metadata_end */
 
 cr-icon-button {
+  cursor: default;
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  --cr-icon-button-size: 32px;
+  --cr-icon-button-size: 34px;
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
