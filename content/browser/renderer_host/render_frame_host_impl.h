@@ -281,6 +281,7 @@ class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
 class PeerConnectionTrackerHost;
+class PendingNavigation;
 class PrefetchedSignedExchangeCache;
 class PrerenderCancellationReason;
 class PresentationServiceImpl;
@@ -300,7 +301,6 @@ class SiteInfo;
 class SpeechSynthesisImpl;
 class WebAuthRequestSecurityChecker;
 class WebUIImpl;
-struct PendingNavigation;
 struct ResourceTimingInfo;
 
 // To be called when a RenderFrameHostImpl receives an event.

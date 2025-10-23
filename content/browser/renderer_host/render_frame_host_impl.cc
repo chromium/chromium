@@ -2062,13 +2062,16 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   net::CookieSettingOverrides cookie_setting_overrides_;
 };
 
-struct PendingNavigation {
-  blink::mojom::CommonNavigationParamsPtr common_params;
-  blink::mojom::BeginNavigationParamsPtr begin_navigation_params;
-  scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
-  mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client;
+class PendingNavigation {
+ public:
+  blink::mojom::CommonNavigationParamsPtr common_params_;
+  blink::mojom::BeginNavigationParamsPtr begin_navigation_params_;
+  mojo::Remote<blink::mojom::NavigationStateKeepAliveHandle>
+      opener_keep_alive_handle_;
+  scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
+  mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client_;
   mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-      renderer_cancellation_listener;
+      renderer_cancellation_listener_;
 
   PendingNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,
@@ -2076,7 +2079,8 @@ struct PendingNavigation {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-          renderer_cancellation_listener);
+          renderer_cancellation_listener,
+      RenderFrameHostImpl* initiator_frame);
 };
 
 PendingNavigation::PendingNavigation(
@@ -2085,13 +2089,19 @@ PendingNavigation::PendingNavigation(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-        renderer_cancellation_listener)
-    : common_params(std::move(common_params)),
-      begin_navigation_params(std::move(begin_navigation_params)),
-      blob_url_loader_factory(std::move(blob_url_loader_factory)),
-      navigation_client(std::move(navigation_client)),
-      renderer_cancellation_listener(
-          std::move(renderer_cancellation_listener)) {}
+        renderer_cancellation_listener,
+    RenderFrameHostImpl* initiator_frame)
+    : common_params_(std::move(common_params)),
+      begin_navigation_params_(std::move(begin_navigation_params)),
+      blob_url_loader_factory_(std::move(blob_url_loader_factory)),
+      navigation_client_(std::move(navigation_client)),
+      renderer_cancellation_listener_(
+          std::move(renderer_cancellation_listener)) {
+  if (initiator_frame) {
+    initiator_frame->IssueKeepAliveHandle(
+        opener_keep_alive_handle_.BindNewPipeAndPassReceiver());
+  }
+}
 
 // static
 RenderFrameHost* RenderFrameHost::FromID(const GlobalRenderFrameHostId& id) {
@@ -4600,12 +4610,12 @@ void RenderFrameHostImpl::Init() {
     std::unique_ptr<PendingNavigation> pending_navigation =
         std::move(pending_navigate_);
     frame_tree_node()->navigator().OnBeginNavigation(
-        frame_tree_node(), std::move(pending_navigation->common_params),
-        std::move(pending_navigation->begin_navigation_params),
-        std::move(pending_navigation->blob_url_loader_factory),
-        std::move(pending_navigation->navigation_client),
+        frame_tree_node(), std::move(pending_navigation->common_params_),
+        std::move(pending_navigation->begin_navigation_params_),
+        std::move(pending_navigation->blob_url_loader_factory_),
+        std::move(pending_navigation->navigation_client_),
         EnsurePrefetchedSignedExchangeCache(), initiator_process_id,
-        std::move(pending_navigation->renderer_cancellation_listener));
+        std::move(pending_navigation->renderer_cancellation_listener_));
     // DO NOT ADD CODE after this, as `this` might be deleted if an early
     // RenderFrameHost swap was performed when starting the navigation above.
   }
@@ -11243,18 +11253,22 @@ void RenderFrameHostImpl::BeginNavigation(
         GetStoragePartition(), validated_common_params->url);
   }
 
+  RenderFrameHostImpl* initiator_frame = nullptr;
+  if (begin_params->initiator_frame_token) {
+    initiator_frame = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetDeprecatedID(),
+        begin_params->initiator_frame_token.value());
+  }
+
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_common_params), std::move(begin_params),
         std::move(blob_url_loader_factory), std::move(navigation_client),
-        std::move(renderer_cancellation_listener));
+        std::move(renderer_cancellation_listener), initiator_frame);
     return;
   }
 
   if (begin_params->initiator_frame_token) {
-    RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetDeprecatedID(),
-        begin_params->initiator_frame_token.value());
     if (IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
           initiator_frame, begin_params->initiator_activation_and_ad_status);
