@@ -86,6 +86,9 @@ extern GuideName* const kNTPIdentityDiscButtonGuide;
 // A guide that is constrained to match the frame of the current active regular
 // tab. It is not registered if the selected cell is not visible.
 extern GuideName* const kSelectedRegularCellGuide;
+// A guide that is constrained to match the frame of the Location Bar Badge when
+// it is large, otherwise this stays nil.
+extern GuideName* const kLocationBarBadgeLargeEntrypointGuide;
 // A guide tracking the input accessory view being presented.
 extern GuideName* const kInputAccessoryViewLayoutGuide;
 

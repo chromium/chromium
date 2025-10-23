@@ -32,6 +32,10 @@
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 // This view controller's mutator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointMutator> mutator;
+// TODO(crbug.com/429140788): Remove after migration.
+// The entrypoint visibility delegate.
+@property(nonatomic, weak) id<ContextualPanelEntrypointVisibilityDelegate>
+    visibilityDelegate;
 
 // Returns the anchor point in window coordinates for the entrypoint's IPH,
 // depending on if the omnibox is at the top or bottom. Since the entrypoint is
