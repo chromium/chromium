@@ -74,12 +74,9 @@ class CRYPTO_EXPORT ProcessBound {
   explicit ProcessBound(const StringType& value)
       : original_size_(value.size()) {
     std::vector<CharType> data(value.begin(), value.end());
-    if (base::FeatureList::IsEnabled(
-            crypto::features::kProcessBoundStringEncryption)) {
-      data.resize(internal::MaybeRoundUp(data.size()));
-      encrypted_ =
-          internal::MaybeEncryptBuffer(base::as_writable_byte_span(data));
-    }
+    data.resize(internal::MaybeRoundUp(data.size()));
+    encrypted_ =
+        internal::MaybeEncryptBuffer(base::as_writable_byte_span(data));
     maybe_encrypted_data_ = std::move(data);
   }
 
@@ -121,7 +118,7 @@ class CRYPTO_EXPORT ProcessBound {
   bool empty() const { return size() == 0; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ProcessBoundFeatureTest, Encryption);
+  FRIEND_TEST_ALL_PREFIXES(ProcessBoundEncryptionTest, Encryption);
   std::vector<CharType> maybe_encrypted_data_;
   size_t original_size_;
   bool encrypted_ = false;

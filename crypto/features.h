@@ -10,9 +10,6 @@
 
 namespace crypto::features {
 
-// Enable encryption for process bound strings, if supported by the platform.
-CRYPTO_EXPORT BASE_DECLARE_FEATURE(kProcessBoundStringEncryption);
-
 // Enables the fix for `UnexportableSigningKey::IsHardwareBacked` when
 // dealing with Windows software keys.
 // Enabled by default on M139. Remove in or after M142.
