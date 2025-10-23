@@ -107,6 +107,8 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 }
 
 void SidePanelCoordinator::DisableAnimationsForTesting() {
+  browser_view_->toolbar_height_side_panel()
+      ->DisableAnimationsForTesting();  // IN-TEST
   browser_view_->contents_height_side_panel()
       ->DisableAnimationsForTesting();  // IN-TEST
 }
@@ -153,10 +155,12 @@ void SidePanelCoordinator::Show(
   if (current_key() && *current_key() == input) {
     waiter(entry->type())->ResetLoadingEntryIfNecessary();
 
+    SidePanel* side_panel = entry->type() == SidePanelEntry::PanelType::kContent
+                                ? browser_view_->contents_height_side_panel()
+                                : browser_view_->toolbar_height_side_panel();
     // If the side panel is in the process of closing, show it instead.
-    if (browser_view_->contents_height_side_panel()->state() ==
-        SidePanel::State::kClosing) {
-      browser_view_->contents_height_side_panel()->Open(/*animated=*/true);
+    if (side_panel->state() == SidePanel::State::kClosing) {
+      side_panel->Open(/*animated=*/true);
       side_panel_toolbar_pinning_controller_->UpdateActiveState(
           entry->key(), entry->should_show_ephemerally_in_toolbar());
       entry->OnEntryHideCancelled();
@@ -229,7 +233,9 @@ void SidePanelCoordinator::PopulateSidePanel(
     std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
-  SidePanel* side_panel = browser_view_->contents_height_side_panel();
+  SidePanel* side_panel = entry->type() == SidePanelEntry::PanelType::kContent
+                              ? browser_view_->contents_height_side_panel()
+                              : browser_view_->toolbar_height_side_panel();
 
   entry->set_last_open_trigger(open_trigger);
   side_panel->SetOutlineVisibility(entry->should_show_outline());

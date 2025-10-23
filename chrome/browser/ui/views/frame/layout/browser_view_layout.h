@@ -60,6 +60,7 @@ struct BrowserViewLayoutViews {
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;
   raw_ptr<views::View> contents_container = nullptr;
   raw_ptr<MultiContentsView> multi_contents_view = nullptr;
+  raw_ptr<views::View> toolbar_height_side_panel = nullptr;
   raw_ptr<views::View> contents_height_side_panel = nullptr;
 
   // TODO(crbug.com/424236535): These can be removed once `SideBySide` is

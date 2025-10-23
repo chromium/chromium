@@ -249,6 +249,8 @@ class BrowserView : public BrowserWindow,
 
   views::View* main_container() { return main_container_; }
 
+  SidePanel* toolbar_height_side_panel() { return toolbar_height_side_panel_; }
+
   SidePanel* contents_height_side_panel() {
     return contents_height_side_panel_;
   }
@@ -1238,6 +1240,9 @@ class BrowserView : public BrowserWindow,
 
   // The view responsible for housing the contents of the vertical tab strip.
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container_ = nullptr;
+
+  // Side panel that extends to the height of the toolbar.
+  raw_ptr<SidePanel> toolbar_height_side_panel_ = nullptr;
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.

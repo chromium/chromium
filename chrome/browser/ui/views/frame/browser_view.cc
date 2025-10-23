@@ -877,6 +877,10 @@ BrowserView::BrowserView(Browser* browser)
 
   main_container_ = AddChildView(std::make_unique<MainContainerView>(*this));
 
+  // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
+  toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+      this, /*has_border=*/false, SidePanel::HorizontalAlignment::kLeft));
+
   top_container_ =
       main_container_->AddChildView(std::make_unique<TopContainerView>(this));
 
@@ -1071,6 +1075,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_container_ = nullptr;
+  toolbar_height_side_panel_ = nullptr;
   contents_height_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;
   left_aligned_side_panel_separator_ = nullptr;
@@ -4682,6 +4687,9 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (infobar_container_) {
     panes->push_back(infobar_container_);
   }
+  if (toolbar_height_side_panel_) {
+    panes->push_back(toolbar_height_side_panel_);
+  }
   if (contents_height_side_panel_) {
     panes->push_back(contents_height_side_panel_);
   }
@@ -5041,6 +5049,8 @@ void BrowserView::AddedToWidget() {
   auto* side_panel_coordinator =
       browser_->GetFeatures().side_panel_coordinator();
   contents_height_side_panel_->AddObserver(side_panel_coordinator);
+  // TODO(crbug.com/445442616): Add toolbar height side panel observation once
+  // SidePanelCoordinator fully supports the toolbar panel type.
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()
@@ -5098,6 +5108,7 @@ void BrowserView::AddedToWidget() {
   layout_views.infobar_container = infobar_container_;
   layout_views.contents_container = contents_container_;
   layout_views.multi_contents_view = multi_contents_view_;
+  layout_views.toolbar_height_side_panel = toolbar_height_side_panel_;
   layout_views.contents_height_side_panel = contents_height_side_panel_;
   layout_views.left_aligned_side_panel_separator =
       left_aligned_side_panel_separator_;
