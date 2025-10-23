@@ -78,7 +78,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getTitle() {
+    String getTitle(boolean hasAccountsOnDevice) {
         switch (mPromoState) {
             case PromoState.SIGNIN:
                 return mContext.getString(R.string.signin_promo_title_bookmarks);

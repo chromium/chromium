@@ -113,7 +113,8 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(), mContext.getString(R.string.signin_promo_title_bookmarks));
+                mDelegate.getTitle(true),
+                mContext.getString(R.string.signin_promo_title_bookmarks));
         assertEquals(
                 mDelegate.getDescription(null),
                 mContext.getString(R.string.signin_promo_description_bookmarks));
@@ -138,7 +139,7 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(),
+                mDelegate.getTitle(true),
                 mContext.getString(R.string.signin_account_picker_bottom_sheet_title));
         assertEquals(
                 mDelegate.getDescription(profileData.getAccountEmail()),
@@ -156,7 +157,8 @@ public class SigninPromoDelegateTest {
         setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
 
         assertTrue(mDelegate.canShowPromo());
-        assertEquals(mDelegate.getTitle(), mContext.getString(R.string.sync_promo_title_bookmarks));
+        assertEquals(
+                mDelegate.getTitle(true), mContext.getString(R.string.sync_promo_title_bookmarks));
         assertEquals(
                 mDelegate.getDescription(null),
                 mContext.getString(R.string.account_settings_promo_description_bookmarks));
@@ -198,6 +200,28 @@ public class SigninPromoDelegateTest {
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
 
         assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void testNtpPromoShown_noAccountsOnDevice() {
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+
+        assertTrue(mDelegate.canShowPromo());
+        assertEquals(
+                mDelegate.getTitle(false),
+                mContext.getString(R.string.signin_promo_title_ntp_sign_in_as_button));
+        assertEquals(
+                mDelegate.getDescription(null),
+                mContext.getString(R.string.custom_tabs_signed_out_message_subtitle));
+        assertEquals(
+                mDelegate.getTextForPrimaryButton(null),
+                mContext.getString(R.string.custom_tabs_signed_out_message_title));
     }
 
     @Test

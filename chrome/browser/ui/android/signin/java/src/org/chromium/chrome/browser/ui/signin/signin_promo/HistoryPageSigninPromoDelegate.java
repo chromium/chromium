@@ -76,7 +76,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getTitle() {
+    String getTitle(boolean hasAccountsOnDevice) {
         return mContext.getString(R.string.signin_promo_title_history_page);
     }
 

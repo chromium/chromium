@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -124,7 +125,7 @@ public class SigninPromoMediatorTest {
         String newSecondaryButtonText = "newSecondaryButtonText";
         doReturn(true).when(mDelegate).refreshPromoState(any());
         doReturn(true).when(mDelegate).shouldHideDismissButton();
-        doReturn(newTitle).when(mDelegate).getTitle();
+        doReturn(newTitle).when(mDelegate).getTitle(anyBoolean());
         doReturn(newDescription).when(mDelegate).getDescription(any());
         doReturn(newPrimaryButtonText).when(mDelegate).getTextForPrimaryButton(any());
         doReturn(newSecondaryButtonText).when(mDelegate).getTextForSecondaryButton();
@@ -145,6 +146,15 @@ public class SigninPromoMediatorTest {
         assertEquals(newDescription, description);
         assertEquals(newPrimaryButtonText, primaryButtonText);
         assertEquals(newSecondaryButtonText, secondaryButtonText);
+    }
+
+    @Test
+    public void testStringsSetByDelegate_noAccountsOnDevice() {
+        createSigninPromoMediator();
+
+        verify(mDelegate).getTitle(/* hasAccountsOnDevice= */ false);
+        verify(mDelegate).getDescription(/* accountEmail= */ null);
+        verify(mDelegate).getTextForPrimaryButton(/* profileData= */ null);
     }
 
     private void createSigninPromoMediator() {

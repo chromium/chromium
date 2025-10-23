@@ -44,7 +44,7 @@ public abstract class SigninPromoDelegate {
     }
 
     /** Returns the title string for the promo. */
-    abstract String getTitle();
+    abstract String getTitle(boolean hasAccountsOnDevice);
 
     /** Returns the description string for the promo. */
     abstract String getDescription(@Nullable String accountEmail);
@@ -107,11 +107,15 @@ public abstract class SigninPromoDelegate {
     }
 
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
-        if (profileData == null) {
-            return mContext.getString(R.string.signin_promo_signin);
-        }
         @SigninFeatureMap.SeamlessSigninStringType
         int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
+        if (profileData == null) {
+            if (seamlessSigninStringType
+                    == SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
+                return mContext.getString(R.string.signin_promo_signin);
+            }
+            return mContext.getString(R.string.sign_in_to_chrome);
+        }
         if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
             if (!TextUtils.isEmpty(profileData.getGivenName())) {
                 return mContext.getString(
