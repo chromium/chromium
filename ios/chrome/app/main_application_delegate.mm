@@ -57,9 +57,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   MainController* _mainController;
   // Memory helper used to log the number of memory warnings received.
   MemoryWarningHelper* _memoryHelper;
-  // Metrics mediator used to check and update the metrics accordingly to the
-  // user preferences.
-  MetricsMediator* _metricsMediator;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -78,8 +75,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   if ((self = [super init])) {
     _memoryHelper = [[MemoryWarningHelper alloc] init];
     _mainController = [[MainController alloc] init];
-    _metricsMediator = [[MetricsMediator alloc] init];
-    [_mainController setMetricsMediator:_metricsMediator];
     _appState = [[AppState alloc] initWithStartupInformation:_mainController];
     _pushNotificationDelegate = [[PushNotificationDelegate alloc]
               initWithAppState:_appState

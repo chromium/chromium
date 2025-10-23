@@ -502,8 +502,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // appropriate pref changes.
   MemoryDebuggerManager* _memoryDebuggerManager;
 
-  // Variable backing metricsMediator property.
-  __weak MetricsMediator* _metricsMediator;
+  // Metrics mediator used to check and update the metrics accordingly to the
+  // user preferences.
+  MetricsMediator* _metricsMediator;
 
   // Holds the ProfileController for all loaded profiles.
   std::map<std::string, ProfileController*, std::less<>> _profileControllers;
@@ -563,6 +564,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   if ((self = [super init])) {
     _isFirstRun = ShouldPresentFirstRunExperience();
     _startupTasks = [[StartupTasks alloc] init];
+    _metricsMediator = [[MetricsMediator alloc] init];
   }
   return self;
 }
