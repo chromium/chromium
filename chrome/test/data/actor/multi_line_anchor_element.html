@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page with focus event handler</title>
+  </head>
+  <body>
+    <span style="line-height: 14;display: block;width: 130px;">
+      <a id="anchor" aria-label="anchor" href="#">
+        One line of text
+        <br>
+        Another line of text
+      </a>
+    </span>
+    <script>
+      let clicked_fired = false;
+      document.getElementById('anchor').addEventListener('click', () => {
+        clicked_fired = true;
+      });
+    </script>
+  </body>
+</html>

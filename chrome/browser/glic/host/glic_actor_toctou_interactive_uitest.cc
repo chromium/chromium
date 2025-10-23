@@ -239,6 +239,28 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnShadowDom) {
   // clang-format on
 }
 
+// Ensure the time-of-use check can succeed when a click is dispatched to a
+// multi-line anchor element.
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnMultilineAnchor) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kAnchorLabel = "anchor";
+
+  // Load the new page that contains the multi-line anchor element.
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/multi_line_anchor_element.html");
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      ClickAction(kAnchorLabel,
+                  ClickAction::LEFT, ClickAction::SINGLE),
+      WaitForJsResult(kNewActorTabId, "() => clicked_fired === true")
+  );
+  // clang-format on
+}
+
 }  //  namespace
 
 }  // namespace glic::test

@@ -147,6 +147,12 @@ class BLINK_EXPORT WebElement : public WebNode {
   // element's ancestor overflow or frame boxes.
   gfx::Rect VisibleBoundsInWidget() const;
 
+  // Returns the client rects of this Element relative to the RenderWidget
+  // (local root frame + viewport transform in the main frame). The bounds have
+  // been adjusted to include any transformations, including page scale. This
+  // function will update the layout if required.
+  std::vector<gfx::Rect> ClientRectsInWidget();
+
   // Returns the image contents of this element or a null SkBitmap
   // if there isn't any.
   SkBitmap ImageContents();

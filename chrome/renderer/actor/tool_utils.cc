@@ -42,12 +42,19 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
     return std::nullopt;
   }
 
-  gfx::Rect rect = element.VisibleBoundsInWidget();
-  if (rect.IsEmpty()) {
+  gfx::Rect visible_rect = element.VisibleBoundsInWidget();
+  if (visible_rect.IsEmpty()) {
     return std::nullopt;
   }
 
-  return gfx::PointF(rect.CenterPoint());
+  std::vector<gfx::Rect> rects = element.ClientRectsInWidget();
+  for (auto rect : rects) {
+    rect.InclusiveIntersect(visible_rect);
+    if (!rect.IsEmpty()) {
+      return gfx::PointF(rect.CenterPoint());
+    }
+  }
+  return std::nullopt;
 }
 
 blink::WebNode GetNodeFromId(const content::RenderFrame& local_root_frame,

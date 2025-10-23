@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -348,6 +349,22 @@ gfx::Rect WebElement::VisibleBoundsInWidget() const {
       visual_viewport.RootFrameToViewport(bounds_in_local_root);
   bounds_in_viewport.Intersect(gfx::Rect(visual_viewport.Size()));
   return bounds_in_viewport;
+}
+
+std::vector<gfx::Rect> WebElement::ClientRectsInWidget() {
+  Element* element = Unwrap<Element>();
+  LocalFrameView* view = element->GetDocument().View();
+  if (!view) {
+    return {};
+  }
+
+  std::vector<gfx::Rect> result;
+  DOMRectList* rects = element->getClientRects();
+  for (size_t idx = 0; idx < rects->length(); idx++) {
+    result.emplace_back(
+        view->FrameToViewport(rects->item(idx)->ToEnclosingRect()));
+  }
+  return result;
 }
 
 SkBitmap WebElement::ImageContents() {
