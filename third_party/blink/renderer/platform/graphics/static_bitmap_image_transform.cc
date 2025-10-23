@@ -265,8 +265,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
 
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
   // If `source` is accelerated, then use a SharedImage provider.
   if (source_paint_image.IsTextureBacked()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider =
@@ -278,8 +276,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
           gfx::Size(dest_size.width(), dest_size.height()),
           viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
           dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
-          kShouldInitialize, context_provider, RasterMode::kGPU,
-          shared_image_usage_flags);
+          CanvasResourceProvider::ShouldInitialize::kNo, context_provider,
+          RasterMode::kGPU, shared_image_usage_flags);
     }
   }
   // If not (or if the SharedImage provider fails), fall back to software.
@@ -289,7 +287,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
         viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
         dest_alpha_type,
         SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
-        kShouldInitialize);
+        CanvasResourceProvider::ShouldInitialize::kNo);
   }
   if (!resource_provider) {
     return nullptr;
