@@ -1576,6 +1576,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, mWindowId);
 
+        EducationalTipModuleUtils.setDefaultBrowserPromoAllowDisplayForRelaunchToSharedPreference(
+                mTabModelProfileSupplier);
+
         super.onPauseWithNative();
     }
 

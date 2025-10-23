@@ -307,6 +307,13 @@ public final class ChromePreferenceKeys {
     public static final String DOWNLOAD_UMA_ENTRY = "DownloadUmaEntry";
 
     /**
+     * Stores whether the educational tip default browser promo is allowed to be displayed on
+     * relaunch.
+     */
+    public static final String EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_ALLOW_DISPLAY_FOR_RELAUNCH =
+            "Chrome.EducationalTip.DefaultBrowserPromoAllowDisplayForRelaunch";
+
+    /**
      * Indicates whether or not there are prefetched content in chrome that can be viewed offline.
      */
     public static final String EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS =
@@ -1123,6 +1130,7 @@ public final class ChromePreferenceKeys {
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,
                 HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.pattern(),
+                EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_ALLOW_DISPLAY_FOR_RELAUNCH,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.pattern(),
                 FIRST_RUN_SKIPPED_BY_POLICY,

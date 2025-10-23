@@ -135,6 +135,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 0.01);
 
         // Test signal "has_default_browser_promo_shown_in_other_surface".
+        when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(true);
         inputContext =
