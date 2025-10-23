@@ -14,7 +14,9 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
+#include "pdf/page_orientation.h"
 #include "pdf/pdf_caret_client.h"
 #include "pdf/region_data.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -28,6 +30,38 @@ namespace chrome_pdf {
 namespace {
 
 constexpr SkColor4f kCaretColor = SkColors::kBlack;
+
+// `is_same_char` is true when the actual char's screen rect is being used,
+// otherwise false if a different char's screen rect is. A different char's
+// screen rect can be used if the actual char does not have a screen rect.
+void TransformCaretScreenRectWithRotatedTextDirection(
+    gfx::Rect& screen_rect,
+    AccessibilityTextDirection rotated_direction,
+    bool is_same_char) {
+  CHECK_NE(rotated_direction, AccessibilityTextDirection::kNone);
+
+  // Apply an offset if the caret should be at the end of a char. For forward
+  // directions, this is necessary when using the previous char's screen rect.
+  // For backward directions, this is necessary when using the current char's
+  // screen rect.
+  const bool is_forward_direction =
+      rotated_direction == AccessibilityTextDirection::kLeftToRight ||
+      rotated_direction == AccessibilityTextDirection::kTopToBottom;
+  const bool needs_offset = is_forward_direction != is_same_char;
+
+  if (rotated_direction == AccessibilityTextDirection::kLeftToRight ||
+      rotated_direction == AccessibilityTextDirection::kRightToLeft) {
+    if (needs_offset) {
+      screen_rect.Offset(screen_rect.width(), 0);
+    }
+    screen_rect.set_width(PdfCaret::kCaretWidth);
+  } else {
+    if (needs_offset) {
+      screen_rect.Offset(0, screen_rect.height());
+    }
+    screen_rect.set_height(PdfCaret::kCaretWidth);
+  }
+}
 
 }  // namespace
 
@@ -198,13 +232,10 @@ PdfCaret::CaretScreenRectData PdfCaret::GetScreenRectForCaret(
     --curr_index.char_index;
   } while (true);
 
-  /// Use the right of the previous char's rect.
-  if (index.char_index != curr_index.char_index) {
-    screen_rect.Offset(screen_rect.width(), 0);
-  }
-
   CHECK(!screen_rect.IsEmpty());
-  screen_rect.set_width(kCaretWidth);
+  TransformCaretScreenRectWithRotatedTextDirection(
+      screen_rect, GetTextDirectionAfterRotationAt(curr_index),
+      /*is_same_char=*/index.char_index == curr_index.char_index);
   return {screen_rect, curr_index};
 }
 
@@ -219,6 +250,42 @@ gfx::Rect PdfCaret::GetScreenRectForChar(
   const std::vector<gfx::Rect> screen_rects =
       client_->GetScreenRectsForCaret(index);
   return !screen_rects.empty() ? screen_rects[0] : gfx::Rect();
+}
+
+AccessibilityTextDirection PdfCaret::GetTextDirectionAfterRotationAt(
+    const PageCharacterIndex& index) const {
+  std::optional<AccessibilityTextRunInfo> text_run =
+      client_->GetTextRunInfoAt(index);
+  auto direction = AccessibilityTextDirection::kLeftToRight;
+  if (text_run.has_value()) {
+    direction = text_run.value().direction;
+    // Default to LTR.
+    if (direction == AccessibilityTextDirection::kNone) {
+      direction = AccessibilityTextDirection::kLeftToRight;
+    }
+  }
+
+  int rotation_steps =
+      GetClockwiseRotationSteps(client_->GetCurrentOrientation());
+  if (rotation_steps == 0) {
+    return direction;
+  }
+
+  // Order of text directions when rotating clockwise.
+  static constexpr std::array<AccessibilityTextDirection, 4> rotation_cycle = {
+      AccessibilityTextDirection::kLeftToRight,
+      AccessibilityTextDirection::kTopToBottom,
+      AccessibilityTextDirection::kRightToLeft,
+      AccessibilityTextDirection::kBottomToTop};
+
+  // Find the position of the current direction in the cycle.
+  auto it = std::ranges::find(rotation_cycle, direction);
+  CHECK(it != rotation_cycle.end());
+  size_t current_index = std::distance(rotation_cycle.begin(), it);
+
+  // Calculate the new direction after rotation.
+  size_t new_index = (current_index + rotation_steps) % rotation_cycle.size();
+  return rotation_cycle[new_index];
 }
 
 void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {

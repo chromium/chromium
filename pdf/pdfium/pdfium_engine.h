@@ -313,9 +313,6 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Returns whether the page at `page_index` is visible or not.
   virtual bool IsPageVisible(int page_index) const;
 
-  // Gets the current layout orientation.
-  PageOrientation GetCurrentOrientation() const;
-
   // Gets the rectangle of the page excluding any additional areas.
   virtual gfx::Rect GetPageContentsRect(int page_index);
 
@@ -514,7 +511,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   void ExtendAndInvalidateSelectionByChar(
       const PageCharacterIndex& index) override;
   uint32_t GetCharCount(uint32_t page_index) const override;
+  PageOrientation GetCurrentOrientation() const override;
   std::vector<gfx::Rect> GetScreenRectsForCaret(
+      const PageCharacterIndex& index) const override;
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfoAt(
       const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
   bool IsSelecting() const override;

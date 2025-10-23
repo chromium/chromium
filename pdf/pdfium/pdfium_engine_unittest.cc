@@ -959,7 +959,7 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaretBlankPage) {
   ASSERT_EQ(0u, engine->GetCharCount(0));
 
   EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}),
-              ElementsAre(gfx::Rect(18, 16, 3, 17)));
+              ElementsAre(gfx::Rect(18, 16, 17, 17)));
 }
 
 TEST_P(PDFiumEngineTest, GetScreenRectsForCaretMiniBlankPage) {
@@ -972,6 +972,29 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaretMiniBlankPage) {
 
   // Page is too small to fit a caret.
   EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}), IsEmpty());
+}
+
+TEST_P(PDFiumEngineTest, GetTextRunInfoAt) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+  ASSERT_EQ(30u, engine->GetCharCount(0));
+
+  EXPECT_FALSE(engine->GetTextRunInfoAt({0, 31}).has_value());
+  EXPECT_TRUE(engine->GetTextRunInfoAt({0, 10}).has_value());
+}
+
+TEST_P(PDFiumEngineTest, GetTextRunInfoAtBlankPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  ASSERT_EQ(0u, engine->GetCharCount(0));
+
+  EXPECT_FALSE(engine->GetTextRunInfoAt({0, 0}).has_value());
 }
 
 TEST_P(PDFiumEngineTest, InvalidateRect) {

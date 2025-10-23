@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "pdf/accessibility_structs.h"
+#include "pdf/page_orientation.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
@@ -31,12 +33,20 @@ class PdfCaretClient {
   // index, otherwise crashes.
   virtual uint32_t GetCharCount(uint32_t page_index) const = 0;
 
+  // Returns the current layout orientation.
+  virtual PageOrientation GetCurrentOrientation() const = 0;
+
   // Gets the screen rects for the caret at `index`. `index` must be a valid
   // char on a page, otherwise crashes. If the page does not have any text, and
   // `index.char_index` is 0, it will return a vector with a default caret
   // screen rect at the top-left of the PDF page. If the PDF page is too small
   // to display the default caret, then the screen rect will be empty.
   virtual std::vector<gfx::Rect> GetScreenRectsForCaret(
+      const PageCharacterIndex& index) const = 0;
+
+  // Returns the text run containing `index`. If `index` is an invalid char or
+  // if the page has no text, returns `std::nullopt` instead.
+  virtual std::optional<AccessibilityTextRunInfo> GetTextRunInfoAt(
       const PageCharacterIndex& index) const = 0;
 
   // Notifies the client to invalidate `rect` for the caret.

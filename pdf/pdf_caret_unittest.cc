@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_caret_client.h"
@@ -49,6 +50,7 @@ constexpr PageCharacterIndex kTestPage1Char1{1, 1};
 constexpr PageCharacterIndex kTestPage2Char0{2, 0};
 constexpr PageCharacterIndex kTestPage3Char0{3, 0};
 
+constexpr gfx::Rect kDefaultScreenRect{10, 10, 12, 12};
 constexpr gfx::Rect kDefaultCaret{10, 10, 1, 12};
 constexpr gfx::Rect kTestChar0ScreenRect{10, 10, 12, 14};
 constexpr gfx::Rect kTestChar1ScreenRect{22, 10, 12, 14};
@@ -67,6 +69,14 @@ constexpr gfx::Rect kTestMultiPage1Char1Caret{23, 15, 1, 4};
 constexpr gfx::Rect kTestMultiPage1Char1EndCaret{31, 15, 1, 4};
 constexpr gfx::Rect kTestMultiPage3Char0Caret{50, 50, 1, 20};
 constexpr gfx::Rect kTestMultiPage3Char0EndCaret{66, 50, 1, 20};
+
+AccessibilityTextRunInfo GenerateTestTextRunInfo(
+    AccessibilityTextDirection direction) {
+  // `PdfCaret` only uses the direction of the text run.
+  AccessibilityTextRunInfo text_run;
+  text_run.direction = direction;
+  return text_run;
+}
 
 class MockTestClient : public PdfCaretClient {
  public:
@@ -87,8 +97,15 @@ class MockTestClient : public PdfCaretClient {
 
   MOCK_METHOD(uint32_t, GetCharCount, (uint32_t page_index), (const override));
 
+  MOCK_METHOD(PageOrientation, GetCurrentOrientation, (), (const override));
+
   MOCK_METHOD(std::vector<gfx::Rect>,
               GetScreenRectsForCaret,
+              (const PageCharacterIndex& index),
+              (const override));
+
+  MOCK_METHOD(std::optional<AccessibilityTextRunInfo>,
+              GetTextRunInfoAt,
               (const PageCharacterIndex& index),
               (const override));
 
@@ -132,6 +149,11 @@ class PdfCaretTest : public testing::Test {
 
   void SetUp() override {
     ResetBitmap();
+    EXPECT_CALL(client(), GetCurrentOrientation())
+        .WillRepeatedly(Return(PageOrientation::kOriginal));
+    EXPECT_CALL(client(), GetTextRunInfoAt(_))
+        .WillRepeatedly(Return(
+            GenerateTestTextRunInfo(AccessibilityTextDirection::kLeftToRight)));
     EXPECT_CALL(client(), IsSelecting()).WillRepeatedly(Return(false));
     EXPECT_CALL(client(), ScrollToChar(_)).Times(AnyNumber());
   }
@@ -254,7 +276,7 @@ class PdfCaretTest : public testing::Test {
 
   void SetUpNoTextPageTest() {
     SetUpPagesWithCharCounts({0});
-    SetUpChar(kTestChar0, '\0', {kDefaultCaret});
+    SetUpChar(kTestChar0, '\0', {kDefaultScreenRect});
   }
 
   void SetUpMultiPageTest() {
@@ -641,6 +663,122 @@ TEST_F(PdfCaretTest, SetCharAndDrawMultiPage) {
 
   caret().SetCharAndDraw(kTestPage1Char0);
   TestDrawCaret(kTestMultiPage1Char0Caret);
+}
+
+class PdfCaretTextDirectionTest : public PdfCaretTest {
+ public:
+  static constexpr gfx::Rect kTestChar0TopCaret{10, 10, 12, 1};
+  static constexpr gfx::Rect kTestChar0BottomCaret{10, 24, 12, 1};
+
+  void SetUpTextDirectionTest(const PageCharacterIndex& start_index,
+                              AccessibilityTextDirection direction) {
+    SetUpPagesWithCharCounts({2});
+    SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
+    SetUpChar(kTestChar1, '\n', {});
+    EXPECT_CALL(client(), GetTextRunInfoAt(_))
+        .WillRepeatedly(Return(GenerateTestTextRunInfo(direction)));
+    InitializeVisibleCaretAtChar(start_index);
+  }
+
+  void TestLeftToRight() {
+    InSequence sequence;
+    TestOrientation(PageOrientation::kOriginal, kTestChar0Caret);
+    TestOrientation(PageOrientation::kClockwise90, kTestChar0TopCaret);
+    TestOrientation(PageOrientation::kClockwise180, kTestChar0EndCaret);
+    TestOrientation(PageOrientation::kClockwise270, kTestChar0BottomCaret);
+  }
+
+  void TestRightToLeft() {
+    InSequence sequence;
+    TestOrientation(PageOrientation::kOriginal, kTestChar0EndCaret);
+    TestOrientation(PageOrientation::kClockwise90, kTestChar0BottomCaret);
+    TestOrientation(PageOrientation::kClockwise180, kTestChar0Caret);
+    TestOrientation(PageOrientation::kClockwise270, kTestChar0TopCaret);
+  }
+
+  void TestTopToBottom() {
+    InSequence sequence;
+    TestOrientation(PageOrientation::kOriginal, kTestChar0TopCaret);
+    TestOrientation(PageOrientation::kClockwise90, kTestChar0EndCaret);
+    TestOrientation(PageOrientation::kClockwise180, kTestChar0BottomCaret);
+    TestOrientation(PageOrientation::kClockwise270, kTestChar0Caret);
+  }
+
+  void TestBottomToTop() {
+    InSequence sequence;
+    TestOrientation(PageOrientation::kOriginal, kTestChar0BottomCaret);
+    TestOrientation(PageOrientation::kClockwise90, kTestChar0Caret);
+    TestOrientation(PageOrientation::kClockwise180, kTestChar0TopCaret);
+    TestOrientation(PageOrientation::kClockwise270, kTestChar0EndCaret);
+  }
+
+  void TestOrientation(PageOrientation orientation, gfx::Rect expected_caret) {
+    EXPECT_CALL(client(), GetCurrentOrientation())
+        .WillOnce(Return(orientation));
+    caret().OnGeometryChanged();
+    TestDrawCaret(expected_caret);
+  }
+};
+
+TEST_F(PdfCaretTextDirectionTest, NoTextPage) {
+  SetUpNoTextPageTest();
+  EXPECT_CALL(client(), GetTextRunInfoAt(_))
+      .WillRepeatedly(Return(std::nullopt));
+  InitializeVisibleCaretAtChar(kTestChar0);
+
+  InSequence sequence;
+  TestOrientation(PageOrientation::kOriginal, kDefaultCaret);
+  TestOrientation(PageOrientation::kClockwise90, gfx::Rect(10, 10, 12, 1));
+  TestOrientation(PageOrientation::kClockwise180, gfx::Rect(22, 10, 1, 12));
+  TestOrientation(PageOrientation::kClockwise270, gfx::Rect(10, 22, 12, 1));
+}
+
+TEST_F(PdfCaretTextDirectionTest, LeftToRight) {
+  SetUpTextDirectionTest(kTestChar0, AccessibilityTextDirection::kLeftToRight);
+  TestLeftToRight();
+}
+
+TEST_F(PdfCaretTextDirectionTest, RightToLeft) {
+  SetUpTextDirectionTest(kTestChar0, AccessibilityTextDirection::kRightToLeft);
+  TestRightToLeft();
+}
+
+TEST_F(PdfCaretTextDirectionTest, TopToBottom) {
+  SetUpTextDirectionTest(kTestChar0, AccessibilityTextDirection::kTopToBottom);
+  TestTopToBottom();
+}
+
+TEST_F(PdfCaretTextDirectionTest, BottomToTop) {
+  SetUpTextDirectionTest(kTestChar0, AccessibilityTextDirection::kBottomToTop);
+  TestBottomToTop();
+}
+
+TEST_F(PdfCaretTextDirectionTest, LeftToRightEmptyScreenRect) {
+  SetUpTextDirectionTest(kTestChar1, AccessibilityTextDirection::kLeftToRight);
+  // When on a character with an empty screen rect, the previous character's
+  // screen rect is used, but flipped.
+  TestRightToLeft();
+}
+
+TEST_F(PdfCaretTextDirectionTest, RightToLeftEmptyScreenRect) {
+  SetUpTextDirectionTest(kTestChar1, AccessibilityTextDirection::kRightToLeft);
+  // When on a character with an empty screen rect, the previous character's
+  // screen rect is used, but flipped.
+  TestLeftToRight();
+}
+
+TEST_F(PdfCaretTextDirectionTest, TopToBottomEmptyScreenRect) {
+  SetUpTextDirectionTest(kTestChar1, AccessibilityTextDirection::kTopToBottom);
+  // When on a character with an empty screen rect, the previous character's
+  // screen rect is used, but flipped.
+  TestBottomToTop();
+}
+
+TEST_F(PdfCaretTextDirectionTest, BottomToTopEmptyScreenRect) {
+  SetUpTextDirectionTest(kTestChar1, AccessibilityTextDirection::kBottomToTop);
+  // When on a character with an empty screen rect, the previous character's
+  // screen rect is used, but flipped.
+  TestTopToBottom();
 }
 
 class PdfCaretMoveTest : public PdfCaretTest {
@@ -1309,7 +1447,7 @@ TEST_F(PdfCaretSelectionTest, SelectUp) {
 
 TEST_F(PdfCaretSelectionTest, SelectStartOnNonTextPageMoveToNonTextPage) {
   SetUpPagesWithCharCounts({0, 0});
-  SetUpChar(kTestChar0, '\0', {kDefaultCaret});
+  SetUpChar(kTestChar0, '\0', {kDefaultScreenRect});
   SetUpChar(kTestPage1Char0, '\0', {gfx::Rect(10, 50, 1, 12)});
 
   InitializeVisibleCaretAtChar(kTestChar0);

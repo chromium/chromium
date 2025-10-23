@@ -121,6 +121,10 @@ class PdfCaret {
   // Returns the screen rect for a char, which may be empty.
   gfx::Rect GetScreenRectForChar(const PageCharacterIndex& index) const;
 
+  // Returns the text direction of `index`, taking page rotations into account.
+  AccessibilityTextDirection GetTextDirectionAfterRotationAt(
+      const PageCharacterIndex& index) const;
+
   // Draws `rect` as the caret on `region`.
   void Draw(const RegionData& region, const gfx::Rect& rect) const;
 
