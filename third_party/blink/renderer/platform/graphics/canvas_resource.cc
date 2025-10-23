@@ -524,20 +524,6 @@ void CanvasResourceSharedImage::WaitSyncToken(
   }
 }
 
-// TODO(crbug.com/40286368): This GetSyncToken() implementation is now only used
-// in tests. We should refactor all tests in favor of scoped access objects and
-// remove this implementation altogether.
-void CanvasResourceSharedImage::GetSyncToken() {
-  CHECK(!GetClientSharedImage()->is_software());
-  DCHECK(!is_cross_thread());
-
-  auto* raster_interface = RasterInterface();
-  CHECK(raster_interface);
-
-  raster_interface->GenUnverifiedSyncTokenCHROMIUM(
-      owning_thread_data().sync_token.GetData());
-}
-
 std::unique_ptr<gpu::RasterScopedAccess> CanvasResourceSharedImage::BeginAccess(
     bool readonly) {
   return GetClientSharedImage()->BeginRasterAccess(
