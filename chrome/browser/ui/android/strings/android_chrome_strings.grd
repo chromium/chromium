@@ -7157,6 +7157,47 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip main page promo.">
         Switch the position of your address bar to the top or bottom for a customized browsing experience
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_ESB" desc="Description of the Enhanced Safe Browsing feature tip first step detail page promo.">
+        Open Chrome menu > Settings
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_ESB" desc="Description of the Enhanced Safe Browsing feature tip second step detail page promo.">
+        Tap Privacy and security > Safe browsing
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_ESB" desc="Description of the Enhanced Safe Browsing feature tip third step detail page promo.">
+        Choose Enhanced protection
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_QUICK_DELETE" desc="Description of the Quick Delete feature tip first step detail page promo.">
+        Open the Chrome menu
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_QUICK_DELETE" desc="Description of the Quick Delete feature tip second step detail page promo.">
+        Tap Delete browsing data
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_QUICK_DELETE" desc="Description of the Quick Delete feature tip third step detail page promo.">
+        Choose a timeframe and then tap Delete data
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_LENS" desc="Description of the Google Lens feature tip first step detail page promo.">
+        Open a New tab page
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_LENS" desc="Description of the Google Lens feature tip second step detail page promo.">
+        Tap the Google Lens icon
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_LENS" desc="Description of the Google Lens feature tip third step detail page promo.">
+        Take a photo or add an image from your photo gallery to search
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip first step detail page promo.">
+        Open Chrome menu > Settings
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip second step detail page promo.">
+        Tap Address bar
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip third step detail page promo.">
+        Choose your preferred position
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_STEPS_NUMBER" desc="The step number of the info section teaching users what steps to take to access the feature tip.">
+        {STEP_NUMBER, plural,
+        =1 {1}
+        other {#}}
+      </message>
 
       <!-- Caret Browsing -->
       <message name="IDS_CARET_BROWSING_DIALOG_TITLE" desc="Title of the caret browsing confirmation dialog" formatter_data="android_java">

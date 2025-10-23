@@ -95,6 +95,12 @@ public class TipsPromoCoordinatorUnitTest {
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
+        assertEquals(
+                3,
+                mPropertyModel
+                        .get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA)
+                        .detailPageSteps
+                        .size());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
@@ -114,6 +120,12 @@ public class TipsPromoCoordinatorUnitTest {
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
+        assertEquals(
+                3,
+                mPropertyModel
+                        .get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA)
+                        .detailPageSteps
+                        .size());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
@@ -134,6 +146,12 @@ public class TipsPromoCoordinatorUnitTest {
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
+        assertEquals(
+                3,
+                mPropertyModel
+                        .get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA)
+                        .detailPageSteps
+                        .size());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
@@ -153,6 +171,12 @@ public class TipsPromoCoordinatorUnitTest {
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
+        assertEquals(
+                3,
+                mPropertyModel
+                        .get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA)
+                        .detailPageSteps
+                        .size());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();

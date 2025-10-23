@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.StringRes;
@@ -34,6 +36,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** Coordinator to manage the promo for the Tips Notifications feature. */
 @NullMarked
@@ -120,7 +124,31 @@ public class TipsPromoCoordinator {
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                     performFeatureAction(featureType);
                 });
+
+        setupDetailPageSteps(data.detailPageSteps);
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+    }
+
+    private void setupDetailPageSteps(List<String> steps) {
+        LinearLayout stepsContainer =
+                (LinearLayout) mContentView.findViewById(R.id.steps_container);
+        stepsContainer.removeAllViews();
+        for (int i = 0; i < steps.size(); i++) {
+            View stepView =
+                    LayoutInflater.from(mContext)
+                            .inflate(
+                                    R.layout.tips_promo_step_item,
+                                    stepsContainer,
+                                    /* attachToRoot= */ false);
+            TextView stepNumber = (TextView) stepView.findViewById(R.id.step_number);
+            stepNumber.setText(
+                    mContext.getResources()
+                            .getQuantityString(
+                                    R.plurals.tips_promo_bottom_sheet_steps_number, i + 1, i + 1));
+            TextView stepContent = (TextView) stepView.findViewById(R.id.step_content);
+            stepContent.setText(steps.get(i));
+            stepsContainer.addView(stepView);
+        }
     }
 
     private void performFeatureAction(@TipsNotificationsFeatureType int featureType) {

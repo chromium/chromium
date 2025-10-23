@@ -16,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /** Properties for the Tips Notifications promo bottom sheet. */
 @NullMarked
@@ -35,16 +36,20 @@ public class TipsPromoProperties {
     public static class FeatureTipPromoData {
         public final String mainPageTitle;
         public final String mainPageDescription;
+        public final List<String> detailPageSteps;
 
         /**
          * Create a {@link FeatureTipPromoData} object containing feature tip data.
          *
          * @param mainPageTitle The title of the main page of the promo.
          * @param mainPageDescription The description of the main page of the promo.
+         * @param detailPageSteps The info steps for the detail page of the promo.
          */
-        public FeatureTipPromoData(String mainPageTitle, String mainPageDescription) {
+        public FeatureTipPromoData(
+                String mainPageTitle, String mainPageDescription, List<String> detailPageSteps) {
             this.mainPageTitle = mainPageTitle;
             this.mainPageDescription = mainPageDescription;
+            this.detailPageSteps = detailPageSteps;
         }
     }
 

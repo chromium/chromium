@@ -32,6 +32,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link TipsPromoViewBinder}. */
@@ -75,7 +76,8 @@ public class TipsPromoViewBinderUnitTest {
     @SmallTest
     @Test
     public void testFeatureTipPromoData() {
-        FeatureTipPromoData promoData = new FeatureTipPromoData(PROMO_TITLE, PROMO_DESCRIPTION);
+        FeatureTipPromoData promoData =
+                new FeatureTipPromoData(PROMO_TITLE, PROMO_DESCRIPTION, Collections.emptyList());
         mModel.set(TipsPromoProperties.FEATURE_TIP_PROMO_DATA, promoData);
 
         assertEquals(PROMO_TITLE, mTitleView.getText());

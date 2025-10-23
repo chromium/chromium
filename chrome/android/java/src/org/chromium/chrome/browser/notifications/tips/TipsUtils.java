@@ -14,6 +14,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Static utilities for Tips Notifications. */
 @NullMarked
 public class TipsUtils {
@@ -28,24 +31,55 @@ public class TipsUtils {
             Context context, @TipsNotificationsFeatureType int featureType) {
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
+        final List<String> detailPageSteps = new ArrayList<>();
 
         switch (featureType) {
             case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_esb;
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_first_step_esb));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_second_step_esb));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_third_step_esb));
                 break;
             case TipsNotificationsFeatureType.QUICK_DELETE:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_first_step_quick_delete));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_second_step_quick_delete));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_third_step_quick_delete));
                 break;
             case TipsNotificationsFeatureType.GOOGLE_LENS:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_lens;
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_first_step_lens));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_second_step_lens));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_third_step_lens));
                 break;
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox;
                 mainPageDescriptionRes =
                         R.string.tips_promo_bottom_sheet_description_bottom_omnibox;
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_first_step_bottom_omnibox));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_second_step_bottom_omnibox));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_third_step_bottom_omnibox));
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
@@ -55,6 +89,8 @@ public class TipsUtils {
         }
 
         return new FeatureTipPromoData(
-                context.getString(mainPageTitleRes), context.getString(mainPageDescriptionRes));
+                context.getString(mainPageTitleRes),
+                context.getString(mainPageDescriptionRes),
+                detailPageSteps);
     }
 }

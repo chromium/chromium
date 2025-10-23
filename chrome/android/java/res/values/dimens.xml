@@ -444,6 +444,9 @@ found in the LICENSE file.
     <!-- Tips Notifications dimensions -->
     <dimen name="tips_notifications_bottom_sheet_horizontal_margin">24dp</dimen>
     <dimen name="tips_notifications_bottom_sheet_button_padding">4dp</dimen>
+    <dimen name="tips_notifications_bottom_sheet_step_content_margin_start">16dp</dimen>
+    <dimen name="tips_notifications_bottom_sheet_step_number_width">25dp</dimen>
+    <dimen name="tips_notifications_bottom_sheet_step_vertical_padding">12dp</dimen>
 
     <!-- Caret browsing dimensions -->
     <dimen name="caret_top_padding">18dp</dimen>

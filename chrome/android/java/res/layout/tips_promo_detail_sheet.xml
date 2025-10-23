@@ -13,6 +13,15 @@ found in the LICENSE file.
     android:layout_gravity="center_horizontal"
     android:layout_marginBottom="20dp">
 
+    <LinearLayout
+        android:id="@+id/steps_container"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
+        android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
+        android:orientation="vertical"
+        android:focusable="true"/>
+
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/tips_promo_details_settings_button" style="@style/FilledButton"
         android:layout_width="match_parent"

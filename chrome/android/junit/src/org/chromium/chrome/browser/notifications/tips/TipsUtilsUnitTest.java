@@ -44,6 +44,15 @@ public class TipsUtilsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_description_esb),
                 promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_esb),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_esb),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_esb),
+                promoData.detailPageSteps.get(2));
     }
 
     @SmallTest
@@ -58,6 +67,15 @@ public class TipsUtilsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_description_quick_delete),
                 promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_quick_delete),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_quick_delete),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_quick_delete),
+                promoData.detailPageSteps.get(2));
     }
 
     @SmallTest
@@ -72,6 +90,15 @@ public class TipsUtilsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_description_lens),
                 promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_lens),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_lens),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_lens),
+                promoData.detailPageSteps.get(2));
     }
 
     @SmallTest
@@ -86,5 +113,14 @@ public class TipsUtilsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_description_bottom_omnibox),
                 promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_bottom_omnibox),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_bottom_omnibox),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_bottom_omnibox),
+                promoData.detailPageSteps.get(2));
     }
 }
