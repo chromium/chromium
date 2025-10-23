@@ -2963,8 +2963,11 @@
         {
             "platforms": [
                 "android",
-                "windows",
-                "mac"
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
