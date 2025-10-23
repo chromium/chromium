@@ -2323,6 +2323,7 @@ chromium-metrics-reviews@google.com.
   <int value="1400" label="DeveloperToolsAvailabilityBlocklist"/>
   <int value="1401" label="LocalNetworkAccessRestrictionsTemporaryOptOut"/>
   <int value="1402" label="GeminiActOnWebSettings"/>
+  <int value="1403" label="LocalAuthFactorsComplexity"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
