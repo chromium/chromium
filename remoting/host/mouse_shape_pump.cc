@@ -18,14 +18,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
-namespace {
-// Poll mouse shape at least 10 times a second.
-constexpr base::TimeDelta kMaxCursorCaptureInterval = base::Milliseconds(100);
-
-// Poll mouse shape at most 100 times a second.
-constexpr base::TimeDelta kMinCursorCaptureInterval = base::Milliseconds(10);
-}  // namespace
-
 namespace remoting {
 
 MouseShapePump::MouseShapePump(
@@ -35,7 +27,6 @@ MouseShapePump::MouseShapePump(
       cursor_shape_stub_(cursor_shape_stub) {
   mouse_cursor_monitor_->Init(this,
                               webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
-  StartCaptureTimer(kMaxCursorCaptureInterval);
 }
 
 MouseShapePump::~MouseShapePump() {
@@ -43,8 +34,7 @@ MouseShapePump::~MouseShapePump() {
 }
 
 void MouseShapePump::SetCursorCaptureInterval(base::TimeDelta new_interval) {
-  StartCaptureTimer(std::clamp(new_interval, kMinCursorCaptureInterval,
-                               kMaxCursorCaptureInterval));
+  mouse_cursor_monitor_->SetPreferredCaptureInterval(new_interval);
 }
 
 void MouseShapePump::SetSendCursorPositionToClient(
@@ -64,18 +54,6 @@ void MouseShapePump::SetSendCursorPositionToClient(
 void MouseShapePump::SetMouseCursorMonitorCallback(
     protocol::MouseCursorMonitor::Callback* callback) {
   callback_ = callback;
-}
-
-void MouseShapePump::Capture() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  mouse_cursor_monitor_->Capture();
-}
-
-void MouseShapePump::StartCaptureTimer(base::TimeDelta capture_interval) {
-  capture_timer_.Start(
-      FROM_HERE, std::move(capture_interval),
-      base::BindRepeating(&MouseShapePump::Capture, base::Unretained(this)));
 }
 
 void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {

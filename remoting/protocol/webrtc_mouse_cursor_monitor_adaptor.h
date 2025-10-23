@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
@@ -21,6 +23,8 @@ namespace remoting::protocol {
 // cursor coordinate into the fractional coordinate.
 class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor {
  public:
+  static base::TimeDelta GetDefaultCaptureInterval();
+
   explicit WebrtcMouseCursorMonitorAdaptor(
       std::unique_ptr<webrtc::MouseCursorMonitor> monitor);
   ~WebrtcMouseCursorMonitorAdaptor() override;
@@ -31,10 +35,13 @@ class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor {
       const WebrtcMouseCursorMonitorAdaptor&) = delete;
 
   void Init(Callback* callback, Mode mode) override;
-  void Capture() override;
+  void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:
+  void StartCaptureTimer(base::TimeDelta capture_interval);
+
   std::unique_ptr<webrtc::MouseCursorMonitor> monitor_;
+  base::RepeatingTimer capture_timer_;
 };
 
 }  // namespace remoting::protocol

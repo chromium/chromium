@@ -319,7 +319,7 @@ class MockMouseCursorMonitor : public protocol::MouseCursorMonitor {
               (protocol::MouseCursorMonitor::Callback*,
                protocol::MouseCursorMonitor::Mode),
               (override));
-  MOCK_METHOD(void, Capture, (), (override));
+  MOCK_METHOD(void, SetPreferredCaptureInterval, (base::TimeDelta), (override));
 };
 
 class MockUrlForwarderConfigurator final : public UrlForwarderConfigurator {

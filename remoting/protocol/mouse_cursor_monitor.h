@@ -5,6 +5,7 @@
 #ifndef REMOTING_PROTOCOL_MOUSE_CURSOR_MONITOR_H_
 #define REMOTING_PROTOCOL_MOUSE_CURSOR_MONITOR_H_
 
+#include "base/time/time.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -40,14 +41,13 @@ class MouseCursorMonitor {
 
   // Initializes the monitor with the `callback`, which must remain valid until
   // capturer is destroyed.
+  // `callback` will be called whenever the cursor shape or position is changed.
   virtual void Init(Callback* callback, Mode mode) = 0;
 
-  // Captures current cursor shape and position (depending on the `mode` passed
-  // to Init()). Calls Callback::OnMouseCursor() if cursor shape has
-  // changed since the last call (or when Capture() is called for the first
-  // time) and then Callback::OnMouseCursorPosition() if mode is set to
-  // SHAPE_AND_POSITION.
-  virtual void Capture() = 0;
+  // Sets the preferred interval between two cursor captures. Note that not all
+  // implementations may honor this value; an implementation could either
+  // maintain its own capture frequency, or use a push model that doesn't poll.
+  virtual void SetPreferredCaptureInterval(base::TimeDelta interval) = 0;
 };
 
 }  // namespace remoting::protocol

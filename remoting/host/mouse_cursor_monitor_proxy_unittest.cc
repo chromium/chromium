@@ -8,12 +8,14 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -59,7 +61,12 @@ class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
     callback_ = callback;
   }
 
-  void Capture() override {
+  void SetPreferredCaptureInterval(base::TimeDelta interval) override {
+    EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
+    capture_interval_ = interval;
+  }
+
+  void Capture() {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     ASSERT_TRUE(callback_);
 
@@ -72,10 +79,13 @@ class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
     callback_->OnMouseCursor(mouse_cursor.release());
   }
 
+  base::TimeDelta capture_interval() const { return capture_interval_; }
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   raw_ptr<Callback> callback_;
+  base::TimeDelta capture_interval_;
 };
 
 class MouseCursorMonitorProxyTest
@@ -118,16 +128,38 @@ void MouseCursorMonitorProxyTest::OnMouseCursor(
 
 TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
+  auto monitor = std::make_unique<ThreadCheckMouseCursorMonitor>(
+      capture_thread_.task_runner());
+  ThreadCheckMouseCursorMonitor* unowned_monitor = monitor.get();
   proxy_ = std::make_unique<MouseCursorMonitorProxy>(
       capture_thread_.task_runner(),
       base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
-          std::make_unique<ThreadCheckMouseCursorMonitor>(
-              capture_thread_.task_runner())));
+          std::move(monitor)));
   proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
-  proxy_->Capture();
+  capture_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&ThreadCheckMouseCursorMonitor::Capture,
+                                base::Unretained(unowned_monitor)));
 
   // |run_loop_| will be stopped when the first cursor is received.
   run_loop_.Run();
+}
+
+TEST_F(MouseCursorMonitorProxyTest, PreferredCaptureInterval) {
+  auto monitor = std::make_unique<ThreadCheckMouseCursorMonitor>(
+      capture_thread_.task_runner());
+  ThreadCheckMouseCursorMonitor* unowned_monitor = monitor.get();
+  proxy_ = std::make_unique<MouseCursorMonitorProxy>(
+      capture_thread_.task_runner(),
+      base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
+          std::move(monitor)));
+  proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
+  proxy_->SetPreferredCaptureInterval(base::Milliseconds(16));
+
+  base::RunLoop run_loop;
+  capture_thread_.task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                                  run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_EQ(unowned_monitor->capture_interval(), base::Milliseconds(16));
 }
 
 }  // namespace remoting

@@ -35,7 +35,7 @@ class MouseCursorMonitorProxy : public protocol::MouseCursorMonitor {
 
   // MouseCursorMonitor interface.
   void Init(Callback* callback, Mode mode) override;
-  void Capture() override;
+  void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:
   class Core;

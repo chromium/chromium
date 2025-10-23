@@ -22,7 +22,8 @@ void IpcMouseCursorMonitor::Init(Callback* callback, Mode mode) {
   desktop_session_proxy_->SetMouseCursorMonitor(weak_factory_.GetWeakPtr());
 }
 
-void IpcMouseCursorMonitor::Capture() {
+void IpcMouseCursorMonitor::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {
   // Ignore. DesktopSessionAgent will capture the cursor at the same time it
   // captures a screen frame when |IpcVideoFrameCapturer::Capture()| is called.
   // This saves an IPC roundtrip.

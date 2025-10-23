@@ -4,7 +4,22 @@
 
 #include "remoting/protocol/webrtc_mouse_cursor_monitor_adaptor.h"
 
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+
 namespace remoting::protocol {
+
+namespace {
+// Poll mouse shape at least 10 times a second.
+constexpr base::TimeDelta kMaxCursorCaptureInterval = base::Milliseconds(100);
+
+// Poll mouse shape at most 100 times a second.
+constexpr base::TimeDelta kMinCursorCaptureInterval = base::Milliseconds(10);
+}  // namespace
+
+// static
+base::TimeDelta WebrtcMouseCursorMonitorAdaptor::GetDefaultCaptureInterval() {
+  return kMaxCursorCaptureInterval;
+}
 
 WebrtcMouseCursorMonitorAdaptor::WebrtcMouseCursorMonitorAdaptor(
     std::unique_ptr<webrtc::MouseCursorMonitor> monitor)
@@ -14,10 +29,20 @@ WebrtcMouseCursorMonitorAdaptor::~WebrtcMouseCursorMonitorAdaptor() = default;
 
 void WebrtcMouseCursorMonitorAdaptor::Init(Callback* callback, Mode mode) {
   monitor_->Init(callback, mode);
+  StartCaptureTimer(GetDefaultCaptureInterval());
 }
 
-void WebrtcMouseCursorMonitorAdaptor::Capture() {
-  monitor_->Capture();
+void WebrtcMouseCursorMonitorAdaptor::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {
+  StartCaptureTimer(std::clamp(interval, kMinCursorCaptureInterval,
+                               kMaxCursorCaptureInterval));
+}
+
+void WebrtcMouseCursorMonitorAdaptor::StartCaptureTimer(
+    base::TimeDelta capture_interval) {
+  capture_timer_.Start(FROM_HERE, capture_interval,
+                       base::BindRepeating(&webrtc::MouseCursorMonitor::Capture,
+                                           base::Unretained(monitor_.get())));
 }
 
 }  // namespace remoting::protocol

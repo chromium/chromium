@@ -42,7 +42,7 @@ class MouseCursorMonitorProxy::Core
       base::OnceCallback<std::unique_ptr<MouseCursorMonitor>()> creator);
 
   void Init(MouseCursorMonitor::Mode mode);
-  void Capture();
+  void SetPreferredCaptureInterval(base::TimeDelta interval);
 
  private:
   // MouseCursorMonitor::Callback implementation.
@@ -88,11 +88,12 @@ void MouseCursorMonitorProxy::Core::Init(MouseCursorMonitor::Mode mode) {
   }
 }
 
-void MouseCursorMonitorProxy::Core::Capture() {
+void MouseCursorMonitorProxy::Core::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (mouse_cursor_monitor_) {
-    mouse_cursor_monitor_->Capture();
+    mouse_cursor_monitor_->SetPreferredCaptureInterval(interval);
   }
 }
 
@@ -147,10 +148,12 @@ void MouseCursorMonitorProxy::Init(Callback* callback, Mode mode) {
       base::BindOnce(&Core::Init, base::Unretained(core_.get()), mode));
 }
 
-void MouseCursorMonitorProxy::Capture() {
+void MouseCursorMonitorProxy::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {
   DCHECK(thread_checker_.CalledOnValidThread());
   capture_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::Capture, base::Unretained(core_.get())));
+      FROM_HERE, base::BindOnce(&Core::SetPreferredCaptureInterval,
+                                base::Unretained(core_.get()), interval));
 }
 
 void MouseCursorMonitorProxy::OnMouseCursor(

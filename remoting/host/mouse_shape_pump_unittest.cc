@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/video.pb.h"
@@ -35,8 +36,6 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-constexpr base::TimeDelta kDefaultCaptureInterval = base::Milliseconds(100);
-
 class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   TestMouseCursorMonitor() : callback_(nullptr) {}
@@ -53,9 +52,12 @@ class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
     callback_ = callback;
   }
 
-  void Capture() override {
+  void SetPreferredCaptureInterval(base::TimeDelta interval) override {
+    capture_interval_ = interval;
+  }
+
+  void SendMouseCursor() {
     ASSERT_TRUE(callback_);
-    capture_call_count_++;
 
     auto mouse_cursor = std::make_unique<webrtc::MouseCursor>(
         new webrtc::BasicDesktopFrame(
@@ -73,10 +75,10 @@ class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
     callback_->OnMouseCursorFractionalPosition(position);
   }
 
-  int get_capture_call_count() const { return capture_call_count_; }
+  base::TimeDelta get_capture_interval() const { return capture_interval_; }
 
  private:
-  int capture_call_count_ = 0;
+  base::TimeDelta capture_interval_;
   raw_ptr<Callback> callback_;
 };
 
@@ -110,7 +112,9 @@ void MouseShapePumpTest::SetCursorShape(
 
 // This test mocks MouseCursorMonitor and ClientStub to verify that the
 // MouseShapePump sends the cursor successfully.
-TEST_F(MouseShapePumpTest, FirstCursor) {
+TEST_F(MouseShapePumpTest, OnMouseCursor_SendsCursorShape) {
+  auto cursor_monitor = std::make_unique<TestMouseCursorMonitor>();
+  auto unowned_cursor_monitor = cursor_monitor.get();
   // Stop the |run_loop_| once it has captured the cursor.
   EXPECT_CALL(client_stub_, SetCursorShape(_))
       .WillOnce(DoAll(Invoke(this, &MouseShapePumpTest::SetCursorShape),
@@ -118,53 +122,11 @@ TEST_F(MouseShapePumpTest, FirstCursor) {
       .RetiresOnSaturation();
 
   // Start the pump.
-  pump_ = std::make_unique<MouseShapePump>(
-      base::WrapUnique(new TestMouseCursorMonitor()), &client_stub_);
+  pump_ = std::make_unique<MouseShapePump>(std::move(cursor_monitor),
+                                           &client_stub_);
+  unowned_cursor_monitor->SendMouseCursor();
 
   run_loop_.Run();
-}
-
-TEST_F(MouseShapePumpTest, DefaultCaptureInterval) {
-  EXPECT_CALL(client_stub_, SetCursorShape(_)).Times(2);
-
-  std::unique_ptr<TestMouseCursorMonitor> monitor =
-      std::make_unique<TestMouseCursorMonitor>();
-  TestMouseCursorMonitor* test_monitor = monitor.get();
-
-  // Start the pump.
-  pump_ = std::make_unique<MouseShapePump>(std::move(monitor), &client_stub_);
-  task_environment_.FastForwardBy(kDefaultCaptureInterval -
-                                  base::Milliseconds(1));
-  ASSERT_EQ(test_monitor->get_capture_call_count(), 0);
-
-  task_environment_.FastForwardBy(base::Milliseconds(2));
-  ASSERT_EQ(test_monitor->get_capture_call_count(), 1);
-
-  task_environment_.FastForwardBy(kDefaultCaptureInterval);
-  ASSERT_EQ(test_monitor->get_capture_call_count(), 2);
-}
-
-TEST_F(MouseShapePumpTest, UpdatedCaptureInterval) {
-  EXPECT_CALL(client_stub_, SetCursorShape(_)).Times(2);
-
-  std::unique_ptr<TestMouseCursorMonitor> monitor =
-      std::make_unique<TestMouseCursorMonitor>();
-  TestMouseCursorMonitor* test_monitor = monitor.get();
-
-  // Start the pump.
-  pump_ = std::make_unique<MouseShapePump>(std::move(monitor), &client_stub_);
-  base::TimeDelta test_capture_interval = base::Milliseconds(15);
-  pump_->SetCursorCaptureInterval(test_capture_interval);
-
-  task_environment_.FastForwardBy(test_capture_interval -
-                                  base::Milliseconds(1));
-  ASSERT_EQ(test_monitor->get_capture_call_count(), 0);
-
-  task_environment_.FastForwardBy(base::Milliseconds(2));
-  ASSERT_EQ(test_monitor->get_capture_call_count(), 1);
-
-  task_environment_.FastForwardBy(test_capture_interval);
-  ASSERT_EQ(test_monitor->get_capture_call_count(), 2);
 }
 
 TEST_F(MouseShapePumpTest,

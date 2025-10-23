@@ -22,7 +22,7 @@ class PipewireMouseCursorMonitor
 
   // MouseCursorMonitor implementation.
   void Init(Callback* callback, Mode mode) override;
-  void Capture() override;
+  void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:
   // PipewireMouseCursorCapturer::Observer overrides.

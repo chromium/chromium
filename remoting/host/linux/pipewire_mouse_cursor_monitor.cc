@@ -35,7 +35,8 @@ void PipewireMouseCursorMonitor::Init(Callback* callback, Mode mode) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PipewireMouseCursorMonitor::Capture() {
+void PipewireMouseCursorMonitor::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {
   // No-op since callback will be run once cursor is changed.
 }
 

@@ -50,10 +50,6 @@ class MouseShapePump : public protocol::MouseCursorMonitor::Callback {
   void SetSendCursorPositionToClient(bool send_cursor_position_to_client);
 
  private:
-  void Capture();
-
-  void StartCaptureTimer(base::TimeDelta capture_interval);
-
   // protocol::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
@@ -64,7 +60,6 @@ class MouseShapePump : public protocol::MouseCursorMonitor::Callback {
   std::unique_ptr<protocol::MouseCursorMonitor> mouse_cursor_monitor_;
   raw_ptr<protocol::CursorShapeStub> cursor_shape_stub_;
 
-  base::RepeatingTimer capture_timer_;
   raw_ptr<protocol::MouseCursorMonitor::Callback> callback_ = nullptr;
   bool send_cursor_position_to_client_ = false;
 };
