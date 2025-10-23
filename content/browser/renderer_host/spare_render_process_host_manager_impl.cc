@@ -637,9 +637,14 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       //    launched.
       // 2. The SiteInstance has opted out of using the spare process.
       // 3. The SiteInstance is a guest SiteInstance.
+      // 4. The SiteInstance is a initial WebUI SiteInstance.
       site_instance->HasProcess() ||
-      !site_instance->CanAssociateWithSpareProcess() ||
-      site_instance->IsGuest()) {
+      !site_instance->CanAssociateWithSpareProcess() || site_instance->IsGuest()
+#if !BUILDFLAG(IS_ANDROID)
+      || GetContentClient()->browser()->IsInitialWebUIScheme(
+             site_instance->GetSiteURL())
+#endif
+  ) {
     action = SpareProcessMaybeTakeAction::kRefusedBySiteInstance;
   } else if (site_instance->GetSiteInfo().is_pdf()) {
     action = SpareProcessMaybeTakeAction::kRefusedForPdfContent;
