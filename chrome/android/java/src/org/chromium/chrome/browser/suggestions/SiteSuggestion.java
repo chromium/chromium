@@ -25,7 +25,7 @@ public class SiteSuggestion {
     @TileTitleSource public final int titleSource;
 
     /** the {@code TileSource} that generated the tile. */
-    @TileSource public final int source;
+    @TileSource.EnumType public final int source;
 
     /**
      * The {@link org.chromium.chrome.browser.suggestions.tile.TileSectionType} the tile is

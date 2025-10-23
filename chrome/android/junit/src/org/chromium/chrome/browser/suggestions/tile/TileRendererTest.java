@@ -110,7 +110,7 @@ public class TileRendererTest {
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
     private Tile mTile;
-    private @TileSource int mTileSource;
+    private @TileSource.EnumType int mTileSource;
 
     @Before
     public void setUp() {

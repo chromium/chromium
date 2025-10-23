@@ -1,0 +1,23 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.chrome.browser.suggestions.tile"]
+module ntp_tiles.mojom;
+
+enum TileSource {
+  // Tile comes from the personal top sites list, based on local history.
+  TOP_SITES = 0,
+  // Tile is regionally popular.
+  POPULAR = 1,
+  // Tile is a popular site baked into the binary.
+  POPULAR_BAKED_IN = 2,
+  // Tile is a custom link.
+  CUSTOM_LINKS = 3,
+  // Tile is on a custodian-managed allowlist.
+  ALLOWLIST = 4,
+  // Tile containing the user-set home page is replacing the home page button.
+  HOMEPAGE = 5,
+  // Tile is an enterprise shortcut.
+  ENTERPRISE_SHORTCUTS = 6,
+};

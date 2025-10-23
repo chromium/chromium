@@ -291,6 +291,7 @@ if (is_android) {
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/minidump_uploader:minidump_uploader_java_test_support",
       "//components/module_installer/android:module_installer_java",
+      "//components/ntp_tiles:mojo_bindings_java",
       "//components/offline_items_collection/core:core_java",
       "//components/omnibox/browser:browser_java",
       "//components/omnibox/common:features_java",

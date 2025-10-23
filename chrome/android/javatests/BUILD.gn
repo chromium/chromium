@@ -1237,7 +1237,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
     "src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//components/ntp_tiles:mojo_bindings_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.swiperefresh") {

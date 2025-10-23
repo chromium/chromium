@@ -12,6 +12,10 @@ build_webui("build") {
     "ntp_tiles_internals.html",
   ]
 
+  mojo_files_deps = [ "//components/ntp_tiles:mojo_bindings_ts__generator" ]
+  mojo_files =
+      [ "$root_gen_dir/components/ntp_tiles/tile_source.mojom-webui.ts" ]
+
   ts_files = [ "ntp_tiles_internals.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
@@ -19,6 +23,7 @@ build_webui("build") {
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   webui_context_type = "trusted"

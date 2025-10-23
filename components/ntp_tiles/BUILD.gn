@@ -180,7 +180,6 @@ if (is_android) {
   java_cpp_enum("ntp_tiles_enums_java") {
     sources = [
       "section_type.h",
-      "tile_source.h",
       "tile_title_source.h",
       "tile_visual_type.h",
     ]
@@ -188,6 +187,12 @@ if (is_android) {
 }
 
 mojom("mojo_bindings") {
-  sources = [ "tile_type.mojom" ]
-  webui_module_path = "/"
+  if (is_android) {
+    generate_java = true
+  }
+  sources = [
+    "tile_source.mojom",
+    "tile_type.mojom",
+  ]
+  webui_module_path = "chrome://resources/mojo/components/ntp_tiles/"
 }

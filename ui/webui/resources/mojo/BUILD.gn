@@ -11,6 +11,8 @@ import("//ui/webui/webui_features.gni")
 tsc_folder = "$root_gen_dir/ui/webui/resources/tsc/mojo"
 
 mojo_ts_files = [
+  "components/ntp_tiles/tile_source.mojom-webui.ts",
+  "components/ntp_tiles/tile_type.mojom-webui.ts",
   "components/omnibox/browser/omnibox.mojom-webui.ts",
   "mojo/public/mojom/base/absl_status.mojom-webui.ts",
   "mojo/public/mojom/base/big_buffer.mojom-webui.ts",
@@ -105,6 +107,7 @@ preprocess_if_expr("copy_mojo_ts") {
   out_folder = "$target_gen_dir/preprocessed"
   in_files = mojo_ts_files
   deps = [
+    "//components/ntp_tiles:mojo_bindings_ts__generator",
     "//components/omnibox/browser:mojo_bindings_ts__generator",
     "//components/omnibox/composebox:mojo_bindings_ts__generator",
     "//mojo/public/mojom/base:base_ts__copy_converters",
