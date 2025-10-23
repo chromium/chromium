@@ -270,6 +270,7 @@
   E_CPONLY(kColorNewTabPageComposeboxUploadButton) \
   E_CPONLY(kColorNewTabPageComposeboxUploadButtonDisabled) \
   E_CPONLY(kColorNewTabPageComposeboxFileChipBackground) \
+  E_CPONLY(kColorNewTabPageComposeboxFileChipFaviconBackground) \
   E_CPONLY(kColorNewTabPageComposeboxFileChipText) \
   E_CPONLY(kColorNewTabPageComposeboxPdfChipIcon) \
   E_CPONLY(kColorNewTabPageComposeboxFileImageOverlay) \
