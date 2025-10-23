@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_app_interface.h"
 
 #import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
@@ -17,7 +17,7 @@
 using chrome_test_util::
     SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet;
 
-@implementation PasswordSuggestionBottomSheetAppInterface
+@implementation CredentialSuggestionBottomSheetAppInterface
 
 static std::unique_ptr<
     ScopedCredentialSuggestionBottomSheetReauthModuleOverride>

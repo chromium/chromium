@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
@@ -353,8 +353,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the passwords view controller appears on screen.
 - (void)testPasswordsViewControllerIsPresented {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Save password for site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
@@ -801,8 +801,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that content is injected in iframe messaging.
 - (void)testPasswordControllerSupportsIFrameMessaging {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   const GURL URL = self.testServer->GetURL(kIFrameHTMLFile);
   NSString* URLString = base::SysUTF8ToNSString(URL.spec());
@@ -838,8 +838,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that an alert is shown when trying to fill a password in an unsecure
 // field.
 - (void)testPasswordControllerPresentsUnsecureAlert {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Only Objc objects can cross the EDO portal.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
@@ -1017,8 +1017,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the overflow menu button is visible.
 - (void)testOverflowMenuVisibility {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Save password for site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
@@ -1043,8 +1043,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests the "Edit" action of the overflow menu button displays the password's
 // details in edit mode.
 - (void)testEditPasswordFromOverflowMenu {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Save password for site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
@@ -1085,8 +1085,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests the "Edit" action of the overflow menu button in the all password list
 // displays the password's details in edit mode.
 - (void)testEditPasswordFromAllPasswordListOverflowMenu {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   [self loadLoginPage];
 
@@ -1114,8 +1114,8 @@ void CheckKeyboardIsUpAndNotCovered() {
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Save password for site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
@@ -1157,8 +1157,8 @@ void CheckKeyboardIsUpAndNotCovered() {
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kFailure];
 
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Save password for site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
@@ -1201,8 +1201,8 @@ void CheckKeyboardIsUpAndNotCovered() {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }
 
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   [self loadLoginPage];
 
@@ -1231,8 +1231,8 @@ void CheckKeyboardIsUpAndNotCovered() {
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Save a credential with a backup password for the current site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());

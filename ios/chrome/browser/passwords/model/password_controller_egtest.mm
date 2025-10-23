@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -205,7 +205,7 @@ void LoginOnUff() {
 
   // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
   // enabled by default.
-  [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
+  [CredentialSuggestionBottomSheetAppInterface setDismissCount:0];
 
   // Clear credentials and autofill profile before starting the test in case
   // there are some left over from a previous test case.
@@ -224,7 +224,7 @@ void LoginOnUff() {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [AutofillAppInterface clearProfilesStore];
-  [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
+  [CredentialSuggestionBottomSheetAppInterface setDismissCount:0];
   [super tearDownHelper];
 }
 
