@@ -495,10 +495,6 @@ int ConvertWifiSignalStrength(int signal_strength) {
   //
   // To convert back to dBm, we use the inverse of the function above to yield
   // a clamped dBm value in the range of -88 to -44dBm.
-  //
-  // TODO(atwilson): Tunnel the raw dBm signal strength from Shill instead of
-  // doing the conversion here so we can report non-clamped values
-  // (crbug.com/463334).
   DCHECK_GT(signal_strength, 0);
   DCHECK_LE(signal_strength, 100);
   return (signal_strength - 200) * 11 / 25;

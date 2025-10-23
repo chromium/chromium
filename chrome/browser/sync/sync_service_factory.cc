@@ -427,8 +427,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // being signed out.
     gcm::GCMProfileServiceFactory::GetForProfile(profile);
 
-    // TODO(atwilson): Change AboutSigninInternalsFactory to load on startup
-    // once http://crbug.com/171406 has been fixed.
     AboutSigninInternalsFactory::GetForProfile(profile);
   }
 

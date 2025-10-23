@@ -136,7 +136,6 @@ void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
     const std::string& registration_id,
     gcm::GCMClient::Result result) {
   DVLOG(1) << "Received Register() response: " << result;
-  // TODO(atwilson): Track GCM errors via UMA (http://crbug.com/459238).
   switch (result) {
     case gcm::GCMClient::SUCCESS:
       std::move(callback_).Run(registration_id);
