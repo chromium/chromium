@@ -49,7 +49,12 @@ import java.util.Set;
 /**
  * This is the implementation of the synchronous {@link TabModel} for the {@link
  * ChromeTabbedActivity}.
+ *
+ * @deprecated This class is replaced by {@link TabCollectionTabModelImpl}. This class will be
+ *     deleted in the coming weeks. If you make a change to this class it MUST be mirrored to {@link
+ *     TabCollectionTabModelImpl}.
  */
+@Deprecated
 @NullMarked
 public class TabModelImpl extends TabModelJniBridge {
     /**

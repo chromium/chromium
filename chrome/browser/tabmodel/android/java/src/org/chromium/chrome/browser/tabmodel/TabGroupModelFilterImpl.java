@@ -55,13 +55,12 @@ import java.util.Set;
  * <p>A group is a collection of {@link Tab}s that share a common ancestor {@link Tab}. This filter
  * is also a {@link TabList} that contains the last shown {@link Tab} from every group.
  *
- * <p>Note this class is in the process of migrating from root ID to TabGroupId. All references to
- * root ID refer to the old ID system. References to tab group ID will refer to the new system. See
- * https://crbug.com/1523745. Update July 2024: the flag for the new TabGroupId system has been
- * removed and it is now launched. This class (and any clients) still need to be migrated off of
- * root ID.
+ * @deprecated This class is replaced by {@link TabCollectionTabModelImpl}. This class will be
+ *     deleted in the coming weeks. If you make a change to this class it MUST be mirrored to {@link
+ *     TabCollectionTabModelImpl}.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@Deprecated
 @NullMarked
 public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, TabModelObserver {
     private static final List<Tab> sEmptyRelatedTabList =
