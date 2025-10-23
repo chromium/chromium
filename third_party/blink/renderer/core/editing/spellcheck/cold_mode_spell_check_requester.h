@@ -58,7 +58,10 @@ class ColdModeSpellCheckRequester
  private:
   SpellCheckRequester& GetSpellCheckRequester() const;
 
-  const Element* CurrentFocusedEditable() const;
+  // This returns the selected editable if spellcheck is on for it and some
+  // other property (e.g., being disconnected) has not disqualified it.
+  // This may return nullptr despite some editable being selected in the page.
+  const Element* QualifyingEditable() const;
 
   enum class CheckingType { kNone, kLocal, kFull };
   CheckingType AccumulateTextDeltaAndComputeCheckingType(

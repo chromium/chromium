@@ -105,39 +105,65 @@ TEST_P(IdleSpellCheckControllerTest, InitializationWithColdMode) {
 TEST_P(IdleSpellCheckControllerTest, RequestWhenInactive) {
   TransitTo(State::kInactive);
   IdleChecker().RespondToChangedContents();
-  EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
-  EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
+    EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  }
 }
 
 TEST_P(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
   TransitTo(State::kHotModeRequested);
-  int handle = IdleChecker().IdleCallbackHandle();
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  }
   IdleChecker().RespondToChangedContents();
-  EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
-  EXPECT_EQ(handle, IdleChecker().IdleCallbackHandle());
-  EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
+    EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  }
 }
 
 TEST_P(IdleSpellCheckControllerTest, RequestWhenColdModeTimerStarted) {
   TransitTo(State::kColdModeTimerStarted);
   IdleChecker().RespondToChangedContents();
-  EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
-  EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
+    EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  }
 }
 
 TEST_P(IdleSpellCheckControllerTest, RequestWhenColdModeRequested) {
   TransitTo(State::kColdModeRequested);
-  int handle = IdleChecker().IdleCallbackHandle();
-  IdleChecker().RespondToChangedContents();
-  EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
-  EXPECT_NE(handle, IdleChecker().IdleCallbackHandle());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  IdleChecker().RespondToChangedContents();
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
+    EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  }
 }
 
 TEST_P(IdleSpellCheckControllerTest, HotModeTransitToColdMode) {
   TransitTo(State::kHotModeRequested);
   IdleChecker().ForceInvocationForTesting();
-  EXPECT_EQ(State::kColdModeTimerStarted, IdleChecker().GetState());
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  } else {
+    EXPECT_EQ(State::kColdModeTimerStarted, IdleChecker().GetState());
+  }
 }
 
 TEST_P(IdleSpellCheckControllerTest, ColdModeTimerStartedToRequested) {
@@ -235,6 +261,34 @@ TEST_P(IdleSpellCheckControllerTest,
   TransitTo(State::kHotModeRequested);
   IdleChecker().RespondToChangedContents();
   // Should not crash
+  IdleChecker().ForceInvocationForTesting();
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+}
+
+TEST_P(IdleSpellCheckControllerTest, UserActivation) {
+  // Update contents when user focus is inactive
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  TransitTo(State::kHotModeRequested);
+  UpdateAllLifecyclePhasesForTest();
+  IdleChecker().ForceInvocationForTesting();
+  if (IsRestrictionActiveForContents()) {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  } else {
+    IdleChecker().SkipColdModeTimerForTesting();
+    ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+    IdleChecker().ForceInvocationForTesting();
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  }
+
+  // Update contents when user focus is active
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  TransitTo(State::kHotModeRequested);
+  UpdateAllLifecyclePhasesForTest();
+  IdleChecker().ForceInvocationForTesting();
+  IdleChecker().SkipColdModeTimerForTesting();
+  ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }

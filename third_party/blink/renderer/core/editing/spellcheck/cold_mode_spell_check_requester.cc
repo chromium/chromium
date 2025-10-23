@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/cold_mode_spell_check_requester.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/backwards_character_iterator.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/features.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
@@ -70,7 +72,24 @@ SpellCheckRequester& ColdModeSpellCheckRequester::GetSpellCheckRequester()
   return window_->GetSpellChecker().GetSpellCheckRequester();
 }
 
-const Element* ColdModeSpellCheckRequester::CurrentFocusedEditable() const {
+const Element* ColdModeSpellCheckRequester::QualifyingEditable() const {
+  // We can skip this pass if the page isn't being interacted with and
+  // `kRestrictSpellingAndGrammarHighlightsChangedContents` is enabled.
+  // This isn't the ideal signal, as it has a 5 second timeout, but it's
+  // enough to prevent a user focused field from being taken advantage of.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedContents.Get() &&
+      !LocalFrame::HasTransientUserActivation(window_->GetFrame())) {
+    base::UmaHistogramBoolean(
+        "WebCore.Editing.SpellCheckUserActionLimitation.Cold.Contents", true);
+    return nullptr;
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Cold.Contents", false);
+
   const Position position =
       window_->GetFrame()->Selection().GetSelectionInDOMTree().Focus();
   if (position.IsNull())
@@ -93,19 +112,19 @@ void ColdModeSpellCheckRequester::Invoke(IdleDeadline* deadline) {
   // TODO(xiaochengh): Figure out if this has any performance impact.
   window_->document()->UpdateStyleAndLayout(DocumentUpdateReason::kSpellCheck);
 
-  const Element* current_focused = CurrentFocusedEditable();
-  if (!current_focused) {
+  const Element* editable = QualifyingEditable();
+  if (!editable) {
     ClearProgress();
     return;
   }
 
-  switch (AccumulateTextDeltaAndComputeCheckingType(*current_focused)) {
+  switch (AccumulateTextDeltaAndComputeCheckingType(*editable)) {
     case CheckingType::kNone:
       return;
     case CheckingType::kLocal:
-      return RequestLocalChecking(*current_focused);
+      return RequestLocalChecking(*editable);
     case CheckingType::kFull:
-      return RequestFullChecking(*current_focused, deadline);
+      return RequestFullChecking(*editable, deadline);
   }
 }
 
