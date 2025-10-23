@@ -83,6 +83,9 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
   // for determining the active browser is modified to be more deterministic.
   static void SetTestingModeForTesting(bool testing_mode);
 
+  // Callback for when a detached instance's window activation changes.
+  void OnGlicWindowActivationChanged(bool active);
+
  private:
   // Tracks the state of the focused browser and candidate focused browser.
   struct FocusedBrowserState {
@@ -121,7 +124,6 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
 
   void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
   void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
-  void OnGlicWindowActivationChanged(bool active);
 
   raw_ref<GlicWindowControllerInterface> window_controller_;
 

@@ -46,10 +46,13 @@ GlicFocusedBrowserManager::GlicFocusedBrowserManager(
     GlicWindowControllerInterface* window_controller)
     : window_controller_(*window_controller) {
   BrowserList::GetInstance()->AddObserver(this);
-  window_activation_subscription_ =
-      window_controller->AddWindowActivationChangedCallback(base::BindRepeating(
-          &GlicFocusedBrowserManager::OnGlicWindowActivationChanged,
-          base::Unretained(this)));
+  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    window_activation_subscription_ =
+        window_controller->AddWindowActivationChangedCallback(
+            base::BindRepeating(
+                &GlicFocusedBrowserManager::OnGlicWindowActivationChanged,
+                base::Unretained(this)));
+  }
   window_controller->AddStateObserver(this);
 }
 
