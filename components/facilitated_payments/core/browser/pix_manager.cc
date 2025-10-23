@@ -18,8 +18,10 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 
 namespace payments::facilitated {
@@ -111,20 +113,21 @@ bool PixManager::IsMerchantAllowlisted(const GURL& url) const {
 void PixManager::OnPixCodeValidated(
     std::string pix_code,
     base::TimeTicks start_time,
-    base::expected<bool, std::string> is_pix_code_valid) {
+    base::expected<mojom::PixQrCodeType, std::string> pix_qr_code_type) {
   LogPaymentCodeValidationResultAndLatency(
-      is_pix_code_valid, (base::TimeTicks::Now() - start_time));
-  if (!is_pix_code_valid.has_value()) {
+      pix_qr_code_type, (base::TimeTicks::Now() - start_time));
+  if (!pix_qr_code_type.has_value()) {
     // Pix code validator encountered an error.
     LogPixFlowExitedReason(PixFlowExitedReason::kCodeValidatorFailed);
     return;
   }
 
-  if (!is_pix_code_valid.value()) {
+  if (pix_qr_code_type.value() == mojom::PixQrCodeType::kInvalid) {
     // Pix code is not valid.
     LogPixFlowExitedReason(PixFlowExitedReason::kInvalidCode);
     return;
   }
+
   // If a valid Pix code is found, and the user has Google Wallet linked Pix
   // accounts, verify that the payments API is available, and then show the Pix
   // payment prompt.

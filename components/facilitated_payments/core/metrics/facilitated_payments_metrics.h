@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/types/expected.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
@@ -232,7 +233,7 @@ void LogNonCardPaymentMethodsFopSelected(
 // Log the result and latency for validating a payment code using
 // `data_decoder::DataDecoder`.
 void LogPaymentCodeValidationResultAndLatency(
-    base::expected<bool, std::string> result,
+    base::expected<mojom::PixQrCodeType, std::string> result,
     base::TimeDelta duration);
 
 // Log the result of whether the facilitated payments is available or not and

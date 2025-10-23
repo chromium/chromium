@@ -448,14 +448,16 @@ void DataDecoder::ParseCborIsolated(base::span<const uint8_t> data,
 void DataDecoder::ValidatePixCode(const std::string& pix_code,
                                   ValidationCallback callback) {
   auto request = base::MakeRefCounted<
-      ValueParseRequest<payments::facilitated::mojom::PixCodeValidator, bool>>(
+      ValueParseRequest<payments::facilitated::mojom::PixCodeValidator,
+                        payments::facilitated::mojom::PixQrCodeType>>(
       std::move(callback), cancel_requests_);
   GetService()->BindPixCodeValidator(request->BindRemote());
   request->remote()->ValidatePixCode(
       pix_code,
       base::BindOnce(
-          &ValueParseRequest<payments::facilitated::mojom::PixCodeValidator,
-                             bool>::OnServiceValue,
+          &ValueParseRequest<
+              payments::facilitated::mojom::PixCodeValidator,
+              payments::facilitated::mojom::PixQrCodeType>::OnServiceValue,
           request));
 }
 

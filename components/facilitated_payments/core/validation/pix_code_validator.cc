@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace payments::facilitated {
@@ -69,31 +70,32 @@ PixCodeValidator::PixCodeValidator() = default;
 PixCodeValidator::~PixCodeValidator() = default;
 
 // static
-bool PixCodeValidator::IsValidPixCode(std::string_view code) {
+mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
   if (code.empty()) {
-    return false;
+    return mojom::PixQrCodeType::kInvalid;
   }
 
   SectionInfo section_info;
-  bool contains_pix_code_indicator = false;
+  mojom::PixQrCodeType contains_pix_code_indicator =
+      mojom::PixQrCodeType::kInvalid;
 
   if (!ParseNextSection(&code, &section_info) ||
       section_info.section_id != kPayloadFormatIndicatorFirstSectionId) {
-    return false;
+    return mojom::PixQrCodeType::kInvalid;
   }
 
   while (!code.empty()) {
     if (!ParseNextSection(&code, &section_info)) {
-      return false;
+      return mojom::PixQrCodeType::kInvalid;
     }
 
     if (section_info.section_id == kMerchantAccountInformationSectionId) {
       if (!ContainsValidSections(section_info.section_value)) {
-        return false;
+        return mojom::PixQrCodeType::kInvalid;
       }
       if (base::ToLowerASCII(section_info.section_value)
               .find(kPixCodeIndicatorLowercase) != 0) {
-        return false;
+        return mojom::PixQrCodeType::kInvalid;
       }
       // By this time, we have already verified that the sub sections for
       // merchant account information are already valid. Only checking for the
@@ -107,20 +109,20 @@ bool PixCodeValidator::IsValidPixCode(std::string_view code) {
       ParseNextSection(&dynamic_url_section_string, &dynamic_url_section_info);
       if (dynamic_url_section_info.section_id !=
           kMerchantAccountInformationDynamicUrlSectionId) {
-        return false;
+        return mojom::PixQrCodeType::kInvalid;
       }
 
-      contains_pix_code_indicator = true;
+      contains_pix_code_indicator = mojom::PixQrCodeType::kDynamic;
     }
 
     if (section_info.section_id == kAdditionalDataFieldTemplateSectionId) {
       if (!ContainsValidSections(section_info.section_value)) {
-        return false;
+        return mojom::PixQrCodeType::kInvalid;
       }
     }
 
     if (code.empty() && section_info.section_id != kCrc16LastSectionId) {
-      return false;
+      return mojom::PixQrCodeType::kInvalid;
     }
   }
 
@@ -135,8 +137,8 @@ bool PixCodeValidator::ContainsPixIdentifier(std::string_view code) {
 
 void PixCodeValidator::ValidatePixCode(
     const std::string& input_text,
-    base::OnceCallback<void(std::optional<bool>)> callback) {
-  std::move(callback).Run(IsValidPixCode(input_text));
+    base::OnceCallback<void(std::optional<mojom::PixQrCodeType>)> callback) {
+  std::move(callback).Run(GetPixQrCodeType(input_text));
 }
 
 }  // namespace payments::facilitated

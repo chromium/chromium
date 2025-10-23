@@ -22,6 +22,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -211,12 +212,13 @@ class PixManager {
 
   // Called by the utility process after validation of the `pix_code`. If the
   // utility processes has disconnected (e.g., due to a crash in the validation
-  // code), then `is_pix_code_valid` contains an error string instead of the
-  // boolean validation result. The call to validate the Pix code was made at
+  // code), then `pix_qr_code_type` contains an error string instead of the
+  // PixQrCodeType result. The call to validate the Pix code was made at
   // `start_time`.
-  void OnPixCodeValidated(std::string pix_code,
-                          base::TimeTicks start_time,
-                          base::expected<bool, std::string> is_pix_code_valid);
+  void OnPixCodeValidated(
+      std::string pix_code,
+      base::TimeTicks start_time,
+      base::expected<mojom::PixQrCodeType, std::string> pix_qr_code_type);
 
   // Lazily initializes an API client and returns a pointer to it. Returns a
   // pointer to the existing API client, if one is already initialized. The

@@ -4,6 +4,11 @@
 
 module payments.facilitated.mojom;
 
+enum PixQrCodeType {
+  kInvalid,
+  kDynamic,
+};
+
 // Interface to validate the format of Pix codes. Called by a browser process
 // into a utility process.
 interface PixCodeValidator {
@@ -13,5 +18,5 @@ interface PixCodeValidator {
   // 1) Two chars of section identifier (between "00" and "99").
   // 2) Two chars of section value length (between "01" and "99").
   // 3) The section value of length indicated in (2).
-  ValidatePixCode(string input_text) => (bool? is_valid_pix_code);
+  ValidatePixCode(string input_text) => (PixQrCodeType? pix_qr_code_type);
 };

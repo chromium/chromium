@@ -73,7 +73,8 @@ class DataDecoder {
       ResultCallback<net::structured_headers::Dictionary>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
-  using ValidationCallback = ResultCallback<bool>;
+  using ValidationCallback =
+      ResultCallback<payments::facilitated::mojom::PixQrCodeType>;
   using CancellationFlag = base::RefCountedData<bool>;
 
   // Returns a raw interface to the service instance. This launches an instance

@@ -31,6 +31,7 @@
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -525,9 +526,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 // If the validation utility process has disconnected (e.g., due to a crash in
@@ -574,9 +575,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled, InvalidCode_PixFlowsAbandoned) {
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/false);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kInvalid);
 }
 
 // If the Pix code validation in the utility process has returned `false`, then
@@ -585,9 +586,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
        PayflowExitedReason_InvalidCode) {
   base::HistogramTester histogram_tester;
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/false);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kInvalid);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
@@ -607,9 +608,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 // If the payments autofill pref is disabled, neither the payflow nor the
@@ -624,9 +625,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 // If the user has turned off autofilling payment methods, the
@@ -639,9 +640,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   // Disable payment methods pref.
   autofill::prefs::SetAutofillPaymentMethodsEnabled(pref_service_.get(), false);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
@@ -660,9 +661,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 // If the user has opted out of the Pix flow, the PayflowExitedReason
@@ -674,9 +675,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
       CreatePixBankAccount(/*instrument_id=*/1));
   autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
@@ -693,9 +694,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_));
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 // If the user doesn't have any linked Pix account, the PayflowExitedReason
@@ -704,9 +705,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
        PayflowExitedReason_NoLinkedAccount) {
   base::HistogramTester histogram_tester;
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
@@ -724,9 +725,9 @@ TEST_F(
 
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 // Verify that the API check result and latency are logged.
@@ -922,9 +923,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled, ApiClientInitializedLazily) {
 
   EXPECT_EQ(nullptr, pix_manager_->api_client_.get());
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   EXPECT_NE(nullptr, pix_manager_->api_client_.get());
 }
@@ -938,9 +939,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 
   EXPECT_EQ(nullptr, pix_manager_->api_client_.get());
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   EXPECT_EQ(nullptr, pix_manager_->api_client_.get());
 }
@@ -977,9 +978,9 @@ TEST_P(PixManagerTestInLandscapeMode, PixPayflowBlockedWhenFlagDisabled) {
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_))
       .Times(IsPaymentEnabledInLandscapeMode() ? 1 : 0);
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 TEST_P(PixManagerTestInLandscapeMode,
@@ -988,9 +989,9 @@ TEST_P(PixManagerTestInLandscapeMode,
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   // In landscape mode, if the `EnablePixPaymentsInLandscapeMode` flag is
   // disabled, Pix payment is not offered, and a histogram should be logged.
@@ -1127,9 +1128,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
@@ -1150,9 +1151,9 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
       CreatePixBankAccount(/*instrument_id=*/1));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
 }
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,

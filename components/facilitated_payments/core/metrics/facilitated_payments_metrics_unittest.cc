@@ -136,8 +136,8 @@ TEST(FacilitatedPaymentsMetricsTest,
      LogPaymentCodeValidationResultAndLatency_InvalidCode) {
   base::HistogramTester histogram_tester;
 
-  LogPaymentCodeValidationResultAndLatency(/*result=*/false,
-                                           base::Milliseconds(10));
+  LogPaymentCodeValidationResultAndLatency(
+      /*result=*/mojom::PixQrCodeType::kInvalid, base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PaymentCodeValidation.InvalidCode.Latency",
@@ -149,11 +149,11 @@ TEST(FacilitatedPaymentsMetricsTest,
      LogPaymentCodeValidationResultAndLatency_ValidCode) {
   base::HistogramTester histogram_tester;
 
-  LogPaymentCodeValidationResultAndLatency(/*result=*/true,
-                                           base::Milliseconds(10));
+  LogPaymentCodeValidationResultAndLatency(
+      /*result=*/mojom::PixQrCodeType::kDynamic, base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.ValidCode.Latency",
+      "FacilitatedPayments.Pix.PaymentCodeValidation.DynamicCode.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }

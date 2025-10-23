@@ -8,8 +8,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
@@ -166,15 +168,15 @@ void LogEwalletFopSelected(AvailableEwalletsConfiguration type) {
 }
 
 void LogPaymentCodeValidationResultAndLatency(
-    base::expected<bool, std::string> result,
+    base::expected<mojom::PixQrCodeType, std::string> result,
     base::TimeDelta duration) {
   std::string payment_code_validation_result_type;
   if (!result.has_value()) {
     payment_code_validation_result_type = "ValidatorFailed";
-  } else if (!result.value()) {
+  } else if (result.value() == mojom::PixQrCodeType::kInvalid) {
     payment_code_validation_result_type = "InvalidCode";
   } else {
-    payment_code_validation_result_type = "ValidCode";
+    payment_code_validation_result_type = "DynamicCode";
   }
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.PaymentCodeValidation.",

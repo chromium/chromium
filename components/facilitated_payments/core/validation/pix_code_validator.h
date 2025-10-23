@@ -32,7 +32,7 @@ class PixCodeValidator : public mojom::PixCodeValidator {
   //    subsections.
   //
   // This function does not validate the value of the CRC16.
-  static bool IsValidPixCode(std::string_view code);
+  static mojom::PixQrCodeType GetPixQrCodeType(std::string_view code);
 
   // Returns true if the input `code` contains the Pix code indicator.
   static bool ContainsPixIdentifier(std::string_view code);
@@ -41,7 +41,8 @@ class PixCodeValidator : public mojom::PixCodeValidator {
   // mojom::PixValidator implementation:
   void ValidatePixCode(
       const std::string& input_text,
-      base::OnceCallback<void(std::optional<bool>)> callback) override;
+      base::OnceCallback<void(std::optional<mojom::PixQrCodeType>)> callback)
+      override;
 };
 
 }  // namespace payments::facilitated
