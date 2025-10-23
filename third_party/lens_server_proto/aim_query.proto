@@ -10,6 +10,7 @@ package lens;
 
 import "lens_overlay_request_id.proto";
 import "lens_overlay_visual_input_type.proto";
+import "lens_overlay_visual_search_interaction_data.proto";
 
 // The collection of parameters required to execute a Lens query as part of AI
 // Mode.
@@ -22,6 +23,9 @@ message LensImageQueryData {
 
   // The type of visual input provided for the query.
   LensOverlayVisualInputType visual_input_type = 4;
+
+  // The visual input interaction data for the query.
+  LensOverlayVisualSearchInteractionData visual_search_interaction_data = 7;
 
   // Deprecated fields to match the Silk LensImageQueryData.
   reserved 3, 5;
