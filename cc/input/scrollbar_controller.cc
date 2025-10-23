@@ -90,22 +90,35 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
       GetScrollbarPartFromPointerDown(position_in_widget);
   const bool perform_jump_click_on_track =
       scrollbar->JumpOnTrackClick() != jump_key_modifier;
+
+  // IMPORTANT: Assign last_known_pointer_position_ BEFORE
+  // GetScrollDeltaForScrollbarPart. When the clicked part is a track
+  // (kBackTrack / kForwardTrack) AND perform_jump_click_on_track is true, the
+  // call chain reaches GetScrollDistanceForAbsoluteJump, which reads
+  // last_known_pointer_position_ to compute the pointer’s position relative to
+  // the scrollbar.
+  last_known_pointer_position_ = position_in_widget;
+
   scroll_result.scroll_delta = GetScrollDeltaForScrollbarPart(
       scrollbar_part, perform_jump_click_on_track);
-  last_known_pointer_position_ = position_in_widget;
+
   scrollbar_scroll_is_active_ = true;
   scroll_result.scroll_units =
       Granularity(scrollbar_part, perform_jump_click_on_track);
 
-  // Initialize drag state if either the scrollbar thumb is being dragged OR the
-  // user has initiated a jump click (since the thumb would have jumped under
-  // the pointer).
-  if (scrollbar_part == ScrollbarPart::kThumb || perform_jump_click_on_track) {
+  // Initialize drag state if either the scrollbar thumb is being dragged or the
+  // user has initiated a jump click on a track part.
+  const bool trigger_jump_click_on_track_part =
+      perform_jump_click_on_track &&
+      (scrollbar_part == ScrollbarPart::kBackTrack ||
+       scrollbar_part == ScrollbarPart::kForwardTrack);
+  if (scrollbar_part == ScrollbarPart::kThumb ||
+      trigger_jump_click_on_track_part) {
     drag_state_ = DragState();
     bool clipped = false;
 
     drag_state_->drag_origin =
-        perform_jump_click_on_track
+        trigger_jump_click_on_track_part
             ? DragOriginForJumpClick(scrollbar)
             : GetScrollbarRelativePosition(position_in_widget, &clipped);
 

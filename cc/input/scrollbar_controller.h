@@ -161,7 +161,8 @@ class CC_EXPORT ScrollbarController {
       const gfx::PointF position_in_widget) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ThumbDragAfterJumpClick);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,
+                           ThumbDragAfterJumpClickOrThumbClick);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,
                            AbortAnimatedScrollBeforeStartingAutoscroll);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollOnDeletedScrollbar);

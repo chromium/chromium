@@ -14508,10 +14508,9 @@ TEST_P(LayerTreeHostImplTest, SingleGSUForScrollbarThumbDragPerFrame) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
 
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
   layer_tree_impl->UpdateAllScrollbarGeometriesForTesting();
@@ -14719,10 +14718,9 @@ TEST_P(LayerTreeHostImplTest, AutoscrollTaskAbort) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
   TestInputHandlerClient input_handler_client;
@@ -14791,10 +14789,9 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
 
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
   layer_tree_impl->UpdateAllScrollbarGeometriesForTesting();
@@ -14866,11 +14863,11 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
   host_impl_ = nullptr;
 }
 
-// Tests that a thumb drag continues to function as expected after a jump click.
-// The functionality of thumb drag itself is pretty well tested. So all that
-// this test needs to verify is that the thumb drag_state_ is correctly
-// populated.
-TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClick) {
+// Tests that a thumb drag continues to function as expected after a jump click
+// or thumb click. The functionality of thumb drag itself is pretty well tested.
+// So all that this test needs to verify is that the thumb drag_state_ is
+// correctly populated.
+TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClickOrThumbClick) {
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
@@ -14899,10 +14896,9 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClick) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
 
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
   layer_tree_impl->UpdateAllScrollbarGeometriesForTesting();
@@ -14911,6 +14907,9 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClick) {
   GetInputHandler().BindToClient(&input_handler_client);
 
   {
+    // Test thumb drag after jump click
+
+    scrollbar->SetJumpOnTrackClick(false);
     EXPECT_FALSE(GetInputHandler()
                      .scrollbar_controller_for_testing()
                      ->drag_state_.has_value());
@@ -14922,7 +14921,7 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClick) {
 
     // This verifies that the jump click took place as expected.
     EXPECT_EQ(0, result.scroll_delta.x());
-    EXPECT_FLOAT_EQ(result.scroll_delta.y(), 243.80952f);
+    EXPECT_FLOAT_EQ(result.scroll_delta.y(), 3169.5239f);
 
     // This verifies that the drag_state_ was initialized when a jump click
     // occurred.
@@ -14937,10 +14936,83 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClick) {
                         ->drag_state_->scroll_position_at_start_,
                     0.0f);
 
+    // Expect the drag origin to be at the center of the thumb.
     EXPECT_FLOAT_EQ(GetInputHandler()
                         .scrollbar_controller_for_testing()
                         ->drag_state_->drag_origin.y(),
                     15.0f + thumb_len / 2.0f);
+    GetInputHandler().scrollbar_controller_for_testing()->HandlePointerUp(
+        gfx::PointF(350, 560));
+  }
+
+  {
+    // Test thumb drag after click on thumb
+
+    scrollbar->SetJumpOnTrackClick(false);
+    EXPECT_FALSE(GetInputHandler()
+                     .scrollbar_controller_for_testing()
+                     ->drag_state_.has_value());
+
+    // Perform a pointerdown on the thumb part.
+    const InputHandlerPointerResult result =
+        GetInputHandler().scrollbar_controller_for_testing()->HandlePointerDown(
+            gfx::PointF(350, 60), /*jump_key_modifier*/ true);
+
+    // This verifies that the pointerdown on the thumb did not cause any jump
+    EXPECT_EQ(0, result.scroll_delta.x());
+    EXPECT_EQ(0, result.scroll_delta.y());
+
+    // This verifies that the drag_state_ was initialized when click
+    // on thumb.
+    EXPECT_TRUE(GetInputHandler()
+                    .scrollbar_controller_for_testing()
+                    ->drag_state_.has_value());
+
+    // This verifies that the start/snap-back position is the scroll position
+    // before any jump-click
+    EXPECT_FLOAT_EQ(GetInputHandler()
+                        .scrollbar_controller_for_testing()
+                        ->drag_state_->scroll_position_at_start_,
+                    0.0f);
+
+    // Expect the drag origin to be at the point of pointerdown.
+    EXPECT_FLOAT_EQ(GetInputHandler()
+                        .scrollbar_controller_for_testing()
+                        ->drag_state_->drag_origin.y(),
+                    60.0f);
+    GetInputHandler().scrollbar_controller_for_testing()->HandlePointerUp(
+        gfx::PointF(350, 60));
+  }
+
+  {
+    // This test verifies that clicking on parts other than the track(jump
+    // click) or thumb does not trigger a thumb drag.
+
+    scrollbar->SetJumpOnTrackClick(false);
+    EXPECT_FALSE(GetInputHandler()
+                     .scrollbar_controller_for_testing()
+                     ->drag_state_.has_value());
+
+    // Perform a pointerdown on the button part to induce scroll.
+    const InputHandlerPointerResult result =
+        GetInputHandler().scrollbar_controller_for_testing()->HandlePointerDown(
+            gfx::PointF(350, 580), /*jump_key_modifier*/ true);
+
+    // This verifies that the scroll took place as expected, i.e. the click was
+    // handled.
+    EXPECT_EQ(0, result.scroll_delta.x());
+    EXPECT_EQ(result.scroll_delta.y(),
+              kPixelsPerLineStep * GetInputHandler()
+                                       .scrollbar_controller_for_testing()
+                                       ->ScreenSpaceScaleFactor());
+
+    // This verifies that the drag_state_ was not initialized although the
+    // click was handled.
+    EXPECT_FALSE(GetInputHandler()
+                     .scrollbar_controller_for_testing()
+                     ->drag_state_.has_value());
+    GetInputHandler().scrollbar_controller_for_testing()->HandlePointerUp(
+        gfx::PointF(350, 580));
   }
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
@@ -14978,10 +15050,9 @@ TEST_P(LayerTreeHostImplTest, AbortAnimatedScrollBeforeStartingAutoscroll) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
   TestInputHandlerClient input_handler_client;
@@ -15067,10 +15138,9 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
   TestInputHandlerClient input_handler_client;
@@ -15171,10 +15241,9 @@ TEST_P(LayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
-  scrollbar->SetBackButtonRect(
-      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
   scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+      gfx::Rect(gfx::Point(0, 570), gfx::Size(15, 15)));
 
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
   layer_tree_impl->UpdateAllScrollbarGeometriesForTesting();
