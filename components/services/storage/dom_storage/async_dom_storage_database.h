@@ -127,8 +127,9 @@ class AsyncDomStorageDatabase {
     }
   }
 
-  using BatchDatabaseTask = base::OnceCallback<void(DomStorageBatchOperation&,
-                                                    const DomStorageDatabase&)>;
+  using BatchDatabaseTask =
+      base::OnceCallback<void(DomStorageBatchOperationLevelDB&,
+                              const DomStorageDatabase&)>;
   void RunBatchDatabaseTasks(RunBatchTasksContext context,
                              std::vector<BatchDatabaseTask> tasks,
                              base::OnceCallback<void(DbStatus)> callback);

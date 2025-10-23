@@ -28,6 +28,7 @@
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -218,7 +219,7 @@ class StorageAreaImplTest : public testing::Test,
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](DomStorageDatabase* db) {
-          std::unique_ptr<DomStorageBatchOperation> batch =
+          std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
               db->CreateBatchOperation();
           ASSERT_TRUE(batch->DeletePrefixed({}).ok());
           ASSERT_TRUE(batch->Commit().ok());

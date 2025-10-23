@@ -17,20 +17,25 @@ namespace storage {
 
 class DomStorageDatabaseLevelDB;
 
-// A DomStorageBatchOperation implementation that uses LevelDB's WriteBatch.
-class DomStorageBatchOperationLevelDB : public DomStorageBatchOperation {
+// Wraps LevelDB's `WriteBatch`, adding convenience functions to copy or delete
+// all keys that start with a `prefix`.
+class DomStorageBatchOperationLevelDB {
  public:
+  using Key = DomStorageDatabase::Key;
+  using KeyView = DomStorageDatabase::KeyView;
+  using Value = DomStorageDatabase::Value;
+  using ValueView = DomStorageDatabase::ValueView;
+
   explicit DomStorageBatchOperationLevelDB(
       base::WeakPtr<DomStorageDatabaseLevelDB> database);
-  ~DomStorageBatchOperationLevelDB() override;
+  ~DomStorageBatchOperationLevelDB();
 
-  // DomStorageBatchOperation implementation.
-  void Put(KeyView key, ValueView value) override;
-  void Delete(KeyView key) override;
-  DbStatus DeletePrefixed(KeyView prefix) override;
-  DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix) override;
-  DbStatus Commit() override;
-  size_t ApproximateSizeForMetrics() const override;
+  void Put(KeyView key, ValueView value);
+  void Delete(KeyView key);
+  DbStatus DeletePrefixed(KeyView prefix);
+  DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix);
+  DbStatus Commit();
+  size_t ApproximateSizeForMetrics() const;
 
  private:
   base::WeakPtr<DomStorageDatabaseLevelDB> database_;

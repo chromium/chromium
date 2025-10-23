@@ -35,6 +35,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
@@ -173,7 +174,7 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
       base::BindOnce(
           [](std::vector<blink::StorageKey> storage_keys,
              DomStorageDatabase& db) {
-            std::unique_ptr<DomStorageBatchOperation> batch =
+            std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                 db.CreateBatchOperation();
             for (const auto& storage_key : storage_keys) {
               batch->DeletePrefixed(MakeStorageKeyPrefix(storage_key));
@@ -244,7 +245,7 @@ class LocalStorageImpl::StorageAreaHolder final
     context_->database_->RunDatabaseTask(
         base::BindOnce(
             [](const blink::StorageKey& storage_key, DomStorageDatabase& db) {
-              std::unique_ptr<DomStorageBatchOperation> batch =
+              std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                   db.CreateBatchOperation();
               storage::LocalStorageAreaAccessMetaData data;
               data.set_last_accessed(base::Time::Now().ToInternalValue());

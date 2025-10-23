@@ -278,7 +278,7 @@ DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
   return FromLevelDBStatus(status);
 }
 
-std::unique_ptr<DomStorageBatchOperation>
+std::unique_ptr<DomStorageBatchOperationLevelDB>
 DomStorageDatabaseLevelDB::CreateBatchOperation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<DomStorageBatchOperationLevelDB>(

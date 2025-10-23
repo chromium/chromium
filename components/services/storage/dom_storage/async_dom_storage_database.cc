@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {
@@ -71,7 +72,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                       [](RunBatchTasksContext context,
                          std::vector<BatchDatabaseTask> tasks,
                          DomStorageDatabase& db) -> DbStatus {
-                        std::unique_ptr<DomStorageBatchOperation> batch =
+                        std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                             db.CreateBatchOperation();
                         // TODO(crbug.com/40245293): Remove this after debugging
                         // is complete.
@@ -150,7 +151,7 @@ void AsyncDomStorageDatabase::InitiateCommit() {
   RunDatabaseTask(
       base::BindOnce(
           [](std::vector<Commit> commits, DomStorageDatabase& db) {
-            std::unique_ptr<DomStorageBatchOperation> batch =
+            std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                 db.CreateBatchOperation();
             for (const Commit& commit : commits) {
               const auto now = base::TimeTicks::Now();

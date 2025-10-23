@@ -25,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -183,7 +184,7 @@ class LocalStorageImplTest : public testing::Test {
     base::RunLoop loop;
     context()->GetDatabaseForTesting().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](DomStorageDatabase* db) {
-          std::unique_ptr<DomStorageBatchOperation> batch =
+          std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
               db->CreateBatchOperation();
           ASSERT_TRUE(batch->DeletePrefixed({}).ok());
           ASSERT_TRUE(batch->Commit().ok());

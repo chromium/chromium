@@ -27,7 +27,7 @@ class MemoryAllocatorDumpGuid;
 
 namespace storage {
 
-class DomStorageBatchOperation;
+class DomStorageBatchOperationLevelDB;
 
 // Abstract interface for DOM storage database implementations. Provides
 // key-value storage operations for DOMStorage StorageAreas.
@@ -87,7 +87,8 @@ class DomStorageDatabase {
   // thread safe. It should be accessed from the same sequence it was created
   // on. The returned object must not outlive the DomStorageDatabase instance
   // it was created from.
-  virtual std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation() = 0;
+  virtual std::unique_ptr<DomStorageBatchOperationLevelDB>
+  CreateBatchOperation() = 0;
   virtual bool ShouldFailAllCommits() const = 0;
 
   // Test only methods.
@@ -141,42 +142,6 @@ class DomStorageDatabaseFactory {
       const std::string& name,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       base::OnceCallback<void(DbStatus)> callback);
-};
-
-// Abstraction for batched operations on a DomStorageDatabase.
-// This class encapsulates a series of database operations that should be
-// performed atomically.
-class DomStorageBatchOperation {
- public:
-  using Key = DomStorageDatabase::Key;
-  using KeyView = DomStorageDatabase::KeyView;
-  using Value = DomStorageDatabase::Value;
-  using ValueView = DomStorageDatabase::ValueView;
-
-  virtual ~DomStorageBatchOperation() = default;
-
-  // Store the mapping "key->value" in the database.
-  virtual void Put(KeyView key, ValueView value) = 0;
-
-  // Delete the entry for "key" if it exists.
-  virtual void Delete(KeyView key) = 0;
-
-  // Adds operations to |batch| which will delete all database entries whose key
-  // starts with |prefix| when committed.
-  virtual DbStatus DeletePrefixed(KeyView prefix) = 0;
-
-  // Adds operations to |batch| which when committed will copy all database
-  // entries whose key starts with |prefix| over to new entries with |prefix|
-  // replaced by |new_prefix| in each new key.
-  virtual DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix) = 0;
-
-  // Commits operations in |batch| to the database.
-  virtual DbStatus Commit() = 0;
-
-  // The size of the database changes caused by this batch operation. This
-  // number is tied to implementation details and should only be used for
-  // metrics.
-  virtual size_t ApproximateSizeForMetrics() const = 0;
 };
 
 }  // namespace storage

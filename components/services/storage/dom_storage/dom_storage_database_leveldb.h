@@ -78,7 +78,8 @@ class DomStorageDatabaseLevelDB
   DbStatus GetPrefixed(KeyView prefix,
                        std::vector<KeyValuePair>* entries) const override;
   DbStatus RewriteDB() override;
-  std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation() override;
+  std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation()
+      override;
   bool ShouldFailAllCommits() const override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
   void MakeAllCommitsFailForTesting() override;

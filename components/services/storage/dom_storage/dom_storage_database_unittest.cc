@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
+#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -343,7 +344,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
 
     // Wipe out the first prefix. We should still see the second prefix.
     std::vector<DomStorageDatabase::KeyValuePair> entries;
-    std::unique_ptr<DomStorageBatchOperation> batch =
+    std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
         db->CreateBatchOperation();
     EXPECT_STATUS_OK(
         batch->DeletePrefixed(base::byte_span_from_cstring(kTestPrefix1)));
@@ -406,7 +407,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, CopyPrefixed) {
 
     // Copy the prefixed entries to |kTestPrefix2| and verify that we have the
     // expected entries.
-    std::unique_ptr<DomStorageBatchOperation> batch =
+    std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
         db->CreateBatchOperation();
     EXPECT_STATUS_OK(
         batch->CopyPrefixed(base::byte_span_from_cstring(kTestPrefix1),

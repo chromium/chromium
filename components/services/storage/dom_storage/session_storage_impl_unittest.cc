@@ -26,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -917,7 +918,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   base::RunLoop loop;
   session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
       base::BindOnce([](DomStorageDatabase& db) {
-        std::unique_ptr<DomStorageBatchOperation> batch =
+        std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
             db.CreateBatchOperation();
         batch->DeletePrefixed(StringViewToUint8Vector("map"));
         EXPECT_TRUE(batch->Commit().ok());
