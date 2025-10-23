@@ -186,6 +186,11 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   CHECK(side_panel_coordinator_);
 }
 
+SidePanelEntry::PanelType LensOverlaySidePanelCoordinator::GetPanelType()
+    const {
+  return SidePanelEntry::PanelType::kContent;
+}
+
 void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {
   CHECK(side_panel_page_);
   side_panel_page_->SetShowErrorPage(side_panel_should_show_error_page_,
