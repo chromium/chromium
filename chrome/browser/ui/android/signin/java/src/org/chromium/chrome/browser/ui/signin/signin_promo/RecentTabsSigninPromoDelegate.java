@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -109,11 +111,17 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     boolean shouldHideSecondaryButton() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mPromoState != PromoState.SIGNIN;
+        }
         return true;
     }
 
     @Override
     boolean shouldHideDismissButton() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mPromoState != PromoState.SIGNIN;
+        }
         return true;
     }
 

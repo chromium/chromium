@@ -360,6 +360,7 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
 
+        // TODO(crbug.com/448227402): remove this check once Seamless Sign-in is launched
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
             onView(withId(R.id.sync_promo_choose_account_button))
                     .check(ViewAssertions.matches(not(isDisplayed())));
@@ -425,6 +426,7 @@ public class SigninPromoCoordinatorTest {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
+        // TODO(crbug.com/448227402): remove this check once Seamless Sign-in is launched
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
             onView(withId(R.id.sync_promo_close_button))
                     .check(ViewAssertions.matches(not(isDisplayed())));
