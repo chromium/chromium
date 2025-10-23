@@ -44,7 +44,7 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Password: '
 ++++++android.widget.EditText clickable editable_text focusable password interesting hint='Password:' input_type=225
-++++android.widget.RadioButton role_description='radio button' checkable clickable focusable interesting name='Radio:'
+++++android.widget.RadioButton checkable clickable focusable interesting name='Radio:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Range: '
 ++++++android.widget.SeekBar clickable focusable range interesting name='50, Range:' item_index=50 item_count=100 range_max=100 range_current_value=50

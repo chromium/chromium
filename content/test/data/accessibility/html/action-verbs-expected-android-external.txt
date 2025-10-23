@@ -10,7 +10,7 @@ WebView text:"Action verbs" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NE
 ++EditText clickable editable focusable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
 ++CheckBox checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300"]
 ++CheckBox checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300"]
-++RadioButton checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300", roleDescription="radio button"]
+++RadioButton checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300"]
 ++Switch text:"ARIA Switch" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", clickableScore="300"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="details"]
 ++++View text:"Summary" clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="disclosureTriangle", clickableScore="300", roleDescription="disclosure triangle"]
