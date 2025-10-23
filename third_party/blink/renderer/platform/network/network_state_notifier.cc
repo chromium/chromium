@@ -215,7 +215,7 @@ void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
     WebConnectionType type,
     std::optional<WebEffectiveConnectionType> effective_type,
     int64_t http_rtt_msec,
-    double max_bandwidth_mbps) {
+    std::optional<double> max_bandwidth_mbps) {
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
@@ -225,7 +225,8 @@ void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
     override_.on_line = on_line;
     override_.connection_initialized = true;
     override_.type = type;
-    override_.max_bandwidth_mbps = max_bandwidth_mbps;
+    override_.max_bandwidth_mbps =
+        max_bandwidth_mbps.value_or(NetworkState::kInvalidMaxBandwidth);
 
     if (!effective_type && http_rtt_msec > 0) {
       base::TimeDelta http_rtt(base::Milliseconds(http_rtt_msec));
