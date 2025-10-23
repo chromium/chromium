@@ -64,6 +64,9 @@ bool IsPreservePortsForTestingEnabled();
 // Whether accessing error attribute is enabled.
 bool IsErrorAttributeEnabled();
 
+// Whether the check for an embedder disabling auto sign-in is enabled.
+bool IsFedCmEmbedderCheckEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

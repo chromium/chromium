@@ -57,6 +57,8 @@ class FederatedIdentityAutoReauthnPermissionContext
   bool IsAutoReauthnSettingEnabled() override;
   bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) override;
+  bool IsAutoReauthnDisabledByEmbedder(
+      content::WebContents* web_contents) override;
   base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
   void RecordEmbargoForAutoReauthn(

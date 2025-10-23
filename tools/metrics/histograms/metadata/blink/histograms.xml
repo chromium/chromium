@@ -1403,6 +1403,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.AutoReauthn.BlockedByEmbedder" enum="Boolean"
+    expires_after="2026-12-12">
+  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether auto-reauthn was disabled by an embedder (e.g. due to an
+    active actor task). Records at most one sample per FedCM API with auto
+    re-authn enabled: some failures could occur before this metric is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByPreventSilentAccess"
     enum="Boolean" expires_after="2025-12-12">
   <owner>npm@chromium.org</owner>

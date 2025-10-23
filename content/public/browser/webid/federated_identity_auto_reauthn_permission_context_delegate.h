@@ -13,6 +13,7 @@ class Origin;
 }
 
 namespace content {
+class WebContents;
 
 // Delegate interface for the FedCM implementation to query whether the FedCM
 // API's auto re-authn is enabled in Site Settings.
@@ -32,6 +33,12 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
   // allowed or not.
   virtual bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) = 0;
+
+  // Returns true if the content embedder chooses to disable
+  // auto-reathentication, for example to avoid interfering with an active actor
+  // task.
+  virtual bool IsAutoReauthnDisabledByEmbedder(
+      content::WebContents* web_contents) = 0;
 
   // Returns the most recent recorded time an auto-reauthn embargo was started
   // with the given |relying_party_embedder|. Returns base::Time() if no record

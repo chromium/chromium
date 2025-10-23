@@ -1007,6 +1007,11 @@ void RequestService::MaybeShowAccountsDialog() {
                                       : DialogType::kSelectAccount;
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
+  bool is_auto_reauthn_blocked_by_embedder =
+      IsFedCmEmbedderCheckEnabled() &&
+      auto_reauthn_permission_delegate_->IsAutoReauthnDisabledByEmbedder(
+          WebContents::FromRenderFrameHost(&render_frame_host()));
+
   std::optional<base::TimeDelta> time_from_embargo;
   bool requires_user_mediation = false;
   IdentityProviderDataPtr auto_reauthn_idp = nullptr;
@@ -1037,7 +1042,8 @@ void RequestService::MaybeShowAccountsDialog() {
         GetAccountForAutoReauthn(&auto_reauthn_idp, &auto_reauthn_account);
     if (dialog_type_ == DialogType::kAutoReauth &&
         (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
-         is_auto_reauthn_embargoed || !has_single_returning_account)) {
+         is_auto_reauthn_embargoed || !has_single_returning_account ||
+         is_auto_reauthn_blocked_by_embedder)) {
       dialog_type_ = DialogType::kSelectAccount;
     }
     if (!has_single_returning_account &&
@@ -1046,7 +1052,8 @@ void RequestService::MaybeShowAccountsDialog() {
           has_single_returning_account, auto_reauthn_account.get(),
           dialog_type_ == DialogType::kAutoReauth,
           !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-          time_from_embargo, requires_user_mediation);
+          is_auto_reauthn_blocked_by_embedder, time_from_embargo,
+          requires_user_mediation);
 
       // By this moment we know that the user has granted permission in the past
       // for the RP/IdP. Because otherwise we have returned already in
@@ -1084,7 +1091,8 @@ void RequestService::MaybeShowAccountsDialog() {
         has_single_returning_account, auto_reauthn_account.get(),
         dialog_type_ == DialogType::kAutoReauth,
         !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-        time_from_embargo, requires_user_mediation);
+        is_auto_reauthn_blocked_by_embedder, time_from_embargo,
+        requires_user_mediation);
   }
 
   // The RenderFrameHost may be alive but not visible in the following
@@ -2383,6 +2391,16 @@ bool RequestService::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
     return false;
   }
 
+  bool is_auto_reauthn_blocked_by_embedder =
+      IsFedCmEmbedderCheckEnabled() &&
+      auto_reauthn_permission_delegate_->IsAutoReauthnDisabledByEmbedder(
+          WebContents::FromRenderFrameHost(&render_frame_host()));
+  if (is_auto_reauthn_blocked_by_embedder) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Silent mediation issue: ongoing actor task in the tab.");
+  }
+
   bool is_auto_reauthn_setting_enabled =
       auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
   if (!is_auto_reauthn_setting_enabled) {
@@ -2428,13 +2446,15 @@ bool RequestService::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
   }
 
   if (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
-      is_auto_reauthn_embargoed || !has_sharing_permission_for_any_account) {
+      is_auto_reauthn_embargoed || !has_sharing_permission_for_any_account ||
+      is_auto_reauthn_blocked_by_embedder) {
     // Record the relevant auto reauthn metrics before aborting the FedCM flow.
     fedcm_metrics_->RecordAutoReauthnMetrics(
         /*has_single_returning_account=*/std::nullopt,
         /*auto_signin_account=*/nullptr,
         /*auto_reauthn_success=*/false, !is_auto_reauthn_setting_enabled,
-        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
+        is_auto_reauthn_embargoed, is_auto_reauthn_blocked_by_embedder,
+        time_from_embargo, requires_user_mediation);
     return true;
   }
   return false;

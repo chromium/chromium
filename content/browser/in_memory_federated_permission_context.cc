@@ -96,6 +96,11 @@ bool InMemoryFederatedPermissionContext::IsAutoReauthnEmbargoed(
   return false;
 }
 
+bool InMemoryFederatedPermissionContext::IsAutoReauthnDisabledByEmbedder(
+    content::WebContents* web_contents) {
+  return false;
+}
+
 void InMemoryFederatedPermissionContext::SetRequiresUserMediation(
     const url::Origin& rp_origin,
     bool requires_user_mediation) {

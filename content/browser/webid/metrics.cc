@@ -467,6 +467,7 @@ void Metrics::RecordAutoReauthnMetrics(
     bool auto_reauthn_success,
     bool is_auto_reauthn_setting_blocked,
     bool is_auto_reauthn_embargoed,
+    bool is_auto_reauthn_blocked_by_embedder,
     std::optional<base::TimeDelta> time_from_embargo,
     bool requires_user_mediation) {
   NumAccounts num_returning_accounts = NumAccounts::kZero;
@@ -482,6 +483,8 @@ void Metrics::RecordAutoReauthnMetrics(
   }
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.Succeeded",
                             auto_reauthn_success);
+  base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByEmbedder",
+                            is_auto_reauthn_blocked_by_embedder);
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByContentSettings",
                             is_auto_reauthn_setting_blocked);
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByEmbargo",
@@ -508,6 +511,8 @@ void Metrics::RecordAutoReauthnMetrics(
         static_cast<int>(num_returning_accounts));
   }
   ukm_builder->SetAutoReauthn_Succeeded(auto_reauthn_success);
+  ukm_builder->SetAutoReauthn_BlockedByEmbedder(
+      is_auto_reauthn_blocked_by_embedder);
   ukm_builder->SetAutoReauthn_BlockedByContentSettings(
       is_auto_reauthn_setting_blocked);
   ukm_builder->SetAutoReauthn_BlockedByEmbargo(is_auto_reauthn_embargoed);

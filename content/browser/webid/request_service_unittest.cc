@@ -1652,7 +1652,8 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
       bool expected_succeeded,
       bool expected_auto_reauthn_setting_blocked,
       bool expected_auto_reauthn_embargoed,
-      bool expected_prevent_silent_access) {
+      bool expected_prevent_silent_access,
+      bool expected_auto_reauthn_blocked_by_embedder) {
     // UMA checks
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
                                          expected_succeeded, 1);
@@ -1664,6 +1665,9 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
       histogram_tester_.ExpectTotalCount(
           "Blink.FedCm.AutoReauthn.ReturningAccounts", 0);
     }
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.AutoReauthn.BlockedByEmbedder",
+        expected_auto_reauthn_blocked_by_embedder, 1);
     histogram_tester_.ExpectUniqueSample(
         "Blink.FedCm.AutoReauthn.BlockedByContentSettings",
         expected_auto_reauthn_setting_blocked, 1);
@@ -2436,7 +2440,47 @@ TEST_F(RequestServiceTest, AutoReauthnEmbargo) {
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
+}
+
+// Test that sign-in state is enforced when the content embedder blocks the
+// sign-in, for example if there is an ongoing task by an actor.
+TEST_F(RequestServiceTest, ExplicitSigninBlockedByEmbedder) {
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillRepeatedly(Return(std::make_optional<base::Time>()));
+
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+  // Pretend actor task is active.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnDisabledByEmbedder(web_contents()))
+      .WillOnce(Return(true));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ASSERT_EQ(all_accounts_for_display().size(), 1u);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignIn);
+  EXPECT_FALSE(test_auto_reauthn_permission_delegate_->embargoed_origins_.count(
+      OriginFromString(kRpUrl)));
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  ExpectAutoReauthnMetrics(Metrics::NumAccounts::kOne,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/true);
 }
 
 // Test that auto re-authn with a single account where the account is a
@@ -2474,7 +2518,8 @@ TEST_F(RequestServiceTest, AutoReauthnForSingleReturningUserSingleAccount) {
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -2525,7 +2570,8 @@ TEST_F(RequestServiceTest, AutoReauthnForSingleReturningUserMultipleAccounts) {
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and multiple returning users
@@ -2577,7 +2623,8 @@ TEST_F(RequestServiceTest,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that auto re-authn with single non-returning account sets the sign-in
@@ -2613,7 +2660,8 @@ TEST_F(RequestServiceTest, AutoReauthnForZeroReturningUsers) {
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -2677,7 +2725,8 @@ TEST_F(RequestServiceTest,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/true);
+                           /*expected_prevent_silent_access=*/true,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -2841,7 +2890,8 @@ TEST_F(RequestServiceTest, AutoReauthnWithBlockedAutoReauthnPermissions) {
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/true,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that auto re-authn where the auto re-authn cooldown is on sets
@@ -2879,7 +2929,8 @@ TEST_F(RequestServiceTest, AutoReauthnWithCooldown) {
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/true,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2926,7 +2977,8 @@ TEST_F(RequestServiceTest,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and auto
@@ -2943,7 +2995,6 @@ TEST_F(RequestServiceTest, AutoReauthnMediationSilentFailWithEmbargo) {
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
-
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
@@ -2973,7 +3024,8 @@ TEST_F(RequestServiceTest, AutoReauthnMediationSilentFailWithEmbargo) {
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/true,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -3020,7 +3072,8 @@ TEST_F(RequestServiceTest,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/true);
+                           /*expected_prevent_silent_access=*/true,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -3066,7 +3119,8 @@ TEST_F(RequestServiceTest,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/true,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test `mediation: silent` could fail silently after fetching accounts
@@ -3139,7 +3193,8 @@ TEST_F(RequestServiceTest,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+                           /*expected_prevent_silent_access=*/false,
+                           /*expected_auto_reauthn_blocked_by_embedder=*/false);
 }
 
 // Test `mediation: silent` fails silently after a failed accounts fetch.

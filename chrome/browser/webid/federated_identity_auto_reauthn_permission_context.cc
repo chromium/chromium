@@ -5,11 +5,16 @@
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context.h"
 
 #include "base/metrics/histogram_macros.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#endif  //! BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 FederatedIdentityAutoReauthnPermissionContext::
@@ -47,6 +52,24 @@ bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(
   return permission_autoblocker_->IsEmbargoed(
       relying_party_embedder.GetURL(),
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
+}
+
+bool FederatedIdentityAutoReauthnPermissionContext::
+    IsAutoReauthnDisabledByEmbedder(content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!web_contents) {
+    return false;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  const auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  return tab_interface && actor_service &&
+         actor_service->IsActiveOnTab(*tab_interface);
+#else   // BUILDFLAG(IS_ANDROID)
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::Time

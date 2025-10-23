@@ -397,6 +397,10 @@ BASE_FEATURE(kEnsureExistingRendererAlive, base::FEATURE_DISABLED_BY_DEFAULT);
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for checking if there is an ongoing embedder task in the auto
+// re-authn flow.
+BASE_FEATURE(kFedCmEmbedderCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Support usernames and phone numbers to identify users, instead of
 // (or in addition to) names and emails.
 BASE_FEATURE(kFedCmAlternativeIdentifiers, base::FEATURE_ENABLED_BY_DEFAULT);

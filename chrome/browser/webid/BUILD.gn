@@ -116,6 +116,9 @@ source_set("impl") {
     "//third_party/blink/public/common:headers",
     "//url",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/actor" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -167,6 +170,8 @@ if (!is_android) {
         [ "federated_identity_auto_reauthn_permission_context_browsertest.cc" ]
     deps = [
       ":webid",
+      "//chrome/browser/actor",
+      "//chrome/browser/actor/ui:test_support",
       "//chrome/browser/password_manager/factories:password_factory_headers",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",

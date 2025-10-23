@@ -31,6 +31,7 @@ struct LoginStatusOptions;
 }  // namespace blink::common::webid
 
 namespace content {
+class WebContents;
 
 // This class implements the various FedCM delegates. It is used to store
 // permission and login state in memory as a default implementation.
@@ -60,6 +61,8 @@ class InMemoryFederatedPermissionContext
   bool IsAutoReauthnSettingEnabled() override;
   bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) override;
+  bool IsAutoReauthnDisabledByEmbedder(
+      content::WebContents* web_contents) override;
   base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
   void RecordEmbargoForAutoReauthn(

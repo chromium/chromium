@@ -504,6 +504,7 @@ class CONTENT_EXPORT Metrics {
       bool auto_reauthn_success,
       bool is_auto_reauthn_setting_blocked,
       bool is_auto_reauthn_embargoed,
+      bool is_auto_reauthn_blocked_by_embedder,
       std::optional<base::TimeDelta> time_from_embargo,
       bool requires_user_mediation);
 

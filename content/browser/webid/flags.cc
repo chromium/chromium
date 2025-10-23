@@ -57,6 +57,10 @@ bool IsUseOtherAccountAndLabelsNewSyntaxEnabled() {
       features::kFedCmUseOtherAccountAndLabelsNewSyntax);
 }
 
+bool IsFedCmEmbedderCheckEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmEmbedderCheck);
+}
+
 bool IsAutofillEnabled() {
   // FedCmAutofill is a new flag extracted from FedCmDelegation. To avoid
   // breaking existing developer testing, we consider the new flag being enabled
