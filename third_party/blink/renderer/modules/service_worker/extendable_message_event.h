@@ -78,6 +78,9 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
 
   const AtomicString& InterfaceName() const override;
 
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override;
+
   void Trace(Visitor*) const override;
 
  private:

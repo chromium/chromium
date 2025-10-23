@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/service_worker/extendable_message_event.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_client_messageport_serviceworker.h"
+#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
 
@@ -106,6 +108,15 @@ MessagePortArray ExtendableMessageEvent::ports() const {
 
 const AtomicString& ExtendableMessageEvent::InterfaceName() const {
   return event_interface_names::kExtendableMessageEvent;
+}
+
+DOMOrigin* ExtendableMessageEvent::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is required, as this object intentionally reveals its
+  // sender's origin cross-origin.
+
+  // TODO(449542601): We should shift `origin_` to hold a SecurityOrigin rather
+  // than a string.
+  return DOMOrigin::Create(SecurityOrigin::CreateFromString(origin_));
 }
 
 void ExtendableMessageEvent::Trace(Visitor* visitor) const {

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -37,6 +38,7 @@
 
 namespace blink {
 
+class DOMOrigin;
 class DOMWrapperWorld;
 class EventDispatcher;
 class EventInit;
@@ -48,7 +50,7 @@ class PseudoElement;
 class CSSPseudoElement;
 class ScriptState;
 
-class CORE_EXPORT Event : public ScriptWrappable {
+class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -348,6 +350,9 @@ class CORE_EXPORT Event : public ScriptWrappable {
   virtual DispatchEventResult DispatchEvent(EventDispatcher&);
 
   probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
+
+  // DOMOriginUtils override:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override { return nullptr; }
 
   void Trace(Visitor*) const override;
 

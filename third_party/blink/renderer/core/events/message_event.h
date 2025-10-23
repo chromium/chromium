@@ -53,7 +53,7 @@ namespace blink {
 class MessageEventInit;
 class UserActivation;
 
-class CORE_EXPORT MessageEvent final : public Event, public DOMOriginUtils {
+class CORE_EXPORT MessageEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

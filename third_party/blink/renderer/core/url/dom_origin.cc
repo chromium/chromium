@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_anchor_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_area_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
@@ -39,6 +40,9 @@ namespace {
 // these types.
 DOMOriginUtils* GetDOMOriginUtilsFromV8Object(v8::Isolate* i,
                                               v8::Local<v8::Value> o) {
+  if (auto* p = V8Event::ToWrappable(i, o)) {
+    return p;
+  }
   if (auto* p = V8HTMLAnchorElement::ToWrappable(i, o)) {
     return p;
   }
@@ -158,12 +162,7 @@ DOMOrigin* DOMOrigin::from(ScriptState* script_state,
     return DOMOrigin::Create(origin->origin_);
   }
 
-  // ExtendableMessageEvent
-  //
-  // TODO(mkwst): This is implemented as a module, which might mean we need to
-  // move `Origin` object itself elsewhere to enable inclusion. Leaving this
-  // unimplemented for the moment.
-
+  // DOMOriginUtils objects:
   LocalDOMWindow* accessing_window = LocalDOMWindow::From(script_state);
   if (DOMOriginUtils* dom_origin_utils =
           GetDOMOriginUtilsFromV8Object(isolate, v8_object)) {
