@@ -68,11 +68,23 @@ AddressFormEventLogger::~AddressFormEventLogger() {
   // is accepted, we remove it from
   // `fields_where_autofill_on_typing_was_shown_`. Therefore for
   // the remaining fields, log that they were not accepted
-  for (const auto& [field_global_id, field_types_used] :
+  for (const auto& [field_global_id,
+                    triggering_field_classification_and_field_types_used] :
        fields_where_autofill_on_typing_was_shown_) {
-    base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
-                              false);
-    for (FieldType field_type : field_types_used) {
+    base::UmaHistogramBoolean(
+        "Autofill.AddressSuggestionOnTypingAcceptance.Any", false);
+    const bool triggering_field_classified =
+        triggering_field_classification_and_field_types_used.first;
+    if (triggering_field_classified) {
+      base::UmaHistogramBoolean(
+          "Autofill.AddressSuggestionOnTypingAcceptance.Classified", false);
+    } else {
+      base::UmaHistogramBoolean(
+          "Autofill.AddressSuggestionOnTypingAcceptance.Unclassified", false);
+    }
+    FieldTypeSet field_types_used_in_suggestions_generation =
+        triggering_field_classification_and_field_types_used.second;
+    for (FieldType field_type : field_types_used_in_suggestions_generation) {
       base::UmaHistogramSparse(
           "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
           GetBucketForAcceptanceMetricsGroupedByFieldType(
@@ -172,16 +184,20 @@ void AddressFormEventLogger::OnDidUndoAutofill() {
   base::RecordAction(base::UserMetricsAction("Autofill_UndoAddressAutofill"));
 }
 
-void AddressFormEventLogger::OnDidShownAutofillOnTyping(
+void AddressFormEventLogger::OnDidShowAddressOnTyping(
     FieldGlobalId field_global_id,
     FieldTypeSet field_types_used,
+    FieldTypeSet triggering_field_types,
     std::map<std::string, base::TimeDelta> profile_last_used_time_per_guid) {
   if (fields_where_autofill_on_typing_was_shown_.contains(field_global_id)) {
-    fields_where_autofill_on_typing_was_shown_[field_global_id].insert_all(
-        field_types_used);
+    fields_where_autofill_on_typing_was_shown_[field_global_id]
+        .second.insert_all(field_types_used);
   } else {
-    fields_where_autofill_on_typing_was_shown_[field_global_id] =
-        field_types_used;
+    const bool is_triggering_field_classified =
+        !FieldTypeSet{NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}.contains_all(
+            triggering_field_types);
+    fields_where_autofill_on_typing_was_shown_[field_global_id] = {
+        is_triggering_field_classified, field_types_used};
   }
   for (auto [guid, last_used_time] : profile_last_used_time_per_guid) {
     autofill_on_typing_suggestion_profile_last_used_time_per_guid_[guid] =
@@ -189,7 +205,7 @@ void AddressFormEventLogger::OnDidShownAutofillOnTyping(
   }
 }
 
-void AddressFormEventLogger::OnDidAcceptAutofillOnTyping(
+void AddressFormEventLogger::OnDidAcceptAddressOnTyping(
     FieldGlobalId field_global_id,
     const std::u16string& value,
     FieldType field_type_used_to_build_suggestion,
@@ -202,10 +218,17 @@ void AddressFormEventLogger::OnDidAcceptAutofillOnTyping(
   CHECK(autofill_on_typing_suggestion_profile_last_used_time_per_guid_.contains(
       profile_used_guid));
   autofill_on_typing_value_used_[field_global_id] = value;
-  base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
+  base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance.Any",
                             true);
+  if (fields_where_autofill_on_typing_was_shown_[field_global_id].first) {
+    base::UmaHistogramBoolean(
+        "Autofill.AddressSuggestionOnTypingAcceptance.Classified", true);
+  } else {
+    base::UmaHistogramBoolean(
+        "Autofill.AddressSuggestionOnTypingAcceptance.Unclassified", true);
+  }
   for (FieldType field_type :
-       fields_where_autofill_on_typing_was_shown_[field_global_id]) {
+       fields_where_autofill_on_typing_was_shown_[field_global_id].second) {
     base::UmaHistogramSparse(
         "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
         GetBucketForAcceptanceMetricsGroupedByFieldType(

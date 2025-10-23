@@ -1069,17 +1069,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.AddressSuggestionOnTypingAcceptance"
-    enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
-    expires_after="2026-06-13">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    During navigation, for each field where an autofill address suggestion on
-    typing is displayed, logs whether the user has accepted it or not.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication"
     enum="BooleanFieldClassificationType" expires_after="2026-06-19">
@@ -1114,6 +1103,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     typing is displayed, logs per field type whether the user has accepted it or
     not.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.AddressSuggestionOnTypingAcceptance.{ClassificationTypes}"
+    enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
+    expires_after="2026-06-13">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    During navigation, for each field where an autofill address suggestion on
+    typing is displayed, logs whether the user has accepted it or not.
+  </summary>
+  <token key="ClassificationTypes">
+    <variant name="Any" summary="any of the following"/>
+    <variant name="Classified"
+        summary="the triggering field where the suggestion was shown was
+                 classified"/>
+    <variant name="Unclassified"
+        summary="the triggering field where the suggestion was shown was not
+                 classified"/>
+  </token>
 </histogram>
 
 <histogram

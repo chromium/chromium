@@ -394,14 +394,18 @@ class AutofillAddressOnTypingMetricsTest : public AutofillMetricsBaseTest,
 
 TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   base::HistogramTester histogram_tester_;
-  FormData form = test::GetFormData({.fields = {{}, {}, {}}});
+  FormData form =
+      test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1,
+                                     .autocomplete_attribute = "address-line1"},
+                                    {.role = ADDRESS_HOME_LINE1,
+                                     .autocomplete_attribute = "address-line1"},
+                                    {}}});
   AutofillProfile profile = test::GetFullProfile();
   const base::Time now = base::Time::Now();
   constexpr size_t kProfileLastUsedInDays = 2u;
   profile.usage_history().set_use_date(now -
                                        base::Days(kProfileLastUsedInDays));
   personal_data().address_data_manager().AddProfile(profile);
-
   // Simulate that the autofill manager has seen this form on page load.
   SeeForm(form);
   std::vector<Suggestion> shown_suggestions = {
@@ -445,8 +449,15 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   SubmitForm(form);
   DeleteDriverToCommitMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "Autofill.AddressSuggestionOnTypingAcceptance"),
+                  "Autofill.AddressSuggestionOnTypingAcceptance.Any"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 2)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Autofill.AddressSuggestionOnTypingAcceptance.Classified"),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  // Note that the third field in `form` is unclassified.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Autofill.AddressSuggestionOnTypingAcceptance.Unclassified"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(
           "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType"),

@@ -71,9 +71,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   // For the profiles used to build the shown suggestions,
   // `profile_last_used_time_per_guid` specifies the last time each of the
   // profiles was used.
-  void OnDidShownAutofillOnTyping(
+  void OnDidShowAddressOnTyping(
       FieldGlobalId field_global_id,
       FieldTypeSet field_types_used,
+      FieldTypeSet triggering_field_types,
       std::map<std::string, base::TimeDelta> profile_last_used_time_per_guid);
 
   // `field_global_id` is the id of the field where a
@@ -83,11 +84,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   // which `value` was derived from.
   // `profile_used_guid` specifies the profile used to build
   // the accepted suggestion.
-  void OnDidAcceptAutofillOnTyping(
-      FieldGlobalId field_global_id,
-      const std::u16string& value,
-      FieldType field_type_used_to_build_suggestion,
-      const std::string profile_used_guid);
+  void OnDidAcceptAddressOnTyping(FieldGlobalId field_global_id,
+                                  const std::u16string& value,
+                                  FieldType field_type_used_to_build_suggestion,
+                                  const std::string profile_used_guid);
   void LogAutofillAddressOnTypingCorrectnessMetrics(const FormStructure& form);
 
   void OnDestroyed() override;
@@ -119,9 +119,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   // suggestion.
   DenseSet<AutofillProfileRecordTypeCategory> profile_categories_filled_;
   // For fields where `SuggestionType::kAddressEntryOnTyping`
-  // suggestions were shown, store the `FieldTypeSet` used to build the
-  // suggestions keyed by the field global identifier.
-  std::map<FieldGlobalId, FieldTypeSet>
+  // suggestions were shown, stores whether the field is classified and the
+  // `FieldTypeSet` used to build the suggestions, keyed by the field global
+  // identifier.
+  std::map<FieldGlobalId, std::pair<bool, FieldTypeSet>>
       fields_where_autofill_on_typing_was_shown_;
   // For profiles that were used to build
   // `SuggestionType::kAddressEntryOnTyping` suggestions, store their last usage
