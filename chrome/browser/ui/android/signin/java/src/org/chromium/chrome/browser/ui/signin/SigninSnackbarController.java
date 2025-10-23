@@ -48,9 +48,13 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
         mListener = listener;
     }
 
-    /** Implements {@link SnackbarController}. actionData will contain signinFlowResult */
+    /**
+     * Implements {@link SnackbarController}. actionData contains the exact actions user performed
+     * during the sign-in and history sync flow
+     */
     @Override
     public void onAction(@Nullable Object actionData) {
+        assert actionData instanceof SigninAndHistorySyncCoordinator.Result;
         // TODO(crbug.com/437039311):
         // - Disable history sync if it was enabled during the flow.
         // - Signout.
@@ -70,11 +74,10 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
             Profile profile,
             SnackbarManager snackbarManager,
             Listener listener,
-            @SigninAndHistorySyncCoordinator.Result int result) {
-        if (result == SigninAndHistorySyncCoordinator.Result.COMPLETED) {
-            // TODO(crbug.com/437039311): No snackbar shown if user doesn't actually sign-in in the
-            // flow (e.g. if only history sync opt-in was achieved), and not shown if the sign-in is
-            // cancelled by the user with the X button.
+            SigninAndHistorySyncCoordinator.Result result) {
+        if (result.hasSignedIn) {
+            // TODO(crbug.com/437039311): No snackbar shown if the sign-in is cancelled by the user
+            // with the X button.
             IdentityManager identityManager =
                     assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
             CoreAccountInfo accountInfo =
@@ -89,7 +92,6 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
                             new SigninSnackbarController(assertNonNull(listener)),
                             Snackbar.TYPE_ACTION,
                             Snackbar.UMA_SIGN_IN);
-            // TODO(crbug.com/437039311): pass history sync completion state
             snackbar.setAction(activity.getString(R.string.snackbar_undo_signin), result);
             snackbarManager.showSnackbar(snackbar);
         }

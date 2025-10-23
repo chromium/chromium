@@ -76,7 +76,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
          */
         Promise<@Nullable Void> getNativeInitializationPromise();
 
-        void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result);
+        void onFlowComplete(SigninAndHistorySyncCoordinator.Result result);
     }
 
     /**
@@ -215,11 +215,11 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                     assumeNonNull(signinManager);
                     signinManager.signOut(SignoutReason.ABORT_SIGNIN);
                 }
-                mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
+                mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
                 break;
             case ChildView.HISTORY_SYNC:
                 if (!mDidShowSignin) {
-                    mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
+                    mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
                     return BackPressResult.SUCCESS;
                 }
                 showChildView(ChildView.SIGNIN);
@@ -239,7 +239,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     @Override
     public void advanceToNextPage() {
         if (!isSignedIn() || mCurrentView == ChildView.HISTORY_SYNC) {
-            mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
+            mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
             return;
         }
         Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
@@ -248,7 +248,8 @@ public final class FullscreenSigninAndHistorySyncCoordinator
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
-            mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.COMPLETED);
+            mDelegate.onFlowComplete(
+                    new SigninAndHistorySyncCoordinator.Result(mDidShowSignin, false));
             return;
         }
         showChildView(ChildView.HISTORY_SYNC);
@@ -338,11 +339,9 @@ public final class FullscreenSigninAndHistorySyncCoordinator
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
-        @SigninAndHistorySyncCoordinator.Result
-        int flowResult =
-                isHistorySyncAccepted
-                        ? SigninAndHistorySyncCoordinator.Result.COMPLETED
-                        : SigninAndHistorySyncCoordinator.Result.INTERRUPTED;
+        SigninAndHistorySyncCoordinator.Result flowResult =
+                new SigninAndHistorySyncCoordinator.Result(
+                        mDidShowSignin && !didSignOut, isHistorySyncAccepted);
         mDelegate.onFlowComplete(flowResult);
     }
 

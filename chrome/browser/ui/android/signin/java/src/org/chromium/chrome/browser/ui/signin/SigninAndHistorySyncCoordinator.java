@@ -8,8 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.view.View;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -22,9 +20,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * Interface for coordinators responsible of showing the correct sub-component of the sign-in and
  * history opt-in flow.
@@ -33,21 +28,31 @@ import java.lang.annotation.RetentionPolicy;
 public interface SigninAndHistorySyncCoordinator {
 
     /** Indicates the sign-in flow completion status. */
-    @IntDef({
-        Result.COMPLETED,
-        Result.INTERRUPTED,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Result {
-        /** Indicates the sign-in flow completed successfully. */
-        int COMPLETED = 0;
+    public class Result {
+        /**
+         * Whether the sign-in operation occurred during this specific execution of the flow. Should
+         * be False if the user was already signed in before the flow started. Note, if the user
+         * explicitly accepts the sign-in CTA and the history sync consent is required, then
+         * declining history sync invalidates the entire sign-in.
+         */
+        public final boolean hasSignedIn;
 
         /**
-         * Indicates the sign-in flow was not completed due to error. The conditions depend on the
-         * configuration of the sign-in flow: e.g. if history opt-in is shown, declining history
-         * opt-in will set the INTERRUPTED state, and same for the sign-in step.
+         * The user successfully completed the history sync enablement step during the flow. Note,
+         * it possible for an already signed-in user to not be shown the sign-in CTA and only the
+         * history sync consent dialog.
          */
-        int INTERRUPTED = 1;
+        public final boolean hasOptedInHistorySync;
+
+        public Result(boolean hasSignedIn, boolean hasOptedInHistorySync) {
+            this.hasSignedIn = hasSignedIn;
+            this.hasOptedInHistorySync = hasOptedInHistorySync;
+        }
+
+        /** Default non-completion state, user canceled the sign-in flow, or an error occurred. */
+        public static Result aborted() {
+            return new Result(false, false);
+        }
     }
 
     /** Cleans up the coordinator after it is finished being used. */

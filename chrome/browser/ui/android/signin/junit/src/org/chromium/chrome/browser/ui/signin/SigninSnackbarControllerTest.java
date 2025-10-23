@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.activity.ComponentActivity;
@@ -36,6 +35,12 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninSnackbarControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private static final SigninAndHistorySyncCoordinator.Result SIGN_IN_ONLY =
+            new SigninAndHistorySyncCoordinator.Result(true, false);
+    private static final SigninAndHistorySyncCoordinator.Result HISTORY_SYNC_ONLY =
+            new SigninAndHistorySyncCoordinator.Result(false, true);
+    private static final SigninAndHistorySyncCoordinator.Result ABORTED =
+            SigninAndHistorySyncCoordinator.Result.aborted();
 
     @Mock private Profile mProfile;
     @Mock private IdentityManager mIdentityManager;
@@ -52,28 +57,27 @@ public class SigninSnackbarControllerTest {
     }
 
     @Test
-    public void testShowUndoSnackbarIfNeeded_resultInterrupted_snackbarNotShown() {
+    public void testShowUndoSnackbarIfNeeded_resultAborted_snackbarNotShown() {
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity,
-                mProfile,
-                mSnackbarManager,
-                mListener,
-                SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
-        verify(mSnackbarManager, never()).showSnackbar(any());
+                mActivity, mProfile, mSnackbarManager, mListener, ABORTED);
+        verifyNoInteractions(mSnackbarManager);
     }
 
     @Test
-    public void testShowUndoSnackbarIfNeeded_resultCompleted_snackbarShown() {
+    public void testShowUndoSnackbarIfNeeded_resultHistorySyncOnly_snackbarNotShown() {
+        SigninSnackbarController.showUndoSnackbarIfNeeded(
+                mActivity, mProfile, mSnackbarManager, mListener, HISTORY_SYNC_ONLY);
+        verifyNoInteractions(mSnackbarManager);
+    }
+
+    @Test
+    public void testShowUndoSnackbarIfNeeded_resultSignedInOnly_snackbarShown() {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(TestAccounts.ACCOUNT1);
 
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity,
-                mProfile,
-                mSnackbarManager,
-                mListener,
-                SigninAndHistorySyncCoordinator.Result.COMPLETED);
+                mActivity, mProfile, mSnackbarManager, mListener, SIGN_IN_ONLY);
 
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());

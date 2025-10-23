@@ -87,7 +87,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         void addAccount();
 
         /** Called when the whole flow finishes. */
-        void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result);
+        void onFlowComplete(SigninAndHistorySyncCoordinator.Result result);
 
         /**
          * Returns whether the history sync modal dialog is shown in full screen mode instead of
@@ -173,7 +173,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         }
         final boolean isBottomSheetShown = mSigninBottomSheetCoordinator != null;
         if (!isBottomSheetShown && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
-            onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
+            onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
         }
     }
 
@@ -259,7 +259,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
         mSigninBottomSheetCoordinator.destroy();
         mSigninBottomSheetCoordinator = null;
-        onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
+        onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
     }
 
     /** Implements {@link SigninSnackbarController.Listener} */
@@ -292,11 +292,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
-        @SigninAndHistorySyncCoordinator.Result
-        int flowResult =
-                isHistorySyncAccepted
-                        ? SigninAndHistorySyncCoordinator.Result.COMPLETED
-                        : SigninAndHistorySyncCoordinator.Result.INTERRUPTED;
+        SigninAndHistorySyncCoordinator.Result flowResult =
+                new SigninAndHistorySyncCoordinator.Result(
+                        mDidShowSigninStep && !didSignOut, isHistorySyncAccepted);
         onFlowComplete(flowResult);
     }
 
@@ -356,7 +354,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                 break;
             case NoAccountSigninMode.NO_SIGNIN:
                 // TODO(crbug.com/41493768): Implement the error state UI.
-                onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
+                onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
                 break;
         }
     }
@@ -399,7 +397,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
-            onFlowComplete(SigninAndHistorySyncCoordinator.Result.COMPLETED);
+            onFlowComplete(new SigninAndHistorySyncCoordinator.Result(mDidShowSigninStep, false));
             return;
         }
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
@@ -432,7 +430,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                                             // called twice, hide behind seamless sign-in flag
                                             onFlowComplete(
                                                     SigninAndHistorySyncCoordinator.Result
-                                                            .INTERRUPTED);
+                                                            .aborted());
                                         }
                                     }
                                 })
@@ -450,7 +448,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                                         } else {
                                             onFlowComplete(
                                                     SigninAndHistorySyncCoordinator.Result
-                                                            .INTERRUPTED);
+                                                            .aborted());
                                         }
                                     }
                                 })
@@ -500,7 +498,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
-    private void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result) {
+    private void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {
         if (mConfig.shouldShowSigninSnackbar) {
             // TODO(crbug.com/437039311): Verify that the user went through a seamless sign-in
             // before showing, add a new field to {WithAccountSigninMode}
