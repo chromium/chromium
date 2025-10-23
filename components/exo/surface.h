@@ -300,10 +300,6 @@ class Surface final : public ui::PropertyHandler {
   // Returns whether the surface has a committed acquire fence.
   bool HasAcquireFence() const;
 
-  // Request a callback when the buffer attached at the next commit is
-  // no longer used by that commit.
-  void SetPerCommitBufferReleaseCallback(
-      Buffer::PerCommitExplicitReleaseCallback callback);
   // Whether the surface has an uncommitted per-commit buffer release callback.
   bool HasPendingPerCommitBufferReleaseCallback() const;
 
