@@ -82,11 +82,11 @@ class CommandService : public BrowserContextKeyedAPI,
    public:
     // Called when an extension command is added.
     virtual void OnExtensionCommandAdded(const ExtensionId& extension_id,
-                                         const Command& command) {}
+                                         const std::string& command_name) {}
 
     // Called when an extension command is removed.
     virtual void OnExtensionCommandRemoved(const ExtensionId& extension_id,
-                                           const Command& command) {}
+                                           const std::string& command_name) {}
 
     // Called when the CommandService is being destroyed.
     virtual void OnCommandServiceDestroying() {}

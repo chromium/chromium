@@ -21,6 +21,16 @@
       },
       "description": "Toggle feature foo"
     },
+    "toggle-feature-2": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+X",
+        "mac": "MacCtrl+Shift+X",
+        "linux": "Ctrl+Shift+X",
+        "chromeos": "Ctrl+Shift+X",
+        "default": "Ctrl+Shift+X"
+      },
+      "description": "Toggle feature bar"
+    },
     "_execute_action": {
       "suggested_key": {
         "mac": "MacCtrl+Shift+F",

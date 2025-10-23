@@ -512,12 +512,12 @@ void ExtensionActionViewController::OnToolbarPinnedActionsChanged() {}
 
 void ExtensionActionViewController::OnExtensionCommandAdded(
     const std::string& extension_id,
-    const extensions::Command& command) {
+    const std::string& command_name) {
   if (extension_id != extension()->id()) {
     return;  // Not this action's extension.
   }
 
-  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
+  if (!extensions::Command::IsActionRelatedCommand(command_name)) {
     return;
   }
 
@@ -526,12 +526,12 @@ void ExtensionActionViewController::OnExtensionCommandAdded(
 
 void ExtensionActionViewController::OnExtensionCommandRemoved(
     const std::string& extension_id,
-    const extensions::Command& command) {
+    const std::string& command_name) {
   if (extension_id != extension()->id()) {
     return;
   }
 
-  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
+  if (!extensions::Command::IsActionRelatedCommand(command_name)) {
     return;
   }
 

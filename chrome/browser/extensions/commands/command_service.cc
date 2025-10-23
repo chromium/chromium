@@ -274,13 +274,11 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
   MergeSuggestedKeyPrefs(extension_id, ExtensionPrefs::Get(profile_),
                          std::move(suggested_key_prefs));
 
-  // Fetch the newly-updated command, and notify the observers.
-  Command command = FindCommandByName(extension_id, command_name);
   for (auto& observer : observers_) {
     if (accelerator.key_code() != ui::VKEY_UNKNOWN) {
-      observer.OnExtensionCommandAdded(extension_id, command);
+      observer.OnExtensionCommandAdded(extension_id, command_name);
     } else {
-      observer.OnExtensionCommandRemoved(extension_id, command);
+      observer.OnExtensionCommandRemoved(extension_id, command_name);
     }
   }
 
@@ -746,7 +744,8 @@ void CommandService::RemoveKeybindingPrefs(const ExtensionId& extension_id,
 
   for (const Command& removed_command : removed_commands) {
     for (auto& observer : observers_)
-      observer.OnExtensionCommandRemoved(extension_id, removed_command);
+      observer.OnExtensionCommandRemoved(extension_id,
+                                         removed_command.command_name());
   }
 }
 

@@ -257,13 +257,13 @@ void DeveloperPrivateEventRouterShared::OnExtensionAllowlistWarningStateChanged(
 
 void DeveloperPrivateEventRouterShared::OnExtensionCommandAdded(
     const ExtensionId& extension_id,
-    const Command& added_command) {
+    const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
 }
 
 void DeveloperPrivateEventRouterShared::OnExtensionCommandRemoved(
     const ExtensionId& extension_id,
-    const Command& removed_command) {
+    const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
 }

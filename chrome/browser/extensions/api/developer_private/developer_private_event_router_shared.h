@@ -139,9 +139,9 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
 
   // CommandService::Observer:
   void OnExtensionCommandAdded(const ExtensionId& extension_id,
-                               const Command& added_command) override;
+                               const std::string& command_name) override;
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
-                                 const Command& removed_command) override;
+                                 const std::string& command_name) override;
 
   // Handles a profile preference change.
   void OnProfilePrefChanged();

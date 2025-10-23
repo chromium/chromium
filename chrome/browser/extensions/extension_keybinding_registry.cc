@@ -299,7 +299,7 @@ void ExtensionKeybindingRegistry::OnExtensionUnloaded(
 
 void ExtensionKeybindingRegistry::OnExtensionCommandAdded(
     const ExtensionId& extension_id,
-    const Command& command) {
+    const std::string& command_name) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
@@ -315,12 +315,12 @@ void ExtensionKeybindingRegistry::OnExtensionCommandAdded(
   if (extension->location() == mojom::ManifestLocation::kComponent)
     return;
 
-  AddExtensionKeybindings(extension, command.command_name());
+  AddExtensionKeybindings(extension, command_name);
 }
 
 void ExtensionKeybindingRegistry::OnExtensionCommandRemoved(
     const ExtensionId& extension_id,
-    const Command& command) {
+    const std::string& command_name) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
@@ -330,7 +330,7 @@ void ExtensionKeybindingRegistry::OnExtensionCommandRemoved(
   if (!extension || !ExtensionMatchesFilter(extension))
     return;
 
-  RemoveExtensionKeybinding(extension, command.command_name());
+  RemoveExtensionKeybinding(extension, command_name);
 }
 
 void ExtensionKeybindingRegistry::OnCommandServiceDestroying() {

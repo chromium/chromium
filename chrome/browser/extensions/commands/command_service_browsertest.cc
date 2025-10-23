@@ -30,8 +30,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace {
 const char kBasicBrowserActionKeybinding[] = "Ctrl+Shift+F";
 const char kBasicNamedKeybinding[] = "Ctrl+Shift+Y";
+const char kBasicNamedKeybinding2[] = "Ctrl+Shift+X";
 const char kBasicAlternateKeybinding[] = "Ctrl+Shift+G";
 const char kBasicNamedCommand[] = "toggle-feature";
+const char kBasicNamedCommand2[] = "toggle-feature-2";
 constexpr char kAltNKeybinding[] = "Alt+N";
 constexpr char kAltZKeybinding[] = "Alt+Z";
 constexpr char kExtensionId[] = "pgoakhfeplldmjheffidklpoklkppipp";
@@ -649,6 +651,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   }
 
   // Tests that setting an empty keybinding string unsets the binding.
+  // Make sure other bindings are unaffected.
   command_service->UpdateKeybindingPrefs(extension->id(), kBasicNamedCommand,
                                          /*keystroke=*/"");
   {
@@ -660,6 +663,11 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
     ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(ui::VKEY_UNKNOWN, command.accelerator().key_code());
+
+    ASSERT_EQ(1u, command_map.count(kBasicNamedCommand2));
+    ui::Command command2 = command_map[kBasicNamedCommand2];
+    EXPECT_EQ(kBasicNamedKeybinding2,
+              Command::AcceleratorToString(command2.accelerator()));
   }
 }
 

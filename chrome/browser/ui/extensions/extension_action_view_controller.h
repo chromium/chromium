@@ -124,9 +124,9 @@ class ExtensionActionViewController
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,
-                               const extensions::Command& command) override;
+                               const std::string& command_name) override;
   void OnExtensionCommandRemoved(const std::string& extension_id,
-                                 const extensions::Command& command) override;
+                                 const std::string& command_name) override;
   void OnCommandServiceDestroying() override;
 
   // ExtensionContextMenuModel::PopupDelegate:

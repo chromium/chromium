@@ -147,9 +147,9 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
  private:
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const ExtensionId& extension_id,
-                               const Command& command) override;
+                               const std::string& command_name) override;
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
-                                 const Command& command) override;
+                                 const std::string& command_name) override;
   void OnCommandServiceDestroying() override;
 
   // ExtensionRegistryObserver implementation.
