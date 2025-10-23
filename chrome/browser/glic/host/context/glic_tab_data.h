@@ -9,6 +9,7 @@
 #include <ostream>
 #include <variant>
 
+#include "base/callback_list.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

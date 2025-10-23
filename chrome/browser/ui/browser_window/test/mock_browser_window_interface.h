@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_MOCK_BROWSER_WINDOW_INTERFACE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_MOCK_BROWSER_WINDOW_INTERFACE_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

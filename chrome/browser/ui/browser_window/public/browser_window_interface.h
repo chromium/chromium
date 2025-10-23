@@ -12,7 +12,6 @@
 #include "content/public/browser/page_navigator.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/callback_list.h"
 #include "ui/base/window_open_disposition.h"
 #endif
 
@@ -32,6 +31,10 @@
 // or on DesktopBrowserWindowCapabilities.
 
 #if !BUILDFLAG(IS_ANDROID)
+namespace base {
+class CallbackListSubscription;
+}  // namespace base
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs

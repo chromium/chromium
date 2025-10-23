@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"

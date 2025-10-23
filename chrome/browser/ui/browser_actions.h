@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 
 class BrowserActionPrefsListener;
 class BrowserWindowInterface;

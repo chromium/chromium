@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -18,6 +17,7 @@
 #include "url/gurl.h"
 
 namespace base {
+class CallbackListSubscription;
 class Clock;
 }
 

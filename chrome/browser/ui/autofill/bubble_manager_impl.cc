@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

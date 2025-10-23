@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -25,6 +24,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
+
+namespace base {
+class CallbackListSubscription;
+}
 
 namespace actions {
 
