@@ -34,6 +34,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
 #if BUILDFLAG(ENABLE_GLIC)
@@ -94,8 +95,8 @@ class GradientBubbleFrameView : public views::BubbleFrameView {
       SkPoint center = SkPoint::Make(button_bounds_f.CenterPoint().x(),
                                      button_bounds_f.CenterPoint().y());
       const SkColor colors[] = {
-          SkColorSetARGB(255, 117, 93, 252), SkColorSetARGB(255, 93, 93, 252),
-          SkColorSetARGB(255, 68, 137, 255), SkColorSetARGB(255, 68, 137, 255)};
+          SkColorSetARGB(255, 79, 161, 255), SkColorSetARGB(255, 79, 161, 255),
+          SkColorSetARGB(255, 52, 107, 241), SkColorSetARGB(255, 52, 107, 241)};
       const SkScalar pos[] = {0.0f, 0.4f, 0.6f, 1.0f};
       std::vector<SkColor4f> color4fs;
       for (const auto& color : colors) {
@@ -139,7 +140,7 @@ END_METADATA
 
 std::unique_ptr<views::FrameView> CreateHandoffButtonFrameView(
     views::Widget* widget) {
-  const gfx::Insets content_padding = gfx::Insets::VH(12, 20);
+  const gfx::Insets content_padding = gfx::Insets::TLBR(10, 10, 10, 14);
   const gfx::Insets total_insets =
       content_padding + gfx::Insets(kHandoffButtonShadowMargin);
   const gfx::RoundedCornersF corners(kHandoffButtonCornerRadius);
@@ -245,6 +246,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
   button_view_->SetProperty(views::kElementIdentifierKey,
                             kHandoffButtonElementId);
+  button_view_->SetLabelStyle(views::style::STYLE_BODY_3_MEDIUM);
 
   auto widget_delegate = std::make_unique<views::WidgetDelegate>();
   widget_delegate->SetContentsView(std::move(button_view));
