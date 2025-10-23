@@ -263,29 +263,33 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   ComputeSubsetParameters(source, options, source_rect, source_rect_valid,
                           dest_size);
 
-  // Create the resource provider for the target for the blit.
-  std::unique_ptr<CanvasResourceProvider> resource_provider;
   // If `source` is accelerated and there is a context provider, try to use an
   // accelerated SharedImage provider.
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
-    resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+    auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
         gfx::Size(dest_size.width(), dest_size.height()),
         viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
         dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
         CanvasResourceProvider::ShouldInitialize::kNo,
         source->ContextProviderWrapper(), RasterMode::kGPU,
         source->GetSharedImage()->usage());
+
+    if (resource_provider) {
+      // Perform the blit and return the drawn resource.
+      BlitToCanvas(resource_provider->Canvas(), source_paint_image,
+                   source_orientation, SkRect::Make(source_rect), dest_size,
+                   options);
+      return resource_provider->Snapshot(flush_reason, source_orientation);
+    }
   }
+
   // If not (or if the SharedImage provider fails), fall back to software.
-  if (!resource_provider) {
-    resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        gfx::Size(dest_size.width(), dest_size.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
-        dest_alpha_type,
-        SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
-        CanvasResourceProvider::ShouldInitialize::kNo);
-  }
+  auto resource_provider = CanvasResourceProvider::CreateBitmapProvider(
+      gfx::Size(dest_size.width(), dest_size.height()),
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
+      dest_alpha_type, SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
+      CanvasResourceProvider::ShouldInitialize::kNo);
   if (!resource_provider) {
     return nullptr;
   }
