@@ -9,7 +9,10 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "content/public/browser/browser_context.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace actor {
 

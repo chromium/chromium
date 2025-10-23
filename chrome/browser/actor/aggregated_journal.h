@@ -19,8 +19,11 @@
 #include "base/types/pass_key.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
-#include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
+
+namespace content {
+class RenderFrameHost;
+}
 
 namespace actor {
 

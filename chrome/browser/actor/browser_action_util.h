@@ -16,12 +16,15 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.
 // TODO(bokan): Rename to actor_proto_conversion.h|cc
+
+namespace content {
+class BrowserContext;
+}
 
 namespace optimization_guide::proto {
 class Action;

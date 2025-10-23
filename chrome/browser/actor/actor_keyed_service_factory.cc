@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 
 namespace actor {
 

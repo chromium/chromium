@@ -24,11 +24,14 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class Profile;
+
+namespace content {
+class NavigationHandle;
+}
 
 namespace tabs {
 class TabInterface;
