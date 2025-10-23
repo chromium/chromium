@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -78,30 +79,29 @@ Uuid Uuid::GenerateRandomV4() {
 Uuid Uuid::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
   DCHECK_EQ(input.size_bytes(), kGuidV4InputLength);
 
-  uint64_t sixteen_bytes[2];
-  UNSAFE_TODO(memcpy(&sixteen_bytes, input.data(), sizeof(sixteen_bytes)));
+  uint64_t first_u64 = U64FromLittleEndian(input.first<8>());
+  uint64_t second_u64 = U64FromLittleEndian(input.last<8>());
 
   // Set the Uuid to version 4 as described in RFC 4122, section 4.4.
   // The format of Uuid version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
   // where y is one of [8, 9, a, b].
 
   // Clear the version bits and set the version to 4:
-  sixteen_bytes[0] &= 0xffffffff'ffff0fffULL;
-  sixteen_bytes[0] |= 0x00000000'00004000ULL;
+  first_u64 &= 0xffffffff'ffff0fffULL;
+  first_u64 |= 0x00000000'00004000ULL;
 
   // Clear bit 65 and set bit 64, to set the 'var' field to 0b10 per RFC 9562
   // section 5.4.
-  sixteen_bytes[1] &= 0x3fffffff'ffffffffULL;
-  sixteen_bytes[1] |= 0x80000000'00000000ULL;
+  second_u64 &= 0x3fffffff'ffffffffULL;
+  second_u64 |= 0x80000000'00000000ULL;
 
   Uuid uuid;
-  uuid.lowercase_ =
-      StringPrintf("%08x-%04x-%04x-%04x-%012llx",
-                   static_cast<uint32_t>(sixteen_bytes[0] >> 32),
-                   static_cast<uint32_t>((sixteen_bytes[0] >> 16) & 0x0000ffff),
-                   static_cast<uint32_t>(sixteen_bytes[0] & 0x0000ffff),
-                   static_cast<uint32_t>(sixteen_bytes[1] >> 48),
-                   sixteen_bytes[1] & 0x0000ffff'ffffffffULL);
+  uuid.lowercase_ = StringPrintf(
+      "%08x-%04x-%04x-%04x-%012llx", static_cast<uint32_t>(first_u64 >> 32),
+      static_cast<uint32_t>((first_u64 >> 16) & 0x0000ffff),
+      static_cast<uint32_t>(first_u64 & 0x0000ffff),
+      static_cast<uint32_t>(second_u64 >> 48),
+      second_u64 & 0x0000ffff'ffffffffULL);
   return uuid;
 }
 
