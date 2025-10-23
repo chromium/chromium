@@ -6,7 +6,7 @@
 
 [
     Exposed=Window,
-    RuntimeEnabled=AnimationTrigger
+    RuntimeEnabled=EventTrigger
 ] interface EventTrigger : AnimationTrigger {
   [CallWith=ExecutionContext, RaisesException] constructor(optional EventTriggerOptions options = {});
   readonly attribute DOMString eventType;

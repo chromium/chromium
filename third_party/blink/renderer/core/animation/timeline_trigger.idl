@@ -6,7 +6,7 @@
 
 [
     Exposed=Window,
-    RuntimeEnabled=AnimationTrigger
+    RuntimeEnabled=TimelineTrigger
 ] interface TimelineTrigger : AnimationTrigger {
   [CallWith=ExecutionContext, MeasureAs=V8AnimationTrigger_Constructor, RaisesException] constructor(optional TimelineTriggerOptions options = {});
   readonly attribute AnimationTimeline? timeline;

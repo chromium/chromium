@@ -1074,7 +1074,7 @@
       converter: "ConvertTimelineTriggerName",
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "timeline-trigger-range-start",
@@ -1085,7 +1085,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "timeline-trigger-range-end",
@@ -1096,7 +1096,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "timeline-trigger-exit-range-start",
@@ -1107,7 +1107,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "timeline-trigger-exit-range-end",
@@ -1118,7 +1118,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "timeline-trigger-source",
@@ -1131,7 +1131,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "transition-delay",
@@ -9028,7 +9028,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: "AnimationTrigger",
+      runtime_flag: "TimelineTrigger",
     },
     {
       name: "-webkit-text-stroke",

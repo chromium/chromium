@@ -62,7 +62,7 @@ void UpdateAnimationTiming(
     Document& document,
     HeapHashSet<WeakMember<AnimationTimeline>>& timelines,
     TimingUpdateReason reason) {
-  if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+  if (RuntimeEnabledFeatures::TimelineTriggerEnabled()) {
     // First service all triggers because servicing a trigger might result in an
     // animation's timeline being "dirtied", i.e. marked with an outdated
     // animation whose currentTime was updated. This can happen if an

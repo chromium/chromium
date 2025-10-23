@@ -538,6 +538,7 @@
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "AnimationTrigger",
       status: "experimental",
+      implied_by: ["EventTrigger", "TimelineTrigger"],
     },
     {
       name: "AnimationWorklet",
@@ -2135,6 +2136,11 @@
     },
     {
       name: "EventTimingTargetSelector",
+      status: "experimental",
+    },
+    {
+      // https://drafts.csswg.org/web-animations-2/#triggers
+      name: "EventTrigger",
       status: "experimental",
     },
     {
@@ -5108,6 +5114,11 @@
       name: "ThirdPartyStoragePartitioningUserBypass",
       browser_process_read_write_access: true,
       base_feature: "none",
+    },
+    {
+      // https://drafts.csswg.org/web-animations-2/#triggers
+      name: "TimelineTrigger",
+      status: "experimental",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",

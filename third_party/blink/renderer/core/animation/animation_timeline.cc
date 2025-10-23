@@ -231,7 +231,7 @@ void AnimationTimeline::RemoveTrigger(TimelineTrigger* trigger) {
 }
 
 void AnimationTimeline::ServiceTriggers() {
-  DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
+  DCHECK(RuntimeEnabledFeatures::TimelineTriggerEnabled());
   PhaseAndTime current_phase_and_time = CurrentPhaseAndTime();
 
   if (last_current_phase_and_time_ != current_phase_and_time) {
