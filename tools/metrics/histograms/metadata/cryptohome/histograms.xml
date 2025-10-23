@@ -420,29 +420,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.RestoreSELinuxContextResultForHome"
-    enum="BooleanSuccess" expires_after="2025-10-01">
-  <owner>jorgelo@chromium.org</owner>
-  <summary>
-    The result of a cryptohome restore SELinux context operation of user home
-    directory /home/.shadow/salted-hash and its subdirectories. Recorded once
-    per login attempt.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.RestoreSELinuxContextResultForShadow"
-    enum="BooleanSuccess" expires_after="2025-10-01">
-  <owner>jadmanski@chromium.org</owner>
-  <owner>jorgelo@chromium.org</owner>
-  <summary>
-    The result of a cryptohome restore SELinux context operation of shadow
-    directory /home/.shadow and its subdirectories. Recorded on a user's first
-    login on a device or login after factory reset.
-
-    WARNING: This histogram was expired from 2022-02-25 to 2022-04-22.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
     expires_after="2026-10-01">
   <owner>vsavu@google.com</owner>
