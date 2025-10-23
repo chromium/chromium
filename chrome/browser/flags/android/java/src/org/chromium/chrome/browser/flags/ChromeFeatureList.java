@@ -955,9 +955,8 @@ public abstract class ChromeFeatureList {
                     LOAD_NATIVE_EARLY, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
-    // TODO(https://crbug.com/438970923): Remove the use of BuildConfig by 2025 EoY.
     public static final CachedFlag sLockTopControlsOnLargeTabletsV2 =
-            newCachedFlag(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2, BuildConfig.IS_DESKTOP_ANDROID);
+            newCachedFlag(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2, false);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMaliciousApkDownloadCheck =
             newCachedFlag(
