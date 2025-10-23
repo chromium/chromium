@@ -50,6 +50,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Callback<Boolean>> ON_USE_AI_MODE_CHANGED =
             new WritableObjectPropertyKey<>();
 
+    /** Action to perform when the user clicks the AI Mode button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_AI_MODE_CLICKED =
+            new WritableObjectPropertyKey<>();
+
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -84,6 +88,7 @@ class NavigationAttachmentsProperties {
         BUTTON_ADD_CLICKED,
         NAVIGATION_TYPE_VISIBLE,
         ON_USE_AI_MODE_CHANGED,
+        POPUP_AI_MODE_CLICKED,
         POPUP_CAMERA_CLICKED,
         POPUP_CLIPBOARD_BUTTON_VISIBLE,
         POPUP_CLIPBOARD_CLICKED,

@@ -23,8 +23,7 @@ found in the LICENSE file.
         android:singleLine="true"
         android:text="@string/recent_tabs"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-        android:visibility="gone"
-        />
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tab_attachment_recycler_view"
@@ -37,7 +36,8 @@ found in the LICENSE file.
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
         android:focusable="false"/>
 
-    <!-- TODO(crbug.com/436888404): either drop clipboard or use proper strings.
+    <!--
+    TODO(crbug.com/436888404): either drop clipboard or use proper strings.
     -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_paste_from_clipboard_button"
@@ -85,6 +85,27 @@ found in the LICENSE file.
         style="@style/TextButton"
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/photo_picker_browse"
+        android:singleLine="true"
+        android:textAlignment="viewStart"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/listDivider"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/navigation_attachments_ai_mode_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:drawableStart="@drawable/search_spark_black_24dp"
+        android:drawablePadding="8dp"
+        style="@style/TextButton"
+        app:drawableTint="@color/default_icon_color_tint_list"
+        android:text="@string/ai_mode_entrypoint_label"
         android:singleLine="true"
         android:textAlignment="viewStart"/>
 

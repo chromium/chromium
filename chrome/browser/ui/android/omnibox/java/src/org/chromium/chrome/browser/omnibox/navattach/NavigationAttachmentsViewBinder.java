@@ -45,6 +45,9 @@ class NavigationAttachmentsViewBinder {
                                             NavigationAttachmentsProperties
                                                     .AUTOCOMPLETE_REQUEST_TYPE_CLICKED)
                                     .run());
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED) {
+            view.popup.mAiModeButton.setOnClickListener(
+                    v -> model.get(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED).run());
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);

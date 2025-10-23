@@ -114,6 +114,7 @@ class NavigationAttachmentsMediator {
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
                 this::activateSearchMode);
+        mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
         mModel.set(
                 NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED,
                 (checked) -> {
@@ -129,21 +130,21 @@ class NavigationAttachmentsMediator {
     void activateSearchMode() {
         mPopup.dismiss();
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH) return;
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
         mComposeBoxQueryControllerBridge.notifySessionAbandoned();
         mModelList.clear();
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
     }
 
     /** Activate AI Mode as the Next Request fulfillment type. */
     void activateAiMode() {
         mPopup.dismiss();
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         mComposeBoxQueryControllerBridge.notifySessionStarted();
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
     }
 
     /**
