@@ -1291,6 +1291,11 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
     return;
   }
 
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_NewTabGroup_AppMenu"));
+  }
+
   const Entry& entry = command_id_to_entry_.find(command_id)->second;
   return entry.first->ActivatedAt(entry.second, mouse_event_flags);
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
+#include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
@@ -136,5 +137,26 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
 }
 
 void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
+  switch (command_id) {
+    case IDC_BOOKMARK_ALL_TABS:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_BookmarkAllTabs"));
+      break;
+    case IDC_NEW_TAB:
+      base::RecordAction(base::UserMetricsAction("SystemContextMenu_NewTab"));
+      break;
+    case IDC_RESTORE_TAB:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_RestoreTab"));
+      break;
+    case IDC_GROUP_UNGROUPED_TABS:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_GroupAllTabs"));
+      break;
+    case IDC_NAME_WINDOW:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_NameWindow"));
+      break;
+  }
   chrome::ExecuteCommand(browser_, command_id);
 }

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -92,6 +93,25 @@ NewTabButtonMenuModel::~NewTabButtonMenuModel() = default;
 
 void NewTabButtonMenuModel::ExecuteCommand(int command_id, int event_flags) {
   CHECK(browser_);
+
+  switch (command_id) {
+    case IDC_NEW_TAB:
+      base::RecordAction(
+          base::UserMetricsAction("NewTabButton_ContextMenu_NewTab"));
+      break;
+    case IDC_ADD_NEW_TAB_RECENT_GROUP:
+      base::RecordAction(
+          base::UserMetricsAction("NewTabButton_ContextMenu_NewTabInGroup"));
+      break;
+    case IDC_CREATE_NEW_TAB_GROUP:
+      base::RecordAction(
+          base::UserMetricsAction("NewTabButton_ContextMenu_NewGroup"));
+      break;
+    case IDC_NEW_SPLIT_TAB:
+      base::RecordAction(
+          base::UserMetricsAction("NewTabButton_ContextMenu_NewSplitTab"));
+      break;
+  }
 
   if (command_id == IDC_NEW_SPLIT_TAB) {
     // Handle this command directly because we want to specify the source

@@ -31611,6 +31611,42 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="NewTabButton_ContextMenu_NewGroup">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opened the new tab button context menu and selected the 'new group'
+    menu item.
+  </description>
+</action>
+
+<action name="NewTabButton_ContextMenu_NewSplitTab">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opened the new tab button context menu and selected the 'new split view
+    with current tab' menu item.
+  </description>
+</action>
+
+<action name="NewTabButton_ContextMenu_NewTab">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opened the new tab button context menu and selected the 'new tab' menu
+    item.
+  </description>
+</action>
+
+<action name="NewTabButton_ContextMenu_NewTabInGroup">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opened the new tab button context menu and selected the 'new tab in
+    group' menu item.
+  </description>
+</action>
+
 <action name="NewTabPage.Carts.AcceptDiscountConsent">
   <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
@@ -46964,10 +47000,55 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SystemContextMenu_BookmarkAllTabs">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system menu context and selected the 'bookmark all tabs'
+    menu item.
+  </description>
+</action>
+
+<action name="SystemContextMenu_GroupAllTabs">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system menu context and selected the 'group all tabs'
+    menu item.
+  </description>
+</action>
+
+<action name="SystemContextMenu_NameWindow">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system menu context and selected the 'name window' menu
+    item.
+  </description>
+</action>
+
+<action name="SystemContextMenu_NewTab">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system menu context and selected the 'new tab' menu
+    item.
+  </description>
+</action>
+
 <action name="SystemContextMenu_Opened">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>The user opened the system menu context.</description>
+</action>
+
+<action name="SystemContextMenu_RestoreTab">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system menu context and selected the 'reopen closed tab'
+    menu item.
+  </description>
 </action>
 
 <action name="Tab.PinnedTabToastClosedAfterConfirmation">
@@ -48003,6 +48084,14 @@ should be able to be added at any place in this file.
   <description>
     User created a tab group by opening the system menu and selecting the group
     all ungrouped tabs button.
+  </description>
+</action>
+
+<action name="TabGroups_NewTabGroup_AppMenu">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User created a tab group by clicking 'New tab group' in the app menu.
   </description>
 </action>
 
