@@ -1245,6 +1245,10 @@ int HttpNetworkTransaction::DoInitStream() {
   next_state_ = STATE_INIT_STREAM_COMPLETE;
 
   initialize_stream_start_time_ = base::TimeTicks::Now();
+  // Reset `initialize_stream_end_time_` to prevent an inconsistent state in
+  // case that `DoInitStream()` is called multiple times.
+  initialize_stream_end_time_ = base::TimeTicks();
+
   int rv = stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
                                      io_callback_);
 
