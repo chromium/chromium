@@ -2150,6 +2150,27 @@
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
     },
+    'storage': {
+      'filepath': '/blob[-_]storage/|' \
+                  '/cache[-_]storage/|' \
+                  '/cookie[-_]store/|' \
+                  '/dom[-_]storage/|' \
+                  '/file[-_]system[-_]access/|' \
+                  '/indexed[-_]db/|' \
+                  '/storage[-_]key/|' \
+                  '/sync[-_]file[-_]system/|' \
+                  '^chrome/browser/storage/|' \
+                  '^components/services/storage/|' \
+                  '^content/browser/locks/|' \
+                  '^storage/|' \
+                  '^third_party/blink/renderer/modules/storage/|' \
+                  '^third_party/blink/renderer/platform/storage/|' \
+                  '^third_party/blink/web_tests/external/wpt/storage/|' \
+                  '^third_party/blink/web_tests/external/wpt/webstorage/|' \
+                  '^third_party/crc32c/|' \
+                  '^third_party/snappy/|' \
+                  '^tools/metrics/histograms/metadata/storage/'
+    },
     'storage_access_api': {
       'filepath': '/storage_access_api/|' \
                   '/storage-access-api/'
@@ -3311,6 +3332,7 @@
     'splitview': ['toshikikikuchi+watch-splitview@chromium.org'],
     'startup': ['nicolaso+watch@chromium.org',
                 'ydago+watch@chromium.org'],
+    'storage': ['storage-reviews@chromium.org'],
     'storage_access_api': ['cfredric+watch@chromium.org'],
     'storage_service': ['dmurph+watching-storageservice@chromium.org',
                         'edgestoragedev@microsoft.com'],
