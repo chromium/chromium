@@ -7,11 +7,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "testing/gtest_mac.h"
@@ -291,6 +293,97 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       test_passkey_model_.GetAllPasskeys();
   EXPECT_EQ(passkeys.size(), 0u);
+}
+
+class CredentialProviderMigratorWithSignalAPITest
+    : public CredentialProviderMigratorTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kCredentialProviderSignalAPI);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CredentialProviderMigratorWithSignalAPITest,
+       PasskeyMigrationUpdatesHidden) {
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+
+  // `TestPasskeyCredential()` is created with hidden = NO.
+  ArchivableCredential* credential = TestPasskeyCredential();
+  [store addCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  // Create the migrator.
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  EXPECT_TRUE(migrator);
+
+  // Start initial migration.
+  __block BOOL blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  // Verify the passkey was migrated and is not hidden.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      test_passkey_model_.GetAllPasskeys();
+  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_FALSE(passkeys[0].hidden());
+
+  // Verify temporal store is empty.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Add the same credential back to the store, but this time set `hidden: YES`.
+  credential.hidden = YES;
+  [store addCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  // Start migration again.
+  blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  // Verify temporal store is empty again.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Verify we still have only 1 passkey, but it's hidden now.
+  passkeys = test_passkey_model_.GetAllPasskeys();
+  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_TRUE(passkeys[0].hidden());
 }
 
 }  // namespace

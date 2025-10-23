@@ -74,12 +74,12 @@
 
 // Whether credential should be shown to the user in authentication surfaces,
 // e.g. because a site marked it as obsolete. Used by passkeys only.
-@property(nonatomic, readonly) BOOL hidden;
+@property(nonatomic, assign) BOOL hidden;
 
 // Local time on device when the credential was `hidden`. Represented in
 // milliseconds since the UNIX epoch. Used to permanently delete credentials
 // after they've been hidden for a while. Used by passkeys only.
-@property(nonatomic, readonly) int64_t hiddenTime;
+@property(nonatomic, assign) int64_t hiddenTime;
 
 // Whether `userDisplayName` or passkey `username` was ever manually edited by
 // the user. Used by passkeys only.

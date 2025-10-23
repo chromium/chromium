@@ -12,6 +12,7 @@
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
@@ -107,6 +108,15 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
         std::optional<sync_pb::WebauthnCredentialSpecifics>
             credential_specifics =
                 _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
+
+        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
+            credential_specifics &&
+            credential_specifics->hidden() != credential.hidden) {
+          // TODO(crbug.com/432260316): Log metrics.
+          // TODO(crbug.com/432260316): Pass hidden time as well.
+          // TODO(crbug.com/432260316): Add PasskeyChangeQuotaTracker.
+          _passkeyStore->SetPasskeyHidden(credentialId, credential.hidden);
+        }
 
         if (credential_specifics &&
             (credential_specifics->last_used_time_windows_epoch_micros() <

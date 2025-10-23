@@ -86,4 +86,12 @@ BOOL ShouldPerformUserVerificationForPreference(
         user_verification_preference_string,
     BOOL is_biometric_authentication_enabled);
 
+// Saves a passkey credential to the user defaults credential store. This
+// credential store will be read by Chrome if it is currently running, or the
+// next time it runs, to sync the newly created passkeys in the user's account.
+//
+// Additionally, updates ASCredentialIdentityStore so that the passkey is
+// correctly surfaced or hidden from the sign-in sheet.
+void SavePasskeyCredential(id<Credential> credential);
+
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_UTIL_H_

@@ -34,6 +34,7 @@ source_set("credential_provider") {
     ":font_provider",
     ":metrics_util",
     ":passkey_request_details",
+    ":passkey_util",
     ":passkey_welcome_screen_util",
     ":reauthentication_handler",
     ":system_strings",

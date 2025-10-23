@@ -113,48 +113,30 @@ NSData* GenerateSignature(NSData* authenticator_data,
 void SaveToIdentityStore(id<Credential> credential,
                          ProceduralBlock completion) {
   auto stateCompletion = ^(ASCredentialIdentityStoreState* state) {
-    if (state.enabled) {
-      // Update ASCredentialIdentityStore to make the passkey immediately
-      // available locally.
-      [ASCredentialIdentityStore.sharedStore
-          saveCredentialIdentityEntries:@[ [[ASPasskeyCredentialIdentity alloc]
-                                            cr_initWithCredential:credential] ]
-                             completion:^(BOOL success, NSError* error) {
-                               completion();
-                             }];
-    } else {
+    if (!state.enabled) {
       completion();
+      return;
+    }
+
+    NSArray<id<ASCredentialIdentity>>* storeIdentities =
+        @[ [[ASPasskeyCredentialIdentity alloc]
+            cr_initWithCredential:credential] ];
+    void (^storeCompletion)(BOOL, NSError*) = ^(BOOL success, NSError* error) {
+      completion();
+    };
+
+    if (credential.hidden) {
+      [ASCredentialIdentityStore.sharedStore
+          removeCredentialIdentityEntries:storeIdentities
+                               completion:storeCompletion];
+    } else {
+      [ASCredentialIdentityStore.sharedStore
+          saveCredentialIdentityEntries:storeIdentities
+                             completion:storeCompletion];
     }
   };
   [ASCredentialIdentityStore.sharedStore
       getCredentialIdentityStoreStateWithCompletion:stateCompletion];
-}
-
-// Saves a newly created passkey to the user defaults credential store. This
-// credential store will be read by Chrome if it is currently running, or the
-// next time it runs, to sync the newly created passkeys in the user's account.
-void SaveCredential(id<Credential> credential) {
-  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
-  UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
-      initWithUserDefaults:app_group::GetGroupUserDefaults()
-                       key:key];
-
-  if ([store credentialWithRecordIdentifier:credential.recordIdentifier]) {
-    [store updateCredential:credential];
-  } else {
-    [store addCredential:credential];
-  }
-
-  [store saveDataWithCompletion:^(NSError* error) {
-    if (error != nil) {
-      return;
-    }
-
-    SaveToIdentityStore(credential, ^{
-      // Notify Chrome that a new passkey was created
-      [CredentialProviderCreationNotifier notifyCredentialCreated];
-    });
-  }];
 }
 
 // Returns the UserVerificationPreference based on the provided
@@ -269,9 +251,9 @@ PasskeyCreationOutput PerformPasskeyCreation(
       [NSData dataWithBytes:attestation_object_for_creation.data()
                      length:attestation_object_for_creation.size()];
 
-  SaveCredential([[ArchivableCredential alloc] initWithFavicon:nil
-                                                          gaia:gaia
-                                                       passkey:passkey]);
+  SavePasskeyCredential([[ArchivableCredential alloc] initWithFavicon:nil
+                                                                 gaia:gaia
+                                                              passkey:passkey]);
 
   return {[ASPasskeyRegistrationCredential
               credentialWithRelyingParty:rp_id
@@ -320,7 +302,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
   // Update the credential's last used time.
   credential.lastUsedTime =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  SaveCredential(credential);
+  SavePasskeyCredential(credential);
 
   return {[ASPasskeyAssertionCredential
               credentialWithUserHandle:credential.userId
@@ -351,4 +333,29 @@ BOOL ShouldPerformUserVerificationForPreference(
     case UserVerificationPreference::kDiscouraged:
       return NO;
   }
+}
+
+void SavePasskeyCredential(id<Credential> credential) {
+  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+  UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+      initWithUserDefaults:app_group::GetGroupUserDefaults()
+                       key:key];
+
+  if ([store credentialWithRecordIdentifier:credential.recordIdentifier]) {
+    [store updateCredential:credential];
+  } else {
+    [store addCredential:credential];
+  }
+
+  [store saveDataWithCompletion:^(NSError* error) {
+    if (error != nil) {
+      return;
+    }
+
+    SaveToIdentityStore(credential, ^{
+      // TODO(crbug.com/432260316): Consider renaming this class as its purpose
+      // is to trigger migration, but not necessarily for creations only.
+      [CredentialProviderCreationNotifier notifyCredentialCreated];
+    });
+  }];
 }

@@ -32,6 +32,7 @@
 #import "ios/chrome/credential_provider_extension/font_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
+#import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_welcome_screen_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
@@ -82,6 +83,7 @@ enum class PasskeyUserVerificationStatus {
 
 }  // namespace
 
+// TODO(crbug.com/454307667): Add unit tests for the whole file.
 @interface CredentialProviderViewController () <
     ConfirmationAlertActionHandler,
     CredentialResponseHandler,
@@ -406,7 +408,26 @@ enum class PasskeyUserVerificationStatus {
 
 - (void)reportUnknownPublicKeyCredentialForRelyingParty:(NSString*)relyingParty
                                            credentialID:(NSData*)credentialID {
-  // TODO(crbug.com/432260316): Implement.
+  // TODO(crbug.com/432260316): Add unit tests.
+  if (!IsSignalAPIEnabled()) {
+    return;
+  }
+
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return [credential.rpId isEqualToString:relyingParty] &&
+               [credential.credentialId isEqualToData:credentialID];
+      }];
+  if (credentialIndex == NSNotFound) {
+    return;
+  }
+
+  id<Credential> credential = credentials[credentialIndex];
+  credential.hidden = YES;
+  credential.hiddenTime = base::Time::Now().InMillisecondsSinceUnixEpoch();
+  SavePasskeyCredential(credential);
 }
 
 - (void)reportPublicKeyCredentialUpdateForRelyingParty:(NSString*)relyingParty
