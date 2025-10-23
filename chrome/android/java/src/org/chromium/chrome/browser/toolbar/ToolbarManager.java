@@ -187,6 +187,8 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -2731,11 +2733,15 @@ public class ToolbarManager
 
     @VisibleForTesting
     String homepageUrl() {
-        Profile profile = mProfileSupplier.get();
-        boolean isIncognito = profile != null && profile.isOffTheRecord();
-        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl(isIncognito);
-        assert !homepageGurl.isEmpty();
-        return homepageGurl.getSpec();
+        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl();
+        if (homepageGurl.isEmpty()) {
+            Profile profile = mProfileSupplier.get();
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(profile);
+            return urlConstantResolver.getNtpUrl();
+        } else {
+            return homepageGurl.getSpec();
+        }
     }
 
     private void registerTemplateUrlObserver() {

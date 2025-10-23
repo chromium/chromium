@@ -342,6 +342,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/metrics:java",
       "//chrome/browser/android/browserservices/verification:java",
+      "//chrome/browser/android/common:java",
       "//chrome/browser/android/content:java",
       "//chrome/browser/android/cookies:java",
       "//chrome/browser/android/crypto:java",

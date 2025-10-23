@@ -162,10 +162,7 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         if (!newHomepage.isValid()) {
             newHomepage = GURL.emptyGURL();
         }
-        boolean useDefaultUri =
-                mHomepageManager
-                        .getDefaultHomepageGurl(getProfile().isOffTheRecord())
-                        .equals(newHomepage);
+        boolean useDefaultUri = mHomepageManager.getDefaultHomepageGurl().equals(newHomepage);
 
         mHomepageManager.setHomepageSelection(setToUseNtp, useDefaultUri, newHomepage);
     }
@@ -182,7 +179,7 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
             return HomepagePolicyManager.getHomepageUrl();
         }
 
-        GURL defaultGurl = mHomepageManager.getDefaultHomepageGurl(getProfile().isOffTheRecord());
+        GURL defaultGurl = mHomepageManager.getDefaultHomepageGurl();
         GURL customGurl = mHomepageManager.getPrefHomepageCustomGurl();
         if (mHomepageManager.getPrefHomepageUseDefaultUri()) {
             return UrlUtilities.isNtpUrl(defaultGurl) ? GURL.emptyGURL() : defaultGurl;
@@ -229,8 +226,7 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
                     mHomepageManager.getPrefHomepageUseChromeNtp()
                             || (mHomepageManager.getPrefHomepageUseDefaultUri()
                                     && UrlUtilities.isNtpUrl(
-                                            mHomepageManager.getDefaultHomepageGurl(
-                                                    getProfile().isOffTheRecord())));
+                                            mHomepageManager.getDefaultHomepageGurl()));
         }
 
         @HomepageOption

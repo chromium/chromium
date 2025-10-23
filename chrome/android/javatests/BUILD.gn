@@ -80,6 +80,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/android/browserservices/verification:java",
+    "//chrome/browser/android/common:java",
     "//chrome/browser/android/content:java",
     "//chrome/browser/android/cookies:java",
     "//chrome/browser/android/crypto:java",
@@ -965,10 +966,7 @@ android_library(
     "src/org/chromium/chrome/browser/partnercustomizations/PartnerHomepageUnitTest.java",
   ]
 
-  deps = [
-    ":chrome_test_java_helper",
-    "//chrome/browser/url_constants/android:java",
-  ]
+  deps = [ ":chrome_test_java_helper" ]
 }
 
 android_library(

@@ -207,9 +207,6 @@ public class HomepagePolicyIntegrationTest {
 
     private String getHomepageUrlOnUiThread() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        HomepageManager.getInstance()
-                                .getHomepageGurl(/* isIncognito= */ false)
-                                .getSpec());
+                () -> HomepageManager.getInstance().getHomepageGurl().getSpec());
     }
 }
