@@ -29,6 +29,7 @@
 
 namespace unexportable_keys {
 
+using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -305,7 +306,7 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
 
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {1, 2, 3};
-  service().SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/0,
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();
@@ -325,7 +326,7 @@ TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
   // `SignSlowlyAsync()` should fail.
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {1, 2, 3};
-  service().SignSlowlyAsync(fake_key_id, data, kTaskPriority, /*max_retries=*/0,
+  service().SignSlowlyAsync(fake_key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   EXPECT_TRUE(sign_future.IsReady());
   EXPECT_EQ(sign_future.Get(), base::unexpected(ServiceError::kKeyNotFound));
@@ -339,7 +340,8 @@ TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
       .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
   std::vector<uint8_t> data = {1, 2, 3};
   EXPECT_CALL(*key_to_generate, SignSlowly(ElementsAreArray(data)))
-      .WillOnce(Return(std::nullopt));
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(std::nullopt));
   SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
 
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
@@ -349,7 +351,7 @@ TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
-  service().SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/0,
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   RunBackgroundTasks();
   EXPECT_EQ(sign_future.Get(),
@@ -385,7 +387,7 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
-  service().SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/3,
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   RunBackgroundTasks();
   EXPECT_TRUE(sign_future.Get().has_value());

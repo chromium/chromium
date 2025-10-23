@@ -160,14 +160,13 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     const UnexportableKeyId& key_id,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
-    size_t max_retries,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
   auto it = key_by_key_id_.find(key_id);
   if (it == key_by_key_id_.end()) {
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
-  task_manager_->SignSlowlyAsync(it->second, data, priority, max_retries,
+  task_manager_->SignSlowlyAsync(it->second, data, priority,
                                  std::move(callback));
 }
 

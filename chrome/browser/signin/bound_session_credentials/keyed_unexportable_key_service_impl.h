@@ -39,7 +39,6 @@ class KeyedUnexportableKeyServiceImpl : public KeyedUnexportableKeyService {
       const unexportable_keys::UnexportableKeyId& key_id,
       base::span<const uint8_t> data,
       unexportable_keys::BackgroundTaskPriority priority,
-      size_t max_retries,
       base::OnceCallback<void(
           unexportable_keys::ServiceErrorOr<std::vector<uint8_t>>)> callback)
       override;

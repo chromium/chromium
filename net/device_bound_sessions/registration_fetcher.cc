@@ -121,7 +121,6 @@ void SignChallengeWithKey(
 
   unexportable_key_service.SignSlowlyAsync(
       key_id, base::as_byte_span(*header_and_payload), kTaskPriority,
-      /*max_retries=*/3,
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
                      std::move(expected_public_key).value(),
                      std::ref(unexportable_key_service), *header_and_payload,

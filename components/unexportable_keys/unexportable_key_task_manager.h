@@ -86,15 +86,13 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // Schedules a new signing task or appends `callback` to an existing
   // task with `signing_key` and `data` arguments. Might return a cached result
   // if a task with the same combination of `signing_key` and `data` has been
-  // completed recently. In case of a failure, the task might be retried up to
-  // `max_retries` times.
+  // completed recently.
   // Invokes `callback` with a signature of `data`, or `ServiceError` if an
   // error occurs during signing.
   void SignSlowlyAsync(
       scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
-      size_t max_retries,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback);
 
  private:

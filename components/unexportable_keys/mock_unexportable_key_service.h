@@ -43,7 +43,6 @@ class MockUnexportableKeyService : public UnexportableKeyService {
       (const UnexportableKeyId& key_id,
        base::span<const uint8_t> data,
        BackgroundTaskPriority priority,
-       size_t max_retries,
        base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback),
       (override));
   MOCK_METHOD(ServiceErrorOr<std::vector<uint8_t>>,

@@ -86,19 +86,15 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
 
   // Schedules a new asynchronous signing task.
   // Might return a cached result if a task with the same combination of
-  // `signing_key` and `data` has been completed recently. In case of a failure,
-  // the task might be retried up to `max_retries` times.
+  // `signing_key` and `data` has been completed recently.
   // Invokes `callback` with a signature of `data`, or a `ServiceError` if
-  // `key_id` is/ not found or an error occurs during signing.
+  // `key_id` is not found or an error occurs during signing.
   // `key_id` must have resulted from calling `GenerateSigningKeySlowlyAsync()`
-  // or `FromWrappedSigningKeySlowlyAsync()`
-  // TODO(crbug.com/405408610): remove `max_retries` parameter once all callers
-  // adopt the retry logic.
+  // or `FromWrappedSigningKeySlowlyAsync()`.
   virtual void SignSlowlyAsync(
       const UnexportableKeyId& key_id,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
-      size_t max_retries,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)>
           callback) = 0;
 

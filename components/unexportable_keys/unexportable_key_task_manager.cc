@@ -36,6 +36,7 @@ constexpr std::string_view kBaseTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult";
 constexpr std::string_view kBaseTaskRetriesHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskRetries";
+constexpr size_t kSignTaskMaxRetries = 3;
 
 template <class CallbackReturnType>
 ServiceErrorOr<CallbackReturnType> ReportResultMetrics(
@@ -158,7 +159,6 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
     scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
-    size_t max_retries,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
   auto callback_wrapper =
       WrapCallbackWithMetrics(BackgroundTaskType::kSign, std::move(callback));
@@ -172,9 +172,9 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
 
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
-  auto task =
-      std::make_unique<SignTask>(std::move(signing_key), data, priority,
-                                 max_retries, std::move(callback_wrapper));
+  auto task = std::make_unique<SignTask>(std::move(signing_key), data, priority,
+                                         kSignTaskMaxRetries,
+                                         std::move(callback_wrapper));
   task_scheduler_.PostTask(std::move(task));
 }
 
