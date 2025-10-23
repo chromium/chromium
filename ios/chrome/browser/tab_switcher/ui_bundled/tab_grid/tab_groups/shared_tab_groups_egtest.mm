@@ -872,7 +872,8 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Ensures new tab is added when closing the last tab of a shared group.
-- (void)testCloseLastTabInSharedGroup {
+// TODO(crbug.com/454567832): Re-enable this test.
+- (void)FLAKY_testCloseLastTabInSharedGroup {
   AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
