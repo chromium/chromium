@@ -820,13 +820,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
 
-  static scoped_refptr<VideoFrame> CreateFrameForMappableSIInternal(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
-      ReleaseMailboxCB mailbox_holder_release_cb,
-      base::TimeDelta timestamp);
-
 #if BUILDFLAG(IS_CHROMEOS)
   static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
       const gfx::Rect& visible_rect,
