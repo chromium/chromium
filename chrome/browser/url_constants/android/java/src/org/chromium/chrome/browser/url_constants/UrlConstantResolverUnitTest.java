@@ -11,12 +11,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlConstantResolver}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
 public class UrlConstantResolverUnitTest {
     private static final String OVERRIDE_URL = "OVERRIDE";
     private UrlConstantResolver mResolver;
@@ -78,6 +82,17 @@ public class UrlConstantResolverUnitTest {
     @Test
     public void testGetHistoryPageUrl_WithOverrideDisabled() {
         mResolver.registerOverride(UrlConstants.NATIVE_HISTORY_URL, () -> null);
+        assertEquals(UrlConstants.NATIVE_HISTORY_URL, mResolver.getHistoryPageUrl());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
+    public void testAllOverridesEnabled_FeatureDisabled() {
+        mResolver.registerOverride(UrlConstants.NTP_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(UrlConstants.BOOKMARKS_NATIVE_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(UrlConstants.NATIVE_HISTORY_URL, () -> OVERRIDE_URL);
+        assertEquals(UrlConstants.NTP_URL, mResolver.getNtpUrl());
+        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, mResolver.getBookmarksPageUrl());
         assertEquals(UrlConstants.NATIVE_HISTORY_URL, mResolver.getHistoryPageUrl());
     }
 

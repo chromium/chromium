@@ -16,6 +16,7 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//extensions/buildflags",

@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -51,6 +52,10 @@ ExtensionsUrlOverrideRegistryManager::ExtensionsUrlOverrideRegistryManager(
     const jni_zero::JavaParamRef<jobject>& j_object,
     Profile* profile)
     : j_object_(env, j_object) {
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kChromeNativeUrlOverriding)) {
+    return;
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   state_tracker_ =
       std::make_unique<ExtensionUrlOverrideStateTrackerImpl>(profile, this);

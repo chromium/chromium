@@ -90,4 +90,13 @@ public class ExtensionsUrlOverrideRegistry {
     private static String buildKey(String string) {
         return ChromePreferenceKeys.EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.createKey(string);
     }
+
+    /** Disables all overrides. */
+    public static void resetRegistry() {
+        setNtpOverrideEnabled(false);
+        setBookmarksPageOverrideEnabled(false);
+        setHistoryPageOverrideEnabled(false);
+        setIncognitoNtpOverrideEnabled(false);
+        setIncognitoBookmarksPageOverrideEnabled(false);
+    }
 }

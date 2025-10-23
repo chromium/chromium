@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.url_constants;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -56,6 +57,8 @@ public class UrlConstantResolver {
     }
 
     private String getUrlOverrideIfPresent(String url) {
+        if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) return url;
+
         UrlConstantOverride override = mUrlConstantOverrides.get(url);
         if (override == null) return url;
 
@@ -95,7 +98,9 @@ public class UrlConstantResolver {
 
         UrlConstantOverride override = mUrlConstantOverrides.get(url);
         GURL gurl = preNativeGurlHolder.gurl;
-        if (override == null || override.getUrlOverrideIfEnabled() == null) {
+        if (override == null
+                || override.getUrlOverrideIfEnabled() == null
+                || !ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) {
             return gurl;
         }
 

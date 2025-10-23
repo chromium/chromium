@@ -863,6 +863,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_TOOLBAR_REFACTOR, false, true);
     public static final CachedFlag sChromeItemPickerUi =
             newCachedFlag(CHROME_ITEM_PICKER_UI, /* defaultValue= */ false);
+    public static final CachedFlag sChromeNativeUrlOverriding =
+            newCachedFlag(CHROME_NATIVE_URL_OVERRIDING, /* defaultValue= */ false);
     public static final CachedFlag sClampAutomotiveScaling =
             newCachedFlag(CLAMP_AUTOMOTIVE_SCALING, true);
     public static final CachedFlag sClankStartupLatencyInjection =
@@ -1165,6 +1167,7 @@ public abstract class ChromeFeatureList {
                     sCctTabModalDialog,
                     sCctToolbarRefactor,
                     sChromeItemPickerUi,
+                    sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,
                     sClankStartupLatencyInjection,
                     sCleanupLegacyTabState,
@@ -1317,8 +1320,6 @@ public abstract class ChromeFeatureList {
     // Default to false. The logic behind the flag is not relevant when native is not initialized.
     public static final MutableFlagWithSafeDefault sBrowserControlsRenderDrivenShowConstraint =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT, false);
-    public static final MutableFlagWithSafeDefault sChromeNativeUrlOverriding =
-            newMutableFlagWithSafeDefault(CHROME_NATIVE_URL_OVERRIDING, false);
     public static final MutableFlagWithSafeDefault sClearBrowsingDataAndroidSurvey =
             newMutableFlagWithSafeDefault(CLEAR_BROWSING_DATA_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =

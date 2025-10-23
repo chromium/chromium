@@ -79,7 +79,7 @@ public class UrlConstantResolverFactoryUnitTest {
     public void testGetForProfile_IncognitoProfile() {
         UrlConstantResolver originalResolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         UrlConstantResolver incognitoResolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         assertNotEquals(originalResolver, incognitoResolver);
@@ -93,7 +93,7 @@ public class UrlConstantResolverFactoryUnitTest {
         assertEquals(testResolver, UrlConstantResolverFactory.getForProfile(null));
         assertEquals(testResolver, UrlConstantResolverFactory.getForProfile(mProfile));
 
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         assertEquals(testResolver, UrlConstantResolverFactory.getForProfile(mProfile));
     }
 
@@ -151,7 +151,7 @@ public class UrlConstantResolverFactoryUnitTest {
 
     @Test
     public void testIncognitoResolver_NtpOverride() {
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
@@ -163,7 +163,7 @@ public class UrlConstantResolverFactoryUnitTest {
 
     @Test
     public void testIncognitoResolver_BookmarksOverride() {
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(true);
@@ -175,7 +175,7 @@ public class UrlConstantResolverFactoryUnitTest {
 
     @Test
     public void testIncognitoResolver_NoHistoryOverride() {
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
@@ -183,11 +183,11 @@ public class UrlConstantResolverFactoryUnitTest {
     }
 
     @Test
-    public void testResolverGetNtpGurl_FeatureEnabled() {
-        when(mProfile.isIncognitoBranded()).thenReturn(false);
+    public void testResolverGetNtpGurl() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         UrlConstantResolver incognitoResolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         assertEquals(mNativeNtpGurl, resolver.getNtpGurl());
