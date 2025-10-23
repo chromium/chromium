@@ -10249,6 +10249,7 @@ from previous Chrome versions.
   <int value="-1443796945" label="OfflinePagesSharing:disabled"/>
   <int value="-1443583078" label="CrOSLateBootAudioStyleTransfer:disabled"/>
   <int value="-1443261188" label="DesktopPWAsTabStripLinkCapturing:disabled"/>
+  <int value="-1443123730" label="WebAppMigratePreinstalledChat:disabled"/>
   <int value="-1441695001" label="OmniboxOnFocusSuggestions:enabled"/>
   <int value="-1441386544" label="NtpSearchboxComposeEntrypoint:disabled"/>
   <int value="-1441340278" label="NewTabPageIcons:enabled"/>
@@ -19715,6 +19716,7 @@ from previous Chrome versions.
   <int value="1893463366" label="EnableHtmlBaseUsernameDetector:enabled"/>
   <int value="1893561439" label="HighEfficiencyModeAvailable:disabled"/>
   <int value="1893693031" label="FreezeUserAgent:enabled"/>
+  <int value="1894208770" label="WebAppMigratePreinstalledChat:enabled"/>
   <int value="1894900449" label="MemorySavingsReportingImprovements:enabled"/>
   <int value="1895993853" label="NtpRealboxRoundedCorners:enabled"/>
   <int value="1896456311" label="enable-password-save-in-page-navigation"/>

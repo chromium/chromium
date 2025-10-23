@@ -4504,6 +4504,13 @@ inline constexpr char kWebAppInstallationApiDescription[] =
     "Enables the Web App Installation API which allows web apps to be "
     "installed programmatically using navigator.install().";
 
+inline constexpr char kWebAppMigratePreinstalledChatName[] =
+    "Migrate preinstalled Chat app";
+inline constexpr char kWebAppMigratePreinstalledChatDescription[] =
+    "When enabled, the preinstalled Chat web app will be migrated from its old "
+    "URL to a new URL. This migration only applies to users who have not "
+    "manually installed the Chat app.";
+
 inline constexpr char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =
     "Use passkey from another device in the context menu";
 inline constexpr char

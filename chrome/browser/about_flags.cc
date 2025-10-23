@@ -13419,6 +13419,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayOptimizationFilter)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"web-app-migrate-preinstalled-chat",
+     flag_descriptions::kWebAppMigratePreinstalledChatName,
+     flag_descriptions::kWebAppMigratePreinstalledChatDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebAppMigratePreinstalledChat)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

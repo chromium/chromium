@@ -10567,6 +10567,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "web-app-migrate-preinstalled-chat",
+    "owners": [ "pwa-team@google.com", "mek@chromium.org" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "web-authentication-immediate-get",
     "owners": [
       "derinel@google.com",
