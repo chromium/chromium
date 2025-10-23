@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/metrics/log_decoder.h"
@@ -148,12 +149,12 @@ void StructuredMetricsMixin::WaitUntilEventRecorded(uint64_t project_name_hash,
       });
   GetRecorder()->SetEventRecordCallbackForTest(std::move(callback));
 
-  // The timeout for this is set to 3 seconds because this should be ample time
-  // for the event to show up after Event::Record() has been called. There is
-  // normally a delay between flushes but this delay has been set to 0 for
-  // testing.
-  base::test::ScopedRunLoopTimeout shortened_timeout{FROM_HERE,
-                                                     base::Seconds(3)};
+  // The timeout for this is set to about 3 seconds (scaled accordingly for
+  // debug and sanitizer builds) because this should be ample time for the event
+  // to show up after Event::Record() has been called. There is normally a delay
+  // between flushes but this delay has been set to 0 for testing.
+  base::test::ScopedRunLoopTimeout shortened_timeout{
+      FROM_HERE, TestTimeouts::action_timeout() / 3};
   record_run_loop_->Run();
 }
 
