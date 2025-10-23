@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
@@ -108,7 +107,6 @@ class OnDeviceExecution final
   explicit OnDeviceExecution(
       ModelBasedCapabilityKey feature,
       OnDeviceOptions opts,
-      ExecuteRemoteFn execute_remote_fn,
       MultimodalMessage message,
       on_device_model::mojom::ResponseConstraintPtr constraint,
       std::unique_ptr<ResultLogger> logger,
@@ -177,18 +175,6 @@ class OnDeviceExecution final
                               proto::Any output,
                               SafetyChecker::Result safety_result);
 
-  // Called to run the text safety remote fallback. Will invoke
-  // OnTextSafetyRemoteResponse when done.
-  void RunTextSafetyRemoteFallback(proto::Any success_response_metadata);
-
-  // Callback invoked when the text safety remote fallback response comes
-  // back. Will invoke the session's completion callback and destroy state.
-  void OnTextSafetyRemoteResponse(
-      proto::InternalOnDeviceModelExecutionInfo remote_ts_model_execution_info,
-      proto::Any success_response_metadata,
-      OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<ModelQualityLogEntry> remote_log_entry);
-
   // Terminates on-device processing as unhealthy and falls back to remote
   // execution to provide the result to the caller.
   void FallbackToRemote(Result result);
@@ -213,7 +199,6 @@ class OnDeviceExecution final
 
   const ModelBasedCapabilityKey feature_;
   const OnDeviceOptions opts_;
-  ExecuteRemoteFn execute_remote_fn_;
 
   mojo::Remote<on_device_model::mojom::Session> session_;
 

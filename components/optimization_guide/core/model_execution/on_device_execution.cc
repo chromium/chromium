@@ -74,7 +74,6 @@ bool GetOnDeviceModelWithholdNewlines() {
 OnDeviceExecution::OnDeviceExecution(
     ModelBasedCapabilityKey feature,
     OnDeviceOptions opts,
-    ExecuteRemoteFn execute_remote_fn,
     MultimodalMessage message,
     on_device_model::mojom::ResponseConstraintPtr constraint,
     std::unique_ptr<ResultLogger> logger,
@@ -82,7 +81,6 @@ OnDeviceExecution::OnDeviceExecution(
     base::OnceCallback<void(bool)> cleanup_callback)
     : feature_(feature),
       opts_(std::move(opts)),
-      execute_remote_fn_(execute_remote_fn),
       last_message_(std::move(message)),
       constraint_(std::move(constraint)),
       histogram_logger_(std::move(logger)),
@@ -146,7 +144,7 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
   auto input = opts_.adapter->ConstructInputString(
       last_message_.read(), /*want_input_context=*/false);
   if (!input) {
-    FallbackToRemote(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage);
     return;
   }
 
@@ -183,7 +181,7 @@ void OnDeviceExecution::OnRequestSafetyResult(
   TRACE_EVENT("optimization_guide", "OnDeviceExecution::OnRequestSafetyResult",
               "feature", base::ToString(feature_));
   if (safety_result.failed_to_run) {
-    FallbackToRemote(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage);
     return;
   }
   // Log the check executions.
@@ -312,11 +310,7 @@ void OnDeviceExecution::OnResponderDisconnect() {
   // OnComplete resets the receiver, so this implies that the response is
   // incomplete and there was either a service crash or model eviction.
   receiver_.reset();
-  if (features::GetOnDeviceFallbackToServerOnDisconnect()) {
-    FallbackToRemote(Result::kDisconnectAndMaybeFallback);
-  } else {
-    CancelPendingResponse(Result::kDisconnectAndCancel);
-  }
+  CancelPendingResponse(Result::kDisconnectAndCancel);
 }
 
 void OnDeviceExecution::RunRawOutputSafetyCheck(
@@ -336,7 +330,7 @@ void OnDeviceExecution::OnRawOutputSafetyResult(
               "OnDeviceExecution::OnRawOutputSafetyResult", "feature",
               base::ToString(feature_));
   if (safety_result.failed_to_run) {
-    FallbackToRemote(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage);
     return;
   }
   if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
@@ -415,7 +409,7 @@ void OnDeviceExecution::OnResponseSafetyResult(
               "OnDeviceExecution::OnResponseSafetyResult", "feature",
               base::ToString(feature_));
   if (safety_result.failed_to_run) {
-    FallbackToRemote(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage);
     return;
   }
   if (completeness == ResponseCompleteness::kComplete ||
@@ -446,26 +440,6 @@ void OnDeviceExecution::OnResponseSafetyResult(
   }
 
   SendSuccessCompletionCallback(output);
-}
-
-void OnDeviceExecution::FallbackToRemote(Result result) {
-  TRACE_EVENT("optimization_guide", "OnDeviceExecution::FallbackToRemote",
-              "feature", base::ToString(feature_));
-  if (histogram_logger_) {
-    histogram_logger_->set_result(result);
-  }
-  auto self = weak_ptr_factory_.GetWeakPtr();
-  // TODO: crbug.com/372535824 - Simplify remote fallback logging.
-  auto log = std::make_unique<proto::LogAiDataRequest>();
-  *log->mutable_model_execution_info() = std::move(exec_log_);
-  exec_log_.Clear();
-  execute_remote_fn_.Run(
-      feature_, last_message_.BuildProtoMessage(), std::nullopt, std::move(log),
-      base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
-                     std::move(callback_)));
-  if (self) {
-    self->Cleanup(/*healthy=*/false);
-  }
 }
 
 void OnDeviceExecution::CancelPendingResponse(Result result,

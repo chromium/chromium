@@ -104,8 +104,7 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
     opts.sampling_params = *config_params.sampling_params;
   }
 
-  return std::make_unique<SessionImpl>(
-      key_, std::move(opts), CreateNoOpExecuteRemoteFn(), std::nullopt);
+  return std::make_unique<SessionImpl>(key_, std::move(opts), std::nullopt);
 }
 
 void ModelClient::OnDisconnect() {

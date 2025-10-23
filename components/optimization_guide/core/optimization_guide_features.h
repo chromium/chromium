@@ -307,11 +307,6 @@ base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceStartupMetricDelay();
 
-// Returns true if during execution a disconnect is received (which generally
-// means a crash) the message should be sent to the server for processing.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool GetOnDeviceFallbackToServerOnDisconnect();
-
 // Whether any features are enabled that allow launching the on-device
 // service.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

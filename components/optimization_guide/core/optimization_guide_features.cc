@@ -490,14 +490,6 @@ base::TimeDelta GetOnDeviceStartupMetricDelay() {
   return kOnDeviceStartupMetricDelay.Get();
 }
 
-bool GetOnDeviceFallbackToServerOnDisconnect() {
-  static const base::FeatureParam<bool>
-      kOnDeviceModelFallbackToServerOnDisconnect{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_fallback_to_server_on_disconnect", true};
-  return kOnDeviceModelFallbackToServerOnDisconnect.Get();
-}
-
 bool CanLaunchOnDeviceModelService() {
   return base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) ||
          base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);

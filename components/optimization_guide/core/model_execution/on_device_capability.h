@@ -56,8 +56,9 @@ struct OptimizationGuideModelStreamingExecutionResult {
 
   base::expected<const StreamingResponse, OptimizationGuideModelExecutionError>
       response;
-  // True if the response was computed on-device.
+
   bool provided_by_on_device = false;
+
   // The execution info will be null until `StreamingResponse.is_complete` is
   // true.
   std::unique_ptr<proto::ModelExecutionInfo> execution_info;

@@ -53,10 +53,8 @@ class SessionImpl : public OnDeviceSession {
 
   SessionImpl(ModelBasedCapabilityKey feature,
               std::optional<OnDeviceOptions> on_device_opts,
-              ExecuteRemoteFn execute_remote_fn,
               const std::optional<SessionConfigParams>& config_params);
   SessionImpl(ModelBasedCapabilityKey feature,
-              ExecuteRemoteFn execute_remote_fn,
               const SamplingParams& sampling_params);
   ~SessionImpl() override;
 
@@ -109,7 +107,6 @@ class SessionImpl : public OnDeviceSession {
       bool want_input_context);
 
   const ModelBasedCapabilityKey feature_;
-  ExecuteRemoteFn execute_remote_fn_;
 
   MultimodalMessage context_;
   base::TimeTicks context_start_time_;

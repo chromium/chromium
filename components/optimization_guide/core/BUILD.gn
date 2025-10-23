@@ -224,8 +224,6 @@ source_set("model_execution") {
     sources += [
       "model_execution/aqa_response_parser.cc",
       "model_execution/aqa_response_parser.h",
-      "model_execution/execute_remote_fn.cc",
-      "model_execution/execute_remote_fn.h",
       "model_execution/fieldwise_response_parser.cc",
       "model_execution/fieldwise_response_parser.h",
       "model_execution/json_response_parser.cc",
@@ -514,8 +512,6 @@ static_library("model_execution_test_support") {
       "model_execution/test/fake_model_assets.h",
       "model_execution/test/fake_model_broker.cc",
       "model_execution/test/fake_model_broker.h",
-      "model_execution/test/fake_remote.cc",
-      "model_execution/test/fake_remote.h",
       "model_execution/test/feature_config_builder.cc",
       "model_execution/test/feature_config_builder.h",
       "model_execution/test/mock_on_device_capability.cc",

@@ -22,7 +22,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -222,8 +221,7 @@ std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
     opts.sampling_params = *config_params.sampling_params;
   }
 
-  return std::make_unique<SessionImpl>(
-      feature, std::move(opts), CreateNoOpExecuteRemoteFn(), config_params);
+  return std::make_unique<SessionImpl>(feature, std::move(opts), config_params);
 }
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
