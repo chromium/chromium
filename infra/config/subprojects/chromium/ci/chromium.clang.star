@@ -1121,6 +1121,8 @@ clang_tot_linux_builder(
             "linux-jammy",
         ],
     ),
+    builderless = False,
+    ssd = True,
     short_name = "msn",
 )
 
