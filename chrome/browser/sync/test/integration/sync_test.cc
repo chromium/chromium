@@ -620,9 +620,9 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
-bool SyncTest::SetupSyncInternal(SyncWaitCondition wait_condition,
-                                 SyncTestAccount account,
-                                 SetupSyncMode setup_mode) {
+bool SyncTest::SetupSyncInternal(SyncTestAccount account,
+                                 SetupSyncMode setup_mode,
+                                 SyncWaitCondition wait_condition) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
@@ -729,15 +729,15 @@ bool SyncTest::SetupSyncInternal(SyncWaitCondition wait_condition,
   return true;
 }
 
-bool SyncTest::SetupSync(SyncWaitCondition wait_condition,
-                         SetupSyncMode setup_mode) {
-  return SetupSync(SyncTestAccount::kDefaultAccount, wait_condition,
-                   setup_mode);
+bool SyncTest::SetupSync(SetupSyncMode setup_mode,
+                         SyncWaitCondition wait_condition) {
+  return SetupSync(SyncTestAccount::kDefaultAccount, setup_mode,
+                   wait_condition);
 }
 
 bool SyncTest::SetupSync(SyncTestAccount account,
-                         SyncWaitCondition wait_condition,
-                         SetupSyncMode setup_mode) {
+                         SetupSyncMode setup_mode,
+                         SyncWaitCondition wait_condition) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
@@ -747,7 +747,7 @@ bool SyncTest::SetupSync(SyncTestAccount account,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  if (!SetupSyncInternal(wait_condition, account, setup_mode)) {
+  if (!SetupSyncInternal(account, setup_mode, wait_condition)) {
     return false;
   }
 

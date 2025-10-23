@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                                 kKeyParams);
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync(kSyncTheFeature, WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
   EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       Pbkdf2PassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync(kSyncTheFeature, WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
   EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
 
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync(kSyncTheFeature, WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
   EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       ScryptPassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync(kSyncTheFeature, WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
   EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       Pbkdf2PassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
                         GetFakeServer());
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync(kSyncTheFeature, WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
   ASSERT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
       key_params.password));
   ASSERT_TRUE(WaitForPassphraseAccepted());

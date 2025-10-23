@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // waits for an "about:blank" tab to show up in the Sessions data on the fake
   // server. Since this test already navigated away, that'll never happen. So
   // use the slightly-weaker WAIT_FOR_SYNC_SETUP_TO_COMPLETE here.
-  ASSERT_TRUE(SetupSync(SyncTest::WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync(kSyncTheFeature, WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
 
   // After Sync was enabled, navigate further.
   GURL synced_url2 =

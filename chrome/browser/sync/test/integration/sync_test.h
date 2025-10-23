@@ -221,12 +221,12 @@ class SyncTest : public PlatformBrowserTest,
   // Initializes sync clients and waits for different stages to complete
   // depending on |setup_mode|.
   [[nodiscard]] bool SetupSync(
-      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
-      SetupSyncMode setup_mode = kSyncTheFeature);
+      SetupSyncMode setup_mode = kSyncTheFeature,
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
   [[nodiscard]] bool SetupSync(
       SyncTestAccount account,
-      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
-      SetupSyncMode setup_mode = kSyncTheFeature);
+      SetupSyncMode setup_mode = kSyncTheFeature,
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
 
   // This is similar to click the reset button on chrome.google.com/data.
   // Only takes effect when running with external servers.
@@ -336,9 +336,9 @@ class SyncTest : public PlatformBrowserTest,
   void InitializeProfile(int index, Profile* profile);
 
   // Internal routine for setting up sync.
-  [[nodiscard]] bool SetupSyncInternal(SyncWaitCondition wait_condition,
-                                       SyncTestAccount account,
-                                       SetupSyncMode setup_mode);
+  [[nodiscard]] bool SetupSyncInternal(SyncTestAccount account,
+                                       SetupSyncMode setup_mode,
+                                       SyncWaitCondition wait_condition);
 
   // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
   // is applicable on ChromeOS-Ash platform only.
