@@ -43,6 +43,12 @@ BASE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices,
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// An experiment to collect memory metrics on all devices to determine the most
+// suitable memory heuristics. Memory pressure signals will not be sent in the
+// experiment group.
+BASE_FEATURE(kUserLevelMemoryPressureSignalMetricsOnly,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices() {
   static bool s_enabled =
       base::SysInfo::Is3GbDevice() &&

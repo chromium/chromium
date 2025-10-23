@@ -792,7 +792,7 @@ int BrowserMainLoop::PreCreateThreads() {
 
   InitializeMemoryManagementComponent();
 #if BUILDFLAG(IS_ANDROID)
-  memory_pressure::UserLevelMemoryPressureSignalGenerator::Initialize();
+  content::UserLevelMemoryPressureSignalGenerator::Initialize();
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)

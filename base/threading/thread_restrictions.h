@@ -346,7 +346,7 @@ class V4L2DevicePoller;  // TODO(crbug.com/41486289): remove this.
 namespace memory_instrumentation {
 class OSMetrics;
 }
-namespace memory_pressure {
+namespace content {
 class UserLevelMemoryPressureSignalGenerator;
 }
 namespace metrics {
@@ -611,6 +611,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::
       ScopedAllowBlockingForViewAura;  // http://crbug.com/332579
   friend class content::ShellPathProvider;
+  friend class content::UserLevelMemoryPressureSignalGenerator;
   friend class content::WebContentsViewMac;
   friend class cronet::CronetContext;
   friend class cronet::CronetPrefsManager;
@@ -623,7 +624,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class io_thread::IOSIOThread;
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
-  friend class memory_pressure::UserLevelMemoryPressureSignalGenerator;
   friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class net::GSSAPISharedLibrary;    // http://crbug.com/66702

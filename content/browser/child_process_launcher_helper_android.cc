@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
+#include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
 #include "content/browser/posix_file_descriptor_info_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -222,6 +223,8 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
     // processes. So there is no need for base::GetTerminationInfo.
     info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
   }
+  info.memory_pressure_metrics =
+      UserLevelMemoryPressureSignalGenerator::GetLatestMemoryMetrics();
   return info;
 }
 
