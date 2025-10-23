@@ -214,7 +214,7 @@ void GlicFloatingUi::Attach() {
 
 void GlicFloatingUi::Detach() {
   // Floaty UI is already detached.
-  NOTREACHED();
+  LOG(WARNING) << "GlicFloatingUi: Detach() called while already detached.";
 }
 
 void GlicFloatingUi::SetMinimumWidgetSize(const gfx::Size& size) {
