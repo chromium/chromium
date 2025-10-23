@@ -14,9 +14,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,10 +30,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -38,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -51,7 +58,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsMediatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock ViewGroup mViewGroup;
     private @Mock NavigationAttachmentsViewHolder mViewHolder;
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock WindowAndroid mWindowAndroid;
@@ -65,7 +71,9 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock Tab mTab3;
     private @Mock WebContents mWebContents;
 
+    private Activity mActivity;
     private Context mContext;
+    private ViewGroup mViewGroup;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
@@ -75,9 +83,15 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Before
     public void setUp() {
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mViewGroup = new ConstraintLayout(mActivity);
+        mActivity.setContentView(mViewGroup);
+        LayoutInflater.from(mActivity)
+                .inflate(R.layout.navigation_attachments_bar, mViewGroup, true);
 
         mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
+
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
         mMediator =
                 Mockito.spy(

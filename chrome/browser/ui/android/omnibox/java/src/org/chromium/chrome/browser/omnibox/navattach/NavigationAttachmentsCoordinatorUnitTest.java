@@ -21,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -59,8 +59,6 @@ import java.util.function.Function;
 /** Unit tests for {@link NavigationAttachmentsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsCoordinatorUnitTest {
-    public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock ComposeBoxQueryControllerBridge.Natives mControllerMock;
@@ -85,17 +83,12 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     public void setUp() {
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mControllerMock);
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mActivity = activity;
-                            mWindowAndroid = new WindowAndroid(activity, false);
-                            mParent = new ConstraintLayout(activity);
-                            mActivity.setContentView(mParent);
-                            LayoutInflater.from(activity)
-                                    .inflate(R.layout.navigation_attachments_bar, mParent, true);
-                        });
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mWindowAndroid = new WindowAndroid(mActivity, false);
+        mParent = new ConstraintLayout(mActivity);
+        mActivity.setContentView(mParent);
+        LayoutInflater.from(mActivity).inflate(R.layout.navigation_attachments_bar, mParent, true);
+
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFunction);
 
         lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();

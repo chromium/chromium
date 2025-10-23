@@ -31,30 +31,34 @@ found in the LICENSE file.
         android:visibility="gone"
         app:constraint_referenced_ids="location_bar_attachments_add"/>
 
-    <org.chromium.ui.widget.ChromeImageButton
+    <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/location_bar_attachments_add"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_width="@dimen/navigation_attachments_button_size"
+        android:layout_height="@dimen/navigation_attachments_button_size"
+        android:padding="@dimen/navigation_attachments_button_padding"
         android:src="@drawable/ic_add_round_24dp"
+        android:scaleType="centerInside"
         android:clickable="true"
         android:focusable="true"
-        android:background="@null"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:background="?attr/selectableItemBackground"
+        android:clipToOutline="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:tint="@color/default_icon_color_tint_list"/>
 
-    <org.chromium.ui.widget.ChromeImageButton
+    <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/location_bar_attachments_settings"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_width="@dimen/navigation_attachments_button_size"
+        android:layout_height="@dimen/navigation_attachments_button_size"
+        android:padding="@dimen/navigation_attachments_button_padding"
         android:src="@drawable/ic_settings_tune_24dp"
+        android:scaleType="centerInside"
         android:clickable="true"
         android:focusable="true"
-        android:background="@null"
+        android:background="?attr/selectableItemBackground"
+        android:clipToOutline="true"
         android:visibility="gone"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
@@ -83,7 +87,6 @@ found in the LICENSE file.
         android:layout_height="@dimen/min_touch_target_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
-        />
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"/>
 
 </merge>

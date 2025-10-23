@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,14 +25,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.widget.ChromeImageButton;
+import org.chromium.ui.widget.ChromeImageView;
 
 /** Unit tests for {@link NavigationAttachmentsViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,7 +44,8 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock ViewGroup mParent;
     private @Mock Group mAttachmentsToolbar;
     private @Mock NavigationAttachmentsPopup mPopup;
-    private @Mock ChromeImageButton mAddButton;
+    private @Mock ChromeImageView mAddButton;
+    private @Mock ChromeImageView mSettingsButton;
     private @Mock Button mCameraButton;
     private @Mock Button mGalleryButton;
     private @Mock Button mFileButton;
@@ -49,15 +53,24 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock SwitchCompat mSwitch;
     private @Mock View mRecentTabsHeader;
 
+    private Activity mActivity;
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+
+        doReturn(mActivity).when(mParent).getContext();
+        doReturn(mActivity.getResources()).when(mParent).getResources();
+
         doReturn(mAttachmentsToolbar)
                 .when(mParent)
                 .findViewById(R.id.location_bar_attachments_toolbar);
         doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
+        doReturn(mSettingsButton)
+                .when(mParent)
+                .findViewById(R.id.location_bar_attachments_settings);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
         doReturn(mSwitch).when(mParent).findViewById(R.id.location_bar_navigation_type);
         doReturn(mRecentTabsHeader)
