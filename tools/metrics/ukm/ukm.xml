@@ -7969,11 +7969,25 @@ be describing additional metrics about the same event.
     <summary>
       True if the cookie was accessed by port which was mismatched.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SchemeMismatch" enum="Boolean">
     <summary>
       True if the cookie was accessed by scheme which was mismatched.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
