@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"

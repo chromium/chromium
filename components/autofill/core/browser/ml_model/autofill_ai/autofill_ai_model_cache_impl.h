@@ -20,7 +20,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;

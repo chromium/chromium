@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
