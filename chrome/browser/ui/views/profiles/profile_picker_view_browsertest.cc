@@ -4057,3 +4057,34 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowRoamingProfileBrowserTest,
   EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
 }
+
+class ProfilePickerToAllUsersBrowserTest : public ProfilePickerTestBase {
+ public:
+  ProfilePickerToAllUsersBrowserTest() {
+    // Avoid explicitly opening a page on startup as it would force a browser to
+    // be opened as the startup mode (added tabs from command line).
+    set_open_about_blank_on_browser_launch(false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kShowProfilePickerToAllUsersExperiment};
+};
+
+// In a regular BrowserTests startup, by default there are no profile, and the
+// startup mode returned in this case is a browser for convenience. To bypass
+// this, we ensure that the browser test has a profile on startup, by created it
+// in PRE_, and actually running the test in the regular test case below
+// (ensuring that the profile already exist on restart).
+IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
+                       PRE_StartupSingleProfile) {
+  ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+}
+IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
+                       StartupSingleProfile) {
+  ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
+
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+}
