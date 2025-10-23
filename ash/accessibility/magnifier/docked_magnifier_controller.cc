@@ -22,6 +22,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -110,9 +111,18 @@ DockedMagnifierController::~DockedMagnifierController() {
 // static
 void DockedMagnifierController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kDockedMagnifierEnabled, false);
+  const uint32_t registration_flags_batch3 =
+      base::FeatureList::IsEnabled(features::kOsSyncAccessibilitySettingsBatch3)
+          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
+          : 0;
+  registry->RegisterBooleanPref(prefs::kDockedMagnifierEnabled, false,
+                                registration_flags_batch3);
   registry->RegisterDoublePref(prefs::kDockedMagnifierScale,
-                               kDefaultMagnifierScale);
+                               kDefaultMagnifierScale,
+                               registration_flags_batch3);
+  // Screen height divisor is not synced as it may result in undesired behavior
+  // when synced across devices with screens that have different physical
+  // dimensions.
   registry->RegisterDoublePref(prefs::kDockedMagnifierScreenHeightDivisor,
                                kDefaultScreenHeightDivisor);
 }

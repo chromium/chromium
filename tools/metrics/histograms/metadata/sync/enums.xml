@@ -782,6 +782,14 @@ chromium-metrics-reviews@google.com.
   <int value="100355" label="AccessibilityCaptionsBackgroundColor"/>
   <int value="100356" label="AccessibilityCaptionsTextShadow"/>
   <int value="100357" label="AccessibilityCaptionsBackgroundOpacity"/>
+  <int value="100358" label="AccessibilityScreenMagnifierEnabled"/>
+  <int value="100359" label="AccessibilitySelectToSpeakEnabled"/>
+  <int value="100360" label="DockedMagnifierEnabled"/>
+  <int value="100361" label="DockedMagnifierScale"/>
+  <int value="100362" label="ScreenMagnifierAcceleratorDialogHasBeenAccepted"/>
+  <int value="100363" label="DockedMagnifierAcceleratorDialogHasBeenAccepted"/>
+  <int value="100364" label="SelectToSpeakAcceleratorDialogHasBeenAccepted"/>
+  <int value="100365" label="AccessibilityScreenMagnifierScale"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

@@ -1521,6 +1521,11 @@ BASE_FEATURE(kOsSyncAccessibilitySettingsBatch1,
 BASE_FEATURE(kOsSyncAccessibilitySettingsBatch2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Gates syncing of the third batch of accessibility settings (screen + docked
+// magnifiers and select-to-speak toggles) so rollout can proceed incrementally.
+BASE_FEATURE(kOsSyncAccessibilitySettingsBatch3,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the OneDrive upload flow should immediately prompt the user to
 // re-authenticate without first showing a notification.
 BASE_FEATURE(kOneDriveUploadImmediateReauth, base::FEATURE_ENABLED_BY_DEFAULT);

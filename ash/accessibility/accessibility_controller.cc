@@ -1237,10 +1237,6 @@ void AccessibilityController::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMonoAudioEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMouseKeysEnabled, false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityScreenMagnifierEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilitySelectToSpeakEnabled,
-                                false);
   registry->RegisterBooleanPref(prefs::kAccessibilityShortcutsEnabled, true);
   registry->RegisterBooleanPref(prefs::kAccessibilitySlowKeysEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilitySpokenFeedbackEnabled,
@@ -1277,13 +1273,7 @@ void AccessibilityController::RegisterProfilePrefs(
   // A pref in this list is associated with accepting for the first time,
   // enabling of some pref above. Non-syncable like all of the above prefs.
   registry->RegisterBooleanPref(
-      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
-      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
       prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
-      prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted, false);
   registry->RegisterBooleanPref(
       prefs::kDictationDlcSuccessNotificationHasBeenShown, false);
   registry->RegisterBooleanPref(
@@ -1428,8 +1418,6 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
-                               std::numeric_limits<double>::min());
   if (::features::IsAccessibilitySlowKeysEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilitySlowKeysDelayMs,
@@ -1607,6 +1595,27 @@ void AccessibilityController::RegisterProfilePrefs(
           : 0;
   registry->RegisterBooleanPref(prefs::kAccessibilityReducedAnimationsEnabled,
                                 false, registration_flags_batch2);
+
+  const uint32_t registration_flags_batch3 =
+      base::FeatureList::IsEnabled(features::kOsSyncAccessibilitySettingsBatch3)
+          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
+          : 0;
+  registry->RegisterBooleanPref(prefs::kAccessibilityScreenMagnifierEnabled,
+                                false, registration_flags_batch3);
+  registry->RegisterBooleanPref(prefs::kAccessibilitySelectToSpeakEnabled,
+                                false, registration_flags_batch3);
+  registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
+                               std::numeric_limits<double>::min(),
+                               registration_flags_batch3);
+  registry->RegisterBooleanPref(
+      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted, false,
+      registration_flags_batch3);
+  registry->RegisterBooleanPref(
+      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, false,
+      registration_flags_batch3);
+  registry->RegisterBooleanPref(
+      prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted, false,
+      registration_flags_batch3);
 
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,

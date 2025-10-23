@@ -2712,12 +2712,14 @@ class AccessibilityControllerRegisterProfilePrefsTest
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kOsSyncAccessibilitySettingsBatch1,
-           features::kOsSyncAccessibilitySettingsBatch2},
+           features::kOsSyncAccessibilitySettingsBatch2,
+           features::kOsSyncAccessibilitySettingsBatch3},
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {}, {features::kOsSyncAccessibilitySettingsBatch1,
-               features::kOsSyncAccessibilitySettingsBatch2});
+               features::kOsSyncAccessibilitySettingsBatch2,
+               features::kOsSyncAccessibilitySettingsBatch3});
     }
   }
 
@@ -2766,6 +2768,15 @@ TEST_P(AccessibilityControllerRegisterProfilePrefsTest,
       prefs::kAccessibilityReducedAnimationsEnabled,
   });
   CheckPrefsSyncableFlags(kBatch2AccessibilitySyncPrefs);
+
+  constexpr auto kBatch3AccessibilitySyncPrefs = std::to_array<const char*>(
+      {prefs::kAccessibilityScreenMagnifierEnabled,
+       prefs::kAccessibilitySelectToSpeakEnabled,
+       prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
+       prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
+       prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
+       prefs::kAccessibilityScreenMagnifierScale});
+  CheckPrefsSyncableFlags(kBatch3AccessibilitySyncPrefs);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
