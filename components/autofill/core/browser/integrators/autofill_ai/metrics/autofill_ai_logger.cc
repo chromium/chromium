@@ -186,6 +186,12 @@ void AutofillAiLogger::OnImportPromptResult(
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.Ai.",
                     EntityPromptTypeToMetricsString(prompt_type), ".",
+                    EntityTypeToMetricsString(entity_type), ".",
+                    EntityRecordTypeToMetricsString(record_type)}),
+      result.close_reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.Ai.",
+                    EntityPromptTypeToMetricsString(prompt_type), ".",
                     EntityTypeToMetricsString(entity_type)}),
       result.close_reason);
   base::UmaHistogramEnumeration(

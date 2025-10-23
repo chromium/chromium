@@ -680,7 +680,8 @@ class AutofillAiPromptMetricsTest
       public testing::WithParamInterface<
           std::tuple<EntityType,
                      AutofillClient::AutofillAiImportPromptType,
-                     AutofillClient::AutofillAiBubbleClosedReason>> {
+                     AutofillClient::AutofillAiBubbleClosedReason,
+                     EntityInstance::RecordType>> {
  public:
   AutofillAiPromptMetricsTest() = default;
 
@@ -691,6 +692,7 @@ class AutofillAiPromptMetricsTest
   AutofillClient::AutofillAiBubbleClosedReason close_reason() {
     return std::get<2>(GetParam());
   }
+  EntityInstance::RecordType record_type() { return std::get<3>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -701,13 +703,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::ValuesIn(
             DenseSet<AutofillClient::AutofillAiImportPromptType>::all()),
         testing::ValuesIn(
-            DenseSet<AutofillClient::AutofillAiBubbleClosedReason>::all())));
+            DenseSet<AutofillClient::AutofillAiBubbleClosedReason>::all()),
+        testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
 
 TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
-  constexpr std::string_view kPromptHistogramMask = "Autofill.Ai.%s.%s";
+  constexpr std::string_view kPromptHistogramMask = "Autofill.Ai.%s.%s%s";
   base::HistogramTester histogram_tester;
   test_api(manager()).logger().OnImportPromptResult(
-      prompt_type(), entity_type(), EntityInstance::RecordType::kLocal,
+      prompt_type(), entity_type(), record_type(),
       /*form_session_id*/ 0, /*domain=*/"",
       AutofillClient::EntityImportPromptResult(
           /*did_user_decline=*/false, close_reason(), /*entity=*/std::nullopt),
@@ -715,13 +718,22 @@ TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
 
   const std::string_view prompt_type_str =
       EntityPromptTypeToMetricsString(prompt_type());
+  const std::string_view entity_type_str =
+      EntityTypeToMetricsString(entity_type());
+  const std::string record_type_str =
+      base::StrCat({".", EntityRecordTypeToMetricsString(record_type())});
 
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kPromptHistogramMask, prompt_type_str,
-                         EntityTypeToMetricsString(entity_type())),
+      base::StringPrintf(kPromptHistogramMask, prompt_type_str, entity_type_str,
+                         record_type_str),
       close_reason(), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kPromptHistogramMask, prompt_type_str, "AllEntities"),
+      base::StringPrintf(kPromptHistogramMask, prompt_type_str, entity_type_str,
+                         ""),
+      close_reason(), 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kPromptHistogramMask, prompt_type_str, "AllEntities",
+                         ""),
       close_reason(), 1);
 }
 
