@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
@@ -38,8 +39,11 @@ gfx::Size GlicFloatingUi::GetDefaultSize() {
 
 GlicFloatingUi::GlicFloatingUi(Profile* profile,
                                gfx::Rect initial_bounds,
-                               GlicUiEmbedder::Delegate& delegate)
-    : profile_(profile), delegate_(delegate) {
+                               GlicUiEmbedder::Delegate& delegate,
+                               GlicInstanceMetrics& instance_metrics)
+    : profile_(profile),
+      delegate_(delegate),
+      instance_metrics_(instance_metrics) {
   application_hotkey_manager_ =
       MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
   glic_panel_hotkey_manager_ =
@@ -222,6 +226,7 @@ bool GlicFloatingUi::IsShowing() const {
 }
 
 void GlicFloatingUi::Show() {
+  instance_metrics_->OnShowInFloaty();
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());

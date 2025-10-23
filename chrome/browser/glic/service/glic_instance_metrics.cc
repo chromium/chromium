@@ -69,7 +69,7 @@ void GlicInstanceMetrics::OnSwitchToConversation(
   }
 }
 
-void GlicInstanceMetrics::OnShowSidePanel() {
+void GlicInstanceMetrics::OnShowInSidePanel() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
 }
 
@@ -78,7 +78,7 @@ void GlicInstanceMetrics::OnShowSidePanelViaHotkey() {
       base::UserMetricsAction("Glic.Instance.Show.SidePanelViaHotkey"));
 }
 
-void GlicInstanceMetrics::OnShowFloaty() {
+void GlicInstanceMetrics::OnShowInFloaty() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.Floaty"));
 }
 

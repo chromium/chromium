@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
+#include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -38,7 +39,6 @@ namespace glic {
 class GlicUiEmbedder;
 class EmptyEmbedderDelegate;
 class GlicTabContentsObserver;
-class GlicInstanceMetrics;
 class GlicZeroStateSuggestionsManager;
 
 // A GlicInstance owns a single host keeping any state that must exist for the
@@ -183,7 +183,7 @@ class GlicInstanceImpl : public GlicInstance,
   void OnTabAddedToTask(actor::TaskId task_id,
                         const tabs::TabInterface::Handle& tab_handle) override;
 
-  raw_ptr<glic::GlicInstanceMetrics> metrics() { return metrics_.get(); }
+  glic::GlicInstanceMetrics* metrics() { return &instance_metrics_; }
 
  private:
   struct EmbedderEntry {
@@ -240,6 +240,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate_;
   InstanceId id_;
+  GlicInstanceMetrics instance_metrics_;
 
   // The single source of truth for all embedders.
   // A tabs::TabInterface* key is a tab-bound side panel.
@@ -255,7 +256,6 @@ class GlicInstanceImpl : public GlicInstance,
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
-  std::unique_ptr<glic::GlicInstanceMetrics> metrics_;
 
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.

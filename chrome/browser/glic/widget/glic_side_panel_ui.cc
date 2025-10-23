@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
@@ -29,8 +30,12 @@ namespace glic {
 
 GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
-                                 GlicUiEmbedder::Delegate& delegate)
-    : profile_(profile), tab_(tab), delegate_(delegate) {
+                                 GlicUiEmbedder::Delegate& delegate,
+                                 GlicInstanceMetrics& instance_metrics)
+    : profile_(profile),
+      tab_(tab),
+      delegate_(delegate),
+      instance_metrics_(instance_metrics) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;
@@ -169,6 +174,7 @@ void GlicSidePanelUi::CaptureScreenshot(
 }
 
 void GlicSidePanelUi::Show() {
+  instance_metrics_->OnShowInSidePanel();
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;

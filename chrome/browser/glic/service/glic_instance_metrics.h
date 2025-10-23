@@ -41,8 +41,8 @@ class GlicInstanceMetrics {
   // Called when an instance is created without warming.
   void OnInstanceCreatedWithoutWarming();
 
-  // Called when GlicInstanceImpl::Show is called for a side panel.
-  void OnShowSidePanel();
+  // Called when this instance is shown in the side panel.
+  void OnShowInSidePanel();
 
   // Called when GlicInstanceImpl::Show is called for a side panel due to hotkey
   // use.
@@ -51,8 +51,8 @@ class GlicInstanceMetrics {
   // Called when the floaty is shown via a hotkey due to hotkey use.
   void OnFloatyShownViaHotkey();
 
-  // Called when GlicInstanceImpl::Show is called for a floaty.
-  void OnShowFloaty();
+  // Called when this instance is shown in a floaty.
+  void OnShowInFloaty();
 
   // Called when GlicInstanceImpl::SwitchConversation is called from this
   // instance (usually via 'start new chat' or re etn chats selection).

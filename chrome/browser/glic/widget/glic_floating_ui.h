@@ -26,6 +26,7 @@ class GlicWindowAnimator;
 class GlicWidget;
 class GlicView;
 class LocalHotkeyManager;
+class GlicInstanceMetrics;
 
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder,
@@ -38,10 +39,12 @@ class GlicFloatingUi : public GlicUiEmbedder,
  public:
   GlicFloatingUi(Profile* profile,
                  BrowserWindowInterface* browser,
-                 GlicUiEmbedder::Delegate& delegate);
+                 GlicUiEmbedder::Delegate& delegate,
+                 GlicInstanceMetrics& instance_metrics);
   GlicFloatingUi(Profile* profile,
                  gfx::Rect initial_bounds,
-                 GlicUiEmbedder::Delegate& delegate);
+                 GlicUiEmbedder::Delegate& delegate,
+                 GlicInstanceMetrics& instance_metrics);
   ~GlicFloatingUi() override;
 
   static gfx::Size GetDefaultSize();
@@ -135,6 +138,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   raw_ptr<Profile> profile_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
+  raw_ref<GlicInstanceMetrics> instance_metrics_;
 
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 
