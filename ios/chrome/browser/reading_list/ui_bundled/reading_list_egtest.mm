@@ -1101,7 +1101,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 - (void)testMarkMixedEntriesRead {
   // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
   // enabled.
-  if (!@available(iOS 18, *)) {
+  if (!@available(iOS 26, *)) {
     if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
         [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
       EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
@@ -1228,6 +1228,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
     if ([ChromeEarlGrey isIPhoneIdiom]) {
       EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
     }
+  }
+  if (!@available(iOS 26, *)) {
     // This test fails on iPad iOS 18 with multitasking enabled.
     if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
         [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
@@ -1693,7 +1695,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
   // enabled.
-  if (!@available(iOS 18, *)) {
+  if (!@available(iOS 26, *)) {
     if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
         [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
       EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
