@@ -337,6 +337,13 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
 
   gfx::Rect results_bounds(contents_host_->GetContentsBounds());
   results_bounds.Inset(GetContentInsets());
+
+  // Workaround for 1px visual artifact. The WebUI autosize mechanism sends a
+  // 1px height when empty instead of hiding, which causes a 1px line to be
+  // rendered. Clamp to 0 to hide the artifact.
+  if (results_bounds.height() <= 1) {
+    results_bounds.set_height(0);
+  }
   contents_->SetBoundsRect(results_bounds);
 }
 

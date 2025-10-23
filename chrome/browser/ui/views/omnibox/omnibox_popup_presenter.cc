@@ -78,9 +78,6 @@ void OmniboxPopupPresenter::Show() {
         include_location_bar_cutout_));
 
     widget_->SetVisibilityChangedAnimationsEnabled(false);
-    // The widget height can not be 0 or else the compositor thinks the webview
-    // is hidden and will not calculate its preferred size.
-    SetWidgetContentHeight(1);
 
     if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
       widget_->Show();
@@ -89,6 +86,10 @@ void OmniboxPopupPresenter::Show() {
       }
     } else {
       widget_->ShowInactive();
+    }
+
+    if (auto* content = GetOmniboxPopupWebUIContent()) {
+      content->GetWebContents()->WasShown();
     }
   }
 }
