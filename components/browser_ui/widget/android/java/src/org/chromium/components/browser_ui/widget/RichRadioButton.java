@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.FrameLayout;
@@ -21,9 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.view.AccessibilityDelegateCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.ChromeImageView;
@@ -91,19 +87,6 @@ public class RichRadioButton extends ConstraintLayout implements Checkable {
         mItemRadioButton = findViewById(R.id.rich_radio_button_radio_button);
 
         setOnClickListener(v -> toggle());
-
-        ViewCompat.setAccessibilityDelegate(
-                this,
-                new AccessibilityDelegateCompat() {
-                    @Override
-                    public void onInitializeAccessibilityNodeInfo(
-                            View host, AccessibilityNodeInfoCompat info) {
-                        super.onInitializeAccessibilityNodeInfo(host, info);
-                        info.setCheckable(true);
-                        info.setChecked(mIsChecked);
-                        info.setClassName(RadioButton.class.getName());
-                    }
-                });
 
         mDefaultRootLayoutPaddingStart = mRootItemLayout.getPaddingStart();
         mDefaultRootLayoutPaddingTop = mRootItemLayout.getPaddingTop();
