@@ -206,7 +206,7 @@ class Host : public GlicSharingManagerProvider {
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
-  content::WebContents* webui_contents();
+  content::WebContents* webui_contents() const;
 
   // Returns whether `contents` is the glic WebUI web contents.
   bool IsGlicWebUi(content::WebContents* contents) const;

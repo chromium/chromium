@@ -351,7 +351,7 @@ bool Host::IsPrimaryClientOpen() {
   return handler_info_ ? handler_info_->open_complete : false;
 }
 
-content::WebContents* Host::webui_contents() {
+content::WebContents* Host::webui_contents() const {
   if (contents_) {
     return contents_->web_contents();
   }

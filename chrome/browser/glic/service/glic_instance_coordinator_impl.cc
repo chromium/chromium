@@ -69,7 +69,12 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     GlicKeyedService* service,
     GlicEnabling* enabling,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
-    : profile_(profile), contextual_cueing_service_(contextual_cueing_service) {
+    : profile_(profile),
+      contextual_cueing_service_(contextual_cueing_service),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kGlicKeyedService,
+          this) {
   if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs)) {
     tab_creation_observer_ = std::make_unique<GlicTabCreationObserver>(
         profile_,
@@ -471,4 +476,34 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
   }
 }
 
+void GlicInstanceCoordinatorImpl::OnMemoryPressure(
+    base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return;
+  }
+
+  // Safeguard: Do not hibernate if there is only one instance left.
+  if (instances_.size() <= 1) {
+    return;
+  }
+
+  GlicInstanceImpl* least_recently_active_instance = nullptr;
+  base::TimeTicks oldest_active_time = base::TimeTicks::Max();
+
+  for (auto const& [id, instance] : instances_) {
+    // Safeguard: Do not hibernate actuating or already hibernated instances.
+    if (instance->IsActuating() || instance->IsHibernated()) {
+      continue;
+    }
+
+    if (instance->GetLastActiveTime() < oldest_active_time) {
+      oldest_active_time = instance->GetLastActiveTime();
+      least_recently_active_instance = instance.get();
+    }
+  }
+
+  if (least_recently_active_instance) {
+    least_recently_active_instance->Hibernate();
+  }
+}
 }  // namespace glic

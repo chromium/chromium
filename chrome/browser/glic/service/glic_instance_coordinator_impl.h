@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -46,11 +47,12 @@ namespace glic {
 
 // An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
 // access to GlicInstanceCoordinatorImpl to allow for test fakes.
-class GlicInstanceCoordinator
-    : public GlicWindowController,
-      public GlicInstanceImpl::InstanceCoordinatorDelegate {};
+class GlicInstanceCoordinator : public GlicWindowController {};
 
-class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
+class GlicInstanceCoordinatorImpl
+    : public GlicInstanceCoordinator,
+      public GlicInstanceImpl::InstanceCoordinatorDelegate,
+      public base::MemoryPressureListener {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -144,6 +146,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   void CloseFloaty();
 
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+
   void RemoveInstance(GlicInstanceImpl* instance) override;
 
   void NotifyActiveInstanceChanged();
@@ -166,6 +170,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   raw_ptr<GlicInstanceImpl> last_active_instance_ = nullptr;
   base::RepeatingCallbackList<void(GlicInstance*)>
       active_instance_changed_callback_list_;
+
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   bool warming_enabled_ = true;
 

@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -91,6 +93,14 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicSharingManagerProvider implementation.
   GlicSharingManager& sharing_manager() override;
+
+  void NotifyInstanceActivationChanged(bool is_active);
+
+  base::TimeTicks GetLastActiveTime() const;
+
+  bool IsHibernated() const;
+
+  void Hibernate();
 
   void CloseInstanceAndShutdown();
 
@@ -277,6 +287,9 @@ class GlicInstanceImpl : public GlicInstance,
       zero_state_suggestions_manager_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
   base::CallbackListSubscription pinned_tabs_change_subscription_;
+
+  base::OneShotTimer inactivity_timer_;
+  base::TimeTicks last_active_time_;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

@@ -23,7 +23,6 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
@@ -142,8 +141,8 @@ GlicInstanceImpl::GlicInstanceImpl(
               contextual_cueing_service)),
       actor_task_manager_(std::make_unique<GlicActorTaskManager>(
           profile,
-          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile))) {
-  CHECK(actor_task_manager_);
+          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile))),
+      last_active_time_(base::TimeTicks::Now()) {
   instance_metrics_.OnInstanceCreated();
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Start warming the contents.
@@ -697,7 +696,7 @@ void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
 }
 
 void GlicInstanceImpl::OnEmbedderWindowActivationChanged(bool has_focus) {
-  coordinator_delegate_->OnInstanceActivationChanged(this, has_focus);
+  NotifyInstanceActivationChanged(has_focus);
 }
 
 void GlicInstanceImpl::NotifyPanelStateChanged() {
@@ -734,7 +733,7 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
 
   // If no embedder is showing, then the instance is inactive.
   instance_metrics_.OnInstanceHidden();
-  coordinator_delegate_->OnInstanceActivationChanged(this, false);
+  NotifyInstanceActivationChanged(false);
 }
 
 void GlicInstanceImpl::OnTabAddedToTask(
@@ -745,6 +744,35 @@ void GlicInstanceImpl::OnTabAddedToTask(
     return;
   }
   Show(ShowOptions::ForSidePanel(*tab));
+}
+
+void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
+  if (is_active) {
+    last_active_time_ = base::TimeTicks::Now();
+    inactivity_timer_.Stop();
+  } else {
+    last_active_time_ = base::TimeTicks::Now();
+    inactivity_timer_.Start(
+        FROM_HERE, base::Hours(23),
+        base::BindOnce(&GlicInstanceImpl::Hibernate, base::Unretained(this)));
+  }
+
+  if (coordinator_delegate_) {
+    coordinator_delegate_->OnInstanceActivationChanged(this, is_active);
+  }
+}
+
+base::TimeTicks GlicInstanceImpl::GetLastActiveTime() const {
+  return last_active_time_;
+}
+
+bool GlicInstanceImpl::IsHibernated() const {
+  return !host_.webui_contents();
+}
+
+void GlicInstanceImpl::Hibernate() {
+  DeactivateCurrentEmbedder();
+  host_.Shutdown();
 }
 
 void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
