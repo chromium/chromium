@@ -27,6 +27,21 @@ bool IsElementFocusable(autofill::FieldRendererId renderer_id,
   return field->is_focusable();
 }
 
+bool IsLoginForm(const password_manager::PasswordForm& form) {
+  const bool has_focusable_username =
+      form.HasUsernameElement() &&
+      IsElementFocusable(form.username_element_renderer_id, form.form_data);
+  const bool has_focusable_password =
+      form.HasPasswordElement() &&
+      IsElementFocusable(form.password_element_renderer_id, form.form_data);
+  const bool has_focusable_new_password =
+      form.HasNewPasswordElement() &&
+      IsElementFocusable(form.new_password_element_renderer_id, form.form_data);
+
+  return (has_focusable_username || has_focusable_password) &&
+         !has_focusable_new_password;
+}
+
 }  // namespace
 
 ActorLoginFormFinder::ActorLoginFormFinder(
@@ -48,49 +63,44 @@ ActorLoginFormFinder::GetSigninFormManager(const url::Origin& origin) {
     return nullptr;
   }
 
+  std::vector<password_manager::PasswordFormManager*>
+      eligible_login_form_managers = GetEligibleLoginFormManagers();
   password_manager::PasswordFormManager* signin_form_manager = nullptr;
-  for (const auto& manager : form_cache->GetFormManagers()) {
-    if (!manager->GetDriver()) {
-      continue;
-    }
+  for (const auto& manager : eligible_login_form_managers) {
     if (!manager->GetDriver()->GetLastCommittedOrigin().IsSameOriginWith(
             origin)) {
       continue;
     }
-
-    const password_manager::PasswordForm* parsed_form =
-        manager->GetParsedObservedForm();
-    if (!parsed_form || !IsLoginForm(*parsed_form)) {
-      continue;
-    }
-
     // Prefer filling the primary main frame form if one exists, but
     // also prefer more recently-parsed forms.
     if (manager->GetDriver()->IsInPrimaryMainFrame()) {
-      signin_form_manager = manager.get();
+      signin_form_manager = manager;
     }
 
     // Otherwise, store this form manager and look to see if there is a primary
     // main frame form later.
     if (!signin_form_manager) {
-      signin_form_manager = manager.get();
+      signin_form_manager = manager;
     }
   }
   return signin_form_manager;
 }
 
-bool ActorLoginFormFinder::IsLoginForm(
-    const password_manager::PasswordForm& form) {
-  const bool has_focusable_username =
-      form.HasUsernameElement() &&
-      IsElementFocusable(form.username_element_renderer_id, form.form_data);
-  const bool has_focusable_password =
-      form.HasPasswordElement() &&
-      IsElementFocusable(form.password_element_renderer_id, form.form_data);
-  const bool has_focusable_new_password =
-      form.HasNewPasswordElement() &&
-      IsElementFocusable(form.new_password_element_renderer_id, form.form_data);
-
-  return (has_focusable_username || has_focusable_password) &&
-         !has_focusable_new_password;
+std::vector<password_manager::PasswordFormManager*>
+ActorLoginFormFinder::GetEligibleLoginFormManagers() {
+  std::vector<password_manager::PasswordFormManager*> eligible_form_managers;
+  password_manager::PasswordFormCache* form_cache =
+      client_->GetPasswordManager()->GetPasswordFormCache();
+  if (!form_cache) {
+    return eligible_form_managers;
+  }
+  for (const auto& manager : form_cache->GetFormManagers()) {
+    const password_manager::PasswordForm* parsed_form =
+        manager->GetParsedObservedForm();
+    if (!parsed_form || !manager->GetDriver() || !IsLoginForm(*parsed_form)) {
+      continue;
+    }
+    eligible_form_managers.emplace_back(manager.get());
+  }
+  return eligible_form_managers;
 }

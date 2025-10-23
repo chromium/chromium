@@ -271,28 +271,20 @@ void ActorLoginCredentialFiller::FillForm(
 void ActorLoginCredentialFiller::FillAllEligibleFields(
     std::u16string username,
     std::u16string password) {
-  PasswordManagerInterface* password_manager = client_->GetPasswordManager();
-  PasswordFormCache* form_cache = password_manager->GetPasswordFormCache();
-
   base::ConcurrentClosures concurrent_filling;
-  for (const auto& manager : form_cache->GetFormManagers()) {
-    if (!manager->GetDriver()) {
-      continue;
-    }
+  for (password_manager::PasswordFormManager* manager :
+       login_form_finder_->GetEligibleLoginFormManagers()) {
     if (!manager->GetDriver()->GetLastCommittedOrigin().IsSameOriginWith(
             origin_)) {
       continue;
     }
 
-    const password_manager::PasswordForm* parsed_form =
-        manager->GetParsedObservedForm();
-    if (!parsed_form || !login_form_finder_->IsLoginForm(*parsed_form)) {
-      continue;
-    }
     if (should_store_permission_) {
       manager->SetShouldStoreActorLoginPermission();
     }
 
+    const password_manager::PasswordForm* parsed_form =
+        manager->GetParsedObservedForm();
     FillField(manager->GetDriver().get(),
               parsed_form->username_element_renderer_id, username,
               FieldType::kUsername, concurrent_filling.CreateClosure());

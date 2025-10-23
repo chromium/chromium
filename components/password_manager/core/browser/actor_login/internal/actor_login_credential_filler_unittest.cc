@@ -199,7 +199,7 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
                                     mock_callback.Get());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
@@ -222,7 +222,7 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_DifferentOrigin) {
                                     mock_callback.Get());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
@@ -233,8 +233,6 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
   FormData form_data = CreateSigninFormData(origin.GetURL());
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
-  EXPECT_CALL(mock_driver_, GetLastCommittedOrigin())
-      .WillOnce(ReturnRef(origin));
   std::unique_ptr<PasswordFormManager> form_manager =
       std::make_unique<PasswordFormManager>(
           &mock_client_, mock_driver_.AsWeakPtr(), form_data, &form_fetcher_,
@@ -248,7 +246,7 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
@@ -268,7 +266,7 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
@@ -292,7 +290,7 @@ TEST_P(ActorLoginCredentialFillerTest,
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
@@ -316,7 +314,7 @@ TEST_P(ActorLoginCredentialFillerTest,
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
@@ -344,7 +342,7 @@ TEST_P(ActorLoginCredentialFillerTest,
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
@@ -374,7 +372,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameAndPasswordSingleForm) {
                                     should_store_permission(), &mock_client_,
                                     future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -423,7 +421,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillSingleFormStoresPermission) {
                                     should_store_permission(), &mock_client_,
                                     base::DoNothing());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -468,7 +466,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameFieldSingleForm) {
                                     future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -521,7 +519,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordFieldSingleForm) {
                                     future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -571,7 +569,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameFailsSingleForm) {
                                     future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -619,7 +617,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillPasswordFailsSingleForm) {
                                     future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -666,7 +664,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillBothFailsSingleForm) {
                                     future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -1079,7 +1077,7 @@ TEST_P(ActorLoginCredentialFillerTest, RequestsReauthBeforeFillingSingleForm) {
                                     should_store_permission(), &mock_client_,
                                     future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(
       mock_form_cache_,
       GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
@@ -1186,7 +1184,7 @@ TEST_P(ActorLoginCredentialFillerTest, TabNotActive_ReturnsErrorBeforeReauth) {
                                     should_store_permission(), &mock_client_,
                                     future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
 
   SetUpDeviceAuthenticatorToRequireReauth(mock_client_);
 
@@ -1262,7 +1260,7 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
 
   MockDeviceAuthenticator* weak_device_authenticator =
       SetUpDeviceAuthenticatorToRequireReauth(mock_client_);
@@ -1311,7 +1309,7 @@ TEST_P(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
                                     should_store_permission(), &mock_client_,
                                     mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
+      .WillRepeatedly(Return(base::span(form_managers)));
 
   MockDeviceAuthenticator* weak_device_authenticator =
       SetUpDeviceAuthenticatorToRequireReauth(mock_client_);

@@ -6,12 +6,12 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_FORM_FINDER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
 namespace password_manager {
-struct PasswordForm;
 class PasswordFormManager;
 class PasswordManagerClient;
 }  // namespace password_manager
@@ -34,16 +34,16 @@ class ActorLoginFormFinder {
   // string.
   static std::u16string GetSourceSiteOrAppFromUrl(const GURL& url);
 
-  // Determines if a given form is a login form. A login form is defined as
-  // having a focusable username or password field, but not a new password
-  // field.
-  bool IsLoginForm(const password_manager::PasswordForm& form);
-
   // Finds the most suitable PasswordFormManager for a sign-in form associated
   // with a given origin from the form cache. It prioritizes forms in the
   // primary main frame.
   password_manager::PasswordFormManager* GetSigninFormManager(
       const url::Origin& origin);
+
+  // Returns all the `PasswordFormManager`s with a valid parsed login form for
+  // the current page.
+  std::vector<password_manager::PasswordFormManager*>
+  GetEligibleLoginFormManagers();
 
  private:
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
