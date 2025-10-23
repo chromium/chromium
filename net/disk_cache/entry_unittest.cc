@@ -2239,6 +2239,7 @@ void DiskCacheEntryTest::DoomSparseEntry() {
   // and DoomEntry the system decides to remove all traces of the file from the
   // system cache so we don't see that there is pending IO.
   base::RunLoop().RunUntilIdle();
+  FlushQueueForTest();
 
   if (backend_to_test() == BackendToTest::kMemory) {
     EXPECT_EQ(0, GetEntryCount());

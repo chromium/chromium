@@ -414,8 +414,9 @@ int64_t SqlBackendImpl::MaxFileSize() const {
 
 int32_t SqlBackendImpl::GetEntryCount(
     net::Int32CompletionOnceCallback callback) const {
-  // Asynchronously retrieves the entry count from the persistent store.
-  store_->GetEntryCount(std::move(callback));
+  // The entry count must be retrieved asynchronously to ensure that all
+  // pending database operations are reflected in the result.
+  store_->GetEntryCountAsync(std::move(callback));
   return net::ERR_IO_PENDING;
 }
 

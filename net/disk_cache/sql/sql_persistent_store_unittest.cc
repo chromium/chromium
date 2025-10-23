@@ -130,19 +130,11 @@ class SqlPersistentStoreTest : public testing::Test {
     return false;
   }
 
-  // Synchronously gets the entry count.
-  int32_t GetEntryCount() {
-    base::test::TestFuture<int32_t> future;
-    store_->GetEntryCount(future.GetCallback());
-    return future.Get();
-  }
+  // Gets the entry count.
+  int32_t GetEntryCount() { return store_->GetEntryCount(); }
 
-  // Synchronously gets the total size of all entries.
-  int64_t GetSizeOfAllEntries() {
-    base::test::TestFuture<int64_t> future;
-    store_->GetSizeOfAllEntries(future.GetCallback());
-    return future.Get();
-  }
+  // Gets the total size of all entries.
+  int64_t GetSizeOfAllEntries() { return store_->GetSizeOfAllEntries(); }
 
   // Ensures all tasks on the background thread have completed.
   void FlushPendingTask() {
@@ -4237,7 +4229,7 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
             SqlPersistentStore::Error::kFailedForTesting);
 
   EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
-            SqlPersistentStore::Error::kFailedForTesting);
+            SqlPersistentStore::Error::kOk);
 
   EXPECT_FALSE(
       OpenLatestEntryBeforeResId(
@@ -4329,7 +4321,7 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
           .has_value());
 
   EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
-            SqlPersistentStore::Error::kDatabaseClosed);
+            SqlPersistentStore::Error::kOk);
 
   EXPECT_TRUE(LoadInMemoryIndex(SqlPersistentStore::Error::kDatabaseClosed));
 }

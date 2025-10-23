@@ -324,11 +324,20 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // The maximum total size of the cache.
   virtual int64_t MaxSize() const = 0;
 
-  // Asynchronously retrieves the count of entries.
-  virtual void GetEntryCount(Int32Callback callback) const = 0;
+  // Retrieves the count of entries.
+  // Note that this value may be stale, as it doesn't account for ongoing
+  // database operations.
+  virtual int32_t GetEntryCount() const = 0;
 
-  // Asynchronously retrieves the total size of all entries.
-  virtual void GetSizeOfAllEntries(Int64Callback callback) const = 0;
+  // Asynchronously retrieves the count of entries.
+  // Retrieves the entry count asynchronously, ensuring all pending database
+  // operations are complete.
+  virtual void GetEntryCountAsync(Int32Callback callback) const = 0;
+
+  // Retrieves the total size of all entries.
+  // Note that this value may be stale, as it doesn't account for ongoing
+  // database operations.
+  virtual int64_t GetSizeOfAllEntries() const = 0;
 
   // Loads the in-memory index. This is a no-op if the index has already been
   // loaded or if a load is already in progress. Returns true if a load was

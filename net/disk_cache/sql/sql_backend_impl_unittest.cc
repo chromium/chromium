@@ -127,11 +127,9 @@ class SqlBackendImplTest : public testing::Test {
     return false;
   }
 
-  // Synchronously gets the total size of all entries.
+  // Gets the total size of all entries.
   int64_t GetSizeOfAllEntries(SqlBackendImpl& backend) {
-    base::test::TestFuture<int64_t> future;
-    backend.GetSqlStoreForTest()->GetSizeOfAllEntries(future.GetCallback());
-    return future.Get();
+    return backend.GetSqlStoreForTest()->GetSizeOfAllEntries();
   }
 
   base::test::TaskEnvironment task_environment_{
