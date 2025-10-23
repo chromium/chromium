@@ -173,9 +173,9 @@ class URLCanonTest : public ::testing::Test {
       StdStringCanonOutput output(&resolved_url);
       Parsed resolved_parsed;
 
-      bool succeed_resolve = ResolveRelativeURL(
-          relative_case.base.data(), parsed, relative_case.is_base_hier,
-          relative_case.rel.data(), relative_component, nullptr, &output,
+      bool succeed_resolve = ResolveRelativeUrl(
+          relative_case.base, parsed, relative_case.is_base_hier,
+          relative_case.rel, relative_component, nullptr, &output,
           &resolved_parsed);
       output.Complete();
 
@@ -2844,7 +2844,7 @@ TEST_F(URLCanonTest, ResolveRelativeURL) {
       StdStringCanonOutput output(&resolved);
       Parsed resolved_parsed;
 
-      bool succeed_resolve = ResolveRelativeURL(
+      bool succeed_resolve = ResolveRelativeUrl(
           cur_case.base, parsed, cur_case.is_base_file, cur_case.test,
           relative_component, nullptr, &output, &resolved_parsed);
       output.Complete();

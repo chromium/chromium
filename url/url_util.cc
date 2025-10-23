@@ -372,10 +372,9 @@ bool DoResolveRelative(std::string_view base_spec,
     Parsed base_parsed_authority = ParseStandardURL(base_spec);
     if (base_parsed_authority.host.is_nonempty()) {
       STACK_UNINITIALIZED RawCanonOutputT<char> temporary_output;
-      bool did_resolve_succeed = ResolveRelativeURL(
-          base_spec.data(), base_parsed_authority, false, relative.data(),
-          relative_component, charset_converter, &temporary_output,
-          output_parsed);
+      bool did_resolve_succeed = ResolveRelativeUrl(
+          base_spec, base_parsed_authority, false, relative, relative_component,
+          charset_converter, &temporary_output, output_parsed);
       // The output_parsed is incorrect at this point (because it was built
       // based on base_parsed_authority instead of base_parsed) and needs to be
       // re-created.
@@ -388,11 +387,9 @@ bool DoResolveRelative(std::string_view base_spec,
     bool file_base_scheme =
         base_parsed.scheme.is_nonempty() &&
         DoCompareSchemeComponent(base_spec, base_parsed.scheme, kFileScheme);
-    // TODO(crbug.com/350788890): ResolveRelativeURL() should accept
-    // string_views.
-    return ResolveRelativeURL(base_spec.data(), base_parsed, file_base_scheme,
-                              relative.data(), relative_component,
-                              charset_converter, output, output_parsed);
+    return ResolveRelativeUrl(base_spec, base_parsed, file_base_scheme,
+                              relative, relative_component, charset_converter,
+                              output, output_parsed);
   }
 
   // Not relative, canonicalize the input.

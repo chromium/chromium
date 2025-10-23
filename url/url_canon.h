@@ -1129,7 +1129,7 @@ bool ReplaceMailtoURL(const char* base,
 // relative or absolute URL and places the result into |*is_relative|. If it is
 // relative, the relevant portion of the URL will be placed into
 // |*relative_component| (there may have been trimmed whitespace, for example).
-// This value is passed to ResolveRelativeURL. If the input is not relative,
+// This value is passed to ResolveRelativeUrl. If the input is not relative,
 // this value is UNDEFINED (it may be changed by the function).
 //
 // Returns true on success (we successfully determined the URL is relative or
@@ -1170,19 +1170,19 @@ bool IsRelativeUrl(std::string_view base,
 // reasonable" that will be consistent and valid, just probably not what
 // was intended by the web page author or caller.
 COMPONENT_EXPORT(URL)
-bool ResolveRelativeURL(const char* base_url,
+bool ResolveRelativeUrl(std::string_view base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const char* relative_url,
+                        std::string_view relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* out_parsed);
 COMPONENT_EXPORT(URL)
-bool ResolveRelativeURL(const char* base_url,
+bool ResolveRelativeUrl(std::string_view base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const char16_t* relative_url,
+                        std::u16string_view relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
