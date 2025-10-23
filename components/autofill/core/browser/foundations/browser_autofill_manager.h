@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/integrators/address_on_typing/address_on_typing_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
@@ -702,6 +703,9 @@ class BrowserAutofillManager : public AutofillManager {
   std::u16string last_unlocked_credit_card_cvc_;
   std::vector<std::unique_ptr<SuggestionGenerator>> suggestion_generators_;
 
+  // Handles general Address on typing feature management, mainly the logic
+  // behind its strike database.
+  AddressOnTypingManager address_on_typing_manager_;
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };
 

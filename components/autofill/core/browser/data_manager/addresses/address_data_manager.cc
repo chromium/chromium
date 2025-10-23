@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
+#include "components/autofill/core/browser/strike_databases/addresses/address_on_typing_suggestion_strike_database.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -578,17 +579,23 @@ void AddressDataManager::SetStrikeDatabase(
       std::make_unique<AutofillProfileUpdateStrikeDatabase>(strike_database);
   address_suggestion_strike_database_ =
       std::make_unique<AddressSuggestionStrikeDatabase>(strike_database);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAddressSuggestionsOnTypingHasStrikeDatabase)) {
+    address_on_typing_suggestion_strike_database_ =
+        std::make_unique<AddressOnTypingSuggestionStrikeDatabase>(
+            strike_database);
+  }
 }
 
-AutofillOnTypingSuggestionStrikeDatabase*
-AddressDataManager::GetAutofillOnTypingSuggestionStrikeDatabase() {
-  return const_cast<AutofillOnTypingSuggestionStrikeDatabase*>(
-      std::as_const(*this).GetAutofillOnTypingSuggestionStrikeDatabase());
+AddressOnTypingSuggestionStrikeDatabase*
+AddressDataManager::GetAddressOnTypingSuggestionStrikeDatabase() {
+  return const_cast<AddressOnTypingSuggestionStrikeDatabase*>(
+      std::as_const(*this).GetAddressOnTypingSuggestionStrikeDatabase());
 }
 
-const AutofillOnTypingSuggestionStrikeDatabase*
-AddressDataManager::GetAutofillOnTypingSuggestionStrikeDatabase() const {
-  return autofill_on_typing_suggestion_strike_database_.get();
+const AddressOnTypingSuggestionStrikeDatabase*
+AddressDataManager::GetAddressOnTypingSuggestionStrikeDatabase() const {
+  return address_on_typing_suggestion_strike_database_.get();
 }
 
 AutofillProfileMigrationStrikeDatabase*

@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -746,6 +747,12 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
     profiles_used_count++;
 
     for (FieldType type : field_types) {
+      const AddressOnTypingSuggestionStrikeDatabase* strike_database =
+          address_data_manager.GetAddressOnTypingSuggestionStrikeDatabase();
+      if (strike_database &&
+          strike_database->ShouldBlockFeature(base::NumberToString(type))) {
+        continue;
+      }
       const std::u16string normalized_field_contents =
           NormalizeForComparisonForType(field_contents, type);
       if (normalized_field_contents.size() <
