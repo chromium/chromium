@@ -1822,6 +1822,8 @@ inline GeometryBox CSSIdentifierValue::ConvertTo() const {
       return GeometryBox::kStrokeBox;
     case CSSValueID::kViewBox:
       return GeometryBox::kViewBox;
+    case CSSValueID::kHalfBorderBox:
+      return GeometryBox::kHalfBorderBox;
     default:
       break;
   }
@@ -1852,6 +1854,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(GeometryBox geometry_box)
       break;
     case GeometryBox::kViewBox:
       value_id_ = CSSValueID::kViewBox;
+      break;
+    case GeometryBox::kHalfBorderBox:
+      value_id_ = CSSValueID::kHalfBorderBox;
       break;
   }
 }

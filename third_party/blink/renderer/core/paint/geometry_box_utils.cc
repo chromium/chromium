@@ -26,6 +26,14 @@ PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
       return -(object.BorderOutsets() + object.PaddingOutsets());
     case GeometryBox::kMarginBox:
       return object.MarginOutsets();
+    case GeometryBox::kHalfBorderBox: {
+      // Half-border-box is halfway between border-box (offset 0) and
+      // padding-box (offset -border), so the offset is -border/2
+      PhysicalBoxStrut border_outsets = object.BorderOutsets();
+      return PhysicalBoxStrut(
+          -border_outsets.top / 2, -border_outsets.right / 2,
+          -border_outsets.bottom / 2, -border_outsets.left / 2);
+    }
     case GeometryBox::kBorderBox:
     case GeometryBox::kStrokeBox:
     case GeometryBox::kViewBox:

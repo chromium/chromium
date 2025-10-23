@@ -1977,7 +1977,7 @@ const CSSValue* ConsumeBasicShapeAndGeometryBox(
   if (!shape) {
     return nullptr;
   }
-  CSSValue* box = css_parsing_utils::ConsumeGeometryBox(stream);
+  CSSValue* box = css_parsing_utils::ConsumeGeometryBoxForBorderShape(stream);
   if (box) {
     return MakeGarbageCollected<CSSValuePair>(
         shape, box, CSSValuePair::kKeepIdenticalValues);
@@ -2024,14 +2024,20 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
 
   const CSSValue* outer = nullptr;
   const CSSValue* inner = nullptr;
+  bool is_single_shape = !border_shape.HasSeparateInnerShape();
 
   // Outer shape and coord box
   CSSValue* outer_shape = ValueForBasicShape(style, &border_shape.OuterShape());
-  GeometryBox box = border_shape.OuterBox();
-  if (box != GeometryBox::kBorderBox) {
-    CSSValue* outer_box = CSSIdentifierValue::Create(box);
+  GeometryBox outer_box = border_shape.OuterBox();
+  // For single-shape border-shape, half-border-box is the default and should
+  // be omitted from serialization
+  bool should_omit_outer_box =
+      (is_single_shape && outer_box == GeometryBox::kHalfBorderBox) ||
+      (!is_single_shape && outer_box == GeometryBox::kBorderBox);
+  if (!should_omit_outer_box) {
+    CSSValue* outer_box_value = CSSIdentifierValue::Create(outer_box);
     outer = MakeGarbageCollected<CSSValuePair>(
-        outer_shape, outer_box, CSSValuePair::kKeepIdenticalValues);
+        outer_shape, outer_box_value, CSSValuePair::kKeepIdenticalValues);
   } else {
     outer = outer_shape;
   }
@@ -2040,11 +2046,11 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   if (border_shape.HasSeparateInnerShape()) {
     CSSValue* inner_shape =
         ValueForBasicShape(style, &border_shape.InnerShape());
-    box = border_shape.InnerBox();
-    if (box != GeometryBox::kBorderBox) {
-      CSSValue* inner_box = CSSIdentifierValue::Create(box);
+    GeometryBox inner_box = border_shape.InnerBox();
+    if (inner_box != GeometryBox::kBorderBox) {
+      CSSValue* inner_box_value = CSSIdentifierValue::Create(inner_box);
       inner = MakeGarbageCollected<CSSValuePair>(
-          inner_shape, inner_box, CSSValuePair::kKeepIdenticalValues);
+          inner_shape, inner_box_value, CSSValuePair::kKeepIdenticalValues);
     } else {
       inner = inner_shape;
     }

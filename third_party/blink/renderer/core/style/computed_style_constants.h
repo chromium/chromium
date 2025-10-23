@@ -552,7 +552,9 @@ enum class GeometryBox {
   // <geometry-box> = <shape-box> | fill-box | stroke-box | view-box
   kFillBox,
   kStrokeBox,
-  kViewBox
+  kViewBox,
+  // Additional value for border-shape: a box halfway between border and padding
+  kHalfBorderBox
 };
 
 // https://drafts.fxtf.org/css-masking/#typedef-compositing-operator

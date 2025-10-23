@@ -1561,6 +1561,10 @@
     // coord-box
     "stroke-box",
 
+    // border-shape specific geometry box
+    // https://drafts.csswg.org/css-borders-4/#border-shape
+    "half-border-box",
+
     // math functions
     // https://drafts.csswg.org/css-values-4/#math
     "calc",

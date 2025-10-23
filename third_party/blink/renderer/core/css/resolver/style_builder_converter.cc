@@ -285,10 +285,14 @@ struct BasicShapeAndCoordBox {
   GeometryBox box;
 };
 
+template <bool has_inner_shape>
 BasicShapeAndCoordBox BasicShapeAndCoordBoxForValue(StyleResolverState& state,
                                                     const CSSValue& value) {
   BasicShape* shape = nullptr;
-  GeometryBox box = GeometryBox::kBorderBox;
+  // For single-shape border-shape, default to half-border-box as the reference
+  // box, so that strokes are centered on the shape path.
+  GeometryBox box =
+      has_inner_shape ? GeometryBox::kBorderBox : GeometryBox::kHalfBorderBox;
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     shape = BasicShapeForValue(state, pair->First());
     box = To<CSSIdentifierValue>(pair->Second()).ConvertTo<GeometryBox>();
@@ -305,7 +309,7 @@ StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
     const CSSValue& value) {
   // Either:
   // - none;
-  // - a single shape (meaning default box is border-box);
+  // - a single shape (meaning default box is half-border-box for stroking);
   // - a pair of shape + box;
   // - list of either: two pairs of shape + box or two shapes.
   if (value.IsIdentifierValue()) {
@@ -316,15 +320,17 @@ StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
     auto [outer_shape, outer_box] =
-        BasicShapeAndCoordBoxForValue(state, list->First());
+        BasicShapeAndCoordBoxForValue</*has_inner_shape=*/true>(state,
+                                                                list->First());
     auto [inner_shape, inner_box] =
-        BasicShapeAndCoordBoxForValue(state, list->Last());
+        BasicShapeAndCoordBoxForValue</*has_inner_shape=*/true>(state,
+                                                                list->Last());
     return MakeGarbageCollected<StyleBorderShape>(*outer_shape, inner_shape,
                                                   outer_box, inner_box);
   }
 
   auto [outer_shape, outer_coord_box] =
-      BasicShapeAndCoordBoxForValue(state, value);
+      BasicShapeAndCoordBoxForValue</*has_inner_shape=*/false>(state, value);
   return MakeGarbageCollected<StyleBorderShape>(
       *outer_shape, outer_shape, outer_coord_box, outer_coord_box);
 }

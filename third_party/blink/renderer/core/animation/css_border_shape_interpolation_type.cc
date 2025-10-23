@@ -47,9 +47,11 @@ struct CSSBorderShapeEntry {
   GeometryBox box = GeometryBox::kBorderBox;
 };
 
+template <bool has_inner_shape>
 CSSBorderShapeEntry CreateEntryFromCSSValue(const CSSValue& value) {
   const CSSValue* shape_value = &value;
-  GeometryBox box = GeometryBox::kBorderBox;
+  GeometryBox box =
+      has_inner_shape ? GeometryBox::kBorderBox : GeometryBox::kHalfBorderBox;
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     shape_value = &pair->First();
     const auto& ident = To<CSSIdentifierValue>(pair->Second());
@@ -194,12 +196,13 @@ InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertValue(
   std::array<CSSBorderShapeEntry, 2> entries;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
-    auto entry = CreateEntryFromCSSValue(list->First());
+    auto entry =
+        CreateEntryFromCSSValue</*has_inner_shape=*/true>(list->First());
     entries[0] = std::move(entry);
-    entry = CreateEntryFromCSSValue(list->Last());
+    entry = CreateEntryFromCSSValue</*has_inner_shape=*/true>(list->Last());
     entries[1] = std::move(entry);
   } else {
-    auto entry = CreateEntryFromCSSValue(value);
+    auto entry = CreateEntryFromCSSValue</*has_inner_shape=*/false>(value);
     entries[0] = entry;
     entries[1] = entry;
   }

@@ -3675,6 +3675,16 @@ CSSIdentifierValue* ConsumeGeometryBox(CSSParserTokenStream& stream) {
                       CSSValueID::kViewBox>(stream);
 }
 
+// https://drafts.csswg.org/css-shapes-1/#valdef-shape-box-half-border-box
+CSSIdentifierValue* ConsumeGeometryBoxForBorderShape(
+    CSSParserTokenStream& stream) {
+  if (CSSIdentifierValue* value =
+          ConsumeIdent<CSSValueID::kHalfBorderBox>(stream)) {
+    return value;
+  }
+  return ConsumeGeometryBox(stream);
+}
+
 void AddProperty(CSSPropertyID resolved_property,
                  CSSPropertyID current_shorthand,
                  const CSSValue& value,
