@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -19,19 +20,31 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
     contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service)
     : page_(std::move(page)),
       page_handler_(this, std::move(page_handler)),
-      web_ui_(web_ui),
-      web_ui_controller_(web_ui_controller),
+      web_ui_(CHECK_DEREF(web_ui)),
+      web_ui_controller_(CHECK_DEREF(web_ui_controller)),
       ui_service_(contextual_tasks_ui_service) {}
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
 
 void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
-  std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
+  if (ui_service_) {
+    std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
+  }
 }
 
 void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
                                                GetUrlForTaskCallback callback) {
-  std::move(callback).Run(ui_service_->GetInitialUrlForTask(uuid));
+  if (ui_service_) {
+    std::move(callback).Run(ui_service_->GetInitialUrlForTask(uuid));
+  }
+}
+
+void ContextualTasksPageHandler::SetTaskId(const base::Uuid& uuid) {
+  web_ui_controller_->SetTaskId(uuid);
+}
+
+void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
+  web_ui_controller_->SetThreadTitle(title);
 }
 
 void ContextualTasksPageHandler::ShowUi() {

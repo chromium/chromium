@@ -20,6 +20,12 @@ interface PageHandler {
   // the omnibox and we don't yet have a thread ID.
   GetUrlForTask(mojo_base.mojom.Uuid uuid) => (url.mojom.Url url);
 
+  // Sets the task ID for the WebUI instance running the feature.
+  SetTaskId(mojo_base.mojom.Uuid uuid);
+
+  // Set the title of the active thread.
+  SetThreadTitle(string title);
+
   // Notify the browser when the UI is ready to show.
   ShowUi();
 };

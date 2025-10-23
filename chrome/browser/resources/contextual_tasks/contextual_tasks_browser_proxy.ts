@@ -13,6 +13,8 @@ export interface BrowserProxy {
   getCallbackRouter(): PageCallbackRouter;
   getThreadUrl(): Promise<{url: Url}>;
   getUrlForTask(uuid: Uuid): Promise<{url: Url}>;
+  setTaskId(uuid: Uuid): void;
+  setThreadTitle(title: string): void;
   showUi(): void;
 }
 
@@ -40,6 +42,14 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getUrlForTask(uuid: Uuid) {
     return this.handler.getUrlForTask(uuid);
+  }
+
+  setTaskId(uuid: Uuid) {
+    this.handler.setTaskId(uuid);
+  }
+
+  setThreadTitle(title: string) {
+    this.handler.setThreadTitle(title);
   }
 
   showUi() {

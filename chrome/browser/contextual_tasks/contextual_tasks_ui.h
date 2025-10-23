@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_H_
 
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,7 +23,12 @@
 
 namespace content {
 class BrowserContext;
+class WebContentsObserver;
 }  // namespace content
+
+namespace contextual_tasks {
+class ContextualTasksUiService;
+}  // namespace contextual_tasks
 
 inline constexpr char kContextualTasksUiHost[] = "contextual-tasks";
 inline constexpr char kContextualTasksUiUrl[] = "chrome://contextual-tasks/";
@@ -35,6 +47,10 @@ class ContextualTasksUI : public TopChromeWebUIController,
       mojo::PendingRemote<contextual_tasks::mojom::Page> page,
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler)
       override;
+
+  void SetTaskId(const base::Uuid& task_id);
+
+  void SetThreadTitle(std::string_view title);
 
   void MaybeShowUi();
 
@@ -62,6 +78,25 @@ class ContextualTasksUI : public TopChromeWebUIController,
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
  private:
+  // A WebContentsObserver used to observe navigations or URL changes in the
+  // frame being hosted by this WebUI. We're not interested in top-level
+  // navigations, so we'll only notify the UI service for navigations that are
+  // not in the primary main frame.
+  class FrameNavObserver : public content::WebContentsObserver {
+   public:
+    explicit FrameNavObserver(content::WebContents* web_contents,
+                              ContextualTasksUI* ui_handle);
+    ~FrameNavObserver() override = default;
+
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+
+   private:
+    raw_ref<ContextualTasksUI> ui_handle_;
+  };
+
+  raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
+
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
 
@@ -69,6 +104,13 @@ class ContextualTasksUI : public TopChromeWebUIController,
       contextual_tasks_page_handler_factory_receiver_{this};
 
   std::unique_ptr<contextual_tasks::mojom::PageHandler> page_handler_;
+
+  std::unique_ptr<FrameNavObserver> nav_observer_;
+
+  // The ID of the task associated with this WebUI, if it exists.
+  std::optional<base::Uuid> task_id_;
+
+  std::optional<std::string> thread_title_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -26,81 +27,6 @@ const char kTestUrl[] = "https://google.com";
 
 using ::testing::_;
 using ::testing::Return;
-
-class MockContextualTasksService : public ContextualTasksService {
- public:
-  MOCK_METHOD(ContextualTask, CreateTask, (), (override));
-  MOCK_METHOD(ContextualTask, CreateTaskFromUrl, (const GURL& url), (override));
-  MOCK_METHOD(
-      void,
-      GetTaskById,
-      (const base::Uuid& task_id,
-       base::OnceCallback<void(std::optional<ContextualTask>)> callback),
-      (const, override));
-  MOCK_METHOD(void,
-              GetTasks,
-              (base::OnceCallback<void(std::vector<ContextualTask>)> callback),
-              (const, override));
-  MOCK_METHOD(void, DeleteTask, (const base::Uuid& task_id), (override));
-  MOCK_METHOD(void,
-              UpdateThreadForTask,
-              (const base::Uuid& task_id,
-               ThreadType thread_type,
-               const std::string& server_id,
-               std::optional<std::string> conversation_turn_id,
-               std::optional<std::string> title),
-              (override));
-  MOCK_METHOD(std::optional<ContextualTask>,
-              GetTaskFromServerId,
-              (ThreadType thread_type, const std::string& server_id),
-              (override));
-  MOCK_METHOD(void,
-              RemoveThreadFromTask,
-              (const base::Uuid& task_id,
-               ThreadType type,
-               const std::string& server_id),
-              (override));
-  MOCK_METHOD(void,
-              AttachUrlToTask,
-              (const base::Uuid& task_id, const GURL& url),
-              (override));
-  MOCK_METHOD(void,
-              DetachUrlFromTask,
-              (const base::Uuid& task_id, const GURL& url),
-              (override));
-  MOCK_METHOD(void,
-              GetContextForTask,
-              (const base::Uuid& task_id,
-               const std::set<ContextualTaskContextSource>& sources,
-               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
-                   context_callback),
-              (override));
-  MOCK_METHOD(void,
-              AssociateTabWithTask,
-              (const base::Uuid& task_id, SessionID tab_id),
-              (override));
-  MOCK_METHOD(void,
-              DisassociateTabFromTask,
-              (const base::Uuid& task_id, SessionID tab_id),
-              (override));
-  MOCK_METHOD(std::optional<ContextualTask>,
-              GetContextualTaskForTab,
-              (SessionID tab_id),
-              (const, override));
-  MOCK_METHOD(void,
-              ClearAllTabAssociationsForTask,
-              (const base::Uuid& task_id),
-              (override));
-
-  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetAiThreadControllerDelegate,
-              (),
-              (override));
-  MOCK_METHOD(FeatureEligibility, GetFeatureEligibility, (), (override));
-  MOCK_METHOD(bool, IsInitialized, (), (override));
-};
 
 class ContextualTasksContextControllerImplTest : public testing::Test {
  public:
@@ -163,7 +89,7 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   // Mock service to control the behavior of ContextualTasksService.
-  MockContextualTasksService mock_service_;
+  MockContextualTasksContextController mock_service_;
   // The controller under test.
   std::unique_ptr<ContextualTasksContextControllerImpl> controller_;
 };

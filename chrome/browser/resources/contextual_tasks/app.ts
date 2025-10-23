@@ -37,6 +37,10 @@ export class ContextualTasksAppElement extends CrLitElement {
     const taskUuid = params.get('task');
     if (taskUuid) {
       const {url} = await this.browserProxy_.getUrlForTask({value: taskUuid});
+      this.browserProxy_.setTaskId({value: taskUuid});
+
+      const aiPageParams = new URLSearchParams(new URL(url.url).search);
+      this.browserProxy_.setThreadTitle(aiPageParams.get('q') || '');
       this.threadUrl_ = url.url;
     } else {
       const {url} = await this.browserProxy_.getThreadUrl();

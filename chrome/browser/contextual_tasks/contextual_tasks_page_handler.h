@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -38,20 +40,21 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
       delete;
   ~ContextualTasksPageHandler() override;
 
-  // Provides a URL for an AI thread to be loaded as part of the WebUI. A thread
-  // is a series of queries and responses with a fixed context.
+  // contextual_tasks::mojom::PageHandler impl:
   void GetThreadUrl(GetThreadUrlCallback callback) override;
 
   void GetUrlForTask(const base::Uuid& uuid,
                      GetUrlForTaskCallback callback) override;
+  void SetTaskId(const base::Uuid& uuid) override;
+  void SetThreadTitle(const std::string& title) override;
 
   void ShowUi() override;
 
  private:
   mojo::Remote<contextual_tasks::mojom::Page> page_;
   mojo::Receiver<contextual_tasks::mojom::PageHandler> page_handler_;
-  const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<ContextualTasksUI> web_ui_controller_;
+  const raw_ref<content::WebUI> web_ui_;
+  const raw_ref<ContextualTasksUI> web_ui_controller_;
   const raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 };
 

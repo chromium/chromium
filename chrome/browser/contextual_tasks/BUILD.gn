@@ -152,6 +152,20 @@ if (!is_android) {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_contextual_tasks_context_controller.cc",
+    "mock_contextual_tasks_context_controller.h",
+  ]
+
+  deps = [
+    ":contextual_tasks",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -172,6 +186,7 @@ source_set("unit_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",

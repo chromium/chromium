@@ -4,9 +4,12 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
@@ -19,12 +22,18 @@
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
 ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui) {
+    : TopChromeWebUIController(web_ui),
+      ui_service_(contextual_tasks::ContextualTasksUiServiceFactory::
+                      GetForBrowserContext(
+                          web_ui->GetWebContents()->GetBrowserContext())),
+      nav_observer_(
+          std::make_unique<FrameNavObserver>(web_ui->GetWebContents(), this)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kContextualTasksUiHost);
   webui::SetupWebUIDataSource(source, kContextualTasksResources,
@@ -84,9 +93,15 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page), std::move(page_handler), web_ui(), this,
-      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()));
+      std::move(page), std::move(page_handler), web_ui(), this, ui_service_);
+}
+
+void ContextualTasksUI::SetTaskId(const base::Uuid& task_id) {
+  task_id_ = task_id;
+}
+
+void ContextualTasksUI::SetThreadTitle(std::string_view title) {
+  thread_title_ = title;
 }
 
 void ContextualTasksUI::MaybeShowUi() {
@@ -132,6 +147,26 @@ void ContextualTasksUI::CreatePageHandler(
       Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
+}
+
+ContextualTasksUI::FrameNavObserver::FrameNavObserver(
+    content::WebContents* web_contents,
+    ContextualTasksUI* ui_handle)
+    : content::WebContentsObserver(web_contents),
+      ui_handle_(CHECK_DEREF(ui_handle)) {}
+
+void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // We only care about the inner frame. Ignore any primary main frame
+  // navigations.
+  if (navigation_handle->IsInPrimaryMainFrame() || !ui_handle_->task_id_ ||
+      !ui_handle_->ui_service_) {
+    return;
+  }
+
+  ui_handle_->ui_service_->OnWebUiInnerFrameNavigation(
+      ui_handle_->task_id_.value(), navigation_handle->GetURL(),
+      ui_handle_->thread_title_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)

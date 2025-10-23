@@ -5,7 +5,11 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -28,7 +32,9 @@ constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
 // implementation with the events being mocked.
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
-  MockUiServiceForUrlIntercept() : ContextualTasksUiService(nullptr) {}
+  explicit MockUiServiceForUrlIntercept(
+      ContextualTasksContextController* context_controller)
+      : ContextualTasksUiService(context_controller) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
@@ -48,12 +54,21 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
 class ContextualTasksUiServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>();
+    context_controller_ =
+        std::make_unique<MockContextualTasksContextController>();
+    service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
+        context_controller_.get());
+  }
+
+  void TearDown() override {
+    service_for_nav_ = nullptr;
+    context_controller_ = nullptr;
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
+  std::unique_ptr<MockContextualTasksContextController> context_controller_;
 };
 
 TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
@@ -123,6 +138,65 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kAiPageUrl), GURL(webui_url), nullptr, false));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(ContextualTasksUiServiceTest, ContextControllerUpdatedOnUrlChange) {
+  GURL updated_url(kAiPageUrl);
+
+  std::string turn_id = "1234";
+  updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id);
+
+  std::string thread_id = "5678";
+  updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id);
+
+  base::Uuid task_id =
+      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
+  std::string title = "title";
+
+  EXPECT_CALL(
+      *context_controller_,
+      UpdateThreadForTask(task_id, _, thread_id, testing::Optional(turn_id),
+                          testing::Optional(title)))
+      .Times(1);
+
+  service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ContextControllerUpdatedOnUrlChange_NoThreadId) {
+  GURL updated_url(kAiPageUrl);
+
+  std::string turn_id = "1234";
+  updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id);
+
+  base::Uuid task_id =
+      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
+  std::string title = "title";
+
+  EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
+      .Times(0);
+
+  service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
+}
+
+// The task should still updated without a turn ID.
+TEST_F(ContextualTasksUiServiceTest,
+       ContextControllerUpdatedOnUrlChange_NoTurnId) {
+  GURL updated_url(kAiPageUrl);
+
+  std::string thread_id = "5678";
+  updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id);
+
+  base::Uuid task_id =
+      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
+  std::string title = "title";
+
+  EXPECT_CALL(
+      *context_controller_,
+      UpdateThreadForTask(task_id, _, thread_id, _, testing::Optional(title)))
+      .Times(1);
+
+  service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
 }
 
 }  // namespace contextual_tasks
