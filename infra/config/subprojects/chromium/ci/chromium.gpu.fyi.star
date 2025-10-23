@@ -3201,9 +3201,7 @@ ci.thin_tester(
         # should be running the same test_suites as
         # 'Win11 FYI x64 Release (NVIDIA RTX 4070 Super)'
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -3215,10 +3213,10 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|11|x64|Nvidia",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|11|x64|Nvidia",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
