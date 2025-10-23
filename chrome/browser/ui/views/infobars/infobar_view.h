@@ -75,6 +75,10 @@ class InfoBarView : public infobars::InfoBar,
   // button from overlapping views that cannot be shrunk any further.
   virtual int GetContentMinimumWidth() const;
 
+  // Returns the preferred width the content (that is, everything between the
+  // icon and the close button).
+  virtual int GetContentPreferredWidth() const;
+
   // These return x coordinates delimiting the usable area for subclasses to lay
   // out their controls.
   int GetStartX() const;

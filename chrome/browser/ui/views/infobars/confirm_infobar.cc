@@ -10,11 +10,13 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -99,9 +101,10 @@ void ConfirmInfoBar::Layout(PassKey) {
             DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING);
   }
 
-  if (GetDelegate()->ShouldShowLinkBeforeButton()) {
-    const int link_spacing =
-        GetDelegate()->GetLinkSpacingWhenPositionedBeforeButton();
+  if (GetDelegate()->ShouldShowLinkBeforeButton() ||
+      base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    const int link_spacing = layout_provider->GetDistanceMetric(
+        DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL);
     link_->SetPosition(
         gfx::Point(label_->bounds().right() + link_spacing, OffsetY(link_)));
 
@@ -166,6 +169,11 @@ const ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() const {
 int ConfirmInfoBar::GetContentMinimumWidth() const {
   return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
          NonLabelWidth();
+}
+
+int ConfirmInfoBar::GetContentPreferredWidth() const {
+  return label_->GetPreferredSize().width() +
+         link_->GetPreferredSize().width() + NonLabelWidth();
 }
 
 int ConfirmInfoBar::NonLabelWidth() const {

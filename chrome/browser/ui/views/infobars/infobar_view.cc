@@ -36,9 +36,11 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -150,33 +152,56 @@ InfoBarView::~InfoBarView() {
 
 void InfoBarView::Layout(PassKey) {
   const int spacing = GetElementSpacing();
-  int start_x = 0;
-  if (icon_) {
-    icon_->SetPosition(gfx::Point(spacing, OffsetY(icon_)));
-    start_x = icon_->bounds().right();
-  }
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    if (close_button_) {
+      const gfx::Insets close_button_spacing = GetCloseButtonSpacing();
+      close_button_->SizeToPreferredSize();
+      close_button_->SetPosition(gfx::Point(
+          width() - close_button_spacing.right() - close_button_->width(),
+          OffsetY(close_button_)));
+      // For accessibility reasons, the close button should come last.
+      DCHECK_EQ(close_button_, close_button_->parent()->children().back());
+    }
 
-  const int content_minimum_width = GetContentMinimumWidth();
-  if (content_minimum_width > 0) {
-    start_x += spacing + content_minimum_width;
+    int content_width = GetContentPreferredWidth();
+    if (icon_) {
+      content_width += icon_->width() + spacing / 2;
+    }
+
+    const int available_width = GetEndX();
+    int start_x = (available_width - content_width) / 2;
+    if (icon_) {
+      icon_->SetPosition(gfx::Point(start_x, OffsetY(icon_)));
+    }
+  } else {
+    int start_x = 0;
+    if (icon_) {
+      icon_->SetPosition(gfx::Point(spacing, OffsetY(icon_)));
+      start_x = icon_->bounds().right();
+    }
+
+    const int content_minimum_width = GetContentMinimumWidth();
+    if (content_minimum_width > 0) {
+      start_x += spacing + content_minimum_width;
+    }
+
+    if (close_button_) {
+      const gfx::Insets close_button_spacing = GetCloseButtonSpacing();
+      close_button_->SizeToPreferredSize();
+      close_button_->SetPosition(gfx::Point(
+          std::max(
+              start_x + close_button_spacing.left(),
+              width() - close_button_spacing.right() - close_button_->width()),
+          OffsetY(close_button_)));
+
+      // For accessibility reasons, the close button should come last.
+      DCHECK_EQ(close_button_, close_button_->parent()->children().back());
+    }
   }
 
   // Ensure the content container spans the full infobar so that its children
   // can continue to use absolute coordinates unchanged.
   content_container_->SetBoundsRect(GetLocalBounds());
-
-  if (close_button_) {
-    const gfx::Insets close_button_spacing = GetCloseButtonSpacing();
-    close_button_->SizeToPreferredSize();
-    close_button_->SetPosition(gfx::Point(
-        std::max(
-            start_x + close_button_spacing.left(),
-            width() - close_button_spacing.right() - close_button_->width()),
-        OffsetY(close_button_)));
-
-    // For accessibility reasons, the close button should come last.
-    DCHECK_EQ(close_button_, close_button_->parent()->children().back());
-  }
 }
 
 gfx::Size InfoBarView::CalculatePreferredSize(
@@ -287,6 +312,10 @@ void InfoBarView::AssignWidths(Views* views, int available_width) {
 }
 
 int InfoBarView::GetContentMinimumWidth() const {
+  return 0;
+}
+
+int InfoBarView::GetContentPreferredWidth() const {
   return 0;
 }
 

@@ -45,6 +45,7 @@ class ConfirmInfoBar : public InfoBarView {
  protected:
   // InfoBarView:
   int GetContentMinimumWidth() const override;
+  int GetContentPreferredWidth() const override;
 
  private:
   void OkButtonPressed();
