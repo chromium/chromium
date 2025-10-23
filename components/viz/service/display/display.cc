@@ -817,9 +817,6 @@ void Display::MaybeLogQuadsProperties(
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.Display.Draw.LastPass.Quads.ColorSpaceTransferID",
         candidate.color_space.GetTransferID());
-    UMA_HISTOGRAM_ENUMERATION(
-        "Compositing.Display.Draw.LastPass.Quads.BufferFormat",
-        gpu::ToBufferFormat(candidate.format));
     gfx::RectF uv_rect = candidate.uv_rect;
     candidate_factory.HandleClipAndSubsampling(candidate);
     if (uv_rect != candidate.uv_rect) {

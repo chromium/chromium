@@ -323,17 +323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Display.Draw.LastPass.Quads.BufferFormat"
-    enum="BufferFormat" expires_after="2025-05-13">
-  <owner>berlu@chromium.org</owner>
-  <owner>chromeos-gfx-compositor@google.com</owner>
-  <summary>
-    This is logged once per n frames, when the frame is drawn and feature is
-    enabled. The buffer format underlying each quads in the last render pass in
-    the CompositorFrame that is produced by surface aggregation.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.Draw.LastPass.Quads.ColorSpacePrimaryID"
     enum="ColorSpacePrimaryID" expires_after="2025-05-13">
   <owner>berlu@chromium.org</owner>
