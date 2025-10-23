@@ -296,6 +296,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Schedules the deletion of a seed file.
   void DeleteSeedFile();
 
+  // Schedules the deletion of a seed file.
+  void DeleteOldSeedFile();
+
   // Reads seed data from a seed file, and if the read is successful,
   // populates `seed_info_`. May also schedule a seed file write for some
   // clients on the first run and for clients that are in the seed file

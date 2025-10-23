@@ -330,8 +330,16 @@ SeedReaderWriter::SeedReaderWriter(
     SetUpSeedFileTrial(entropy_providers->default_entropy(), channel);
     if (ShouldUseSeedFile()) {
       ReadSeedFile();
+    } else if (ShouldMigrateToLocalState(channel)) {
+      // Because of the new group assignment, it is possible that a client that
+      // previously stored the seed data in the old seed file should now migrate
+      // back to local state.
+      MigrateToLocalState();
     }
   } else if (ShouldMigrateToLocalState(channel)) {
+    // The old seed file experiment was affecting clients in stable and beta
+    // channels. Migrate if necessary the seed data from the old seed file to
+    // local state.
     MigrateToLocalState();
   }
 }
@@ -677,6 +685,12 @@ void SeedReaderWriter::DeleteSeedFile() {
                                 seed_writer_->path()));
 }
 
+void SeedReaderWriter::DeleteOldSeedFile() {
+  file_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                                old_seed_file_path_));
+}
+
 void SeedReaderWriter::ReadSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SeedSource seed_source = SeedSource::kNoSource;
@@ -692,6 +706,16 @@ void SeedReaderWriter::ReadSeedFile() {
     stored_seed_info_.clear_data();
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kSeedFile;
+  } else if (read_seed_info_result.error() !=
+             LoadSeedResult::kErrorReadingFile) {
+    // Check if the read failed because the file was missing. We only want to
+    // migrate the seed using the old Seed File or Local State the first time,
+    // when the Seed File doesn't exist yet. In posterior runs the file should
+    // exist. If there's an error for any other reason, we don't want to
+    // fallback, so we just initialize the seed data to empty. Note:
+    // base::ReadFileToString() doesn't provide info about why the read failed,
+    // but this is most probable due to the file not existing.
+    stored_seed_data_ = "";
   } else if (ReadOldSeedFile()) {
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kOldSeedFile;
@@ -743,9 +767,7 @@ void SeedReaderWriter::ReadSeedFile() {
   // Clients using a seed file should clear seed from local state and the old
   // seed file, as it will no longer be used.
   local_state_->ClearPref(fields_prefs_->seed);
-  file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                old_seed_file_path_));
+  DeleteOldSeedFile();
 }
 
 bool SeedReaderWriter::ReadOldSeedFile() {
@@ -838,26 +860,21 @@ bool SeedReaderWriter::ShouldUseSeedFile() const {
 bool SeedReaderWriter::ShouldMigrateToLocalState(
     version_info::Channel channel) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (channel == version_info::Channel::UNKNOWN ||
-      channel == version_info::Channel::CANARY ||
-      channel == version_info::Channel::DEV) {
-    return false;
-  }
-  return seed_writer_ && base::PathExists(seed_writer_->path());
+  return seed_writer_ && base::PathExists(old_seed_file_path_);
 }
 
 void SeedReaderWriter::MigrateToLocalState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string seed_file_data;
   const bool success =
-      base::ReadFileToString(seed_writer_->path(), &seed_file_data);
+      base::ReadFileToString(old_seed_file_path_, &seed_file_data);
   if (success && !seed_file_data.empty()) {
     std::string seed_data = seed_file_data == kIdenticalToSafeSeedSentinel
                                 ? kIdenticalToSafeSeedSentinel
                                 : base::Base64Encode(seed_file_data);
     local_state_->SetString(fields_prefs_->seed, seed_data);
   }
-  DeleteSeedFile();
+  DeleteOldSeedFile();
 }
 
 void SeedReaderWriter::ProcessStoredSeedDataAndRunCallback(
