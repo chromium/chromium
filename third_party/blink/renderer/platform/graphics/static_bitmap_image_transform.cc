@@ -269,15 +269,13 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // accelerated SharedImage provider.
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
-    const gpu::SharedImageUsageSet shared_image_usage_flags =
-        source->GetSharedImage()->usage();
     resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
         gfx::Size(dest_size.width(), dest_size.height()),
         viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
         dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
         CanvasResourceProvider::ShouldInitialize::kNo,
         source->ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags);
+        source->GetSharedImage()->usage());
   }
   // If not (or if the SharedImage provider fails), fall back to software.
   if (!resource_provider) {
