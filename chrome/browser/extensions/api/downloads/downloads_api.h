@@ -319,7 +319,7 @@ class ExtensionDownloadsEventRouter
       download::DownloadPathReservationTracker::FilenameConflictAction)>
       FilenameChangedCallback;
 
-  static void SetDetermineFilenameTimeoutSecondsForTesting(int s);
+  static void SetDetermineFilenameTimeoutForTesting(base::TimeDelta timeout);
 
   // The logic for how to handle conflicting filename suggestions from multiple
   // extensions is split out here for testing.

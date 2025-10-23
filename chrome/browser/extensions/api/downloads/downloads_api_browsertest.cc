@@ -383,8 +383,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
 #endif
 
   content::RenderProcessHost* AddFilenameDeterminer() {
-    ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutSecondsForTesting(
-        2);
+    ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutForTesting(
+        base::Seconds(2));
     GURL url(extension_->GetResourceURL("empty.html"));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     content::WebContents* const tab = chrome::AddSelectedTabWithURL(
@@ -3067,8 +3067,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
-  ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutSecondsForTesting(
-      0);
+  ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutForTesting(
+      base::Seconds(0));
 
   // Start downloading a file.
   std::optional<base::Value> result = RunFunctionAndReturnResult(

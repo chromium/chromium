@@ -32,6 +32,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -759,8 +760,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   void OnItemUpdated() { ++updated_; }
   void OnChangedFired() { ++changed_fired_; }
 
-  static void SetDetermineFilenameTimeoutSecondsForTesting(int s) {
-    determine_filename_timeout_s_ = s;
+  static void SetDetermineFilenameTimeoutForTesting(base::TimeDelta timeout) {
+    determine_filename_timeout_ = timeout;
   }
 
   void BeginFilenameDetermination(
@@ -781,7 +782,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
         base::BindOnce(
             &ExtensionDownloadsEventRouterData::DetermineFilenameTimeout,
             weak_ptr_factory_->GetWeakPtr()),
-        base::Seconds(determine_filename_timeout_s_));
+        determine_filename_timeout_);
   }
 
   void DetermineFilenameTimeout() { CallFilenameCallback(); }
@@ -905,7 +906,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   }
 
  private:
-  static int determine_filename_timeout_s_;
+  static base::TimeDelta determine_filename_timeout_;
 
   struct DeterminerInfo {
     DeterminerInfo();
@@ -969,7 +970,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
       weak_ptr_factory_;
 };
 
-int ExtensionDownloadsEventRouterData::determine_filename_timeout_s_ = 15;
+base::TimeDelta ExtensionDownloadsEventRouterData::determine_filename_timeout_ =
+    base::Seconds(15);
 
 ExtensionDownloadsEventRouterData::DeterminerInfo::DeterminerInfo(
     const ExtensionId& e_id,
@@ -1755,10 +1757,10 @@ ExtensionDownloadsEventRouter::~ExtensionDownloadsEventRouter() {
     router->UnregisterObserver(this);
 }
 
-void ExtensionDownloadsEventRouter::
-    SetDetermineFilenameTimeoutSecondsForTesting(int s) {
-  ExtensionDownloadsEventRouterData::
-      SetDetermineFilenameTimeoutSecondsForTesting(s);
+void ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutForTesting(
+    base::TimeDelta timeout) {
+  ExtensionDownloadsEventRouterData::SetDetermineFilenameTimeoutForTesting(
+      timeout);
 }
 
 void ExtensionDownloadsEventRouter::SetUiEnabled(const Extension* extension,
