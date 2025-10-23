@@ -176,7 +176,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void FlushDeferredRequests(std::vector<mojom::DeferredRequestPtr> requests,
                              uint32_t flushed_deferred_message_id) override;
 
-  bool IsNativeBufferSupported(gfx::BufferFormat buffer_format,
+  bool IsNativeBufferSupported(viz::SharedImageFormat format,
                                gfx::BufferUsage buffer_usage);
   void CreateGpuMemoryBuffer(const gfx::Size& size,
                              const viz::SharedImageFormat& format,
@@ -399,7 +399,7 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
 }
 
 bool GpuChannelMessageFilter::IsNativeBufferSupported(
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage buffer_usage) {
   // Note that we are initializing the |supported_gmb_configurations_| here to
   // make sure gpu service have already initialized and required metadata like
@@ -418,8 +418,9 @@ bool GpuChannelMessageFilter::IsNativeBufferSupported(
           gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
     }
   }
-  return base::Contains(supported_gmb_configurations_,
-                        gfx::BufferUsageAndFormat(buffer_usage, buffer_format));
+  return base::Contains(
+      supported_gmb_configurations_,
+      gfx::BufferUsageAndFormat(buffer_usage, ToBufferFormat(format)));
 }
 
 void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
@@ -434,10 +435,9 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     std::move(callback).Run(gfx::GpuMemoryBufferHandle());
     return;
   }
-  auto buffer_format = ToBufferFormat(format);
-  gfx::GpuMemoryBufferHandle handle;
 
-  if (IsNativeBufferSupported(buffer_format, buffer_usage)) {
+  gfx::GpuMemoryBufferHandle handle;
+  if (IsNativeBufferSupported(format, buffer_usage)) {
 #if BUILDFLAG(IS_ANDROID)
     // Creation of native buffer handles is not supported on Android (the
     // only way that a non-null GpuMemoryBufferHandle can be created on

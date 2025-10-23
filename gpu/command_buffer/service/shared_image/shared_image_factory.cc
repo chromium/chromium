@@ -389,7 +389,7 @@ bool SharedImageFactory::CreateSharedImage(
   return RegisterBacking(std::move(backing), std::move(pool_id));
 }
 
-bool SharedImageFactory::IsNativeBufferSupported(gfx::BufferFormat format,
+bool SharedImageFactory::IsNativeBufferSupported(viz::SharedImageFormat format,
                                                  gfx::BufferUsage usage) {
   // Note that we are initializing the |supported_gmb_configurations_| here to
   // make sure gpu service have already initialized and required metadata like
@@ -408,8 +408,9 @@ bool SharedImageFactory::IsNativeBufferSupported(gfx::BufferFormat format,
           gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
     }
   }
-  return base::Contains(supported_gmb_configurations_,
-                        gfx::BufferUsageAndFormat(usage, format));
+  return base::Contains(
+      supported_gmb_configurations_,
+      gfx::BufferUsageAndFormat(usage, ToBufferFormat(format)));
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
@@ -429,10 +430,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  auto buffer_format = ToBufferFormat(format);
-  auto native_buffer_supported =
-      IsNativeBufferSupported(buffer_format, buffer_usage);
-
+  auto native_buffer_supported = IsNativeBufferSupported(format, buffer_usage);
   std::unique_ptr<SharedImageBacking> backing;
   if (native_buffer_supported) {
     auto* factory = GetFactoryByUsage(usage, format, size,
@@ -819,7 +817,7 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   shared_image_caps.supports_r16_shared_images =
       is_angle_metal || is_skia_graphite;
   shared_image_caps.supports_native_nv12_mappable_shared_images =
-      IsNativeBufferSupported(gfx::BufferFormat::YUV_420_BIPLANAR,
+      IsNativeBufferSupported(viz::MultiPlaneFormat::kNV12,
                               gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
