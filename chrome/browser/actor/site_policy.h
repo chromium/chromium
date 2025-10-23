@@ -45,6 +45,14 @@ void MayActOnUrl(const GURL& url,
                  TaskId task_id,
                  DecisionCallback callback);
 
+// Checks if navigation to `url` should be blocked using
+// OptimizationGuideService. If the callback is invoked with `may_act` set to
+// `true`, then the actor is allowed to navigate to the URL. Otherwise, the
+// actor should block navigation or ask the user to confirm.
+bool ShouldBlockNavigationUrlForOriginGating(const GURL& url,
+                                             Profile* profile,
+                                             DecisionCallback callback);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_SITE_POLICY_H_

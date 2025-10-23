@@ -11,6 +11,8 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -20,7 +22,7 @@ namespace actor {
 
 namespace {
 
-constexpr char kHandleUserConfirmationDialogRequest[] =
+constexpr char kHandleUserConfirmationDialogTempl[] =
     R"js(
   (() => {
     window.userConfirmationDialogRequestData = new Promise(resolve => {
@@ -29,13 +31,12 @@ constexpr char kHandleUserConfirmationDialogRequest[] =
           // Response will be verified in C++ callback below.
           request.onDialogClosed({
             response: {
-              permissionGranted: true,
+              permissionGranted: $1,
             },
           });
           // Resolve the promise with the request data to be verified.
           resolve({
             navigationOrigin: request.navigationOrigin,
-            downloadId: request.downloadId,
           });
         }
       );
@@ -93,6 +94,23 @@ class ExecutionEngineInteractiveUiTest
                                                   std::move(event_dispatcher));
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(actor_task));
+
+    // Optimization guide uses this histogram to signal initialization in tests.
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester_for_init_,
+        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+    // Simulate the component loading, as the implementation checks it, but the
+    // actual list is set via the command line.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+        ->MaybeUpdateHintsComponent(
+            {base::Version("123"),
+             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    glic::test::InteractiveGlicTest::SetUpCommandLine(command_line);
+    SetUpBlocklist(command_line, "blocked.example.com");
   }
 
   content::WebContents* web_contents() {
@@ -179,37 +197,13 @@ class ExecutionEngineInteractiveUiTest
 
  private:
   TaskId task_id_;
+  base::HistogramTester histogram_tester_for_init_;
+  base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
-                       PromptUserToConfirmNavigation) {
-  const GURL url =
-      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
-      CreateMockWebClientRequest(kHandleUserConfirmationDialogRequest));
-
-  base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
-      future;
-  GetActorTask()->GetExecutionEngine()->PromptUserToConfirmNavigation(
-      url::Origin::Create(GURL("https://www.example.com")),
-      future.GetCallback());
-
-  // Verify response was forwarded to the callback correctly.
-  auto response = future.Take();
-  EXPECT_TRUE(response->result->is_permission_granted());
-  EXPECT_TRUE(response->result->get_permission_granted());
-  EXPECT_FALSE(response->result->is_error_reason());
-
-  auto expected_request = base::Value::Dict().Set(
-      "navigationOrigin", "https://www.example.com:443");
-  RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
-}
-
-IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
-                       CrossOriginNavigationGating_Granted) {
+                       ConfirmNavigationToNewOrigin_Granted) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL second_url =
@@ -234,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
-                       CrossOriginNavigationGating_Denied) {
+                       ConfirmNavigationToNewOrigin_Denied) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL second_url =
@@ -259,26 +253,52 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
-                       PromptToConfirmDownload) {
-  const GURL url =
-      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
-      CreateMockWebClientRequest(kHandleUserConfirmationDialogRequest));
+                       ConfirmBlockedOriginWithUser_Granted) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
 
-  base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
-      future;
-  GetActorTask()->GetExecutionEngine()->PromptToConfirmDownload(
-      /*download_id=*/123, future.GetCallback());
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CreateMockWebClientRequest(content::JsReplace(
+                      kHandleUserConfirmationDialogTempl, true)));
 
-  // Verify response was forwarded to the callback correctly.
-  auto response = future.Take();
-  EXPECT_TRUE(response->result->is_permission_granted());
-  EXPECT_TRUE(response->result->get_permission_granted());
-  EXPECT_FALSE(response->result->is_error_reason());
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
 
-  auto expected_request = base::Value::Dict().Set("downloadId", 123);
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+  auto expected_request = base::Value::Dict().Set(
+      "navigationOrigin", url::Origin::Create(blocked_url).GetDebugString());
+  RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
+                       ConfirmBlockedOriginWithUser_Denied) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CreateMockWebClientRequest(content::JsReplace(
+                      kHandleUserConfirmationDialogTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  auto expected_request = base::Value::Dict().Set(
+      "navigationOrigin", url::Origin::Create(blocked_url).GetDebugString());
   RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
 }
 

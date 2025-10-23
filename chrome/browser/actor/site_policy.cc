@@ -124,6 +124,14 @@ void OnOptimizationGuideDecision(
   }
 }
 
+void OnOptimizationGuideDecisionForOriginGating(
+    DecisionCallback callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  std::move(callback).Run(decision ==
+                          optimization_guide::OptimizationGuideDecision::kTrue);
+}
+
 void MayActOnUrl(const GURL& url,
                  bool allow_insecure_http,
                  Profile* profile,
@@ -221,6 +229,13 @@ void MayActOnUrl(const GURL& url,
     return;
   }
 
+  // Blocklist is checked by `ShouldBlockNavigationUrlForOriginGating` when this
+  // feature is enabled.
+  if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+    decision_wrapper->Accept();
+    return;
+  }
+
   // Check that the optimization guide component has loaded. It could be
   // missing, for example, if the user has very recently installed chrome and
   // the component updater has not yet run. We don't want to reject every URL,
@@ -303,6 +318,32 @@ void MayActOnUrl(const GURL& url,
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
   MayActOnUrl(url, allow_insecure_http, profile, std::move(decision_wrapper));
+}
+
+bool ShouldBlockNavigationUrlForOriginGating(const GURL& url,
+                                             Profile* profile,
+                                             DecisionCallback callback) {
+  // Check that the optimization guide component has loaded. It could be
+  // missing, for example, if the user has very recently installed chrome and
+  // the component updater has not yet run. We don't want to reject every URL,
+  // so we check for this and fail open.
+  const bool optimization_guide_component_loaded =
+      optimization_guide::OptimizationHintsComponentUpdateListener::
+          GetInstance()
+              ->hints_component_info()
+              .has_value();
+
+  if (auto* optimization_guide_decider =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+      optimization_guide_decider && optimization_guide_component_loaded &&
+      base::FeatureList::IsEnabled(kGlicActionUseOptimizationGuide)) {
+    optimization_guide_decider->CanApplyOptimization(
+        url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+        base::BindOnce(&OnOptimizationGuideDecisionForOriginGating,
+                       std::move(callback)));
+    return true;
+  }
+  return false;
 }
 
 }  // namespace actor

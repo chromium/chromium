@@ -130,42 +130,29 @@ class ExecutionEngine : public ToolDelegate {
   void OnCredentialSelected(
       webui::mojom::SelectCredentialDialogResponsePtr response);
 
-  using UserConfirmationDialogCallback = base::OnceCallback<void(
-      webui::mojom::UserConfirmationDialogResponsePtr response)>;
-
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
-  void PromptUserToConfirmNavigation(const url::Origin& navigation_origin,
-                                     UserConfirmationDialogCallback callback);
-  void PromptToConfirmDownload(int32_t download_id,
-                               UserConfirmationDialogCallback callback);
+  // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
+  // the web client, receives its response. This callback gets a boolean
+  // indicating if navigation should continue.
+  using NavigationDecisionCallback =
+      base::OnceCallback<void(bool may_continue)>;
+
+  // Returns a boolean indicating if ActorNavigationThrottle should defer a
+  // navigation until the decision callback is invoked.
+  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
+                            NavigationDecisionCallback callback);
 
   // Callback for when the user responds to a confirmation dialog.
-  void OnUserConfirmation(
+  void OnUserConfirmationDialogResponse(
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
-  // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
-  // the web client, receives its response. This callback gets the Mojo response
-  // forwarded to it by ActorKeyedService.
-  using NavigationConfirmationCallback = base::OnceCallback<void(
-      webui::mojom::NavigationConfirmationResponsePtr response)>;
-
-  // Called when the browser detects the actor needs to confirm a
-  // client-side-initiated navigation to a novel origin. The web client should
-  // check that the origin is relevant for the task and respond with whether the
-  // actor is permitted to visit the page.
-  void ConfirmCrossOriginNavigation(const url::Origin& navigation_origin,
-                                    NavigationConfirmationCallback callback);
-
   // Callback when the server responds when asked to confirm navigation.
-  void OnNavigationConfirmation(
+  void OnNavigationConfirmationResponse(
       webui::mojom::NavigationConfirmationResponsePtr response);
 
   static std::string StateToString(State state);
-
-  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
-                            NavigationConfirmationCallback callback);
 
   void AddObserver(StateObserver* observer);
 
@@ -209,11 +196,6 @@ class ExecutionEngine : public ToolDelegate {
   void CompleteActions(mojom::ActionResultPtr result,
                        std::optional<size_t> action_index);
 
-  void PromptUserForConfirmationInternal(
-      const std::optional<url::Origin>& navigation_origin,
-      const std::optional<int32_t> download_url,
-      UserConfirmationDialogCallback callback);
-
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
   const ToolRequest& GetNextAction() const;
@@ -223,21 +205,38 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  void OnPromptUserToConfirmNavigationDecision(
-      url::Origin navigation_origin,
-      UserConfirmationDialogCallback callback,
-      webui::mojom::UserConfirmationDialogResponsePtr response);
-
-  void OnNavigationConfirmationDecision(
-      url::Origin navigation_origin,
-      NavigationConfirmationCallback callback,
-      webui::mojom::NavigationConfirmationResponsePtr response);
-
   bool ShouldGateNavigationInternal(
       content::NavigationHandle& navigation_handle,
-      NavigationConfirmationCallback callback);
+      NavigationDecisionCallback callback);
   void LogNavigationGating(content::NavigationHandle& navigation_handle,
                            bool applied_gate);
+
+  void CheckNavigationBlocklist(const GURL& navigation_url,
+                                NavigationDecisionCallback callback);
+  void OnNavigationBlocklistDecision(url::Origin navigation_origin,
+                                     NavigationDecisionCallback callback,
+                                     bool may_continue);
+
+  // Called when the browser detects the actor needs to confirm a
+  // client-side-initiated navigation to a novel origin. The web client should
+  // check that the origin is relevant for the task and respond with whether the
+  // actor is permitted to visit the page.
+  void SendNavigationConfirmationRequest(const url::Origin& navigation_origin,
+                                         NavigationDecisionCallback callback);
+  void OnNavigationConfirmationDecision(
+      url::Origin navigation_origin,
+      NavigationDecisionCallback callback,
+      webui::mojom::NavigationConfirmationResponsePtr response);
+
+  // Called when the browser detects the actor navigating to an origin in the
+  // blocklist. The web client should confirm with the user that the actor is
+  // allowed to navigate to this origin.
+  void SendUserConfirmationDialogRequest(const url::Origin& navigation_origin,
+                                         NavigationDecisionCallback callback);
+  void OnPromptUserToConfirmNavigationDecision(
+      url::Origin navigation_origin,
+      NavigationDecisionCallback callback,
+      webui::mojom::UserConfirmationDialogResponsePtr response);
 
   State state_ = State::kInit;
 
@@ -277,8 +276,10 @@ class ExecutionEngine : public ToolDelegate {
 
   ToolDelegate::CredentialSelectedCallback credential_selected_callback_;
 
-  UserConfirmationDialogCallback user_confirmation_callback_;
-  NavigationConfirmationCallback navigation_confirmation_callback_;
+  base::OnceCallback<void(webui::mojom::UserConfirmationDialogResponsePtr)>
+      user_confirmation_callback_;
+  base::OnceCallback<void(webui::mojom::NavigationConfirmationResponsePtr)>
+      navigation_confirmation_callback_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

@@ -366,6 +366,7 @@ source_set("interactive_ui_tests") {
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/optimization_guide:test_support",
     ]
   }
 }

@@ -137,11 +137,10 @@ ActorNavigationThrottle::WillProcessResponse() {
 }
 
 void ActorNavigationThrottle::OnNavigationConfirmationDecision(
-    webui::mojom::NavigationConfirmationResponsePtr response) {
+    bool may_continue) {
   CHECK(!navigation_handle()->IsInPrerenderedMainFrame())
       << "We should not be prompting for pre-rendered frame navigations.";
-  if (response->result->is_permission_granted() &&
-      response->result->get_permission_granted()) {
+  if (may_continue) {
     Resume();
     return;
   }

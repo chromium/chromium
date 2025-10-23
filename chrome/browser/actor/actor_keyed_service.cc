@@ -230,7 +230,8 @@ void ActorKeyedService::OnUserConfirmationDialogDecision(
     TaskId request_task_id,
     webui::mojom::UserConfirmationDialogResponsePtr response) {
   if (auto* task = GetTask(request_task_id)) {
-    task->GetExecutionEngine()->OnUserConfirmation(std::move(response));
+    task->GetExecutionEngine()->OnUserConfirmationDialogResponse(
+        std::move(response));
   } else {
     VLOG(1) << "Task not found for task id: " << request_task_id;
   }
@@ -255,7 +256,8 @@ void ActorKeyedService::OnNavigationConfirmationDecision(
     TaskId request_task_id,
     webui::mojom::NavigationConfirmationResponsePtr response) {
   if (auto* task = GetTask(request_task_id)) {
-    task->GetExecutionEngine()->OnNavigationConfirmation(std::move(response));
+    task->GetExecutionEngine()->OnNavigationConfirmationResponse(
+        std::move(response));
   } else {
     VLOG(1) << "Task not found for task id: " << request_task_id;
   }

@@ -188,7 +188,7 @@ std::string ExecutionEngine::StateToString(State state) {
 
 bool ExecutionEngine::ShouldGateNavigation(
     content::NavigationHandle& navigation_handle,
-    ExecutionEngine::NavigationConfirmationCallback callback) {
+    ExecutionEngine::NavigationDecisionCallback callback) {
   if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
     return false;
   }
@@ -200,7 +200,7 @@ bool ExecutionEngine::ShouldGateNavigation(
 
 bool ExecutionEngine::ShouldGateNavigationInternal(
     content::NavigationHandle& navigation_handle,
-    ExecutionEngine::NavigationConfirmationCallback callback) {
+    ExecutionEngine::NavigationDecisionCallback callback) {
   base::ScopedUmaHistogramTimer timer(
       "Actor.NavigationGating.TimeElapsedForGating");
 
@@ -228,12 +228,8 @@ bool ExecutionEngine::ShouldGateNavigationInternal(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &ExecutionEngine::ConfirmCrossOriginNavigation, GetWeakPtr(),
-          navigation_origin,
-          base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
-                         GetWeakPtr(), navigation_origin,
-                         std::move(callback))));
+      base::BindOnce(&ExecutionEngine::CheckNavigationBlocklist, GetWeakPtr(),
+                     navigation_handle.GetURL(), std::move(callback)));
 
   return true;
 }
@@ -255,29 +251,66 @@ void ExecutionEngine::LogNavigationGating(
   }
 }
 
-void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
-    url::Origin navigation_origin,
-    ExecutionEngine::UserConfirmationDialogCallback callback,
-    webui::mojom::UserConfirmationDialogResponsePtr response) {
-  if (response->result->is_permission_granted()) {
-    bool permission_granted = response->result->get_permission_granted();
-    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
-                          permission_granted);
-    if (permission_granted) {
-      allowed_navigation_origins_.insert(std::move(navigation_origin));
-    }
-  } else if (response->result->is_error_reason()) {
-    // TODO(crbug.com/450302860): Add UMA metrics for logging frequency of
-    // different failure modes.
-  } else {
-    NOTREACHED();
+void ExecutionEngine::CheckNavigationBlocklist(
+    const GURL& navigation_url,
+    ExecutionEngine::NavigationDecisionCallback callback) {
+  auto [callback1, callback2] = base::SplitOnceCallback(std::move(callback));
+  if (ShouldBlockNavigationUrlForOriginGating(
+          navigation_url, profile_,
+          base::BindOnce(&ExecutionEngine::OnNavigationBlocklistDecision,
+                         GetWeakPtr(), url::Origin::Create(navigation_url),
+                         std::move(callback1)))) {
+    return;
   }
-  std::move(callback).Run(std::move(response));
+  // If `ShouldBlockNavigationUrlForOriginGating` returns false, it means the
+  // Optimization Guide was not available to check the blocklist, so we
+  // continue to the next step.
+  OnNavigationBlocklistDecision(url::Origin::Create(navigation_url),
+                                std::move(callback2),
+                                /*may_continue=*/true);
+}
+
+void ExecutionEngine::OnNavigationBlocklistDecision(
+    url::Origin navigation_origin,
+    ExecutionEngine::NavigationDecisionCallback callback,
+    bool may_continue) {
+  // If the site is not on the blocklist, this is a novel origin and we should
+  // invoke SendNavigationConfirmationRequest.
+  if (may_continue) {
+    SendNavigationConfirmationRequest(navigation_origin, std::move(callback));
+    return;
+  }
+  // Otherwise if the site is blocked, present a user confirmation dialog to
+  // continue.
+  SendUserConfirmationDialogRequest(navigation_origin, std::move(callback));
+}
+
+void ExecutionEngine::SendNavigationConfirmationRequest(
+    const url::Origin& navigation_origin,
+    ExecutionEngine::NavigationDecisionCallback callback) {
+  if (navigation_confirmation_callback_) {
+    std::move(navigation_confirmation_callback_)
+        .Run(webui::mojom::NavigationConfirmationResponse::New(
+            webui::mojom::ConfirmationRequestResult::NewErrorReason(
+                webui::mojom::ConfirmationRequestErrorReason::
+                    kPreemptedByNewRequest)));
+  }
+  navigation_confirmation_callback_ =
+      base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
+                     GetWeakPtr(), navigation_origin, std::move(callback));
+  ActorKeyedService::Get(profile_)->NotifyRequestToConfirmNavigation(
+      task_->id(), navigation_origin);
+}
+
+void ExecutionEngine::OnNavigationConfirmationResponse(
+    webui::mojom::NavigationConfirmationResponsePtr response) {
+  CHECK(navigation_confirmation_callback_);
+  std::move(navigation_confirmation_callback_).Run(std::move(response));
 }
 
 void ExecutionEngine::OnNavigationConfirmationDecision(
     url::Origin navigation_origin,
-    ExecutionEngine::NavigationConfirmationCallback callback,
+    ExecutionEngine::NavigationDecisionCallback callback,
     webui::mojom::NavigationConfirmationResponsePtr response) {
   if (response->result->is_permission_granted()) {
     bool permission_granted = response->result->get_permission_granted();
@@ -288,8 +321,54 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     if (permission_granted) {
       allowed_navigation_origins_.insert(std::move(navigation_origin));
     }
+    std::move(callback).Run(permission_granted);
+    return;
   }
-  std::move(callback).Run(std::move(response));
+  // TODO(crbug.com/450302860): Add UMA metrics for logging frequency of
+  // different failure modes.
+  std::move(callback).Run(/*may_continue=*/false);
+}
+
+void ExecutionEngine::SendUserConfirmationDialogRequest(
+    const url::Origin& navigation_origin,
+    ExecutionEngine::NavigationDecisionCallback callback) {
+  if (user_confirmation_callback_) {
+    std::move(user_confirmation_callback_)
+        .Run(webui::mojom::UserConfirmationDialogResponse::New(
+            webui::mojom::ConfirmationRequestResult::NewErrorReason(
+                webui::mojom::ConfirmationRequestErrorReason::
+                    kPreemptedByNewRequest)));
+  }
+  user_confirmation_callback_ =
+      base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
+                     GetWeakPtr(), navigation_origin, std::move(callback));
+  ActorKeyedService::Get(profile_)->NotifyRequestToShowUserConfirmationDialog(
+      task_->id(), navigation_origin, std::nullopt);
+}
+
+void ExecutionEngine::OnUserConfirmationDialogResponse(
+    webui::mojom::UserConfirmationDialogResponsePtr response) {
+  CHECK(user_confirmation_callback_);
+  std::move(user_confirmation_callback_).Run(std::move(response));
+}
+
+void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
+    url::Origin navigation_origin,
+    ExecutionEngine::NavigationDecisionCallback callback,
+    webui::mojom::UserConfirmationDialogResponsePtr response) {
+  if (response->result->is_permission_granted()) {
+    bool permission_granted = response->result->get_permission_granted();
+    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
+                          permission_granted);
+    if (permission_granted) {
+      allowed_navigation_origins_.insert(std::move(navigation_origin));
+    }
+    std::move(callback).Run(permission_granted);
+    return;
+  }
+  // TODO(crbug.com/450302860): Add UMA metrics for logging frequency of
+  // different failure modes.
+  std::move(callback).Run(/*may_continue=*/false);
 }
 
 void ExecutionEngine::AddObserver(StateObserver* observer) {
@@ -670,63 +749,6 @@ void ExecutionEngine::AddWritableMainframeOrigins(
     // the url::Origin's stored in allowed_navigation_origins_.
     allowed_navigation_origins_.insert(url::Origin(origin));
   }
-}
-
-void ExecutionEngine::PromptUserToConfirmNavigation(
-    const url::Origin& navigation_origin,
-    ExecutionEngine::UserConfirmationDialogCallback callback) {
-  PromptUserForConfirmationInternal(
-      navigation_origin, /*download_url=*/std::nullopt, std::move(callback));
-}
-
-void ExecutionEngine::PromptToConfirmDownload(
-    int32_t download_id,
-    ExecutionEngine::UserConfirmationDialogCallback callback) {
-  PromptUserForConfirmationInternal(/*navigation_origin=*/std::nullopt,
-                                    download_id, std::move(callback));
-}
-
-void ExecutionEngine::PromptUserForConfirmationInternal(
-    const std::optional<url::Origin>& navigation_origin,
-    const std::optional<int32_t> download_id,
-    ExecutionEngine::UserConfirmationDialogCallback callback) {
-  if (user_confirmation_callback_) {
-    std::move(user_confirmation_callback_)
-        .Run(webui::mojom::UserConfirmationDialogResponse::New(
-            webui::mojom::ConfirmationRequestResult::NewErrorReason(
-                webui::mojom::ConfirmationRequestErrorReason::
-                    kPreemptedByNewRequest)));
-  }
-  user_confirmation_callback_ = std::move(callback);
-  ActorKeyedService::Get(profile_)->NotifyRequestToShowUserConfirmationDialog(
-      task_->id(), navigation_origin, download_id);
-}
-
-void ExecutionEngine::OnUserConfirmation(
-    webui::mojom::UserConfirmationDialogResponsePtr response) {
-  CHECK(user_confirmation_callback_);
-  std::move(user_confirmation_callback_).Run(std::move(response));
-}
-
-void ExecutionEngine::ConfirmCrossOriginNavigation(
-    const url::Origin& navigation_origin,
-    ExecutionEngine::NavigationConfirmationCallback callback) {
-  if (navigation_confirmation_callback_) {
-    std::move(navigation_confirmation_callback_)
-        .Run(webui::mojom::NavigationConfirmationResponse::New(
-            webui::mojom::ConfirmationRequestResult::NewErrorReason(
-                webui::mojom::ConfirmationRequestErrorReason::
-                    kPreemptedByNewRequest)));
-  }
-  navigation_confirmation_callback_ = std::move(callback);
-  ActorKeyedService::Get(profile_)->NotifyRequestToConfirmNavigation(
-      task_->id(), navigation_origin);
-}
-
-void ExecutionEngine::OnNavigationConfirmation(
-    webui::mojom::NavigationConfirmationResponsePtr response) {
-  CHECK(navigation_confirmation_callback_);
-  std::move(navigation_confirmation_callback_).Run(std::move(response));
 }
 
 const ToolRequest& ExecutionEngine::GetNextAction() const {

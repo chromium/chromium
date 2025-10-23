@@ -181,6 +181,23 @@ TEST_F(ActorSitePolicyTest, BlockIfInBlocklist) {
   CheckUrl(url, false);
 }
 
+TEST_F(ActorSitePolicyTest, AllowIfNotBlockedForOriginGating) {
+  base::test::TestFuture<bool> got_may_act;
+  EXPECT_TRUE(ShouldBlockNavigationUrlForOriginGating(
+      GURL("https://c.test/"), profile(), got_may_act.GetCallback()));
+  EXPECT_TRUE(got_may_act.Get());
+}
+
+TEST_F(ActorSitePolicyTest, BlockIfInBlocklistForOriginGating) {
+  const GURL url("https://c.test/");
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kFalse);
+  base::test::TestFuture<bool> got_may_act;
+  EXPECT_TRUE(ShouldBlockNavigationUrlForOriginGating(
+      url, profile(), got_may_act.GetCallback()));
+  EXPECT_FALSE(got_may_act.Get());
+}
+
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {
   CheckUrl(GURL("https://c.test/"), false);
 }

@@ -55,8 +55,7 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       bool may_act);
 
-  void OnNavigationConfirmationDecision(
-      webui::mojom::NavigationConfirmationResponsePtr response);
+  void OnNavigationConfirmationDecision(bool may_continue);
 
   Profile* GetProfile();
   AggregatedJournal& GetJournal();

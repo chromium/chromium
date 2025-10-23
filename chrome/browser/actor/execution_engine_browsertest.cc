@@ -23,6 +23,8 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,6 +39,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -429,41 +432,6 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
   EXPECT_FALSE(browser_client().external_protocol_result().value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PromptToConfirmDownload) {
-  ActorKeyedService* actor_service = actor_keyed_service();
-  int32_t download_id = 123;
-
-  // Mocking IPC for browsertest.
-  // We will run it with a test response from the web client in a UI test.
-  base::CallbackListSubscription user_confirmation_dialog_subscription =
-      actor_service->AddRequestToShowUserConfirmationDialogSubscriberCallback(
-          base::BindLambdaForTesting(
-              [&](const std::optional<url::Origin>& got_navigation_origin,
-                  const std::optional<int32_t> got_download_id,
-                  ActorKeyedService::UserConfirmationDialogCallback callback) {
-                // Verify the request is what the IPC expects.
-                EXPECT_FALSE(got_navigation_origin);
-                EXPECT_TRUE(got_download_id);
-                EXPECT_EQ(got_download_id, download_id);
-                // Send a mock IPC response.
-                std::move(callback).Run(
-                    webui::mojom::UserConfirmationDialogResponse::New(
-                        webui::mojom::ConfirmationRequestResult::
-                            NewPermissionGranted(true)));
-              }));
-
-  base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
-      future;
-  actor_task().GetExecutionEngine()->PromptToConfirmDownload(
-      download_id, future.GetCallback());
-
-  // Verify response was forwarded to the callback correctly.
-  auto response = future.Take();
-  EXPECT_FALSE(response->result->is_error_reason());
-  EXPECT_TRUE(response->result->is_permission_granted());
-  EXPECT_TRUE(response->result->get_permission_granted());
-}
-
 class ExecutionEngineFileSystemAccessApiBrowserTest
     : public ExecutionEngineBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -574,6 +542,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineDangerousContentBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          ExecutionEngineDangerousContentBrowserTest,
                          testing::Bool());
+
 class ExecutionEngineOriginGatingBrowserTest
     : public ExecutionEngineBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -585,9 +554,9 @@ class ExecutionEngineOriginGatingBrowserTest
 
   bool origin_gating_enabled() { return GetParam(); }
 
-  void CreateMockPromptIPCResponse(
+  void CreateMockNavigationConfirmationResponse(
       std::optional<TaskId> expected_task_id,
-      std::optional<url::Origin> expected_navigation_origin,
+      url::Origin expected_navigation_origin,
       bool permission_granted) {
     navigation_confirmation_subscription_ =
         actor_keyed_service()->AddRequestToConfirmNavigationSubscriberCallback(
@@ -610,24 +579,50 @@ class ExecutionEngineOriginGatingBrowserTest
                 }));
   }
 
+  void CreateMockUserConfirmationDialogResponse(
+      url::Origin expected_navigation_origin,
+      bool permission_granted) {
+    user_confirmation_dialog_subscription_ =
+        actor_keyed_service()
+            ->AddRequestToShowUserConfirmationDialogSubscriberCallback(
+                base::BindLambdaForTesting(
+                    [expected_navigation_origin, permission_granted](
+                        const std::optional<url::Origin>& got_navigation_origin,
+                        const std::optional<int32_t> got_download_id,
+                        ActorKeyedService::UserConfirmationDialogCallback
+                            callback) {
+                      // Verify the request is what the IPC expects.
+                      EXPECT_TRUE(got_navigation_origin);
+                      EXPECT_EQ(got_navigation_origin,
+                                expected_navigation_origin);
+                      EXPECT_FALSE(got_download_id);
+                      // Send a mock IPC response.
+                      std::move(callback).Run(
+                          webui::mojom::UserConfirmationDialogResponse::New(
+                              webui::mojom::ConfirmationRequestResult::
+                                  NewPermissionGranted(permission_granted)));
+                    }));
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription navigation_confirmation_subscription_;
+  base::CallbackListSubscription user_confirmation_dialog_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
-                       GateCrossOriginNavigations_Denied) {
+                       ConfirmNavigationToNewOrigin_Denied) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL second_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  CreateMockPromptIPCResponse(actor_task().id(),
-                              url::Origin::Create(second_url),
-                              /*permission_granted=*/false);
+  CreateMockNavigationConfirmationResponse(actor_task().id(),
+                                           url::Origin::Create(second_url),
+                                           /*permission_granted=*/false);
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   EXPECT_TRUE(content::ExecJs(web_contents(),
@@ -666,15 +661,15 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
-                       GateCrossOriginNavigations_Granted) {
+                       ConfirmNavigationToNewOrigin_Granted) {
   const GURL start_url = embedded_https_test_server().GetURL(
       "www.example.com", "/actor/link.html");
   const GURL second_url = embedded_https_test_server().GetURL(
-      "foo.example.com", "/actor/blank.html");
+      "sub.example.com", "/actor/blank.html");
 
-  CreateMockPromptIPCResponse(actor_task().id(),
-                              url::Origin::Create(second_url),
-                              /*permission_granted=*/true);
+  CreateMockNavigationConfirmationResponse(actor_task().id(),
+                                           url::Origin::Create(second_url),
+                                           /*permission_granted=*/true);
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   EXPECT_TRUE(content::ExecJs(web_contents(),
@@ -708,6 +703,56 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       ConfirmBlockedOriginWithUser_Denied) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  CreateMockUserConfirmationDialogResponse(url::Origin::Create(blocked_url),
+                                           /*permission_granted=*/false);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+
+  // The navigation will be blocked by the Optimization Guide blocklist.
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       ConfirmBlockedOriginWithUser_Granted) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  CreateMockUserConfirmationDialogResponse(url::Origin::Create(blocked_url),
+                                           /*permission_granted=*/true);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+
+  // The IPC will only allow navigation if kGlicCrossOriginNavigationGating is
+  // enabled.
+  ClickTarget("#link",
+              origin_gating_enabled()
+                  ? mojom::ActionResultCode::kOk
+                  : mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        AddWritableMainframeOrigins) {
   // This test is not meaningful if origin gating is disabled.
   if (!origin_gating_enabled()) {
@@ -721,9 +766,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                                EncodeURI(cross_origin_url.spec())}));
 
   // Mock IPC response waill always reject navigation.
-  CreateMockPromptIPCResponse(actor_task().id(),
-                              url::Origin::Create(cross_origin_url),
-                              /*permission_granted=*/false);
+  CreateMockNavigationConfirmationResponse(
+      actor_task().id(), url::Origin::Create(cross_origin_url),
+      /*permission_granted=*/false);
 
   // Start on link page on foo.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
@@ -767,9 +812,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // Mock IPC response waill always reject navigation.
   // Task ID is not constant throughout this test so we do not check the IPC
   // request for the ID.
-  CreateMockPromptIPCResponse(/*expected_task_id=*/std::nullopt,
-                              url::Origin::Create(cross_origin_url),
-                              /*permission_granted=*/false);
+  CreateMockNavigationConfirmationResponse(
+      /*expected_task_id=*/std::nullopt, url::Origin::Create(cross_origin_url),
+      /*permission_granted=*/false);
 
   // Start on foo.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
