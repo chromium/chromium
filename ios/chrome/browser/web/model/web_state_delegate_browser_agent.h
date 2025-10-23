@@ -101,6 +101,8 @@ class WebStateDelegateBrowserAgent
                         base::OnceCallback<void(bool)> callback) override;
   void ShouldAllowCut(web::WebState* source,
                       base::OnceCallback<void(bool)> callback) override;
+  void ShouldAllowShare(web::WebState* source,
+                        base::OnceCallback<void(bool)> callback) override;
   void DidFinishClipboardRead(web::WebState* source) override;
 
   raw_ptr<WebStateList> web_state_list_ = nullptr;

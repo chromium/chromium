@@ -375,6 +375,13 @@ void WebStateDelegateBrowserAgent::ShouldAllowCut(
       ->ShouldAllowCut(std::move(callback));
 }
 
+void WebStateDelegateBrowserAgent::ShouldAllowShare(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+      ->ShouldAllowShare(std::move(callback));
+}
+
 void WebStateDelegateBrowserAgent::DidFinishClipboardRead(
     web::WebState* source) {
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)

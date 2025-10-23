@@ -232,3 +232,15 @@ TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowCut) {
                              }));
   run_loop.Run();
 }
+
+// Tests that share is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowShare) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowShare(web_state,
+                               base::BindLambdaForTesting([&](bool allowed) {
+                                 EXPECT_TRUE(allowed);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
+}
