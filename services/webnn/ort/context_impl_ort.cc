@@ -4,6 +4,7 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
+#include "base/feature_list.h"
 #include "services/webnn/ort/buffer_content_ort.h"
 #include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
@@ -18,6 +19,14 @@
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::ort {
+
+namespace {
+
+// The feature flag allows us to try using device allocator to create device
+// tensors for EPs, e.g. OpenVINO EP.
+BASE_FEATURE(kUseDeviceTensor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 // static
 scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
@@ -73,7 +82,12 @@ ContextImplOrt::ContextImplOrt(
           shared_image_manager,
           std::move(main_task_runner)),
       env_(std::move(env)),
-      session_options_(SessionOptions::Create(this->options().device, env_)) {}
+      session_options_(SessionOptions::Create(this->options().device, env_)) {
+  if (base::FeatureList::IsEnabled(kUseDeviceTensor)) {
+    device_allocator_ = DeviceAllocator::Create(this->options().device,
+                                                session_options_->get(), env_);
+  }
+}
 
 ContextImplOrt::~ContextImplOrt() = default;
 
@@ -349,8 +363,8 @@ ContextImplOrt::CreateTensorImpl(
                           "Creation of constant tensors is not supported."));
   }
 
-  auto buffer_content =
-      std::make_unique<BufferContentOrt>(tensor_info->descriptor);
+  auto buffer_content = std::make_unique<BufferContentOrt>(
+      tensor_info->descriptor, device_allocator_);
   auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
           std::move(buffer_content));

@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/ort/device_allocator.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_session_options.h"
 #include "services/webnn/ort/scoped_ort_types.h"
@@ -97,6 +98,10 @@ class ContextImplOrt final : public WebNNContextImpl {
   // The session options are shared among all the sessions created by this
   // context.
   scoped_refptr<SessionOptions> session_options_;
+
+  // The device allocator used for device tensor creation. May be nullptr if
+  // device tensor is not supported.
+  scoped_refptr<DeviceAllocator> device_allocator_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };

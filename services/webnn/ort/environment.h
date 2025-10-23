@@ -20,6 +20,9 @@
 
 namespace webnn::ort {
 
+inline constexpr base::cstring_view kOpenVINOExecutionProvider =
+    "OpenVINOExecutionProvider";
+
 // Describes the workarounds needed for execution provider limitations.
 // TODO(crbug.com/428740146): Remove this struct once all the execution
 // providers fix these issues.
@@ -66,6 +69,16 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   static std::vector<const OrtEpDevice*> SelectEpDevicesForDeviceType(
       base::span<const OrtEpDevice* const> available_devices,
       mojom::Device device_type);
+
+  // Returns a span of registered execution provider devices in `env`. The span
+  // is guaranteed to be valid until `env_` is released or the list of execution
+  // providers is modified.
+  //
+  // Thread safety note:
+  // The provider list is only modified during Environment initialization and is
+  // immutable for the lifetime of the Environment object. Therefore, it is safe
+  // for multiple threads to hold and use the returned span concurrently.
+  base::span<const OrtEpDevice* const> GetRegisteredEpDevices() const;
 
   // Get combined EP workarounds for the EPs that will be selected according to
   // the given device type.

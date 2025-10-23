@@ -38,7 +38,7 @@ struct EpInfo {
 constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
     // Intel
     {
-        "OpenVINOExecutionProvider",
+        kOpenVINOExecutionProvider,
         {
             .package_family_name = L"MicrosoftCorporationII.WinML.Intel."
                                    L"OpenVINO.EP.1.8_8wekyb3d8bbwe",
@@ -146,7 +146,7 @@ bool VendorIdExistsInGpuInfo(const gpu::GPUInfo& gpu_info, uint32_t vendor_id) {
 // Returns a span of registered execution provider devices in `env`. The span is
 // guaranteed to be valid until `env` is released or the list of execution
 // providers is modified.
-base::span<const OrtEpDevice* const> GetRegisteredEpDevices(
+base::span<const OrtEpDevice* const> GetRegisteredEpDevicesImpl(
     const OrtApi* ort_api,
     const OrtEnv* env) {
   size_t num_ep_devices = 0;
@@ -161,7 +161,7 @@ bool IsExecutionProviderRegistered(const OrtApi* ort_api,
                                    const OrtEnv* env,
                                    base::cstring_view ep_name) {
   base::span<const OrtEpDevice* const> ep_devices =
-      GetRegisteredEpDevices(ort_api, env);
+      GetRegisteredEpDevicesImpl(ort_api, env);
   for (const auto* ep_device : ep_devices) {
     CHECK(ep_device);
     const char* registered_ep_name = ort_api->EpDevice_EpName(ep_device);
@@ -607,7 +607,7 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
   if (ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
       ort_logging_level == ORT_LOGGING_LEVEL_INFO) {
     // Logs all registered EP devices in this environment.
-    LogEpDevices(ort_api, GetRegisteredEpDevices(ort_api, env.get()),
+    LogEpDevices(ort_api, GetRegisteredEpDevicesImpl(ort_api, env.get()),
                  "Registered OrtEpDevice");
   }
 
@@ -666,11 +666,17 @@ std::vector<const OrtEpDevice*> Environment::SelectEpDevicesForDeviceType(
   return selected_devices;
 }
 
+base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
+    const {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  return GetRegisteredEpDevicesImpl(ort_api, this->get());
+}
+
 EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
   EpWorkarounds workarounds;
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> registered_ep_devices =
-      GetRegisteredEpDevices(ort_api, this->get());
+      GetRegisteredEpDevicesImpl(ort_api, this->get());
   std::vector<const OrtEpDevice*> selected_ep_devices =
       SelectEpDevicesForDeviceType(registered_ep_devices, device_type);
   for (const auto* ep_device : selected_ep_devices) {
@@ -690,7 +696,7 @@ std::vector<Environment::SessionConfigEntry> Environment::GetEpConfigEntries(
     mojom::Device device_type) const {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> registered_ep_devices =
-      GetRegisteredEpDevices(ort_api, this->get());
+      GetRegisteredEpDevicesImpl(ort_api, this->get());
   std::vector<const OrtEpDevice*> selected_ep_devices =
       SelectEpDevicesForDeviceType(registered_ep_devices, device_type);
   std::vector<SessionConfigEntry> ep_config_entries;

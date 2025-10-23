@@ -16,22 +16,30 @@
 
 namespace webnn::ort {
 
-BufferContentOrt::BufferContentOrt(const OperandDescriptor& descriptor) {
+BufferContentOrt::BufferContentOrt(
+    const OperandDescriptor& descriptor,
+    scoped_refptr<DeviceAllocator> device_allocator)
+    : device_allocator_(std::move(device_allocator)) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
   OrtAllocator* allocator = nullptr;
-  // Use the default allocator which is CPU based and non-arena.
-  // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
-  // same default allocator and its returned value should NOT be freed.
-  //
-  // TODO(crbug.com/419403184): Figure out how to support allocator for other
-  // devices.
-  CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
+  // Use the device allocator if it's present. Otherwise, use the default
+  // allocator which is CPU based and non-arena.
+  if (device_allocator_) {
+    allocator = device_allocator_->get();
+  } else {
+    // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
+    // same default allocator and its returned value should NOT be freed.
+    CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
+  }
   CHECK(allocator);
 
   ONNXTensorElementDataType ort_data_type =
       WebnnToOnnxDataType(descriptor.data_type());
   std::vector<int64_t> ort_shape = WebnnToOnnxShape(descriptor.shape());
 
+  // TODO(crbug.com/453420646): Implement context lost handling for ORT tensor
+  // creation failures.
   CHECK_STATUS(ort_api->CreateTensorAsOrtValue(
       allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
       ScopedOrtValue::Receiver(tensor_).get()));

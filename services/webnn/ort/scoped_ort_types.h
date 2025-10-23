@@ -118,6 +118,13 @@ struct ScopedOrtTypeTraitsHelper<OrtModel*> {
   }
 };
 
+template <>
+struct ScopedOrtTypeTraitsHelper<OrtAllocator*> {
+  static void Free(OrtAllocator* value) {
+    PlatformFunctions::GetInstance()->ort_api()->ReleaseAllocator(value);
+  }
+};
+
 template <typename T>
 using ScopedOrtType = base::ScopedGeneric<T*, ScopedOrtTypeTraits<T*>>;
 
@@ -137,6 +144,7 @@ using ScopedOrtValueInfo = internal::ScopedOrtType<OrtValueInfo>;
 using ScopedOrtNode = internal::ScopedOrtType<OrtNode>;
 using ScopedOrtGraph = internal::ScopedOrtType<OrtGraph>;
 using ScopedOrtModel = internal::ScopedOrtType<OrtModel>;
+using ScopedOrtAllocator = internal::ScopedOrtType<OrtAllocator>;
 
 }  // namespace webnn::ort
 
