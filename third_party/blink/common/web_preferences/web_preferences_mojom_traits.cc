@@ -243,8 +243,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->ai_prompt_api_enabled = data.ai_prompt_api_enabled();
 
 #if BUILDFLAG(IS_ANDROID)
-  out->should_screenshot_on_mainframe_same_doc_navigation =
-      data.should_screenshot_on_mainframe_same_doc_navigation();
+  out->increment_local_surface_id_for_mainframe_same_doc_navigation =
+      data.increment_local_surface_id_for_mainframe_same_doc_navigation();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;

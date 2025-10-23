@@ -29,7 +29,6 @@
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
-#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -150,9 +149,8 @@ BrowserContextImpl::~BrowserContextImpl() {
   // BrowserContext.
   policy->RemoveStateForBrowserContext(*self_);
 
-  if (download_manager_) {
+  if (download_manager_)
     download_manager_->Shutdown();
-  }
 
   TtsControllerImpl::GetInstance()->OnBrowserContextDestroyed(self_);
 
@@ -180,9 +178,8 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
   // Make sure NotifyWillBeDestroyed is idempotent.  This helps facilitate the
   // pattern where NotifyWillBeDestroyed is called from *both*
   // ShellBrowserContext and its derived classes (e.g. WebTestBrowserContext).
-  if (will_be_destroyed_soon_) {
+  if (will_be_destroyed_soon_)
     return;
-  }
   will_be_destroyed_soon_ = true;
 
   self_->ForEachLoadedStoragePartition(&NotifyContextWillBeDestroyed);
@@ -210,9 +207,8 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
 StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!storage_partition_map_) {
+  if (!storage_partition_map_)
     storage_partition_map_ = std::make_unique<StoragePartitionImplMap>(self_);
-  }
 
   return storage_partition_map_.get();
 }
@@ -232,9 +228,8 @@ BrowsingDataRemoverImpl* BrowserContextImpl::GetBrowsingDataRemover() {
 media::VideoDecodePerfHistory* BrowserContextImpl::GetVideoDecodePerfHistory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!video_decode_perf_history_) {
+  if (!video_decode_perf_history_)
     video_decode_perf_history_ = self_->CreateVideoDecodePerfHistory();
-  }
 
   return video_decode_perf_history_.get();
 }
@@ -259,9 +254,8 @@ BrowserContextImpl::CreateWebrtcVideoPerfHistory() {
 media::WebrtcVideoPerfHistory* BrowserContextImpl::GetWebrtcVideoPerfHistory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!webrtc_video_perf_history_) {
+  if (!webrtc_video_perf_history_)
     webrtc_video_perf_history_ = CreateWebrtcVideoPerfHistory();
-  }
 
   return webrtc_video_perf_history_.get();
 }
@@ -305,18 +299,16 @@ DownloadManager* BrowserContextImpl::GetDownloadManager() {
 void BrowserContextImpl::SetDownloadManagerForTesting(
     std::unique_ptr<DownloadManager> download_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (download_manager_) {
+  if (download_manager_)
     download_manager_->Shutdown();
-  }
   download_manager_ = std::move(download_manager);
 }
 
 PermissionController* BrowserContextImpl::GetPermissionController() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!permission_controller_) {
+  if (!permission_controller_)
     permission_controller_ = std::make_unique<PermissionControllerImpl>(self_);
-  }
 
   return permission_controller_.get();
 }
@@ -334,9 +326,8 @@ storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!external_mount_points_) {
+  if (!external_mount_points_)
     external_mount_points_ = storage::ExternalMountPoints::CreateRefCounted();
-  }
   return external_mount_points_.get();
 #else
   return nullptr;
@@ -373,8 +364,7 @@ void BrowserContextImpl::SetPrefetchServiceForTesting(
 NavigationEntryScreenshotManager*
 BrowserContextImpl::GetNavigationEntryScreenshotManager() {
   if (!nav_entry_screenshot_manager_ &&
-      BackForwardTransitionAnimationManager::
-          ShouldAnimateBackForwardTransitions()) {
+      NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
     nav_entry_screenshot_manager_ =
         std::make_unique<NavigationEntryScreenshotManager>();
   }

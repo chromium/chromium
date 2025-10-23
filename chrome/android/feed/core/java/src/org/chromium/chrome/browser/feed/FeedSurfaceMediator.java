@@ -696,7 +696,7 @@ public class FeedSurfaceMediator
                                         listener.onScrolled(dx, dy);
                                     }
                                     // Null if the stream has not been binded yet.
-                                    if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()
+                                    if (GestureNavigationUtils.areBackForwardTransitionsEnabled()
                                             && mCoordinator.getHybridListRenderer() != null
                                             && mCoordinator
                                                             .getHybridListRenderer()
@@ -963,7 +963,6 @@ public class FeedSurfaceMediator
 
     /**
      * Notifies a bound stream of new header count number.
-     *
      * @param newHeaderCount Number of headers in the {@link RecyclerView}.
      */
     void notifyHeadersChanged(int newHeaderCount) {
@@ -1335,8 +1334,8 @@ public class FeedSurfaceMediator
     }
 
     /**
-     * @return Whether the touch events are enabled. TODO(huayinz): Move this method to a Model once
-     *     a Model is introduced.
+     * @return Whether the touch events are enabled.
+     * TODO(huayinz): Move this method to a Model once a Model is introduced.
      */
     boolean getTouchEnabled() {
         return mTouchEnabled;
@@ -1426,7 +1425,6 @@ public class FeedSurfaceMediator
 
     /**
      * Scrolls the page to show the view at the given {@code viewPosition} if not already visible.
-     *
      * @param viewPosition The position of the view that should be visible or scrolled to.
      */
     void scrollToViewIfNecessary(int viewPosition) {

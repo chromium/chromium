@@ -199,10 +199,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(::features::kFedCm);
 
   // Disable Digital Credentials API on WebView.
-  aw_feature_overrides.DisableFeature(
-      ::features::kWebIdentityDigitalCredentials);
-  aw_feature_overrides.DisableFeature(
-      ::features::kWebIdentityDigitalCredentialsCreation);
+  aw_feature_overrides.DisableFeature(::features::kWebIdentityDigitalCredentials);
+  aw_feature_overrides.DisableFeature(::features::kWebIdentityDigitalCredentialsCreation);
 
   // TODO(crbug.com/40272633): Web MIDI permission prompt for all usage.
   aw_feature_overrides.DisableFeature(blink::features::kBlockMidiByDefault);
@@ -216,6 +214,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // site isolation but field trial testing doesn't indicate that. Revisit when
   // enabling site isolation. See crbug.com/356170748.
   aw_feature_overrides.DisableFeature(blink::features::kPaintHoldingForIframes);
+
+  // Default Nav Transition does not support WebView.
+  // TODO(crbug.com/434928245): cleanup this feature gate in M141.
+  aw_feature_overrides.DisableFeature(blink::features::kBackForwardTransitions);
 
   // Disabling this feature for WebView, since it can switch focus when scrolled
   // in cases with multiple views which can trigger HTML focus changes that

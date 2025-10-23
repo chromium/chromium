@@ -1943,8 +1943,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // This is called on the UI thread.
   virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  CreateURLLoaderThrottlesForKeepAlive(BrowserContext* browser_context,
-                                       FrameTreeNodeId frame_tree_node_id);
+  CreateURLLoaderThrottlesForKeepAlive(
+      BrowserContext* browser_context,
+      FrameTreeNodeId frame_tree_node_id);
 
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle navigation URL requests for schemes not handled by the Network
@@ -3363,10 +3364,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // `web_contents`.
   virtual bool ShouldDisallowCredentialRequest(WebContents* web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Whether to animate back-forward transition gestures with a screenshot of
-  // the destination.
-  virtual bool ShouldAnimateBackForwardTransitions();
 };
 
 }  // namespace content

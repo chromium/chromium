@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -658,7 +659,7 @@ class TabImpl implements Tab {
 
     /**
      * @return true iff the tab doesn't hold a live page. This happens before initialize() and when
-     *     the tab holds frozen WebContents state that is yet to be inflated.
+     * the tab holds frozen WebContents state that is yet to be inflated.
      */
     @Override
     public boolean isFrozen() {
@@ -1489,7 +1490,6 @@ class TabImpl implements Tab {
 
     /**
      * Restores member fields from the given TabState.
-     *
      * @param state TabState containing information about this Tab.
      */
     void restoreFieldsFromState(TabState state) {
@@ -1720,7 +1720,6 @@ class TabImpl implements Tab {
 
     /**
      * Called when a page has finished loading.
-     *
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
@@ -1732,7 +1731,6 @@ class TabImpl implements Tab {
 
     /**
      * Called when a page has failed loading.
-     *
      * @param errorCode The error code causing the page to fail loading.
      */
     void didFailPageLoad(int errorCode) {
@@ -1775,7 +1773,6 @@ class TabImpl implements Tab {
 
     /**
      * Notify the observers that the load progress has changed.
-     *
      * @param progress The current percentage of progress.
      */
     void notifyLoadProgress(float progress) {
@@ -1818,10 +1815,10 @@ class TabImpl implements Tab {
     }
 
     /**
-     * Sets whether the tab is showing an error page. This is reset whenever the tab finishes a
-     * navigation. Note: This is kept here to keep the build green. Remove from interface as soon as
-     * the downstream patch lands.
-     *
+     * Sets whether the tab is showing an error page.  This is reset whenever the tab finishes a
+     * navigation.
+     * Note: This is kept here to keep the build green. Remove from interface as soon as
+     *       the downstream patch lands.
      * @param isShowingErrorPage Whether the tab shows an error page.
      */
     void setIsShowingErrorPage(boolean isShowingErrorPage) {
@@ -1913,12 +1910,11 @@ class TabImpl implements Tab {
     /**
      * Cache the title for the current page.
      *
-     * <p>{@link ContentViewClient#onUpdateTitle} is unreliable, particularly for navigating
-     * backwards and forwards in the history stack, so pull the correct title whenever the page
-     * changes. onUpdateTitle is only called when the title of a navigation entry changes. When the
-     * user goes back a page the navigation entry exists with the correct title, thus the title is
-     * not actually changed, and no notification is sent.
-     *
+     * {@link ContentViewClient#onUpdateTitle} is unreliable, particularly for navigating backwards
+     * and forwards in the history stack, so pull the correct title whenever the page changes.
+     * onUpdateTitle is only called when the title of a navigation entry changes. When the user goes
+     * back a page the navigation entry exists with the correct title, thus the title is not
+     * actually changed, and no notification is sent.
      * @param title Title of the page.
      */
     void updateTitle(String title) {
@@ -2165,7 +2161,6 @@ class TabImpl implements Tab {
 
     /**
      * Shows the given {@code nativePage} if it's not already showing.
-     *
      * @param nativePage The {@link NativePage} to show.
      */
     private void showNativePage(NativePage nativePage) {
@@ -2181,6 +2176,9 @@ class TabImpl implements Tab {
                         view.addOnAttachStateChangeListener(mAttachStateChangeListener);
                     }
                     if (isDisplayingBackForwardAnimation()) {
+                        assert GestureNavigationUtils.areBackForwardTransitionsEnabled()
+                                : "Must not draw bf screenshot if back forward transition is"
+                                        + " disabled";
                         mNativePageSmoothTransitionDelegate = mNativePage.enableSmoothTransition();
                         assumeNonNull(mNativePageSmoothTransitionDelegate);
                         mNativePageSmoothTransitionDelegate.prepare();
@@ -2222,7 +2220,6 @@ class TabImpl implements Tab {
 
     /**
      * Set {@link TabDelegateFactory} instance and updates the references.
-     *
      * @param factory TabDelegateFactory instance.
      */
     private void setDelegateFactory(TabDelegateFactory factory) {
@@ -2261,8 +2258,8 @@ class TabImpl implements Tab {
     }
 
     /**
-     * Update the interactable state of the tab. If the state has changed, it will call the {@link
-     * #onInteractableStateChanged(boolean)} method.
+     * Update the interactable state of the tab. If the state has changed, it will call the
+     * {@link #onInteractableStateChanged(boolean)} method.
      */
     private void updateInteractableState() {
         boolean currentState =

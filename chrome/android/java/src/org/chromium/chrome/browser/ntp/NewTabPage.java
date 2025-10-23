@@ -303,7 +303,7 @@ public class NewTabPage
                     });
             mRestoringState.addObserver(mOnScrollStateChanged);
             mHandler.postDelayed(
-                    mFallback, BackPressMetrics.MAX_FALLBACK_DELAY_NTP_SMOOTH_TRANSITION);
+                    mFallback, BackPressMetrics.maxFallbackDelayOfNtpSmoothTransition());
         }
 
         @Override
@@ -345,13 +345,16 @@ public class NewTabPage
         updateMargins();
     }
 
-    /** Allows clients to listen for updates to the scroll changes of the search box on the NTP. */
+    /**
+     * Allows clients to listen for updates to the scroll changes of the search box on the
+     * NTP.
+     */
     public interface OnSearchBoxScrollListener {
         /**
          * Callback to be notified when the scroll position of the search box on the NTP has
-         * changed. A scroll percentage of 0, means the search box has no scroll applied and is in
-         * it's natural resting position. A value of 1 means the search box is scrolled entirely to
-         * the top of the screen viewport.
+         * changed.  A scroll percentage of 0, means the search box has no scroll applied and
+         * is in it's natural resting position.  A value of 1 means the search box is scrolled
+         * entirely to the top of the screen viewport.
          *
          * @param scrollPercentage The percentage the search box has been scrolled off the page.
          */
@@ -362,7 +365,6 @@ public class NewTabPage
     public interface MostVisitedTileClickObserver {
         /**
          * Called when a most visited tile is clicked.
-         *
          * @param tile The most visited tile that was clicked.
          * @param tab The tab hosting the most visited tile section.
          */
@@ -871,8 +873,8 @@ public class NewTabPage
     }
 
     /**
-     * Update the margins for the content when browser controls constraints or bottom control height
-     * are changed.
+     * Update the margins for the content when browser controls constraints or bottom control
+     *  height are changed.
      */
     private void updateMargins() {
         // TODO(mdjones): can this be merged with BasicNativePage's updateMargins?
@@ -926,7 +928,6 @@ public class NewTabPage
 
     /**
      * Updates whether the NewTabPage should animate on URL focus changes.
-     *
      * @param disable Whether to disable the animations.
      */
     public void setUrlFocusAnimationsDisabled(boolean disable) {
@@ -985,7 +986,7 @@ public class NewTabPage
      *
      * @param bounds The current drawing location of the search box.
      * @param translation The translation applied to the search box by the parent view hierarchy up
-     *     to the NewTabPage view.
+     *                    to the NewTabPage view.
      */
     public void getSearchBoxBounds(Rect bounds, Point translation) {
         mNewTabPageLayout.getSearchBoxBounds(bounds, translation, getView());
@@ -1016,9 +1017,7 @@ public class NewTabPage
         return mNewTabPageManager.isLocationBarShownInNtp();
     }
 
-    /**
-     * @see org.chromium.chrome.browser.omnibox.NewTabPageDelegate#hasCompletedFirstLayout().
-     */
+    /** @see org.chromium.chrome.browser.omnibox.NewTabPageDelegate#hasCompletedFirstLayout(). */
     public boolean hasCompletedFirstLayout() {
         return mNewTabPageLayout.getHeight() > 0;
     }

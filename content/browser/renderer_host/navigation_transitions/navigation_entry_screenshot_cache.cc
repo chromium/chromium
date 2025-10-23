@@ -23,6 +23,10 @@ namespace content {
 
 namespace {
 
+const base::FeatureParam<bool> kDumpWithoutCrashNavigationEntryScreenshotCache{
+    &blink::features::kBackForwardTransitions,
+    "dump-without-crash-navigation-entry-screenshot-cache", false};
+
 NavigationEntryScreenshotCache::CompressedCallback& GetTestCallback() {
   static base::NoDestructor<NavigationEntryScreenshotCache::CompressedCallback>
       instance;
@@ -54,6 +58,7 @@ NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
     NavigationControllerImpl* nav_controller)
     : manager_(manager), nav_controller_(nav_controller) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
 }
 
 NavigationEntryScreenshotCache::~NavigationEntryScreenshotCache() {
@@ -147,7 +152,9 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
   // first (thus not tracked). Impossible to overwrite for a cached entry.
   // TODO(crbug.com/373893401): Find out why this happens.
   if (entry->GetUserData(NavigationEntryScreenshot::kUserDataKey)) {
-    base::debug::DumpWithoutCrashing();
+    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
+      base::debug::DumpWithoutCrashing();
+    }
     RemoveScreenshot(entry);
   }
 

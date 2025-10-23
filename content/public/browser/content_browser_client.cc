@@ -97,7 +97,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/public/browser/tts_environment_android.h"
 #else
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -2015,13 +2014,5 @@ bool ContentBrowserClient::ShouldDisallowCredentialRequest(
   return false;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-bool ContentBrowserClient::ShouldAnimateBackForwardTransitions() {
-#if BUILDFLAG(IS_ANDROID)
-  return NavigationTransitionConfig::SupportsBackForwardTransitions({});
-#else
-  return false;
-#endif
-}
 
 }  // namespace content

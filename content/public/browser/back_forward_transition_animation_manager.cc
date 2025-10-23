@@ -4,36 +4,23 @@
 
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 
-#include "base/auto_reset.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/gfx/animation/animation.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "ui/base/l10n/l10n_util_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
 // static
-bool BackForwardTransitionAnimationManager::
-    ShouldAnimateBackForwardTransitions() {
-  return content::GetContentClient()
-      ->browser()
-      ->ShouldAnimateBackForwardTransitions();
-}
-
-// static
-base::AutoReset<int>
-BackForwardTransitionAnimationManager::SetMinRequiredPhysicalRamMbForTesting(
-    int mb) {
+bool BackForwardTransitionAnimationManager::AreBackForwardTransitionsEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  return NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(mb);
+  return NavigationTransitionConfig::AreBackForwardTransitionsEnabled();
 #else
-  return base::AutoReset<int>(nullptr, 0);
+  return false;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -42,7 +29,7 @@ bool BackForwardTransitionAnimationManager::ShouldAnimateNavigationTransition(
     NavigationDirection navigation_direction,
     ui::BackGestureEventSwipeEdge edge) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!ShouldAnimateBackForwardTransitions()) {
+  if (!AreBackForwardTransitionsEnabled()) {
     return false;
   }
 

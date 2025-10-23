@@ -33,6 +33,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -63,6 +64,12 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @DoNotBatch(reason = "Affect nav settings")
+@EnableFeatures({
+    "BackForwardTransitions"
+            + ":transition_from_native_pages/true"
+            + "/transition_to_native_pages/true"
+            + "/min-required-physical-ram-mb/0"
+})
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class ScreenshotCaptureTest {
@@ -122,13 +129,12 @@ public class ScreenshotCaptureTest {
                 EmbeddedTestServer.createAndStartServerWithPort(
                         ApplicationProvider.getApplicationContext(), 46985);
 
-        var siteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
-        var mostVisitedSites = new FakeMostVisitedSites();
-        mostVisitedSites.setTileSuggestions(siteSuggestions);
-        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
+        var mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
+        var mMostVisitedSites = new FakeMostVisitedSites();
+        mMostVisitedSites.setTileSuggestions(mSiteSuggestions);
+        mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
         mScreenshotCaptureTestHelper = new ScreenshotCaptureTestHelper();
         mHomepageTestRule.useChromeNtpForTest();
-        GestureNavigationUtils.setMinRequiredPhysicalRamMbForTesting(0);
     }
 
     @After
@@ -271,9 +277,9 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
-        GestureNavigationTestUtils navUtils =
+        GestureNavigationTestUtils mNavUtils =
                 new GestureNavigationTestUtils(mActivityTestRule::getActivity);
-        navUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
+        mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();
         mActivityTestRule
@@ -289,7 +295,7 @@ public class ScreenshotCaptureTest {
                             callbackHelper.notifyCalled();
                         });
         callbackHelper.waitForOnly();
-        ThreadUtils.runOnUiThreadBlocking(() -> navUtils.getNavigationHandler().release(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavUtils.getNavigationHandler().release(true));
         // Wait animation to be finished. Reduce flakiness caused by being destroyed during a
         // running animation.
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());

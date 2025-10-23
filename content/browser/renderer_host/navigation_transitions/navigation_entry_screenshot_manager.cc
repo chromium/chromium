@@ -28,6 +28,7 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
       tick_clock_(base::DefaultTickClock::GetInstance()),
       cleanup_delay_(
           NavigationTransitionConfig::GetCleanupDelayForInvisibleCaches()) {
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   max_cache_size_in_bytes_ =
       NavigationTransitionConfig::ComputeCacheSizeInBytes();

@@ -169,6 +169,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
       unique_id_(unique_id),
       dimensions_without_compression_(bitmap_->GetSize()),
       supports_etc_non_power_of_two_(supports_etc_non_power_of_two) {
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   SetupCompressionTask(bitmap, supports_etc_non_power_of_two);
@@ -192,6 +193,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
       supports_etc_non_power_of_two_(supports_etc_non_power_of_two),
       context_provider_(std::move(context_provider)),
       screenshot_callback_(std::move(screenshot_callback)) {
+  DCHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   context_provider_->AddObserver(this);
 
@@ -343,7 +345,8 @@ void NavigationEntryScreenshot::SetupCompressionTask(
       base::BindOnce(&CompressNavigationScreenshotOnWorkerThread, bitmap,
                      supports_etc_non_power_of_two, std::move(done_callback));
 
-  if (!performance_scenarios::CurrentScenariosMatch(
+  if (NavigationTransitionConfig::ShouldCompressScreenshotWhenQuiet() &&
+      !performance_scenarios::CurrentScenariosMatch(
           performance_scenarios::ScenarioScope::kGlobal, scenario_pattern())) {
     auto observer_list =
         performance_scenarios::PerformanceScenarioObserverList::GetForScope(

@@ -31,9 +31,12 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -63,7 +66,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.Q,
-        message = "crbug.com/1276402 crbug.com/345352689 crbug.com/40899221")
+        message = "crbug.com/1276402 crbug.com/345352689")
 @Batch(Batch.PER_CLASS)
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
@@ -291,6 +294,8 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeNavigateOnRenderedPage() {
+        // TODO(crbug.com/40899221): Write a test variation running with
+        //     ChromeFeatureList.BACK_FORWARD_TRANSITIONS enabled when the feature is completed.
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
@@ -300,8 +305,20 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1426201")
+    @DisableFeatures(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink() {
+        testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+    @DisabledTest(message = "crbug.com/1426201")
+    public void testLeftEdgeSwipeClosesTabLaunchedFromLink_withBackForwardTransition() {
+        testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
+    }
+
+    private void testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal() {
         Tab oldTab = currentTab();
         TabCreator tabCreator =
                 ThreadUtils.runOnUiThreadBlocking(

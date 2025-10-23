@@ -52,9 +52,8 @@ void TabFavicon::SetWebContents(JNIEnv* env,
       content::WebContents::FromJavaWebContents(jweb_contents);
   favicon_driver_ =
       favicon::ContentFaviconDriver::FromWebContents(active_web_contents_);
-  if (favicon_driver_) {
+  if (favicon_driver_)
     favicon_driver_->AddObserver(this);
-  }
 }
 
 void TabFavicon::ResetWebContents(JNIEnv* env) {
@@ -105,9 +104,8 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
   }
 
   SkBitmap favicon = image.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
-  if (favicon.empty()) {
+  if (favicon.empty())
     return;
-  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -121,7 +119,7 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
         env, jobj_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
   }
   if (content::BackForwardTransitionAnimationManager::
-          ShouldAnimateBackForwardTransitions()) {
+          AreBackForwardTransitionsEnabled()) {
     CHECK(active_web_contents_);
     if (static_cast<bool>(
             Java_TabFavicon_shouldUpdateFaviconForNavigationTransitions(

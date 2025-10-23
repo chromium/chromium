@@ -4,34 +4,33 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
-import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/skcolor.mojom";
 
 enum PointerType {
-  kPointerNone = 1,  // 1 << 0
-  kPointerFirstType = kPointerNone,
-  kPointerCoarseType = 2,  // 1 << 1
-  kPointerFineType = 4,  // 1 << 2
+  kPointerNone                              = 1,             // 1 << 0
+  kPointerFirstType                         = kPointerNone,
+  kPointerCoarseType                        = 2,             // 1 << 1
+  kPointerFineType                          = 4              // 1 << 2
 };
 
 enum HoverType {
-  kHoverNone = 1,  // 1 << 0
-  kHoverFirstType = kHoverNone,
-  kHoverHoverType = 2,  // 1 << 1
+  kHoverNone                                 = 1,            // 1 << 0
+  kHoverFirstType                            = kHoverNone,
+  kHoverHoverType                            = 2             // 1 << 1
 };
 
-// For media feature update, indicating the update ability of the output
-// display,
+// For media feature update, indicating the update ability of the output display,
 // once renering is done:
 // Slow - e-ink screens, underpowered devices.
 // Fast - regular computer screen.
 enum OutputDeviceUpdateAbilityType {
   kSlowType,
-  kFastType,
+  kFastType
 };
 
 // There are multiple editing details that are different on Windows than
@@ -53,7 +52,7 @@ enum EditingBehavior {
   kEditingWindowsBehavior,
   kEditingUnixBehavior,
   kEditingAndroidBehavior,
-  kEditingChromeOSBehavior,
+  kEditingChromeOSBehavior
 };
 
 // ImageAnimationPolicy is used for controlling image animation
@@ -63,15 +62,10 @@ enum EditingBehavior {
 enum ImageAnimationPolicy {
   kImageAnimationPolicyAllowed,
   kImageAnimationPolicyAnimateOnce,
-  kImageAnimationPolicyNoAnimation,
+  kImageAnimationPolicyNoAnimation
 };
 
-enum ViewportStyle {
-  kDefault,
-  kMobile,
-  kTelevision,
-  kLast = kTelevision,
-};
+enum ViewportStyle { kDefault, kMobile, kTelevision, kLast = kTelevision };
 
 // Defines the autoplay policy to be used. Should match the class in
 // WebSettings.h.
@@ -327,7 +321,7 @@ struct WebPreferences {
   [EnableIf=is_android]
   bool report_screen_size_in_physical_pixels_quirk;
 
-  // Used by Android_WebView only to support legacy apps that inject script into
+  // Used by Android_WebView only to support legacy apps that inject script int32o
   // a top-level initial empty document and expect it to persist on navigation.
   [EnableIf=is_android]
   bool reuse_global_for_unowned_main_frame;
@@ -360,12 +354,12 @@ struct WebPreferences {
   [EnableIf=is_android]
   bool scroll_top_left_interop_enabled;
 
-  // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   [EnableIf=is_android]
+  // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
 
-  // Long press on links selects text instead of triggering context menu.
   [EnableIf=is_android]
+  // Long press on links selects text instead of triggering context menu.
   bool long_press_link_select_text;
 
   // Disable the Web Authentication (WebAuthn) API.
@@ -517,5 +511,5 @@ struct WebPreferences {
   bool ai_prompt_api_enabled = false;
 
   [EnableIf=is_android]
-  bool should_screenshot_on_mainframe_same_doc_navigation = true;
+  bool increment_local_surface_id_for_mainframe_same_doc_navigation = true;
 };

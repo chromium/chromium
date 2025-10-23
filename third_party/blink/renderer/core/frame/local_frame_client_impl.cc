@@ -132,9 +132,8 @@ Frame* ToCoreFrame(WebFrame* frame) {
 LocalFrame* GetLocalParentFrame(WebLocalFrameImpl* frame) {
   WebFrame* parent = frame->Parent();
   auto* parent_web_local_frame = DynamicTo<WebLocalFrameImpl>(parent);
-  if (!parent_web_local_frame) {
+  if (!parent_web_local_frame)
     return nullptr;
-  }
 
   return parent_web_local_frame->GetFrame();
 }
@@ -227,15 +226,13 @@ void LocalFrameClientImpl::DispatchDidClearWindowObjectInMainWorld(
 }
 
 void LocalFrameClientImpl::DocumentElementAvailable() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidCreateDocumentElement();
-  }
 }
 
 void LocalFrameClientImpl::RunScriptsAtDocumentElementAvailable() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->RunScriptsAtDocumentElementAvailable();
-  }
   // The callback might have deleted the frame, do not use |this|!
 }
 
@@ -286,18 +283,16 @@ createShadowRootWithin(document.body);
 }
 
 void LocalFrameClientImpl::RunScriptsAtDocumentIdle() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->RunScriptsAtDocumentIdle();
-  }
   // The callback might have deleted the frame, do not use |this|!
 }
 
 void LocalFrameClientImpl::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidCreateScriptContext(context, world_id);
-  }
 }
 
 void LocalFrameClientImpl::WillReleaseScriptContext(
@@ -313,15 +308,13 @@ bool LocalFrameClientImpl::AllowScriptExtensions() {
 }
 
 void LocalFrameClientImpl::DidChangeScrollOffset() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidChangeScrollOffset();
-  }
 }
 
 void LocalFrameClientImpl::NotifyCurrentHistoryItemChanged() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->NotifyCurrentHistoryItemChanged();
-  }
 }
 
 void LocalFrameClientImpl::DidUpdateCurrentHistoryItem() {
@@ -330,13 +323,10 @@ void LocalFrameClientImpl::DidUpdateCurrentHistoryItem() {
 
 bool LocalFrameClientImpl::AllowContentInitiatedDataUrlNavigations(
     const KURL& url) {
-  if (RuntimeEnabledFeatures::
-          AllowContentInitiatedDataUrlNavigationsEnabled()) {
+  if (RuntimeEnabledFeatures::AllowContentInitiatedDataUrlNavigationsEnabled())
     return true;
-  }
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     return web_frame_->Client()->AllowContentInitiatedDataUrlNavigations(url);
-  }
   return false;
 }
 
@@ -356,9 +346,8 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   // Alert the client that the frame is being detached. This is the last
   // chance we have to communicate with the client.
   WebLocalFrameClient* client = web_frame_->Client();
-  if (!client) {
+  if (!client)
     return;
-  }
 
   web_frame_->WillDetachParent();
 
@@ -373,15 +362,13 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
 
   // We only notify the browser process when the frame is being detached for
   // removal, not after a swap.
-  if (type == FrameDetachType::kRemove) {
+  if (type == FrameDetachType::kRemove)
     web_frame_->GetFrame()->GetLocalFrameHostRemote().Detach();
-  }
 
   client->FrameDetached(detach_reason);
 
-  if (type == FrameDetachType::kRemove) {
+  if (type == FrameDetachType::kRemove)
     ToCoreFrame(web_frame_)->DetachFromParent();
-  }
 
   // Clear our reference to LocalFrame at the very end, in case the client
   // refers to it.
@@ -411,9 +398,8 @@ std::optional<KURL> LocalFrameClientImpl::DispatchWillSendRequest(
 }
 
 void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidDispatchDOMContentLoadedEvent();
-  }
 }
 
 void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(
@@ -426,9 +412,8 @@ void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(
 }
 
 void LocalFrameClientImpl::DispatchDidHandleOnloadEvents() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidHandleOnloadEvents();
-  }
 }
 
 void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
@@ -473,10 +458,12 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
 #if BUILDFLAG(IS_ANDROID)
         if (web_frame_->View()
                 ->GetWebPreferences()
-                .should_screenshot_on_mainframe_same_doc_navigation) {
+                .increment_local_surface_id_for_mainframe_same_doc_navigation) {
           frame_widget->RequestNewLocalSurfaceId();
-          screenshot_destination = base::UnguessableToken::Create();
-          frame_widget->RequestViewportScreenshot(screenshot_destination);
+          if (RuntimeEnabledFeatures::BackForwardTransitionsEnabled()) {
+            screenshot_destination = base::UnguessableToken::Create();
+            frame_widget->RequestViewportScreenshot(screenshot_destination);
+          }
         }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -557,9 +544,8 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
     // With local to local swap it's possible for the frame to be deleted as a
     // side effect of JS event handlers called in DidCommitNavigation
     // (e.g. unload).
-    if (!web_frame_->Client()) {
+    if (!web_frame_->Client())
       return;
-    }
     if (web_frame_->GetFrame()->IsLocalRoot()) {
       // This update should be sent as soon as loading the new document begins
       // so that the browser and compositor could reset their states. However,
@@ -641,9 +627,8 @@ void LocalFrameClientImpl::BeginNavigation(
         initiator_navigation_state_keep_alive_handle,
     bool is_container_initiated,
     bool has_rel_opener) {
-  if (!web_frame_->Client()) {
+  if (!web_frame_->Client())
     return;
-  }
 
   // |initiator_frame_token| and |initiator_navigation_state_keep_alive_handle|
   // should either be both specified or both null.
@@ -724,9 +709,8 @@ void LocalFrameClientImpl::BeginNavigation(
           ? WebNavigationInfo::ArchiveStatus::Present
           : WebNavigationInfo::ArchiveStatus::Absent;
 
-  if (form) {
+  if (form)
     navigation_info->form = WebFormElement(form);
-  }
 
   if (origin_frame) {
     navigation_info->is_opener_navigation =
@@ -819,9 +803,8 @@ void LocalFrameClientImpl::DidStartLoading() {
 }
 
 void LocalFrameClientImpl::DidStopLoading() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidStopLoading();
-  }
 }
 
 bool LocalFrameClientImpl::NavigateBackForward(
@@ -833,12 +816,10 @@ bool LocalFrameClientImpl::NavigateBackForward(
   DCHECK(web_frame_->Client());
 
   DCHECK(offset);
-  if (offset > webview->HistoryForwardListCount()) {
+  if (offset > webview->HistoryForwardListCount())
     return false;
-  }
-  if (offset < -webview->HistoryBackListCount()) {
+  if (offset < -webview->HistoryBackListCount())
     return false;
-  }
 
   bool has_user_gesture =
       LocalFrame::HasTransientUserActivation(web_frame_->GetFrame());
@@ -848,15 +829,13 @@ bool LocalFrameClientImpl::NavigateBackForward(
 }
 
 void LocalFrameClientImpl::DidDispatchPingLoader(const KURL& url) {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidDispatchPingLoader(url);
-  }
 }
 
 void LocalFrameClientImpl::DidChangePerformanceTiming() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidChangePerformanceTiming();
-  }
 }
 
 void LocalFrameClientImpl::DidObserveUserInteraction(
@@ -871,16 +850,14 @@ void LocalFrameClientImpl::DidObserveUserInteraction(
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidChangeCpuTiming(time);
-  }
 }
 
 void LocalFrameClientImpl::DidObserveLoadingBehavior(
     LoadingBehaviorFlag behavior) {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidObserveLoadingBehavior(behavior);
-  }
 }
 
 void LocalFrameClientImpl::DidObserveJavaScriptFrameworks(
@@ -897,9 +874,8 @@ void LocalFrameClientImpl::DidObserveSubresourceLoad(
 
 void LocalFrameClientImpl::DidObserveNewFeatureUsage(
     const UseCounterFeature& feature) {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidObserveNewFeatureUsage(feature);
-  }
 }
 
 // A new soft navigation was observed.
@@ -912,9 +888,8 @@ void LocalFrameClientImpl::DidObserveSoftNavigation(
 
 void LocalFrameClientImpl::DidObserveLayoutShift(double score,
                                                  bool after_input_or_scroll) {
-  if (WebLocalFrameClient* client = web_frame_->Client()) {
+  if (WebLocalFrameClient* client = web_frame_->Client())
     client->DidObserveLayoutShift(score, after_input_or_scroll);
-  }
 }
 
 void LocalFrameClientImpl::SelectorMatchChanged(
@@ -943,9 +918,8 @@ String LocalFrameClientImpl::UserAgent() {
     return override;
   }
 
-  if (user_agent_.empty()) {
+  if (user_agent_.empty())
     user_agent_ = Platform::Current()->UserAgent();
-  }
   return user_agent_;
 }
 
@@ -964,9 +938,8 @@ std::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
 }
 
 String LocalFrameClientImpl::DoNotTrackValue() {
-  if (web_frame_->View()->GetRendererPreferences().enable_do_not_track) {
+  if (web_frame_->View()->GetRendererPreferences().enable_do_not_track)
     return "1";
-  }
   return String();
 }
 
@@ -996,9 +969,8 @@ WebPluginContainerImpl* LocalFrameClientImpl::CreatePlugin(
     const Vector<String>& param_values,
     const String& mime_type,
     bool load_manually) {
-  if (!web_frame_->Client()) {
+  if (!web_frame_->Client())
     return nullptr;
-  }
 
   WebPluginParams params;
   params.url = url;
@@ -1008,21 +980,18 @@ WebPluginContainerImpl* LocalFrameClientImpl::CreatePlugin(
   params.load_manually = load_manually;
 
   WebPlugin* web_plugin = web_frame_->Client()->CreatePlugin(params);
-  if (!web_plugin) {
+  if (!web_plugin)
     return nullptr;
-  }
 
   // The container takes ownership of the WebPlugin.
   auto* container =
       MakeGarbageCollected<WebPluginContainerImpl>(element, web_plugin);
 
-  if (!web_plugin->Initialize(container)) {
+  if (!web_plugin->Initialize(container))
     return nullptr;
-  }
 
-  if (!element.GetLayoutObject()) {
+  if (!element.GetLayoutObject())
     return nullptr;
-  }
 
   return container;
 }
@@ -1034,9 +1003,8 @@ std::unique_ptr<WebMediaPlayer> LocalFrameClientImpl::CreateWebMediaPlayer(
   LocalFrame* local_frame = html_media_element.LocalFrameForPlayer();
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(local_frame);
 
-  if (!web_frame || !web_frame->Client()) {
+  if (!web_frame || !web_frame->Client())
     return nullptr;
-  }
 
   return CoreInitializer::GetInstance().CreateWebMediaPlayer(
       web_frame->Client(), html_media_element, source, client);
@@ -1049,17 +1017,15 @@ RemotePlaybackClient* LocalFrameClientImpl::CreateRemotePlaybackClient(
 }
 
 void LocalFrameClientImpl::DidChangeName(const String& name) {
-  if (!web_frame_->Client()) {
+  if (!web_frame_->Client())
     return;
-  }
   web_frame_->Client()->DidChangeName(name);
 }
 
 std::unique_ptr<WebServiceWorkerProvider>
 LocalFrameClientImpl::CreateServiceWorkerProvider() {
-  if (!web_frame_->Client()) {
+  if (!web_frame_->Client())
     return nullptr;
-  }
   return web_frame_->Client()->CreateServiceWorkerProvider();
 }
 
@@ -1087,9 +1053,8 @@ KURL LocalFrameClientImpl::OverrideFlashEmbedWithHTML(const KURL& url) {
 }
 
 void LocalFrameClientImpl::NotifyUserActivation() {
-  if (WebAutofillClient* autofill_client = web_frame_->AutofillClient()) {
+  if (WebAutofillClient* autofill_client = web_frame_->AutofillClient())
     autofill_client->UserGestureObserved();
-  }
 }
 
 void LocalFrameClientImpl::AbortClientNavigation(bool for_new_navigation) {
@@ -1152,15 +1117,13 @@ bool LocalFrameClientImpl::HandleCurrentKeyboardEvent() {
 
 void LocalFrameClientImpl::DidChangeSelection(bool is_selection_empty,
                                               blink::SyncCondition force_sync) {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidChangeSelection(is_selection_empty, force_sync);
-  }
 }
 
 void LocalFrameClientImpl::DidChangeContents() {
-  if (web_frame_->Client()) {
+  if (web_frame_->Client())
     web_frame_->Client()->DidChangeContents();
-  }
 }
 
 Frame* LocalFrameClientImpl::FindFrame(const AtomicString& name) const {
