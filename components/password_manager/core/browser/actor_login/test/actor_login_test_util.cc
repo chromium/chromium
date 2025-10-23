@@ -8,6 +8,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "url/origin.h"
 
 namespace actor_login {
 
@@ -17,10 +18,12 @@ using autofill::test::CreateTestFormField;
 using autofill::test::MakeFormRendererId;
 
 Credential CreateTestCredential(const std::u16string& username,
-                                const GURL& url) {
+                                const GURL& url,
+                                const url::Origin& request_origin) {
   Credential credential;
   credential.username = username;
   credential.source_site_or_app = base::UTF8ToUTF16(url.spec());
+  credential.request_origin = request_origin;
   credential.type = CredentialType::kPassword;
   return credential;
 }

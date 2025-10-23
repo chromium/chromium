@@ -7,6 +7,7 @@
 
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 class FormData;
@@ -17,7 +18,8 @@ namespace actor_login {
 // Creates a password`Credential` with the given `username` and `url`.
 // The other fields are set to default values.
 Credential CreateTestCredential(const std::u16string& username,
-                                const GURL& url);
+                                const GURL& url,
+                                const url::Origin& request_origin);
 
 // Creates a `FormData` with two fields: username and password for the given
 // `url`.

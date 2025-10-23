@@ -9,12 +9,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
 
 namespace {
@@ -42,6 +44,17 @@ bool IsLoginForm(const password_manager::PasswordForm& form) {
          !has_focusable_new_password;
 }
 
+bool IsFormOriginSupported(const url::Origin& form_origin,
+                           const url::Origin& main_frame_origin) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginSameSiteIframeSupport)) {
+    return net::registry_controlled_domains::SameDomainOrHost(
+        form_origin, main_frame_origin,
+        net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  }
+  return form_origin.IsSameOriginWith(main_frame_origin);
+}
+
 }  // namespace
 
 ActorLoginFormFinder::ActorLoginFormFinder(
@@ -64,13 +77,9 @@ ActorLoginFormFinder::GetSigninFormManager(const url::Origin& origin) {
   }
 
   std::vector<password_manager::PasswordFormManager*>
-      eligible_login_form_managers = GetEligibleLoginFormManagers();
+      eligible_login_form_managers = GetEligibleLoginFormManagers(origin);
   password_manager::PasswordFormManager* signin_form_manager = nullptr;
   for (const auto& manager : eligible_login_form_managers) {
-    if (!manager->GetDriver()->GetLastCommittedOrigin().IsSameOriginWith(
-            origin)) {
-      continue;
-    }
     // Prefer filling the primary main frame form if one exists, but
     // also prefer more recently-parsed forms.
     if (manager->GetDriver()->IsInPrimaryMainFrame()) {
@@ -87,7 +96,7 @@ ActorLoginFormFinder::GetSigninFormManager(const url::Origin& origin) {
 }
 
 std::vector<password_manager::PasswordFormManager*>
-ActorLoginFormFinder::GetEligibleLoginFormManagers() {
+ActorLoginFormFinder::GetEligibleLoginFormManagers(const url::Origin& origin) {
   std::vector<password_manager::PasswordFormManager*> eligible_form_managers;
   password_manager::PasswordFormCache* form_cache =
       client_->GetPasswordManager()->GetPasswordFormCache();
@@ -97,6 +106,10 @@ ActorLoginFormFinder::GetEligibleLoginFormManagers() {
   for (const auto& manager : form_cache->GetFormManagers()) {
     const password_manager::PasswordForm* parsed_form =
         manager->GetParsedObservedForm();
+    if (!IsFormOriginSupported(manager->GetDriver()->GetLastCommittedOrigin(),
+                               origin)) {
+      continue;
+    }
     if (!parsed_form || !manager->GetDriver() || !IsLoginForm(*parsed_form)) {
       continue;
     }

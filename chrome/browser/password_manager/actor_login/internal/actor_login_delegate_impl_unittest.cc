@@ -34,6 +34,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace actor_login {
 
@@ -234,7 +236,9 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::kActorLogin);
-  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   delegate_->AttemptLogin(credential, false, future.GetCallback());
@@ -248,7 +252,9 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
 TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
-  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
 
   SetUpActorCredentialFillerDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
@@ -263,7 +269,9 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
 TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
-  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
 
   SetUpActorCredentialFillerDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
@@ -308,7 +316,9 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
   delegate_->GetCredentials(future2.GetCallback());
   ASSERT_TRUE(future2.Get().has_value());
 
-  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
 
   // First `AttemptLogin` call.
   base::test::TestFuture<LoginStatusResultOrError> future3;
@@ -324,7 +334,9 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsAndAttemptLogin) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
-  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
 
   SetUpActorCredentialFillerDeps();
 
@@ -345,7 +357,9 @@ TEST_F(ActorLoginDelegateImplTest,
        AttemptLoginLeavesServiceAvailableForSynchronousUse) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
-  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
 
   SetUpActorCredentialFillerDeps();
 

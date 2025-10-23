@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_FORM_FINDER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_FORM_FINDER_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/common/form_data.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -40,10 +42,10 @@ class ActorLoginFormFinder {
   password_manager::PasswordFormManager* GetSigninFormManager(
       const url::Origin& origin);
 
-  // Returns all the `PasswordFormManager`s with a valid parsed login form for
-  // the current page.
+  // Returns all the `PasswordFormManager`s that are allowed for `origin` and
+  // with a valid parsed login form
   std::vector<password_manager::PasswordFormManager*>
-  GetEligibleLoginFormManagers();
+  GetEligibleLoginFormManagers(const url::Origin& origin);
 
  private:
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;

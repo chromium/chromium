@@ -602,6 +602,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Actor login: get credentials signin form exists";
     case STRING_ACTOR_LOGIN_GET_CREDENTIALS_NUM_CREDENTIALS:
       return "Actor login: get credentials number of credentials";
+    case STRING_ACTOR_LOGIN_PRIMARY_MAIN_FRAME_ORIGIN_CHANGED:
+      return "Actor login: primary main frame origin changed";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
