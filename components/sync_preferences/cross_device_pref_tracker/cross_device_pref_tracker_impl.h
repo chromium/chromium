@@ -171,8 +171,12 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
 
   // Removes entries from cross-device storage dictionaries corresponding to
   // devices that are no longer known by `DeviceInfoTracker`. Relies on
-  // `known_device_guids_` being up-to-date.
+  // `active_device_guids_` being up-to-date.
   void GarbageCollectStaleCacheGuids();
+
+  // Returns all devices (local and remote) deemed active. A device is active if
+  // it has not expired, based on its `DeviceInfo::last_updated_timestamp`.
+  std::vector<const syncer::DeviceInfo*> GetActiveDevices() const;
 
   // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until `Shutdown()`.
@@ -207,10 +211,11 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Maps `cross_device_pref_name` -> dictionary value.
   base::flat_map<std::string, base::Value::Dict> cross_device_storage_cache_;
 
-  // Set of Cache GUIDs for which `DeviceInfo` is currently available.
-  // Used to detect when entries become visible due to `DeviceInfo` updates.
-  // Stores copies of the GUID strings for safety.
-  base::flat_set<std::string> known_device_guids_;
+  // Set of Cache GUIDs for devices that have available `DeviceInfo` from the
+  // tracker and are considered active (i.e., not expired). A device is active
+  // if it has synced within the `kDeviceExpirationTimeout` window. Stores
+  // copies of the GUID strings for safety.
+  base::flat_set<std::string> active_device_guids_;
 
   // Observation for changes in `DeviceInfo`.
   base::ScopedObservation<syncer::DeviceInfoTracker,
