@@ -8,8 +8,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -103,16 +106,14 @@ int FakeDatagramSocket::DoSend(const scoped_refptr<net::IOBuffer>& buf,
     return r;
   }
 
-  written_packets_.push_back(std::string());
-  written_packets_.back().assign(buf->data(),
-                                 UNSAFE_TODO(buf->data() + buf_len));
+  auto packet = buf->first(base::checked_cast<size_t>(buf_len));
+  written_packets_.emplace_back(base::as_string_view(packet));
 
   if (peer_socket_.get()) {
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &FakeDatagramSocket::AppendInputPacket, peer_socket_,
-            std::string(buf->data(), UNSAFE_TODO(buf->data() + buf_len))));
+        base::BindOnce(&FakeDatagramSocket::AppendInputPacket, peer_socket_,
+                       std::string(base::as_string_view(packet))));
   }
 
   return buf_len;
@@ -120,12 +121,12 @@ int FakeDatagramSocket::DoSend(const scoped_refptr<net::IOBuffer>& buf,
 
 int FakeDatagramSocket::CopyReadData(const scoped_refptr<net::IOBuffer>& buf,
                                      int buf_len) {
-  int size =
-      std::min(buf_len, static_cast<int>(input_packets_[input_pos_].size()));
-  UNSAFE_TODO(
-      memcpy(buf->data(), &(*input_packets_[input_pos_].begin()), size));
+  const size_t read_size = std::min(base::checked_cast<size_t>(buf_len),
+                                    input_packets_[input_pos_].size());
+  buf->span().copy_prefix_from(
+      base::as_byte_span(input_packets_[input_pos_]).first(read_size));
   ++input_pos_;
-  return size;
+  return read_size;
 }
 
 FakeDatagramChannelFactory::FakeDatagramChannelFactory()
