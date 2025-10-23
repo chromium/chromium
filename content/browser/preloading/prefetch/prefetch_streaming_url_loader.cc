@@ -70,9 +70,18 @@ void PrefetchStreamingURLLoader::Start(
       prefetch_url_loader_client_receiver_.BindNewPipeAndPassRemote(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation));
-  prefetch_url_loader_client_receiver_.set_disconnect_handler(base::BindOnce(
-      &PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo,
-      weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
+    // We call `DisconnectPrefetchURLLoaderMojo()` in `OnComplete()`, so
+    // disconnection reaching this handler is always unexpected disconnection
+    // before `OnComplete()` and should be considered as a failure.
+    prefetch_url_loader_client_receiver_.set_disconnect_handler(base::BindOnce(
+        &PrefetchStreamingURLLoader::OnComplete, weak_ptr_factory_.GetWeakPtr(),
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED)));
+  } else {
+    prefetch_url_loader_client_receiver_.set_disconnect_handler(base::BindOnce(
+        &PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 
   if (!timeout_duration.is_zero()) {
     timeout_timer_.Start(

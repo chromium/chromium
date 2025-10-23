@@ -6811,26 +6811,31 @@ std::vector<Event> CalculateOutputEventSequence(
 
         // Otherwise, it's unexpected disconnection and should be considered as
         // a failure and the observer should be notified of the failure.
-        prefetch_completed = true;
+        if (!base::FeatureList::IsEnabled(
+                features::kPrefetchGracefulNotification)) {
+          prefetch_completed = true;
 
-        if (!during_redirect_eligibility_check) {
-          // TODO(https://crbug.com/400761083): However, currently no
-          // notifications are made if not during redirect eligibility check.
-          // Fix this.
+          if (!during_redirect_eligibility_check) {
+            // TODO(https://crbug.com/400761083): However, currently no
+            // notifications are made if not during redirect eligibility check.
+            // Fix this.
+            break;
+          }
+
+          if (!determined_head_issued) {
+            determined_head_issued = true;
+            output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
+          }
+
+          // TODO(https://crbug.com/400761083): Disconnection during redirect
+          // eligibility check should be handled in the same way as
+          // `kPrefetchURLLoaderOnCompleteFailure` case below (because it should
+          // be handled as a general error), but currently we don't issue
+          // `PrefetchCompletedOrFailed()` observer call. Fix this.
           break;
         }
 
-        if (!determined_head_issued) {
-          determined_head_issued = true;
-          output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
-        }
-
-        // TODO(https://crbug.com/400761083): Disconnection during redirect
-        // eligibility check should be handled in the same way as
-        // `kPrefetchURLLoaderOnCompleteFailure` case below (because it should
-        // be handled as a general error), but currently we don't issue
-        // `PrefetchCompletedOrFailed()` observer call. Fix this.
-        break;
+        [[fallthrough]];
 
       case Event::kPrefetchURLLoaderOnCompleteFailure:
         CHECK(!prefetch_completed);
