@@ -5567,6 +5567,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-daisy-chain-new-tabs",
+    "owners": [ "bryantchandler@chromium.org", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-default-to-last-active-conversation",
     "owners": [ "sanaakbani@google.com" ],
     "expiry_milestone": 150

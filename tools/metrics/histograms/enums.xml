@@ -9700,6 +9700,7 @@ from previous Chrome versions.
   <int value="-1624966923" label="TopLevelTpcdSupportSettings:enabled"/>
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
+  <int value="-1624381282" label="GlicDaisyChainNewTabs:enabled"/>
   <int value="-1624107722" label="CopyImageFilenameToClipboard:enabled"/>
   <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
@@ -16258,6 +16259,7 @@ from previous Chrome versions.
   <int value="694985670" label="OmniboxUIExperimentNarrowDropdown:disabled"/>
   <int value="695385040" label="enable-external-drive-rename"/>
   <int value="695425272" label="ConvertTrackpadEventsToMouse:disabled"/>
+  <int value="695816413" label="GlicDaisyChainNewTabs:disabled"/>
   <int value="696261973" label="GaiaActionButtons:enabled"/>
   <int value="696600628" label="VibrateRequiresUserGesture:disabled"/>
   <int value="696786796" label="EnableKeyboardRewriterFix:disabled"/>

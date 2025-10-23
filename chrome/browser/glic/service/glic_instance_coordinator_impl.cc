@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -69,6 +70,12 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     GlicEnabling* enabling,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : profile_(profile), contextual_cueing_service_(contextual_cueing_service) {
+  if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs)) {
+    tab_creation_observer_ = std::make_unique<GlicTabCreationObserver>(
+        profile_,
+        base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabCreated,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
 }
 
@@ -439,4 +446,29 @@ void GlicInstanceCoordinatorImpl::OnDetachRequested(GlicInstance* instance,
                                                     tabs::TabInterface* tab) {
   CloseFloaty();
 }
+
+void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
+                                               tabs::TabInterface& new_tab) {
+  auto* tab_features = old_tab.GetTabFeatures();
+  if (!tab_features) {
+    return;
+  }
+
+  auto* registry = tab_features->side_panel_registry();
+  if (!registry) {
+    return;
+  }
+
+  const auto& active_entry =
+      registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent);
+  if (!active_entry.has_value() ||
+      active_entry.value()->key().id() != SidePanelEntry::Id::kGlic) {
+    return;
+  }
+
+  if (auto* instance = GetInstanceImplForTab(&old_tab)) {
+    instance->Show(ShowOptions::ForSidePanel(new_tab));
+  }
+}
+
 }  // namespace glic

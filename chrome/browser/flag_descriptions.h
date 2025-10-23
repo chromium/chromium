@@ -1402,6 +1402,12 @@ inline constexpr char kGlicDefaultToLastActiveConversationDescription[] =
     "Enables the last active conversation as the default conversation when "
     "opening a new Glic side panel instance.";
 
+inline constexpr char kGlicDaisyChainNewTabsName[] =
+    "Glic Daisy chain new tabs";
+inline constexpr char kGlicDaisyChainNewTabsDescription[] =
+    "Daisy chains new tabs if the active tab when the new tab was create has an"
+    " open glic side panel";
+
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";
 inline constexpr char kContextualSearchWithCredentialsForDebugDescription[] =

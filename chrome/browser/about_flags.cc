@@ -11818,6 +11818,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-capture-region", flag_descriptions::kGlicCaptureRegionName,
      flag_descriptions::kGlicCaptureRegionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kGlicCaptureRegion)},
+    {"glic-daisy-chain-new-tabs", flag_descriptions::kGlicDaisyChainNewTabsName,
+     flag_descriptions::kGlicDaisyChainNewTabsDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicDaisyChainNewTabs)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

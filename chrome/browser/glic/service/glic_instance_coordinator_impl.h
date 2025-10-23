@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_tab_creation_observer.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -131,6 +132,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   }
 
  private:
+  void OnTabCreated(tabs::TabInterface& old_tab, tabs::TabInterface& new_tab);
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id);
   GlicInstanceImpl* GetInstanceImplForTab(tabs::TabInterface* tab);
@@ -166,6 +168,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       active_instance_changed_callback_list_;
 
   bool warming_enabled_ = true;
+
+  std::unique_ptr<GlicTabCreationObserver> tab_creation_observer_;
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
