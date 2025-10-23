@@ -8,7 +8,6 @@
 
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 
 namespace gpu {
 
