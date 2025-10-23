@@ -54,7 +54,7 @@ ${this.ntpRealboxNextEnabled ? html`
     <div class="dropdownContainer">
       <contextual-entrypoint-and-carousel id="context"
           part="contextual-entrypoint-and-carousel"
-          exportparts="composebox-entrypoint"
+          exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
           .tabSuggestions=${this.tabSuggestions_}
           entrypoint-name="Realbox"
           @add-tab-context="${this.addTabContext_}"

@@ -401,6 +401,10 @@ cr-searchbox-icon {
   padding-top: unset;
 }
 
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 24px;
+}
+
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
   z-index: 100;
 }
