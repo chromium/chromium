@@ -2303,7 +2303,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4811918461974803225">Google Pay-Logo, Affirm-Logo</translation>
 <translation id="4813512666221746211">Netzwerkfehler</translation>
 <translation id="4814114628197290459">IBAN löschen</translation>
-<translation id="4816341377198595747">„In Lesezeichen suchen“ – aktiviere diese Schaltfläche, wenn du in den Lesezeichen suchen möchtest</translation>
+<translation id="4816341377198595747">„In Lesezeichen suchen“ – aktiviere diesen Button, wenn du in den Lesezeichen suchen möchtest</translation>
 <translation id="4816492930507672669">An Seite anpassen</translation>
 <translation id="4819347708020428563">Anmerkungen in der Standardansicht bearbeiten?</translation>
 <translation id="4822493756793346865">Normalpreise basieren auf Daten von Onlineshops der letzten 90 Tage.</translation>
@@ -2801,7 +2801,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5619721953841297650">Voreinstellung</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="5629630648637658800">Fehler beim Laden der Richtlinieneinstellungen</translation>
-<translation id="5630981295558454585">„Google Fragen zu dieser Seite stellen“ – aktiviere diese Schaltfläche, wenn du Google Fragen zu dieser Seite stellen möchtest</translation>
+<translation id="5630981295558454585">„Google Fragen zu dieser Seite stellen“ – aktiviere diesen Button, wenn du Google Fragen zu dieser Seite stellen möchtest</translation>
 <translation id="5631439013527180824">Ungültiges Management-Token für das Gerät</translation>
 <translation id="5632485077360054581">So gehts</translation>
 <translation id="563324245173044180">Betrügerische Inhalte blockiert.</translation>
@@ -3711,7 +3711,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7139892792842608322">Hauptfach</translation>
 <translation id="7140087718106278457">Die Liste mit Zahlungsmethoden ist geschlossen.</translation>
 <translation id="714064300541049402">Seite 2 – X-Verschiebung des Bilds</translation>
-<translation id="7140922144008419614">„Tabs suchen“ – aktiviere diese Schaltfläche, wenn du nach Tabs suchen möchtest</translation>
+<translation id="7140922144008419614">„Tabs suchen“ – aktiviere diesen Button, wenn du nach Tabs suchen möchtest</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -4344,7 +4344,7 @@ Weitere Details:
 <translation id="8194412401381329820">Du kannst diese Seite auf diesem nicht verwalteten Gerät nicht in einem verwalteten Konto verwenden. Alle verwalteten Konten werden gesperrt, wenn du diese Seite nutzt. Ausgenommen sind Konten, die von derselben Entität wie dieses Gerät verwaltet werden (verknüpfte Konten).</translation>
 <translation id="8194797478851900357">&amp;Verschieben rückgängig machen</translation>
 <translation id="8194956568907463262">Shooterspiele</translation>
-<translation id="8198379961710069585">„Suchverlauf“ – aktiviere diese Schaltfläche, wenn du im Verlauf suchen möchtest</translation>
+<translation id="8198379961710069585">„Suchverlauf“ – aktiviere diesen Button, wenn du im Verlauf suchen möchtest</translation>
 <translation id="8199437620497683918">Optische Disk (glänzend)</translation>
 <translation id="8199730148066603000">Vorschau von URLs ohne HTTPS sind nicht zulässig.</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
@@ -4976,7 +4976,7 @@ Weitere Details:
 <translation id="950926967802086924">Passkey • Google Passwortmanager</translation>
 <translation id="955429569736351433">VR-Berechtigung gewährt</translation>
 <translation id="955627189349169688">Du kannst diese Richtlinie in den <ph name="BEGIN_LINK" />Einstellungen für die Chrome-Synchronisierung<ph name="END_LINK" /> deaktivieren.</translation>
-<translation id="95676157383774931">Schaltfläche für den „Google AI“-Modus drücken, um den „Google AI“-Modus zu fragen</translation>
+<translation id="95676157383774931">Button für den „Google AI“-Modus drücken, um den „Google AI“-Modus zu fragen</translation>
 <translation id="95721182352849470">Gelb 2</translation>
 <translation id="961663415146723894">Bindung unten</translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>

@@ -1278,7 +1278,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> Tabs geschlossen</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiodateien, 1 Audiodatei in der Liste}other{Audiodateien, # Audiodateien in der Liste}}</translation>
 <translation id="685850645784703949">Discover von Google – aus</translation>
-<translation id="6861722405755529743">Overflow-Schaltfläche für die Lesezeichenleiste</translation>
+<translation id="6861722405755529743">Overflow-Button für die Lesezeichenleiste</translation>
 <translation id="6864459304226931083">Bild herunterladen</translation>
 <translation id="686490460830618322">App-Filtertabelle</translation>
 <translation id="6865313869410766144">Autofill-Formulardaten</translation>
@@ -1484,7 +1484,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7686086654630106285">Weitere Informationen zu Werbung, die von Websites vorgeschlagen wird</translation>
 <translation id="7690596512217303514">Chrome konnte auf deinem Gerät nicht geöffnet werden. Lade das aktuelle Chrome-Update aus deinem App-Shop herunter, um das Problem zu beheben.</translation>
 <translation id="7691043218961417207">Inhalte, denen du folgen kannst</translation>
-<translation id="7692761875510935111">Schnell im Browser öffnen. Zum Ändern Schaltfläche gedrückt halten.</translation>
+<translation id="7692761875510935111">Schnell im Browser öffnen. Zum Ändern Button gedrückt halten.</translation>
 <translation id="7697383401610880082">Ziehpunkt</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
 <translation id="7702420606070050505">Ansicht mit den letzten Aktivitäten am unteren Rand vollständig geöffnet</translation>

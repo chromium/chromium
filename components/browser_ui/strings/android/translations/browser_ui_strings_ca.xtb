@@ -402,7 +402,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5617702678271228680">Full inferior de les targetes de la pàgina Pestanya nova</translation>
 <translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5649053991847567735">Baixades automàtiques</translation>
-<translation id="5668404140385795438">Ignora la sol·licitud d'un lloc web per evitar que s'apropi la imatge</translation>
+<translation id="5668404140385795438">Ignora la sol·licitud d'un lloc web per evitar que s'apropi el zoom</translation>
 <translation id="5668843533782548925">Els llocs web són més lents, però més segurs</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
 <translation id="5689516760719285838">Ubicació</translation>
@@ -683,7 +683,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8889294078294184559">Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment</translation>
 <translation id="8899807382908246773">Anuncis intrusius</translation>
-<translation id="8903921497873541725">Amplia</translation>
+<translation id="8903921497873541725">Amplia el zoom</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8926666909099850184">L'NFC està desactivada en aquest dispositiu. Activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>

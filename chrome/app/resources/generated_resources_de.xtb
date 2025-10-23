@@ -169,7 +169,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1110155001042129815">Warten</translation>
 <translation id="1110965959145884739">Wähle aus, welche Sprachen auf diesem Gerät installiert werden sollen. Sprachendateien werden von Nutzern gemeinsam verwendet, um Speicherplatz zu sparen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111932478203988717">Dein Kind kann sich mit dieser PIN auf seinem Gerät anmelden</translation>
-<translation id="1112227834592480032">Wähle die Google Lens-Schaltfläche aus, klicke und ziehe den Mauszeiger über ein Problem</translation>
+<translation id="1112227834592480032">Wähle den Google Lens-Button aus, klicke und ziehe den Mauszeiger über ein Problem</translation>
 <translation id="1112420131909513020">Tab im Hintergrund verwendet Bluetooth</translation>
 <translation id="1112998165730922436">Streamen pausiert</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -1189,7 +1189,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kann <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nicht mehr verwenden</translation>
 <translation id="1812284620455788548">„<ph name="TAB_NAME" />“ wird gestreamt</translation>
 <translation id="1813278315230285598">Dienste</translation>
-<translation id="1813828404076816564">Wähle die Feedback-Schaltfläche aus, um Feedback zur Funktion „Geteilte Tabgruppen“ zu senden</translation>
+<translation id="1813828404076816564">Wähle den Feedback-Button aus, um Feedback zur Funktion „Geteilte Tabgruppen“ zu senden</translation>
 <translation id="18139523105317219">Name der EDI-Partei</translation>
 <translation id="1815083418640426271">Als unformatierten Text einfügen</translation>
 <translation id="1815097521077272760">Du wurdest eingeladen, die Tastatursteuerung für dieses Spiel auszuprobieren.</translation>
