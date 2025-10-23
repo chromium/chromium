@@ -318,6 +318,120 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintIn{VisibleMode}"
+    units="ms" expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the latency from the initiation of a visible mode change to the
+    first paint of the button in the new {VisibleMode} mode, i.e. the duration
+    from Reload icon to Stop icon or from Stop icon to Reload icon.
+
+    If there are multiple mode changes before the first paint, the time origin
+    starts from the last mode change.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="VisibleMode">
+    <variant name="Reload" summary="Reload"/>
+    <variant name="Stop" summary="Stop"/>
+  </token>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.InputCount"
+    enum="ReloadButtonInputType" expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Counts the number of times the ReloadButton is activated, sliced by input
+    type.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.InputToNextPaint{InputType}"
+    units="ms" expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the latency from a {InputType} input event to the next paint of the
+    button.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="InputType">
+    <variant name=".KeyPress" summary="KeyPress"/>
+    <variant name=".MouseRelease" summary="MouseRelease"/>
+  </token>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.InputToReload{InputType}" units="ms"
+    expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the latency from a {InputType} input event to the completion of the
+    browser's reload command execution.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="InputType">
+    <variant name=".KeyPress" summary="KeyPress"/>
+    <variant name=".MouseRelease" summary="MouseRelease"/>
+  </token>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.InputToStop{InputType}" units="ms"
+    expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the latency from a {InputType} input event to the completion of the
+    browser's stop command execution.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="InputType">
+    <variant name=".KeyPress" summary="KeyPress"/>
+    <variant name=".MouseRelease" summary="MouseRelease"/>
+  </token>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.MouseHoverToNextPaint" units="ms"
+    expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from a mouseenter event on the ReloadButton to the
+    completion of its immediate visual update (e.g., painted in hovered state).
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.MousePressToNextPaint" units="ms"
+    expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from a mousedown event on the ReloadButton to the
+    completion of its immediate visual update (e.g., painted in pressed state).
+    If there are multiple mouse presses before the visual update, the time
+    origin starts from the last mouse press.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram
     name="InitialWebUI.Startup.ReloadButton.FirstContentfulPaint{StartupTemperature}"
     units="ms" expires_after="2026-04-30">
   <owner>mych@chromium.org</owner>

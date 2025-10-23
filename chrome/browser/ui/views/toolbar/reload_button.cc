@@ -16,7 +16,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
+#include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,6 +35,21 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+WaapUIMetricsRecorder::ReloadButtonMode ToRecorderButtonMode(
+    ReloadButton::Mode mode) {
+  switch (mode) {
+    case ReloadButton::Mode::kReload:
+      return WaapUIMetricsRecorder::ReloadButtonMode::kReload;
+    case ReloadButton::Mode::kStop:
+      return WaapUIMetricsRecorder::ReloadButtonMode::kStop;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 // ReloadButton ---------------------------------------------------------------
 
 ReloadButton::ReloadButton(Profile* profile, CommandUpdater* command_updater)
@@ -42,7 +57,7 @@ ReloadButton::ReloadButton(Profile* profile, CommandUpdater* command_updater)
                                         base::Unretained(this)),
                     CreateMenuModel(),
                     nullptr),
-      profile_(profile),
+      metrics_recorder_(std::make_unique<WaapUIMetricsRecorder>(profile)),
       command_updater_(command_updater),
       reload_icon_(vector_icons::kReloadChromeRefreshIcon),
       reload_touch_icon_(kReloadTouchIcon),
@@ -122,28 +137,35 @@ void ReloadButton::SetMenuEnabled(bool is_menu_enabled) {
   UpdateCachedTooltipText();
 }
 
+void ReloadButton::OnMouseEntered(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMouseEntered(event.time_stamp());
+  ToolbarButton::OnMouseEntered(event);
+}
+
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMouseExited(event.time_stamp());
   ToolbarButton::OnMouseExited(event);
   if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, true);
   }
 }
 
+bool ReloadButton::OnMousePressed(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMousePressed(event.time_stamp());
+  return ToolbarButton::OnMousePressed(event);
+}
+
+void ReloadButton::OnMouseReleased(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMouseReleased(event.time_stamp());
+  ToolbarButton::OnMouseReleased(event);
+}
+
 void ReloadButton::PaintButtonContents(gfx::Canvas* canvas) {
-  // The flag indicates whether the first paint among all instances of the
-  // reload button has been recorded or not. It should only be flagged once
-  // throughout the life of the application.
-  static bool is_first_paint_recorded = false;
   Button::PaintButtonContents(canvas);
 
-  if (!is_first_paint_recorded && profile_) {
-    is_first_paint_recorded = true;
-    if (auto* waap_service = WaapUIMetricsService::Get(profile_)) {
-      auto now = base::TimeTicks::Now();
-      waap_service->OnFirstPaint(now);
-      waap_service->OnFirstContentfulPaint(now);
-    }
-  }
+  auto now = base::TimeTicks::Now();
+  metrics_recorder_->OnPaint(ToRecorderButtonMode(visible_mode_), GetState(),
+                             now);
 }
 
 void ReloadButton::UpdateCachedTooltipText() {
@@ -196,6 +218,9 @@ std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
 }
 
 void ReloadButton::SetVisibleMode(Mode mode) {
+  metrics_recorder_->OnChangeVisibleMode(ToRecorderButtonMode(visible_mode_),
+                                         ToRecorderButtonMode(mode),
+                                         base::TimeTicks::Now());
   visible_mode_ = mode;
   switch (mode) {
     case Mode::kReload:
@@ -221,10 +246,14 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
 
   ClearPendingMenu();
 
+  metrics_recorder_->OnButtonPressedStart(event,
+                                          ToRecorderButtonMode(visible_mode_));
+
   if (visible_mode_ == Mode::kStop) {
     if (command_updater_) {
       command_updater_->ExecuteCommandWithDisposition(
           IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
+      metrics_recorder_->DidExecuteStopCommand(base::TimeTicks::Now());
     }
     // The user has clicked, so we can feel free to update the button, even if
     // the mouse is still hovering.
@@ -254,6 +283,7 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
                               &ReloadButton::OnDoubleClickTimer);
 
     ExecuteBrowserCommand(command, flags);
+    metrics_recorder_->DidExecuteReloadCommand(base::TimeTicks::Now());
     ++testing_reload_count_;
   }
 }

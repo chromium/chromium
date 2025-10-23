@@ -18,6 +18,8 @@
 
 class CommandUpdater;
 class Profile;
+class WaapUIMetricsRecorder;
+class WaapUIMetricsRecorder;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -45,7 +47,10 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
                              const gfx::VectorIcon& touch_icon);
 
   // ToolbarButton:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
   bool ShouldShowMenu() override;
   void ShowDropDownMenu(ui::mojom::MenuSourceType source_type) override;
 
@@ -70,7 +75,7 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  friend class ReloadButtonTest;
+  friend class ReloadButtonTestBase;
   FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipText);
   FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipTextAccessibility);
 
@@ -91,8 +96,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // Timer to delay switching between reload and stop states.
   base::OneShotTimer mode_switch_timer_;
 
-  // This may be null.
-  const raw_ptr<Profile> profile_;
+  // This can't be null. But it may not record anything if the feature is
+  // disabled or if profile is missing.
+  const std::unique_ptr<WaapUIMetricsRecorder> metrics_recorder_;
 
   // This may be NULL when testing.
   raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;

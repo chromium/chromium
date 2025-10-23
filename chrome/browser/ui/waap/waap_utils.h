@@ -9,6 +9,12 @@
 
 // Returns true if the given URL is the initial WebUI scheme.
 // This is only relevant on non-Android platforms.
+// TODO(crbug.com/448794588): Some callers of this function assume that
+// `WaapUIMetricsService` is available when this returns true. This
+// assumption is no longer valid as the service is now gated by
+// features::kInitialWebUIMetrics. Introduce a new helper function,
+// e.g., ShouldLogMetricsForInitialWebUI(), that checks
+// features::kInitialWebUIMetrics and update those callers.
 bool IsForInitialWebUI(const GURL& url);
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_

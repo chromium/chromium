@@ -124,6 +124,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h:PinInfoBarUserInteraction) -->
 
+<!-- LINT.IfChange(ReloadButtonInputType) -->
+
+<enum name="ReloadButtonInputType">
+  <int value="0" label="MouseRelease"/>
+  <int value="1" label="KeyPress"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_ui_metrics_recorder.h:ReloadButtonInputType) -->
+
 <!-- LINT.IfChange(RenderViewContextMenuItem) -->
 
 <enum name="RenderViewContextMenuItem">

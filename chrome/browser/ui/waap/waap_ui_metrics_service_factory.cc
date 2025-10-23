@@ -24,8 +24,9 @@ WaapUIMetricsService* WaapUIMetricsServiceFactory::GetForProfile(
 WaapUIMetricsServiceFactory* WaapUIMetricsServiceFactory::GetInstance() {
   static base::NoDestructor<WaapUIMetricsServiceFactory> instance;
 
-  return base::FeatureList::IsEnabled(features::kInitialWebUI) ? instance.get()
-                                                               : nullptr;
+  return base::FeatureList::IsEnabled(features::kInitialWebUIMetrics)
+             ? instance.get()
+             : nullptr;
 }
 
 WaapUIMetricsServiceFactory::WaapUIMetricsServiceFactory()

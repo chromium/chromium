@@ -358,6 +358,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/waap",
       "//chrome/common:buildflags",
       "//chrome/test:test_support",
       "//components/keyed_service/core",
