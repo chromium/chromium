@@ -1952,6 +1952,11 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     // least one EffectNode that was inducing a render surface.
     layers.set_needs_update_draw_properties();
   }
+  // Set this last, making sure renderer side state isn't overwritten by other
+  // updates. As this is a transient property, we should set but not clear it.
+  if (update->full_tree_damaged) {
+    property_trees.set_full_tree_damaged(true);
+  }
 
   // Safe down-cast: AnimationHost is the only subclass of MutatorHost.
   auto* animation_host = static_cast<cc::AnimationHost*>(layers.mutator_host());
