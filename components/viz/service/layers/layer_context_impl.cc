@@ -1974,9 +1974,9 @@ void LayerContextImpl::DoDrawInternal(
     const BeginFrameArgs& begin_frame_args,
     base::TimeTicks start_update_display_tree) {
   TRACE_EVENT0("viz", "LayerContextImpl::DoDrawInternal");
-
-  // Client should not have called UpdateDisplayTree if CanDraw() is false.
-  CHECK(host_impl_->CanDraw());
+  if (!host_impl_->CanDraw()) {
+    return;
+  }
 
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
@@ -1988,20 +1988,10 @@ void LayerContextImpl::DoDrawInternal(
   frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
   frame.origin_begin_main_frame_args = begin_frame_args;
   stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
-
-  // |PrepareToDraw| is expected to succeed here. Adding a check to ensure
-  // that is happening.
-  auto draw_result = host_impl_->PrepareToDraw(&frame);
-  CHECK_EQ(draw_result, cc::DrawResult::kSuccess);
-
+  host_impl_->PrepareToDraw(&frame);
   stage_breakdown.start_draw_layers = base::TimeTicks::Now();
   frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
-
-  // |DrawLayers| is expected to succeed. Adding a check to ensure that
-  // is happening.
-  std::optional<cc::SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
-  CHECK(submit_info.has_value());
-
+  host_impl_->DrawLayers(&frame);
   host_impl_->DidDrawAllLayers(frame);
   host_impl_->DidFinishImplFrame(begin_frame_args);
 }
