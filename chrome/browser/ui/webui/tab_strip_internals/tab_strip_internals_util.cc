@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -122,14 +123,13 @@ mojom::NodeIdPtr MakeNodeId(const std::string& id, mojom::NodeId::Type type) {
 }
 
 mojom::NodePtr BuildTabCollectionTree(const TabStripModel* model) {
-  if (!model || model->empty()) {
-    return mojom::Node::New();
+  CHECK(model);
+  if (model->empty()) {
+    return nullptr;
   }
 
   auto* root_collection = GetRootCollectionForTab(model->GetTabAtIndex(0));
-  if (!root_collection) {
-    return mojom::Node::New();
-  }
+  CHECK(root_collection);
 
   std::unordered_map<const tabs::TabCollection*, mojom::Node*> map_collection;
 
@@ -184,7 +184,8 @@ mojom::NodePtr BuildTabCollectionTree(const TabStripModel* model) {
 }
 
 mojom::SelectionModelPtr BuildSelectionModel(const TabStripModel* model) {
-  if (!model || model->empty()) {
+  CHECK(model);
+  if (model->empty()) {
     return mojom::SelectionModel::New();
   }
 

@@ -48,8 +48,11 @@ struct NodeId {
 
 // Represents the TabStripModel for a single window.
 struct TabStripModel {
-  // Root of the TabStripModel is always a TabStripCollection.
-  Node root;
+  // Root node of the TabStripModel, which is always a TabStripCollection.
+  // It can be null when TabStripModel is empty.
+  // This can occur, for example, when a new browser window is created
+  // with no tabs yet, or when an existing window is being torn down.
+  Node? root;
 };
 
 // Represents a node in the TabStripModel.
@@ -126,8 +129,8 @@ struct SplitTabVisualData {
 
 // Details about selected tabs.
 struct SelectionModel {
-  int32 active_index;
-  int32 anchor_index;
+  int32 active_index = -1;
+  int32 anchor_index = -1;
   array<int32> selected_indices;
 };
 

@@ -5397,6 +5397,13 @@ static_library("ui") {
       "//chrome/browser/ui/webui/tab_strip_internals",
       "//chrome/browser/ui/webui/tab_strip_internals:impl",
     ]
+
+    # TODO(crbug.com/427204855): Remove this circular include once
+    # "chrome/browser/ui/browser.h" and
+    # "chrome/browser/ui/browser_list.h"
+    # are fully componentized.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
 }
 

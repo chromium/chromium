@@ -15,12 +15,21 @@
 TabStripInternalsPageHandler::TabStripInternalsPageHandler(
     mojo::PendingReceiver<tab_strip_internals::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_strip_internals::mojom::Page> page)
-    : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
+    : receiver_(this, std::move(receiver)), page_(std::move(page)) {
+  observer_ = std::make_unique<TabStripInternalsObserver>(
+      base::BindRepeating(&TabStripInternalsPageHandler::NotifyTabStripUpdated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 TabStripInternalsPageHandler::~TabStripInternalsPageHandler() = default;
 
 void TabStripInternalsPageHandler::GetTabStripData(
     GetTabStripDataCallback callback) {
+  std::move(callback).Run(BuildSnapshot());
+}
+
+tab_strip_internals::mojom::ContainerPtr
+TabStripInternalsPageHandler::BuildSnapshot() {
   auto data = tab_strip_internals::mojom::Container::New();
   data->tabstrip_tree = tab_strip_internals::mojom::TabStripTree::New();
   // TODO (crbug.com/427204855): Add tab restore and session restore data.
@@ -43,17 +52,14 @@ void TabStripInternalsPageHandler::GetTabStripData(
     data->tabstrip_tree->windows.push_back(std::move(window_node));
   }
 
-  // TODO (crbug.com/427204855): Inherit from TabStripModelObserver,
-  // BrowserListObserver, and TabRestoreServiceObserver and implement required
-  // methods to listen to and broadcast live-updates to the webui.
-  std::move(callback).Run(std::move(data));
+  // TODO (crbug.com/427204855): Inherit from TabRestoreServiceObserver and
+  // implement required methods to listen to and broadcast live-updates to the
+  // webui.
+  return data;
 }
 
-// TODO (crbug.com/427204855): Invoke this method from TabStrip observer
-// methods.
-void TabStripInternalsPageHandler::NotifyTabStripUpdated(
-    tab_strip_internals::mojom::ContainerPtr data) {
+void TabStripInternalsPageHandler::NotifyTabStripUpdated() {
   if (page_) {
-    page_->OnTabStripUpdated(std::move(data));
+    page_->OnTabStripUpdated(BuildSnapshot());
   }
 }

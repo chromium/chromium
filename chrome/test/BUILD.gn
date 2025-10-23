@@ -5958,6 +5958,10 @@ if (!is_android) {
       ]
     }
 
+    if (enable_session_service) {
+      deps += [ "//chrome/browser/ui/webui/tab_strip_internals:browser_tests" ]
+    }
+
     if (enable_spellcheck) {
       sources +=
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]

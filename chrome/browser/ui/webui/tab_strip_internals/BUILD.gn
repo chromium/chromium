@@ -10,12 +10,15 @@ assert(enable_session_service)
 source_set("tab_strip_internals") {
   sources = [
     "tab_strip_internals_handler.h",
+    "tab_strip_internals_observer.h",
     "tab_strip_internals_ui.h",
     "tab_strip_internals_util.h",
   ]
 
   deps = [
     ":mojo_bindings",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common",
     "//content/public/browser",
     "//ui/webui",
@@ -25,9 +28,12 @@ source_set("tab_strip_internals") {
 source_set("impl") {
   sources = [
     "tab_strip_internals_handler.cc",
+    "tab_strip_internals_observer.cc",
     "tab_strip_internals_ui.cc",
     "tab_strip_internals_util.cc",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":tab_strip_internals",
@@ -54,4 +60,24 @@ mojom("mojo_bindings") {
   ]
 
   webui_module_path = "/"
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_strip_internals_observer_browsertest.cc" ]
+
+  deps = [
+    ":tab_strip_internals",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support_ui",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//url",
+  ]
 }
