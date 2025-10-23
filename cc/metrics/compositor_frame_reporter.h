@@ -30,6 +30,7 @@
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_v4_processor.h"
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -55,6 +56,7 @@ struct GlobalMetricsTrackers {
   RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*
       scroll_jank_dropped_frame_tracker = nullptr;
   RAW_PTR_EXCLUSION ScrollJankUkmReporter* scroll_jank_ukm_reporter = nullptr;
+  RAW_PTR_EXCLUSION ScrollJankV4Processor* scroll_jank_v4_processor = nullptr;
   RAW_PTR_EXCLUSION FrameSorter* frame_sorter = nullptr;
 };
 

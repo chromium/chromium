@@ -92,22 +92,13 @@ void ScrollJankDroppedFrameTracker::EmitPerWindowHistogramsAndResetCounters() {
 }
 
 void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
-    ScrollUpdateEventMetrics& earliest_event,
     ScrollUpdateEventMetrics& latest_event,
     base::TimeTicks last_input_generation_ts,
     base::TimeTicks presentation_ts,
-    base::TimeDelta vsync_interval,
-    bool has_inertial_input,
-    float abs_total_raw_delta_pixels,
-    float max_abs_inertial_raw_delta_pixels) {
+    base::TimeDelta vsync_interval) {
   base::TimeTicks first_input_generation_ts =
       latest_event.GetDispatchStageTimestamp(
           EventMetrics::DispatchStage::kGenerated);
-  base::TimeTicks first_input_generation_v4_ts =
-      earliest_event.GetDispatchStageTimestamp(
-          EventMetrics::DispatchStage::kGenerated);
-  CHECK_LE(first_input_generation_v4_ts, first_input_generation_ts);
-  CHECK(has_inertial_input || max_abs_inertial_raw_delta_pixels == 0);
   if ((last_input_generation_ts < first_input_generation_ts) ||
       (presentation_ts <= last_input_generation_ts)) {
     // TODO(crbug.com/40913586): Investigate when these edge cases can be
@@ -201,43 +192,8 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
   }
   DCHECK_LT(fixed_window_.num_presented_frames, kHistogramEmitFrequency);
 
-  ReportLatestPresentationDataV4(
-      earliest_event, first_input_generation_v4_ts, last_input_generation_ts,
-      presentation_ts, vsync_interval, has_inertial_input,
-      abs_total_raw_delta_pixels, max_abs_inertial_raw_delta_pixels);
-
   prev_presentation_ts_ = presentation_ts;
   prev_last_input_generation_ts_ = last_input_generation_ts;
-}
-
-void ScrollJankDroppedFrameTracker::ReportLatestPresentationDataV4(
-    ScrollUpdateEventMetrics& earliest_event,
-    base::TimeTicks first_input_generation_v4_ts,
-    base::TimeTicks last_input_generation_ts,
-    base::TimeTicks presentation_ts,
-    base::TimeDelta vsync_interval,
-    bool has_inertial_input,
-    float abs_total_raw_delta_pixels,
-    float max_abs_inertial_raw_delta_pixels) {
-  static const bool scroll_jank_v4_metric_enabled =
-      base::FeatureList::IsEnabled(features::kScrollJankV4Metric);
-  if (!scroll_jank_v4_metric_enabled) {
-    return;
-  }
-
-  std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result> result =
-      v4_decider_.DecideJankForPresentedFrame(
-          first_input_generation_v4_ts, last_input_generation_ts,
-          presentation_ts, vsync_interval, has_inertial_input,
-          abs_total_raw_delta_pixels, max_abs_inertial_raw_delta_pixels);
-  if (!result.has_value()) {
-    return;
-  }
-
-  v4_histogram_emitter_.OnFramePresented(result->missed_vsyncs_per_reason);
-
-  DCHECK(!earliest_event.scroll_jank_v4());
-  earliest_event.set_scroll_jank_v4(std::move(result));
 }
 
 void ScrollJankDroppedFrameTracker::OnScrollStarted() {
@@ -245,8 +201,6 @@ void ScrollJankDroppedFrameTracker::OnScrollStarted() {
   // previous scroll, emit histograms for the previous scroll now.
   EmitPerScrollHistogramsAndResetCounters();
   per_scroll_ = JankData();
-  v4_histogram_emitter_.OnScrollStarted();
-  v4_decider_.OnScrollStarted();
 }
 
 void ScrollJankDroppedFrameTracker::OnScrollEnded() {
@@ -254,8 +208,6 @@ void ScrollJankDroppedFrameTracker::OnScrollEnded() {
           features::kEmitPerScrollJankV1MetricAtEndOfScroll)) {
     EmitPerScrollHistogramsAndResetCounters();
   }
-  v4_histogram_emitter_.OnScrollEnded();
-  v4_decider_.OnScrollEnded();
 }
 
 }  // namespace cc

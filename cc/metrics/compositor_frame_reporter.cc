@@ -1897,6 +1897,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
                   global_trackers_.scroll_jank_dropped_frame_tracker
                       ->OnScrollStarted();
                 }
+                if (global_trackers_.scroll_jank_v4_processor) {
+                  global_trackers_.scroll_jank_v4_processor->OnScrollStarted();
+                }
                 if (global_trackers_.scroll_jank_ukm_reporter) {
                   global_trackers_.scroll_jank_ukm_reporter
                       ->EmitScrollJankUkm();
@@ -1924,12 +1927,16 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
               if (global_trackers_.scroll_jank_dropped_frame_tracker) {
                 global_trackers_.scroll_jank_dropped_frame_tracker
                     ->ReportLatestPresentationData(
-                        *updates.earliest_event, *updates.latest_event,
-                        updates.last_coalesced_ts, end_timestamp,
-                        args_.interval,
-                        /* has_inertial_input= */ updates.fling_input_count > 0,
-                        std::abs(updates.total_raw_delta_pixels),
-                        updates.max_abs_inertial_raw_delta_pixels);
+                        *updates.latest_event, updates.last_coalesced_ts,
+                        end_timestamp, args_.interval);
+              }
+              if (global_trackers_.scroll_jank_v4_processor) {
+                global_trackers_.scroll_jank_v4_processor->OnFramePresented(
+                    *updates.earliest_event, updates.last_coalesced_ts,
+                    end_timestamp, args_.interval,
+                    /* has_inertial_input= */ updates.fling_input_count > 0,
+                    std::abs(updates.total_raw_delta_pixels),
+                    updates.max_abs_inertial_raw_delta_pixels);
               }
               if (global_trackers_.scroll_jank_ukm_reporter) {
                 global_trackers_.scroll_jank_ukm_reporter
@@ -1940,6 +1947,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
               if (global_trackers_.scroll_jank_dropped_frame_tracker) {
                 global_trackers_.scroll_jank_dropped_frame_tracker
                     ->OnScrollEnded();
+              }
+              if (global_trackers_.scroll_jank_v4_processor) {
+                global_trackers_.scroll_jank_v4_processor->OnScrollEnded();
               }
             },
         },

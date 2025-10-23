@@ -11,8 +11,6 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_ukm_reporter.h"
-#include "cc/metrics/scroll_jank_v4_decider.h"
-#include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 namespace cc {
 class ScrollJankUkmReporter;
@@ -24,14 +22,10 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
 
   ScrollJankDroppedFrameTracker(const ScrollJankDroppedFrameTracker&) = delete;
 
-  void ReportLatestPresentationData(ScrollUpdateEventMetrics& earliest_event,
-                                    ScrollUpdateEventMetrics& latest_event,
+  void ReportLatestPresentationData(ScrollUpdateEventMetrics& latest_event,
                                     base::TimeTicks last_input_generation_ts,
                                     base::TimeTicks presentation_ts,
-                                    base::TimeDelta vsync_interval,
-                                    bool has_inertial_input,
-                                    float abs_total_raw_delta_pixels,
-                                    float max_abs_inertial_raw_delta_pixels);
+                                    base::TimeDelta vsync_interval);
   void OnScrollStarted();
   void OnScrollEnded();
 
@@ -59,15 +53,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
  private:
   void EmitPerWindowHistogramsAndResetCounters();
   void EmitPerScrollHistogramsAndResetCounters();
-  void ReportLatestPresentationDataV4(
-      ScrollUpdateEventMetrics& earliest_event,
-      base::TimeTicks first_input_generation_v4_ts,
-      base::TimeTicks last_input_generation_ts,
-      base::TimeTicks presentation_ts,
-      base::TimeDelta vsync_interval,
-      bool has_inertial_input,
-      float abs_total_raw_delta_pixels,
-      float max_abs_inertial_raw_delta_pixels);
 
   // We could have two different frames with same presentation time and due to
   // this just having previous frame's data is not enough for calculating the
@@ -90,8 +75,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   std::optional<JankData> per_scroll_;
 
   raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
-  ScrollJankV4Decider v4_decider_;
-  ScrollJankV4HistogramEmitter v4_histogram_emitter_;
 };
 
 }  // namespace cc

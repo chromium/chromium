@@ -4,6 +4,7 @@
 
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
@@ -14,6 +15,7 @@
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_v4_processor.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -37,7 +39,8 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       predictor_jank_tracker_(std::make_unique<PredictorJankTracker>()),
       scroll_jank_dropped_frame_tracker_(
           std::make_unique<ScrollJankDroppedFrameTracker>()),
-      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()) {
+      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()),
+      scroll_jank_v4_processor_(std::make_unique<ScrollJankV4Processor>()) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -52,6 +55,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
   global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
   global_trackers_.scroll_jank_dropped_frame_tracker =
       scroll_jank_dropped_frame_tracker_.get();
+  global_trackers_.scroll_jank_v4_processor = scroll_jank_v4_processor_.get();
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {

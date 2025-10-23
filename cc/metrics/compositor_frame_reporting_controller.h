@@ -21,6 +21,7 @@
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_v4_processor.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
@@ -223,6 +224,7 @@ class CC_EXPORT CompositorFrameReportingController {
   std::unique_ptr<ScrollJankDroppedFrameTracker>
       scroll_jank_dropped_frame_tracker_;
   std::unique_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_;
+  std::unique_ptr<ScrollJankV4Processor> scroll_jank_v4_processor_;
 
   std::array<std::unique_ptr<CompositorFrameReporter>,
              PipelineStage::kNumPipelineStages>
