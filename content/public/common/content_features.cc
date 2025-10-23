@@ -493,6 +493,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kIgnoreDuplicateNavs,
                    "duplicate_nav_threshold",
                    base::Milliseconds(2000));
+BASE_FEATURE_PARAM(bool,
+                   kSkipIgnoreRendererInitiatedNavs,
+                   &kIgnoreDuplicateNavs,
+                   "skip_ignore_renderer_initiated_navs",
+                   false);
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, base::FEATURE_ENABLED_BY_DEFAULT);
