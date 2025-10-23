@@ -61,7 +61,10 @@ class GlicProfileManagerUiTest
                                 {features::kGlicWarming,
                                  {{features::kGlicWarmingDelayMs.name, "0"},
                                   {features::kGlicWarmingJitterMs.name, "0"}}}},
-          /*disabled_features=*/{});
+          /*disabled_features=*/{
+              // TODO(b/453696965): These tests need fixed to work with
+              // kGlicMultiInstance.
+              features::kGlicMultiInstance});
     } else {
       feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/{{features::kGlicFreWarming, {}},
@@ -70,7 +73,10 @@ class GlicProfileManagerUiTest
                                      {features::kGlicWarmingDelayMs.name, "0"},
                                      {features::kGlicWarmingJitterMs.name, "0"},
                                  }}},
-          /*disabled_features=*/{features::kGlicWarmMultiple});
+          /*disabled_features=*/{features::kGlicWarmMultiple,
+                                 // TODO(b/453696965): These tests need fixed to
+                                 // work with kGlicMultiInstance.
+                                 features::kGlicMultiInstance});
     }
   }
   ~GlicProfileManagerUiTest() override = default;
