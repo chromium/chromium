@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
 
 #import <UIKit/UIKit.h>
@@ -20,7 +15,8 @@
 #import "base/task/thread_pool.h"
 
 namespace {
-const char* kOrientationDescriptions[] = {
+
+constexpr std::array<std::string_view, 4> kOrientationDescriptions = {
     "LandscapeLeft",
     "LandscapeRight",
     "Portrait",
@@ -33,39 +29,52 @@ void DeleteAllFiles(std::vector<base::FilePath> paths) {
     base::DeleteFile(path);
   }
 }
+
+// Returns the retina suffix.
+std::string_view GetRetinaSuffix() {
+  CGFloat scale = [UIScreen mainScreen].scale;
+  if (scale == 2) {
+    return "@2x";
+  }
+
+  if (scale == 3) {
+    return "@3x";
+  }
+
+  return {};
+}
+
 }  // namespace
 
 void ClearIOSSnapshots(base::OnceClosure callback) {
   // Generates a list containing all the possible snapshot paths because the
   // list of snapshots stored on the device can't be obtained programmatically.
-  std::vector<base::FilePath> snapshots_paths;
-  GetSnapshotsPaths(&snapshots_paths);
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&DeleteAllFiles, std::move(snapshots_paths)),
+      base::BindOnce(&DeleteAllFiles, GetSnapshotsPaths()),
       std::move(callback));
 }
 
-void GetSnapshotsPaths(std::vector<base::FilePath>* snapshots_paths) {
-  DCHECK(snapshots_paths);
+std::vector<base::FilePath> GetSnapshotsPaths() {
   base::FilePath snapshots_dir;
   base::PathService::Get(base::DIR_CACHE, &snapshots_dir);
+  const std::string_view retina_suffix = GetRetinaSuffix();
+
   // Snapshots are located in a path with the bundle ID used twice.
   snapshots_dir = snapshots_dir.Append("Snapshots")
                       .Append(base::apple::BaseBundleID())
                       .Append(base::apple::BaseBundleID());
-  const char* retina_suffix = "";
-  CGFloat scale = [UIScreen mainScreen].scale;
-  if (scale == 2) {
-    retina_suffix = "@2x";
-  } else if (scale == 3) {
-    retina_suffix = "@3x";
-  }
-  for (unsigned int i = 0; i < std::size(kOrientationDescriptions); i++) {
+
+  std::vector<base::FilePath> snapshots_paths;
+  snapshots_paths.reserve(kOrientationDescriptions.size());
+
+  for (std::string_view orientation_description : kOrientationDescriptions) {
     std::string snapshot_filename =
         base::StringPrintf("UIApplicationAutomaticSnapshotDefault-%s%s.png",
-                           kOrientationDescriptions[i], retina_suffix);
+                           orientation_description, retina_suffix);
     base::FilePath snapshot_path = snapshots_dir.Append(snapshot_filename);
-    snapshots_paths->push_back(snapshot_path);
+    snapshots_paths.push_back(std::move(snapshot_path));
   }
+
+  return snapshots_paths;
 }

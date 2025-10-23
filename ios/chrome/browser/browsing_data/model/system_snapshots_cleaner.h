@@ -14,8 +14,7 @@
 // the deletion has completed (asynchronously).
 void ClearIOSSnapshots(base::OnceClosure callback);
 
-// Adds to `snapshotsPaths` all the possible paths to the application's
-// snapshots taken by iOS.
-void GetSnapshotsPaths(std::vector<base::FilePath>* snapshotsPaths);
+// Returns all the possible paths to the application's snapshots taken by iOS.
+std::vector<base::FilePath> GetSnapshotsPaths();
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_SYSTEM_SNAPSHOTS_CLEANER_H_
