@@ -1107,38 +1107,39 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription chip_visibility_subscription_;
 
   // BrowserView layout (LTR one is pictured here).
-  // -----------------------------------------------------------------------
-  // | Tabs (tab_strip_region_view_) |
-  // |---------------------------------------------------------------------|
-  // | MainRegion (main_region_)                                           |
-  // |  ----------------------------------------------------------------   |
-  // |  | MainContainer (main_container_)                               |  |
-  // |  |  ------------------------------------------------------------ |  |
-  // |  |  | TopContainerView (top_container)                           |  |
-  // |  |  |  --------------------------------------------------------- |  |
-  // |  |  |  | Web App toolbar and title (web_app_frame_toolbar_)      |  |
-  // |  |  |  |-------------------------------------------------------- |  |
-  // |  |  |  | Navigation buttons, address bar, menu (toolbar_)        |  |
-  // |  |  |  |-------------------------------------------------------- |  |
-  // |  |  |  | Bookmarks (bookmark_bar_view_)                          |  |
-  // |  |  |  --------------------------------------------------------- |  |
-  // |  |  |----------------------------------------------------------- |  |
-  // |  |  | All infobars (infobar_container_)                          |  |
-  // |  |  |----------------------------------------------------------- |  |
-  // |  |  | Contents container (contents_container_)                   |  |
-  // |  |  |  --------------------------------------------------------- |  |
-  // |  |  |  |  contents_web_view_ (or multi_contents_view_ if defined)|  |
-  // |  |  |  --------------------------------------------------------- |  |
-  // |  |  |----------------------------------------------------------- |  |
-  // |  |  | ContentHeightSidePanel (contents_height_side_panel_)       |  |
-  // |  |  |----------------------------------------------------------- |  |
-  // |  ----------------------------------------------------------------   |
-  // |  | ToolbarHeightSidePanel ()                                     |  |
-  // |  |---------------------------------------------------------------|  |
-  // ----------------------------------------------------------------------
+  // --------------------------------------------------------------------------
+  // | Tabs (tab_strip_region_view_) (no immersive)                           |
+  // |------------------------------------------------------------------------|
+  // | Web App toolbar and title (web_app_frame_toolbar_)(no immersive)       |
+  // |------------------------------------------------------------------------|
+  // | MainContainer (main_container_)                                        |
+  // |------------------------------------------------------------------------|
+  // |  | TopContainerView (top_container)                                    |
+  // |  |  ----------------------------------------------------------------|  |
+  // |  |  | Tabs (tab_strip_region_view)(immersive)                       |  |
+  // |  |  |---------------------------------------------------------------|  |
+  // |  |  | Web app toolbar and title (web_app_frame_toolbar_)(immersive) |  |
+  // |  |  |---------------------------------------------------------------|  |
+  // |  |  | Navigation buttons, address bar, menu (toolbar_)              |  |
+  // |  |  |---------------------------------------------------------------|  |
+  // |  |  | Bookmarks (bookmark_bar_view_)                                |  |
+  // |  |  ----------------------------------------------------------------|  |
+  // |  |---------------------------------------------------------------------|
+  // |  | All infobars (infobar_container_)                                   |
+  // |  |---------------------------------------------------------------------|
+  // |  | Contents container (contents_container_)                            |
+  // |  |  -----------------------------------------------------------------  |
+  // |  |  |  contents_web_view_ (or multi_contents_view_ if defined       |  |
+  // |  |  -----------------------------------------------------------------  |
+  // |  |---------------------------------------------------------------------|
+  // |  | ContentHeightSidePanel (contents_height_side_panel_)                |
+  // |  |---------------------------------------------------------------------|
+  // |------------------------------------------------------------------------|
+  // | ToolbarHeightSidePanel ()                                              |
+  // --------------------------------------------------------------------------
 
-  // The view that contains the MainContainer and the toolbar height side panel
-  // when it is implemented.
+  // The view that draws the background the main_container and
+  // toolbar_height_side_panel are displayed on.
   raw_ptr<views::View> main_region_ = nullptr;
 
   // The view that contains the primary UI (Toolbar, BookmarksBar, InfoBar,
@@ -1148,6 +1149,9 @@ class BrowserView : public BrowserWindow,
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
   // bar. Stacked top in the view hiearachy so it can be used to slide out
   // the top views in immersive fullscreen.
+  // Note: The TabStrip and Web App toolbar are only added to TopContainer while
+  // in immersive fullscreen mode. In all other cases, they live directly in
+  // BrowserView.
   raw_ptr<TopContainerView> top_container_ = nullptr;
 
   // Menu button and page status icons. Only used by web-app windows.
@@ -1162,7 +1166,7 @@ class BrowserView : public BrowserWindow,
   // The view that contains the tabstrip, new tab button, and grab handle space.
   raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
 
-  // the webui based tabstrip, when applicable. see https://crbug.com/989131.
+  // The webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
 
   // Allows us to react to changes in accessibility mode. Having an observer
