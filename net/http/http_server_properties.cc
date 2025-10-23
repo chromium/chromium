@@ -280,6 +280,11 @@ bool HttpServerProperties::RequiresHTTP11(
     const url::SchemeHostPort& server,
     const NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Avoid overhead of copying the SchemeHostPort and the NAK in the very likely
+  // case the list of servers is empty.
+  if (servers_requiring_http_11_.empty()) {
+    return false;
+  }
   return RequiresHTTP11Internal(NormalizeSchemeHostPort(server),
                                 network_anonymization_key);
 }
@@ -297,8 +302,12 @@ void HttpServerProperties::MaybeForceHTTP11(
     const NetworkAnonymizationKey& network_anonymization_key,
     SSLConfig* ssl_config) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  MaybeForceHTTP11Internal(NormalizeSchemeHostPort(server),
-                           network_anonymization_key, ssl_config);
+  // No need for separate internal method here, since this can use
+  // RequiresHTTP11() to do the work normalizing `server`.
+  if (RequiresHTTP11(server, network_anonymization_key)) {
+    ssl_config->alpn_protos.clear();
+    ssl_config->alpn_protos.push_back(NextProto::kProtoHTTP11);
+  }
 }
 
 AlternativeServiceInfoVector HttpServerProperties::GetAlternativeServiceInfos(
@@ -789,10 +798,9 @@ bool HttpServerProperties::RequiresHTTP11Internal(
   if (server.host().empty())
     return false;
 
-  auto spdy_info = server_info_map_.Get(
+  auto it = servers_requiring_http_11_.Get(
       CreateServerInfoKey(std::move(server), network_anonymization_key));
-  return spdy_info != server_info_map_.end() &&
-         spdy_info->second.requires_http11.value_or(false);
+  return it != servers_requiring_http_11_.end();
 }
 
 void HttpServerProperties::SetHTTP11RequiredInternal(
@@ -804,25 +812,10 @@ void HttpServerProperties::SetHTTP11RequiredInternal(
   if (server.host().empty())
     return;
 
-  server_info_map_
-      .GetOrPut(
-          CreateServerInfoKey(std::move(server), network_anonymization_key))
-      ->second.requires_http11 = true;
+  servers_requiring_http_11_.Put(
+      CreateServerInfoKey(std::move(server), network_anonymization_key));
   // No need to call MaybeQueueWriteProperties(), as this information is not
   // persisted to preferences.
-}
-
-void HttpServerProperties::MaybeForceHTTP11Internal(
-    url::SchemeHostPort server,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    SSLConfig* ssl_config) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_NE(server.scheme(), url::kWsScheme);
-  DCHECK_NE(server.scheme(), url::kWssScheme);
-  if (RequiresHTTP11(std::move(server), network_anonymization_key)) {
-    ssl_config->alpn_protos.clear();
-    ssl_config->alpn_protos.push_back(NextProto::kProtoHTTP11);
-  }
 }
 
 AlternativeServiceInfoVector
@@ -1327,11 +1320,6 @@ void HttpServerProperties::OnServerInfoLoaded(
       old_entry->second.alternative_services = server_info.alternative_services;
     if (!old_entry->second.server_network_stats.has_value())
       old_entry->second.server_network_stats = server_info.server_network_stats;
-
-    // |requires_http11| isn't saved to prefs, so the loaded entry should not
-    // have it set. Unconditionally copy it from the new entry.
-    DCHECK(!old_entry->second.requires_http11.has_value());
-    old_entry->second.requires_http11 = server_info.requires_http11;
   }
 
   // Attempt to find canonical servers. Canonical suffix only apply to HTTPS.

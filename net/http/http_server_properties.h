@@ -96,6 +96,8 @@ class NET_EXPORT HttpServerProperties
  public:
   // Store at most 500 MRU ServerInfos in memory and disk.
   static const int kMaxServerInfoEntries = 500;
+  // Max number of servers that can be recorded as requiring HTTP/1.1.
+  static const int kMaxServersRequiringHttp11Entries = 100;
 
   // Provides an interface to interact with persistent preferences storage
   // implemented by the embedder. The prefs are assumed not to have been loaded
@@ -147,10 +149,6 @@ class NET_EXPORT HttpServerProperties
     // when loading from disk, when an initialized false value will take
     // priority over a not set value.
     std::optional<bool> supports_spdy;
-
-    // True if the server has previously indicated it required HTTP/1.1. Unlike
-    // other fields, not persisted to disk.
-    std::optional<bool> requires_http11;
 
     std::optional<AlternativeServiceInfoVector> alternative_services;
     std::optional<ServerNetworkStats> server_network_stats;
@@ -537,10 +535,6 @@ class NET_EXPORT HttpServerProperties
   void SetHTTP11RequiredInternal(
       url::SchemeHostPort server,
       const NetworkAnonymizationKey& network_anonymization_key);
-  void MaybeForceHTTP11Internal(
-      url::SchemeHostPort server,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      SSLConfig* ssl_config);
   AlternativeServiceInfoVector GetAlternativeServiceInfosInternal(
       const url::SchemeHostPort& origin,
       const NetworkAnonymizationKey& network_anonymization_key);
@@ -660,6 +654,13 @@ class NET_EXPORT HttpServerProperties
   std::unique_ptr<HttpServerPropertiesManager> properties_manager_;
 
   ServerInfoMap server_info_map_;
+
+  // Set of servers that require HTTP/1.1. Not persisted to disk. This is
+  // separate from ServerInfoMap because it's generally empty, and has to be
+  // checked on every network request, rather than only when establishing
+  // connections.
+  base::LRUCacheSet<ServerInfoMapKey> servers_requiring_http_11_{
+      kMaxServersRequiringHttp11Entries};
 
   BrokenAlternativeServices broken_alternative_services_;
 
