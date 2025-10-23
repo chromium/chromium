@@ -1687,25 +1687,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion138ToCurrent) {
   }
 }
 
-TEST_F(WebDatabaseMigrationTest, MigrateVersion139ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_139.sql")));
-  {
-    sql::Database connection(sql::test::kTestTag);
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    EXPECT_EQ(139, VersionFromConnection(&connection));
-  }
-  DoMigration();
-  {
-    sql::Database connection(sql::test::kTestTag);
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
-              VersionFromConnection(&connection));
-    EXPECT_TRUE(connection.DoesTableExist("autofill_ai_entities"));
-    EXPECT_TRUE(
-        connection.DoesColumnExist("autofill_ai_entities", "use_count"));
-    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities", "use_date"));
-  }
-}
+// Version 139 added new columns to the entities table. These columns are now
+// deprecated and moved to the entities_metadata table. The migration unit test
+// to the current version thus no longer applies.
 
 TEST_F(WebDatabaseMigrationTest, MigrateVersion140ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_140.sql")));
@@ -1841,6 +1825,73 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion145ToCurrent) {
               VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities",
                                            "frecency_override"));
+  }
+}
+
+// Tests addition of autofill_ai_entities_metadata table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion146ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_146.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(146, VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("autofill_ai_entities", "use_count"));
+    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities", "use_date"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("autofill_ai_entities", "date_modified"));
+
+    // Insert a dummy entity to test that it is migrated correctly.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO autofill_ai_entities
+      (guid, entity_type, nickname, use_count, use_date, date_modified)
+      VALUES
+      ('00000000-0000-0000-0000-000000000001', 'TestEntity', 'TestNickname', 11, 22, 33);
+    )"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("autofill_ai_entities", "use_count"));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("autofill_ai_entities", "use_date"));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("autofill_ai_entities", "date_modified"));
+
+    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities_metadata",
+                                           "entity_guid"));
+    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities_metadata",
+                                           "use_count"));
+    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities_metadata",
+                                           "use_date"));
+    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities_metadata",
+                                           "date_modified"));
+
+    // The entity should still exist.
+    sql::Statement s_entities(connection.GetUniqueStatement(
+        "SELECT guid, entity_type, nickname from autofill_ai_entities"));
+    ASSERT_TRUE(s_entities.Step());
+    EXPECT_EQ(s_entities.ColumnString(0),
+              "00000000-0000-0000-0000-000000000001");
+    EXPECT_EQ(s_entities.ColumnString(1), "TestEntity");
+    EXPECT_EQ(s_entities.ColumnString(2), "TestNickname");
+    ASSERT_FALSE(s_entities.Step());
+
+    // Expect the entity's metadata in the migrated table.
+    sql::Statement s_metadata(connection.GetUniqueStatement(
+        "SELECT entity_guid, use_count, use_date, date_modified from "
+        "autofill_ai_entities_metadata"));
+    ASSERT_TRUE(s_metadata.Step());
+    EXPECT_EQ(s_metadata.ColumnString(0),
+              "00000000-0000-0000-0000-000000000001");
+    EXPECT_EQ(s_metadata.ColumnInt(1), 11);
+    EXPECT_EQ(s_metadata.ColumnInt(2), 22);
+    EXPECT_EQ(s_metadata.ColumnInt(3), 33);
+    ASSERT_FALSE(s_metadata.Step());
   }
 }
 

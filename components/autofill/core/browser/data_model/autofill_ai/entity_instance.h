@@ -200,6 +200,15 @@ class EntityInstance final {
         : EntityId(uuid.AsLowercaseString()) {}
   };
 
+  // Contains information about an entity's metadata stored in the
+  // `entities_metadata` table.
+  struct EntityMetadata {
+    EntityInstance::EntityId guid;
+    base::Time date_modified;
+    size_t use_count;
+    base::Time use_date;
+  };
+
   // Controls whether the attributes of the entity instance can be edited by the
   // user.
   using AreAttributesReadOnly =
@@ -364,6 +373,7 @@ class EntityInstance final {
       attributes_;
   EntityId guid_;
   std::string nickname_;
+  // TODO(crbug.com/436551488): Use `EntityMetadata`.
   base::Time date_modified_;
   size_t use_count_;
   base::Time use_date_;

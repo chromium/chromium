@@ -52,9 +52,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 139 migrates valuables tables to a new format, changing the column
-// names. It is thus is no longer compatible with version 138.
-constexpr int kCompatibleVersionNumber = 139;
+// Version 147 migrates entities metadata fields into a new table. It is thus is
+// no longer compatible with version 139.
+constexpr int kCompatibleVersionNumber = 147;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

@@ -57,7 +57,10 @@ class EntityTableTest : public testing::Test {
 // Tests that the entity and attribute tables preserve entity data between write
 // and read.
 TEST_F(EntityTableTest, BasicWriteThenRead) {
-  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance pp = test::GetPassportEntityInstance(
+      {.date_modified = test::kJune2017 - base::Days(2),
+       .use_date = test::kJune2017 - base::Days(7),
+       .use_count = 5});
   EntityInstance dl = test::GetDriversLicenseEntityInstance();
   // Flight reservation has frecency override set to departure time.
   EntityInstance fr = test::GetFlightReservationEntityInstance({
@@ -90,6 +93,23 @@ TEST_F(EntityTableTest, BasicWriteThenRead_ReadOnlyInstance) {
 
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
 
+  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp));
+}
+
+// Tests that the entity table preserves custom use_date, use_count, and
+// date_modified values between write and read.
+TEST_F(EntityTableTest, CustomUseDateUseCountDateModified) {
+  base::Time custom_use_date = test::kJune2017 - base::Days(5);
+  int custom_use_count = 10;
+  base::Time custom_date_modified = test::kJune2017 - base::Days(2);
+
+  EntityInstance pp = test::GetPassportEntityInstance({
+      .date_modified = custom_date_modified,
+      .use_date = custom_use_date,
+      .use_count = custom_use_count,
+  });
+
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
   EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp));
 }
 
@@ -266,6 +286,37 @@ TEST_F(EntityTableTest, EntityInstanceExists) {
   ASSERT_TRUE(table().RemoveEntityInstance(dl.guid()));
   EXPECT_FALSE(table().EntityInstanceExists(pp.guid()));
   EXPECT_FALSE(table().EntityInstanceExists(dl.guid()));
+}
+
+// Tests that metadata info is removed alongside entities.
+TEST_F(EntityTableTest, RemoveEntityInstanceRemovesMetadata) {
+  EntityInstance pp = test::GetPassportEntityInstance(
+      {.date_modified = test::kJune2017 - base::Days(2),
+       .use_date = test::kJune2017 - base::Days(7),
+       .use_count = 5});
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  ASSERT_TRUE(table().EntityInstanceExists(pp.guid()));
+
+  // Verify that metadata exists in the database.
+  sql::Statement s;
+  s.Assign(test_api(table()).db()->GetUniqueStatement(
+      "SELECT count(*) FROM autofill_ai_entities_metadata WHERE entity_guid = "
+      "?"));
+  s.BindString(0, *pp.guid());
+  ASSERT_TRUE(s.Step());
+  EXPECT_GT(s.ColumnInt(0), 0);
+
+  // Remove the entity.
+  ASSERT_TRUE(table().RemoveEntityInstance(pp.guid()));
+  EXPECT_FALSE(table().EntityInstanceExists(pp.guid()));
+
+  // Verify that metadata is also removed.
+  s.Assign(test_api(table()).db()->GetUniqueStatement(
+      "SELECT count(*) FROM autofill_ai_entities_metadata WHERE entity_guid = "
+      "?"));
+  s.BindString(0, *pp.guid());
+  ASSERT_TRUE(s.Step());
+  EXPECT_EQ(s.ColumnInt(0), 0);
 }
 
 }  // namespace
