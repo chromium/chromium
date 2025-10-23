@@ -14,6 +14,7 @@ component("policy") {
 
   public_deps = [
     "external_storage",
+    "local_auth_factors",
     "restriction_schedule",
     "system_features_disable_list",
   ]
@@ -26,6 +27,7 @@ source_set("unit_tests") {
 
   deps = [
     "external_storage:unit_tests",
+    "local_auth_factors:unit_tests",
     "restriction_schedule:unit_tests",
     "system_features_disable_list:unit_tests",
     "weekly_time:unit_tests",
