@@ -78,11 +78,9 @@ TEST_F(ContextGroupTest, Basic) {
 }
 
 TEST_F(ContextGroupTest, InitializeNoExtensions) {
-  TestHelper::SetupContextGroupInitExpectations(gl_.get(), DisallowedFeatures(),
-                                                "ANGLE", "OpenGL ES 2.0",
-                                                CONTEXT_TYPE_OPENGLES2);
-  group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2,
-                     DisallowedFeatures());
+  TestHelper::SetupContextGroupInitExpectations(
+      gl_.get(), "ANGLE", "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);
+  group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2);
   EXPECT_EQ(static_cast<uint32_t>(TestHelper::kNumVertexAttribs),
             group_->max_vertex_attribs());
   EXPECT_EQ(static_cast<uint32_t>(TestHelper::kNumTextureUnits),
@@ -117,23 +115,17 @@ TEST_F(ContextGroupTest, MultipleContexts) {
   TraceOutputter outputter;
   std::unique_ptr<MockGLES2Decoder> decoder2_(
       new MockGLES2Decoder(&client2, &command_buffer_service2, &outputter));
-  TestHelper::SetupContextGroupInitExpectations(gl_.get(), DisallowedFeatures(),
-                                                "ANGLE", "OpenGL ES 2.0",
-                                                CONTEXT_TYPE_OPENGLES2);
-  EXPECT_EQ(group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2,
-                               DisallowedFeatures()),
+  TestHelper::SetupContextGroupInitExpectations(
+      gl_.get(), "ANGLE", "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);
+  EXPECT_EQ(group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2),
             gpu::ContextResult::kSuccess);
-  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_WEBGL1,
-                               DisallowedFeatures()),
+  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_WEBGL1),
             gpu::ContextResult::kFatalFailure);
-  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_WEBGL2,
-                               DisallowedFeatures()),
+  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_WEBGL2),
             gpu::ContextResult::kFatalFailure);
-  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_OPENGLES3,
-                               DisallowedFeatures()),
+  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_OPENGLES3),
             gpu::ContextResult::kFatalFailure);
-  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_OPENGLES2,
-                               DisallowedFeatures()),
+  EXPECT_EQ(group_->Initialize(decoder2_.get(), CONTEXT_TYPE_OPENGLES2),
             gpu::ContextResult::kSuccess);
 
   EXPECT_TRUE(group_->buffer_manager() != nullptr);

@@ -71,8 +71,7 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   // This should only be called by a DecoderContext. This must be paired with a
   // call to destroy if it succeeds.
   gpu::ContextResult Initialize(DecoderContext* decoder,
-                                ContextType context_type,
-                                const DisallowedFeatures& disallowed_features);
+                                ContextType context_type);
 
   // Destroys all the resources when called for the last context in the group.
   // It should only be called by DecoderContext.

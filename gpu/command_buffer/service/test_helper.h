@@ -19,7 +19,6 @@
 namespace gpu {
 namespace gles2 {
 
-struct DisallowedFeatures;
 class Buffer;
 class BufferManager;
 class FeatureInfo;
@@ -105,7 +104,6 @@ class TestHelper {
 
   static void SetupContextGroupInitExpectations(
       ::gl::MockGLInterface* gl,
-      const DisallowedFeatures& disallowed_features,
       const char* extensions,
       const char* gl_version,
       ContextType context_type);

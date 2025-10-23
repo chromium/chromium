@@ -2984,7 +2984,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     return gpu::ContextResult::kFatalFailure;
   }
 
-  auto result = group_->Initialize(this, context_type, DisallowedFeatures());
+  auto result = group_->Initialize(this, context_type);
   if (result != gpu::ContextResult::kSuccess) {
     // Must not destroy ContextGroup if it is not initialized.
     group_ = nullptr;

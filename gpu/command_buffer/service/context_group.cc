@@ -43,9 +43,8 @@ void GetIntegerv(GLenum pname, uint32_t* var) {
 
 }  // namespace anonymous
 
-DisallowedFeatures AdjustDisallowedFeatures(
-    ContextType context_type, const DisallowedFeatures& disallowed_features) {
-  DisallowedFeatures adjusted_disallowed_features = disallowed_features;
+DisallowedFeatures GetDisallowedFeatures(ContextType context_type) {
+  DisallowedFeatures adjusted_disallowed_features;
   if (context_type == CONTEXT_TYPE_WEBGL1) {
     adjusted_disallowed_features.npot_support = true;
   }
@@ -122,10 +121,8 @@ ContextGroup::ContextGroup(
   use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
 }
 
-gpu::ContextResult ContextGroup::Initialize(
-    DecoderContext* decoder,
-    ContextType context_type,
-    const DisallowedFeatures& disallowed_features) {
+gpu::ContextResult ContextGroup::Initialize(DecoderContext* decoder,
+                                            ContextType context_type) {
   switch (context_type) {
     case CONTEXT_TYPE_WEBGL1:
       if (kGpuFeatureStatusBlocklisted ==
@@ -157,7 +154,7 @@ gpu::ContextResult ContextGroup::Initialize(
   }
 
   DisallowedFeatures adjusted_disallowed_features =
-      AdjustDisallowedFeatures(context_type, disallowed_features);
+      GetDisallowedFeatures(context_type);
 
   feature_info_->Initialize(context_type, use_passthrough_cmd_decoder_,
                             adjusted_disallowed_features);

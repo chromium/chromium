@@ -325,7 +325,6 @@ void TestHelper::SetupTextureManagerDestructionExpectations(
 
 void TestHelper::SetupContextGroupInitExpectations(
     ::gl::MockGLInterface* gl,
-    const DisallowedFeatures& disallowed_features,
     const char* extensions,
     const char* gl_version,
     ContextType context_type) {

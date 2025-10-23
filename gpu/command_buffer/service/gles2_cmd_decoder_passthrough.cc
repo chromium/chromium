@@ -827,7 +827,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   multi_draw_manager_ = std::make_unique<MultiDrawManager>(
       MultiDrawManager::IndexStorageType::Pointer);
 
-  auto result = group_->Initialize(this, context_type, DisallowedFeatures());
+  auto result = group_->Initialize(this, context_type);
   if (result != gpu::ContextResult::kSuccess) {
     // Must not destroy ContextGroup if it is not initialized.
     group_ = nullptr;

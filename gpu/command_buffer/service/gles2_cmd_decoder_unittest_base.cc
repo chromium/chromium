@@ -230,7 +230,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   context_->GLContextStub::MakeCurrentImpl(surface_.get());
 
   TestHelper::SetupContextGroupInitExpectations(
-      gl_.get(), DisallowedFeatures(), normalized_init.extensions.c_str(),
+      gl_.get(), normalized_init.extensions.c_str(),
       normalized_init.gl_version.c_str(), init.context_type);
 
   // We initialize the ContextGroup with a MockGLES2Decoder so that
@@ -240,8 +240,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   mock_decoder_ = std::make_unique<MockGLES2Decoder>(
       this, command_buffer_service_.get(), &outputter_);
 
-  EXPECT_EQ(group_->Initialize(mock_decoder_.get(), init.context_type,
-                               DisallowedFeatures()),
+  EXPECT_EQ(group_->Initialize(mock_decoder_.get(), init.context_type),
             gpu::ContextResult::kSuccess);
 
   // GPUTracer
@@ -2344,9 +2343,8 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   // request what they need.
   decoder_->SetOptionalExtensionsRequestedForTesting(false);
 
-  ASSERT_EQ(
-      group_->Initialize(decoder_.get(), context_type_, DisallowedFeatures()),
-      gpu::ContextResult::kSuccess);
+  ASSERT_EQ(group_->Initialize(decoder_.get(), context_type_),
+            gpu::ContextResult::kSuccess);
 
   // We need command buffer to emulate default framebuffer is the GLSurface is
   // surfaceless.
