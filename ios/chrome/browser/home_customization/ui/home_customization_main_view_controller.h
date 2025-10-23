@@ -48,6 +48,9 @@
 // Prevents the background from changing when it should not change.
 @property(nonatomic, assign) BOOL backgroundCustomizationUserInteractionEnabled;
 
+// Height of the content inside this view.
+@property(nonatomic, readonly) CGFloat viewContentHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MAIN_VIEW_CONTROLLER_H_

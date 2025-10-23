@@ -21,6 +21,9 @@ CustomizationSection* const kCustomizationSectionMagicStackToggles =
 
 NSString* const kBottomSheetDetentIdentifier = @"kBottomSheetDetentIdentifier";
 
+NSString* const kBottomSheetExpandedDetentIdentifier =
+    @"kBottomSheetExpandedDetentIdentifier";
+
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"kNavigationBarDismissButtonIdentifier";
 

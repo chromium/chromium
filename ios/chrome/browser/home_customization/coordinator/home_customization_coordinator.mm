@@ -220,6 +220,18 @@ CGFloat const kSheetCornerRadius = 30;
 
 // Creates a view controller for a page in the menu.
 - (UIViewController*)createMenuPage:(CustomizationMenuPage)page {
+  auto detentResolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return kInitialDetentHeight;
+  };
+  UISheetPresentationControllerDetent* initialDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kBottomSheetDetentIdentifier
+                            resolver:detentResolver];
+  NSMutableArray<UISheetPresentationControllerDetent*>* detents = [@[
+    initialDetent,
+  ] mutableCopy];
+
   UIViewController* menuPage;
 
   // Create view controller for the `page` and configure it with the mediator.
@@ -236,13 +248,23 @@ CGFloat const kSheetCornerRadius = 30;
           _backgroundService->IsCustomizationDisabledOrColorManagedByPolicy();
       self.mediator.mainPageConsumer = self.mainViewController;
       _backgroundConfigurationMediator.consumer = self.mainViewController;
-      // Do not set self.mainViewController as
-      // _backgroundConfigurationMediator.consumer because this view should not
-      // have cancel/done buttons when the selected background changes.
       [self.mediator configureMainPageData];
       [_backgroundConfigurationMediator
           loadRecentlyUsedBackgroundConfigurations];
       menuPage = self.mainViewController;
+
+      __weak __typeof(self) weakSelf = self;
+      auto expandedDetentResolver = ^CGFloat(
+          id<UISheetPresentationControllerDetentResolutionContext> context) {
+        return [weakSelf detentHeightForMainViewControllerExpanded];
+      };
+
+      UISheetPresentationControllerDetent* expandedDetent =
+          [UISheetPresentationControllerDetent
+              customDetentWithIdentifier:kBottomSheetExpandedDetentIdentifier
+                                resolver:expandedDetentResolver];
+      [detents addObject:expandedDetent];
+
       break;
     }
     case CustomizationMenuPage::kMagicStack: {
@@ -286,21 +308,12 @@ CGFloat const kSheetCornerRadius = 30;
   presentationController.preferredCornerRadius = kSheetCornerRadius;
   presentationController.delegate = self;
 
-  auto detentResolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return kInitialDetentHeight;
-  };
-  UISheetPresentationControllerDetent* initialDetent =
-      [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kBottomSheetDetentIdentifier
-                            resolver:detentResolver];
-  presentationController.detents = @[
-    initialDetent,
-  ];
+  presentationController.detents = detents;
+  presentationController.prefersScrollingExpandsWhenScrolledToEdge = NO;
   presentationController.selectedDetentIdentifier =
       kBottomSheetDetentIdentifier;
   presentationController.largestUndimmedDetentIdentifier =
-      kBottomSheetDetentIdentifier;
+      presentationController.detents.lastObject.identifier;
 
   return navigationController;
 }
@@ -337,6 +350,13 @@ CGFloat const kSheetCornerRadius = 30;
     // The presenting page should become interactable for voiceover.
     self.currentPageViewController.view.accessibilityViewIsModal = YES;
   }
+}
+
+- (CGFloat)detentHeightForMainViewControllerExpanded {
+  CGFloat height = self.mainViewController.viewContentHeight;
+  return (height < kInitialDetentHeight)
+             ? UISheetPresentationControllerDetentInactive
+             : height;
 }
 
 #pragma mark - HomeCustomizationBackgroundPickerPresentationDelegate

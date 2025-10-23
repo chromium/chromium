@@ -68,6 +68,10 @@
   // The number of times a background is selected from the recently used
   // section.
   int _recentBackgroundClickCount;
+
+  // Last handled height. Used so detents are only invalidated when the content
+  // height actually changes.
+  CGFloat _lastSeenViewContentHeight;
 }
 
 // Synthesized from HomeCustomizationViewControllerProtocol.
@@ -122,6 +126,20 @@
   if (_additionalViewWillTransitionToSizeHandler) {
     _additionalViewWillTransitionToSizeHandler(size, coordinator);
   }
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  if (_lastSeenViewContentHeight != self.viewContentHeight) {
+    _lastSeenViewContentHeight = self.viewContentHeight;
+    [self.sheetPresentationController invalidateDetents];
+  }
+}
+
+- (CGFloat)viewContentHeight {
+  return self.navigationController.navigationBar.frame.size.height +
+         self.collectionView.contentSize.height;
 }
 
 #pragma mark - Private
