@@ -233,7 +233,7 @@ static const ElementIdInfo kColorVolumeMetadataIds[] = {
     {FLOAT, kWebMIdLuminanceMin},
 };
 
-static const ElementIdInfo kProjectionIds[]{
+static const ElementIdInfo kProjectionIds[] = {
     {UINT, kWebMIdProjectionType},      {SKIP_BINARY, kWebMIdProjectionPrivate},
     {FLOAT, kWebMIdProjectionPoseYaw},  {FLOAT, kWebMIdProjectionPosePitch},
     {FLOAT, kWebMIdProjectionPoseRoll},
