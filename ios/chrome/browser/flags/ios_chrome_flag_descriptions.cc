@@ -1534,10 +1534,10 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kShowTabGridOnStartName[] = "Show TabGrid on start";
-const char kShowTabGridOnStartDescription[] =
-    "Show TabGrid on start if the last activation is within a specific time "
-    "interval";
+const char kShowTabGroupInGridOnStartName[] = "Show tab group in grid on start";
+const char kShowTabGroupInGridOnStartDescription[] =
+    "Show tab group in grid on start if the last activation is within a "
+    "specific time interval";
 
 const char kSignInButtonNoAvatarName[] =
     "Display sign-in button without avatar";

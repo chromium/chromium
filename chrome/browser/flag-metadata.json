@@ -9366,7 +9366,7 @@
     "expiry_milestone": 140
   },
   {
-    "name": "show-tab-grid-on-start",
+    "name": "show-tab-group-in-grid-on-start",
     "owners": [ "achara@google.com", "ewannpv@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 146
   },

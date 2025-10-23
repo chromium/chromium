@@ -16,13 +16,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
-@interface FakeSceneState ()
-// Redeclare interface provider readwrite.
-@property(nonatomic, strong, readwrite) id<BrowserProviderInterface>
-    browserProviderInterface;
-
-@end
-
 @implementation FakeSceneState {
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;

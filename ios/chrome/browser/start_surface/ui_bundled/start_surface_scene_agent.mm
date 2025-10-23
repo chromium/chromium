@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -93,6 +95,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       self.waitingForProfileStateAfterSceneStateReady) {
     self.waitingForProfileStateAfterSceneStateReady = NO;
     [self showStartSurfaceIfNecessary];
+    [self showTabGroupInGridIfNecessary];
   }
 }
 
@@ -102,6 +105,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   if (self.waitingForProfileStateAfterSceneStateReady) {
     self.waitingForProfileStateAfterSceneStateReady = NO;
     [self showStartSurfaceIfNecessary];
+    [self showTabGroupInGridIfNecessary];
   }
 }
 
@@ -132,6 +136,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       self.previousActivationLevel < SceneActivationLevelForegroundInactive) {
     [self logBackgroundDurationMetricForActivationLevel:level];
     [self showStartSurfaceIfNecessary];
+    [self showTabGroupInGridIfNecessary];
   }
   self.previousActivationLevel = level;
 }
@@ -401,4 +406,49 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 }
 
+// Shows the active tab group in tab grid view if chrome becomes active during a
+// specific time interval since last activation.
+- (void)showTabGroupInGridIfNecessary {
+  if (!IsShowTabGroupInGridOnStartEnabled()) {
+    return;
+  }
+
+  Browser* browser =
+      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
+
+  // Do not show if in IncognitoMode
+  if (browser->type() != Browser::Type::kRegular) {
+    return;
+  }
+
+  // Do not show if already visible.
+  if (self.sceneState.controller.isTabGridVisible) {
+    return;
+  }
+
+  if (!ShouldShowTabGroupInGridForSceneState(self.sceneState)) {
+    return;
+  }
+
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+    // Do not show if the app is not yet ready to present normal UI that is
+    // required by tab group in grid.
+    self.waitingForProfileStateAfterSceneStateReady = YES;
+    return;
+  }
+
+  WebStateList* webStateList = browser->GetWebStateList();
+  int index = webStateList->active_index();
+  const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
+  if (!tabGroup) {
+    // Do not show if active tab is not part of a group.
+    return;
+  }
+
+  // Activate the tab group in grid view.
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+}
 @end

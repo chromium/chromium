@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_FAKE_SCENE_STATE_H_
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "url/gurl.h"
 
 class ProfileIOS;
@@ -22,18 +23,22 @@ class ProfileIOS;
 
 - (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
 
+// Redeclares interface provider as readwrite.
+@property(nonatomic, strong, readwrite)
+    StubBrowserProviderInterface* browserProviderInterface;
+
 // Window for the associated scene, if any.
 // This is redeclared relative to FakeScene.window, except this is now readwrite
 // and backed by an instance variable.
 @property(nonatomic, strong, readwrite) UIWindow* window;
 
-// Re-declare appState as readwrite.
+// Redeclares appState as readwrite.
 @property(nonatomic, weak, readwrite) AppState* appState;
 
-// Append a suitable web state test double to the receiver's main interface.
+// Appends a suitable web state test double to the receiver's main interface.
 - (void)appendWebStateWithURL:(const GURL)URL;
 
-// Append `count` web states, all with `url` as the current URL, to the
+// Appends `count` web states, all with `url` as the current URL, to the
 - (void)appendWebStatesWithURL:(const GURL)URL count:(int)count;
 
 // Must be called before -dealloc.
