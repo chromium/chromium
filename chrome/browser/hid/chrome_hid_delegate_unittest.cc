@@ -1177,78 +1177,32 @@ TEST_F(ChromeHidDelegateExtensionRenderFrameTest,
   TestConnectAndNavigateCrossDocument(web_contents());
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AddChangeRemoveDevice DISABLED_AddChangeRemoveDevice
-#else
-#define MAYBE_AddChangeRemoveDevice AddChangeRemoveDevice
-#endif
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest,
-       MAYBE_AddChangeRemoveDevice) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, AddChangeRemoveDevice) {
   TestAddChangeRemoveDevice();
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NoPermissionDevice DISABLED_NoPermissionDevice
-#else
-#define MAYBE_NoPermissionDevice NoPermissionDevice
-#endif
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, MAYBE_NoPermissionDevice) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, NoPermissionDevice) {
   TestNoPermissionDevice();
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ReconnectHidService DISABLED_ReconnectHidService
-#else
-#define MAYBE_ReconnectHidService ReconnectHidService
-#endif
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, MAYBE_ReconnectHidService) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ReconnectHidService) {
   TestReconnectHidService();
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RevokeDevicePermission DISABLED_RevokeDevicePermission
-#else
-#define MAYBE_RevokeDevicePermission RevokeDevicePermission
-#endif
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest,
-       MAYBE_RevokeDevicePermission) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, RevokeDevicePermission) {
   TestRevokeDevicePermission();
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RevokeDevicePermissionEphemeral \
-  DISABLED_RevokeDevicePermissionEphemeral
-#else
-#define MAYBE_RevokeDevicePermissionEphemeral RevokeDevicePermissionEphemeral
-#endif
 TEST_F(ChromeHidDelegateExtensionServiceWorkerTest,
-       MAYBE_RevokeDevicePermissionEphemeral) {
+       RevokeDevicePermissionEphemeral) {
   TestRevokeDevicePermissionEphemeral();
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ConnectAndDisconnect DISABLED_ConnectAndDisconnect
-#else
-#define MAYBE_ConnectAndDisconnect ConnectAndDisconnect
-#endif
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest,
-       MAYBE_ConnectAndDisconnect) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndDisconnect) {
   TestConnectAndDisconnect(/*web_contents=*/nullptr);
 }
 
-// TODO(https://crbug.com/451813737): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ConnectAndRemove DISABLED_ConnectAndRemove
-#else
-#define MAYBE_ConnectAndRemove ConnectAndRemove
-#endif
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, MAYBE_ConnectAndRemove) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndRemove) {
   TestConnectAndRemove(/*web_contents=*/nullptr);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
