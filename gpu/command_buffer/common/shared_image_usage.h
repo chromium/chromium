@@ -78,14 +78,6 @@ enum SharedImageUsage : uint32_t {
   // Image will be written by Dawn (for WebGPU)
   SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 20,
 
-  // The image will be used by GLES2 only for raster over the GLES2 interface.
-  // Specified in conjunction with GLES2_READ and/or GLES2_WRITE.
-  SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY = 1 << 21,
-
-  // The image will be used by raster only over the GLES2 interface.
-  // Specified in conjunction with RASTER_READ and/or RASTER_WRITE.
-  SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 22,
-
   // Image will contain protected content to be scanned out. Note that this type
   // of image
   // won't necessarily be written to by a hardware video decoder, but will
@@ -93,10 +85,10 @@ enum SharedImageUsage : uint32_t {
   // to by a preprocessing step that converts the image's pixel format into
   // something the
   // display controller understands.
-  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 23,
+  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 21,
 
   // Image will be used as a WebGPU shared buffer
-  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 24,
+  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 22,
 
   // Image will be used only by the CPU for Read and Writes by the client.
   // Note that this flag is a special case and will be used in cases where
@@ -104,22 +96,22 @@ enum SharedImageUsage : uint32_t {
   // CPU for read/write but is not importable/texturable in the GPU. Once such
   // use case is CrOs where client CameraBufferFactory uses BufferFormat::R_8
   // to create a MappableSI but that format is non-texturable.
-  SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 25,
+  SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 23,
 
   // Image will be used as a WebNN shared tensor
-  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR = 1 << 26,
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR = 1 << 24,
 
   // Image will be used by one copy raster for raster source access.
-  SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE = 1 << 27,
+  SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE = 1 << 25,
 
   // Image will be used for CPU Reads by client.
-  SHARED_IMAGE_USAGE_CPU_READ = 1 << 28,
+  SHARED_IMAGE_USAGE_CPU_READ = 1 << 26,
 
   // Image will be read by WebNN.
-  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ = 1 << 29,
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ = 1 << 27,
 
   // Image will be written by WebNN.
-  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE = 1 << 30,
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE = 1 << 28,
 
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
@@ -129,7 +121,7 @@ enum SharedImageUsage : uint32_t {
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
   // image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1u << 31,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1u << 29,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
