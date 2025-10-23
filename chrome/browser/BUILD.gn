@@ -987,6 +987,8 @@ static_library("browser") {
     "performance_manager/policies/policy_features.h",
     "performance_manager/policies/termination_target_policy.cc",
     "performance_manager/policies/termination_target_policy.h",
+    "performance_manager/policies/transient_keep_alive_policy.cc",
+    "performance_manager/policies/transient_keep_alive_policy.h",
     "performance_manager/policies/working_set_trimmer_policy.cc",
     "performance_manager/policies/working_set_trimmer_policy.h",
     "performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h",

@@ -237,6 +237,12 @@ BASE_DECLARE_FEATURE(kKeepDefaultSearchEngineRendererAlive);
 // A feature to boost the priority of tabs that are being closed.
 BASE_DECLARE_FEATURE(kBoostClosingTabs);
 
+BASE_DECLARE_FEATURE(kTransientKeepAlivePolicy);
+
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTransientKeepAlivePolicyDuration);
+
+BASE_DECLARE_FEATURE_PARAM(size_t, kTransientKeepAlivePolicyMaxCount);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

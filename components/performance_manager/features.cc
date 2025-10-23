@@ -271,4 +271,24 @@ BASE_FEATURE(kKeepDefaultSearchEngineRendererAlive,
 
 BASE_FEATURE(kBoostClosingTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Defines the feature to enable this policy.
+BASE_FEATURE(kTransientKeepAlivePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Defines the Finch parameter for the keep-alive duration.
+// Default is 23 seconds, which represents the threshold at which approximately
+// 50% of renderer process could potentially be reused.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTransientKeepAlivePolicyDuration,
+                   &kTransientKeepAlivePolicy,
+                   "duration",
+                   base::Seconds(23));
+
+// Defines the Finch parameter for the maximum number of empty renderer
+// processes to keep alive simultaneously. Default is 10.
+BASE_FEATURE_PARAM(size_t,
+                   kTransientKeepAlivePolicyMaxCount,
+                   &kTransientKeepAlivePolicy,
+                   "count",
+                   10);
+
 }  // namespace performance_manager::features

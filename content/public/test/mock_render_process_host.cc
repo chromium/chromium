@@ -318,6 +318,10 @@ void MockRenderProcessHost::Cleanup() {
   }
   delayed_cleanup_ = false;
 
+  if (pending_reuse_ref_count_ > 0) {
+    return;
+  }
+
   if (listeners_.IsEmpty() && !deletion_callback_called_ &&
       !pending_view_count_) {
     if (IsInitializedAndNotDead()) {

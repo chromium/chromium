@@ -74,6 +74,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Node Removed"/>
 </enum>
 
+<!-- LINT.IfChange(TransientKeepAliveResult) -->
+
+<enum name="TransientKeepAliveResult">
+  <int value="0" label="Successful Reuse"/>
+  <int value="1" label="Evicted Due To Count Limit"/>
+  <int value="2" label="Timer Expired Without Reuse"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/policies/transient_keep_alive_policy.h:TransientKeepAliveResult) -->
+
 </enums>
 
 </histogram-configuration>

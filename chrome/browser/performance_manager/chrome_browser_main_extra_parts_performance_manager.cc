@@ -30,6 +30,7 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/termination_target_policy.h"
+#include "chrome/browser/performance_manager/policies/transient_keep_alive_policy.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -323,6 +324,15 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<performance_manager::policies::KeepAliveDSEPolicy>());
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kTransientKeepAlivePolicy)) {
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::TransientKeepAlivePolicy>());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 content::FeatureObserverClient*

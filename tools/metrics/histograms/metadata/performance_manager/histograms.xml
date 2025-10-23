@@ -362,6 +362,31 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.TransientKeepAlive.Result"
+    enum="TransientKeepAliveResult" expires_after="2026-10-16">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when a renderer process's transient keep-alive is resolved. This
+    tracks the final state of the keep-alive attempt, corresponding to the
+    TransientKeepAliveResult enum (e.g., successful reuse, eviction, or
+    timeout).
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.TransientKeepAlive.TimeToReuse" units="ms"
+    expires_after="2026-10-16">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded only when a process kept alive by the TransientKeepAlivePolicy was
+    successfully reused (i.e., when TransientKeepAliveResult::kReused is
+    recorded in the .Result histogram). Measures the time delta from when the
+    process became empty (and the keep-alive timer started) to when it was
+    reused for a new navigation.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
     units="%" expires_after="2026-02-22">
   <owner>anthonyvd@chromium.org</owner>
