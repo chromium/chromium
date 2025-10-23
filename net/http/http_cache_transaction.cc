@@ -4187,12 +4187,14 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
   // In order to conditionally log HttpCache.NoVarySearch.LookupTime.{Hit,Miss},
   // this doesn't use the SCOPED_UMA_HISTOGRAM_TIMER_MICROS macro, but the
   // bucket definitions are identical.
+  bool base_url_matched = false;
   const auto start_time = base::Time::Now();
   std::optional<NoVarySearchCache::LookupResult> maybe_result =
-      cache_->no_vary_search_cache_->Lookup(*request_);
+      cache_->no_vary_search_cache_->Lookup(*request_, base_url_matched);
   const auto elapsed = base::Time::Now() - start_time;
 
-  // There are six similar histograms, so use macros to minimise copy-and-paste
+  const bool is_main_frame = effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED;
+  // There are 12 similar histograms, so use macros to minimise copy-and-paste
   // errors.
 
 #define UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(full_suffix)           \
@@ -4200,11 +4202,17 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
       "HttpCache.NoVarySearch.LookupTime" full_suffix, elapsed, \
       base::Microseconds(1), base::Seconds(1), 50)
 
-#define UMA_HISTOGRAM_LOOKUP_TIME(suffix)                   \
-  if (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED) { \
-    UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(suffix ".MainFrame");  \
-  }                                                         \
+#define UMA_HISTOGRAM_LOOKUP_TIME_CHECKING_BASE_URL_MATCH(suffix) \
+  if (base_url_matched) {                                         \
+    UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(suffix ".BaseUrlMatched");   \
+  }                                                               \
   UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(suffix)
+
+#define UMA_HISTOGRAM_LOOKUP_TIME(suffix)                                   \
+  if (is_main_frame) {                                                      \
+    UMA_HISTOGRAM_LOOKUP_TIME_CHECKING_BASE_URL_MATCH(suffix ".MainFrame"); \
+  }                                                                         \
+  UMA_HISTOGRAM_LOOKUP_TIME_CHECKING_BASE_URL_MATCH(suffix)
 
   UMA_HISTOGRAM_LOOKUP_TIME("");
 
@@ -4215,6 +4223,7 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
   UMA_HISTOGRAM_LOOKUP_TIME(".Hit");
 
 #undef UMA_HISTOGRAM_LOOKUP_TIME
+#undef UMA_HISTOGRAM_LOOKUP_TIME_CHECKING_BASE_URL_MATCH
 #undef UMA_HISTOGRAM_LOOKUP_TIME_SINGLE
 
   if (maybe_result->original_url == request_->url) {

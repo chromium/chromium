@@ -141,6 +141,8 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // from this cache if it was not in the disk cache. Not const because it
   // updates the LRU linked list to mark the entry as recently used.
   std::optional<LookupResult> Lookup(const HttpRequestInfo& request);
+  std::optional<LookupResult> Lookup(const HttpRequestInfo& request,
+                                     bool& out_base_url_matched);
 
   // Inserts `url` into the cache if a non-default "No-Vary-Search" header was
   // found in `headers`. On insertion, will remove any existing matching entry
