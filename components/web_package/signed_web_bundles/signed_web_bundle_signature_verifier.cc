@@ -40,6 +40,16 @@ namespace {
 
 std::vector<uint8_t> CreateIntegrityBlockCbor(
     const SignedWebBundleIntegrityBlock& integrity_block) {
+  // This function looks like it should use a cbor::Value::ArrayValue to build
+  // the outer array, but it can't: one of the elements is a pre-encoded CBOR
+  // value which we can't safely decode because it's untrusted input. This is
+  // obviously undesirable, because there's no guarantee at all that the
+  // pre-encoded value is actually valid CBOR.
+  //
+  // TODO(https://crbug.com/454485901): once there's a memory-safe CBOR parser,
+  // re-parse the pre-encoded value, then re-encode it here instead of
+  // constructing a CBOR array by hand so that we're guaranteed that the result
+  // of this function is valid.
   std::vector<uint8_t> ib_cbor;
 
   // 0x84 is the encoding byte for an array of length 4.
