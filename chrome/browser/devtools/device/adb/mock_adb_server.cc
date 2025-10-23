@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -222,7 +223,7 @@ class SimpleHttpServer {
  public:
   class Parser {
    public:
-    virtual size_t Consume(const char* data, size_t size) = 0;
+    virtual size_t Consume(base::span<const uint8_t> data) = 0;
     virtual ~Parser() = default;
   };
 
@@ -362,8 +363,7 @@ void SimpleHttpServer::Connection::OnDataRead(int count) {
 
   do {
     base::span<uint8_t> data_buffer = input_buffer_->span_before_offset();
-    base::span<char> data_chars = base::as_writable_chars(data_buffer);
-    bytes_processed = parser_->Consume(data_chars.data(), data_chars.size());
+    bytes_processed = parser_->Consume(data_buffer);
 
     if (bytes_processed) {
       const size_t unprocessed_size = data_buffer.size() - bytes_processed;
@@ -457,21 +457,23 @@ class AdbParser : public SimpleHttpServer::Parser,
         callback_(callback) {
   }
 
-  size_t Consume(const char* data, size_t size) override {
+  size_t Consume(base::span<const uint8_t> data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    const size_t size = data.size();
     if (mock_connection_) {
-      mock_connection_->Receive(std::string(data, size));
+      mock_connection_->Receive(std::string(base::as_string_view(data)));
       return size;
     }
     if (size >= kAdbMessageHeaderSize) {
-      std::string message_header(data, kAdbMessageHeaderSize);
+      std::string_view message_header =
+          base::as_string_view(data.first(kAdbMessageHeaderSize));
       uint32_t message_size;
 
       EXPECT_TRUE(base::HexStringToUInt(message_header, &message_size));
 
       if (size >= message_size + kAdbMessageHeaderSize) {
-        std::string message_body(UNSAFE_TODO(data + kAdbMessageHeaderSize),
-                                 message_size);
+        std::string message_body(base::as_string_view(
+            data.subspan(kAdbMessageHeaderSize, message_size)));
         ProcessCommand(message_body);
         return kAdbMessageHeaderSize + message_size;
       }

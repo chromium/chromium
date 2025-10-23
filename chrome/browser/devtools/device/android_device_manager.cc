@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -201,7 +202,7 @@ class HttpRequest {
     std::string request = base::StrCat(pieces);
     auto base_buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(request.size());
-    UNSAFE_TODO(memcpy(base_buffer->data(), request.data(), request.size()));
+    base_buffer->span().copy_from(base::as_byte_span(request));
     request_ = base::MakeRefCounted<net::DrainableIOBuffer>(
         std::move(base_buffer), request.size());
     timeout_timer_.Start(

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "net/base/io_buffer.h"
@@ -126,7 +127,8 @@ int AndroidUsbSocket::Read(net::IOBuffer* buffer,
 
   size_t bytes_to_copy = static_cast<size_t>(length) > read_buffer_.length() ?
       read_buffer_.length() : static_cast<size_t>(length);
-  UNSAFE_TODO(memcpy(buffer->data(), read_buffer_.data(), bytes_to_copy));
+  buffer->span().copy_prefix_from(
+      base::as_byte_span(read_buffer_).first(bytes_to_copy));
   if (read_buffer_.length() > bytes_to_copy)
     read_buffer_ = read_buffer_.substr(bytes_to_copy);
   else
@@ -235,10 +237,11 @@ void AndroidUsbSocket::RespondToReader(bool disconnect) {
   if (read_callback_.is_null() || (read_buffer_.empty() && !disconnect))
     return;
   size_t bytes_to_copy =
-      static_cast<size_t>(read_length_) > read_buffer_.length() ?
-          read_buffer_.length() : static_cast<size_t>(read_length_);
-  UNSAFE_TODO(
-      memcpy(read_io_buffer_->data(), read_buffer_.data(), bytes_to_copy));
+      static_cast<size_t>(read_length_) > read_buffer_.length()
+          ? read_buffer_.length()
+          : static_cast<size_t>(read_length_);
+  read_io_buffer_->span().copy_prefix_from(
+      base::as_byte_span(read_buffer_).first(bytes_to_copy));
   if (read_buffer_.length() > bytes_to_copy)
     read_buffer_ = read_buffer_.substr(bytes_to_copy);
   else
