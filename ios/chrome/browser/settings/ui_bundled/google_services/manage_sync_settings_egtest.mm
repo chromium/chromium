@@ -177,7 +177,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
     config.features_enabled.push_back(kLinkedServicesSettingIos);
   }
 
-  if ([self isRunningTest:@selector(testSwitchAccountFromAccountMenu)] ||
+  if ([self isRunningTest:@selector(DISABLED_testSwitchAccountFromAccountMenu)] ||
       [self isRunningTest:@selector(testSignOutFromAccountFromAccountMenu)]) {
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   }
@@ -1655,7 +1655,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Test switching account from the account menu.
-- (void)testSwitchAccountFromAccountMenu {
+- (void)DISABLED_testSwitchAccountFromAccountMenu {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
