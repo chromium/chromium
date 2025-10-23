@@ -466,7 +466,31 @@ enum class PasskeyUserVerificationStatus {
                                        acceptedCredentialIDs:
                                            (NSArray<NSData*>*)
                                                acceptedCredentialIDs {
-  // TODO(crbug.com/432260316): Implement.
+  if (!IsSignalAPIEnabled()) {
+    return;
+  }
+
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return [credential.rpId isEqualToString:relyingParty] &&
+               [credential.userId isEqualToData:userHandle];
+      }];
+  if (credentialIndex == NSNotFound) {
+    return;
+  }
+
+  id<Credential> credential = credentials[credentialIndex];
+  BOOL credentialShouldBeHidden =
+      ![acceptedCredentialIDs containsObject:credential.credentialId];
+  if (credential.hidden == credentialShouldBeHidden) {
+    return;
+  }
+
+  credential.hidden = credentialShouldBeHidden;
+  credential.hiddenTime = base::Time::Now().InMillisecondsSinceUnixEpoch();
+  SavePasskeyCredential(credential);
 }
 
 - (void)reportUnusedPasswordCredentialForDomain:(NSString*)domain
