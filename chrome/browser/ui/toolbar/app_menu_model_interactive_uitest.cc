@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -117,39 +118,41 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
  protected:
   auto CheckIncognitoWindowOpened(const Browser* default_browser) {
     return Check(base::BindLambdaForTesting([default_browser]() {
-      Browser* new_browser = nullptr;
+      BrowserWindowInterface* new_browser = nullptr;
       if (BrowserList::GetIncognitoBrowserCount() == 1) {
         EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-        for (Browser* browser : *BrowserList::GetInstance()) {
-          if (browser != default_browser) {
-            new_browser = browser;
-            break;
-          }
-        }
+        ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+            [default_browser, &new_browser](BrowserWindowInterface* browser) {
+              if (browser != default_browser) {
+                new_browser = browser;
+              }
+              return !new_browser;
+            });
         CHECK(new_browser);
       } else {
         new_browser = ui_test_utils::WaitForBrowserToOpen();
       }
-      return new_browser->profile()->IsIncognitoProfile();
+      return new_browser->GetProfile()->IsIncognitoProfile();
     }));
   }
 
   auto CheckGuestWindowOpened(const Browser* default_browser) {
     return Check(base::BindLambdaForTesting([default_browser]() {
-      Browser* new_browser = nullptr;
+      BrowserWindowInterface* new_browser = nullptr;
       if (BrowserList::GetGuestBrowserCount() == 1) {
         EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-        for (Browser* browser : *BrowserList::GetInstance()) {
-          if (browser != default_browser) {
-            new_browser = browser;
-            break;
-          }
-        }
+        ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+            [default_browser, &new_browser](BrowserWindowInterface* browser) {
+              if (browser != default_browser) {
+                new_browser = browser;
+              }
+              return !new_browser;
+            });
         CHECK(new_browser);
       } else {
         new_browser = ui_test_utils::WaitForBrowserToOpen();
       }
-      return new_browser->profile()->IsGuestSession();
+      return new_browser->GetProfile()->IsGuestSession();
     }));
   }
 };
