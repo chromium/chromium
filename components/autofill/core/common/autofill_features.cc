@@ -49,8 +49,7 @@ const base::FeatureParam<int> kAutofillOnTypingMinNumberCharactersToMatch{
 // This parameter enables updating the maximum number of characters typed until
 // Autofill on typing suggestions are no longer displayed.
 const base::FeatureParam<int> kAutofillOnTypingMaxNumberCharactersToMatch{
-    &kAutofillAddressSuggestionsOnTyping, "max_number_characeters_to_match",
-    10};
+    &kAutofillAddressSuggestionsOnTyping, "max_number_characters_to_match", 10};
 
 // This parameter enables updating the required number of characters that need
 // to be missing between the typed data and the profile data. This makes sure
