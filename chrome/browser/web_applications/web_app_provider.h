@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -252,7 +253,11 @@ class WebAppProvider : public KeyedService {
   // Returns a nullptr in the default implementation
   virtual FakeWebAppProvider* AsFakeWebAppProviderForTesting();
 
-  void DoDelayedPostStartupWork();
+  // Calling this will prevent the delayed post-startup work (e.g. the
+  // `DoDelayedPostStartupWork` method) from being scheduled as a delayed task.
+  // This will CHECK-fail if the system has already started.
+  // Returns a callback that, when called, calls `DoDelayedPostStartupWork`.
+  base::OnceClosure DisableDelayedPostStartupWorkForTesting();
 
  protected:
   virtual void StartImpl();
@@ -267,6 +272,8 @@ class WebAppProvider : public KeyedService {
   void OnSyncBridgeReady();
 
   void CheckIsConnected() const;
+
+  void DoDelayedPostStartupWork();
 
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;
@@ -311,6 +318,7 @@ class WebAppProvider : public KeyedService {
   bool started_ = false;
   bool connected_ = false;
   bool is_registry_ready_ = false;
+  bool prevent_delayed_startup_tasks_for_testing_ = false;
 
   base::WeakPtrFactory<WebAppProvider> weak_ptr_factory_{this};
 };

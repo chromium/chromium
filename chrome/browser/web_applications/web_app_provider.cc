@@ -355,6 +355,13 @@ FakeWebAppProvider* WebAppProvider::AsFakeWebAppProviderForTesting() {
   return nullptr;
 }
 
+base::OnceClosure WebAppProvider::DisableDelayedPostStartupWorkForTesting() {
+  CHECK(!started_);
+  prevent_delayed_startup_tasks_for_testing_ = true;
+  return base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 void WebAppProvider::StartImpl() {
   StartSyncBridge();
 }
@@ -510,6 +517,9 @@ void WebAppProvider::OnSyncBridgeReady() {
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
 
+  if (prevent_delayed_startup_tasks_for_testing_) {  // IN-TEST
+    return;                                          // IN-TEST
+  }
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(
           FROM_HERE,

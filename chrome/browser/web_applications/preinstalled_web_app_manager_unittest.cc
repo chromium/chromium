@@ -32,9 +32,11 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/fake_extensions_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -47,10 +49,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/common/manifest_id_constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
@@ -632,9 +637,14 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
   static constexpr std::string_view kScope = "https://www.example.com/";
   static constexpr std::u16string_view kAppName = u"Example App";
 
-  static ExternalInstallOptions GetInstallOptionsWithFactory() {
+  static ExternalInstallOptions GetInstallOptionsWithFactory(
+      webapps::ManifestId manifest_id = GURL(kManifestId),
+      GURL install_url = GURL(kInstallUrl),
+      GURL start_url = GURL(kStartUrl),
+      GURL manifest_url = GURL(kManifestUrl),
+      GURL scope = GURL(kScope)) {
     ExternalInstallOptions options(
-        /*install_url=*/GURL(kInstallUrl),
+        /*install_url=*/install_url,
         /*user_display_mode=*/
         mojom::UserDisplayMode::kBrowser,
         /*install_source=*/ExternalInstallSource::kExternalDefault);
@@ -642,27 +652,30 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     options.user_type_allowlist = {"unmanaged", "managed", "child"};
     options.expected_app_id =
         GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
-    options.app_info_factory = base::BindRepeating([]() {
-      GURL start_url = GURL(kStartUrl);
-      webapps::ManifestId manifest_id = webapps::ManifestId(kManifestId);
-      auto info = std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
-      info->title = kAppName;
-      info->scope = GURL(kScope);
-      info->display_mode = DisplayMode::kStandalone;
-      info->install_url = GURL(kInstallUrl);
-      info->icon_bitmaps.any = {
-          {144,
-           ::gfx::test::CreateBitmap(
-               FakeWebContentsManager::kBasicInstallIconSize, SK_ColorGREEN)}};
-      return info;
-    });
+    options.app_info_factory = base::BindRepeating(
+        [](webapps::ManifestId manifest_id, GURL start_url, GURL scope,
+           GURL install_url) {
+          auto info =
+              std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
+          info->title = kAppName;
+          info->scope = scope;
+          info->display_mode = DisplayMode::kStandalone;
+          info->install_url = install_url;
+          info->icon_bitmaps.any = {
+              {144, ::gfx::test::CreateBitmap(
+                        FakeWebContentsManager::kBasicInstallIconSize,
+                        SK_ColorGREEN)}};
+          return info;
+        },
+        manifest_id, start_url, scope, install_url);
 
     return options;
   }
 
-  static ExternalInstallOptions GetInstallOptionsFromManifest() {
+  static ExternalInstallOptions GetInstallOptionsFromManifest(
+      GURL install_url = GURL(kInstallUrl)) {
     ExternalInstallOptions options(
-        /*install_url=*/GURL(kInstallUrl),
+        /*install_url=*/install_url,
         /*user_display_mode=*/
         mojom::UserDisplayMode::kBrowser,
         /*install_source=*/ExternalInstallSource::kExternalDefault);
@@ -693,15 +706,22 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     fake_extensions_manager->SetExtensionsSytemReady(true);
     fake_provider().SetExtensionsManager(std::move(fake_extensions_manager));
 
+    SetupPageState();
+  }
+
+  void SetupPageState(webapps::ManifestId manifest_id = GURL(kManifestId),
+                      GURL install_url = GURL(kInstallUrl),
+                      GURL start_url = GURL(kStartUrl),
+                      GURL manifest_url = GURL(kManifestUrl)) {
     // Make sure the 'manifest' preinstall state matches the app factory
     // preinstall state
     fake_web_contents_manager().CreateBasicInstallPageState(
-        GURL(kInstallUrl), GURL(kManifestUrl), GURL(kStartUrl));
+        install_url, manifest_url, start_url);
 
     // Make the manifest state match GetInstallOptionsWithFactory().
     auto& page_state =
-        fake_web_contents_manager().GetOrCreatePageState(GURL(kInstallUrl));
-    page_state.manifest_before_default_processing->id = GURL(kManifestId);
+        fake_web_contents_manager().GetOrCreatePageState(install_url);
+    page_state.manifest_before_default_processing->id = manifest_id;
     page_state.manifest_before_default_processing->name = kAppName;
 
     auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
@@ -773,6 +793,111 @@ TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaManifest) {
   EXPECT_THAT(
       icons.Get().trusted_icons.any.at(144),
       gfx::test::EqualsBitmap(gfx::test::CreateBitmap(144, SK_ColorGREEN)));
+}
+
+class PreinstalledWebAppManagerChatUpdate
+    : public PreinstalledWebAppManagerBasicTest {
+ public:
+  GURL GetChatInstallUrl() const {
+    return GURL(webapps::kMailGoogleChatInstallUrl);
+  }
+  webapps::ManifestId GetChatManifestId() const {
+    return webapps::ManifestId(webapps::kMailGoogleChatManifestId);
+  }
+
+  GURL GetChatStartUrl() const {
+    return GURL(webapps::kMailGoogleChatManifestId);
+  }
+
+  GURL GetChatManifestUrl() const {
+    return GURL(
+        base::StrCat({webapps::kMailGoogleChatManifestId, "manifest.json"}));
+  }
+
+  webapps::AppId GetChatAppId() const {
+    return GenerateAppIdFromManifestId(
+        webapps::ManifestId(webapps::kMailGoogleChatManifestId));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebAppPeriodicPreinstallUpdate};
+};
+
+TEST_F(PreinstalledWebAppManagerChatUpdate, PRE_UpdateOccursForChat) {
+  // The PRE test should install the chat app where the configuration should
+  // match the one that is attempted to be updated by the
+  // `WebAppProvider::DoDelayedPostStartupWork`.
+  preinstalled_app_override_->apps = {GetInstallOptionsWithFactory(
+      GetChatManifestId(), GetChatInstallUrl(), GetChatStartUrl(),
+      GetChatManifestUrl(), GetChatStartUrl().GetWithoutFilename())};
+
+  // This should install the chat app with the configuration of SetupPageState
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // Expect no scope extensions.
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      GetChatAppId(), WebAppFilter::InstalledInChrome()));
+  EXPECT_THAT(provider()
+                  .registrar_unsafe()
+                  .GetAppById(GetChatAppId())
+                  ->validated_scope_extensions(),
+              testing::IsEmpty());
+}
+
+TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateOccursForChat) {
+  const url::Origin kOtherOrigin =
+      url::Origin::Create(GURL("https://www.example.com"));
+  // This shouldn't result in any app changes, it's the same configuration.
+  preinstalled_app_override_->apps = {GetInstallOptionsWithFactory(
+      GetChatManifestId(), GetChatInstallUrl(), GetChatStartUrl(),
+      GetChatManifestUrl(), GetChatStartUrl().GetWithoutFilename())};
+
+  // This should NOT install the chat app with scope extensions, instead the
+  // state should stay the same.
+  base::OnceClosure post_startup_tasks =
+      provider().DisableDelayedPostStartupWorkForTesting();
+  // Fake out the association fetcher, so we don't have to handle those
+  // requests.
+  auto fake_association_manager =
+      std::make_unique<FakeWebAppOriginAssociationManager>();
+  fake_association_manager->set_pass_through(true);
+  fake_provider().SetOriginAssociationManager(
+      std::move(fake_association_manager));
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // Expect no scope extensions.
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      GetChatAppId(), WebAppFilter::InstalledInChrome()));
+  EXPECT_THAT(provider()
+                  .registrar_unsafe()
+                  .GetAppById(GetChatAppId())
+                  ->validated_scope_extensions(),
+              testing::IsEmpty());
+
+  // Set up the manifest state to have scope extensions, and trigger the
+  // post-startup task to update.
+  GURL::Replacements update_url_query_adder;
+  update_url_query_adder.SetQueryStr("usp=chrome_preinstall_update");
+  GURL update_install_url =
+      GetChatInstallUrl().ReplaceComponents(update_url_query_adder);
+  SetupPageState(GetChatManifestId(), update_install_url, GetChatStartUrl(),
+                 GetChatManifestUrl());
+  auto& page_state =
+      fake_web_contents_manager().GetOrCreatePageState(update_install_url);
+  page_state.manifest_before_default_processing->scope_extensions.push_back(
+      blink::mojom::ManifestScopeExtension::New(kOtherOrigin,
+                                                /*has_origin_wildcard=*/false));
+  std::move(post_startup_tasks).Run();
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_THAT(provider()
+                  .registrar_unsafe()
+                  .GetAppById(GetChatAppId())
+                  ->validated_scope_extensions(),
+              testing::ElementsAre(ScopeExtensionInfo::CreateForOrigin(
+                  kOtherOrigin, /*has_origin_wildcard=*/false)));
 }
 
 }  // namespace web_app
