@@ -874,9 +874,6 @@ BASE_FEATURE(kForceOnDeviceAppControlsForAllRegions,
 // For more info, see go/crosforest.
 BASE_FEATURE(kForestFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to allow keeping full screen mode after unlock.
-BASE_FEATURE(kFullscreenAfterUnlockAllowed, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
 // and the active window is in fullscreen.
@@ -2847,10 +2844,6 @@ bool ShouldForceEnableServerSideSpeechRecognition() {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING);
-}
-
-bool IsFullscreenAfterUnlockAllowed() {
-  return base::FeatureList::IsEnabled(kFullscreenAfterUnlockAllowed);
 }
 
 bool IsFullscreenAlertBubbleEnabled() {

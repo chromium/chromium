@@ -76,13 +76,6 @@ void FullscreenController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void FullscreenController::MaybeExitFullscreenBeforeLock(
     base::OnceClosure callback) {
-  // Check whether it is allowed to keep full screen on unlock.
-  if (!features::IsFullscreenAfterUnlockAllowed()) {
-    ExitFullscreenIfActive();
-    std::move(callback).Run();
-    return;
-  }
-
   // Nothing to do if the active window is not in full screen mode.
   WindowState* active_window_state = WindowState::ForActiveWindow();
   if (!active_window_state || !active_window_state->IsFullscreen()) {
