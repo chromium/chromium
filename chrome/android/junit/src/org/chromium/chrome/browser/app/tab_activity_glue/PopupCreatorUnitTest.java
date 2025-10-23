@@ -126,7 +126,7 @@ public class PopupCreatorUnitTest {
     public void testPopupsDisabledWhenFeatureDisabled() {
         Assert.assertFalse(
                 "Popups should not be enabled when the feature is disabled",
-                PopupCreator.arePopupsEnabled(mDisplay));
+                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class PopupCreatorUnitTest {
         Assert.assertFalse(
                 "Popups should not be enabled if the delegate returns false when"
                         + " isTaskMoveAllowedOnDisplay is called",
-                PopupCreator.arePopupsEnabled(mDisplay));
+                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class PopupCreatorUnitTest {
         AconfigFlaggedApiDelegate.setInstanceForTesting(null);
         Assert.assertFalse(
                 "Popups should not be enabled if the delegate is null",
-                PopupCreator.arePopupsEnabled(mDisplay));
+                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
     }
 
     @Test
@@ -163,7 +163,29 @@ public class PopupCreatorUnitTest {
         Assert.assertTrue(
                 "Popups should be enabled if the delegate returns true when"
                         + " isTaskMoveAllowedOnDisplay is called",
-                PopupCreator.arePopupsEnabled(mDisplay));
+                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testPopupsEnabledWhenDelegateReturnsTrue_WindowFeaturesOnDifferentDisplay() {
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(100, 200, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
+        doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
+        doReturn(false)
+                .when(mFlaggedApiDelegate)
+                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
+        doReturn(true)
+                .when(mFlaggedApiDelegate)
+                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(EXTERNAL_DISPLAY_ID));
+
+        Assert.assertTrue(
+                "Popups should be enabled if the delegate returns true when"
+                        + " isTaskMoveAllowedOnDisplay is called",
+                PopupCreator.arePopupsEnabled(windowFeatures, mDisplay));
     }
 
     @Test

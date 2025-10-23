@@ -252,7 +252,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         WindowAndroid window = mTab.getWindowAndroid();
         boolean openingPopup =
                 window != null
-                        && PopupCreator.arePopupsEnabled(window.getDisplay())
+                        && PopupCreator.arePopupsEnabled(windowFeatures, window.getDisplay())
                         && (disposition == WindowOpenDisposition.NEW_POPUP);
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             RecordHistogram.recordBooleanHistogram(
