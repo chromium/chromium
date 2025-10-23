@@ -323,7 +323,7 @@ PageActionIconView* PageActionIconController::GetIconView(
 }
 
 PageActionIconType PageActionIconController::GetIconType(
-    PageActionIconView* view) {
+    const PageActionIconView* view) const {
   for (auto& page_action : page_action_icon_views_) {
     if (page_action.second == view) {
       return page_action.first;

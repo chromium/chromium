@@ -890,30 +890,42 @@ void LocationBarView::Layout(PassKey) {
     }
   }
 
-  auto add_trailing_decoration = [&](View* view, int intra_item_padding) {
+  auto add_trailing_decoration = [&](View* view, int intra_item_padding,
+                                     int edge_padding) {
     if (view->GetVisible()) {
       trailing_decorations.AddDecoration(
           vertical_padding, location_height, /*auto_collapse=*/false,
-          /*max_fraction=*/0, intra_item_padding,
-          trailing_decorations_edge_padding, view);
+          /*max_fraction=*/0, intra_item_padding, edge_padding, view);
     }
   };
 
+  // For page contexts where all non-AIM page actions are hidden, the AIM page
+  // action should be flush against the right-edge of the location bar.
+  const int kTrailingEdgePaddingForAim = -3;
   add_trailing_decoration(page_action_icon_container_,
-                          /*intra_item_padding=*/0);
+                          /*intra_item_padding=*/0,
+                          /*edge_padding=*/
+                          ShouldHidePageActionIconsForContext(
+                              omnibox_view_->model()->GetPageClassification())
+                              ? kTrailingEdgePaddingForAim
+                              : trailing_decorations_edge_padding);
   add_trailing_decoration(page_action_container_,
-                          /*intra_item_padding=*/0);
+                          /*intra_item_padding=*/0,
+                          /*edge_padding=*/trailing_decorations_edge_padding);
   for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
     int intra_item_padding = kContentSettingIntraItemPadding;
-    add_trailing_decoration(view, intra_item_padding);
+    add_trailing_decoration(view, intra_item_padding,
+                            /*edge_padding=*/trailing_decorations_edge_padding);
   }
 
   if (intent_chip_) {
     int intra_item_padding = kIntentChipIntraItemPadding;
-    add_trailing_decoration(intent_chip_, intra_item_padding);
+    add_trailing_decoration(intent_chip_, intra_item_padding,
+                            /*edge_padding=*/trailing_decorations_edge_padding);
   }
 
-  add_trailing_decoration(clear_all_button_, /*intra_item_padding=*/0);
+  add_trailing_decoration(clear_all_button_, /*intra_item_padding=*/0,
+                          /*edge_padding=*/trailing_decorations_edge_padding);
 
   // Perform layout.
   int entry_width = width();
