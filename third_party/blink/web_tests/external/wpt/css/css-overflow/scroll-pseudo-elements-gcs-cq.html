@@ -6,6 +6,18 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
+  html {
+    container-type: inline-size;
+    width: 500px;
+    @container (width = 500px) {
+      /* None of these pseudo elements are rendered, but getComputedStyle()
+         should still work. If rendered, they would become child boxes of the
+         root element, thus they can query their originating element for size
+         container queries. */
+      &::scroll-marker-group { --test: pass; }
+      &::scroll-button(left) { --test: pass; }
+    }
+  }
   #container {
     container-type: inline-size;
     width: 400px;
@@ -27,6 +39,12 @@
   <div id="scroller"></div>
 </div>
 <script>
+  test(() => {
+    assert_equals(getComputedStyle(document.documentElement, "::scroll-marker-group").getPropertyValue("--test"), "pass");
+  }, "::scroll-marker-group queries root originating element for size queries");
+  test(() => {
+    assert_equals(getComputedStyle(document.documentElement, "::scroll-button(left)").getPropertyValue("--test"), "pass");
+  }, "::scroll-button skips queries root originating element for size queries");
   test(() => {
     assert_equals(getComputedStyle(scroller, "::scroll-marker-group").getPropertyValue("--test"), "pass");
   }, "::scroll-marker-group skips originating element for size queries");
