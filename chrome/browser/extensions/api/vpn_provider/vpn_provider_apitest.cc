@@ -216,12 +216,12 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
                           GetKey(configuration_name));
   }
 
-  bool IsConfigConnected() const {
+  bool IsConfigConnected() {
     const auto& mapping = GetVpnServiceAsh()->extension_id_to_service_;
     if (!base::Contains(mapping, extension_id())) {
       return false;
     }
-    return mapping.at(extension_id())->OwnsActiveConfiguration();
+    return service()->OwnsActiveConfiguration(extension_id());
   }
 
   std::string GetSingleServicePath() {

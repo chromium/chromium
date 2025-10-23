@@ -79,11 +79,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
                            CreateConfigurationCallback) override;
   void DestroyConfiguration(const std::string& configuration_name,
                             DestroyConfigurationCallback) override;
-  void BindPepperVpnProxyObserver(
-      const std::string& configuration_name,
-      mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>
-          pepper_vpn_proxy_observer,
-      BindPepperVpnProxyObserverCallback) override;
 
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
@@ -93,7 +88,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   // Otherwise, returns std::nullopt.
   std::optional<std::string> GetActiveConfigurationObjectPath() const;
 
-  bool OwnsActiveConfiguration() const;
   bool HasConfigurationForServicePath(const std::string& service_path) const;
 
   void DestroyAllConfigurations();
@@ -249,9 +243,6 @@ class VpnServiceForExtensionAsh::VpnConfiguration
 
   virtual const std::optional<std::string>& service_path() const = 0;
   virtual void set_service_path(std::string) = 0;
-
-  virtual void BindPepperVpnProxyObserver(
-      mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>) = 0;
 };
 
 }  // namespace crosapi

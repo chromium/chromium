@@ -11,25 +11,6 @@ struct VpnErrorResponse {
   string? message@1;
 };
 
-// Adapter that allows packets received by ash to be routed through
-// PepperVpnProviderResourceHostProxy running in lacros.
-// See content/public/browser/pepper_vpn_provider_resource_host_proxy.h for
-// details.
-// Next version: 1
-// Next method id: 2
-[Uuid="abf3cd5e-a471-40a1-947b-3be9f8519da4"]
-interface PepperVpnProxyObserver {
-  // Invoked when the active Vpn configuration disconnects.
-  // Corresponds to
-  //    PepperVpnProviderResourceHostProxy::SendOnUnbind().
-  OnUnbind@0();
-
-  // Invoked when the active Vpn configuration receives |data| packet.
-  // Corresponds to
-  //    PepperVpnProviderResourceHostProxy::SendOnPacketReceived(...).
-  OnPacketReceived@1(array<uint8> data);
-};
-
 // Listens to events dispatched by VpnServiceForExtension.
 // See
 //   * chrome.vpnProvider.onPlatformMessage
@@ -71,19 +52,9 @@ interface VpnServiceForExtension {
       => (VpnErrorResponse? error);
 
   // SetParameters@2 was removed.
-
   // SendPacket@3 was removed.
-
   // NotifyConnectionStateChanged@4 was removed.
-
-  // Binds |pepper_vpn_proxy_observer| to the active configuration if it belongs
-  // to the extension and has name equal to
-  // |configuration_name|. On success all packets will be routed through
-  // Pepper API.
-  BindPepperVpnProxyObserver@5(string configuration_name,
-      pending_remote<PepperVpnProxyObserver> pepper_vpn_proxy_observer)
-      => (VpnErrorResponse? error);
-
+  // BindPepperVpnProxyObserver@5 was removed.
   // DispatchAddDialogEvent@6 was removed.
   // DispatchConfigureDialogEvent@7 was removed.
 };
