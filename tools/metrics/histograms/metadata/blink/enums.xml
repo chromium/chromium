@@ -6341,6 +6341,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5709" label="IdentityDigitalCredentialsCreationSuccess"/>
   <int value="5710" label="FedCmErrorCodeAttribute"/>
   <int value="5711" label="FedCmErrorErrorAttribute"/>
+  <int value="5712" label="AnimationAllTypes"/>
+  <int value="5713" label="AnimationSvgTypes"/>
+  <int value="5714" label="AnimationNonCompositedTypes"/>
+  <int value="5715" label="AnimationCompositedTypes"/>
+  <int value="5716" label="AnimationSvgNonCompositedTypes"/>
+  <int value="5717" label="AnimationSvgCompositedTypes"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

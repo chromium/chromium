@@ -5025,6 +5025,12 @@ enum WebFeature {
   kIdentityDigitalCredentialsCreationSuccess = 5709,
   kFedCmErrorCodeAttribute = 5710,
   kFedCmErrorErrorAttribute = 5711,
+  kAnimationAllTypes = 5712,
+  kAnimationSvgTypes = 5713,
+  kAnimationNonCompositedTypes = 5714,
+  kAnimationCompositedTypes = 5715,
+  kAnimationSvgNonCompositedTypes = 5716,
+  kAnimationSvgCompositedTypes = 5717,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

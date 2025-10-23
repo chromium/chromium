@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -222,6 +223,59 @@ void RecordCompositorAnimationFailureReasons(
       UMA_HISTOGRAM_ENUMERATION(
           "Blink.Animation.CompositedAnimationFailureReason", i + 1,
           kFailureReasonEnumMax);
+    }
+  }
+}
+
+// Helper function to record both UMA histogram and UseCounter for animation
+// types
+void RecordAnimationTypeAndUseCounter(BlinkAnimationType animation_type,
+                                      WebFeature web_feature,
+                                      ExecutionContext* execution_context) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.Animation.AnimationType", animation_type,
+                            BlinkAnimationType::kAnimationTypeEnumMax);
+  UseCounter::Count(execution_context, web_feature);
+}
+
+void RecordAnimationTypeMetrics(
+    bool is_svg_animation,
+    CompositorAnimations::FailureReasons failure_reasons,
+    ExecutionContext* execution_context) {
+  RecordAnimationTypeAndUseCounter(BlinkAnimationType::kAllAnimations,
+                                   WebFeature::kAnimationAllTypes,
+                                   execution_context);
+
+  if (is_svg_animation) {
+    RecordAnimationTypeAndUseCounter(BlinkAnimationType::kSvgAnimations,
+                                     WebFeature::kAnimationSvgTypes,
+                                     execution_context);
+  }
+
+  if (failure_reasons == CompositorAnimations::kNoFailure) {
+    // Record all composited animations in the general metric.
+    RecordAnimationTypeAndUseCounter(BlinkAnimationType::kCompositedAnimations,
+                                     WebFeature::kAnimationCompositedTypes,
+                                     execution_context);
+    if (is_svg_animation) {
+      // SVG animations are recorded in both metrics: the general composited
+      // animations metric (above) for overall statistics, and the SVG-specific
+      // metric (below) for tracking SVG animation behavior separately.
+      RecordAnimationTypeAndUseCounter(
+          BlinkAnimationType::kSvgCompositedAnimations,
+          WebFeature::kAnimationSvgCompositedTypes, execution_context);
+    }
+  } else {
+    // Record all non-composited animations in the general metric.
+    RecordAnimationTypeAndUseCounter(
+        BlinkAnimationType::kNonCompositedAnimations,
+        WebFeature::kAnimationNonCompositedTypes, execution_context);
+    // SVG animations are recorded in both metrics: the general non-composited
+    // animations metric (above) for overall statistics, and the SVG-specific
+    // metric (below) for tracking SVG animation behavior separately.
+    if (is_svg_animation) {
+      RecordAnimationTypeAndUseCounter(
+          BlinkAnimationType::kSvgNonCompositedAnimations,
+          WebFeature::kAnimationSvgNonCompositedTypes, execution_context);
     }
   }
 }
@@ -767,6 +821,13 @@ bool Animation::PreCommit(
               paint_artifact_compositor,
               base::OptionalToPtr(unsupported_properties_for_tracing));
       RecordCompositorAnimationFailureReasons(failure_reasons);
+
+      // Record animation type metrics
+      auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
+      const bool is_svg_animation =
+          keyframe_effect && IsA<SVGElement>(keyframe_effect->EffectTarget());
+      RecordAnimationTypeMetrics(is_svg_animation, failure_reasons,
+                                 GetExecutionContext());
 
       if (failure_reasons == CompositorAnimations::kNoFailure) {
         // We could still have a stale compositor keyframe model ID if

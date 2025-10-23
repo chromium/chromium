@@ -66,6 +66,17 @@ class StyleChangeReasonForTracing;
 class TreeScope;
 class TimelineRange;
 
+// This should be kept in sync with the `BlinkAnimationType` histogram.
+enum class BlinkAnimationType : int {
+  kAllAnimations = 0,
+  kSvgAnimations = 1,
+  kNonCompositedAnimations = 2,
+  kCompositedAnimations = 3,
+  kSvgNonCompositedAnimations = 4,
+  kSvgCompositedAnimations = 5,
+  kAnimationTypeEnumMax = 6
+};
+
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
                               public ExecutionContextLifecycleObserver,

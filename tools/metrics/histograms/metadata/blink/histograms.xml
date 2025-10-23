@@ -244,6 +244,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Animation.AnimationType" enum="BlinkAnimationType"
+    expires_after="2026-11-11">
+  <owner>kevers@chromium.org</owner>
+  <owner>dmangal@microsoft.com</owner>
+  <owner>animations-dev@chromium.org</owner>
+  <summary>
+    Records the type of animation (all types, SVG, composited, non-composited)
+    when an animation starts. This helps track usage patterns of different
+    animation types across the web. This is recorded when an animation attempts
+    to start, regardless of whether it successfully runs on the compositor.
+    Note: This does not include SVG SMIL animations.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Animation.CompositedAnimationFailureReason"
     enum="CompositorAnimationsFailureReason" expires_after="2026-04-05">
   <owner>smcgruer@chromium.org</owner>
