@@ -273,7 +273,10 @@ void TabHoverCardController::UpdateHoverCard(
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
-  if (!hover_card_ && (!tab || !tab_strip_->GetWidget())) {
+  // Note that this includes a check for whether the tab strip widget is
+  // visible (see crbug.com/454057267).
+  if (!hover_card_ && (!tab || !tab_strip_->GetWidget() ||
+                       !tab_strip_->GetWidget()->IsVisibleOnScreen())) {
     return;
   }
 
