@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ని ఉపయోగించి కొనసాగించడం సాధ్యం కాదు</translation>
 <translation id="1820408774134375111">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్</translation>
+<translation id="1823492026305965829"><ph name="USER_FULL_NAME" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="1825772852827001597">Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఎన్‌క్రిప్ట్ చేయబడవు. Chromeకు చెందిన బ్రౌజింగ్ హిస్టరీ సింక్ అవ్వదు.
 మీ రహస్య పదబంధం ఉన్న కొంతమంది మాత్రమే ఎన్‌క్రిప్ట్ చేసిన మీ డేటాను చదవగలరు. రహస్య పదబంధం Googleకు పంపబడదు లేదా Googleలో స్టోర్ చేయబడదు. మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">పేజీలో కనుగొనండి</translation>
@@ -261,6 +262,7 @@
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="22091350895006575">యూజర్‌నేమ్‌ను జోడించండి</translation>
 <translation id="221494669172414749">ప్రొఫైల్ లాక్ లేకుండా Chromeను తెరవడం వలన మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లు, పేమెంట్ ఆప్షన్‌లు కారు నుండి తీసివేయబడతాయి. ప్రొఫైల్ లాక్‌ను ఉపయోగించడం వల్ల ఈ డేటా సురక్షితంగా ఉంటుంది.</translation>
+<translation id="2227179592712503583">సూచనను తీసివేయండి</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />గా కొనసాగించండి</translation>
 <translation id="2230777942707397948">ఖాళీ విండో</translation>
 <translation id="223356358902285214">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
@@ -855,6 +857,7 @@
 <translation id="4910889077668685004">చెల్లింపు యాప్‌లు</translation>
 <translation id="4912413785358399818">ట్యాబ్‌ను తరలించండి</translation>
 <translation id="4913169188695071480">రీఫ్రెష్ చేయడం ఆపివేయి</translation>
+<translation id="4921224083091001889">మీ డివైజ్‌లన్నింటిలో మీ పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని పొందడానికి <ph name="EMAIL" />‌గా Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="4925120120285606924">స్క్రీన్‌షాట్ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">మీరు ఇమేజ్‌లు, ఫైల్స్‌ను సేవ్ చేసి ఆఫ్‌లైన్‌లో చూడవచ్చు లేదా ఇతర యాప్‌లలో వాటిని షేర్ చేయవచ్చు</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 బుక్‌మార్క్, ఇతర ఐటెమ్‌లు ఈ డివైజ్‌లో మాత్రమే సేవ్ అయ్యాయి. వాటిని మీ ఇతర డివైజ్‌లలో ఉపయోగించడానికి, మీ Google ఖాతాలో సేవ్ చేయండి.}other{# బుక్‌మార్క్‌లు, ఇతర ఐటెమ్‌లు ఈ డివైజ్‌లో మాత్రమే సేవ్ అయ్యాయి. వాటిని మీ ఇతర డివైజ్‌లలో ఉపయోగించడానికి, మీ Google ఖాతాలో సేవ్ చేయండి.}}</translation>
@@ -879,6 +882,7 @@
 <translation id="5007392906805964215">రివ్యూ చేయండి</translation>
 <translation id="5010886807652684893">విజువల్ వీక్షణ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
+<translation id="5012016139642806466">మీ డివైజ్‌లన్నింటిలో మీ పాస్‌వర్డ్‌లను, మరిన్నింటిని పొందండి</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" />, <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" />‌కు సంబంధం ఉన్నట్లు కనిపిస్తోంది. మీ పాస్‌వర్డ్‌ను ఉపయోగించే ముందు మీరు <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />‌ను ట్రస్ట్ చేస్తున్నారని నిర్ధారించుకోండి.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">గత 15 నిమిషాల డేటా</translation>
@@ -971,6 +975,7 @@
 <translation id="544776284582297024">ఒకే సమయంలో ట్యాబ్‍లను తెరిచి వేర్వేరు పేజీలను సందర్శించడానికి, ట్యాబ్‍లను తెరువు బటన్‍ను ట్యాప్ చేయండి</translation>
 <translation id="5456381639095306749">పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5458366071038729214">మీరు ఫాలో అయ్యే సైట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="5469852975082458401">టెక్స్ట్ కర్సర్‌తో మీరు పేజీలను నావిగేట్ చేయవచ్చు. ఆఫ్ చేయడానికి F7ను నొక్కండి.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ట్యాబ్‌ను తరలించడం సాధ్యం కాదు</translation>
 <translation id="548278423535722844">మ్యాప్స్ యాప్‌లో తెరువు</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />‌గా చేరండి</translation>
@@ -1107,7 +1112,6 @@
 <translation id="6124936178263837501">స్పామ్ కాదు అని రిపోర్ట్ చేయండి</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />మరిన్ని వివరాలు<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">అంశాన్ని తీసివేశారు</translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> సైట్లు ఉండే, <ph name="COLOR_NAME" /> రంగులో ఉండే <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను తెరవండి.</translation>
 <translation id="6130303040046284160">ట్యాబ్‌ను కుదించండి</translation>
 <translation id="6134168885321518274">కనుగొనే బార్‌ను తెరవండి</translation>
@@ -1147,6 +1151,7 @@
 <translation id="6255809143828972562">Chromeకు సంబంధించిన టూల్స్‌తో, మీరు సురక్షితంగా బ్రౌజ్ చేయవచ్చు, అలాగే కంట్రోల్‌లో ఉండవచ్చు</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>
+<translation id="6267106249090587268">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> స్పామ్ లేదా మోసపూరిత కంటెంట్‌ల కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="6276708887952587684">పేజీ సోర్స్ కోడ్‌ను చూడండి</translation>
 <translation id="6277522088822131679">పేజీని ముద్రిస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6278428485366576908">థీమ్</translation>
@@ -1217,6 +1222,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 గంట క్రితం చెక్ చేసింది}other{# గంటల క్రితం చెక్ చేసింది}}</translation>
 <translation id="6545017243486555795">మొత్తం డేటాను తీసివేయండి</translation>
 <translation id="6546511553472444032">ఫైల్ హానికరమైనది కావచ్చు</translation>
+<translation id="654871471440386944">క్యారెట్ బ్రౌజింగ్‌ను ఆన్ చేయాలా?</translation>
 <translation id="6550891580932862748">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు లేదా ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించదు. ఇతర Google ప్రోడక్ట్‌లలో మీ సురక్షిత బ్రౌజింగ్ సెట్టింగ్‌లు ప్రభావితం కావు.</translation>
 <translation id="6554822972009632311">కంటెంట్ ఫిల్టర్ ఆన్‌లో ఉంది</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, ఇంకా మరో <ph name="TAB_COUNT_ONE" /> ట్యాబ్ మూసివేయబడుతుంది}other{<ph name="TAB_TITLE" />, ఇంకా మరో <ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు మూసివేయబడతాయి}}</translation>

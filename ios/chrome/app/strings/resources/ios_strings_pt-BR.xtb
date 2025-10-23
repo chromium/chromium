@@ -1235,6 +1235,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5758759241456233788">Maps Previews desativados. Ative de novo nas configurações.</translation>
 <translation id="5759484603608560822">Ocultar Downloads</translation>
 <translation id="5767099457279594162">A senha não foi compartilhada</translation>
+<translation id="5768870767339201169">Volte de onde parou</translation>
 <translation id="5779117921996157216">{count,plural, =1{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas comprometidas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="5791632441210678828">Botão para ordenar o feed "Seguindo".</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>

@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">Maps-en aurrebista desaktibatuta dago. Berriro aktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="5759484603608560822">Ezkutatu "Deskargak"</translation>
 <translation id="5767099457279594162">Ez da partekatu pasahitza</translation>
+<translation id="5768870767339201169">Jarraitu utzi zenuen tokitik</translation>
 <translation id="5779117921996157216">{count,plural, =1{Arriskuan dagoen {count} pasahitz daukazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda ezazu.}other{Arriskuan dauden {count} pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda itzazu.}}</translation>
 <translation id="5791632441210678828">Jarraitzen jarioko Ordenatu botoia.</translation>
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
@@ -1792,6 +1793,7 @@
 <translation id="7851858861565204677">Beste gailu batzuk</translation>
 <translation id="7853202427316060426">Jarduerak</translation>
 <translation id="7854006015462979438">Ireki General (orokorra)</translation>
+<translation id="7855678267851972597">Audioak</translation>
 <translation id="7859988229622350291">Ez itzuli edukirik hizkuntza hauetako batean badago:</translation>
 <translation id="7863211248337747225">Lortu aplikazioa</translation>
 <translation id="7865127013871431856">Itzultzeko aukerak</translation>
@@ -1971,6 +1973,7 @@
 <translation id="8524799873541103884"><ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /> <ph name="INCOGNITO" /> fitxak</translation>
 <translation id="8528009254289981965">Ireki beste aplikazioetako estekak ezkutuko moduan</translation>
 <translation id="8529767659511976195">Berria</translation>
+<translation id="8531572740963685410">PDFak</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Arakatze segurua aktibatuta dago</translation>
 <translation id="8534481786647257214">Google+eko mezua argitaratu da.</translation>

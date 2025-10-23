@@ -1235,6 +1235,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5758759241456233788">Značajka Pregledi karata je isključena. Ponovno je uključite u postavkama.</translation>
 <translation id="5759484603608560822">Sakrij preuzimanja</translation>
 <translation id="5767099457279594162">Zaporka nije podijeljena</translation>
+<translation id="5768870767339201169">Nastavite tamo gdje ste stali</translation>
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ugroženu zaporku koja bi mogla ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}one{Imate {count} ugroženu zaporku koja bi mogla ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}few{Imate {count} ugrožene zaporke koje bi mogle ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}other{Imate {count} ugroženih zaporki koje bi mogle ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}}</translation>
 <translation id="5791632441210678828">Gumb za razvrstavanje za feed Praćeno</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti ovu novu karticu?</translation>
@@ -1691,6 +1692,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7484645889979462775">Nikad za ovu web lokaciju</translation>
 <translation id="7486006552035434095">Sinkronizirajte svoje uređaje</translation>
 <translation id="7491131399623468277">Otvorite postavke…</translation>
+<translation id="7491161827858509164">Da biste vidjeli datoteke koje ste prethodno preuzeli, otvorite <ph name="BEGIN_LINK" />Datoteke<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Nastavi uređivati</translation>
 <translation id="7500244509706269886">Automatski popuni obrazac</translation>
 <translation id="750493650310597496">Nije odabrana nijedna oznaka</translation>
@@ -1728,6 +1730,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612849887607288481">Otvorite izbornik za AI prototip</translation>
 <translation id="7620522820075868385">Odustani</translation>
+<translation id="762078666799342162">Ranija preuzimanja možete pregledati u aplikaciji <ph name="BEGIN_LINK" />Datoteke<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožene zaporke}=1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
 <translation id="7640669552036055091">Kartice s Androida</translation>

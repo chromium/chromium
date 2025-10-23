@@ -238,7 +238,7 @@
 <translation id="6684809838922667136">Chrome の品質を向上</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。ログイン中にこのデバイスにのみ保存されたデータは削除されます。これには履歴やパスワードが含まれる場合があります。}other{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。ログイン中にこのデバイスにのみ保存されたデータは削除されます。これには履歴やパスワードが含まれる場合があります。}}</translation>
 <translation id="6709398533399187136">データ侵害によってパスワードが漏洩しました。Google パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
-<translation id="6718973358446066955">Chrome の設定はあと少しで完了</translation>
+<translation id="6718973358446066955">Chrome の設定完了まであと少し</translation>
 <translation id="6820553595690137150">パスフレーズによる暗号化には、お支払い方法と住所は含まれません。
 
 この設定を変更するには、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />します。</translation>

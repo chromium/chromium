@@ -500,7 +500,7 @@
 서드 파티 소프트웨어와의 호환성 문제로 인해 LPAC 샌드박스 내에서 인쇄 서비스가 올바르게 작동하지 않는 경우에만 정책을 사용 중지하세요.</translation>
 <translation id="1369698103169067223">한눈에 보기가 사용 설정되지 않았습니다.</translation>
 <translation id="1371851989348083665">웹에서 <ph name="ASSISTANT_PRODUCT_NAME" /> 사용 허용</translation>
-<translation id="1372618949173323717">자바스크립트 사용 중지</translation>
+<translation id="1372618949173323717">JavaScript 사용 중지</translation>
 <translation id="1376119291123231789">고급 배터리 충전 모드를 사용 설정합니다.</translation>
 <translation id="1376299650477150211">고급 JavaScript 최적화가 사용 중지된 사이트를 지정하는 사이트 URL 패턴 목록을 설정할 수 있습니다.
 
@@ -10681,15 +10681,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
       정책을 사용 안함으로 설정하면 등록된 기기가 상세 보고 제어 권한을 받을 수 없습니다.</translation>
 <translation id="82530263956734297">차단 목록에서 제외할 확장 프로그램 ID</translation>
 <translation id="8254749125469750814">클라우드 서비스로 확장 프로그램을 설치할 수 있는지 확인하지 않습니다.</translation>
-<translation id="825509998103089977">Gemini 앱이 사용자를 대신하여 웹페이지에서 작업을 실행하도록 허용할지 제어합니다.
-
-0/설정 안 함 = Gemini 앱이 웹페이지에서 작업을 실행하도록 허용합니다.
-
-1 = Gemini 앱이 웹페이지에서 작업을 실행하도록 허용하지 않습니다.
-
-Gemini 앱이 사용 중지되면 이 정책은 아무런 영향을 미치지 않습니다. 예를 들어 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 Gemini 앱을 사용 중지할 수 있습니다.
-
-자세한 내용은 https://support.google.com/chrome/a/answer/16291696 페이지를 참고하세요.</translation>
 <translation id="8256006033157034334">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="8256688113167012935">계정 이름 <ph name="PRODUCT_OS_NAME" />을(를) 해당 기기 로컬 계정의 로그인 화면에 표시할 것인지 제어합니다.
 

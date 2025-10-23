@@ -181,6 +181,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Sign-in bottom sheet</translation>
+<translation id="1823492026305965829">Sign in as <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Find in page</translation>
@@ -261,6 +262,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="22091350895006575">Add username</translation>
 <translation id="221494669172414749">Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.</translation>
+<translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
@@ -855,6 +857,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4910889077668685004">Payment apps</translation>
 <translation id="4912413785358399818">Move tab</translation>
 <translation id="4913169188695071480">Stop refreshing</translation>
+<translation id="4921224083091001889">To get your passwords and more on all your devices; sign in to Chrome as <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">You can save images and files to view offline or share in other apps</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}other{# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
@@ -879,6 +882,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5007392906805964215">Review</translation>
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
+<translation id="5012016139642806466">Get your passwords and more on all your devices</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> and <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> seem to be related. Make sure that you trust <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> before using your password.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Last 15 minutes</translation>
@@ -971,6 +975,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
+<translation id="5469852975082458401">You can navigate pages with a text cursor. Press F7 to turn off.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1112,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6124936178263837501">Report as not spam</translation>
 <translation id="6125202119952209826">Join tab group with <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />More details<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Item removed</translation>
 <translation id="6127860394906721547">Open <ph name="TITLE_OF_GROUP" /> tab group, colour <ph name="COLOR_NAME" />, with sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimise tab</translation>
 <translation id="6134168885321518274">Open Find Bar</translation>
@@ -1220,6 +1224,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Checked 1 hour ago}other{Checked # hours ago}}</translation>
 <translation id="6545017243486555795">Clear All Data</translation>
 <translation id="6546511553472444032">File might be harmful</translation>
+<translation id="654871471440386944">Turn on caret browsing?</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
 <translation id="6554822972009632311">Content filter is on</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="TAB_TITLE" /> and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>

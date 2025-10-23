@@ -1235,6 +1235,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5758759241456233788">Pregled Mapa je isključen. Uključite ga ponovo u Postavkama.</translation>
 <translation id="5759484603608560822">Sakrij preuzimanja</translation>
 <translation id="5767099457279594162">Lozinka nije podijeljena</translation>
+<translation id="5768870767339201169">Nastavite tamo gdje ste stali</translation>
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ugroženu lozinku koja može ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}one{Imate {count} ugroženu lozinku koja može ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}few{Imate {count} ugrožene lozinke koje mogu ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}other{Imate {count} ugroženih lozinki koje mogu ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}}</translation>
 <translation id="5791632441210678828">Dugme za sortiranje za sažetak sadržaja Praćeno.</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti novu karticu?</translation>
@@ -1691,6 +1692,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7484645889979462775">Nikada za ovu web lokaciju</translation>
 <translation id="7486006552035434095">Kontinuirano sinhronizirajte uređaje</translation>
 <translation id="7491131399623468277">Idi u postavke…</translation>
+<translation id="7491161827858509164">Da biste vidjeli datoteke koje ste prethodno preuzeli, otvorite <ph name="BEGIN_LINK" />Datoteke<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Nastavi uređivanje</translation>
 <translation id="7500244509706269886">Automatski popuni obrazac</translation>
 <translation id="750493650310597496">Odabrano je 0 oznaka</translation>
@@ -1728,6 +1730,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612849887607288481">Otvori meni AI prototipa</translation>
 <translation id="7620522820075868385">Otkaži</translation>
+<translation id="762078666799342162">Ranija preuzimanja možete pregledati u aplikaciji <ph name="BEGIN_LINK" />Datoteke<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Netačan pristupni izraz</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožena lozinka}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="7640669552036055091">Kartice s Androida</translation>

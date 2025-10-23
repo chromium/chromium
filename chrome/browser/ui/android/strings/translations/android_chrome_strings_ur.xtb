@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="22091350895006575">صارف نام شامل کریں</translation>
 <translation id="221494669172414749">‏پروفائل لاک کے بغیر Chrome کھولنے سے، کار سے آپ کے محفوظ کردہ پاس ورڈز اور ادائیگی کے طریقے ہٹ جائیں گے۔ پروفائل لاک کا استعمال کرنے سے یہ ڈیٹا محفوظ رہتا ہے۔</translation>
+<translation id="2227179592712503583">تجویز ہٹائیں</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> کے بطور جاری رکھیں</translation>
 <translation id="2230777942707397948">خالی ونڈو</translation>
 <translation id="223356358902285214">ویب اور ایپ سرگرمی</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">ٹیبز کو کھولنے اور ایک ہی وقت میں مختلف صفحات ملاحظہ کرنے کے لئے، ٹیبز بٹن کھولیں پر تھپتھپائیں</translation>
 <translation id="5456381639095306749">صفحہ ڈاؤن لوڈ کریں</translation>
 <translation id="5458366071038729214">آپ جن سائٹس کی پیروی کرتے ہیں وہ آپ کو یہاں ملیں گی</translation>
+<translation id="5469852975082458401">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے F7 دبائیں۔</translation>
 <translation id="5471273988133666918">ٹیب <ph name="TAB_TITLE" /> کو منتقل نہیں کیا جا سکتا</translation>
 <translation id="548278423535722844">نقشہ کی ایپ میں کھولیں</translation>
 <translation id="549660026907543296">بطور <ph name="MEMBER_FULL_NAME" /> شامل ہوں</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">'سپام نہیں ہے' کے بطور اطلاع دیں</translation>
 <translation id="6125202119952209826">‫<ph name="OWNER_FIRST_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />مزید تفصیلات<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
 <translation id="6127860394906721547">سائٹس <ph name="URL_LIST" /> کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ، رنگ <ph name="COLOR_NAME" /> کھولیں۔</translation>
 <translation id="6130303040046284160">ٹیب کو چھوٹا کریں</translation>
 <translation id="6134168885321518274">تلاش بار کھولیں</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">‏‫Chrome کے ٹولز کے ذریعے آپ محفوظ طریقے سے براؤز کر سکتے ہیں اور چیزوں پر کنٹرول رکھ سکتے ہیں</translation>
 <translation id="6264376385120300461">بہر حال ڈاؤن لوڈ کریں</translation>
 <translation id="6264485186158353794">تحفظ پر واپس جائیں</translation>
+<translation id="6267106249090587268">‏اطلاعات <ph name="SEPARATOR" /> اسپام یا گمراہ کن مواد کی وجہ سے Chrome نے ان اجازتوں کو ہٹا دیا</translation>
 <translation id="6276708887952587684">صفحہ کا ماخذ دیکھیں</translation>
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6278428485366576908">تھیم</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 گھنٹہ پہلے چیک کیا گیا}other{# گھنٹے پہلے چیک کیا گیا}}</translation>
 <translation id="6545017243486555795">سبھی ڈیٹا صاف کریں</translation>
 <translation id="6546511553472444032">فائل نقصان دہ ہو سکتی ہے</translation>
+<translation id="654871471440386944">کیرٹ براؤزنگ آن کریں؟</translation>
 <translation id="6550891580932862748">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ Google کے دیگر پروڈکٹس میں آپ کی محفوظ براؤزنگ کی ترتیبات متاثر نہیں ہوں گی۔</translation>
 <translation id="6554822972009632311">مواد کا فلٹر آن ہے</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> اور <ph name="TAB_COUNT_ONE" /> مزید ٹیب کو بند کر دیا جائے گا}other{<ph name="TAB_TITLE" /> اور <ph name="TAB_COUNT_MANY" /> مزید ٹیبز کو بند کر دیا جائے گا}}</translation>

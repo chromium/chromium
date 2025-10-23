@@ -261,6 +261,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="22091350895006575">Adaugă un nume de utilizator</translation>
 <translation id="221494669172414749">Dacă deschizi Chrome fără o blocare a profilului, parolele salvate și metodele de plată vor fi eliminate din mașină. Dacă folosești o blocare a profilului, aceste date sunt păstrate în siguranță.</translation>
+<translation id="2227179592712503583">Elimină sugestia</translation>
 <translation id="2227444325776770048">Continuă ca <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Fereastră goală</translation>
 <translation id="223356358902285214">Activitatea de pe web și din aplicații</translation>
@@ -971,6 +972,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="544776284582297024">Pentru a deschide file și a accesa pagini diferite în același timp, atinge butonul Deschide file</translation>
 <translation id="5456381639095306749">Descarcă pagina</translation>
 <translation id="5458366071038729214">Aici vei vedea site-urile pe care le urmărești</translation>
+<translation id="5469852975082458401">Poți să navighezi în pagini folosind cursorul pentru text. Apasă pe F7 pentru a-l dezactiva.</translation>
 <translation id="5471273988133666918">Fila <ph name="TAB_TITLE" /> nu poate fi mutată</translation>
 <translation id="548278423535722844">Deschide în aplicația Maps</translation>
 <translation id="549660026907543296">Alătură-te ca <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6124936178263837501">Raportează ca nefiind spam</translation>
 <translation id="6125202119952209826">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mai multe detalii<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Elementul a fost eliminat</translation>
 <translation id="6127860394906721547">Deschide grupul de file <ph name="TITLE_OF_GROUP" /> de culoare <ph name="COLOR_NAME" />, cu site-urile <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizează fila</translation>
 <translation id="6134168885321518274">Deschide bara de căutare</translation>
@@ -1149,6 +1150,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6255809143828972562">Cu instrumentele din Chrome, navighezi în siguranță și deții controlul</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6264485186158353794">Înapoi la zona sigură</translation>
+<translation id="6267106249090587268">Notificări <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni din cauza conținutului spam sau înșelător</translation>
 <translation id="6276708887952587684">Afișează sursa paginii</translation>
 <translation id="6277522088822131679">A apărut o problemă la printarea paginii. Încercați din nou.</translation>
 <translation id="6278428485366576908">Temă</translation>
@@ -1219,6 +1221,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{A rulat acum o oră}few{A rulat acum # ore}other{A rulat acum # de ore}}</translation>
 <translation id="6545017243486555795">Șterge toate datele</translation>
 <translation id="6546511553472444032">Fișierul poate fi dăunător</translation>
+<translation id="654871471440386944">Activezi navigarea cu tastatura?</translation>
 <translation id="6550891580932862748">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Setările tale pentru Navigarea sigură din alte produse Google nu vor fi afectate.</translation>
 <translation id="6554822972009632311">Filtrul de conținut este activat</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> și încă <ph name="TAB_COUNT_ONE" /> filă vor fi închise}few{<ph name="TAB_TITLE" /> și încă <ph name="TAB_COUNT_MANY" /> file vor fi închise}other{<ph name="TAB_TITLE" /> și încă <ph name="TAB_COUNT_MANY" /> de file vor fi închise}}</translation>

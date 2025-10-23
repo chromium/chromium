@@ -1235,6 +1235,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5758759241456233788">Naka-off ang Mga Preview ng Maps. I-on ulit ito sa Mga Setting.</translation>
 <translation id="5759484603608560822">I-hide ang Mga Download</translation>
 <translation id="5767099457279594162">Hindi na-share ang password</translation>
+<translation id="5768870767339201169">Magpatuloy Kung Saan Ka Huminto</translation>
 <translation id="5779117921996157216">{count,plural, =1{Mayroon kang {count} nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ito ngayon para manatiling ligtas.}one{Mayroon kang {count} nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}other{Mayroon kang {count} na nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}}</translation>
 <translation id="5791632441210678828">Button na Pagbukud-bukurin para sa feed na Sinusubaybayan.</translation>
 <translation id="5803566855766646066">Sigurado ka bang gusto mong i-discard ang bagong card na ito?</translation>
@@ -1691,6 +1692,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7484645889979462775">Hindi kailanman para sa site na ito</translation>
 <translation id="7486006552035434095">Panatilihing naka-sync ang iyong mga device</translation>
 <translation id="7491131399623468277">Pumunta sa Settings…</translation>
+<translation id="7491161827858509164">Para makita ang mga file na dati mo nang na-download, buksan ang <ph name="BEGIN_LINK" />Mga File<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Magpatuloy sa pag-edit</translation>
 <translation id="7500244509706269886">I-autofill ang form</translation>
 <translation id="750493650310597496">0 ang napili</translation>
@@ -1728,6 +1730,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>
 <translation id="7612849887607288481">Buksan ang Menu ng Pag-prototype ng AI</translation>
 <translation id="7620522820075868385">Kanselahin</translation>
+<translation id="762078666799342162">Makikita mo ang iyong mga naunang download sa <ph name="BEGIN_LINK" />Mga File<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mga nakompromisong password}=1{{COUNT} nakompromisong password}one{{COUNT} nakompromisong password}other{{COUNT} na nakompromisong password}}</translation>
 <translation id="7640669552036055091">Mga Tab mula sa Android</translation>

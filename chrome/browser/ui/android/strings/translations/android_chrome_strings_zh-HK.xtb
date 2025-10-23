@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1820408774134375111">登入頁底面板</translation>
+<translation id="1823492026305965829">使用 <ph name="USER_FULL_NAME" /> 登入</translation>
 <translation id="1825772852827001597">系統將不會加密你在 Google Pay 中的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
 只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1829244130665387512">喺網頁度搵</translation>
@@ -261,6 +262,7 @@
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="22091350895006575">新增使用者名稱</translation>
 <translation id="221494669172414749">如在不鎖定設定檔的情況下開啟 Chrome，系統將移除車上儲存的密碼和付款方法。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
+<translation id="2227179592712503583">移除建議</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
@@ -855,6 +857,7 @@
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4912413785358399818">移動分頁</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
+<translation id="4921224083091001889">如要在你的所有裝置上存取密碼及其他設定，請使用 <ph name="EMAIL" /> 登入 Chrome</translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">您可儲存圖片和檔案，方便離線查看或分享到其他應用程式</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{# 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
@@ -879,6 +882,7 @@
 <translation id="5007392906805964215">查看</translation>
 <translation id="5010886807652684893">視覺化檢視</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
+<translation id="5012016139642806466">在所有裝置上存取密碼及其他設定</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> 和 <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> 似乎有關聯。請確認你信任 <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />，再使用此密碼。</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">過去 15 分鐘</translation>
@@ -971,6 +975,7 @@
 <translation id="544776284582297024">如要同時開啟分頁和瀏覽不同網頁，請輕按開啟分頁按鈕</translation>
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">您可在此找到您追蹤的網站</translation>
+<translation id="5469852975082458401">您可使用文字游標導覽網頁。按 F7 即可關閉。</translation>
 <translation id="5471273988133666918">無法移動「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
@@ -1107,7 +1112,6 @@
 <translation id="6124936178263837501">舉報為非垃圾郵件</translation>
 <translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多詳情<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">項目已移除</translation>
 <translation id="6127860394906721547">打開「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />，網站包括 <ph name="URL_LIST" />。</translation>
 <translation id="6130303040046284160">將分頁縮到最小</translation>
 <translation id="6134168885321518274">開啟「搜尋列」</translation>
@@ -1220,6 +1224,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{曾在 1 小時前檢查}other{曾在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
+<translation id="654871471440386944">要開啟「鍵盤瀏覽」功能嗎？</translation>
 <translation id="6550891580932862748">無法防範危險網站、下載檔案和擴充程式。其他 Google 產品的「安全瀏覽」設定不會受影響。</translation>
 <translation id="6554822972009632311">已啟用內容篩選器</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{即將關閉 <ph name="TAB_TITLE" /> 和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="TAB_TITLE" /> 和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>

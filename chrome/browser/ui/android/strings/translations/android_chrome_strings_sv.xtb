@@ -261,6 +261,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="22091350895006575">Lägg till användarnamn</translation>
 <translation id="221494669172414749">Om du öppnar Chrome utan ett profillås tas dina sparade lösenord och betalningsmetoder bort från bilen. Denna data skyddas om du använder ett profillås.</translation>
+<translation id="2227179592712503583">Ta bort förslag</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt fönster</translation>
 <translation id="223356358902285214">Webb- och appaktivitet</translation>
@@ -972,6 +973,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="544776284582297024">Tryck på Öppna flikar om du vill öppna flikar och besöka olika sidor samtidigt</translation>
 <translation id="5456381639095306749">Ladda ned sida</translation>
 <translation id="5458366071038729214">Här hittar du webbplatser som du följer</translation>
+<translation id="5469852975082458401">Du kan navigera på sidor med en textmarkör. Tryck på F7 om du vill inaktivera detta.</translation>
 <translation id="5471273988133666918">Det går inte att flytta fliken <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Öppna i kartapp</translation>
 <translation id="549660026907543296">Gå med som <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1108,7 +1110,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6124936178263837501">Rapportera som inte skräppost</translation>
 <translation id="6125202119952209826">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer information<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6127860394906721547">Öppna flikgruppen <ph name="TITLE_OF_GROUP" /> i färgen <ph name="COLOR_NAME" /> med webbplatserna <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimera flik</translation>
 <translation id="6134168885321518274">Öppna fältet Hitta</translation>
@@ -1150,6 +1151,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6255809143828972562">Med verktyg från Chrome kan du surfa säkert och behålla kontrollen</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
+<translation id="6267106249090587268">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter på grund av spam eller vilseledande innehåll</translation>
 <translation id="6276708887952587684">Visa sidkälla</translation>
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1220,6 +1222,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Genomsöktes för 1 timme sedan}other{Genomsöktes för # timmar sedan}}</translation>
 <translation id="6545017243486555795">Rensa all data</translation>
 <translation id="6546511553472444032">Filen kan vara skadlig</translation>
+<translation id="654871471440386944">Vill du aktivera textmarkörläge?</translation>
 <translation id="6550891580932862748">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Inställningarna för Säker webbsökning i andra produkter från Google påverkas inte.</translation>
 <translation id="6554822972009632311">Innehållsfilter är aktiverat</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>

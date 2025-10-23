@@ -1692,6 +1692,7 @@
 <translation id="7484645889979462775">永不儲存這個網站的密碼</translation>
 <translation id="7486006552035434095">讓你的裝置保持同步</translation>
 <translation id="7491131399623468277">前往「設定」…</translation>
+<translation id="7491161827858509164">如要查看之前下載的檔案，請開啟「<ph name="BEGIN_LINK" />檔案<ph name="END_LINK" />」</translation>
 <translation id="7498234416455752244">繼續編輯</translation>
 <translation id="7500244509706269886">自動填入表格</translation>
 <translation id="750493650310597496">已選取 0 個</translation>
@@ -1729,6 +1730,7 @@
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612849887607288481">開啟 AI 原型選單</translation>
 <translation id="7620522820075868385">取消</translation>
+<translation id="762078666799342162">你可以在「<ph name="BEGIN_LINK" />檔案<ph name="END_LINK" />」中查看之前的下載項目</translation>
 <translation id="7638584964844754484">複雜密碼不正確</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="7640669552036055091">Android 裝置上的分頁</translation>

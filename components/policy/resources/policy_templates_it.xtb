@@ -10716,15 +10716,6 @@ Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezio
       Se viene disattivata, i dispositivi registrati non riceveranno i controlli di reporting granulare.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
 <translation id="8254749125469750814">Non convalidare se un'estensione può essere installata o meno con un servizio cloud.</translation>
-<translation id="825509998103089977">Determina se l'app Gemini può eseguire azioni sulle pagine web per conto dell'utente.
-
-0/non configurata = l'app Gemini può eseguire azioni sulle pagine web.
-
-1 = l'app Gemini non può eseguire azioni sulle pagine web.
-
-Questa policy non ha alcun effetto quando l'app Gemini è disattivata. Ad esempio, l'app Gemini può essere disattivata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Per maggiori informazioni, visita la pagina https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Questa policy è deprecata e non è supportata. Utilizza la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 

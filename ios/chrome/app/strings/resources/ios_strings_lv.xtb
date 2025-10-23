@@ -1235,6 +1235,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5758759241456233788">Maps priekšskatījumi ir izslēgti. Iestatījumos varat tos atkal ieslēgt.</translation>
 <translation id="5759484603608560822">Paslēpt vienumu “Lejupielādes”</translation>
 <translation id="5767099457279594162">Parole netika kopīgota</translation>
+<translation id="5768870767339201169">Turpiniet darbu no vietas, kur to pārtraucāt</translation>
 <translation id="5779117921996157216">{count,plural, =1{Jums ir {count} uzlauzta parole, kas var apdraudēt jūsu drošību. Labojiet to tūlīt, lai gādātu par savu drošību.}zero{Jums ir {count} uzlauztas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}one{Jums ir {count} uzlauzta parole, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}other{Jums ir {count} uzlauztas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}}</translation>
 <translation id="5791632441210678828">Kārtošanas poga plūsmai Sekojat.</translation>
 <translation id="5803566855766646066">Vai tiešām vēlaties atmest jauno kartīti?</translation>

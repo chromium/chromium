@@ -262,6 +262,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="22091350895006575">Thêm tên người dùng</translation>
 <translation id="221494669172414749">Nếu bạn mở Chrome mà không cần khoá hồ sơ, mật khẩu và phương thức thanh toán đã lưu sẽ bị xoá khỏi ô tô. Sử dụng khoá hồ sơ giúp giữ an toàn cho dữ liệu này.</translation>
+<translation id="2227179592712503583">Xóa đề xuất</translation>
 <translation id="2227444325776770048">Tiếp tục bằng tài khoản của <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Cửa sổ trống</translation>
 <translation id="223356358902285214">Hoạt động trên web và ứng dụng</translation>
@@ -974,6 +975,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="544776284582297024">Để mở các thẻ và truy cập cùng lúc vào nhiều trang, hãy nhấn vào nút mở thẻ</translation>
 <translation id="5456381639095306749">Tải trang xuống</translation>
 <translation id="5458366071038729214">Bạn sẽ thấy các trang web mình theo dõi tại đây</translation>
+<translation id="5469852975082458401">Bạn có thể di chuyển giữa các trang bằng con trỏ văn bản. Hãy nhấn F7 để tắt.</translation>
 <translation id="5471273988133666918">Không thể di chuyển thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
 <translation id="549660026907543296">Tham gia dưới tên <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6124936178263837501">Báo cáo không phải là nội dung rác</translation>
 <translation id="6125202119952209826">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Thông tin chi tiết khác<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Đã xóa mục</translation>
 <translation id="6127860394906721547">Mở nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" />, có các trang web <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Thu nhỏ thẻ</translation>
 <translation id="6134168885321518274">Mở Thanh tìm kiếm</translation>
@@ -1223,6 +1224,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Đã kiểm tra 1 giờ trước}other{Đã kiểm tra # giờ trước}}</translation>
 <translation id="6545017243486555795">Xóa tất cả dữ liệu</translation>
 <translation id="6546511553472444032">Tệp có thể gây hại</translation>
+<translation id="654871471440386944">Bật tính năng duyệt web có con nháy?</translation>
 <translation id="6550891580932862748">Không bảo vệ bạn trước các trang web, nội dung tải xuống và tiện ích nguy hiểm. Chế độ cài đặt Duyệt web an toàn của bạn trong các sản phẩm khác của Google sẽ không bị ảnh hưởng.</translation>
 <translation id="6554822972009632311">Bộ lọc nội dung đang bật</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Thẻ <ph name="TAB_TITLE" /> và <ph name="TAB_COUNT_ONE" /> thẻ khác sẽ đóng}other{Thẻ <ph name="TAB_TITLE" /> và <ph name="TAB_COUNT_MANY" /> thẻ khác sẽ đóng}}</translation>

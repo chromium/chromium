@@ -261,6 +261,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="22091350895006575">Aggiungi nome utente</translation>
 <translation id="221494669172414749">Se apri Chrome senza un blocco del profilo, le password e i metodi di pagamento salvati verranno rimossi dall'auto. L'utilizzo di un blocco del profilo protegge questi dati.</translation>
+<translation id="2227179592712503583">Rimuovi suggerimento</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Finestra vuota</translation>
 <translation id="223356358902285214">Attività web e app</translation>
@@ -971,6 +972,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="544776284582297024">Per aprire più schede e visitare pagine diverse contemporaneamente, tocca il pulsante Schede aperte</translation>
 <translation id="5456381639095306749">Scarica la pagina</translation>
 <translation id="5458366071038729214">Qui troverai i siti che segui</translation>
+<translation id="5469852975082458401">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi F7 per disattivare questa opzione.</translation>
 <translation id="5471273988133666918">Impossibile spostare la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Apri nell'app di mappe</translation>
 <translation id="549660026907543296">Partecipa come <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6124936178263837501">Segnala come non spam</translation>
 <translation id="6125202119952209826">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Altri dettagli<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Elemento rimosso</translation>
 <translation id="6127860394906721547">Apri il gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />, con i siti <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Riduci a icona la scheda</translation>
 <translation id="6134168885321518274">Apri la barra di ricerca</translation>
@@ -1149,6 +1150,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6255809143828972562">Con gli strumenti di Chrome puoi navigare in sicurezza e tenere tutto sotto controllo</translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
 <translation id="6264485186158353794">Torna nell'area protetta</translation>
+<translation id="6267106249090587268">Notifiche <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni a causa di spam o contenuti ingannevoli</translation>
 <translation id="6276708887952587684">Visualizza il codice sorgente della pagina</translation>
 <translation id="6277522088822131679">Si è verificato un problema durante la stampa della pagina. Riprova.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1219,6 +1221,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Eseguito 1 ora fa}other{Eseguito # ore fa}}</translation>
 <translation id="6545017243486555795">Cancella tutti i dati</translation>
 <translation id="6546511553472444032">Potrebbe essere dannoso</translation>
+<translation id="654871471440386944">Attivare navigazione con cursore?</translation>
 <translation id="6550891580932862748">Non ti protegge da estensioni, download e siti web pericolosi. Le impostazioni di Navigazione sicura di altri prodotti Google rimarranno invariate.</translation>
 <translation id="6554822972009632311">Il filtro dei contenuti è attivo</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> altra scheda verranno chiuse}other{<ph name="TAB_TITLE" /> e altre <ph name="TAB_COUNT_MANY" /> schede verranno chiuse}}</translation>

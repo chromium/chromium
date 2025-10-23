@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="22091350895006575">Pridať používateľské meno</translation>
 <translation id="221494669172414749">Ak otvoríte Chrome bez zámky profilu, odstránite heslá a spôsoby platby uložené v aute. Pomocou zámky profilu sú tieto údaje uchované v bezpečí.</translation>
+<translation id="2227179592712503583">Odstrániť návrh</translation>
 <translation id="2227444325776770048">Pokračovať ako <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Prázdne okno</translation>
 <translation id="223356358902285214">Aktivita na internete a v aplikáciách</translation>
@@ -971,6 +972,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="544776284582297024">Ak chcete otvoriť karty a navštíviť naraz rôzne stránky, klepnite na tlačidlo Otvoriť karty</translation>
 <translation id="5456381639095306749">Stránka sťahovania</translation>
 <translation id="5458366071038729214">Tu nájdete weby, ktoré sledujete</translation>
+<translation id="5469852975082458401">Stránkami môžete prechádzať pomocou textového kurzora. Stlačením klávesa F7 túto funkciu vypnete.</translation>
 <translation id="5471273988133666918">Karta <ph name="TAB_TITLE" /> sa nedá presunúť</translation>
 <translation id="548278423535722844">Otvorte v aplikácii pre mapy</translation>
 <translation id="549660026907543296">Pripojte sa ako <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6124936178263837501">Nahlásiť, že nejde o spam</translation>
 <translation id="6125202119952209826">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Ďalšie podrobnosti<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Položka bola odstránená</translation>
 <translation id="6127860394906721547">Otvorte skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s webmi <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimalizovať kartu</translation>
 <translation id="6134168885321518274">Otvorenie panela vyhľadávania</translation>
@@ -1149,6 +1150,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6255809143828972562">Pomocou nástrojov Chromu môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
 <translation id="6264376385120300461">Napriek tomu stiahnuť</translation>
 <translation id="6264485186158353794">Späť do bezpečia</translation>
+<translation id="6267106249090587268">Upozornenia <ph name="SEPARATOR" /> Chrome odstránil tieto povolenia pre spam alebo klamlivý obsah</translation>
 <translation id="6276708887952587684">Zobrazenie zdrojového kódu stránky</translation>
 <translation id="6277522088822131679">Pri tlačení stránky sa vyskytol problém. Skúste to znova.</translation>
 <translation id="6278428485366576908">Motív</translation>
@@ -1219,6 +1221,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrola prebehla pred hodinou}few{Kontrola prebehla pred # hodinami}many{Kontrola prebehla pred # hodiny}other{Kontrola prebehla pred # hodinami}}</translation>
 <translation id="6545017243486555795">Vymazať všetky dáta</translation>
 <translation id="6546511553472444032">Súbor môže byť škodlivý</translation>
+<translation id="654871471440386944">Chcete zapnúť prehliadanie Caret?</translation>
 <translation id="6550891580932862748">Nechráni vás pred nebezpečnými webmi, stiahnutým súbormi ani rozšíreniami. Nastavenie Bezpečné prehliadanie v iných službách Googlu nebude ovplyvnené.</translation>
 <translation id="6554822972009632311">Filter obsahu je zapnutý</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_ONE" /> ďalšia karta budú zavreté}few{<ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> ďalšie karty budú zavreté}many{<ph name="TAB_TITLE" /> and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}other{<ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> ďalších kariet budú zavreté}}</translation>

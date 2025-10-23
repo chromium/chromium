@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">සලකා බැලිය යුතු කරුණු</translation>
 <translation id="22091350895006575">පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="221494669172414749">පැතිකඩ අගුලක් නොමැතිව Chrome විවෘත කිරීම ඔබේ සුරකින ලද මුරපද සහ ගෙවීම් ක්‍රම මෝටර් රථයෙන් ඉවත් කරනු ඇත. පැතිකඩ අගුලක් භාවිතා කිරීම මෙම දත්ත සුරක්ෂිතව තබා ගනී.</translation>
+<translation id="2227179592712503583">යෝජනාව ඉවත් කරන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
 <translation id="2230777942707397948">හිස් කවුළුව</translation>
 <translation id="223356358902285214">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">ටැබ් විවෘත කිරීමට සහ විවිධ පිටු එකවර බැලීමට, ටැබ් විවෘත කරන්න බොත්තම තට්ටු කරන්න</translation>
 <translation id="5456381639095306749">පිටුව බාගන්න</translation>
 <translation id="5458366071038729214">ඔබට ඔබ මෙහි අනුගමනය කරන අඩවි හමු වනු ඇත</translation>
+<translation id="5469852975082458401">ඔබට පෙළ කර්සරයක් සමගින් පිටුවල සංචාලනය කළ හැකිය. ක්‍රියාවිරහිත කිරීමට F7 ඔබන්න.</translation>
 <translation id="5471273988133666918">පටිත්ත <ph name="TAB_TITLE" /> ගෙන යා නොහැක.</translation>
 <translation id="548278423535722844">සිතියම් යෙදුම තුළ විවෘත කරන්න</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ලෙස එක්වන්න</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">අයාචිත නොවන බව වාර්තා කරන්න</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> සමග පටිති සමූහයට එකතු වන්න</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />වැඩි විස්තර<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">අයිතමය ඉවත් කරන ලදී</translation>
 <translation id="6127860394906721547"><ph name="TITLE_OF_GROUP" /> පටිති සමූහය, වර්ණය <ph name="COLOR_NAME" />, අඩවි <ph name="URL_LIST" /> සමග විවෘත කරන්න.</translation>
 <translation id="6130303040046284160">පටිත්ත අවම කරන්න</translation>
 <translation id="6134168885321518274">සෙවීම් තීරුව විවෘත කරන්න</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">Chrome වෙතින් මෙවලම් සමගින්, ඔබට සුරක්ෂිතව බ්‍රවුස් කර පාලනයේ සිටිය හැක</translation>
 <translation id="6264376385120300461">කෙසේ වුවත් බාගන්න</translation>
 <translation id="6264485186158353794">ආරක්ෂාව වෙත ආපසු</translation>
+<translation id="6267106249090587268">දැනුම්දීම් <ph name="SEPARATOR" /> අයාචිත හෝ රැවටිලිකාර අන්තර්ගත නිසා Chrome මෙම අවසර ඉවත් කර ඇත</translation>
 <translation id="6276708887952587684">පිටු මූලාශ්‍රය බලන්න</translation>
 <translation id="6277522088822131679">මෙම පිටුව මුද්‍රණය කිරීමේ ගැටලුවක් විය. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6278428485366576908">තේමාව</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{පැය 1කට පෙර පරීක්ෂා කරන ලදි}one{පැය #කට පෙර පරීක්ෂා කරන ලදි}other{පැය #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="6545017243486555795">සියලු දත්ත හිස් කරන්න</translation>
 <translation id="6546511553472444032">ගොනුව හානිකර විය හැකිය</translation>
+<translation id="654871471440386944">කැරට් බ්‍රවුස් කිරීම ක්‍රියාත්මක කරන්නද?</translation>
 <translation id="6550891580932862748">අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහිව ඔබව ආරක්ෂා නොකරයි. වෙනත් Google නිෂ්පාදනවල ඔබේ සුරක්ෂිත බ්‍රවුස් කිරීමේ සැකසීම් බලපාන්නේ නැත.</translation>
 <translation id="6554822972009632311">අන්තර්ගත පෙරහන ක්‍රියාත්මකයි</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />ක් සහ තව ටැබ <ph name="TAB_COUNT_ONE" />ක් වැසෙනු ඇත}one{<ph name="TAB_TITLE" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}other{<ph name="TAB_TITLE" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}}</translation>

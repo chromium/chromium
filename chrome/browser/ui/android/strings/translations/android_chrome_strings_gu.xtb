@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="22091350895006575">વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="221494669172414749">Chromeને પ્રોફાઇલ લૉક વિના ખોલવાથી કારમાંથી તમારા સાચવેલા પાસવર્ડ અને ચુકવણી પદ્ધતિઓ કાઢી નાખવામાં આવે એમ બની શકે છે. પ્રોફાઇલ લૉકનો ઉપયોગ કરવાથી આ ડેટા સુરક્ષિત રહે છે.</translation>
+<translation id="2227179592712503583">સૂચન દૂર કરો</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="2230777942707397948">ખાલી વિન્ડો</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">ટૅબ ખોલી અને વિવિધ પેજની એક સાથે મુલાકાત લેવા માટે, ટૅબ ખોલો બટન પર ટૅપ કરો</translation>
 <translation id="5456381639095306749">પેજ ડાઉનલોડ કરો</translation>
 <translation id="5458366071038729214">તમે જે સાઇટ ફૉલો કરશો, તે અહીં દેખાશે</translation>
+<translation id="5469852975082458401">તમે ટેક્સ્ટ કર્સર વડે કોઈપણ પેજ પર નૅવિગેટ કરી શકશો. બંધ કરવા માટે, F7 દબાવો.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ટૅબને ખસેડી શકાતું નથી</translation>
 <translation id="548278423535722844">નકશા અ‍ૅપ્લિકેશનમાં ખોલો</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> તરીકે જોડાઓ</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">સ્પામ નથી તરીકે જાણ કરો</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />વધુ વિગતો<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
 <translation id="6127860394906721547">ટૅબનું ગ્રૂપ <ph name="TITLE_OF_GROUP" />, રંગ <ph name="COLOR_NAME" />, <ph name="URL_LIST" /> સાઇટ સાથે ખોલો.</translation>
 <translation id="6130303040046284160">ટૅબને નાનું કરો</translation>
 <translation id="6134168885321518274">શોધ બાર ખોલો</translation>
@@ -1220,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 કલાક પહેલાં ચેક કર્યું}one{# કલાક પહેલાં ચેક કર્યું}other{# કલાક પહેલાં ચેક કર્યું}}</translation>
 <translation id="6545017243486555795">બધો ડેટા સાફ કરો</translation>
 <translation id="6546511553472444032">ફાઇલ હાનિકારક હોઈ શકે છે</translation>
+<translation id="654871471440386944">શું ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ કરીએ?</translation>
 <translation id="6550891580932862748">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. અન્ય Google પ્રોડક્ટના તમારા Safe Browsing સેટિંગને કોઈ અસર થશે નહીં.</translation>
 <translation id="6554822972009632311">કન્ટેન્ટનું ફિલ્ટર ચાલુ છે</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> અને વધુ <ph name="TAB_COUNT_ONE" /> ટૅબ બંધ કરવામાં આવશે}one{<ph name="TAB_TITLE" /> અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}other{<ph name="TAB_TITLE" /> અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}}</translation>

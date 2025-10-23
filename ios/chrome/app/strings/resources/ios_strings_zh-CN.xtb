@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">地图预览已关闭，您可以在“设置”中重新开启此功能。</translation>
 <translation id="5759484603608560822">隐藏“下载内容”</translation>
 <translation id="5767099457279594162">未能分享密码</translation>
+<translation id="5768870767339201169">从上次停下的地方继续</translation>
 <translation id="5779117921996157216">{count,plural, =1{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}other{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}}</translation>
 <translation id="5791632441210678828">用于对所关注 Feed 进行排序的按钮。</translation>
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
@@ -1643,7 +1644,7 @@
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">Google 密码管理工具中已有这些账号的密码。如果您选择导入以下某个密码，导入的密码会替换现有密码。</translation>
+<translation id="7334364820047587268">您的 Google 密码管理工具中已有这些账号的密码。如果选择导入以下某个密码，则导入的密码会替换现有密码。</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>

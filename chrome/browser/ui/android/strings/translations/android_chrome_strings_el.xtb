@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">Λάβετε υπόψη τα εξής</translation>
 <translation id="22091350895006575">Προσθήκη ονόματος χρήστη</translation>
 <translation id="221494669172414749">Εάν ανοίξετε το Chrome χωρίς κλείδωμα προφίλ, θα καταργηθούν οι αποθηκευμένοι κωδικοί πρόσβασης και οι τρόποι πληρωμής από το αυτοκίνητο. Η χρήση ενός κλειδώματος προφίλ διατηρεί αυτά τα δεδομένα ασφαλή.</translation>
+<translation id="2227179592712503583">Κατάργηση πρότασης</translation>
 <translation id="2227444325776770048">Συνέχεια ως <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Κενό παράθυρο</translation>
 <translation id="223356358902285214">Δραστηριότητα ιστού και εφαρμογών</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">Για να ανοίξετε καρτέλες και να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα, πατήστε το κουμπί Άνοιγμα καρτελών.</translation>
 <translation id="5456381639095306749">Λήψη σελίδας</translation>
 <translation id="5458366071038729214">Εδώ θα βρίσκετε τους ιστοτόπους που ακολουθείτε.</translation>
+<translation id="5469852975082458401">Μπορείτε να πλοηγηθείτε σε σελίδες με δείκτη κειμένου. Πατήστε F7 για απενεργοποίηση.</translation>
 <translation id="5471273988133666918">Δεν είναι δυνατή η μετακίνηση της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
 <translation id="549660026907543296">Συμμετοχή ως <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">Αναφορά ως μη ανεπιθύμητου</translation>
 <translation id="6125202119952209826">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Περισσότερες λεπτομέρειες<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6127860394906721547">Άνοιγμα της ομάδας καρτελών <ph name="TITLE_OF_GROUP" />, χρώμα <ph name="COLOR_NAME" />, με τους ιστοτόπους <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Ελαχιστοποίηση καρτέλας</translation>
 <translation id="6134168885321518274">Άνοιγμα γραμμής εύρεσης</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">Με τα εργαλεία του Chrome, μπορείτε να περιηγείστε με ασφάλεια και να διατηρείτε τον έλεγχο</translation>
 <translation id="6264376385120300461">Να γίνει η λήψη ούτως ή άλλως</translation>
 <translation id="6264485186158353794">Πίσω στην ασφάλεια</translation>
+<translation id="6267106249090587268">Ειδοποιήσεις <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες λόγω ανεπιθύμητου ή παραπλανητικού περιεχομένου</translation>
 <translation id="6276708887952587684">Προβολή πηγαίου κώδικα σελίδας</translation>
 <translation id="6277522088822131679">Παρουσιάστηκε ένα πρόβλημα κατά την εκτύπωση της σελίδας. Δοκιμάστε ξανά.</translation>
 <translation id="6278428485366576908">Θέμα</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ελέγχθηκε πριν από μία ώρα}other{Ελέγχθηκε πριν από # ώρες}}</translation>
 <translation id="6545017243486555795">Διαγραφή όλων των δεδομένων</translation>
 <translation id="6546511553472444032">Το αρχείο μπορεί να είναι επιβλαβές</translation>
+<translation id="654871471440386944">Ενεργοποίηση της περιήγησης με σύμβολα προσθήκης;</translation>
 <translation id="6550891580932862748">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Οι ρυθμίσεις Ασφαλούς περιήγησης σε άλλα προϊόντα της Google δεν θα επηρεαστούν.</translation>
 <translation id="6554822972009632311">Το φίλτρο περιεχομένου είναι ενεργό</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα}other{Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες}}</translation>

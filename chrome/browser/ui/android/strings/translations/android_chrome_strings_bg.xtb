@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="22091350895006575">Добавяне на потребителското име</translation>
 <translation id="221494669172414749">Когато отворите Chrome без опция за заключване на потребителския профил, запазените ви пароли и начини на плащане ще бъдат премахнати от автомобила. Използването на опция за заключване на потребителския профил защитава тези данни.</translation>
+<translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Празен прозорец</translation>
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">За да отваряте раздели и да посещавате различни страници едновременно, докоснете бутона за отворени раздели</translation>
 <translation id="5456381639095306749">Изтегляне на страницата</translation>
 <translation id="5458366071038729214">Тук ще виждате сайтовете, които следите</translation>
+<translation id="5469852975082458401">Можете да навигирате в страниците с помощта на текстов курсор. Натиснете F7 за изключване на функцията.</translation>
 <translation id="5471273988133666918">Разделът „<ph name="TAB_TITLE" />“ не може да бъде преместен</translation>
 <translation id="548278423535722844">Отваряне в приложение за карти</translation>
 <translation id="549660026907543296">Присъединяване като <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">Подаване на сигнал, че не е спам</translation>
 <translation id="6125202119952209826">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Още подробности<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Елементът бе премахнат</translation>
 <translation id="6127860394906721547">Отваряне на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, която съдържа следните сайтове: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Намаляване на раздела</translation>
 <translation id="6134168885321518274">Отваряне на лентата за търсене</translation>
@@ -1220,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено преди 1 час}other{Проверено преди # часа}}</translation>
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6546511553472444032">Файлът може да бъде опасен</translation>
+<translation id="654871471440386944">Да се включи ли Caret Browsing?</translation>
 <translation id="6550891580932862748">Няма защита срещу опасни уебсайтове, изтегляния и разширения. Настройките ви за Безопасно сърфиране в други продукти на Google няма да бъдат засегнати.</translation>
 <translation id="6554822972009632311">Филтърът за съдържанието е включен</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_ONE" /> раздел ще бъдат затворени}other{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_MANY" /> раздела ще бъдат затворени}}</translation>

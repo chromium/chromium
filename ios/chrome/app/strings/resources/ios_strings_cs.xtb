@@ -1235,6 +1235,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5758759241456233788">Náhledy map jsou vypnuté. V sekci Nastavení je můžete znovu zapnout.</translation>
 <translation id="5759484603608560822">Skrýt možnost Stažené soubory</translation>
 <translation id="5767099457279594162">Heslo nebylo sdíleno</translation>
+<translation id="5768870767339201169">Pokračujte, kde jste skončili</translation>
 <translation id="5779117921996157216">{count,plural, =1{Máte {count} prolomené heslo, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}few{Máte {count} prolomená hesla, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}many{Máte {count} prolomeného hesla, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}other{Máte {count} prolomených hesel, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}}</translation>
 <translation id="5791632441210678828">Tlačítko řazení informačního kanálu Sledováno.</translation>
 <translation id="5803566855766646066">Opravdu tuto novou kartu chcete zahodit?</translation>

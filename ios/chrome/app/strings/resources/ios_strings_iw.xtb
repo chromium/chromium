@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">הפצה מקדימה של "מפות" מושבתת. אפשר להפעיל אותה שוב בהגדרות.</translation>
 <translation id="5759484603608560822">הסתרת ההורדות</translation>
 <translation id="5767099457279594162">הסיסמה לא שותפה</translation>
+<translation id="5768870767339201169">להמשיך מהנקודה שבה הפסקת</translation>
 <translation id="5779117921996157216">{count,plural, =1{יש לך סיסמה אחת ({count}) שנחשפה ועלולה לסכן את האבטחה שלך. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
 <translation id="5791632441210678828">כפתור למיון של הפיד 'במעקב'.</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
@@ -1691,6 +1692,7 @@
 <translation id="7484645889979462775">לעולם לא עבור אתר זה</translation>
 <translation id="7486006552035434095">אפשר לסנכרן בין המכשירים</translation>
 <translation id="7491131399623468277">להגדרות…</translation>
+<translation id="7491161827858509164">כדי לראות קבצים שהורדו בעבר, פותחים את <ph name="BEGIN_LINK" />קבצים<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">המשך העריכה</translation>
 <translation id="7500244509706269886">מילוי אוטומטי של טופס</translation>
 <translation id="750493650310597496">0 נבחרו</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
 <translation id="7612849887607288481">‏פתיחת תפריט אב הטיפוס של ה-AI</translation>
 <translation id="7620522820075868385">ביטול</translation>
+<translation id="762078666799342162">אפשר לראות את ההורדות הקודמות בתיקיית <ph name="BEGIN_LINK" />הקבצים<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{‫{COUNT} סיסמאות שנחשפו}two{‫{COUNT} סיסמאות שנחשפו}other{‫{COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="7640669552036055091">‏כרטיסיות מ-Android</translation>

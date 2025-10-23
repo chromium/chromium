@@ -262,6 +262,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="22091350895006575">Pridėti naudotojo vardą</translation>
 <translation id="221494669172414749">Atidarius „Chrome“ be profilio užrakto, išsaugoti slaptažodžiai ir mokėjimo metodai bus pašalinti iš automobilio. Naudojant profilio užraktą šie duomenys apsaugomi.</translation>
+<translation id="2227179592712503583">Pašalinti pasiūlymą</translation>
 <translation id="2227444325776770048">Tęsti kaip <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tuščias langas</translation>
 <translation id="223356358902285214">Žiniatinklio ir programų veikla</translation>
@@ -974,6 +975,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="544776284582297024">Norėdami atidaryti skirtukus ir vienu metu lankytis skirtinguose puslapiuose, palieskite mygtuką „Atidaryti skirtukai“</translation>
 <translation id="5456381639095306749">Atsisiųsti puslapį</translation>
 <translation id="5458366071038729214">Stebimas svetaines rasite čia</translation>
+<translation id="5469852975082458401">Puslapius galite naršyti naudodami teksto žymeklį. Paspauskite F7, kad išjungtumėte.</translation>
 <translation id="5471273988133666918">Negalima perkelti skirtuko „<ph name="TAB_TITLE" />“</translation>
 <translation id="548278423535722844">Atidaryti Žemėlapių programoje</translation>
 <translation id="549660026907543296">Prisijungti kaip <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6124936178263837501">Pranešti kaip apie ne šlamštą</translation>
 <translation id="6125202119952209826">Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Daugiau išsamios informacijos<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Elementas pašalintas</translation>
 <translation id="6127860394906721547">Atidaryti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, su svetainėmis <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Sumažinti skirtuką</translation>
 <translation id="6134168885321518274">Atidaryti radimo juostą</translation>
@@ -1223,6 +1224,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Tikrinta prieš 1 valandą}one{Tikrinta prieš # valandą}few{Tikrinta prieš # valandas}many{Tikrinta prieš # valandos}other{Tikrinta prieš # valandų}}</translation>
 <translation id="6545017243486555795">Išvalyti visus duomenis</translation>
 <translation id="6546511553472444032">Failas gali būti žalingas</translation>
+<translation id="654871471440386944">Įjungti „Caret Browsing“?</translation>
 <translation id="6550891580932862748">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Tai neturės įtakos Saugaus naršymo nustatymams kituose „Google“ produktuose.</translation>
 <translation id="6554822972009632311">Turinio filtras įjungtas</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}many{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtuko bus uždaryti}other{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>

@@ -261,6 +261,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
 <translation id="22091350895006575">Ychwanegu enw defnyddiwr</translation>
 <translation id="221494669172414749">Bydd agor Chrome heb glo proffil yn tynnu'ch cyfrineiriau a'ch dulliau talu sydd wedi'u cadw o'r car. Mae defnyddio clo proffil yn cadw'r data hyn yn ddiogel.</translation>
+<translation id="2227179592712503583">Tynnu'r awgrym</translation>
 <translation id="2227444325776770048">Parhau fel <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ffenestr wag</translation>
 <translation id="223356358902285214">Gweithgarwch ar y We ac Apiau</translation>
@@ -972,6 +973,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="544776284582297024">I agor tabiau ac i fynd i wahanol dudalennau ar yr un pryd, tapiwch y botwm tabiau sydd ar agor</translation>
 <translation id="5456381639095306749">Tudalen lawrlwytho</translation>
 <translation id="5458366071038729214">Byddwch yn gweld gwefannau rydych yn eu dilyn yma</translation>
+<translation id="5469852975082458401">Gallwch lywio tudalennau gyda chyrchwr testun. Pwyswch F7 i'w ddiffodd.</translation>
 <translation id="5471273988133666918">Ni ellir symud y tab <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Agor yn ap mapiau</translation>
 <translation id="549660026907543296">Ymuno fel <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1108,7 +1110,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6124936178263837501">Nodi fel neges nad yw'n sothach</translation>
 <translation id="6125202119952209826">Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Rhagor o fanylion<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Tynnwyd eitem</translation>
 <translation id="6127860394906721547">Agor grŵp tabiau <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />, gyda gwefannau <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimeiddio tab</translation>
 <translation id="6134168885321518274">Agor y Bar Canfod</translation>
@@ -1150,6 +1151,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6255809143828972562">Gydag offer gan Chrome, gallwch bori'n ddiogel ac aros mewn rheolaeth</translation>
 <translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>
 <translation id="6264485186158353794">Yn ôl i dudalen ddiogel</translation>
+<translation id="6267106249090587268">Hysbysiadau <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd e-bost sothach neu gynnwys dichellgar</translation>
 <translation id="6276708887952587684">Gweld ffynhonnell y dudalen</translation>
 <translation id="6277522088822131679">Bu gwall wrth argraffu'r dudalen. Rhowch gynnig arall arni.</translation>
 <translation id="6278428485366576908">Thema</translation>
@@ -1220,6 +1222,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Gwiriwyd 1 awr yn ôl}zero{Gwiriwyd # awr yn ôl}two{Gwiriwyd # awr yn ôl}few{Gwiriwyd # awr yn ôl}many{Gwiriwyd # awr yn ôl}other{Gwiriwyd # awr yn ôl}}</translation>
 <translation id="6545017243486555795">Clirio'r Holl Ddata</translation>
 <translation id="6546511553472444032">Mae'n bosib bod y ffeil yn niweidiol</translation>
+<translation id="654871471440386944">Troi pori caret ymlaen?</translation>
 <translation id="6550891580932862748">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Ni fydd eich gosodiadau Pori'n Ddiogel mewn cynhyrchion Google eraill yn cael eu heffeithio.</translation>
 <translation id="6554822972009632311">Mae'r hidlydd cynnwys ymlaen</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}two{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> dab arall yn cael eu cau}few{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}many{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}other{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>

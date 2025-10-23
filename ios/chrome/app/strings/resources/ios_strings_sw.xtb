@@ -1235,6 +1235,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5758759241456233788">Umezima Matoleo ya Kuhakiki Ramani. Yawashe tena kwenye Mipangilio.</translation>
 <translation id="5759484603608560822">Kuficha Vipakuliwa</translation>
 <translation id="5767099457279594162">Nenosiri halikushirikiwa</translation>
+<translation id="5768870767339201169">Endelea Ulipoachia</translation>
 <translation id="5779117921996157216">{count,plural, =1{Unatumia nenosiri {count} lililoathiriwa, hali inayoweza kuhatarisha usalama wako. Lirekebishe sasa ili udumishe usalama.}other{Unatumia manenosiri {count} yaliyoathiriwa, hali inayoweza kuhatarisha usalama wako. Yarekebishe sasa ili udumishe usalama.}}</translation>
 <translation id="5791632441210678828">Kitufe cha kupangilia mipasho Unayofuatilia.</translation>
 <translation id="5803566855766646066">Je, una uhakika ungependa kufuta kadi hii mpya?</translation>
@@ -1691,6 +1692,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7484645889979462775">Kamwe lisihifadhiwe kwa tovuti hii</translation>
 <translation id="7486006552035434095">Hakikisha vifaa vyako vimesawazishwa</translation>
 <translation id="7491131399623468277">Nenda kwenye Mipangilio...</translation>
+<translation id="7491161827858509164">Ili uone faili ulizopakua hapo awali, fungua <ph name="BEGIN_LINK" />Faili<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Endelea kubadilisha</translation>
 <translation id="7500244509706269886">Kujaza fomu kiotomatiki</translation>
 <translation id="750493650310597496">Hakuna zilizochaguliwa</translation>
@@ -1728,6 +1730,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7612619742409846846">Umeingia katika akaunti ya Google ukitumia</translation>
 <translation id="7612849887607288481">Fungua Menyu ya Kuweka Mifano ya Awali ya AI</translation>
 <translation id="7620522820075868385">Acha</translation>
+<translation id="762078666799342162">Unaweza kuangalia faili ulizopakua hapo awali katika <ph name="BEGIN_LINK" />Faili<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Kaulisiri si sahihi</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Manenosiri yaliyoathiriwa}=1{Nenosiri {COUNT} limeathiriwa}other{Manenosiri {COUNT} yameathiriwa}}</translation>
 <translation id="7640669552036055091">Vichupo kwenye Android</translation>

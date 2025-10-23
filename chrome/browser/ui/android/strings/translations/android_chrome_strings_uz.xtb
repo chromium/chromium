@@ -262,6 +262,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
 <translation id="22091350895006575">Foydalanuvchi nomini kiritish</translation>
 <translation id="221494669172414749">Chrome profil qulfisiz ochilsa, saqlangan parollar va toʻlov usullari avtomobildan olib tashlanadi. Profil qulfi bu maʼlumotlarni xavfsiz saqlaydi.</translation>
+<translation id="2227179592712503583">Taklifni olib tashlash</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> sifatida davom etish</translation>
 <translation id="2230777942707397948">Boʻsh oyna</translation>
 <translation id="223356358902285214">Veb va ilovalardagi faoliyat tarixi</translation>
@@ -974,6 +975,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="544776284582297024">Bir vaqtda varaqlar ochish va turli sahifalarga tashrif buyurish uchun varaqlarni ochish tugmasini bosing</translation>
 <translation id="5456381639095306749">Sahifani yuklab olish</translation>
 <translation id="5458366071038729214">Kuzatuvdagi saytlaringiz shu yerda chiqadi</translation>
+<translation id="5469852975082458401">Sahifalarni matn kursori bilan kezish mumkin. Rejimdan chiqish uchun F7 tugmasini bosing.</translation>
 <translation id="5471273988133666918">Varaq (<ph name="TAB_TITLE" />) boshqa joyga olinmaydi</translation>
 <translation id="548278423535722844">Xaritalar ilovasida ochish</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> nomidan qoʻshilish</translation>
@@ -1110,7 +1112,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6124936178263837501">Spam emas deb belgilash</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> ulashgan varaqlar guruhiga qoʻshilish</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Havola olib tashlandi</translation>
 <translation id="6127860394906721547"><ph name="COLOR_NAME" /> rangli, <ph name="URL_LIST" /> saytlari bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini oching.</translation>
 <translation id="6130303040046284160">Varaqni yigʻish</translation>
 <translation id="6134168885321518274">Qidiruv panelini ochish</translation>
@@ -1223,6 +1224,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 soat oldin tekshirilgan}other{# soat oldin tekshirilgan}}</translation>
 <translation id="6545017243486555795">Barcha ma’lumotlarni tozalash</translation>
 <translation id="6546511553472444032">Fayl xavfli boʻlishi mumkin</translation>
+<translation id="654871471440386944">Faol kursor rejimi yoqilsinmi?</translation>
 <translation id="6550891580932862748">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Saytlarni xavfsiz kezish sozlamalari boshqa Google mahsulotlariga taʼsir qilmaydi.</translation>
 <translation id="6554822972009632311">Kontent filtri yoniq</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> va yana <ph name="TAB_COUNT_ONE" /> ta varaq yopiladi}other{<ph name="TAB_TITLE" /> va yana <ph name="TAB_COUNT_MANY" /> ta varaq yopiladi}}</translation>

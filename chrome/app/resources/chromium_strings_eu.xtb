@@ -64,6 +64,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, Google-ren Pasahitz-kudeatzailea erabiltzeko eskatuko zaizu.</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
 <translation id="18552579716432081">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina haiek Google-ko kontuan mantentzeko, <ph name="BEGIN_LINK" />amaitu saioa Chromium-en<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chromium arakatzaile, Google Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -90,6 +91,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2049376729098081731">Aukeratu ea Chromium-eko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="2054039611381840095">Etorkizunean Chromium-en eguneratzeak eskuratzeko, macOS 12 edo berriago bat beharko duzu. Ordenagailu hau macOS 11 erabiltzen ari da.</translation>
 <translation id="2086476982681781442">Chromium-ek deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
+<translation id="208726765006323911"><ph name="FEATURE_NAME" /> probatzeko eskatuko zaizu iOS-erako Chromium irekitzen duzun hurrengo aldian.</translation>
 <translation id="2099452623287920103">Google-ko kontuan gordetako pasahitzak eta Chromium-eko beste datuak gailu honetatik kenduko dira. Chromium-en haiek berriro ere erabiltzeko, hasi saioa berriro.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium minutu batez erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}other{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium # minutuz erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}}</translation>
 <translation id="2126108037660393668">Deskargatutako fitxategia ezin izan da egiaztatu.</translation>
@@ -150,6 +152,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2718390899429598676">Segurtasun gehiago izateko, Chromium-ek datuak enkriptatuko ditu.</translation>
 <translation id="2721354645805494590">Zure Google-ko kontua Chromium-etik kentzeko, amaitu saioa</translation>
 <translation id="2722636413143664436">Pasahitzak, laster-markak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chromium-en</translation>
+<translation id="2723860029395667894">Erakutsi beti Google-ren AA moduaren lasterbidea</translation>
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2768103863314748511">Ezarri Chromium PDFen ikustaile lehenetsi gisa</translation>
@@ -452,7 +455,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6390800440335263989">Jarraitzeko, hasi saioa Chromium-en <ph name="EMAIL" /> helbide elektronikoarekin. Horrek bermatuko du zure erakundearen gidalerroak jasotzen dituzula.</translation>
 <translation id="6400112897226594999">Chromium-en logotipoa ordenagailu baten pantailan.</translation>
 <translation id="6403826409255603130">Web-orriak eta aplikazioak tximista bezain azkar abiarazten dituen web-arakatzailea da Chromium. Bizkorra, egonkorra eta erabiltzeko erraza da. Chromium-ek malwarearen eta phishingaren aurka dituen babes inkorporatuei esker, seguruago ibiliko zara Interneten.</translation>
-<translation id="642132557830635295">Chromium-ek bizkorrago funtzionatzen du eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete</translation>
+<translation id="642132557830635295">Chromium-ek bizkorrago funtzionatzen du, eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete</translation>
 <translation id="6436260184216827876">Irudi-bilaketa ez dago erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="6442900851116057561">Berrabiarazi Chromium OS</translation>
 <translation id="6443470774889161065">Ziurrenik bisitatuko dituzun are orri gehiago aurrez kargatzen ditu Chromium-ek, bisitatzen dituzunean bizkorrago karga daitezen</translation>
@@ -637,6 +640,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8601359445272098721">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak, "itzuli pantaila" botoia hautatuta.</translation>
 <translation id="8619360774459241877">Chromium abiarazten…</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ezin da ezarri arakatzaile lehenetsi gisa.</translation>
+<translation id="8677922833187616101">Erakutsi beti Google-ren AA moduaren lasterbidea</translation>
 <translation id="8697124171261953979">Chromium hasten duzunean edo Omnibox-etik bilaketak egiten dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8704119203788522458">Hau da zure Chromium arakatzailea</translation>
 <translation id="8712637175834984815">Ados</translation>

@@ -262,6 +262,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="22091350895006575">Lisää käyttäjätunnus</translation>
 <translation id="221494669172414749">Jos avaat Chromen ilman profiililukkoa, tallennetut salasanat ja maksutavat poistetaan autosta. Profiililukko suojaa tätä dataa.</translation>
+<translation id="2227179592712503583">Poista ehdotus</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tyhjä ikkuna</translation>
 <translation id="223356358902285214">Verkko- ja sovellustoiminta</translation>
@@ -974,6 +975,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="544776284582297024">Välilehtipainikkeella voit avata välilehtiä ja selata useita sivuja yhtä aikaa.</translation>
 <translation id="5456381639095306749">Lataa sivu</translation>
 <translation id="5458366071038729214">Löydät seuraamasi sivustot täältä</translation>
+<translation id="5469852975082458401">Voit siirtyä sivuilla tekstikohdistimen avulla. Laita pois päältä painamalla F7.</translation>
 <translation id="5471273988133666918">Välilehteä (<ph name="TAB_TITLE" />) ei voi siirtää</translation>
 <translation id="548278423535722844">Avaa karttasovelluksessa</translation>
 <translation id="549660026907543296">Liity nimellä <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6124936178263837501">Ilmoita ei-roskapostiksi</translation>
 <translation id="6125202119952209826">Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Kohde poistettu</translation>
 <translation id="6127860394906721547">Avaa välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), väri <ph name="COLOR_NAME" />, joka sisältää nämä sivustot: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Pienennä välilehti</translation>
 <translation id="6134168885321518274">Avaa hakupalkki</translation>
@@ -1223,6 +1224,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Tarkistettu 1 tunti sitten}other{Tarkistettu # tuntia sitten}}</translation>
 <translation id="6545017243486555795">Poista kaikki tiedot</translation>
 <translation id="6546511553472444032">Tiedosto saattaa olla haitallinen</translation>
+<translation id="654871471440386944">Laitetaanko näppäimistöselaaminen päälle?</translation>
 <translation id="6550891580932862748">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Muutos ei vaikuta selaussuojan asetuksiin muissa Googlen tuotteissa.</translation>
 <translation id="6554822972009632311">Sisältösuodatin on päällä</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="TAB_TITLE" /> ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>

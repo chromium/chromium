@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="22091350895006575">新增使用者名稱</translation>
 <translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
+<translation id="2227179592712503583">移除建議</translation>
 <translation id="2227444325776770048">以「<ph name="USER_FULL_NAME" />」的身分繼續</translation>
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網路和應用程式活動</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">如果想開啟分頁並同時造訪不同的網頁，請輕觸「開啟的分頁」按鈕</translation>
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">這裡會顯示你追蹤的網站</translation>
+<translation id="5469852975082458401">你可以透過文字游標瀏覽頁面。按下 F7 鍵即可關閉這項功能。</translation>
 <translation id="5471273988133666918">無法移動分頁「<ph name="TAB_TITLE" />」</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">回報為非垃圾訊息</translation>
 <translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />的分頁群組</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多詳細資料<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">已移除項目</translation>
 <translation id="6127860394906721547">開啟<ph name="COLOR_NAME" />的「<ph name="TITLE_OF_GROUP" />」分頁群組，內含網站 <ph name="URL_LIST" />。</translation>
 <translation id="6130303040046284160">將分頁縮到最小</translation>
 <translation id="6134168885321518274">開啟搜尋列</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">Chrome 提供各種實用工具，讓你放心瀏覽網路，掌控一切設定</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全網頁</translation>
+<translation id="6267106249090587268">通知 <ph name="SEPARATOR" /> 這個網站含有垃圾或欺詐內容，因此 Chrome 已移除這些權限</translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{已在 1 小時前檢查}other{已在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
+<translation id="654871471440386944">要開啟鍵盤瀏覽功能嗎？</translation>
 <translation id="6550891580932862748">無法防範危險的網站、下載內容和擴充功能。其他 Google 產品的安全瀏覽設定不會受到影響。</translation>
 <translation id="6554822972009632311">內容篩選器已開啟</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>

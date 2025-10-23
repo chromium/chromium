@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">नक्साको प्रयोगात्मक संस्करण अफ छ। सेटिङमा गई यसलाई फेरि अन गर्नुहोस्।</translation>
 <translation id="5759484603608560822">"डाउनलोडहरू" लुकाउनुहोस्</translation>
 <translation id="5767099457279594162">पासवर्ड सेयर गरिएको छैन</translation>
+<translation id="5768870767339201169">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस्</translation>
 <translation id="5779117921996157216">{count,plural, =1{तपाईंको {count} पासवर्ड अरूले देखेका छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यो समस्या समाधान गर्नुहोस्।}other{तपाईंका {count} वटा पासवर्ड अरूले देखेका छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यी समस्या समाधान गर्नुहोस्।}}</translation>
 <translation id="5791632441210678828">"फलो गरिराखिएका" फिड क्रमबद्ध गर्नुहोस् नामक बटन।</translation>
 <translation id="5803566855766646066">तपाईंले यो नयाँ कार्ड हटाउन खोज्नुभएकै हो?</translation>
@@ -1691,6 +1692,7 @@
 <translation id="7484645889979462775">यस साइटको लागि कहिले पनि होइन</translation>
 <translation id="7486006552035434095">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>
 <translation id="7491131399623468277">सेटिङमा जानुहोस्…</translation>
+<translation id="7491161827858509164">तपाईंले यसअघि डाउनलोड गरेका फाइलहरू हेर्न <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> खोल्नुहोस्</translation>
 <translation id="7498234416455752244">सम्पादन गरिरहनुहोस्</translation>
 <translation id="7500244509706269886">अटोफिल फाराम</translation>
 <translation id="750493650310597496">0 चयन गरियो</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>
 <translation id="7612849887607288481">AI प्रोटोटाइपिङ मेनु खोल्नुहोस्</translation>
 <translation id="7620522820075868385">रद्द गर्नुहोस्</translation>
+<translation id="762078666799342162">तपाईं <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> मा गई यसअघि डाउनलोड गरिएका कन्टेन्ट हेर्न सक्नुहुन्छ</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{अरूले देखेका पासवर्डहरू}=1{अरूले देखेका {COUNT} पासवर्ड}other{अरूले देखेका {COUNT} वटा पासवर्ड}}</translation>
 <translation id="7640669552036055091">Android मा हालसालै खोलिएका ट्याबहरू</translation>

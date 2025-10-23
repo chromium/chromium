@@ -1235,6 +1235,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5758759241456233788">Kaartide eelvaated on välja lülitatud. Lülitage need seadetes uuesti sisse.</translation>
 <translation id="5759484603608560822">Peida valik „Allalaadimised“</translation>
 <translation id="5767099457279594162">Parooli ei jagatud</translation>
+<translation id="5768870767339201169">Jätkake sealt, kus pooleli jäite</translation>
 <translation id="5779117921996157216">{count,plural, =1{Teil on {count} ohustatud parool, mis võib teie turvalisuse ohtu seada. Turvalisuse tagamiseks parandage see kohe.}other{Teil on {count} ohustatud parooli, mis võivad teie turvalisuse ohtu seada. Turvalisuse tagamiseks parandage need kohe.}}</translation>
 <translation id="5791632441210678828">Voo Jälgin sortimisnupp.</translation>
 <translation id="5803566855766646066">Kas soovite kindlasti sellest uuest kaardist loobuda?</translation>

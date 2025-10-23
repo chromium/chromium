@@ -49,6 +49,7 @@
 <translation id="11947597112837849">helbide elektronikoa</translation>
 <translation id="1197267115302279827">Mugitu laster-markak</translation>
 <translation id="1197761954713363183">Itxi da sarbide-gakoa berresteko orria</translation>
+<translation id="1197933394627598677">Erakutsi irakurtzeko modua</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1202892408424955784">Jarraipena egiten diezun produktuak</translation>
 <translation id="1204037785786432551">Deskargatu estekako edukia</translation>
@@ -260,6 +261,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="22091350895006575">Gehitu erabiltzaile-izena</translation>
 <translation id="221494669172414749">Profilaren blokeorik ez baduzu eta Chrome irekitzen baduzu, gorde dituzun pasahitzak eta ordainketa-metodoak kenduko dira autotik. Datu horiek babesteko balio du profilaren blokeoak.</translation>
+<translation id="2227179592712503583">Kendu iradokizuna</translation>
 <translation id="2227444325776770048">Jarraitu <ph name="USER_FULL_NAME" /> gisa</translation>
 <translation id="2230777942707397948">Leiho hutsa</translation>
 <translation id="223356358902285214">Sareko eta aplikazioetako jarduerak</translation>
@@ -970,6 +972,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="544776284582297024">Fitxak ireki eta aldi berean webgune bat baino gehiago ikusteko, sakatu irekitako fitxen botoia</translation>
 <translation id="5456381639095306749">Deskargatu orria</translation>
 <translation id="5458366071038729214">Jarraitzaile zaituzten webguneak aurkituko dituzu hemen</translation>
+<translation id="5469852975082458401">Nabigatu orrietatik testu-kurtsorea erabilita. Eginbidea desaktibatzeko, sakatu F7.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> fitxa ezin da mugitu</translation>
 <translation id="548278423535722844">Ireki mapa-aplikazio batean</translation>
 <translation id="549660026907543296">Sartu <ph name="MEMBER_FULL_NAME" /> gisa</translation>
@@ -1106,7 +1109,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="6124936178263837501">Salatu ez dela spama</translation>
 <translation id="6125202119952209826">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> erabiltzailearekin</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Xehetasun gehiago<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Kendu egin da elementua</translation>
 <translation id="6127860394906721547">Ireki <ph name="TITLE_OF_GROUP" /> fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa, <ph name="URL_LIST" /> webguneak dituena.</translation>
 <translation id="6130303040046284160">Minimizatu fitxa</translation>
 <translation id="6134168885321518274">Ireki bilaketa-barra</translation>
@@ -1148,6 +1150,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6255809143828972562">Chrome-ren tresnekin, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
 <translation id="6264376385120300461">Deskargatu halere</translation>
 <translation id="6264485186158353794">Itzuli segurtasunera</translation>
+<translation id="6267106249090587268">Jakinarazpenak <ph name="SEPARATOR" /> Spama edo eduki engainakorra duelako kendu ditu baimenak Chrome-k</translation>
 <translation id="6276708887952587684">Ikusi orriaren iturburua</translation>
 <translation id="6277522088822131679">Arazo bat izan da orria inprimatzean. Saiatu berriro.</translation>
 <translation id="6278428485366576908">Gaia</translation>
@@ -1218,6 +1221,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Duela ordubete egiaztatu du}other{Duela # ordu egiaztatu du}}</translation>
 <translation id="6545017243486555795">Garbitu datu guztiak</translation>
 <translation id="6546511553472444032">Baliteke fitxategia kaltegarria izatea</translation>
+<translation id="654871471440386944">Testu-kurtsorearen bidez arakatzeko eginbidea aktibatu nahi duzu?</translation>
 <translation id="6550891580932862748">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Honek ez du eraginik izango Google-ren beste produktuetako Arakatze segurua eginbidearen ezarpenetan.</translation>
 <translation id="6554822972009632311">Eduki-iragazkia aktibatuta dago</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> eta beste <ph name="TAB_COUNT_ONE" /> fitxa itxiko dira}other{<ph name="TAB_TITLE" /> eta beste <ph name="TAB_COUNT_MANY" /> fitxa itxiko dira}}</translation>
@@ -1400,6 +1404,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Bat deskargatzeko zain}other{# deskargatzeko zain}}</translation>
 <translation id="7230064152164845085">Aldatu ezkutuko modura</translation>
 <translation id="7237724030342645845">Google-ren Pasahitz-kudeatzailea zerbitzuak funtzionatzeari utzi dio</translation>
+<translation id="7239496616545081903">Ezkutatu irakurtzeko modua</translation>
 <translation id="72415438529550637">Pasahitzaren iradokizuna itxi da.</translation>
 <translation id="7248671827512403053">Aplikazioa</translation>
 <translation id="7253951228444156601">Pasahitzak egiaztatzen…</translation>
@@ -1742,6 +1747,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8723453889042591629">Itzuli orria bizkor. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8731268612289859741">Segurtasun-kodea</translation>
+<translation id="8738163682604285902">Irakurtzeko modua ikusi nahi duzu?</translation>
 <translation id="8746155870861185046">Partekatu nabarmendutako edukia</translation>
 <translation id="8748850008226585750">Ezkutatuta dago edukia</translation>
 <translation id="8754448020583829686">Kopiatu estekarik gabe</translation>

@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="22091350895006575">Ավելացնել օգտանուն</translation>
 <translation id="221494669172414749">Եթե դուք բացեք Chrome-ը առանց պրոֆիլի կողպման, ձեր պահված գաղտնաբառերը և վճարման եղանակները կհեռացվեն մեքենայից։ Տվյալները պաշտպանելու համար օգտագործեք պրոֆիլի կողպում։</translation>
+<translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Դատարկ պատուհան</translation>
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">Ներդիրներ բացելու և միաժամանակ մի քանի էջեր այցելելու համար սեղմեք «բաց ներդիրներ» կոճակը</translation>
 <translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="5458366071038729214">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
+<translation id="5469852975082458401">Դուք կարող եք մեկ էջից անցնել մյուսը տեսքտի նշորդի միջոցով։ Սեղմեք F7՝ անջատելու համար։</translation>
 <translation id="5471273988133666918">Ներդիր <ph name="TAB_TITLE" />-ը հնարավոր չէ շարժել</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
 <translation id="549660026907543296">Միանալ որպես <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">Նշել որպես ոչ սպամ</translation>
 <translation id="6125202119952209826">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Այլ մանրամասներ<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6127860394906721547">Բացեք ներդիրների «<ph name="TITLE_OF_GROUP" />» խումբը, գույնը՝ <ph name="COLOR_NAME" />, հետևյալ էջերով՝ <ph name="URL_LIST" />։</translation>
 <translation id="6130303040046284160">Ծալել ներդիրը</translation>
 <translation id="6134168885321518274">Բացել որոնման գոտին</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">Chrome-ի գործիքների միջոցով դուք կարող եք ապահով դիտարկել և կառավարել կարգավորումները</translation>
 <translation id="6264376385120300461">Ներբեռնել</translation>
 <translation id="6264485186158353794">Վերադառնալ անվտանգության</translation>
+<translation id="6267106249090587268">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները սպամի կամ մոլորեցնող բովանդակության պատճառով</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
 <translation id="6277522088822131679">Այս էջը տպելիս խնդիր առաջացավ: Նորից փորձեք:</translation>
 <translation id="6278428485366576908">Թեմա</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ստուգվել է 1 ժամ առաջ}one{Ստուգվել է # ժամ առաջ}other{Ստուգվել է # ժամ առաջ}}</translation>
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
 <translation id="6546511553472444032">Ֆայլը կարող է վտանգավոր լինել</translation>
+<translation id="654871471440386944">Միացնե՞լ ստեղնային դիտարկումը</translation>
 <translation id="6550891580932862748">Չի պաշտպանում վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից։ Google-ի այլ պրոդուկտներում Ապահով դիտարկման կարգավորումները չեն փոխվի։</translation>
 <translation id="6554822972009632311">Բովանդակության զտիչը միացված է</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_ONE" /> ներդիր կփակվեն}one{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր կփակվեն}other{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր կփակվեն}}</translation>

@@ -181,6 +181,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan ikke fortsette å bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Påloggingsfeltet nederst</translation>
+<translation id="1823492026305965829">Logg på som <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Finn på side</translation>
@@ -261,6 +262,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="22091350895006575">Legg til et brukernavn</translation>
 <translation id="221494669172414749">Hvis du åpner Chrome uten profillås, fjernes de lagrede passordene og betalingsmåtene dine fra bilen. Bruk en profillås for å holde disse dataene sikre.</translation>
+<translation id="2227179592712503583">Fjern forslaget</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt vindu</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
@@ -855,6 +857,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4910889077668685004">Betalingsapper</translation>
 <translation id="4912413785358399818">Flytt fane</translation>
 <translation id="4913169188695071480">Slutt å laste inn på nytt</translation>
+<translation id="4921224083091001889">For å få passordene dine med mer på alle enhetene dine, logg på Chrome som <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Skjermbilde <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Du kan lagre bilder og filer for å se dem uten nett eller dele dem i andre apper</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 bokmerke og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}other{# bokmerker og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
@@ -879,6 +882,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5007392906805964215">Se gjennom</translation>
 <translation id="5010886807652684893">Visuell visning</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil koble til</translation>
+<translation id="5012016139642806466">Få passordene dine med mer på alle enhetene dine</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> og <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> ser ut til å være relatert. Forsikre deg om at du stoler på <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />, før du bruker passordet ditt.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">De siste 15 minuttene</translation>
@@ -971,6 +975,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="544776284582297024">For å åpne faner og besøke ulike sider samtidig, trykk på åpne faner-knappen</translation>
 <translation id="5456381639095306749">Last ned siden</translation>
 <translation id="5458366071038729214">Her finner du nettsteder du følger</translation>
+<translation id="5469852975082458401">Du kan navigere på sider med en tekstmarkør. Trykk på F7 for å slå av dette.</translation>
 <translation id="5471273988133666918">Fanen <ph name="TAB_TITLE" /> kan ikke flyttes</translation>
 <translation id="548278423535722844">Åpne i en kartapp</translation>
 <translation id="549660026907543296">Bli med som <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1112,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6124936178263837501">Rapportér at dette ikke er søppelpost</translation>
 <translation id="6125202119952209826">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6127860394906721547">Åpne fanegruppen <ph name="TITLE_OF_GROUP" />, fargen <ph name="COLOR_NAME" /> og nettstedene <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimer fanen</translation>
 <translation id="6134168885321518274">Åpne ordsøklinjen</translation>
@@ -1149,6 +1153,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6255809143828972562">Med verktøy fra Chrome kan du surfe trygt og ha kontroll</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264485186158353794">Tilbake til trygg grunn</translation>
+<translation id="6267106249090587268">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene på grunn av søppelpost eller villedende innhold</translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1219,6 +1224,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Sjekket for en time siden}other{Sjekket for # timer siden}}</translation>
 <translation id="6545017243486555795">Slett alle data</translation>
 <translation id="6546511553472444032">Filen kan være skadelig</translation>
+<translation id="654871471440386944">Vil du slå på markørsurfing?</translation>
 <translation id="6550891580932862748">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Safe Browsing-innstillingene i andre Google-produkter påvirkes ikke.</translation>
 <translation id="6554822972009632311">Innholdsfilteret er på</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>

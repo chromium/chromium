@@ -4916,6 +4916,11 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="4467952432486360968">Drittanbieter-Cookies blockieren</translation>
 <translation id="4472740647327683596">Seitenbreite in Mikrometern.</translation>
 <translation id="4474167089968829729">Aktiviert das Speichern von Passwörtern im Passwortmanager</translation>
+<translation id="4474266799109921560">Wenn die Richtlinie auf „2“ gesetzt ist, wird die Verwendung der WebPrinting API für Ursprünge der isolierten Web-App automatisch blockiert.
+
+Wenn die Richtlinie auf „3“ gesetzt ist, wird dem Nutzer eine Benachrichtigung angezeigt, wenn ein Ursprung der isolierten Web-App die WebPrinting API verwenden möchte.
+
+Wenn sie nicht konfiguriert ist, können Ursprünge der isolierten Web-App den Zugriff auf lokale Drucker anfordern − diese Einstellung kann aber vom Nutzer geändert werden.</translation>
 <translation id="447692108909279121">WebRTC-IP-Handling</translation>
 <translation id="4478248026668918517">Blockiert die Erkennung des Anwendungsbereichs von Richtlinien.</translation>
 <translation id="4479671363221255277">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
@@ -5263,6 +5268,14 @@ Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel 
 <translation id="4674542060943819878">Schließen von Warnungen zu gehackten Passwörtern aktivieren</translation>
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">Autofill zulassen</translation>
+<translation id="4681603713834987752">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch Zugriff auf lokale Drucker über die WebPrinting API gewährt wird.
+Gültige Muster sind auf isolierte Web-Apps beschränkt.
+
+Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+
+URL-Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="46845898956959634">„Formuliere für mich“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
@@ -7331,6 +7344,14 @@ Diese Richtlinie gilt nur für neue Verbindungsversuche und macht vorhandene Ver
 <translation id="5983274643567559194">Festlegen einer Tastenkombination für die Aktion „Löschen“ ist deaktiviert.</translation>
 <translation id="5984099692320899605">Keine NTLM-Authentifizierung verwenden</translation>
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
+<translation id="5985770641601021372">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch der Zugriff auf lokale Drucker über die WebPrinting API verweigert wird.
+Gültige Muster sind auf isolierte Web-Apps beschränkt.
+
+Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+
+URL-Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5987654816293745077">Gerätelaufzeitzähler melden</translation>
 <translation id="5991707691018985057">Dialogfeld zum Abbrechen anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5992485316563377005">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die Renderer-Codeintegrität aktiviert.
@@ -8449,6 +8470,7 @@ Wenn die Richtlinie aktiviert ist, aktualisiert die Funktion zur Aktualisierung 
 <translation id="6687291630099400188">Keine Systeminformationen auf dem Anmeldebildschirm anzeigen</translation>
 <translation id="6689343802305995925">Keine Aktion passiert.</translation>
 <translation id="6689792153960219308">Hardwarestatus senden</translation>
+<translation id="6690130879720759384">Ursprüngen der isolierten Web-App nicht erlauben, über die WebPrinting API Zugriff auf lokale Drucker anzufordern</translation>
 <translation id="6690425645391461516">DNS-Abfangprüfungen deaktivieren; „Meintest du: http://intranetsite/“-Infoleisten erlauben.</translation>
 <translation id="669066148640728553">Du kannst ein Zeitfenster für das Ende des Benachrichtigungszeitraums für den Neustart festlegen.
 
@@ -8718,7 +8740,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
 <translation id="6895437634974956885">Der Akkuzustand kann durch Faktoren wie häufiges vollständiges Aufladen und längere Ladezeiten beeinträchtigt werden. Diese Richtlinie bietet drei Optionen, das Ladeverhalten zu optimieren sowie diese Beeinträchtigungen zu minimieren und so letztendlich die Lebensdauer des Akkus zu verlängern.
 
-Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Ein/Aus-Schaltfläche für das adaptive Laden verwenden, um es zu aktivieren oder zu deaktivieren.
+Wenn die Richtlinie nicht konfiguriert ist, können Nutzer den Ein/Aus-Button für das adaptive Laden verwenden, um es zu aktivieren oder zu deaktivieren.
 
 Wenn die Richtlinie auf „1“ (Standard) gesetzt oder nicht konfiguriert ist, wird der Akku ganz normal auf 100 % aufgeladen. Dadurch werden das adaptive und das begrenzte Laden deaktiviert.
 
@@ -10509,15 +10531,6 @@ Eine ausführliche Beschreibung aller Werte findest du unter RFC 8828, Abschnit
       Wird die Richtlinie deaktiviert, dürfen angemeldete Geräte keine Steuerelemente für detailliertes Reporting erhalten.</translation>
 <translation id="82530263956734297">Aus der Sperrliste auszuschließende Erweiterungs-IDs</translation>
 <translation id="8254749125469750814">Nicht mit einem Cloud-Dienst prüfen, ob eine Erweiterung installiert werden kann oder nicht.</translation>
-<translation id="825509998103089977">Diese Richtlinie legt fest, ob die Gemini App im Namen des Nutzers Aktionen auf Webseiten ausführen darf.
-
-0 / nicht festgelegt = Die Gemini App darf Aktionen auf Webseiten ausführen.
-
-1 = Die Gemini App darf keine Aktionen auf den Webseiten ausführen.
-
-Diese Richtlinie hat keine Auswirkungen, wenn die Gemini App deaktiviert ist. Beispielsweise kann die Gemini App durch die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ deaktiviert werden.
-
-Weitere Informationen findest du unter https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />“.</translation>
 <translation id="8256688113167012935">Gibt an, welchen Kontonamen <ph name="PRODUCT_OS_NAME" /> für das entsprechende lokale Gerätekonto auf der Anmeldeseite anzeigt.
 
@@ -11038,6 +11051,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8567697114274003779">Benutzerdefiniertes Unternehmenslabel für ein verwaltetes Profil festlegen</translation>
+<translation id="8571069584826006598">Ursprüngen der isolierten Web-App erlauben, den Nutzer über die WebPrinting API um Zugriff auf lokale Drucker zu bitten</translation>
 <translation id="8571119890730528225">Drittanbieter-Speicherpartitionierung deaktivieren.</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
 <translation id="8571871284943706125">Mit dieser Richtlinie wird festgelegt, ob Ereignisse in CRD-Sitzungen auf registrierten Geräten für verknüpfte Nutzer gemeldet werden.

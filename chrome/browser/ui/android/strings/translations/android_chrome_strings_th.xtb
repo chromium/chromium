@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">ตั้งค่าการซิงค์เริ่มต้นไม่สำเร็จ</translation>
 <translation id="1812027881030482584">ดำเนินการต่อโดยใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ใน <ph name="SITE_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="1820408774134375111">Bottom Sheet การลงชื่อเข้าใช้</translation>
+<translation id="1823492026305965829">ลงชื่อเข้าใช้ด้วย <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
 เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
@@ -261,6 +262,7 @@
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="22091350895006575">เพิ่มชื่อผู้ใช้</translation>
 <translation id="221494669172414749">การเปิด Chrome โดยไม่ใช้การล็อกโปรไฟล์จะนำรหัสผ่านและวิธีการชำระเงินที่บันทึกไว้ออกจากรถ การใช้การล็อกโปรไฟล์จะช่วยให้ข้อมูลนี้ปลอดภัย</translation>
+<translation id="2227179592712503583">นำคำแนะนำออก</translation>
 <translation id="2227444325776770048">ดำเนินการต่อในชื่อ <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">หน้าต่างว่าง</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
@@ -855,6 +857,7 @@
 <translation id="4910889077668685004">แอปชำระเงิน</translation>
 <translation id="4912413785358399818">ย้ายแท็บ</translation>
 <translation id="4913169188695071480">หยุดรีเฟรช</translation>
+<translation id="4921224083091001889">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์ด้วย <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">ภาพหน้าจอ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">คุณบันทึกรูปภาพและไฟล์เพื่อดูแบบออฟไลน์หรือแชร์ในแอปอื่นๆ ได้</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}other{ระบบบันทึกบุ๊กมาร์ก # รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}}</translation>
@@ -879,6 +882,7 @@
 <translation id="5007392906805964215">ดู</translation>
 <translation id="5010886807652684893">ดูภาพ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ต้องการเชื่อมต่อ</translation>
+<translation id="5012016139642806466">รับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> และ <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> ดูเหมือนจะเกี่ยวข้องกัน ตรวจสอบว่าคุณเชื่อถือ <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> ได้ก่อนจะใช้รหัสผ่านของคุณ</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">15 นาทีที่ผ่านมา</translation>
@@ -971,6 +975,7 @@
 <translation id="544776284582297024">หากต้องการเปิดแท็บและเข้าชมหน้าต่างๆ ในเวลาเดียวกัน ให้แตะปุ่มเปิดแท็บ</translation>
 <translation id="5456381639095306749">ดาวน์โหลดหน้า</translation>
 <translation id="5458366071038729214">คุณจะเห็นเว็บไซต์ที่ติดตามที่นี่</translation>
+<translation id="5469852975082458401">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความ กด F7 เพื่อปิด</translation>
 <translation id="5471273988133666918">ย้ายแท็บ <ph name="TAB_TITLE" /> ไม่ได้</translation>
 <translation id="548278423535722844">เปิดในแอปแผนที่</translation>
 <translation id="549660026907543296">เข้าร่วมในชื่อ <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1112,6 @@
 <translation id="6124936178263837501">รายงานว่าไม่ใช่จดหมายขยะ</translation>
 <translation id="6125202119952209826">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />รายละเอียดเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">นำรายการออกแล้ว</translation>
 <translation id="6127860394906721547">เปิดกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> สี<ph name="COLOR_NAME" /> ที่มีเว็บไซต์ <ph name="URL_LIST" /></translation>
 <translation id="6130303040046284160">ย่อแท็บ</translation>
 <translation id="6134168885321518274">เปิดแถบค้นหา</translation>
@@ -1149,6 +1153,7 @@
 <translation id="6255809143828972562">เครื่องมือจาก Chrome ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามต้องการ</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
 <translation id="6264485186158353794">กลับสู่ความปลอดภัย</translation>
+<translation id="6267106249090587268">การแจ้งเตือน <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากมีเนื้อหาสแปมหรือเนื้อหาหลอกลวง</translation>
 <translation id="6276708887952587684">ดูซอร์สโค้ดของหน้าเว็บ</translation>
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
 <translation id="6278428485366576908">ธีม</translation>
@@ -1219,6 +1224,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{ตรวจสอบเมื่อ 1 ชั่วโมงที่ผ่านมา}other{ตรวจสอบเมื่อ # ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="6545017243486555795">ล้างข้อมูลทั้งหมด</translation>
 <translation id="6546511553472444032">ไฟล์อาจเป็นอันตราย</translation>
+<translation id="654871471440386944">เปิดการเรียกดูด้วยแป้นพิมพ์ใช่ไหม</translation>
 <translation id="6550891580932862748">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย การตั้งค่า Google Safe Browsing ในผลิตภัณฑ์อื่นๆ ของ Google จะไม่ได้รับผลกระทบ</translation>
 <translation id="6554822972009632311">ตัวกรองเนื้อหาเปิดอยู่</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บ <ph name="TAB_TITLE" /> และอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บ <ph name="TAB_TITLE" /> และอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>

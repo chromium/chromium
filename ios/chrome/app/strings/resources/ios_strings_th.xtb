@@ -1235,6 +1235,7 @@
 <translation id="5758759241456233788">การแสดงตัวอย่างแผนที่ปิดอยู่ โปรดเปิดอีกครั้งในการตั้งค่า</translation>
 <translation id="5759484603608560822">ซ่อน "ดาวน์โหลด"</translation>
 <translation id="5767099457279594162">ไม่ได้แชร์รหัสผ่าน</translation>
+<translation id="5768870767339201169">ดำเนินการต่อจากที่ค้างไว้</translation>
 <translation id="5779117921996157216">{count,plural, =1{คุณมี {count} รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}other{คุณมี {count} รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}}</translation>
 <translation id="5791632441210678828">ปุ่มจัดเรียงสำหรับฟีดที่กำลังติดตาม</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
@@ -1691,6 +1692,7 @@
 <translation id="7484645889979462775">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7486006552035434095">ซิงค์อุปกรณ์อยู่เสมอ</translation>
 <translation id="7491131399623468277">ไปที่การตั้งค่า…</translation>
+<translation id="7491161827858509164">หากต้องการดูไฟล์ที่คุณดาวน์โหลดไว้ก่อนหน้านี้ ให้เปิด<ph name="BEGIN_LINK" />ไฟล์<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">แก้ไขต่อ</translation>
 <translation id="7500244509706269886">ป้อนข้อความอัตโนมัติในแบบฟอร์ม</translation>
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7612619742409846846">ลงชื่อเข้าใช้ Google ด้วย</translation>
 <translation id="7612849887607288481">เปิดเมนูการสร้างต้นแบบ AI</translation>
 <translation id="7620522820075868385">ยกเลิก</translation>
+<translation id="762078666799342162">คุณดูไฟล์ที่ดาวน์โหลดก่อนหน้านี้ได้ใน<ph name="BEGIN_LINK" />ไฟล์<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{รหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
 <translation id="7640669552036055091">แท็บจาก Android</translation>

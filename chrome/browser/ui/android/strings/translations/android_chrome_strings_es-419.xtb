@@ -261,6 +261,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="22091350895006575">Agregar nombre de usuario</translation>
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
+<translation id="2227179592712503583">Quitar sugerencia</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
 <translation id="223356358902285214">Actividad web y en aplicaciones</translation>
@@ -971,6 +972,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="544776284582297024">Para abrir pestañas y visitar diferentes páginas al mismo tiempo, presiona el botón de pestañas abiertas</translation>
 <translation id="5456381639095306749">Descargar página</translation>
 <translation id="5458366071038729214">Aquí encontrarás los sitios que sigues.</translation>
+<translation id="5469852975082458401">Puedes navegar páginas con un cursor de texto. Presiona F7 para desactivar esta función.</translation>
 <translation id="5471273988133666918">No se puede mover la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir en una app de mapas</translation>
 <translation id="549660026907543296">Únete como <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6124936178263837501">Informar que no es spam</translation>
 <translation id="6125202119952209826">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Más detalles<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6127860394906721547">Abrir el grupo de pestañas <ph name="TITLE_OF_GROUP" />, en color <ph name="COLOR_NAME" />, con los sitios <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar pestaña</translation>
 <translation id="6134168885321518274">Abrir la barra de búsqueda</translation>
@@ -1149,6 +1150,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6255809143828972562">Con las herramientas de Chrome, puedes navegar de forma segura y mantener el control</translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6264485186158353794">Volver a un sitio seguro</translation>
+<translation id="6267106249090587268">Notificaciones <ph name="SEPARATOR" /> Chrome quitó estos permisos debido a la presencia de contenido engañoso o spam</translation>
 <translation id="6276708887952587684">Ver el código fuente de la página</translation>
 <translation id="6277522088822131679">Se produjo un error al imprimir la página. Vuelve a intentarlo.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1219,6 +1221,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Se verificó hace 1 hora}other{Se verificó hace # horas}}</translation>
 <translation id="6545017243486555795">Borrar todos los datos</translation>
 <translation id="6546511553472444032">Es posible que el archivo sea dañino</translation>
+<translation id="654871471440386944">¿Deseas activar la navegación por cursor de texto?</translation>
 <translation id="6550891580932862748">No te protege contra descargas, extensiones ni sitios web peligrosos. La configuración de la Navegación segura en otros productos de Google no se verá afectada.</translation>
 <translation id="6554822972009632311">El filtro de contenido está activado</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Se cerrarán <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_ONE" /> pestaña más.}other{Se cerrarán <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_MANY" /> pestañas más.}}</translation>

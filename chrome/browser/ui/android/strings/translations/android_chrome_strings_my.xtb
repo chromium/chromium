@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
 <translation id="22091350895006575">အသုံးပြုသူအမည် ထည့်ရန်</translation>
 <translation id="221494669172414749">ပရိုဖိုင်လော့ခ်ချခြင်းမပါဘဲ Chrome ကိုဖွင့်ပါက သိမ်းထားသော စကားဝှက်နှင့် ငွေပေးချေနည်းလမ်းများကို သင့်ကားမှ ဖယ်ရှားပါမည်။ ပရိုဖိုင်လော့ခ်ချခြင်း သုံးပါက ဤဒေတာအား လုံခြုံမှုရှိစေသည်။</translation>
+<translation id="2227179592712503583">အကြံပြုချက် ဖယ်ရှားရန်</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
 <translation id="2230777942707397948">ဝင်းဒိုးအလွတ်</translation>
 <translation id="223356358902285214">ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">တဘ်များဖွင့်ပြီး စာမျက်နှာအမျိုးမျိုးကို တစ်ချိန်တည်းဝင်ကြည့်ရန်အတွက် တဘ်ဖွင့်ရန်ခလုတ်ကို တို့ပါ</translation>
 <translation id="5456381639095306749">ဒေါင်းလုဒ်စာမျက်နှာ</translation>
 <translation id="5458366071038729214">သင်လိုက်ကြည့်သော ဝဘ်ဆိုက်များကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
+<translation id="5469852975082458401">စာရိုက်သည့်ပုံကာဆာဖြင့် စာမျက်နှာများကို ကြည့်ရှုနိုင်သည်။ ပိတ်ရန် F7 ကို နှိပ်ပါ။</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> တဘ်ကို ရွှေ့၍မရပါ</translation>
 <translation id="548278423535722844">မြေပုံအက်ပ်တွင် ဖွင့်ပါ</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> အဖြစ် ပါဝင်ရန်</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">စပမ်းမဟုတ်ကြောင်း သတင်းပို့ရန်</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />နောက်ထပ်အသေးစိတ်<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6127860394906721547"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု၊ အရောင် <ph name="COLOR_NAME" /> နှင့် ဝဘ်ဆိုက်များ <ph name="URL_LIST" /> ကို ဖွင့်သည်။</translation>
 <translation id="6130303040046284160">တဘ်ကို ချုံ့ရန်</translation>
 <translation id="6134168885321518274">ရှာဖွေဘား ဖွင့်ရန်</translation>
@@ -1148,6 +1149,7 @@
 <translation id="6255809143828972562">Chrome မှ တူးလ်များဖြင့် လုံခြုံစွာဘရောက်စ်လုပ်ပြီး ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6264376385120300461">မည်သို့ပင်ဖြစ်စေ ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="6264485186158353794">လုံခြုံရာ နောက်သို့</translation>
+<translation id="6267106249090587268">အကြောင်းကြားချက်များ <ph name="SEPARATOR" /> စပမ်း (သို့) လှည့်ဖြားသည့် အကြောင်းအရာများကြောင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="6276708887952587684">စာမျက်နှာ အရင်းအမြစ်အား ကြည့်ရန်</translation>
 <translation id="6277522088822131679">စာမျက်နှာ ပရင်ထုတ်ရာတွင် ပြဿနာရှိသည်။ ကျေးဇူးပြု၍ နောက်မှ ကြိုးစားပါ။</translation>
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
@@ -1218,6 +1220,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{လွန်ခဲ့သော ၁ နာရီက စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # နာရီက စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="6545017243486555795">ဒေတာများအားလုံးကိုရှင်းလင်းရန်</translation>
 <translation id="6546511553472444032">ဖိုင်မှာ အန္တရာယ်ရှိနိုင်သည်</translation>
+<translation id="654871471440386944">Caret ဖြင့်ရှာဖွေခြင်းကို ဖွင့်မလား။</translation>
 <translation id="6550891580932862748">အန္တရာယ်ရှိသော ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများ၏ ရန်မှ ကာကွယ်မပေးပါ။ Google ၏ အခြားထုတ်ကုန်များရှိ သင်၏ ‘လုံခြုံစွာ ကြည့်ရှုခြင်း’ ဆက်တင်များအပေါ် သက်ရောက်မှုမရှိပါ။</translation>
 <translation id="6554822972009632311">အကြောင်းအရာဖီလ်တာ ဖွင့်ထားသည်</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> နှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_ONE" /> ခုကို ပိတ်ပါမည်}other{<ph name="TAB_TITLE" /> နှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်ပါမည်}}</translation>

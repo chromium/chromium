@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="22091350895006575">वापरकर्ता नाव जोडा</translation>
 <translation id="221494669172414749">प्रोफाइल लॉकशिवाय Chrome उघडल्याने तुमचे सेव्ह केलेले पासवर्ड आणि पेमेंट पद्धती कारमधून काढून टाकल्या जातील. प्रोफाइल लॉक वापरल्याने हा डेटा सुरक्षित राहतो.</translation>
+<translation id="2227179592712503583">सूचना काढून टाका</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="2230777942707397948">रिकामी विंडो</translation>
 <translation id="223356358902285214">वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करा</translation>
 <translation id="5458366071038729214">तुम्ही फॉलो करत असलेल्या साइट तुम्हाला येथे दिसतील</translation>
+<translation id="5469852975082458401">तुम्ही मजकुराचा कर्सर वापरून पेज नेव्हिगेट करू शकता. बंद करण्यासाठी F7 प्रेस करा.</translation>
 <translation id="5471273988133666918">टॅब <ph name="TAB_TITLE" /> हलवला जाऊ शकत नाही</translation>
 <translation id="548278423535722844">नकाशे ॲपमध्ये उघडा</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> म्हणून सामील व्हा</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">स्पॅम नाही म्हणून नोंदवा</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> सोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />आणखी तपशील<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">आयटम काढला</translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> या साइट असलेला <ph name="COLOR_NAME" /> या रंगाचा <ph name="TITLE_OF_GROUP" /> हा टॅब गट उघडा.</translation>
 <translation id="6130303040046284160">टॅब मिनिमाइझ करा</translation>
 <translation id="6134168885321518274">शोध बार उघडा</translation>
@@ -1220,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{एका तासापूर्वी तपासले}other{# तासांपूर्वी तपासले}}</translation>
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6546511553472444032">फाइल हानिकारक असू शकते</translation>
+<translation id="654871471440386944">कॅरेट ब्राउझिंग सुरू करायचे आहे का?</translation>
 <translation id="6550891580932862748">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुमच्या इतर Google उत्पादनांमधील सुरक्षित ब्राउझिंग सेटिंग्जवर परिणाम होणार नाही.</translation>
 <translation id="6554822972009632311">आशय फिल्टर सुरू आहे</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_ONE" /> टॅब बंद केला जाईल}other{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब बंद केले जातील}}</translation>

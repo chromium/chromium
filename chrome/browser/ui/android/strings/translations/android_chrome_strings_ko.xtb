@@ -261,6 +261,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="22091350895006575">사용자 이름 추가</translation>
 <translation id="221494669172414749">프로필 잠금 없이 Chrome을 열면 저장된 비밀번호와 결제 수단이 차량에서 삭제됩니다. 프로필 잠금을 사용하면 이 데이터가 안전하게 보호됩니다.</translation>
+<translation id="2227179592712503583">추천 삭제</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />(으)로 계속</translation>
 <translation id="2230777942707397948">빈 창</translation>
 <translation id="223356358902285214">웹 및 앱 활동</translation>
@@ -971,6 +972,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="544776284582297024">탭을 열어 동시에 여러 페이지를 방문하려면 탭 열기 버튼 탭하기</translation>
 <translation id="5456381639095306749">다운로드 페이지</translation>
 <translation id="5458366071038729214">팔로우하는 사이트가 여기에 표시됩니다</translation>
+<translation id="5469852975082458401">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 F7을 누르세요.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> 탭을 이동할 수 없습니다.</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />(으)로 참여</translation>
@@ -1107,7 +1109,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6124936178263837501">스팸 아님으로 신고</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />세부정보 더보기<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> 사이트가 포함된 <ph name="COLOR_NAME" /> 색상의 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 엽니다.</translation>
 <translation id="6130303040046284160">탭 최소화</translation>
 <translation id="6134168885321518274">찾기 창 열기</translation>
@@ -1149,6 +1150,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6255809143828972562">Chrome의 도구로 안전하게 탐색하고 제어할 수 있습니다</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6264485186158353794">안전한 페이지로 돌아가기</translation>
+<translation id="6267106249090587268">알림 <ph name="SEPARATOR" /> 스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="6276708887952587684">페이지 소스 보기</translation>
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="6278428485366576908">테마</translation>
@@ -1219,6 +1221,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1시간 전에 확인됨}other{#시간 전에 확인됨}}</translation>
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
 <translation id="6546511553472444032">유해한 파일일 수도 있음</translation>
+<translation id="654871471440386944">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
 <translation id="6550891580932862748">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. 다른 Google 제품의 세이프 브라우징 설정은 영향을 받지 않습니다.</translation>
 <translation id="6554822972009632311">콘텐츠 필터 사용 중</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>

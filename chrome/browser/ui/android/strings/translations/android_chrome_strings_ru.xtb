@@ -262,6 +262,7 @@
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="22091350895006575">Добавить имя пользователя</translation>
 <translation id="221494669172414749">Если вы откроете Chrome без блокировки профиля, сохраненные пароли и способы оплаты будут удалены с автомобиля. Используйте блокировку профиля, чтобы защитить данные.</translation>
+<translation id="2227179592712503583">Удалить подсказку</translation>
 <translation id="2227444325776770048">Продолжить как <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Пустое окно</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
@@ -974,6 +975,7 @@
 <translation id="544776284582297024">Нажмите эту кнопку, чтобы открыть новую вкладку или переключиться на другую.</translation>
 <translation id="5456381639095306749">Скачать страницу</translation>
 <translation id="5458366071038729214">Здесь будут сайты, на которые вы подпишетесь.</translation>
+<translation id="5469852975082458401">Вы сможете использовать курсор для навигации по страницам. Нажмите F7, чтобы отключить эту функцию.</translation>
 <translation id="5471273988133666918">Нельзя переместить вкладку "<ph name="TAB_TITLE" />".</translation>
 <translation id="548278423535722844">Показать на карте</translation>
 <translation id="549660026907543296">Присоединиться как <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@
 <translation id="6124936178263837501">Это не спам</translation>
 <translation id="6125202119952209826">Присоединитесь к группе, в которой состоит <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6127860394906721547">Открой группу вкладок "<ph name="TITLE_OF_GROUP" />", цвет "<ph name="COLOR_NAME" />", со следующими страницами: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Свернуть вкладку</translation>
 <translation id="6134168885321518274">Открыть панель поиска</translation>
@@ -1223,6 +1224,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено 1 час назад.}one{Проверено # час назад.}few{Проверено # часа назад.}many{Проверено # часов назад.}other{Проверено # часа назад.}}</translation>
 <translation id="6545017243486555795">Удалить все данные</translation>
 <translation id="6546511553472444032">Файл может быть опасным</translation>
+<translation id="654871471440386944">Включить режим активного курсора?</translation>
 <translation id="6550891580932862748">Не защищает вас от опасных сайтов, расширений и скачиваемых файлов. Этот вариант не повлияет на настройки Безопасного просмотра в других продуктах Google.</translation>
 <translation id="6554822972009632311">Фильтр контента включен</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>

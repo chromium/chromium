@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">Що варто врахувати</translation>
 <translation id="22091350895006575">Додати ім’я користувача</translation>
 <translation id="221494669172414749">Якщо відкрити Chrome, коли блокування профілю автомобіля не налаштовано, з профілю буде вилучено всі збережені паролі й способи оплати. Блокування профілю захищає ці дані.</translation>
+<translation id="2227179592712503583">Видалити пропозицію</translation>
 <translation id="2227444325776770048">Продовжити як <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Порожнє вікно</translation>
 <translation id="223356358902285214">Історія додатків і вебпошуку</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">Щоб відкривати різні вкладки й одночасно переглядати кілька сторінок, натисніть кнопку відкритих вкладок</translation>
 <translation id="5456381639095306749">Завантажити сторінку</translation>
 <translation id="5458366071038729214">Тут відображатимуться сайти, на які ви підпишетеся</translation>
+<translation id="5469852975082458401">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цей режим, натисніть F7.</translation>
 <translation id="5471273988133666918">Не можна перемістити вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">Відкрити в додатку Карти</translation>
 <translation id="549660026907543296">Приєднатися як <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">Позначити як не спам</translation>
 <translation id="6125202119952209826">Приєднатися до групи вкладок, з якою працює <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Веб-сайт видалено</translation>
 <translation id="6127860394906721547">Відкрити групу вкладок "<ph name="TITLE_OF_GROUP" />" із сайтами (<ph name="URL_LIST" />); колір: <ph name="COLOR_NAME" />.</translation>
 <translation id="6130303040046284160">Згорнути вкладку</translation>
 <translation id="6134168885321518274">Відкрити панель "Пошук"</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">Безпечно переглядайте вебсторінки й керуйте налаштуваннями завдяки інструментам від Chrome</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
 <translation id="6264485186158353794">Назад на безпечну сторінку</translation>
+<translation id="6267106249090587268">Сповіщення <ph name="SEPARATOR" /> Chrome скасував ці дозволи через спам або оманливий контент</translation>
 <translation id="6276708887952587684">Переглянути джерело сторінки</translation>
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
 <translation id="6278428485366576908">Тема</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Перевірено 1 годину тому}one{Перевірено # годину тому}few{Перевірено # години тому}many{Перевірено # годин тому}other{Перевірено # години тому}}</translation>
 <translation id="6545017243486555795">Видалити всі дані</translation>
 <translation id="6546511553472444032">Файл може бути шкідливим</translation>
+<translation id="654871471440386944">Увімкнути клавішну навігацію?</translation>
 <translation id="6550891580932862748">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Це не вплине на налаштування Безпечного перегляду в інших продуктах Google.</translation>
 <translation id="6554822972009632311">Фільтр контенту ввімкнено</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>

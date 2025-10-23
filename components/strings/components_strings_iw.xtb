@@ -2142,7 +2142,7 @@
 <translation id="4480760608050410381">‏סרטון MP4</translation>
 <translation id="448363931695049633">פיצריות</translation>
 <translation id="4489023393592172404">‏מעטפה – Kaku 4</translation>
-<translation id="4489977488133295402">כדי למלא אוטומטית את פרטי אמצעי התשלום, עליך לאמת את הזהות שלך</translation>
+<translation id="4489977488133295402">מילוי אוטומטי של פרטי אמצעי התשלום יותנה באימות הזהות</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
 <translation id="4493480324863638523">‏כתובת URL לא חוקית. הסכימה של כתובת ה-URL צריכה להיות רגילה, כלומר: http://example.com או https://example.com.</translation>
@@ -4811,7 +4811,7 @@ Del</translation>
 <translation id="8918062451146297192">‏קוד אימות (CVC) לכרטיס הווירטואלי</translation>
 <translation id="8919740778133505789">מכוניות ספורט</translation>
 <translation id="8919895429178014996">הסתרת כל הפריטים</translation>
-<translation id="8919989290032064330">לאמת את הזהות שלך כדי למלא אוטומטית את פרטי אמצעי התשלום?</translation>
+<translation id="8919989290032064330">למלא אוטומטית את פרטי התשלום רק אחרי שאימתת את הזהות שלך?</translation>
 <translation id="8922013791253848639">תמיד לאפשר מודעות באתר הזה</translation>
 <translation id="8922734931659847428">‏רשימה חלקית של כתובות URL של דפים עם <ph name="BEGIN_LINK" />אירועי שימוש בטכנולוגיה מדור קודם<ph name="END_LINK" /> שביקרת בהם</translation>
 <translation id="892588693504540538">ניקוב בפינה הימנית העליונה</translation>

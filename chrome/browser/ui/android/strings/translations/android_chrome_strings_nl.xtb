@@ -261,6 +261,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="22091350895006575">Gebruikersnaam toevoegen</translation>
 <translation id="221494669172414749">Als je Chrome opent zonder profielvergrendeling, worden je opgeslagen wachtwoorden en betaalmethoden uit de auto verwijderd. Met een profielvergrendeling beveilig je deze gegevens.</translation>
+<translation id="2227179592712503583">Suggestie verwijderen</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Leeg venster</translation>
 <translation id="223356358902285214">Web- en app-activiteit</translation>
@@ -971,6 +972,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="544776284582297024">Tik op de knop voor geopende tabbladen om tabbladen te openen en tegelijkertijd verschillende pagina's te bezoeken</translation>
 <translation id="5456381639095306749">Pagina downloaden</translation>
 <translation id="5458366071038729214">Hier vind je de sites die je volgt</translation>
+<translation id="5469852975082458401">Je kunt navigeren op pagina's met een tekstcursor. Druk op F7 om dit uit te zetten.</translation>
 <translation id="5471273988133666918">Tabblad <ph name="TAB_TITLE" /> kan niet worden verplaatst</translation>
 <translation id="548278423535722844">Openen in app voor passen</translation>
 <translation id="549660026907543296">Deelnemen als <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6124936178263837501">Melden als geen spam</translation>
 <translation id="6125202119952209826">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Item verwijderd</translation>
 <translation id="6127860394906721547">Tabbladgroep <ph name="TITLE_OF_GROUP" /> openen, kleur <ph name="COLOR_NAME" />, met sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Tabblad minimaliseren</translation>
 <translation id="6134168885321518274">Zoekbalk openen</translation>
@@ -1220,6 +1221,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 uur geleden gecheckt}other{# uur geleden gecheckt}}</translation>
 <translation id="6545017243486555795">Alle gegevens wissen</translation>
 <translation id="6546511553472444032">Bestand kan schadelijk zijn</translation>
+<translation id="654871471440386944">Browsen met navigatietoetsen aanzetten?</translation>
 <translation id="6550891580932862748">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Dit heeft geen invloed op je Safe Browsing-instellingen in andere Google-producten.</translation>
 <translation id="6554822972009632311">Contentfilter staat aan</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="TAB_TITLE" /> en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>

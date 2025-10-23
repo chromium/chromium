@@ -1692,6 +1692,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7484645889979462775">ຢ່າເລີຍສໍາລັບເວັບໄຊທ໌ນີ້</translation>
 <translation id="7486006552035434095">ຊິ້ງອຸປະກອນຂອງທ່ານຢູ່ສະເໝີ</translation>
 <translation id="7491131399623468277">ໄປຫາການຕັ້ງຄ່າ…</translation>
+<translation id="7491161827858509164">ເພື່ອເບິ່ງໄຟລ໌ທີ່ທ່ານດາວໂຫຼດໄວ້ກ່ອນໜ້ານີ້, ໃຫ້ເປີດ <ph name="BEGIN_LINK" />ໄຟລ໌<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">ສືບຕໍ່ແກ້ໄຂ</translation>
 <translation id="7500244509706269886">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດໃນແບບຟອມ</translation>
 <translation id="750493650310597496">0 ເລືອກແລ້ວ</translation>
@@ -1729,6 +1730,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7612619742409846846">ເຂົ້າສູ່ລະບົບ Google ເປັນ</translation>
 <translation id="7612849887607288481">ເປີດເມນູ AI ຕົ້ນແບບ</translation>
 <translation id="7620522820075868385">ຍົກເລີກ</translation>
+<translation id="762078666799342162">ທ່ານສາມາດເບິ່ງໄຟລ໌ທີ່ດາວໂຫຼດກ່ອນໜ້ານີ້ຂອງທ່ານໄດ້ໃນ <ph name="BEGIN_LINK" />ໄຟລ໌<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}}</translation>
 <translation id="7640669552036055091">ແຖບຈາກ Android</translation>

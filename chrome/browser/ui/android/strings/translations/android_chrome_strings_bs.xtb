@@ -181,6 +181,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1810845389119482123">Početno postavljanje sinhronizacije nije završeno</translation>
 <translation id="1812027881030482584">Web lokacija <ph name="SITE_ETLD_PLUS_ONE" /> ne može nastaviti koristiti pružaoca usluga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Donja tabela za prijavu</translation>
+<translation id="1823492026305965829">Prijavite se kao <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Načini plaćanja i adrese s Google Paya se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
@@ -261,6 +262,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2194856509914051091">Stvari za razmatranje</translation>
 <translation id="22091350895006575">Dodaj korisničko ime</translation>
 <translation id="221494669172414749">Otvaranje Chromea bez zaključavanja profila će ukloniti sačuvane lozinke i načine plaćanja iz automobila. Korištenje zaključavanja profila čuva te podatke na sigurnom.</translation>
+<translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Prazan prozor</translation>
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
@@ -855,6 +857,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
 <translation id="4912413785358399818">Pomjeri karticu</translation>
 <translation id="4913169188695071480">Prestani osvježavati</translation>
+<translation id="4921224083091001889">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se na Chrome kao <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Snimak ekrana <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Možete sačuvati slike i fajlove da pregledate offline ili dijelite u drugim aplikacijama</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}one{# oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}few{# oznake i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}other{# oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}}</translation>
@@ -879,6 +882,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5010886807652684893">Vizuelni prikaz</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> se želi povezati</translation>
+<translation id="5012016139642806466">Pristupajte svojim zaporkama i drugim podacima na svim svojim uređajima</translation>
 <translation id="5012253429094023177">Izgleda da su <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> i <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> povezani. Provjerite je li <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> pouzdana web lokacija prije korištenja lozinke.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Posljednjih 15 minuta</translation>
@@ -971,6 +975,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="544776284582297024">Da otvorite kartice i posjećujete različite stranice u isto vrijeme, dodirnite dugme Otvori kartice</translation>
 <translation id="5456381639095306749">Preuzmi stranicu</translation>
 <translation id="5458366071038729214">Ovdje ćete pronaći lokacije koje pratite</translation>
+<translation id="5469852975082458401">Možete navigirati stranicama pomoću kursora za tekst. Pritisnite F7 da isključite.</translation>
 <translation id="5471273988133666918">Kartica <ph name="TAB_TITLE" /> se ne može premjestiti</translation>
 <translation id="548278423535722844">Otvori u aplikacijama za mape</translation>
 <translation id="549660026907543296">Pridružite se kao <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1112,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6124936178263837501">Prijavi da nije neželjeno</translation>
 <translation id="6125202119952209826">Pridružite se grupi kartica koju koristi <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Više detalja<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6127860394906721547">Otvaranje grupe kartica<ph name="TITLE_OF_GROUP" />, boje <ph name="COLOR_NAME" />, s web lokacijama <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimiziranje kartice</translation>
 <translation id="6134168885321518274">Otvaranje trake za pronalaženje</translation>
@@ -1149,6 +1153,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6255809143828972562">Pomoću Chromeovih alata možete preglédati sigurno i zadržati kontrolu</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6264485186158353794">Nazad na sigurno</translation>
+<translation id="6267106249090587268">Obavještenja <ph name="SEPARATOR" /> Chrome je uklonio ova odobrenja zbog neželjenog ili obmanjujućeg sadržaja</translation>
 <translation id="6276708887952587684">Prikaz izvora stranice</translation>
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1219,6 +1224,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Provjereno prije 1 sat}one{Provjereno prije # sat}few{Provjereno prije # sata}other{Provjereno prije # sati}}</translation>
 <translation id="6545017243486555795">Obriši sve podatke</translation>
 <translation id="6546511553472444032">Fajl može biti štetan</translation>
+<translation id="654871471440386944">Uključiti navigaciju kursorom?</translation>
 <translation id="6550891580932862748">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. To neće uticati na vaše postavke Sigurnog pregledanja na drugim Googleovim proizvodima.</translation>
 <translation id="6554822972009632311">Filter sadržaja je uključen</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_ONE" /> kartica će se zatvoriti}one{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica će se zatvoriti}few{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartice će se zatvoriti}other{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica će se zatvoriti}}</translation>

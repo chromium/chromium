@@ -261,6 +261,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
 <translation id="22091350895006575">Колдонуучунун атын кошуу</translation>
 <translation id="221494669172414749">Chrome профиль кулпусу жок ачылса, сакталган сырсөздөрүңүз жана төлөм ыкмаларыңыз унаадан өчүрүлөт. Профиль кулпусун колдонуу менен бул маалымат коопсуз сакталат.</translation>
+<translation id="2227179592712503583">Сунушту өчүрүү</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> катары улантуу</translation>
 <translation id="2230777942707397948">Бош терезе</translation>
 <translation id="223356358902285214">Колдонмолор жана Интернеттеги аракеттер таржымалы</translation>
@@ -971,6 +972,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="544776284582297024">Бир учурда бир нече өтмөктү ачып, бир нече баракка өтүү үчүн өтмөктөрдү ачуу баскычын басыңыз</translation>
 <translation id="5456381639095306749">Баракты жүктөп алуу</translation>
 <translation id="5458366071038729214">Жазылган сайттарды ушул жерден табасыз</translation>
+<translation id="5469852975082458401">Барактарды текст курсору менен көрө аласыз. Өчүрүү үчүн F7 баскычын басыңыз.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> өтмөгүн жылдырууга болбойт</translation>
 <translation id="548278423535722844">Карталар колдонмосунан ачыңыз</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> катары кошулуу</translation>
@@ -1107,7 +1109,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6124936178263837501">Спам эмес деп кабарлоо</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> бар өтмөктөр тобуна кошулуңуз</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Толук маалымат<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Нерсе өчүрүлдү</translation>
 <translation id="6127860394906721547"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобун ачуу, түсү <ph name="COLOR_NAME" />, <ph name="URL_LIST" /> сайттары менен.</translation>
 <translation id="6130303040046284160">Өтмөктү кичирейтүү</translation>
 <translation id="6134168885321518274">Издөө тилкесин ачуу</translation>
@@ -1149,6 +1150,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6255809143828972562">Chrome'дун куралдары менен коопсуз серептеп, баарын көзөмөлдөй аласыз</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
 <translation id="6264485186158353794">Коопсуздукка кайтуу</translation>
+<translation id="6267106249090587268">Билдирмелер <ph name="SEPARATOR" /> Спам же жалган материалдан улам Chrome бул уруксаттарды өчүрдү</translation>
 <translation id="6276708887952587684">Барактын булагын көрсөтүү</translation>
 <translation id="6277522088822131679">Баракты басып чыгарууда көйгөй келип чыкты. Дагы аракет кылып көрүңүз.</translation>
 <translation id="6278428485366576908">Тема</translation>
@@ -1219,6 +1221,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 саат мурда текшерилди}other{# саат мурда текшерилди}}</translation>
 <translation id="6545017243486555795">Бардык нерселерди өчүрүү</translation>
 <translation id="6546511553472444032">Файл кооптуу болушу мүмкүн</translation>
+<translation id="654871471440386944">Caret серептөөсү күйгүзүлсүнбү?</translation>
 <translation id="6550891580932862748">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргобойт. Мунун Google'дагы башка товарлардын Коопсуз серептөө параметрлерине кедергиси тийбейт.</translation>
 <translation id="6554822972009632311">Видеолордун чыпкасы күйүк</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> жана дагы <ph name="TAB_COUNT_ONE" /> өтмөк жабылат}other{<ph name="TAB_TITLE" /> жана дагы <ph name="TAB_COUNT_MANY" /> өтмөк жабылат}}</translation>

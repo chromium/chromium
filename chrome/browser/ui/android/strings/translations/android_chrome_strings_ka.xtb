@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">სინქრონიზაციის თავდაპირველი დაყენება არ დასრულებულა</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
 <translation id="1820408774134375111">სისტემაში შესვლის ქვედა ფურცელი</translation>
+<translation id="1823492026305965829">შედით, როგორც <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Google Pay-ში არსებული გადახდის მეთოდები და მისამართები არ დაიშიფრება. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.
 თქვენი დაშიფრული მონაცემების წაკითხვა შეუძლია მხოლოდ მას, ვინც თქვენი საიდუმლო ფრაზა იცის. საიდუმლო ფრაზა არ იგზავნება Google-ში და არ ინახება მის მიერ. საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chrome მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
@@ -261,6 +262,7 @@
 <translation id="2194856509914051091">გასათვალისწინებელი საკითხები</translation>
 <translation id="22091350895006575">მომხმარებლის სახელის დამატება</translation>
 <translation id="221494669172414749">Chrome-ის გახსნა პროფილის ჩაკეტვის გარეშე ამოშლის თქვენს შენახულ პაროლებსა და გადახდის მეთოდებს მანქანიდან. პროფილის ჩაკეტვის გამოყენება უზრუნველყოფს ამ მონაცემების უსაფრთხოებას.</translation>
+<translation id="2227179592712503583">შემოთავაზების ამოშლა</translation>
 <translation id="2227444325776770048">გაგრძელება, როგორც <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">ცარიელი ფანჯარა</translation>
 <translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
@@ -855,6 +857,7 @@
 <translation id="4910889077668685004">გადახდის აპები</translation>
 <translation id="4912413785358399818">ჩანართის გადატანა</translation>
 <translation id="4913169188695071480">განახლების შეწყვეტა</translation>
+<translation id="4921224083091001889">თქვენს ყველა მოწყობილობაზე პაროლებისა და სხვა მონაცემების მისაღებად შედით Chrome-ში, როგორც <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">ეკრანის ანაბეჭდი <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">შეგიძლიათ შეინახოთ სურათები და ფაილები ხაზგარეშე რეჟიმში სანახავად ან სხვა აპებში გასაზიარებლად</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 სანიშნე და სხვა ერთეულები შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მათ გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში.}other{# სანიშნე და სხვა ერთეულები შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებში მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში.}}</translation>
@@ -879,6 +882,7 @@
 <translation id="5007392906805964215">გადახედვა</translation>
 <translation id="5010886807652684893">ვიზუალური ხედი</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> დაკავშირებას ითხოვს</translation>
+<translation id="5012016139642806466">მიიღეთ თქვენი პაროლები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> და <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" />, როგორც ჩანს, დაკავშირებულია ერთმანეთთან. დარწმუნდით, რომ <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> სანდოა, სანამ თქვენს პაროლს გამოიყენებთ.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">ბოლო 15 წუთი</translation>
@@ -971,6 +975,7 @@
 <translation id="544776284582297024">ჩანართების გასახსნელად და ერთდროულად სხვადასხვა გვერდის მოსანახულებლად შეეხეთ ჩანართების გახსნის ღილაკს</translation>
 <translation id="5456381639095306749">გვერდის ჩამოტვირთვა</translation>
 <translation id="5458366071038729214">აქ იპოვით საიტებს, რომლებსაც თვალს ადევნებთ</translation>
+<translation id="5469852975082458401">გვერდებზე ნავიგაცია ტექსტური კურსორის მეშვეობით შეგიძლიათ. გამოსართავად დააჭირეთ F7-ს.</translation>
 <translation id="5471273988133666918">ჩანართის „<ph name="TAB_TITLE" />“ გადატანა შეუძლებელია</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
 <translation id="549660026907543296">შეერთება სახელით <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1112,6 @@
 <translation id="6124936178263837501">მონიშვნა, რომ „სპამი არ არის“</translation>
 <translation id="6125202119952209826">შეუერთდით ჩანართების ჯგუფს <ph name="OWNER_FIRST_NAME" />-სთან ერთად</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6127860394906721547">გახსენით ჩანართების ჯგუფი „<ph name="TITLE_OF_GROUP" />“, <ph name="COLOR_NAME" /> ფერის, ვებსაიტებით <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">ჩანართის ჩაკეცვა</translation>
 <translation id="6134168885321518274">საძიებო ზოლის გახსნა</translation>
@@ -1149,6 +1153,7 @@
 <translation id="6255809143828972562">Chrome-ში არსებული ხელსაწყოები დაგეხმარებათ, უსაფრთხოდ დაათვალიეროთ ვები და შეინარჩუნოთ კონტროლი</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
 <translation id="6264485186158353794">უსაფრთხოებაზე დაბრუნება</translation>
+<translation id="6267106249090587268">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები სპამის ან შეცდომაში შემყვანი კონტენტის გამო</translation>
 <translation id="6276708887952587684">გვერდის წყაროს ნახვა</translation>
 <translation id="6277522088822131679">გვერდის დაბეჭდვისას დაფიქსირდა შეცდომა. გთხოვთ ცადოთ ხელახლა.</translation>
 <translation id="6278428485366576908">თემა</translation>
@@ -1219,6 +1224,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{შემოწმდა 1 საათის წინ}other{შემოწმდა # საათის წინ}}</translation>
 <translation id="6545017243486555795">ყველა მონაცემის გასუფთავება</translation>
 <translation id="6546511553472444032">ფაილი, შესაძლოა, საზიანო იყოს</translation>
+<translation id="654871471440386944">გსურთ კურსორით დათვალიერების ჩართვა?</translation>
 <translation id="6550891580932862748">არ დაგიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა თუ გაფართოებებისგან. აღნიშნული არ აისახება თქვენ მიერ Google-ის სხვა პროდუქტებში Safe Browsing-ისთვის დაყენებულ პარამეტრებზე.</translation>
 <translation id="6554822972009632311">კონტენტის ფილტრი ჩართულია</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> და <ph name="TAB_COUNT_ONE" /> სხვა ჩანართი დაიხურება}other{<ph name="TAB_TITLE" /> და <ph name="TAB_COUNT_MANY" /> სხვა ჩანართი დაიხურება}}</translation>

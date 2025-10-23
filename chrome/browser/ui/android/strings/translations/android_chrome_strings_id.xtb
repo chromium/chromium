@@ -261,6 +261,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="22091350895006575">Tambahkan nama pengguna</translation>
 <translation id="221494669172414749">Membuka Chrome tanpa kunci profil akan menghapus sandi dan metode pembayaran tersimpan Anda dari mobil. Menggunakan kunci profil akan menjaga keamanan data ini.</translation>
+<translation id="2227179592712503583">Hapus saran</translation>
 <translation id="2227444325776770048">Lanjutkan sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Jendela kosong</translation>
 <translation id="223356358902285214">Aktivitas Web &amp; Aplikasi</translation>
@@ -971,6 +972,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol tab terbuka</translation>
 <translation id="5456381639095306749">Download halaman</translation>
 <translation id="5458366071038729214">Anda akan menemukan situs yang Anda ikuti di sini</translation>
+<translation id="5469852975082458401">Anda dapat membuka halaman dengan kursor teks. Tekan F7 untuk menonaktifkan.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> tidak dapat dipindahkan</translation>
 <translation id="548278423535722844">Buka di aplikasi peta</translation>
 <translation id="549660026907543296">Gabung sebagai <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6124936178263837501">Laporkan sebagai bukan spam</translation>
 <translation id="6125202119952209826">Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Detail selengkapnya<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Item dihapus</translation>
 <translation id="6127860394906721547">Buka grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />, dengan situs <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Perkecil tab</translation>
 <translation id="6134168885321518274">Buka Kolom Cari</translation>
@@ -1149,6 +1150,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6255809143828972562">Dengan alat dari Chrome, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6264376385120300461">Tetap download</translation>
 <translation id="6264485186158353794">Kembali agar aman</translation>
+<translation id="6267106249090587268">Notifikasi <ph name="SEPARATOR" /> Chrome menghapus izin ini karena spam atau konten tidak jujur</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
 <translation id="6277522088822131679">Terjadi error saat mencetak halaman. Coba lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1219,6 +1221,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Diperiksa 1 jam yang lalu}other{Diperiksa # jam yang lalu}}</translation>
 <translation id="6545017243486555795">Hapus Semua Data</translation>
 <translation id="6546511553472444032">File mungkin berbahaya</translation>
+<translation id="654871471440386944">Aktifkan penjelajahan dengan keyboard?</translation>
 <translation id="6550891580932862748">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Setelan Safe Browsing Anda di produk Google lainnya tidak akan terpengaruh.</translation>
 <translation id="6554822972009632311">Filter konten aktif</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> dan <ph name="TAB_COUNT_ONE" /> tab lainnya akan ditutup}other{<ph name="TAB_TITLE" /> dan <ph name="TAB_COUNT_MANY" /> tab lainnya akan ditutup}}</translation>

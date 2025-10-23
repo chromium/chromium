@@ -1235,6 +1235,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5758759241456233788">A vista previa de Maps está desactivada. Actívaa de novo en Configuración.</translation>
 <translation id="5759484603608560822">Ocultar Descargas</translation>
 <translation id="5767099457279594162">O contrasinal non se compartiu</translation>
+<translation id="5768870767339201169">Continúa onde o deixaches</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tes {count} contrasinal vulnerado que podería poñer en perigo a túa seguranza. Cámbiao xa para non correr riscos.}other{Tes {count} contrasinais vulnerados que poderían poñer en perigo a túa seguranza. Cámbiaos xa para non correr riscos.}}</translation>
 <translation id="5791632441210678828">Botón Ordenar do feed Seguindo.</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
@@ -1792,6 +1793,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7851858861565204677">Outros dispositivos</translation>
 <translation id="7853202427316060426">Actividade</translation>
 <translation id="7854006015462979438">Abre General (Xeral)</translation>
+<translation id="7855678267851972597">Audio</translation>
 <translation id="7859988229622350291">Non traducir nunca</translation>
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opcións do Tradutor</translation>
@@ -1971,6 +1973,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8524799873541103884">Etiquetas de <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Abre ligazóns desde outras aplicacións no modo de incógnito</translation>
 <translation id="8529767659511976195">Novidade</translation>
+<translation id="8531572740963685410">PDF</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A opción Navegación segura está activada</translation>
 <translation id="8534481786647257214">Completouse a publicación en Google+.</translation>

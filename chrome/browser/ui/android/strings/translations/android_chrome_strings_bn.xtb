@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="22091350895006575">ইউজারনেম যোগ করুন</translation>
 <translation id="221494669172414749">প্রোফাইল লক ছাড়া Chrome খুললে, আপনার সেভ করা পাসওয়ার্ড ও পেমেন্ট পদ্ধতি গাড়ি থেকে মুছে ফেলা হবে। প্রোফাইল লক ব্যবহার করা হলে এই ডেটা সুরক্ষিত থাকবে।</translation>
+<translation id="2227179592712503583">সাজেশন সরিয়ে দিন</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="2230777942707397948">ফাঁকা উইন্ডো</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">ট্যাব খুলে বিভিন্ন পৃষ্ঠা একইসাথে ব্রাউজ করার জন্য 'ট্যাব খুলুন' বোতাম টিপুন</translation>
 <translation id="5456381639095306749">পৃষ্ঠা ডাউনলোড করুন</translation>
 <translation id="5458366071038729214">যেসব সাইট ফলো করছেন সেগুলো এখানে দেখতে পাবেন</translation>
+<translation id="5469852975082458401">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে পারবেন। ক্যারেট ব্রাউজিং বন্ধ করার জন্য F7 শর্টকাট প্রেস করুন।</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ট্যাব সরানো যাবে না</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> হিসেবে যোগ দিন</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">স্প্যাম নয় হিসেবে চিহ্নিত করা হয়েছে</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />-এর সাথে ট্যাব গ্রুপে যোগ দিন</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />আরও বিবরণ<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> সাইটের <ph name="COLOR_NAME" /> রঙের <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ খুলুন।</translation>
 <translation id="6130303040046284160">ট্যাব মিনিমাইজ করুন</translation>
 <translation id="6134168885321518274">স্ক্রিনের মধ্যে খোঁজার বার খুলুন</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">Chrome-এর টুল দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
+<translation id="6267106249090587268">বিজ্ঞপ্তি <ph name="SEPARATOR" /> স্প্যাম বা প্রতারণামূলক কন্টেন্ট থাকায়, Chrome এইসব অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="6276708887952587684">পৃষ্ঠার সূত্র দেখুন</translation>
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6278428485366576908">থীম</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{১ ঘণ্টা আগে চেক করা হয়েছে}one{# ঘণ্টা আগে চেক করা হয়েছে}other{# ঘণ্টা আগে চেক করা হয়েছে}}</translation>
 <translation id="6545017243486555795">সমস্ত ডেটা সাফ করুন</translation>
 <translation id="6546511553472444032">ফাইলটি ক্ষতিকর হতে পারে</translation>
+<translation id="654871471440386944">ক্যারেট ব্রাউজিং চালু করতে চান?</translation>
 <translation id="6550891580932862748">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। Google-এর অন্য প্রোডাক্টে আপনার নিরাপদ ব্রাউজিংয়ের সেটিংস প্রভাবিত হবে না।</translation>
 <translation id="6554822972009632311">কন্টেন্ট ফিল্টার চালু আছে</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ করা হবে}one{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}other{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}}</translation>

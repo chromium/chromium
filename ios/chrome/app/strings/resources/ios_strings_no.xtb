@@ -1235,6 +1235,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5758759241456233788">Forhåndsvisninger i Maps er av. Slå dem på igjen i innstillingene.</translation>
 <translation id="5759484603608560822">Skjul nedlastinger</translation>
 <translation id="5767099457279594162">Passordet ble ikke delt</translation>
+<translation id="5768870767339201169">Fortsett der du avsluttet</translation>
 <translation id="5779117921996157216">{count,plural, =1{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="5791632441210678828">Sorteringsknapp for Følger-feeden.</translation>
 <translation id="5803566855766646066">Er du sikker på at du vil forkaste dette nye kortet?</translation>
@@ -1691,6 +1692,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7484645889979462775">Aldri for dette nettstedet</translation>
 <translation id="7486006552035434095">Hold enhetene dine synkronisert</translation>
 <translation id="7491131399623468277">Gå til Innstillinger …</translation>
+<translation id="7491161827858509164">Åpne <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /> for å se filer du har lastet ned tidligere.</translation>
 <translation id="7498234416455752244">Fortsett å endre</translation>
 <translation id="7500244509706269886">Autofyll skjema</translation>
 <translation id="750493650310597496">0 er valgt</translation>
@@ -1728,6 +1730,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612849887607288481">Åpne menyen for AI-prototyping</translation>
 <translation id="7620522820075868385">Avbryt</translation>
+<translation id="762078666799342162">Du kan se tidligere nedlastinger i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Feil passordfrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Passord utsatt for sikkerhetsbrudd}=1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="7640669552036055091">Faner fra Android</translation>

@@ -261,6 +261,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="22091350895006575">Tilføj brugernavn</translation>
 <translation id="221494669172414749">Hvis du åbner Chrome uden en profillås, fjernes dine gemte adgangskoder og betalingsmetoder fra bilen. Du kan beskytte disse data ved at bruge en profillås.</translation>
+<translation id="2227179592712503583">Fjern forslag</translation>
 <translation id="2227444325776770048">Fortsæt som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt vindue</translation>
 <translation id="223356358902285214">Web- og appaktivitet</translation>
@@ -971,6 +972,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på faneknappen</translation>
 <translation id="5456381639095306749">Download siden</translation>
 <translation id="5458366071038729214">Du kan finde de websites, du følger, her</translation>
+<translation id="5469852975082458401">Du kan navigere på sider med en tekstmarkør. Tryk på F7, eller deaktiver.</translation>
 <translation id="5471273988133666918">Fanen <ph name="TAB_TITLE" /> kan ikke flyttes</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
 <translation id="549660026907543296">Deltag som <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1109,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6124936178263837501">Rapportér som ikke-spam</translation>
 <translation id="6125202119952209826">Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Elementet blev fjernet</translation>
 <translation id="6127860394906721547">Åbn fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med disse websites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimer fane</translation>
 <translation id="6134168885321518274">Åbn søgelinjen</translation>
@@ -1149,6 +1150,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6255809143828972562">Med værktøjer fra Chrome kan du søge sikkert på nettet og bevare styringen</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
 <translation id="6264485186158353794">Tilbage i sikkerhed</translation>
+<translation id="6267106249090587268">Notifikationer <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser på grund af spam eller vildledende indhold</translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
 <translation id="6277522088822131679">Der opstod et problem med udskrivning af siden. Prøv igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1219,6 +1221,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Tjekket for 1 time siden}one{Tjekket # time siden}other{Tjekket for # timer siden}}</translation>
 <translation id="6545017243486555795">Ryd alle data</translation>
 <translation id="6546511553472444032">Filen kan være skadelig</translation>
+<translation id="654871471440386944">Vil du aktivere tastenavigation?</translation>
 <translation id="6550891580932862748">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Dine indstillinger for Beskyttet browsing i andre Google-produkter påvirkes ikke.</translation>
 <translation id="6554822972009632311">Indholdsfilteret er aktiveret</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>

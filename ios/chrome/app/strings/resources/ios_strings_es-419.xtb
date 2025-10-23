@@ -1235,6 +1235,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5758759241456233788">Las versiones preliminares de Maps están desactivadas. Vuelve a activarlas en Configuración.</translation>
 <translation id="5759484603608560822">Ocultar la opción Descargas</translation>
 <translation id="5767099457279594162">No se compartió la contraseña</translation>
+<translation id="5768870767339201169">Continúa desde donde te quedaste</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tienes {count} contraseña hackeada que podría poner en riesgo tu seguridad. Cámbiala ahora para mantener tu cuenta segura.}other{Tienes {count} contraseñas hackeadas que podrían poner en riesgo tu seguridad. Cámbialas ahora para mantener tu cuenta segura.}}</translation>
 <translation id="5791632441210678828">Botón para ordenar el feed de Siguiendo.</translation>
 <translation id="5803566855766646066">¿Confirmas que quieres descartar esta tarjeta nueva?</translation>

@@ -1235,6 +1235,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5758759241456233788">Vistas previas de Maps desactivadas. Vuelve a activarlas en Configuración.</translation>
 <translation id="5759484603608560822">Ocultar Descargas</translation>
 <translation id="5767099457279594162">No se ha compartido la contraseña</translation>
+<translation id="5768870767339201169">Sigue por donde lo dejaste</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tienes {count} contraseña vulnerada que podría poner en riesgo tu seguridad. Soluciona el problema para protegerte.}other{Tienes {count} contraseñas vulneradas que podrían poner en riesgo tu seguridad. Soluciona el problema para protegerte.}}</translation>
 <translation id="5791632441210678828">Botón para ordenar el feed Siguiendo</translation>
 <translation id="5803566855766646066">¿Seguro que quieres descartar esta nueva tarjeta?</translation>

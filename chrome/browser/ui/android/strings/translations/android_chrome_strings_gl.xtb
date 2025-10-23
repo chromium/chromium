@@ -49,6 +49,7 @@
 <translation id="11947597112837849">enderezo de correo electrónico</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
 <translation id="1197761954713363183">Pechouse a folla de confirmación da clave de acceso</translation>
+<translation id="1197933394627598677">Mostrar modo de lectura</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1202892408424955784">Produtos dos que se fai un seguimento</translation>
 <translation id="1204037785786432551">Descargar ligazón</translation>
@@ -260,6 +261,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="22091350895006575">Engadir nome de usuario</translation>
 <translation id="221494669172414749">Se abres Chrome sen un bloqueo de perfil, os teus métodos de pago e contrasinais gardados quitaranse do coche. O bloqueo de perfil protexe estes datos.</translation>
+<translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventá baleira</translation>
 <translation id="223356358902285214">Actividade web e das aplicacións</translation>
@@ -970,6 +972,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="544776284582297024">Para abrir pestanas e visitar distintas páxinas ao mesmo tempo, toca o botón de pestanas abertas</translation>
 <translation id="5456381639095306749">Descargar páxina</translation>
 <translation id="5458366071038729214">Aquí atoparás os sitios que segues</translation>
+<translation id="5469852975082458401">Podes navegar polas páxinas cun cursor de texto. Preme F7 para desactivar esta función.</translation>
 <translation id="5471273988133666918">A pestana <ph name="TAB_TITLE" /> non se pode mover</translation>
 <translation id="548278423535722844">Abrir na aplicación de mapas</translation>
 <translation id="549660026907543296">Unirte como <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1106,7 +1109,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6124936178263837501">Informar de que non é spam</translation>
 <translation id="6125202119952209826">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Máis detalles<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Eliminouse o elemento</translation>
 <translation id="6127860394906721547">Abre o grupo de pestanas "<ph name="TITLE_OF_GROUP" />", de cor <ph name="COLOR_NAME" />, cos sitios <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar a pestana</translation>
 <translation id="6134168885321518274">Abrir a barra de busca</translation>
@@ -1148,6 +1150,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6255809143828972562">Coas ferramentas de Chrome, podes navegar de maneira segura e manter o control</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
 <translation id="6264485186158353794">Volver para estar a salvo</translation>
+<translation id="6267106249090587268">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque o sitio inclúe contido enganoso ou spam</translation>
 <translation id="6276708887952587684">Consultar fonte da páxina</translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1218,6 +1221,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{A comprobación realizouse hai 1 hora}other{A comprobación realizouse hai # horas}}</translation>
 <translation id="6545017243486555795">Borrar todos os datos</translation>
 <translation id="6546511553472444032">Pode que o ficheiro sexa daniño</translation>
+<translation id="654871471440386944">Queres activar a navegación por cursor de texto?</translation>
 <translation id="6550891580932862748">Non te protexe contra sitios web, descargas nin extensións perigosos. A configuración de Navegación segura noutros produtos de Google non se verá afectada.</translation>
 <translation id="6554822972009632311">O filtro de contido está activado</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Pecharase <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharase <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
@@ -1400,6 +1404,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
 <translation id="7230064152164845085">Cambiar ao modo de incógnito</translation>
 <translation id="7237724030342645845">O xestor de contrasinais de Google deixou de funcionar</translation>
+<translation id="7239496616545081903">Ocultar Modo de lectura</translation>
 <translation id="72415438529550637">A suxestión de contrasinal está pechada.</translation>
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7253951228444156601">Comprobando contrasinais…</translation>
@@ -1742,6 +1747,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8723453889042591629">Traduce rapidamente esta páxina. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8731268612289859741">Código de seguranza</translation>
+<translation id="8738163682604285902">Queres que se mostre o modo de lectura?</translation>
 <translation id="8746155870861185046">Compartir texto destacado</translation>
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8754448020583829686">Copiar sen ligazón</translation>

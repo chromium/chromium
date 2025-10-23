@@ -261,6 +261,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="22091350895006575">Adicione um nome de usuário</translation>
 <translation id="221494669172414749">Se você abrir o Chrome sem um bloqueio de perfil, as senhas e formas de pagamento salvas serão removidas do carro. O uso do bloqueio de perfil protege esses dados.</translation>
+<translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Janela vazia</translation>
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
@@ -972,6 +973,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="544776284582297024">Para abrir guias e acessar páginas diferentes ao mesmo tempo, toque no botão "abrir guias"</translation>
 <translation id="5456381639095306749">Baixar página</translation>
 <translation id="5458366071038729214">Você verá os sites que você seguir aqui</translation>
+<translation id="5469852975082458401">Você pode navegar pelas páginas com um cursor de texto. Pressione F7 para desativar.</translation>
 <translation id="5471273988133666918">Não foi possível mover a guia <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir no app de mapa</translation>
 <translation id="549660026907543296">Participar como <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1108,7 +1110,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6124936178263837501">Informar como "Não é spam"</translation>
 <translation id="6125202119952209826">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Item removido</translation>
 <translation id="6127860394906721547">Abrir o grupo de guias <ph name="TITLE_OF_GROUP" />, na cor <ph name="COLOR_NAME" />, com os sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar guia</translation>
 <translation id="6134168885321518274">Abrir barra "Localizar"</translation>
@@ -1150,6 +1151,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6255809143828972562">Com esses recursos, você navega com segurança e fica no controle</translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
+<translation id="6267106249090587268">Notificações <ph name="SEPARATOR" /> O Chrome removeu essas permissões devido a spam ou conteúdo enganoso</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1220,6 +1222,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Verificado 1 hora atrás}one{Verificado # hora atrás}other{Verificado # horas atrás}}</translation>
 <translation id="6545017243486555795">Limpar todos os dados</translation>
 <translation id="6546511553472444032">O arquivo pode ser nocivo</translation>
+<translation id="654871471440386944">Ativar Caret Browsing?</translation>
 <translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações da Navegação Segura em outros produtos do Google não serão afetadas.</translation>
 <translation id="6554822972009632311">Filtro de conteúdo ativado</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> outra serão fechadas}one{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outra serão fechadas}other{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outras serão fechadas}}</translation>

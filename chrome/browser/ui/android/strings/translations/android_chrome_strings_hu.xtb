@@ -262,6 +262,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="22091350895006575">Felhasználónév megadása</translation>
 <translation id="221494669172414749">Ha profilzárolás nélkül nyitja meg a Chrome-ot, azzal eltávolítja a mentett jelszavakat és fizetési módokat az autóból. A profilzárolással biztonságban tudhatja adatait.</translation>
+<translation id="2227179592712503583">Javaslat eltávolítása</translation>
 <translation id="2227444325776770048">Folytatás mint <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Üres ablak</translation>
 <translation id="223356358902285214">Internetes és alkalmazástevékenységek</translation>
@@ -974,6 +975,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
 <translation id="5456381639095306749">Oldal letöltése</translation>
 <translation id="5458366071038729214">A követett webhelyeket itt láthatja majd</translation>
+<translation id="5469852975082458401">Az oldalakon szövegkurzorral navigálhat. A funkciót az F7 gombbal kapcsolhatja ki.</translation>
 <translation id="5471273988133666918">A(z) <ph name="TAB_TITLE" /> lapot nem lehet áthelyezni</translation>
 <translation id="548278423535722844">Megnyitás térképalkalmazásban</translation>
 <translation id="549660026907543296">Csatlakozás mint <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6124936178263837501">Bejelentés nem spamként</translation>
 <translation id="6125202119952209826">Csatlakozás <ph name="OWNER_FIRST_NAME" /> lapcsoportjához</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />További részletek<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Elem eltávolítva</translation>
 <translation id="6127860394906721547">A következő webhelyekket tartalmazó, <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport megnyitása: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Lap kis méretre állítása</translation>
 <translation id="6134168885321518274">Keresősáv megnyitása</translation>
@@ -1223,6 +1224,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 órája ellenőrizve}other{# órája ellenőrizve}}</translation>
 <translation id="6545017243486555795">Összes adat törlése</translation>
 <translation id="6546511553472444032">A fájl kártékony lehet</translation>
+<translation id="654871471440386944">Bekapcsolja a billentyűzettel böngészést?</translation>
 <translation id="6550891580932862748">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. A Biztonságos Böngészés beállításait más Google-termékekben nem érinti a módosítás.</translation>
 <translation id="6554822972009632311">A tartalomszűrő be van kapcsolva</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_ONE" /> másik lap be lesz zárva}other{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_MANY" /> másik lap be lesz zárva}}</translation>

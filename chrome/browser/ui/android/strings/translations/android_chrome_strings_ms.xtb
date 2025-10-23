@@ -262,6 +262,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="22091350895006575">Tambahkan nama pengguna</translation>
 <translation id="221494669172414749">Tindakan membuka Chrome tanpa kunci profil akan mengalih keluar kata laluan dan kaedah pembayaran anda yang disimpan daripada kereta. Penggunaan kunci profil memastikan data ini selamat.</translation>
+<translation id="2227179592712503583">Alih keluar cadangan</translation>
 <translation id="2227444325776770048">Teruskan sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tetingkap kosong</translation>
 <translation id="223356358902285214">Aktiviti Web &amp; Apl</translation>
@@ -974,6 +975,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
 <translation id="5456381639095306749">Muat turun halaman</translation>
 <translation id="5458366071038729214">Anda akan menemukan laman yang anda ikuti di sini</translation>
+<translation id="5469852975082458401">Anda boleh menukar halaman dengan kursor teks. Tekan F7 untuk mematikannya.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> tidak dapat dialihkan</translation>
 <translation id="548278423535722844">Buka dalam apl peta</translation>
 <translation id="549660026907543296">Sertai sebagai <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6124936178263837501">Laporkan sebagai bukan spam</translation>
 <translation id="6125202119952209826">Sertai kumpulan tab dengan <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Lagi butiran<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Item dialih keluar</translation>
 <translation id="6127860394906721547">Buka kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />, dengan laman <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimumkan tab</translation>
 <translation id="6134168885321518274">Buka Bar Cari</translation>
@@ -1223,6 +1224,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Disemak 1 jam yang lalu}other{Disemak # yang lalu}}</translation>
 <translation id="6545017243486555795">Hapuskan Semua Data</translation>
 <translation id="6546511553472444032">Fail mungkin berbahaya</translation>
+<translation id="654871471440386944">Hidupkan semak imbas karet?</translation>
 <translation id="6550891580932862748">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Tetapan Penyemakan Imbas Selamat anda pada produk Google lain tidak akan terjejas.</translation>
 <translation id="6554822972009632311">Penapis kandungan dihidupkan</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> dan <ph name="TAB_COUNT_ONE" /> lagi tab akan ditutup}other{<ph name="TAB_TITLE" /> dan <ph name="TAB_COUNT_MANY" /> lagi tab akan ditutup}}</translation>

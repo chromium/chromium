@@ -262,6 +262,7 @@
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
 <translation id="22091350895006575">ഉപയോക്തൃനാമം ചേർക്കുക</translation>
 <translation id="221494669172414749">പ്രൊഫൈൽ ലോക്ക് ഇല്ലാതെ Chrome തുറക്കുന്നത്, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളും പേയ്‌മെന്റ് രീതികളും കാറിൽ നിന്ന് നീക്കം ചെയ്യും. പ്രൊഫൈൽ ലോക്ക് ഉപയോഗിക്കുന്നത്, ഈ ഡാറ്റ സുരക്ഷിതമാക്കി നിലനിർത്തുന്നു.</translation>
+<translation id="2227179592712503583">നിർദ്ദേശം നീക്കം ചെയ്യുക</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> എന്ന പേരിൽ തുടരുക</translation>
 <translation id="2230777942707397948">ശൂന്യമായ വിൻഡോ</translation>
 <translation id="223356358902285214">വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി</translation>
@@ -974,6 +975,7 @@
 <translation id="544776284582297024">ടാബുകൾ തുറക്കാനും ഒരേ സമയം വ്യത്യസ്‌ത പേജുകൾ സന്ദർശിക്കാനും 'തുറന്നിരിക്കുന്ന ടാബുകൾ' ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5456381639095306749">പേജ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5458366071038729214">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ ഇവിടെ കാണാം</translation>
+<translation id="5469852975082458401">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് നിങ്ങൾക്ക് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാനാകും. ഓഫാക്കാൻ F7 അമർത്തുക.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ടാബ് നീക്കാനാകില്ല</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> എന്നയാളായി ചേരുക</translation>
@@ -1110,7 +1112,6 @@
 <translation id="6124936178263837501">സ്‌പാം അല്ല എന്ന് റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />കൂടുതൽ വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6127860394906721547"><ph name="COLOR_NAME" /> നിറത്തിലുള്ള, <ph name="URL_LIST" /> സൈറ്റുകൾ അടങ്ങിയിട്ടുള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് തുറക്കുക.</translation>
 <translation id="6130303040046284160">ടാബ് ചെറുതാക്കുക</translation>
 <translation id="6134168885321518274">'ബാർ കണ്ടെത്തുക' തുറക്കുക</translation>
@@ -1223,6 +1224,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{ഒരു മണിക്കൂർ മുമ്പ് പരിശോധിച്ചു}other{# മണിക്കൂർ മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="6545017243486555795">എല്ലാ വിവരങ്ങളും മായ്‌ക്കുക</translation>
 <translation id="6546511553472444032">ഫയൽ ദോഷകരമായേക്കാം</translation>
+<translation id="654871471440386944">കാരറ്റ് ബ്രൗസ് ചെയ്യൽ ഓണാക്കണോ?</translation>
 <translation id="6550891580932862748">അപകടകരമായ വെബ്‌സൈറ്റുകൾ ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കില്ല. മറ്റ് Google ഉൽപ്പന്നങ്ങളിലെ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗ് ക്രമീകരണത്തെ ബാധിക്കില്ല.</translation>
 <translation id="6554822972009632311">ഉള്ളടക്ക ഫിൽട്ടർ ഓണാണ്</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> എന്നതും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="TAB_TITLE" /> എന്നതും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>

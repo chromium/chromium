@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">إعداد المزامنة الأولية لم يكتمل</translation>
 <translation id="1812027881030482584">ليس بإمكان "<ph name="SITE_ETLD_PLUS_ONE" />" مواصلة استخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="1820408774134375111">البطاقة السفلية لتسجيل الدخول</translation>
+<translation id="1823492026305965829">تسجيل الدخول بحساب "<ph name="USER_FULL_NAME" />"</translation>
 <translation id="1825772852827001597">‏لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
 ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">البحث في الصفحة</translation>
@@ -261,6 +262,7 @@
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="22091350895006575">إضافة اسم مستخدِم</translation>
 <translation id="221494669172414749">‏سيؤدي فتح Chrome بدون قفل للملف الشخصي إلى إزالة كلمات المرور وطُرق الدفع المحفوظة من السيارة. ويؤدي استخدام قفل للملف الشخصي إلى الحفاظ على أمان هذه البيانات.</translation>
+<translation id="2227179592712503583">إزالة الاقتراح</translation>
 <translation id="2227444325776770048">المتابعة بحساب "<ph name="USER_FULL_NAME" />"</translation>
 <translation id="2230777942707397948">نافذة فارغة</translation>
 <translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
@@ -856,6 +858,7 @@
 <translation id="4910889077668685004">تطبيقات الدفع</translation>
 <translation id="4912413785358399818">نقل علامة التبويب</translation>
 <translation id="4913169188695071480">إيقاف إعادة التحميل</translation>
+<translation id="4921224083091001889">‏يتيح لك تسجيل الدخول إلى Chrome بحساب <ph name="EMAIL" /> الحصول على كلمات المرور وغيرها على جميع أجهزتك</translation>
 <translation id="4925120120285606924">لقطة شاشة بتاريخ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">يمكنك حفظ الصور والملفات لعرضها بلا اتصال بالإنترنت أو مشاركتها في تطبيقات أخرى.</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{‏تم حفظ إشارة مرجعية واحدة وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}zero{‏تم حفظ # إشارة مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}two{‏تم حفظ إشارتَين مرجعيتَين وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}few{‏تم حفظ # إشارات مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}many{‏تم حفظ # إشارة مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}other{‏تم حفظ # إشارة مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}}</translation>
@@ -880,6 +883,7 @@
 <translation id="5007392906805964215">مراجعة</translation>
 <translation id="5010886807652684893">العرض الموسّع</translation>
 <translation id="5011311129201317034">يريد <ph name="SITE" /> الاتصال</translation>
+<translation id="5012016139642806466">الوصول إلى كلمات المرور وغيرها على جميع أجهزتك</translation>
 <translation id="5012253429094023177">يبدو أنّ <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> و<ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> مرتبطان. تأكّد من أنّك تثق في <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> قبل استخدام كلمة المرور هذه.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">آخر 15 دقيقة</translation>
@@ -972,6 +976,7 @@
 <translation id="544776284582297024">لفتح علامات تبويب وزيارة صفحات مختلفة في آنٍ واحد، انقر على زر "علامات التبويب المفتوحة".</translation>
 <translation id="5456381639095306749">تنزيل الصفحة</translation>
 <translation id="5458366071038729214">تظهر هنا المواقع الإلكترونية التي تتابعها.</translation>
+<translation id="5469852975082458401">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على F7 لإيقافه.</translation>
 <translation id="5471273988133666918">تعذَّر نقل علامة التبويب "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
 <translation id="549660026907543296">الانضمام باسم "<ph name="MEMBER_FULL_NAME" />"</translation>
@@ -1108,7 +1113,6 @@
 <translation id="6124936178263837501">الإبلاغ أنّ المحتوى مرغوب فيه</translation>
 <translation id="6125202119952209826">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />"</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />المزيد من التفاصيل<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">تمت إزالة العنصر</translation>
 <translation id="6127860394906721547">تم فتح مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على قائمة المواقع الإلكترونية <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">تصغير علامة التبويب</translation>
 <translation id="6134168885321518274">فتح "شريط البحث"</translation>
@@ -1221,6 +1225,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{تمّ إجراء عملية التحقُّق قبل ساعة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # ساعة.}two{تمّ إجراء عملية التحقُّق قبل ساعتَين.}few{تمّ إجراء عملية التحقُّق قبل # ساعات.}many{تمّ إجراء عملية التحقُّق قبل # ساعة.}other{تمّ إجراء عملية التحقُّق قبل # ساعة.}}</translation>
 <translation id="6545017243486555795">محو جميع البيانات</translation>
 <translation id="6546511553472444032">قد يكون هذا الملف ضارًا.</translation>
+<translation id="654871471440386944">هل تريد تفعيل ميزة "التصفُّح النصي بالمؤشر"؟</translation>
 <translation id="6550891580932862748">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. لن تتأثر إعدادات "التصفح الآمن" في منتجات Google الأخرى.</translation>
 <translation id="6554822972009632311">فلتر المحتوى مفعَّل</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) أخرى.}zero{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}two{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />) أُخريان.}few{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى.}many{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}other{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}}</translation>

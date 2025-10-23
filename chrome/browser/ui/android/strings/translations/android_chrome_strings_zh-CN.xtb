@@ -261,6 +261,7 @@
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="22091350895006575">添加用户名</translation>
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
+<translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身份继续</translation>
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
@@ -971,6 +972,7 @@
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
 <translation id="5456381639095306749">下载网页</translation>
 <translation id="5458366071038729214">您会在此处看到自己已关注的网站</translation>
+<translation id="5469852975082458401">您可以使用文本光标浏览网页。按 F7 可关闭。</translation>
 <translation id="5471273988133666918">无法移动标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="548278423535722844">在地图应用中打开</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身份加入</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6124936178263837501">报告为非垃圾内容</translation>
 <translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多详情<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">该项已移除</translation>
 <translation id="6127860394906721547">打开<ph name="COLOR_NAME" />的“<ph name="TITLE_OF_GROUP" />”标签页分组，其中包含网站 <ph name="URL_LIST" />。</translation>
 <translation id="6130303040046284160">最小化标签页</translation>
 <translation id="6134168885321518274">打开查找栏</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6255809143828972562">借助 Chrome 中的工具，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6264485186158353794">返回安全连接</translation>
+<translation id="6267106249090587268">通知 <ph name="SEPARATOR" /> Chrome 撤销了这些权限，因为此网站包含网络垃圾或欺骗性内容</translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6278428485366576908">主题</translation>
@@ -1219,6 +1221,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 小时前检查过}other{# 小时前检查过}}</translation>
 <translation id="6545017243486555795">清除所有数据</translation>
 <translation id="6546511553472444032">文件可能有害</translation>
+<translation id="654871471440386944">要开启光标浏览模式吗？</translation>
 <translation id="6550891580932862748">不会防范危险的网站、下载内容和扩展程序。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
 <translation id="6554822972009632311">内容过滤器已开启</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>

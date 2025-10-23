@@ -181,6 +181,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne peut pas continuer à utiliser <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Zone de contenu dans le bas de l'écran de connexion</translation>
+<translation id="1823492026305965829">Se connecter en tant que <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
 Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par cette dernière. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
@@ -261,6 +262,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="22091350895006575">Ajouter un nom d'utilisateur</translation>
 <translation id="221494669172414749">Si vous ouvrez Chrome sans un verrouillage de profil, vos mots de passe et vos modes de paiement enregistrés seront retirés du véhicule. Le verrouillage de profil protège ces données.</translation>
+<translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2227444325776770048">Continuer comme <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Fenêtre vide</translation>
 <translation id="223356358902285214">Activité sur le Web et dans les applications</translation>
@@ -855,6 +857,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4910889077668685004">Applications de paiement</translation>
 <translation id="4912413785358399818">Déplacer l'onglet</translation>
 <translation id="4913169188695071480">Arrêter l'actualisation</translation>
+<translation id="4921224083091001889">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Vous pouvez enregistrer des images et des fichiers pour les afficher hors ligne ou les partager dans d'autres applications</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}one{# favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}other{# favoris et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
@@ -879,6 +882,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5007392906805964215">Examiner</translation>
 <translation id="5010886807652684893">Vue visuelle</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
+<translation id="5012016139642806466">Accédez à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> et <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> semblent liés. Assurez-vous de faire confiance à <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> avant d'utiliser votre mot de passe.</translation>
 <translation id="5016205925109358554">Avec empattement</translation>
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
@@ -971,6 +975,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="544776284582297024">Pour ouvrir des onglets et visiter différentes pages en même temps, touchez le bouton des onglets ouverts</translation>
 <translation id="5456381639095306749">Télécharger la page</translation>
 <translation id="5458366071038729214">Les sites que vous suivez s'afficheront ici</translation>
+<translation id="5469852975082458401">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur F7 pour désactiver ce mode.</translation>
 <translation id="5471273988133666918">L'onglet <ph name="TAB_TITLE" /> ne peut pas être déplacé</translation>
 <translation id="548278423535722844">Ouvrir dans l'application Maps</translation>
 <translation id="549660026907543296">Se joindre en tant que <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1107,7 +1112,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6124936178263837501">Signaler comme n'étant pas un pourriel</translation>
 <translation id="6125202119952209826">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plus de détails<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6127860394906721547">Ouvrir le groupe d'onglets <ph name="TITLE_OF_GROUP" />, de couleur <ph name="COLOR_NAME" />, qui comprend les sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Réduire l'onglet</translation>
 <translation id="6134168885321518274">Ouvrir la barre de recherche</translation>
@@ -1149,6 +1153,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6255809143828972562">Grâce aux outils de Chrome, vous pouvez naviguer en toute sécurité et garder le contrôle</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Retour à la sécurité</translation>
+<translation id="6267106249090587268">Notifications <ph name="SEPARATOR" /> Chrome a retiré ces autorisations en raison de la présence de contenu indésirable ou trompeur</translation>
 <translation id="6276708887952587684">Afficher la source de la page</translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
@@ -1219,6 +1224,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Dernière vérification : il y a 1 heure}one{Dernière vérification : il y a # heure}other{Dernière vérification : il y a # heures}}</translation>
 <translation id="6545017243486555795">Effacer toutes les données</translation>
 <translation id="6546511553472444032">Le fichier peut être dangereux</translation>
+<translation id="654871471440386944">Activer la navigation au clavier?</translation>
 <translation id="6550891580932862748">Ne vous protège pas contre les téléchargements, les extensions, ou les sites Web dangereux. Vos paramètres de navigation sécurisée dans les autres produits Google ne seront pas affectés.</translation>
 <translation id="6554822972009632311">Le filtre de contenu est activé</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>

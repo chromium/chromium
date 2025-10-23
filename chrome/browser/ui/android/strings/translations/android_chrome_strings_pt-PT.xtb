@@ -262,6 +262,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="22091350895006575">Adicionar nome de utilizador</translation>
 <translation id="221494669172414749">Abrir o Chrome sem um bloqueio do perfil remove as palavras-passe guardadas e os métodos de pagamento do carro. A utilização de um bloqueio do perfil mantém estes dados seguros.</translation>
+<translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Janela vazia</translation>
 <translation id="223356358902285214">Atividade da Web e de apps</translation>
@@ -974,6 +975,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
 <translation id="5456381639095306749">Transferir página</translation>
 <translation id="5458366071038729214">Encontrará os sites que segue aqui</translation>
+<translation id="5469852975082458401">Pode navegar pelas páginas com um cursor de texto. Prima F7 para desativar esta opção.</translation>
 <translation id="5471273988133666918">Não é possível mover o separador <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
 <translation id="549660026907543296">Aderir como <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1110,7 +1112,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6124936178263837501">Informar que não é spam</translation>
 <translation id="6125202119952209826">Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Item removido</translation>
 <translation id="6127860394906721547">Abra o grupo de separadores <ph name="TITLE_OF_GROUP" />, cor <ph name="COLOR_NAME" />, com os sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar separador</translation>
 <translation id="6134168885321518274">Abrir a barra Localizar</translation>
@@ -1223,6 +1224,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Última verificação há 1 hora}other{Última verificação há # horas}}</translation>
 <translation id="6545017243486555795">Limpar todos os dados</translation>
 <translation id="6546511553472444032">O ficheiro pode ser prejudicial</translation>
+<translation id="654871471440386944">Ativar a navegação por cursor?</translation>
 <translation id="6550891580932862748">Não protege contra transferências, extensões ou Websites perigosos. As suas definições da Navegação segura noutros produtos Google não são afetadas.</translation>
 <translation id="6554822972009632311">O filtro de conteúdo está ativado</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}other{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>

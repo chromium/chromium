@@ -262,6 +262,7 @@
 <translation id="2194856509914051091">கருத்தில்கொள்ள வேண்டியவை</translation>
 <translation id="22091350895006575">பயனர்பெயரைச் சேருங்கள்</translation>
 <translation id="221494669172414749">சுயவிவரப் பூட்டு இல்லாமல் Chromeமைத் திறந்தால் நீங்கள் காரில் சேமித்துள்ள கடவுச்சொற்களும் பேமெண்ட் முறைகளும் அகற்றப்படும். சுயவிவரப் பூட்டைப் பயன்படுத்தினால் இந்தத் தரவு பாதுகாப்பாக இருக்கும்.</translation>
+<translation id="2227179592712503583">பரிந்துரையை அகற்று</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ஆகத் தொடர்க</translation>
 <translation id="2230777942707397948">காலியான சாளரம்</translation>
 <translation id="223356358902285214">இணையம் மற்றும் ஆப்ஸ் செயல்பாடு</translation>
@@ -974,6 +975,7 @@
 <translation id="544776284582297024">ஒரே நேரத்தில் தாவல்களைத் திறந்து வெவ்வேறு பக்கங்களைப் பார்வையிட, 'திறக்கப்பட்டுள்ள தாவல்கள்' பட்டனைத் தட்டவும்</translation>
 <translation id="5456381639095306749">பக்கத்தைப் பதிவிறக்குக</translation>
 <translation id="5458366071038729214">நீங்கள் பின்தொடரும் தளங்களின் பட்டியல் இங்கே காட்டப்படும்</translation>
+<translation id="5469852975082458401">உரை-கர்சரைப் பயன்படுத்திப் பக்கங்களுக்குச் செல்லலாம். இதை முடக்க ‘F7’ விசையை அழுத்தவும்.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> பக்கத்தை நகர்த்த முடியாது</translation>
 <translation id="548278423535722844">வரைபடப் பயன்பாட்டில் திற</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> என்ற பெயரில் சேர்கிறீர்கள்</translation>
@@ -1110,7 +1112,6 @@
 <translation id="6124936178263837501">ஸ்பேம் இல்லை என்று புகாரளி</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> உடன் பக்கக் குழுவில் சேருங்கள்</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />கூடுதல் விவரங்கள்<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">உருப்படி அகற்றப்பட்டது</translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> தளங்களைக் கொண்ட, <ph name="COLOR_NAME" /> வண்ணத்தில் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைத் திறக்கும்.</translation>
 <translation id="6130303040046284160">உலாவிப் பக்கத்தைச் சிறிதாக்கும்</translation>
 <translation id="6134168885321518274">'கண்டறி' பட்டியைத் திறக்கும்</translation>
@@ -1223,6 +1224,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{சரிபார்த்தது: 1 மணிநேரத்திற்கு முன்பு}other{சரிபார்த்தது: # மணிநேரத்திற்கு முன்பு}}</translation>
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
 <translation id="6546511553472444032">ஃபைல் தீங்கிழைப்பதாக இருக்கக்கூடும்</translation>
+<translation id="654871471440386944">சுட்டி உலாவலை இயக்கவா?</translation>
 <translation id="6550891580932862748">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றிலிருந்து உங்களைப் பாதுகாக்காது. பிற Google தயாரிப்புகளில் அமைக்கப்பட்டிருக்கும் உங்கள் பாதுகாப்பு உலாவல் அமைப்புகள் மாற்றப்படாது.</translation>
 <translation id="6554822972009632311">உள்ளடக்க வடிப்பான் ஆன் செய்யப்பட்டுள்ளது</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_ONE" /> பக்கம் மூடப்படும்}other{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்கள் மூடப்படும்}}</translation>

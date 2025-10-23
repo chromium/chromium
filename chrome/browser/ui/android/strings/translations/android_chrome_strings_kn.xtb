@@ -262,6 +262,7 @@
 <translation id="2194856509914051091">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
 <translation id="22091350895006575">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="221494669172414749">ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಇಲ್ಲದೆ Chrome ಅನ್ನು ತೆರೆಯುವುದರಿಂದ ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಕಾರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ಬಳಸುವುದರಿಂದ ಈ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ.</translation>
+<translation id="2227179592712503583">ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
 <translation id="2230777942707397948">ಖಾಲಿ ವಿಂಡೋ</translation>
 <translation id="223356358902285214">ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
@@ -973,6 +974,7 @@
 <translation id="544776284582297024">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಲು ಮತ್ತು ಒಂದೇ ಸಮಯದಲ್ಲಿ ವಿಭಿನ್ನ ಪುಟಗಳಿಗೆ ಭೇಟಿ ನೀಡಲು, ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5456381639095306749">ಪುಟ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5458366071038729214">ನೀವು ಫಾಲೋ ಮಾಡುವ ಸೈಟ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಹುಡುಕಬಹುದು</translation>
+<translation id="5469852975082458401">ಪಠ್ಯದ ಕರ್ಸರ್ ಮೂಲಕ ನೀವು ಪುಟಗಳನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಬಹುದು. ಆಫ್ ಮಾಡಲು F7 ಒತ್ತಿರಿ.</translation>
 <translation id="5471273988133666918">ಟ್ಯಾಬ್ <ph name="TAB_TITLE" /> ಅನ್ನು ಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="548278423535722844">ನಕ್ಷೆಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ಎಂಬುದಾಗಿ ಸೇರಿಕೊಳ್ಳಿ</translation>
@@ -1109,7 +1111,6 @@
 <translation id="6124936178263837501">ಸ್ಪ್ಯಾಮ್ ಅಲ್ಲ ಎಂದು ವರದಿ ಮಾಡಿ</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> ಅವರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ವಿವರಗಳು<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> ಸೈಟ್‌ಗಳನ್ನು ಹೊಂದಿರುವ <ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="6130303040046284160">ಕುಗ್ಗಿಸುವ ಟ್ಯಾಬ್</translation>
 <translation id="6134168885321518274">ಹುಡುಕುವ ಪಟ್ಟಿಯನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1222,6 +1223,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 ಗಂಟೆಯ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ಗಂಟೆಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ಗಂಟೆಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6545017243486555795">ಎಲ್ಲಾ ಡೇಟಾ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="6546511553472444032">ಫೈಲ್ ಹಾನಿಕಾರಕವಾಗಿರಬಹುದು</translation>
+<translation id="654871471440386944">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6550891580932862748">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಸಂಬಂಧಿಸಿದಂತೆ ನಿಮಗೆ ರಕ್ಷಣೆ ನೀಡುವುದಿಲ್ಲ. ಇತರ Google ಉತ್ಪನ್ನಗಳಲ್ಲಿನ ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಪರಿಣಾಮ ಬೀರುವುದಿಲ್ಲ.</translation>
 <translation id="6554822972009632311">ಕಂಟೆಂಟ್ ಫಿಲ್ಟರ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="TAB_TITLE" /> ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="TAB_TITLE" /> ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>

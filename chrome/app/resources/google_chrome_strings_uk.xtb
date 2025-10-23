@@ -708,7 +708,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="8999117580775242387">Якщо протокол HTTPS недоступний, Chrome використовуватиме незахищене з’єднання без попередження</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
-<translation id="9010418943148193727">Пошукову систему за умовчанням змінено за межами Chrome. Щоб захистити вас, вебпереглядач Chrome скинув її.</translation>
+<translation id="9010418943148193727">Пошукову систему за умовчанням змінено за межами Chrome. Щоб захистити вас, Chrome скинув її.</translation>
 <translation id="9014771989710951291">Вебпереглядачем Chrome керують кілька організацій</translation>
 <translation id="9024318700713112071">Зробіть Chrome вебпереглядачем за умовчанням</translation>
 <translation id="9066987883552592250">Закрити Gemini у Chrome Canary</translation>
