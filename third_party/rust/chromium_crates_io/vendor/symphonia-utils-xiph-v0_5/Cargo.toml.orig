@@ -1,6 +1,6 @@
 [package]
 name = "symphonia-utils-xiph"
-version = "0.5.4"
+version = "0.5.5"
 description = "Project Symphonia utilities for Xiph codecs and formats."
 homepage = "https://github.com/pdeljanov/Symphonia"
 repository = "https://github.com/pdeljanov/Symphonia"
@@ -13,5 +13,5 @@ edition = "2018"
 rust-version = "1.53"
 
 [dependencies]
-symphonia-core = { version = "0.5.4", path = "../symphonia-core" }
-symphonia-metadata = { version = "0.5.4", path = "../symphonia-metadata" }
+symphonia-core = { version = "0.5.5", path = "../symphonia-core" }
+symphonia-metadata = { version = "0.5.5", path = "../symphonia-metadata" }

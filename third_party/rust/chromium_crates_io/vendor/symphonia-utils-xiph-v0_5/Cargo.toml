@@ -13,8 +13,14 @@
 edition = "2018"
 rust-version = "1.53"
 name = "symphonia-utils-xiph"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Project Symphonia utilities for Xiph codecs and formats."
 homepage = "https://github.com/pdeljanov/Symphonia"
 readme = "README.md"
@@ -32,8 +38,12 @@ categories = [
 license = "MPL-2.0"
 repository = "https://github.com/pdeljanov/Symphonia"
 
+[lib]
+name = "symphonia_utils_xiph"
+path = "src/lib.rs"
+
 [dependencies.symphonia-core]
-version = "0.5.4"
+version = "0.5.5"
 
 [dependencies.symphonia-metadata]
-version = "0.5.4"
+version = "0.5.5"
