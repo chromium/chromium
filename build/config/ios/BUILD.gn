@@ -270,7 +270,16 @@ config("xctest_config") {
 # When you have a modulemap to define modules for the C++ code that can be
 # called from Swift, you need to include the path to the modulemap.
 config("enable_swift_cxx_interop") {
-  swiftflags = [ "-cxx-interoperability-mode=default" ]
+  swiftflags = [
+    "-cxx-interoperability-mode=default",
+
+    # Add a path to the bridging code. This is used for <swift/bridging>.
+    "-I",
+    rebase_path("$ios_toolchains_path/usr/include", root_build_dir),
+    "-Xcc=-fmodule-map-file=" +
+        rebase_path("$ios_toolchains_path/usr/include/swift/bridging.modulemap",
+                    root_build_dir),
+  ]
 
   # TODO(crbug.com/451945291): Move the following compiler flags to
   # build/config/compiler/BUILD.gn when Swift/C++ interop is enabled by default.
