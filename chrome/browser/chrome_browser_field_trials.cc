@@ -236,6 +236,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(::features::kDefaultANGLEVulkan);
   feature_overrides.EnableFeature(::features::kVulkanFromANGLE);
   feature_overrides.EnableFeature(::features::kDefaultPassthroughCommandDecoder);
+
+  // Enable site-per-process by default for desktop platforms.
+  // TODO(crbug.com/453856709): Remove when we determine how to ensure
+  // SitePerProcess is enabled for all necessary or eligible Android devices.
+  feature_overrides.EnableFeature(::features::kSitePerProcess);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
