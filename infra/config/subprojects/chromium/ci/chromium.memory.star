@@ -841,7 +841,7 @@ linux_memory_builder(
                         "--no-xvfb",
                     ],
                 ),
-                "linux_nvidia_gtx_1660_stable",
+                "linux_nvidia_gtx_1660_obsolete",
             ],
             "interactive_ui_tests": targets.mixin(
                 # https://crbug.com/1498240

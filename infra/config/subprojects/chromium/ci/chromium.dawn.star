@@ -598,7 +598,7 @@ gpu.ci.linux_builder(
             "gpu_dawn_tsan_gtests",
         ],
         mixins = [
-            "linux_nvidia_gtx_1660_stable",
+            "linux_nvidia_gtx_1660_obsolete",
         ],
     ),
     targets_settings = targets.settings(

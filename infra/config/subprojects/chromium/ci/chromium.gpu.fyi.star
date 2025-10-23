@@ -980,7 +980,7 @@ gpu.ci.linux_builder(
             "gpu_fyi_linux_debug_gtests",
         ],
         mixins = [
-            "linux_nvidia_gtx_1660_stable",
+            "linux_nvidia_gtx_1660_obsolete",
         ],
     ),
     # This bot doesn't run any Telemetry-based tests so doesn't
