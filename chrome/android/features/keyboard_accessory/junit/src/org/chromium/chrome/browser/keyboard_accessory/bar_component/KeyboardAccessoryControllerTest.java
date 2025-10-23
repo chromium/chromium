@@ -135,6 +135,16 @@ public class KeyboardAccessoryControllerTest {
         mEdgeToEdgeControllerSupplier = new ObservableSupplierImpl<>(mEdgeToEdgeController);
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.ADDRESS_ENTRY))
+                .thenReturn(FillingProduct.ADDRESS);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.CREDIT_CARD_ENTRY))
+                .thenReturn(FillingProduct.CREDIT_CARD);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.IBAN_ENTRY))
+                .thenReturn(FillingProduct.IBAN);
+
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
                         ContextUtils.getApplicationContext(),
@@ -600,9 +610,6 @@ public class KeyboardAccessoryControllerTest {
                 AutofillProfile.builder().setRecordType(RecordType.ACCOUNT_HOME).build();
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         when(mMockPersonalDataManager.getProfile("123")).thenReturn(profile);
-        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
-                        SuggestionType.ADDRESS_ENTRY))
-                .thenReturn(FillingProduct.ADDRESS);
 
         AutofillProfilePayload payload = new AutofillProfilePayload("123");
         AutofillSuggestion addressSuggestion =
@@ -693,9 +700,9 @@ public class KeyboardAccessoryControllerTest {
 
         final AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
-                        .setLabel("SecondSuggestion")
-                        .setSubLabel("")
-                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setLabel("John")
+                        .setSubLabel("Main Str")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph("")
                         .build();
 
@@ -743,13 +750,76 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
+    public void testGroupCreationForCreditCards() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        final AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Mastercast")
+                        .setSubLabel("1234 **")
+                        .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
+                        .setFeatureForIph("")
+                        .build();
+        mCoordinator.setSuggestions(
+                List.of(suggestion, suggestion, suggestion), mMockAutofillDelegate);
+
+        // It is not allowed to limit width of the credit card suggestions.
+        assertThat(mModel.get(BAR_ITEMS).size(), is(4));
+        assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(2), instanceOf(AutofillBarItem.class));
+    }
+
+    @Test
+    public void testGroupCreationForIbans() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        final AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("DE12 3456 **")
+                        .setSubLabel("Your account")
+                        .setSuggestionType(SuggestionType.IBAN_ENTRY)
+                        .setFeatureForIph("")
+                        .build();
+        mCoordinator.setSuggestions(
+                List.of(suggestion, suggestion, suggestion), mMockAutofillDelegate);
+
+        // It is not allowed to limit width of the IBAN suggestions.
+        assertThat(mModel.get(BAR_ITEMS).size(), is(4));
+        assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(2), instanceOf(AutofillBarItem.class));
+    }
+
+    @Test
+    public void testGroupCreationForPasswords() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        final AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("username")
+                        .setSubLabel("******")
+                        .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
+                        .setFeatureForIph("")
+                        .build();
+        mCoordinator.setSuggestions(
+                List.of(suggestion, suggestion, suggestion), mMockAutofillDelegate);
+
+        // It is not allowed to limit width of the password suggestions.
+        assertThat(mModel.get(BAR_ITEMS).size(), is(4));
+        assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(2), instanceOf(AutofillBarItem.class));
+    }
+
+    @Test
     public void testGroupCreationWhenStyleIsChanged() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
         final AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
-                        .setLabel("SecondSuggestion")
-                        .setSubLabel("")
-                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setLabel("John")
+                        .setSubLabel("Main Str")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph("")
                         .build();
         mCoordinator.setSuggestions(

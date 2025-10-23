@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetrics
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.FillingProduct;
+import org.chromium.components.autofill.FillingProductBridge;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -191,9 +193,10 @@ class KeyboardAccessoryMediator
             scrollableItems.add(item);
         }
         List<ActionBarItem> autofillBarItems = new ArrayList<>();
-        // Collect at most 3 Autofill suggestions that are in the beginning of the list.
+        // Collect at most 3 Autofill address suggestions that are in the beginning of the list.
         for (int i = 0; i < scrollableItems.size() && autofillBarItems.size() < 3; i++) {
-            if (scrollableItems.get(i) instanceof AutofillBarItem autofillBarItem) {
+            if (scrollableItems.get(i) instanceof AutofillBarItem autofillBarItem
+                    && canLimitWidth(autofillBarItem.getSuggestion().getSuggestionType())) {
                 autofillBarItems.add(autofillBarItem);
             } else {
                 // Stop collection Autofill suggestions when the first item of a different type is
@@ -496,6 +499,17 @@ class KeyboardAccessoryMediator
 
     private static boolean containsAddressInfo(AutofillSuggestion suggestion) {
         return suggestion.getSuggestionType() == SuggestionType.ADDRESS_ENTRY;
+    }
+
+    /**
+     * Width limiting is applied only to address suggestions.
+     *
+     * @param suggestionType the type of the displayed suggestion.
+     * @return whether the width of the suggestion is allowed to be limited.
+     */
+    private static boolean canLimitWidth(@SuggestionType int suggestionType) {
+        return FillingProductBridge.getFillingProductFromSuggestionType(suggestionType)
+                == FillingProduct.ADDRESS;
     }
 
     private @StringRes int getCaptionId(@AccessoryAction int actionType) {
