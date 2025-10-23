@@ -140,16 +140,6 @@ public class UrlConstantResolverFactoryUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING})
-    public void testIncognitoResolver_FeatureDisabled() {
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
-        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
-        assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
-    }
-
-    @Test
     public void testIncognitoResolver_NtpOverride() {
         when(mProfile.isOffTheRecord()).thenReturn(true);
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
@@ -198,24 +188,5 @@ public class UrlConstantResolverFactoryUnitTest {
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
         assertEquals(mNtpGurl, incognitoResolver.getNtpGurl());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING})
-    public void testResolverGetNtpGurl_FeatureDisabled() {
-        when(mProfile.isIncognitoBranded()).thenReturn(false);
-        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
-
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
-        UrlConstantResolver incognitoResolver = UrlConstantResolverFactory.getForProfile(mProfile);
-
-        assertEquals(mNativeNtpGurl, resolver.getNtpGurl());
-        assertEquals(mNativeNtpGurl, incognitoResolver.getNtpGurl());
-
-        ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
-        assertEquals(mNativeNtpGurl, resolver.getNtpGurl());
-
-        ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
-        assertEquals(mNativeNtpGurl, incognitoResolver.getNtpGurl());
     }
 }

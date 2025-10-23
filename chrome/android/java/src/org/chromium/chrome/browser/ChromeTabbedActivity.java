@@ -2368,7 +2368,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
 
         String url = null;
-        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl();
+        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl(incognito);
 
         ProfileProvider profileProvider = getProfileProviderSupplier().get();
         Profile profile =
