@@ -3748,8 +3748,8 @@ EVENT_TYPE(CERT_VERIFIER_REQUEST)
 //                    being the certificate to verify and the remaining
 //                    being intermediate certificates to assist path
 //                    building.>
-//   "ocsp_response": <Optionally, a PEM encoded stapled OCSP response.>
-//   "sct_list": <Optionally, a PEM encoded SignedCertificateTimestampList.>
+//   "stapled_ocsp_response": <Optionally, a PEM encoded stapled OCSP response.>
+//   "tls_sct_list": <Optionally, a PEM encoded SignedCertificateTimestampList.>
 //   "host": <The hostname verification is being performed for.>
 //   "verifier_flags": <The CertVerifier::VerifyFlags.>
 // }
@@ -3823,8 +3823,8 @@ EVENT_TYPE(CERT_VERIFY_PROC_CREATED)
 //   "crlset_sequence": <Sequence number of the CRLSet.>
 //   "crlset_is_expired": <Boolean indicating whether the CRLSet is considered
 //                         expired.>
-//   "ocsp_response": <Optionally, a PEM encoded stapled OCSP response.>
-//   "sct_list": <Optionally, a PEM encoded SignedCertificateTimestampList.>
+//   "stapled_ocsp_response": <Optionally, a PEM encoded stapled OCSP response.>
+//   "tls_sct_list": <Optionally, a PEM encoded SignedCertificateTimestampList.>
 //   "host": <The hostname verification is being performed for.>
 //   "verify_flags": <The CertVerifyProc::VerifyFlags.>
 // }

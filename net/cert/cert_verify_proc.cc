@@ -363,11 +363,11 @@ base::Value::Dict CertVerifyParams(X509Certificate* cert,
   base::Value::Dict dict;
   dict.Set("certificates", NetLogX509CertificateList(cert));
   if (!ocsp_response.empty()) {
-    dict.Set("ocsp_response",
+    dict.Set("stapled_ocsp_response",
              bssl::PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
   }
   if (!sct_list.empty()) {
-    dict.Set("sct_list", bssl::PEMEncode(sct_list, "NETLOG SCT LIST"));
+    dict.Set("tls_sct_list", bssl::PEMEncode(sct_list, "NETLOG SCT LIST"));
   }
   dict.Set("host", NetLogStringValue(hostname));
   dict.Set("verify_flags", flags);
