@@ -398,7 +398,7 @@ void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
     return;
   }
   auto* next = DynamicTo<LayoutBlockFlow>(child->NextSibling());
-  if (next && next->IsAnonymousBlockFlow()) {
+  if (next && next->IsAnonymousBlockFlow() && !next->IsViewTransitionRoot()) {
     MoveChildTo(next, child, next->FirstChild(), false);
   }
 }
