@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     /** Indicates the type of content the should be shown in the visible promo. */
-    @IntDef({PromoState.NONE, PromoState.SIGNIN})
+    @IntDef({PromoState.NONE, PromoState.SIGNIN, PromoState.HISTORY_SYNC})
     @Retention(RetentionPolicy.SOURCE)
     private @interface PromoState {
         /** No promo should be shown. */
@@ -44,6 +44,12 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
         /** The promo content should promote sign-in. Shown to signed-out user. */
         int SIGNIN = 1;
+
+        /**
+         * The promo content should promote enabling history and tabs sync in the settings. Shown to
+         * signed-in user with history and tabs sync disabled in settings.
+         */
+        int HISTORY_SYNC = 2;
     }
 
     private final String mPromoShowCountPreferenceName;
@@ -144,6 +150,12 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
             return PromoState.NONE;
         }
         final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
-        return !historySyncHelper.shouldDisplayHistorySync() ? PromoState.NONE : PromoState.SIGNIN;
+        if (!historySyncHelper.shouldDisplayHistorySync()) {
+            return PromoState.NONE;
+        }
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                return PromoState.HISTORY_SYNC;
+        }
+        return PromoState.SIGNIN;
     }
 }
