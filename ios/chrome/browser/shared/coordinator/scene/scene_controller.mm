@@ -1583,8 +1583,6 @@ void OnListFamilyMembersResponse(
   // agent).
   self.sceneState.UIEnabled = NO;
 
-  [[SessionSavingSceneAgent agentFromScene:self.sceneState]
-      saveSessionsIfNeeded];
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
 
