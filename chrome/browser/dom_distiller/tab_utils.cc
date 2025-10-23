@@ -280,8 +280,7 @@ void OverrideDefaultZoomForReaderModePage(content::WebContents* web_contents,
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents);
   if (host_zoom_map) {
-    host_zoom_map->SetZoomLevelForHostAndScheme(url.GetScheme(), url.GetHost(),
-                                                0.0);
+    host_zoom_map->SetZoomLevelForHost(url.GetHost(), 0.0);
   }
 #endif
 }
