@@ -898,9 +898,16 @@ class WebAuthnHintsTest : public WebAuthnBrowserTest {
 };
 
 // The hints parameter here contains nonsense values (which should be ignored)
-// and lists `security-key` and `hybrid` (more than once). This is contradictory
-// but Chromium will prioritize in the order of the enum values, so
-// `security-key` will win out.
+// and lists `security-key` and `hybrid` (more than once).
+//
+// According to the standard,
+//
+// "Hints are provided in order of decreasing preference so, if two hints are
+// contradictory, the first one controls. [...] If the same hint appears more
+// than once, its second and later appearances are ignored."
+//
+// In practice, Chromium will only consider the first recognised hint and ignore
+// the rest for the purposes of configuring the UI.
 static constexpr char kMakeCredentialWithHints[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "" },
@@ -923,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnHintsTest, HintsArePassedThrough) {
 
   ASSERT_TRUE(observer_->hints().transport.has_value());
   EXPECT_EQ(observer_->hints().transport.value(),
-            AuthenticatorTransport::kUsbHumanInterfaceDevice);
+            AuthenticatorTransport::kHybrid);
 }
 
 class WebAuthnConditionalUITest : public WebAuthnBrowserTest {

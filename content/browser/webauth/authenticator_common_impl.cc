@@ -500,31 +500,25 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
   return prf_values;
 }
 
-void SetHints(AuthenticatorRequestClientDelegate* request_delegate,
-              const base::flat_set<blink::mojom::Hint>& hints) {
-  // The first recognised transport takes priority.
-  std::optional<device::FidoTransportProtocol> transport;
-  for (const auto hint : hints) {
-    switch (hint) {
-      case blink::mojom::Hint::SECURITY_KEY:
-        transport = transport.value_or(
-            device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-        break;
-      case blink::mojom::Hint::CLIENT_DEVICE:
-        transport =
-            transport.value_or(device::FidoTransportProtocol::kInternal);
-        break;
-      case blink::mojom::Hint::HYBRID:
-        transport = transport.value_or(device::FidoTransportProtocol::kHybrid);
-        break;
-    }
+device::FidoTransportProtocol HintToTransport(blink::mojom::Hint hint) {
+  switch (hint) {
+    case blink::mojom::Hint::SECURITY_KEY:
+      return device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
+    case blink::mojom::Hint::CLIENT_DEVICE:
+      return device::FidoTransportProtocol::kInternal;
+    case blink::mojom::Hint::HYBRID:
+      return device::FidoTransportProtocol::kHybrid;
   }
+}
 
-  if (transport) {
-    AuthenticatorRequestClientDelegate::Hints delegate_hints;
-    delegate_hints.transport = transport;
-    request_delegate->SetHints(delegate_hints);
+void SetHints(AuthenticatorRequestClientDelegate* request_delegate,
+              base::span<const blink::mojom::Hint> hints) {
+  if (hints.empty()) {
+    return;
   }
+  AuthenticatorRequestClientDelegate::Hints delegate_hints;
+  delegate_hints.transport = HintToTransport(hints.at(0u));
+  request_delegate->SetHints(delegate_hints);
 }
 
 bool IsPlatformAuthenticatorForInvalidStateError(
@@ -837,7 +831,7 @@ struct AuthenticatorCommonImpl::RequestState {
   // conditional UI WebAuthn call, or a payment-related request.
   std::optional<AuthenticationRequestMode> mode;
   // The hints set by the request, if any.
-  base::flat_set<blink::mojom::Hint> hints;
+  std::vector<blink::mojom::Hint> hints;
   std::optional<CredentialRequestResult> request_result;
   std::variant<std::monostate, MakeCredentialOutcome, GetAssertionOutcome>
       request_outcome;
@@ -1083,7 +1077,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   req_state_->request_key = RequestKey(next_request_key_);
 
   req_state_->response_callback = std::move(callback);
-  req_state_->hints.insert(options->hints.begin(), options->hints.end());
+  req_state_->hints = options->hints;
 
   if (options->is_payment_credential_creation) {
     req_state_->mode = AuthenticationRequestMode::kPayment;
@@ -1494,8 +1488,7 @@ void AuthenticatorCommonImpl::GetCredential(
   } else {
     req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
-  req_state_->hints.insert(public_key_options->hints.begin(),
-                           public_key_options->hints.end());
+  req_state_->hints = public_key_options->hints;
 
   if (options->mediation != Mediation::CONDITIONAL) {
     BeginRequestTimeout(public_key_options->timeout);
