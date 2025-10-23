@@ -4,44 +4,49 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingStart="8dp"
     android:paddingEnd="8dp"
     android:paddingTop="16dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/navigation_attachments_recent_tabs_header"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
         android:singleLine="true"
         android:text="@string/recent_tabs"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tab_attachment_recycler_view"
         android:visibility="visible"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:fadingEdgeLength="8dp"
         android:paddingStart="@dimen/omnibox_suggestion_content_padding"
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
-        android:focusable="false"/>
+        android:focusable="false"
+        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_recent_tabs_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!--
     TODO(crbug.com/436888404): either drop clipboard or use proper strings.
     -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_paste_from_clipboard_button"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
         android:drawableStart="@drawable/ic_content_copy"
         android:drawablePadding="8dp"
@@ -50,11 +55,14 @@ found in the LICENSE file.
         android:text="@string/clipboard_permission_title"
         android:singleLine="true"
         android:textAlignment="viewStart"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tab_attachment_recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_camera_button"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
         android:drawableStart="@drawable/ic_photo_camera"
         android:drawablePadding="8dp"
@@ -62,11 +70,14 @@ found in the LICENSE file.
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/photo_picker_camera"
         android:singleLine="true"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="viewStart"
+        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_paste_from_clipboard_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_pick_picture_button"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
         android:drawableStart="@drawable/ic_collections_grey"
         android:drawablePadding="8dp"
@@ -74,11 +85,14 @@ found in the LICENSE file.
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/photo_picker_browse"
         android:singleLine="true"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="viewStart"
+        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_camera_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_pick_file_button"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
         android:drawableStart="@drawable/ic_attach_file_24dp"
         android:drawablePadding="8dp"
@@ -86,20 +100,31 @@ found in the LICENSE file.
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/photo_picker_browse"
         android:singleLine="true"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="viewStart"
+        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_pick_picture_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/autocomplete_request_type_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="navigation_attachments_ai_mode_divider,navigation_attachments_ai_mode_button"/>
 
     <View
-        android:layout_width="match_parent"
+        android:id="@+id/navigation_attachments_ai_mode_divider"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/listDivider"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_pick_file_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_ai_mode_button"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
         android:drawableStart="@drawable/search_spark_black_24dp"
         android:drawablePadding="8dp"
@@ -107,6 +132,9 @@ found in the LICENSE file.
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/ai_mode_entrypoint_label"
         android:singleLine="true"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="viewStart"
+        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_ai_mode_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
