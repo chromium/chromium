@@ -89,6 +89,7 @@ source_set("unit_tests") {
     ":passkey_util",
     ":passkey_util_swift",
     ":passkey_welcome_screen_util",
+    ":system_strings",
     "//base",
     "//base/test:test_support",
     "//components/cbor",

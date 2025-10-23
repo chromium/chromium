@@ -58,6 +58,14 @@ void CheckCell(UITableViewCell* cell,
   EXPECT_NSEQ(cell.detailTextLabel.text, expected_detail_text);
 }
 
+// Returns a formatted representation of a timestamp.
+NSString* FormatTimestamp(int64_t timestamp) {
+  return [NSDateFormatter
+      localizedStringFromDate:[NSDate dateWithTimeIntervalSince1970:timestamp]
+                    dateStyle:NSDateFormatterMediumStyle
+                    timeStyle:NSDateFormatterNoStyle];
+}
+
 }  // namespace
 
 class CredentialDetailsViewControllerTest : public PlatformTest {
@@ -99,17 +107,26 @@ TEST_F(CredentialDetailsViewControllerTest, TestPasskeyPresentation) {
   EXPECT_EQ([table_view numberOfRowsInSection:0], 4);
 
   // Check that the content of every table view cell is as expected.
-  CheckCell(GetTableViewCell(0, 0), @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_URL",
+  CheckCell(GetTableViewCell(0, 0),
+            NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_URL", @""),
             credential.serviceIdentifier);
-  CheckCell(GetTableViewCell(0, 1),
-            @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USERNAME",
-            credential.username);
+  CheckCell(
+      GetTableViewCell(0, 1),
+      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USERNAME", @""),
+      credential.username);
   CheckCell(GetTableViewCell(0, 2),
-            @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USER_DISPLAY_NAME",
+            NSLocalizedString(
+                @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USER_DISPLAY_NAME", @""),
             credential.userDisplayName);
-  CheckCell(GetTableViewCell(0, 3),
-            @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_CREATION_DATE",
-            @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_CREATION_DATE");
+
+  CheckCell(
+      GetTableViewCell(0, 3),
+      NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_CREATION_DATE", @""),
+      [NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_CREATION_DATE",
+                         @"")
+          stringByReplacingOccurrencesOfString:@"$1"
+                                    withString:FormatTimestamp(kJan1st2024)]);
 }
 
 // Tests that converting the passkey creation time to a formatted date gives the
@@ -117,11 +134,7 @@ TEST_F(CredentialDetailsViewControllerTest, TestPasskeyPresentation) {
 TEST_F(CredentialDetailsViewControllerTest,
        TestFormattedDateForPasskeyCreationTime) {
   id<Credential> credential = TestPasskeyCredential();
-  NSString* expected_formatted_date = [NSDateFormatter
-      localizedStringFromDate:[NSDate dateWithTimeIntervalSince1970:kJan1st2024]
-                    dateStyle:NSDateFormatterMediumStyle
-                    timeStyle:NSDateFormatterNoStyle];
   EXPECT_NSEQ([controller()
                   formattedDateForPasskeyCreationDate:credential.creationDate],
-              expected_formatted_date);
+              FormatTimestamp(kJan1st2024));
 }

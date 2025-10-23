@@ -18,6 +18,7 @@ group("all_tests") {
   deps = [
     ":all_fuzzer_tests",
     ":ios_chrome_unittests",
+    "//ios/chrome/test/extensions:all_tests",
     "//ios/chrome/test/swift_interop:ios_swift_interop_xcuitests",
     "//ios/chrome/test/xcuitest:ios_chrome_device_check_xcuitests_module",
     "//ios/chrome/test/xcuitest:ios_chrome_xcuitests",
@@ -574,11 +575,7 @@ test("ios_chrome_unittests") {
   }
 
   if (ios_enable_credential_provider_extension) {
-    deps += [
-      "//ios/chrome/browser/credential_provider/model:unit_tests",
-      "//ios/chrome/credential_provider_extension:unit_tests",
-      "//ios/chrome/credential_provider_extension/ui:unit_tests",
-    ]
+    deps += [ "//ios/chrome/browser/credential_provider/model:unit_tests" ]
   }
 
   assert_no_deps = ios_assert_no_deps

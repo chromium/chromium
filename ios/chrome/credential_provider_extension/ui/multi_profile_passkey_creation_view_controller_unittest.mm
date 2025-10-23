@@ -41,14 +41,17 @@ TEST_F(MultiProfilePasskeyCreationViewControllerTest,
   EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_generic_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
-  EXPECT_NSEQ(controller.titleText,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEYS_CREATE");
+  EXPECT_NSEQ(
+      controller.titleText,
+      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEYS_CREATE", @""));
   EXPECT_FALSE(controller.subtitleText);
   EXPECT_EQ(controller.specificContentView.subviews.count, 2u);
-  EXPECT_NSEQ(controller.primaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CREATE");
-  EXPECT_NSEQ(controller.secondaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CANCEL");
+  EXPECT_NSEQ(
+      controller.primaryActionString,
+      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CREATE", @""));
+  EXPECT_NSEQ(
+      controller.secondaryActionString,
+      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CANCEL", @""));
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }
