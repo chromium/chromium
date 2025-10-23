@@ -1151,8 +1151,8 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
     bool did_encounter_cross_origin_redirect,
     const GURL response_url,
     const network::mojom::URLResponseHead* response) {
-  // Experimental: Storage Access API Headers
-  // (https://github.com/cfredric/storage-access-headers)
+  // Storage Access API Headers:
+  // https://github.com/privacycg/storage-access-headers
   //
   // A server can opt-in to provide storage access to a document by setting the
   // `Activate-Storage-Access: load` header, provided that the user has already
