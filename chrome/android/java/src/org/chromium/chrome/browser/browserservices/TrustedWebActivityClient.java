@@ -78,6 +78,12 @@ public class TrustedWebActivityClient {
             "notificationPermissionRequestPendingIntent";
     private static final String EXTRA_MESSENGER = "messenger";
 
+    private static final String COMMAND_CHECK_CONTACT_PERMISSION = "checkContactPermission";
+    private static final String CONTACT_PERMISSION_RESULT = "contactPermissionResult";
+    private static final String COMMAND_FETCH_CONTACTS = "fetchContacts";
+    private static final String COMMAND_FETCH_CONTACT_ICON = "fetchContactIcon";
+    private static final String EXTRA_ON_CONTACT_FETCH_ERROR = "onContactFetchError";
+
     private final ConnectionPool mConnectionPool;
 
     private static @Nullable TrustedWebActivityClient sInstance;
@@ -515,6 +521,117 @@ public class TrustedWebActivityClient {
                 });
     }
 
+    public void checkContactPermission(String url, PermissionCallback permissionCallback) {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        TrustedWebActivityCallback callback =
+                                new TrustedWebActivityCallback() {
+                                    private void onUiThread(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        @ContentSetting
+                                        final int settingValue =
+                                                COMMAND_CHECK_CONTACT_PERMISSION.equals(
+                                                                        callbackName)
+                                                                && bundle != null
+                                                                && bundle.getBoolean(
+                                                                        CONTACT_PERMISSION_RESULT)
+                                                        ? ContentSetting.ALLOW
+                                                        : ContentSetting.BLOCK;
+
+                                        permissionCallback.onPermission(
+                                                service.getComponentName(), settingValue);
+                                    }
+
+                                    @Override
+                                    public void onExtraCallback(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        // Hop back to the UI thread because we are on a binder
+                                        // thread.
+                                        PostTask.postTask(
+                                                TaskTraits.UI_USER_VISIBLE,
+                                                () -> onUiThread(callbackName, bundle));
+                                    }
+                                };
+
+                        Bundle result =
+                                safeSendExtraCommand(
+                                        service,
+                                        COMMAND_CHECK_CONTACT_PERMISSION,
+                                        Bundle.EMPTY,
+                                        callback);
+
+                        if (result == null || !result.getBoolean(EXTRA_COMMAND_SUCCESS)) {
+                            permissionCallback.onPermission(
+                                    service.getComponentName(), ContentSetting.BLOCK);
+                        }
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.e(TAG, "Unable to request contact permission from TWA shell.");
+                        permissionCallback.onNoTwaFound();
+                    }
+                });
+    }
+
+    public void fetchContacts(
+            String url,
+            boolean includeNames,
+            boolean includeEmails,
+            boolean includeTel,
+            boolean includeAddresses,
+            TrustedWebActivityCallback callback) {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle args = new Bundle();
+                        args.putBoolean("includeNames", includeNames);
+                        args.putBoolean("includeEmails", includeEmails);
+                        args.putBoolean("includeTel", includeTel);
+                        args.putBoolean("includeAddresses", includeAddresses);
+
+                        safeSendExtraCommand(service, COMMAND_FETCH_CONTACTS, args, callback);
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.e(TAG, "Unable to get contact data from TWA shell.");
+                        notifyContactFetchError(callback, "NoTwaFound");
+                    }
+                });
+    }
+
+    public void fetchContactIcon(
+            String url, String id, int iconSize, TrustedWebActivityCallback callback) {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle args = new Bundle();
+
+                        args.putString("id", id);
+                        args.putInt("size", iconSize);
+
+                        safeSendExtraCommand(service, COMMAND_FETCH_CONTACT_ICON, args, callback);
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.e(TAG, "Unable to get contact icon from TWA shell.");
+                        notifyContactFetchError(callback, "NoTwaFound");
+                    }
+                });
+    }
+
     public void connectAndExecute(Uri scope, ExecutionCallback callback) {
         Origin origin = Origin.create(scope);
         if (origin == null) {
@@ -586,6 +703,12 @@ public class TrustedWebActivityClient {
         Bundle error = new Bundle();
         error.putString("message", message);
         callback.onExtraCallback(EXTRA_NEW_LOCATION_ERROR_CALLBACK, error);
+    }
+
+    private void notifyContactFetchError(TrustedWebActivityCallback callback, String message) {
+        Bundle error = new Bundle();
+        error.putString("message", message);
+        callback.onExtraCallback(EXTRA_ON_CONTACT_FETCH_ERROR, error);
     }
 
     private @Nullable Bundle safeSendExtraCommand(

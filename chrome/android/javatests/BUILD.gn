@@ -585,6 +585,7 @@ android_library(
   sources = [
     "src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivityTest.java",
     "src/org/chromium/chrome/browser/browserservices/RunningInChromeTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientContactsDelegationTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientLocationDelegationTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityOrientationTest.java",

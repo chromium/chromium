@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.READ_CONTACTS;
 
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
@@ -227,10 +228,28 @@ public class InstalledWebappPermissionManager {
     }
 
     /**
+     * Returns whether the delegate application for the origin has Android contacts permission, or
+     * {@code null} if it does not exist or did not request contacts permission.
+     */
+    public static @Nullable Boolean hasAndroidContactsPermission(@Nullable String packageName) {
+        return hasAndroidPermissions(packageName, new String[] {READ_CONTACTS});
+    }
+
+    /**
      * Returns whether the delegate application for the origin has Android location permission, or
      * {@code null} if it does not exist or did not request location permission.
      */
     public static @Nullable Boolean hasAndroidLocationPermission(@Nullable String packageName) {
+        return hasAndroidPermissions(
+                packageName, new String[] {ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION});
+    }
+
+    /**
+     * Returns whether the delegate application for the origin has any of specific Android
+     * permissions, or {@code null} if it does not exist or did not request those permissions.
+     */
+    public static @Nullable Boolean hasAndroidPermissions(
+            @Nullable String packageName, String[] permissions) {
         if (packageName == null) return null;
 
         try {
@@ -241,23 +260,27 @@ public class InstalledWebappPermissionManager {
             String[] requestedPermissions = packageInfo.requestedPermissions;
             int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
 
-            if (requestedPermissions != null) {
-                boolean locationRequested = false;
-                for (int i = 0; i < requestedPermissions.length; ++i) {
-                    if (ACCESS_COARSE_LOCATION.equals(requestedPermissions[i])
-                            || ACCESS_FINE_LOCATION.equals(requestedPermissions[i])) {
+            if (requestedPermissions == null) {
+                return null;
+            }
+
+            boolean requested = false;
+            for (int i = 0; i < requestedPermissions.length; ++i) {
+                for (String permission : permissions) {
+                    if (permission.equals(requestedPermissions[i])) {
                         if (requestedPermissionsFlags != null
                                 && ((requestedPermissionsFlags[i]
                                                 & PackageInfo.REQUESTED_PERMISSION_GRANTED)
                                         != 0)) {
                             return true;
                         }
-                        locationRequested = true;
+                        requested = true;
+                        break;
                     }
                 }
-                // Coarse or fine Location requested but not granted.
-                if (locationRequested) return false;
             }
+            // Permissions requested but not granted.
+            if (requested) return false;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Couldn't find name for client package: %s", packageName);
         }
