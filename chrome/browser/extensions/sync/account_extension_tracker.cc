@@ -19,6 +19,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -290,8 +291,11 @@ AccountExtensionTracker::GetAccountExtensionType(
   return static_cast<AccountExtensionType>(type_int);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void AccountExtensionTracker::OnSignInInitiatedFromExtensionPromo(
     const ExtensionId& extension_id) {
+  CHECK(!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
+
   bool already_has_primary_account =
       IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
           signin::ConsentLevel::kSignin);
@@ -316,6 +320,7 @@ void AccountExtensionTracker::OnSignInInitiatedFromExtensionPromo(
                      weak_factory_.GetWeakPtr(), extension_id),
       kMaxSigninFromExtensionBubbleDelay);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool AccountExtensionTracker::CanUploadAsAccountExtension(
     const Extension& extension) const {

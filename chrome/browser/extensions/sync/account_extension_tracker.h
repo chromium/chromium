@@ -110,9 +110,11 @@ class AccountExtensionTracker : public KeyedService,
   // account.
   std::vector<const Extension*> GetUploadableLocalExtensions() const;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // Called when the user initiates a signin from a promo that appears after an
   // extension with the given `extension_id` is installed.
   void OnSignInInitiatedFromExtensionPromo(const ExtensionId& extension_id);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Whether the given `extension` can be uploaded to/associated with the
   // current signed in user.

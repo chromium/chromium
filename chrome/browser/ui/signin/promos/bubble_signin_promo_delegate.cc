@@ -17,6 +17,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +34,8 @@ syncer::DataType GetDataTypeFromAccessPoint(
       return syncer::CONTACT_INFO;
     case signin_metrics::AccessPoint::kBookmarkBubble:
       return syncer::BOOKMARKS;
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+      return syncer::EXTENSIONS;
     default:
       NOTREACHED();
   }
@@ -72,7 +75,8 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
   signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
 
-  if (access_point_ == signin_metrics::AccessPoint::kExtensionInstallBubble) {
+  if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
+      access_point_ == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     // Make sure the `data_id_` is of the correct type.
     CHECK(std::holds_alternative<extensions::ExtensionId>(data_id_));
     const extensions::ExtensionId extension_id =

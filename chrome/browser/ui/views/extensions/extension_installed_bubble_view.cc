@@ -51,6 +51,8 @@
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #endif
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
+
 namespace {
 
 const int kRightColumnWidth = 285;
@@ -131,6 +133,9 @@ void ExtensionInstalledBubbleView::Show(
   } else {
     widget->Show();
   }
+
+  weak_delegate->GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
+                                                   kExtensionBubbleFrameViewId);
 }
 
 ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
