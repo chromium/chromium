@@ -80,7 +80,7 @@ ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed) {
         // "/a/:domain/videos/",
     });
     info->icon_bitmaps.any =
-        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_VIDS_ICON_144_PNG});
+        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_VIDS_ICON_192_PNG});
     return info;
   });
   options.expected_app_id = ash::kVidsAppId;
