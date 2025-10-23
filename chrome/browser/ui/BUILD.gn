@@ -152,6 +152,8 @@ static_library("ui") {
     "webui/metrics_handler.h",
     "webui/metrics_internals/field_trials_handler.cc",
     "webui/metrics_internals/field_trials_handler.h",
+    "webui/metrics_internals/metrics_internals_features.cc",
+    "webui/metrics_internals/metrics_internals_features.h",
     "webui/metrics_internals/metrics_internals_handler.cc",
     "webui/metrics_internals/metrics_internals_handler.h",
     "webui/metrics_internals/metrics_internals_ui.cc",

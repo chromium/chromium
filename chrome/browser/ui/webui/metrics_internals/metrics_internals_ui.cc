@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_internals/field_trials_handler.h"
+#include "chrome/browser/ui/webui/metrics_internals/metrics_internals_features.h"
 #include "chrome/browser/ui/webui/metrics_internals/metrics_internals_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/grit/metrics_internals_resources.h"
@@ -49,4 +50,8 @@ MetricsInternalsUI::MetricsInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<StructuredMetricsInternalsHandler>());
 #endif
+
+  source->AddBoolean(
+      "enablePrivateMetricsTab",
+      base::FeatureList::IsEnabled(features::kPrivateMetricsWebUI));
 }

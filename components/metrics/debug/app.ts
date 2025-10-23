@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './field_trials.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './app.html.js';
 import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy} from './browser_proxy.js';
@@ -109,6 +111,11 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Set up the UMA "Export logs" button.
     const exportUmaLogsButton = this.getRequiredElement('#export-uma-logs');
     exportUmaLogsButton.addEventListener('click', () => this.exportUmaLogs_());
+
+    if (!loadTimeData.getBoolean('enablePrivateMetricsTab')) {
+      this.getRequiredElement('#private-metrics-tab').style.display = 'none';
+      this.getRequiredElement('#private-metrics-panel').style.display = 'none';
+    }
   }
 
   /**
