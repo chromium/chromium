@@ -211,6 +211,29 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_IsEditable) {
   }
 }
 
+// Tests that the `CreateSpecificsFromEntityMetadata` function correctly
+// converts EntityTable::EntityMetadata to the proto.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityMetadata) {
+  EntityInstance::EntityMetadata metadata;
+  metadata.guid = EntityInstance::EntityId("test-valuable-id");
+  // Corresponds to Jan 1, 2025, 00:00:00 UTC
+  metadata.date_modified = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13379000000000000u));
+  metadata.use_count = 5;
+  // Corresponds to Jan 1, 2024, 00:00:00 UTC
+  metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13347400000000000u));
+
+  sync_pb::AutofillValuableMetadataSpecifics specifics =
+      CreateSpecificsFromEntityMetadata(metadata);
+
+  EXPECT_EQ(specifics.valuable_id(), "test-valuable-id");
+  EXPECT_EQ(specifics.last_modified_date_unix_epoch_micros(),
+            13379000000000000ll);
+  EXPECT_EQ(specifics.use_count(), 5u);
+  EXPECT_EQ(specifics.last_used_date_unix_epoch_micros(), 13347400000000000ll);
+}
+
 // Tests that the `CreateValuableMetadataFromSpecifics` function correctly
 // converts the proto to EntityTable::EntityMetadata.
 TEST(EntitySyncUtilTest, CreateValuableMetadataFromSpecifics) {

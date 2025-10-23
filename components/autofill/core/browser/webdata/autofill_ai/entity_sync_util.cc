@@ -322,6 +322,18 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
   return std::nullopt;
 }
 
+sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
+    const EntityInstance::EntityMetadata& metadata) {
+  sync_pb::AutofillValuableMetadataSpecifics specifics;
+  specifics.set_valuable_id(*metadata.guid);
+  specifics.set_use_count(metadata.use_count);
+  specifics.set_last_used_date_unix_epoch_micros(
+      metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_last_modified_date_unix_epoch_micros(
+      metadata.date_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return specifics;
+}
+
 EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
     const sync_pb::AutofillValuableMetadataSpecifics& specifics) {
   return EntityInstance::EntityMetadata{

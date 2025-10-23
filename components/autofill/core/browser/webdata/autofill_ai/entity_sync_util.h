@@ -28,6 +28,11 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
 std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics);
 
+// For a given `EntityMetadata`, returns the corresponding
+// `sync_pb::AutofillValuableMetadataSpecifics`.
+sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
+    const EntityInstance::EntityMetadata& metadata);
+
 // Converts the given valuable metadata `specifics` into an equivalent
 // EntityInstance::EntityMetadata.
 EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
