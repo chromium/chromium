@@ -501,22 +501,17 @@ bool FindBarView::HandleWriteTextToClipboard(
     ui::ClipboardBuffer clipboard_buffer,
     const std::u16string_view& text) {
   content::WebContents* web_contents = GetWebContentsFromHost(find_bar_host_);
-  if (!web_contents) {
-    return false;
-  }
 
-  return enterprise_data_protection::HandleWriteTextToClipboard(
-      web_contents, clipboard_buffer, text);
+  return web_contents && enterprise_data_protection::HandleWriteTextToClipboard(
+                             web_contents, clipboard_buffer, text);
 }
 
 bool FindBarView::AllowStartDragEvent(
     const std::u16string_view& selected_text) {
   content::WebContents* web_contents = GetWebContentsFromHost(find_bar_host_);
-  if (!web_contents) {
-    return true;
-  }
 
-  return enterprise_data_protection::DragAndDropForTextIsAllowed(web_contents);
+  return !web_contents ||
+         enterprise_data_protection::DragAndDropForTextIsAllowed(web_contents);
 }
 
 void FindBarView::Find(std::u16string_view search_text) {
