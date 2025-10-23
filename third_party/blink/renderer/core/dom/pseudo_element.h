@@ -97,7 +97,10 @@ class CORE_EXPORT PseudoElement : public Element {
 
   virtual void Dispose();
 
-  static bool IsLayoutSiblingOfOriginatingElement(PseudoId pseudo_id);
+  static bool IsLayoutSiblingOfOriginatingElement(
+      const Element& originating_element,
+      PseudoId pseudo_id);
+  bool IsLayoutSiblingOfOriginatingElement() const;
 
   bool IsInertRoot() const override;
 

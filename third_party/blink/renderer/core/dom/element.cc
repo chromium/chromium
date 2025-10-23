@@ -8294,7 +8294,8 @@ ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
     data.AddColumnPseudoElement(*column_pseudo_element);
     const ComputedStyle* style =
         column_pseudo_element->CustomStyleForLayoutObject(
-            StyleRecalcContext::FromInclusiveAncestors(*this));
+            StyleRecalcContext::FromPseudoElementAncestors(*this,
+                                                           kPseudoIdColumn));
     if (!style) {
       style = &GetDocument().GetStyleResolver().InitialStyle();
     }
@@ -8316,7 +8317,8 @@ ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
         MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
     const ComputedStyle* scroll_marker_style =
         scroll_marker->CustomStyleForLayoutObject(
-            StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
+            StyleRecalcContext::FromPseudoElementAncestors(
+                *column_pseudo_element, kPseudoIdScrollMarker));
     if (!PseudoElementLayoutObjectIsNeeded(kPseudoIdScrollMarker,
                                            scroll_marker_style, this)) {
       scroll_marker->Dispose();
@@ -9316,7 +9318,9 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
 
   StyleRecalcContext child_recalc_context = style_recalc_context;
   child_recalc_context.is_ensuring_style = true;
-  if (element_style->IsContainerForSizeContainerQueries()) {
+  if (element_style->IsContainerForSizeContainerQueries() &&
+      !PseudoElement::IsLayoutSiblingOfOriginatingElement(
+          *this, pseudo_element_specifier)) {
     child_recalc_context.container = this;
   }
 
@@ -9501,7 +9505,8 @@ void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
   if (CanGeneratePseudoElement(kPseudoIdFirstLetter) ||
       GetPseudoElement(kPseudoIdFirstLetter)) {
     UpdateFirstLetterPseudoElement(
-        phase, StyleRecalcContext::FromInclusiveAncestors(*this));
+        phase, StyleRecalcContext::FromPseudoElementAncestors(
+                   *this, kPseudoIdFirstLetter));
   }
 }
 
@@ -10025,7 +10030,8 @@ const ComputedStyle* Element::UncachedStyleForPseudoElement(
   DCHECK(!IsHighlightPseudoElement(request.pseudo_id));
 
   return StyleForPseudoElement(
-      StyleRecalcContext::FromInclusiveAncestors(*this), request);
+      StyleRecalcContext::FromPseudoElementAncestors(*this, request.pseudo_id),
+      request);
 }
 
 const ComputedStyle* Element::StyleForPseudoElement(
@@ -10099,7 +10105,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
   }
 
   StyleRequest style_request = request;
-  if (PseudoElement::IsLayoutSiblingOfOriginatingElement(pseudo_id)) {
+  if (PseudoElement::IsLayoutSiblingOfOriginatingElement(*this, pseudo_id)) {
     CHECK(request.parent_override);
     const ComputedStyle* layout_parent_style = request.parent_override;
     Element* layout_parent =

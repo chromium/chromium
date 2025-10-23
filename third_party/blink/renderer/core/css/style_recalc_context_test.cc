@@ -65,55 +65,66 @@ TEST_F(StyleRecalcContextTest, FromAncestors) {
   EXPECT_TRUE(in_display_none->EnsureComputedStyle());
 
   EXPECT_FALSE(StyleRecalcContext::FromAncestors(*outer).container);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer).container,
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer, kPseudoIdNone)
+                .container,
             outer);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*inner).container, outer);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inner).container,
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inner, kPseudoIdNone)
+                .container,
             inner);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*display_contents).container,
             inner);
-  EXPECT_EQ(
-      StyleRecalcContext::FromInclusiveAncestors(*display_contents).container,
-      display_contents);
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*display_contents,
+                                                       kPseudoIdNone)
+                .container,
+            display_contents);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*in_display_contents).container,
             display_contents);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*in_display_contents)
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*in_display_contents,
+                                                       kPseudoIdNone)
                 .container,
             in_display_contents);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*display_none).container, outer);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*display_none).container,
-            display_none);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*display_none, kPseudoIdNone)
+          .container,
+      display_none);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*in_display_none).container,
             display_none);
-  EXPECT_EQ(
-      StyleRecalcContext::FromInclusiveAncestors(*in_display_none).container,
-      in_display_none);
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*in_display_none,
+                                                       kPseudoIdNone)
+                .container,
+            in_display_none);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*inline_container).container,
             outer);
-  EXPECT_EQ(
-      StyleRecalcContext::FromInclusiveAncestors(*inline_container).container,
-      inline_container);
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inline_container,
+                                                       kPseudoIdNone)
+                .container,
+            inline_container);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*in_inline_container).container,
             inline_container);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*in_inline_container)
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*in_inline_container,
+                                                       kPseudoIdNone)
                 .container,
             inline_container);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*before).container, outer);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*before).container,
+  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*before, kPseudoIdNone)
+                .container,
             before);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*before_pseudo).container,
             before);
   EXPECT_EQ(
-      StyleRecalcContext::FromInclusiveAncestors(*before_pseudo).container,
+      StyleRecalcContext::FromInclusiveAncestors(*before_pseudo, kPseudoIdNone)
+          .container,
       before);
 }
 
@@ -145,33 +156,45 @@ TEST_F(StyleRecalcContextTest, FromAncestors_FlatTree) {
   auto* inner_slot = inner_root->getElementById(AtomicString("inner_slot"));
 
   EXPECT_FALSE(StyleRecalcContext::FromAncestors(*outer_host).container);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer_host).container,
-            outer_host);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*outer_host, kPseudoIdNone)
+          .container,
+      outer_host);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*outer_child).container,
             outer_slot);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer_child).container,
-            outer_child);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*outer_child, kPseudoIdNone)
+          .container,
+      outer_child);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*outer_slot).container,
             outer_host);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer_slot).container,
-            outer_slot);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*outer_slot, kPseudoIdNone)
+          .container,
+      outer_slot);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*inner_host).container,
             outer_host);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inner_host).container,
-            inner_host);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*inner_host, kPseudoIdNone)
+          .container,
+      inner_host);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*inner_child).container,
             inner_slot);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inner_child).container,
-            inner_child);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*inner_child, kPseudoIdNone)
+          .container,
+      inner_child);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*inner_slot).container,
             inner_host);
-  EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inner_slot).container,
-            inner_slot);
+  EXPECT_EQ(
+      StyleRecalcContext::FromInclusiveAncestors(*inner_slot, kPseudoIdNone)
+          .container,
+      inner_slot);
 }
 
 }  // namespace blink

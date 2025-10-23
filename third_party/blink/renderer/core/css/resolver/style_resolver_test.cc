@@ -4266,4 +4266,67 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
 }
 
+TEST_F(StyleResolverTest, FindContainerForElement_LayoutSiblings) {
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #outer {
+        container-type: scroll-state inline-size anchored;
+        width: 200px;
+        height: 200px;
+      }
+      #scroller {
+        container-type: scroll-state inline-size anchored;
+        width: 100px;
+        height: 100px;
+        overflow: scroll;
+        scroll-marker-group: before;
+      }
+      #scroller::scroll-marker-group { background: lime; }
+      #scroller::scroll-button(left) { content: "X"; }
+    </style>
+    <div id="outer">
+      <div id="scroller"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  ContainerSelector size_selector(g_null_atom, kPhysicalAxesNone,
+                                  kLogicalAxesInline,
+                                  /*scroll_state=*/false,
+                                  /*anchored_query=*/false);
+  ContainerSelector scroll_state_selector(g_null_atom, kPhysicalAxesNone,
+                                          kLogicalAxesNone,
+                                          /*scroll_state=*/true,
+                                          /*anchored_query=*/false);
+  ContainerSelector anchored_selector(g_null_atom, kPhysicalAxesNone,
+                                      kLogicalAxesNone,
+                                      /*scroll_state=*/false,
+                                      /*anchored_query=*/true);
+
+  Element* outer = GetElementById("outer");
+  Element* scroller = GetElementById("scroller");
+  Element* group = scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+  Element* button =
+      scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+
+  EXPECT_EQ(StyleResolver::FindContainerForElement(group, size_selector,
+                                                   &GetDocument()),
+            outer);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(group, scroll_state_selector,
+                                                   &GetDocument()),
+            scroller);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(group, anchored_selector,
+                                                   &GetDocument()),
+            scroller);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(button, size_selector,
+                                                   &GetDocument()),
+            outer);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(
+                button, scroll_state_selector, &GetDocument()),
+            scroller);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(button, anchored_selector,
+                                                   &GetDocument()),
+            scroller);
+}
+
 }  // namespace blink

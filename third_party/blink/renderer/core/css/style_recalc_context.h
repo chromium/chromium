@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -33,15 +34,29 @@ class CORE_EXPORT StyleRecalcContext {
   // the shadow-including parent of Element has a ComputedStyle.
   static StyleRecalcContext FromAncestors(Element&);
 
-  // If the passed in StyleRecalcContext is nullptr, build a StyleRecalcContext
-  // suitable for resolving the style for child elements of the passed in
-  // element. Otherwise return the passed in context as a value.
+  // To be used instead of FromAncestors() when we are computing styles for an
+  // element which might not yet exist. For instance for getComputedStyle() for
+  // pseudo elements that do not exist or pseudo elements not backed by a
+  // PseudoElement.
+  //
+  // The passed in PseudoId must not be kPseudoIdNone.
+  static StyleRecalcContext FromPseudoElementAncestors(
+      Element& originating_element,
+      PseudoId);
+
+ private:
+  // Build a StyleRecalcContext suitable for resolving the style for child
+  // elements of the passed in element.
   //
   // It is invalid to pass an Element without a ComputedStyle. This means that
   // if the Element is in display:none, the ComputedStyle must be ensured
   // before calling this function.
-  static StyleRecalcContext FromInclusiveAncestors(Element&);
+  static StyleRecalcContext FromInclusiveAncestors(Element&, PseudoId);
 
+  FRIEND_TEST_ALL_PREFIXES(StyleRecalcContextTest, FromAncestors);
+  FRIEND_TEST_ALL_PREFIXES(StyleRecalcContextTest, FromAncestors_FlatTree);
+
+ public:
   // Set to the nearest container (for size container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
   Element* container = nullptr;

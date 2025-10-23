@@ -2441,10 +2441,16 @@ Element* StyleResolver::FindContainerForElement(
     Element* element,
     const ContainerSelector& container_selector,
     const TreeScope* selector_tree_scope) {
-  DCHECK(element);
+  CHECK(element);
+  Element* start_candidate = FlatTreeTraversal::ParentElement(*element);
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    if (pseudo_element->IsLayoutSiblingOfOriginatingElement() &&
+        container_selector.SelectsSizeContainers()) {
+      start_candidate = FlatTreeTraversal::ParentElement(*start_candidate);
+    }
+  }
   return ContainerQueryEvaluator::FindContainer(
-      FlatTreeTraversal::ParentElement(*element), container_selector,
-      selector_tree_scope);
+      start_candidate, container_selector, selector_tree_scope);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(

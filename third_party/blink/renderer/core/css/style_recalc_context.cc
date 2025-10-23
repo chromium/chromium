@@ -6,18 +6,23 @@
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
 StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
-    Element& start_element) {
+    Element& start_element,
+    PseudoId pseudo_id) {
   StyleRecalcContext result;
-  for (auto* element = &start_element; element;
+  for (Element* element = &start_element; element;
        element = FlatTreeTraversal::ParentElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (result.container == nullptr &&
-          style->IsContainerForSizeContainerQueries()) {
+          style->IsContainerForSizeContainerQueries() &&
+          (element != start_element ||
+           !PseudoElement::IsLayoutSiblingOfOriginatingElement(start_element,
+                                                               pseudo_id))) {
         // TODO(crbug.com/40250356): Eliminate all invalid calls to
         // StyleRecalcContext::From[Inclusive]Ancestors, then either turn
         // if (!style) into CHECK(style) or simplify into checking:
@@ -59,9 +64,16 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
 
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
   if (Element* parent = FlatTreeTraversal::ParentElement(element)) {
-    return FromInclusiveAncestors(*parent);
+    return FromInclusiveAncestors(*parent, element.GetPseudoId());
   }
   return StyleRecalcContext();
+}
+
+StyleRecalcContext StyleRecalcContext::FromPseudoElementAncestors(
+    Element& originating_element,
+    PseudoId pseudo_id) {
+  CHECK(pseudo_id != kPseudoIdNone);
+  return FromInclusiveAncestors(originating_element, pseudo_id);
 }
 
 }  // namespace blink
