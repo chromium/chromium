@@ -145,7 +145,6 @@ V8PerIsolateData::V8PerIsolateData(
           std::move(cpp_heap)),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
       private_property_(std::make_unique<V8PrivateProperty>()),
-      constructor_mode_(ConstructorMode::kCreateNewObject),
       runtime_call_stats_(base::DefaultTickClock::GetInstance()) {
   if (v8_context_snapshot_mode == V8ContextSnapshotMode::kTakeSnapshot) {
     // Snapshot should only execute on the main thread. SnapshotCreator enters

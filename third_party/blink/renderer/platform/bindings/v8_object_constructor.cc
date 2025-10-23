@@ -61,7 +61,7 @@ void V8ObjectConstructor::IsValidConstructorMode(
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(),
                                                "Blink_IsValidConstructorMode");
   if (ConstructorMode::Current(info.GetIsolate()) ==
-      ConstructorMode::kCreateNewObject) {
+      ConstructorMode::Mode::kCreateNewObject) {
     V8ThrowException::ThrowTypeError(info.GetIsolate(), "Illegal constructor");
     return;
   }
