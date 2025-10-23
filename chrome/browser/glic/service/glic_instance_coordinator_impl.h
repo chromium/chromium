@@ -64,9 +64,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   ~GlicInstanceCoordinatorImpl() override;
 
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
-  void OnInstanceVisibilityChanged(GlicInstance* instance,
+  void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                    bool is_showing) override;
-  void OnInstanceActivationChanged(GlicInstance* instance,
+  void OnInstanceActivationChanged(GlicInstanceImpl* instance,
                                    bool is_active) override;
   void SwitchConversation(
       GlicInstanceImpl& source_instance,
@@ -142,7 +142,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   void CloseFloaty();
 
-  void RemoveInstance(GlicInstance* instance) override;
+  void RemoveInstance(GlicInstanceImpl* instance) override;
 
   void NotifyActiveInstanceChanged();
 

@@ -57,11 +57,11 @@ class GlicInstanceImpl : public GlicInstance,
   class InstanceCoordinatorDelegate {
    public:
     virtual ~InstanceCoordinatorDelegate() = default;
-    virtual void RemoveInstance(GlicInstance* instance) = 0;
+    virtual void RemoveInstance(GlicInstanceImpl* instance) = 0;
     // Called by an instance when its visibility state changes.
-    virtual void OnInstanceVisibilityChanged(GlicInstance* instance,
+    virtual void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                              bool is_showing) = 0;
-    virtual void OnInstanceActivationChanged(GlicInstance* instance,
+    virtual void OnInstanceActivationChanged(GlicInstanceImpl* instance,
                                              bool is_active) = 0;
     virtual void SwitchConversation(
         GlicInstanceImpl& source_instance,

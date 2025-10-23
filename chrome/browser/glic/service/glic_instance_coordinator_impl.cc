@@ -83,10 +83,10 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
-    GlicInstance* instance,
+    GlicInstanceImpl* instance,
     bool is_active) {
   if (is_active && active_instance_ != instance) {
-    active_instance_ = static_cast<GlicInstanceImpl*>(instance);
+    active_instance_ = instance;
     last_active_instance_ = active_instance_;
   } else if (!is_active && active_instance_ == instance) {
     active_instance_ = nullptr;
@@ -97,7 +97,7 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
-    GlicInstance* instance,
+    GlicInstanceImpl* instance,
     bool is_showing) {
   // TODO(crbug.com/452963408): We think this will be useful, but if we find
   // that we're not using it, we should remove it.
@@ -368,7 +368,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   instance->Toggle(ShowOptions::ForSidePanel(*tab), prevent_close);
 }
 
-void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
+void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
   OnInstanceActivationChanged(instance, false);
   // Remove the instance first, and then delete. This way, GetInstances() will
   // not return the instance being deleted while it's being deleted.
