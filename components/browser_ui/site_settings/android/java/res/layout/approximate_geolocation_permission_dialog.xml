@@ -23,17 +23,17 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/radio_button_group"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/allow"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/radio_button_with_description_height" />
+            android:layout_height="wrap_content" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/block"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/radio_button_with_description_height" />
+            android:layout_height="wrap_content" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
@@ -41,7 +41,7 @@ found in the LICENSE file.
         android:id="@+id/location_access_message"
         android:text="@string/website_settings_edit_site_dialog_geolocation_access_description"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingStart="@dimen/dialog_message_padding_start"
         android:paddingEnd="@dimen/dialog_message_padding_end"
         android:paddingBottom="@dimen/dialog_message_padding_bottom"
@@ -52,18 +52,18 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/location_access_group"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/precise"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/radio_button_with_description_height"
+            android:layout_height="wrap_content"
             app:primaryText="@string/website_settings_permissions_geolocation_precise" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/approximate"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/radio_button_with_description_height"
+            android:layout_height="wrap_content"
             app:primaryText="@string/website_settings_permissions_geolocation_approximate" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
