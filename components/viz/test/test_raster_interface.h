@@ -64,7 +64,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void DeleteQueriesEXT(GLsizei n, const GLuint* queries) override;
   void BeginQueryEXT(GLenum target, GLuint id) override;
   void EndQueryEXT(GLenum target) override;
-  void QueryCounterEXT(GLuint id, GLenum target) override;
   void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) override;
   void GetQueryObjectui64vEXT(GLuint id,
                               GLenum pname,

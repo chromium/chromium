@@ -25,8 +25,6 @@ void GenQueriesEXT(GLsizei n, GLuint* queries) override;
 
 void DeleteQueriesEXT(GLsizei n, const GLuint* queries) override;
 
-void QueryCounterEXT(GLuint id, GLenum target) override;
-
 void BeginQueryEXT(GLenum target, GLuint id) override;
 
 void EndQueryEXT(GLenum target) override;

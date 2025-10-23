@@ -59,7 +59,6 @@ void TestRasterInterface::GenQueriesEXT(GLsizei n, GLuint* queries) {
 void TestRasterInterface::DeleteQueriesEXT(GLsizei n, const GLuint* queries) {}
 void TestRasterInterface::BeginQueryEXT(GLenum target, GLuint id) {}
 void TestRasterInterface::EndQueryEXT(GLenum target) {}
-void TestRasterInterface::QueryCounterEXT(GLuint id, GLenum target) {}
 
 void TestRasterInterface::GetQueryObjectuivEXT(GLuint id,
                                                GLenum pname,

@@ -1776,14 +1776,6 @@ error::Error RasterDecoderImpl::HandleEndQueryEXT(
   return error::kNoError;
 }
 
-error::Error RasterDecoderImpl::HandleQueryCounterEXT(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "glQueryCounterEXT",
-                     "unknown query target");
-  return error::kNoError;
-}
-
 void RasterDecoderImpl::DoFinish() {
   shared_context_state_->FlushAndSubmit(/*sync_to_cpu=*/true);
   ProcessPendingQueries(/*did_finish=*/true);

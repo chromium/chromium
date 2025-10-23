@@ -68,7 +68,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   MOCK_METHOD2(DeleteQueriesEXT, void(GLsizei n, const GLuint* queries));
   MOCK_METHOD2(BeginQueryEXT, void(GLenum target, GLuint id));
   MOCK_METHOD1(EndQueryEXT, void(GLenum target));
-  MOCK_METHOD2(QueryCounterEXT, void(GLuint id, GLenum target));
   MOCK_METHOD3(GetQueryObjectuivEXT,
                void(GLuint id, GLenum pname, GLuint* params));
   MOCK_METHOD3(GetQueryObjectui64vEXT,

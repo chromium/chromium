@@ -19,7 +19,6 @@ virtual GLenum GetError() = 0;
 virtual void OrderingBarrierCHROMIUM() = 0;
 virtual void GenQueriesEXT(GLsizei n, GLuint* queries) = 0;
 virtual void DeleteQueriesEXT(GLsizei n, const GLuint* queries) = 0;
-virtual void QueryCounterEXT(GLuint id, GLenum target) = 0;
 virtual void BeginQueryEXT(GLenum target, GLuint id) = 0;
 virtual void EndQueryEXT(GLenum target) = 0;
 virtual void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) = 0;
