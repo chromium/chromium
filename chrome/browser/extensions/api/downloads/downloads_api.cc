@@ -733,12 +733,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
 
   explicit ExtensionDownloadsEventRouterData(DownloadItem* download_item,
                                              base::Value::Dict json_item)
-      : updated_(0),
-        changed_fired_(0),
-        json_(std::move(json_item)),
-        creator_conflict_action_(downloads::FilenameConflictAction::kUniquify),
-        determined_conflict_action_(
-            downloads::FilenameConflictAction::kUniquify),
+      : json_(std::move(json_item)),
         is_download_completed_(download_item->GetState() ==
                                DownloadItem::COMPLETE),
         is_completed_download_deleted_(
@@ -955,8 +950,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
         base::Seconds(15));
   }
 
-  int updated_;
-  int changed_fired_;
+  int updated_ = 0;
+  int changed_fired_ = 0;
   // Dictionary representing the current state of the download. It is cleared
   // when download completes.
   base::Value::Dict json_;
@@ -966,9 +961,11 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   DeterminerInfoVector determiners_;
 
   base::FilePath creator_suggested_filename_;
-  downloads::FilenameConflictAction creator_conflict_action_;
+  downloads::FilenameConflictAction creator_conflict_action_ =
+      downloads::FilenameConflictAction::kUniquify;
   base::FilePath determined_filename_;
-  downloads::FilenameConflictAction determined_conflict_action_;
+  downloads::FilenameConflictAction determined_conflict_action_ =
+      downloads::FilenameConflictAction::kUniquify;
   DeterminerInfo determiner_;
 
   // Whether a download is complete and whether the completed download is
