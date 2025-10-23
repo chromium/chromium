@@ -82,7 +82,11 @@ GlicActorUiTest::GlicActorUiTest() {
        {optimization_guide::features::
             kAnnotatedPageContentWithActionableElements,
         {}}},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{
+          // TODO(b/454665367): Most GlicActorUiTest tests are broken for
+          // multi-instance. Temporarily disable glic multi-instance.
+          features::kGlicMultiInstance,
+      });
 }
 GlicActorUiTest::~GlicActorUiTest() = default;
 
