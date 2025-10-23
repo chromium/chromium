@@ -314,6 +314,10 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // PWA.)
   bool BrowserIsApp() const;
 
+  // Configures the user-visible method of authenticating for security domain
+  // recovery.
+  void ShowSecurityDomainRecoveryUI();
+
   content::WebContents* web_contents() const;
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
@@ -378,6 +382,10 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   base::RepeatingCallback<void(
       std::unique_ptr<device::enclave::CredentialRequest>)>
       enclave_request_callback_;
+
+  // Represents this object's claim to handle any keys provided by
+  // accounts.google.com.
+  std::unique_ptr<EnclaveManager::StoreKeysLock> store_keys_lock_;
 
   // Whether the initial UI is being blocked while enclave state is loaded.
   bool ready_for_ui_ = false;

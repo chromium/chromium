@@ -149,6 +149,21 @@ struct EnclaveManager::PendingAction {
   bool unregister = false;  // whether to unregister from the enclave.
 };
 
+EnclaveManager::StoreKeysLock::StoreKeysLock(
+    base::WeakPtr<EnclaveManager> manager)
+    : manager_(std::move(manager)) {}
+
+EnclaveManager::StoreKeysLock::~StoreKeysLock() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!manager_) {
+    return;
+  }
+
+  CHECK_GT(manager_->store_keys_lock_depth_, 0u);
+  manager_->store_keys_lock_depth_--;
+}
+
 namespace {
 
 // Used so the EnclaveManager can be forced into invalid states for testing.
@@ -3034,6 +3049,12 @@ void EnclaveManager::SetupWithPIN(std::string pin,
   Act();
 }
 
+std::unique_ptr<EnclaveManager::StoreKeysLock>
+EnclaveManager::GetStoreKeysLock() {
+  store_keys_lock_depth_++;
+  return std::make_unique<StoreKeysLock>(GetWeakPtr());
+}
+
 bool EnclaveManager::AddDeviceToAccount(
     std::optional<trusted_vault::GpmPinMetadata> pin_metadata,
     EnclaveManager::Callback callback) {
@@ -3067,6 +3088,7 @@ void EnclaveManager::AddDeviceAndPINToAccount(
     std::optional<std::string> previous_pin_public_key,
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(has_pending_keys());
 
   auto action = std::make_unique<PendingAction>();
   action->pin_public_key = std::move(previous_pin_public_key);
@@ -3746,9 +3768,9 @@ void EnclaveManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
-                               std::vector<std::vector<uint8_t>> keys,
-                               int last_key_version) {
+void EnclaveManager::StorePendingKeys(const GaiaId& gaia_id,
+                                      std::vector<std::vector<uint8_t>> keys,
+                                      int last_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   pending_keys_ = std::make_unique<StoreKeysArgs>();
@@ -3761,6 +3783,58 @@ void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
   for (Observer& observer : observer_list_) {
     observer.OnKeysStored();
   }
+}
+
+void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
+                               std::vector<std::vector<uint8_t>> keys,
+                               int last_key_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
+    if (store_keys_lock_depth_) {
+      StorePendingKeys(gaia_id, std::move(keys), last_key_version);
+    } else {
+      // TODO(crbug.com/450851888): Refactor the logic related to storing the
+      // keys from the out of context retrieval.
+      StoreKeysFromOutOfContextRetrieval(gaia_id, std::move(keys),
+                                         last_key_version);
+    }
+  } else {
+    // Use the old implementation:
+    StorePendingKeys(gaia_id, std::move(keys), last_key_version);
+  }
+}
+
+void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
+    const GaiaId& gaia_id,
+    std::vector<std::vector<uint8_t>> keys,
+    int last_key_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!store_keys_lock_depth_);
+
+  auto pending_keys = std::make_unique<StoreKeysArgs>();
+  pending_keys->gaia_id = gaia_id;
+  pending_keys->keys = std::move(keys);
+  pending_keys->last_key_version = last_key_version;
+
+  if (is_registered()) {
+    FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
+                    << last_key_version;
+    return;
+  }
+
+  FIDO_LOG(EVENT) << "Opportunistic keys provided";
+  // These keys were provided opportunistically so that a MagicArch flow can
+  // be avoided in the future. However, as an invariant, we only register with
+  // the enclave if we can serve requests, which means having a form of local
+  // user verification.
+  // We should store keys even if system UV isn't available as long as the
+  // security domain has a GPM PIN.
+  // TODO(crbug.com/442804402): additionally to checking the availability of the
+  // system UV we also need to check a presence of the GPM PIN (which could be
+  // used for user verification).
+  AreUserVerifyingKeysSupported(
+      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysUVCheckComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
 }
 
 std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
@@ -4330,6 +4404,28 @@ void EnclaveManager::OnCheckGpmPinAvailabilityResult(
   // Calling the callback after fetching the GPM PIN info:
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), pin_availability));
+}
+
+void EnclaveManager::OpportunisticStoreKeysUVCheckComplete(
+    std::unique_ptr<StoreKeysArgs> pending_keys,
+    bool can_make_uv_keys) {
+  FIDO_LOG(EVENT) << "Opportunistic keys UV key result: " << can_make_uv_keys;
+
+  if (!can_make_uv_keys) {
+    // Without local UV we can't make use of opportunistic keys.
+    return;
+  }
+
+  pending_keys_ = std::move(pending_keys);
+  store_keys_count_++;
+  AddDeviceToAccount(
+      /*pin_metadata=*/std::nullopt,
+      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysAddComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EnclaveManager::OpportunisticStoreKeysAddComplete(bool success) {
+  FIDO_LOG(EVENT) << "Opportunistic keys device add result: " << success;
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {
