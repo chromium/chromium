@@ -206,16 +206,18 @@ void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
   // outside the scroll, just invalidate it.
   std::vector<gfx::Rect> leftover_rects;
   for (size_t i = 0; i < update_.paint_rects.size(); ++i) {
-    if (!update_.scroll_rect.Intersects(update_.paint_rects[i]))
+    if (!update_.scroll_rect.Intersects(update_.paint_rects[i])) {
       continue;
+    }
 
     gfx::Rect intersection =
         gfx::IntersectRects(update_.paint_rects[i], update_.scroll_rect);
     gfx::Rect rect = update_.paint_rects[i];
     while (!rect.IsEmpty()) {
       gfx::Rect leftover = gfx::SubtractRects(rect, intersection);
-      if (leftover.IsEmpty())
+      if (leftover.IsEmpty()) {
         break;
+      }
       // Don't want to call InvalidateRectInternal() now since it'll modify
       // `update_.paint_rects`, so keep track of this and do it below.
       leftover_rects.push_back(leftover);
@@ -231,12 +233,14 @@ void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
     }
   }
 
-  for (const auto& leftover_rect : leftover_rects)
+  for (const auto& leftover_rect : leftover_rects) {
     InvalidateRectInternal(leftover_rect, /*check_scroll=*/false);
+  }
 
   for (auto& update_rect : update_.ready_rects) {
-    if (update_.scroll_rect.Contains(update_rect.rect()))
+    if (update_.scroll_rect.Contains(update_rect.rect())) {
       update_rect.set_rect(ScrollPaintRect(update_rect.rect(), amount));
+    }
   }
 
   if (update_.synthesized_scroll_damage_rect) {

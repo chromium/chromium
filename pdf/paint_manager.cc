@@ -98,8 +98,9 @@ void PaintManager::SetTransform(float scale,
                                 const gfx::Point& origin,
                                 const gfx::Vector2d& translate,
                                 bool schedule_flush) {
-  if (!surface_)
+  if (!surface_) {
     return;
+  }
 
   CHECK_GT(scale, 0.0f);
   // translate_with_origin = origin - scale * origin - translate
@@ -110,8 +111,9 @@ void PaintManager::SetTransform(float scale,
   // TODO(crbug.com/40203030): Should update be deferred until `Flush()`?
   client_->UpdateLayerTransform(scale, translate_with_origin);
 
-  if (!schedule_flush)
+  if (!schedule_flush) {
     return;
+  }
 
   if (flush_pending_) {
     flush_requested_ = true;
@@ -125,8 +127,9 @@ void PaintManager::ClearTransform() {
 }
 
 void PaintManager::Invalidate() {
-  if (!surface_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_) {
     return;
+  }
 
   EnsureCallbackPending();
   aggregator_.InvalidateRect(gfx::Rect(GetEffectiveSize()));
@@ -135,14 +138,16 @@ void PaintManager::Invalidate() {
 void PaintManager::InvalidateRect(const gfx::Rect& rect) {
   DCHECK(!in_paint_);
 
-  if (!surface_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_) {
     return;
+  }
 
   // Clip the rect to the device area.
   gfx::Rect clipped_rect =
       gfx::IntersectRects(rect, gfx::Rect(GetEffectiveSize()));
-  if (clipped_rect.IsEmpty())
+  if (clipped_rect.IsEmpty()) {
     return;  // Nothing to do.
+  }
 
   EnsureCallbackPending();
   aggregator_.InvalidateRect(clipped_rect);
@@ -152,8 +157,9 @@ void PaintManager::ScrollRect(const gfx::Rect& clip_rect,
                               const gfx::Vector2d& amount) {
   DCHECK(!in_paint_);
 
-  if (!surface_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_) {
     return;
+  }
 
   EnsureCallbackPending();
 
@@ -172,13 +178,15 @@ void PaintManager::EnsureCallbackPending() {
   // The best way for us to do the next update is to get a notification that
   // a previous one has completed. So if we're already waiting for one, we
   // don't have to do anything differently now.
-  if (flush_pending_)
+  if (flush_pending_) {
     return;
+  }
 
   // If no flush is pending, we need to do a manual call to get back to the
   // main thread. We may have one already pending, or we may need to schedule.
-  if (manual_callback_pending_)
+  if (manual_callback_pending_) {
     return;
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaintManager::OnManualCallbackComplete,
@@ -227,8 +235,9 @@ void PaintManager::DoPaint() {
       weak_factory_.InvalidateWeakPtrs();
     }
 
-    if (pending_device_scale_ != device_scale_)
+    if (pending_device_scale_ != device_scale_) {
       client_->UpdateScale(1.0f / pending_device_scale_);
+    }
     device_scale_ = pending_device_scale_;
 
     // This must be cleared before calling into the plugin since it may do
@@ -240,8 +249,9 @@ void PaintManager::DoPaint() {
   PaintAggregator::PaintUpdate update = aggregator_.GetPendingUpdate();
   client_->OnPaint(update.paint_rects, ready_rects, pending_rects);
 
-  if (ready_rects.empty() && pending_rects.empty())
+  if (ready_rects.empty() && pending_rects.empty()) {
     return;  // Nothing was painted, don't schedule a flush.
+  }
 
   std::vector<PaintReadyRect> ready_now;
   if (pending_rects.empty()) {
@@ -327,8 +337,9 @@ void PaintManager::OnFlushComplete() {
 
   // If more paints were enqueued while we were waiting for the flush to
   // complete, execute them now.
-  if (aggregator_.HasPendingUpdate())
+  if (aggregator_.HasPendingUpdate()) {
     DoPaint();
+  }
 
   // If there was another flush request while flushing we flush again.
   if (flush_requested_) {
@@ -344,8 +355,9 @@ void PaintManager::OnManualCallbackComplete() {
   // invalid regions. Even though we only schedule this callback when something
   // is pending, a Flush callback could have come in before this callback was
   // executed and that could have cleared the queue.
-  if (aggregator_.HasPendingUpdate())
+  if (aggregator_.HasPendingUpdate()) {
     DoPaint();
+  }
 }
 
 }  // namespace chrome_pdf
