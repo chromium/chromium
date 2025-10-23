@@ -39,6 +39,7 @@
 #import "components/url_formatter/url_formatter.h"
 #import "components/version_info/version_info.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
@@ -998,7 +999,7 @@ void OnListFamilyMembersResponse(
 
   std::optional<std::string> profileName;
 
-  if ([context.gaiaID isEqualToString:app_group::kNoAccount]) {
+  if ([context.gaiaID.ToNSString() isEqualToString:app_group::kNoAccount]) {
     // Use the personal profile name if there is no GaiaID (this happens in
     // the sign-out scenario).
     profileName = GetApplicationContext()
@@ -1078,7 +1079,6 @@ void OnListFamilyMembersResponse(
       IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
   CoreAccountInfo primaryAccount =
       identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaiaInApp = primaryAccount.gaia.ToNSString();
   for (UIOpenURLContext* context : URLContexts) {
     // Check that this URL is coming from a widget.
     if (!([self widgetURLEligibleForAccountChange:context.URL] ||
@@ -1092,21 +1092,22 @@ void OnListFamilyMembersResponse(
                                     &newGaia)) {
       continue;
     }
-    NSString* newGaiaID = base::SysUTF8ToNSString(newGaia);
+    GaiaId newGaiaID(newGaia);
 
     // Only switch account if the gaia in the widget is different from the gaia
     // in the app.
-    if ([gaiaInApp isEqualToString:newGaiaID]) {
+    if (primaryAccount.gaia == newGaiaID) {
       continue;
     }
 
-    if ([newGaiaID isEqualToString:app_group::kNoAccount] && gaiaInApp.length) {
+    if ([newGaiaID.ToNSString() isEqualToString:app_group::kNoAccount] &&
+        !primaryAccount.gaia.empty()) {
       return [[URLContext alloc] initWithContext:context
                                           gaiaID:newGaiaID
                                             type:AccountSwitchType::kSignOut];
     }
-    if (![newGaiaID isEqualToString:gaiaInApp] &&
-        ![newGaiaID isEqualToString:app_group::kNoAccount]) {
+    if (newGaiaID != primaryAccount.gaia &&
+        ![newGaiaID.ToNSString() isEqualToString:app_group::kNoAccount]) {
       return [[URLContext alloc] initWithContext:context
                                           gaiaID:newGaiaID
                                             type:AccountSwitchType::kSignIn];

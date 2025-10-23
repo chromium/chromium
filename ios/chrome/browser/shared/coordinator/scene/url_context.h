@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+class GaiaId;
+
 // Account switching types.
 enum class AccountSwitchType {
   kSignIn,
@@ -17,11 +19,11 @@ enum class AccountSwitchType {
 // Context information for an URL with a request to switch account.
 @interface URLContext : NSObject
 - (instancetype)initWithContext:(UIOpenURLContext*)context
-                         gaiaID:(NSString*)gaiaID
+                         gaiaID:(const GaiaId&)gaiaID
                            type:(AccountSwitchType)type;
 
 @property(nonatomic, readonly) UIOpenURLContext* context;
-@property(nonatomic, readonly) NSString* gaiaID;
+@property(nonatomic, readonly) GaiaId gaiaID;
 @property(nonatomic, readonly) AccountSwitchType type;
 
 @end

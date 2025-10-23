@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 
+#import "google_apis/gaia/gaia_id.h"
+
 @implementation URLContext
 
 - (instancetype)initWithContext:(UIOpenURLContext*)context
-                         gaiaID:(NSString*)gaiaID
+                         gaiaID:(const GaiaId&)gaiaID
                            type:(AccountSwitchType)type {
   self = [super init];
   if (self) {

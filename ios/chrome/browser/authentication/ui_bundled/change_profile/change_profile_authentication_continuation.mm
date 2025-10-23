@@ -6,6 +6,7 @@
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -70,7 +71,7 @@ void SigninForContext(URLContext* context,
   GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
       base::BindRepeating(&IdentitiesOnDevice, identities));
   for (id<SystemIdentity> identity in identities) {
-    if ([identity.gaiaID isEqualToString:context.gaiaID]) {
+    if (identity.gaiaId == context.gaiaID) {
       newIdentity = identity;
     }
   }
@@ -118,11 +119,10 @@ void ChangeProfileAuthenticationContinuation(URLContext* context,
             signin::ConsentLevel::kSignin)) {
       SigninForContext(context, contexts, openURL, authentication_service,
                        scene_state, std::move(closure));
-    } else if (![context.gaiaID
-                   isEqualToString:authentication_service
-                                       ->GetPrimaryIdentity(
-                                           signin::ConsentLevel::kSignin)
-                                       .gaiaID] &&
+    } else if (context.gaiaID !=
+                   authentication_service
+                       ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                       .gaiaId &&
                !authentication_service->HasPrimaryIdentityManaged(
                    signin::ConsentLevel::kSignin)) {
       base::OnceClosure completion = base::BindOnce(

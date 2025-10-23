@@ -300,6 +300,6 @@ source_set("url_context") {
     "url_context.h",
     "url_context.mm",
   ]
-  deps = []
+  deps = [ "//google_apis" ]
   frameworks = [ "UIKit.framework" ]
 }
