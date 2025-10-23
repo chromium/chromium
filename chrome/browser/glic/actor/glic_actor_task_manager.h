@@ -47,6 +47,8 @@ class GlicActorTaskManager {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
+  bool IsActuating() const;
+
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
 
  private:

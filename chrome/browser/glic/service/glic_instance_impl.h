@@ -99,6 +99,8 @@ class GlicInstanceImpl : public GlicInstance,
   bool IsAttached() override;
   gfx::Size GetPanelSize() override;
 
+  bool IsActuating() const;
+
   // These methods should only be called by the GlicInstanceCoordinator.
   // This method will either show an embedder or create an inactive embedder and
   // bind a tab to conversation.

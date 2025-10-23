@@ -302,6 +302,10 @@ void GlicActorTaskManager::ResumeActorTask(
                                               std::move(observation_callback));
 }
 
+bool GlicActorTaskManager::IsActuating() const {
+  return !!current_task_id_;
+}
+
 base::WeakPtr<GlicActorTaskManager> GlicActorTaskManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
