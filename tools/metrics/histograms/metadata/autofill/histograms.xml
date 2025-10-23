@@ -525,6 +525,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="FLIGHT_RESERVATION_ARRIVAL_AIRPORT"/>
   <variant name="FLIGHT_RESERVATION_CONFIRMATION_CODE"/>
   <variant name="FLIGHT_RESERVATION_DEPARTURE_AIRPORT"/>
+  <variant name="FLIGHT_RESERVATION_DEPARTURE_DATE"/>
   <variant name="FLIGHT_RESERVATION_FLIGHT_NUMBER"/>
   <variant name="FLIGHT_RESERVATION_TICKET_NUMBER"/>
   <variant name="IBAN_VALUE"/>

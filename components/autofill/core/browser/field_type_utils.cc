@@ -191,6 +191,7 @@ bool IsDateFieldType(FieldType field_type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
       return true;
   }
   NOTREACHED();
@@ -325,6 +326,7 @@ bool IsAffixFormatStringEnabledForType(FieldType type) {
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
       return false;
     case PASSPORT_NUMBER:
     case VEHICLE_VIN:

@@ -133,6 +133,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
       return DataType::kCountry;
     case AttributeTypeName::kDriversLicenseExpirationDate:
     case AttributeTypeName::kDriversLicenseIssueDate:
+    case AttributeTypeName::kFlightReservationDepartureDate:
     case AttributeTypeName::kKnownTravelerNumberExpirationDate:
     case AttributeTypeName::kNationalIdCardIssueDate:
     case AttributeTypeName::kNationalIdCardExpirationDate:
@@ -187,6 +188,8 @@ constexpr FieldType AttributeType::field_type() const {
       return FLIGHT_RESERVATION_DEPARTURE_AIRPORT;
     case AttributeTypeName::kFlightReservationArrivalAirport:
       return FLIGHT_RESERVATION_ARRIVAL_AIRPORT;
+    case AttributeTypeName::kFlightReservationDepartureDate:
+      return FLIGHT_RESERVATION_DEPARTURE_DATE;
 
     case AttributeTypeName::kKnownTravelerNumberNumber:
       return KNOWN_TRAVELER_NUMBER;

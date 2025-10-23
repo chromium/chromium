@@ -473,6 +473,7 @@ AddressUIComponentIconType GetAddressUIComponentIconTypeForFieldType(
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
       return AddressUIComponentIconType::kNoIcon;
   }
 }

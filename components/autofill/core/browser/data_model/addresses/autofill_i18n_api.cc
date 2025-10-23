@@ -265,6 +265,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }

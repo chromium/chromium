@@ -105,7 +105,7 @@
   },
   {
     "name": "Flight Reservation",
-    "attributes": [ "Flight number", "Ticket number", "Confirmation code", "Passenger name", "Departure airport", "Arrival airport"],
+    "attributes": [ "Flight number", "Ticket number", "Confirmation code", "Passenger name", "Departure airport", "Arrival airport", "Departure date"],
     "obfuscated attributes": [],
     "required fields": [
       [ "Flight number" ],

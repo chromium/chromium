@@ -182,7 +182,9 @@ static constexpr auto kTypeNameToFieldType =
          {"FLIGHT_RESERVATION_DEPARTURE_AIRPORT",
           FLIGHT_RESERVATION_DEPARTURE_AIRPORT},
          {"FLIGHT_RESERVATION_ARRIVAL_AIRPORT",
-          FLIGHT_RESERVATION_ARRIVAL_AIRPORT}});
+          FLIGHT_RESERVATION_ARRIVAL_AIRPORT},
+         {"FLIGHT_RESERVATION_DEPARTURE_DATE",
+          FLIGHT_RESERVATION_DEPARTURE_DATE}});
 
 bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
@@ -317,6 +319,10 @@ bool IsFillableFieldType(FieldType field_type) {
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
       return true;
 
+    // Autofill AI types that are not fillable.
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
+      return false;
+
     // Not fillable credential fields.
     case NOT_PASSWORD:
     case NOT_USERNAME:
@@ -417,6 +423,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
       return "";
     case NUMERIC_QUANTITY:
       return "Numeric quantity";

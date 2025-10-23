@@ -549,6 +549,7 @@ enum FieldType {
   FLIGHT_RESERVATION_TICKET_NUMBER = 200,
   FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 204,
   FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 205,
+  FLIGHT_RESERVATION_DEPARTURE_DATE = 206,
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -560,7 +561,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 206,
+  MAX_VALID_FIELD_TYPE = 207,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -838,6 +839,7 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
       return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:

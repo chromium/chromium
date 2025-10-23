@@ -47,6 +47,7 @@ std::u16string AttributeType::GetNameForI18n() const {
       case AttributeTypeName::kFlightReservationPassengerName:
       case AttributeTypeName::kFlightReservationDepartureAirport:
       case AttributeTypeName::kFlightReservationArrivalAirport:
+      case AttributeTypeName::kFlightReservationDepartureDate:
         // Flight reservations are read-only and do not use attribute strings.
         return u"";
       case AttributeTypeName::kKnownTravelerNumberName:
