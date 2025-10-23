@@ -58,6 +58,15 @@
 
 namespace glic {
 
+namespace {
+constexpr base::TimeDelta kSidePanelMaxRecency = base::Minutes(20);
+constexpr base::TimeDelta kFloatyMaxRecency = base::Hours(3);
+
+base::TimeDelta GetTimeSinceLastActive(GlicInstanceImpl* instance) {
+  return base::TimeTicks::Now() - instance->GetLastActiveTime();
+}
+}  // namespace
+
 // TODO(refactor): Remove after launching kGlicMultiInstance.
 HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   return *host_manager_;
@@ -306,7 +315,8 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
 
   if (base::FeatureList::IsEnabled(
           features::kGlicDefaultToLastActiveConversation) &&
-      last_active_instance_) {
+      last_active_instance_ &&
+      GetTimeSinceLastActive(last_active_instance_) < kSidePanelMaxRecency) {
     return last_active_instance_;
   }
 
@@ -345,7 +355,6 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
 }
 
 void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
-  // TODO: Sync this id with the web client.
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
   warmed_instance_ = std::make_unique<GlicInstanceImpl>(
       profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
@@ -353,10 +362,14 @@ void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
       contextual_cueing_service_);
 }
 
-void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
+GlicInstanceImpl*
+GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
   auto* floaty_instance = GetInstanceWithFloaty();
-  if (!floaty_instance && base::FeatureList::IsEnabled(
-                              features::kGlicDefaultToLastActiveConversation)) {
+  if (!floaty_instance &&
+      base::FeatureList::IsEnabled(
+          features::kGlicDefaultToLastActiveConversation) &&
+      last_active_instance_ &&
+      GetTimeSinceLastActive(last_active_instance_) < kFloatyMaxRecency) {
     floaty_instance = last_active_instance_;
   }
 
@@ -365,8 +378,12 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
   if (!floaty_instance) {
     floaty_instance = CreateGlicInstance();
   }
-  floaty_instance->Toggle(ShowOptions::ForFloating(/*anchor_browser=*/nullptr),
-                          prevent_close);
+  return floaty_instance;
+}
+
+void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
+  GetOrCreateInstanceImplForFloaty()->Toggle(
+      ShowOptions::ForFloating(/*anchor_browser=*/nullptr), prevent_close);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(

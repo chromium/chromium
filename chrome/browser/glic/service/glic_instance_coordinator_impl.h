@@ -138,6 +138,7 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id);
   GlicInstanceImpl* GetInstanceImplForTab(tabs::TabInterface* tab);
+  GlicInstanceImpl* GetOrCreateInstanceImplForFloaty();
   GlicInstanceImpl* CreateGlicInstance();
   void CreateWarmedInstance();
 
