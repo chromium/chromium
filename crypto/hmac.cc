@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "crypto/openssl_util.h"
@@ -42,11 +43,11 @@ size_t HMAC::DigestLength() const {
   }
 }
 
-bool HMAC::Init(const unsigned char* key, size_t key_length) {
+bool HMAC::Init(base::span<const uint8_t> key) {
   // Init must not be called more than once on the same HMAC object.
   DCHECK(!initialized_);
   initialized_ = true;
-  key_.assign(key, UNSAFE_TODO(key + key_length));
+  key_ = base::ToVector(key);
   return true;
 }
 
