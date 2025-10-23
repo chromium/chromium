@@ -14,8 +14,8 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -77,7 +77,8 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
     UITableViewDataSource,
     UITableViewDelegate> {
   // List of suggestions in the bottom sheet
-  // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
+  // The property is defined by CredentialSuggestionBottomSheetConsumer
+  // protocol.
   NSArray<FormSuggestion*>* _suggestions;
 
   // The current's page domain. This is used for the password bottom sheet
@@ -95,7 +96,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 }
 
 // The password controller handler used to open the password manager.
-@property(nonatomic, weak) id<PasswordSuggestionBottomSheetHandler> handler;
+@property(nonatomic, weak) id<CredentialSuggestionBottomSheetHandler> handler;
 
 // Whether the bottom sheet will be disabled on exit. Default is YES.
 @property(nonatomic, assign) BOOL disableBottomSheetOnExit;
@@ -105,7 +106,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 @implementation CredentialSuggestionBottomSheetViewController
 
 - (instancetype)initWithHandler:
-                    (id<PasswordSuggestionBottomSheetHandler>)handler
+                    (id<CredentialSuggestionBottomSheetHandler>)handler
                             URL:(const GURL&)URL {
   self = [super init];
   if (self) {
@@ -176,7 +177,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   return _suggestions;
 }
 
-#pragma mark - PasswordSuggestionBottomSheetConsumer
+#pragma mark - CredentialSuggestionBottomSheetConsumer
 
 - (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions
              andDomain:(NSString*)domain {

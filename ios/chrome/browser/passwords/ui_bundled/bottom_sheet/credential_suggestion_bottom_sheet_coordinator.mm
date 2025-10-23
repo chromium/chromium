@@ -162,7 +162,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [super stop];
 }
 
-#pragma mark - PasswordSuggestionBottomSheetHandler
+#pragma mark - CredentialSuggestionBottomSheetHandler
 
 - (void)displayPasswordManager {
   _dismissing = YES;
@@ -276,7 +276,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
 }
 
-#pragma mark - PasswordSuggestionBottomSheetPresenter
+#pragma mark - CredentialSuggestionBottomSheetPresenter
 
 - (void)endPresentation {
   if (_dismissing) {

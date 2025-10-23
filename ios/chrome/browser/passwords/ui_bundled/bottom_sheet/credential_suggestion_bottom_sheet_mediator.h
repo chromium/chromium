@@ -9,7 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
 
 namespace autofill {
@@ -36,15 +36,15 @@ class GURL;
 
 @class FormSuggestion;
 
-@protocol PasswordSuggestionBottomSheetConsumer;
-@protocol PasswordSuggestionBottomSheetPresenter;
+@protocol CredentialSuggestionBottomSheetConsumer;
+@protocol CredentialSuggestionBottomSheetPresenter;
 @protocol ReauthenticationProtocol;
 
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
 @interface CredentialSuggestionBottomSheetMediator
-    : NSObject <PasswordSuggestionBottomSheetDelegate>
+    : NSObject <CredentialSuggestionBottomSheetDelegate>
 
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
@@ -63,7 +63,7 @@ class GURL;
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
                  presenter:
-                     (id<PasswordSuggestionBottomSheetPresenter>)presenter;
+                     (id<CredentialSuggestionBottomSheetPresenter>)presenter;
 
 // Disconnects the mediator.
 - (void)disconnect;
@@ -77,7 +77,8 @@ class GURL;
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
 
 // The bottom sheet suggestions consumer.
-@property(nonatomic, strong) id<PasswordSuggestionBottomSheetConsumer> consumer;
+@property(nonatomic, strong) id<CredentialSuggestionBottomSheetConsumer>
+    consumer;
 
 // Logs bottom sheet exit reasons, like dismissal or using a credential.
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;

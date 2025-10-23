@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
 
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_handler.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace autofill {
@@ -20,8 +20,8 @@ struct FormActivityParams;
 // This coordinator is responsible for creating the bottom sheet's mediator and
 // view controller.
 @interface CredentialSuggestionBottomSheetCoordinator
-    : ChromeCoordinator <PasswordSuggestionBottomSheetHandler,
-                         PasswordSuggestionBottomSheetPresenter>
+    : ChromeCoordinator <CredentialSuggestionBottomSheetHandler,
+                         CredentialSuggestionBottomSheetPresenter>
 
 // `viewController` is the VC used to present the bottom sheet.
 // `params` comes from the form (in bottom_sheet.ts) and contains

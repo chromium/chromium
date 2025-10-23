@@ -28,8 +28,8 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -193,7 +193,8 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 @property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
 
 // Presenter that controls the presentation of the bottom sheet.
-@property(nonatomic, weak) id<PasswordSuggestionBottomSheetPresenter> presenter;
+@property(nonatomic, weak) id<CredentialSuggestionBottomSheetPresenter>
+    presenter;
 
 @end
 
@@ -276,7 +277,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
                  presenter:
-                     (id<PasswordSuggestionBottomSheetPresenter>)presenter {
+                     (id<CredentialSuggestionBottomSheetPresenter>)presenter {
   if ((self = [super init])) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
@@ -389,7 +390,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 #pragma mark - Accessors
 
-- (void)setConsumer:(id<PasswordSuggestionBottomSheetConsumer>)consumer {
+- (void)setConsumer:(id<CredentialSuggestionBottomSheetConsumer>)consumer {
   _consumer = consumer;
   if ([self hasSuggestions]) {
     NSString* domain = @"";
@@ -416,7 +417,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   }
 }
 
-#pragma mark - PasswordSuggestionBottomSheetDelegate
+#pragma mark - CredentialSuggestionBottomSheetDelegate
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
-#define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
 
 #import <Foundation/Foundation.h>
 
 @class FormSuggestion;
 
-// Handler for the passwords bottom sheet's context menu.
-@protocol PasswordSuggestionBottomSheetHandler <NSObject>
+// Handler for the credential bottom sheet's context menu.
+@protocol CredentialSuggestionBottomSheetHandler <NSObject>
 
 // Displays the password manager menu.
 - (void)displayPasswordManager;
 
-// Displays the password details menu.
+// Displays the credential details menu.
 - (void)displayPasswordDetailsForFormSuggestion:(FormSuggestion*)formSuggestion;
 
 // Handles tapping the primary button. The selected suggestion must be provided.
@@ -32,4 +32,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_HANDLER_H_

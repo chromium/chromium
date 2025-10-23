@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 @class FormSuggestion;
 
-// Suggestions consumer for the passwords bottom sheet.
-@protocol PasswordSuggestionBottomSheetConsumer <NSObject>
+// Suggestions consumer for the credential bottom sheet.
+@protocol CredentialSuggestionBottomSheetConsumer <NSObject>
 
 // Sends the list of suggestions to be presented to the user on the bottom sheet
 // and the current page's domain.
@@ -33,4 +33,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_BOTTOM_SHEET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_

@@ -32,8 +32,8 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -292,9 +292,9 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
     PasswordTabHelper::CreateForWebState(web_state_.get());
 
     consumer_ =
-        OCMProtocolMock(@protocol(PasswordSuggestionBottomSheetConsumer));
+        OCMProtocolMock(@protocol(CredentialSuggestionBottomSheetConsumer));
     presenter_ = OCMStrictProtocolMock(
-        @protocol(PasswordSuggestionBottomSheetPresenter));
+        @protocol(CredentialSuggestionBottomSheetPresenter));
 
     params_.frame_id = kMainFrameId;
     params_.form_name = "form";
