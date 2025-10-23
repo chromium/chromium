@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 
 namespace autofill::autofill_metrics {
 
@@ -46,7 +47,13 @@ bool OtpFormEventLogger::HasLoggedDataToFillAvailable() const {
 }
 
 void OtpFormEventLogger::LogUkmInteractedWithForm(
-    FormSignature form_signature) {}
+    FormSignature form_signature) {
+  client().GetFormInteractionsUkmLogger().LogInteractedWithForm(
+      driver().GetPageUkmSourceId(),
+      /*is_for_credit_card=*/false,
+      /*local_record_type_count=*/otp_for_filling_existed_ ? 1 : 0,
+      /*server_record_type_count=*/0, form_signature);
+}
 
 void OtpFormEventLogger::OnOtpAvailable() {
   otp_for_filling_existed_ = true;

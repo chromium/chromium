@@ -9,16 +9,19 @@
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 namespace {
 
-using test::SingleSubmissionKeyMetricExpectations;
+using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
+using test::CreateTestFormField;
 using test::VerifySingleSubmissionKeyMetricExpectations;
 using ::testing::_;
 using ::testing::Return;
@@ -108,7 +111,11 @@ class OtpFormEventLoggerIntegrationTest
   }
 
   FormData CreateOtpForm() {
-    return test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
+    FormData form = test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
+    form.set_url(GURL("https://example.test/"));
+    form.set_main_frame_origin(
+        url::Origin::Create(GURL("https://example.test/")));
+    return form;
   }
 
   static std::string CreateMockedServerResponseString(const FormData form) {
@@ -129,8 +136,14 @@ class OtpFormEventLoggerIntegrationTest
         static_cast<MockSmsOtpBackend*>(autofill_client().GetSmsOtpBackend());
     one_time_tokens::OtpFetchReply reply = CreateOtpFetchReply(returns_otp);
     EXPECT_CALL(*backend, RetrieveSmsOtp)
-        .WillRepeatedly(
-            [reply](auto callback) { std::move(callback).Run(reply); });
+        .WillRepeatedly([this, returns_otp, reply](auto callback) {
+          if (returns_otp && autofill_manager().GetMetricState().has_value()) {
+            autofill_manager()
+                .GetMetricState()
+                ->otp_form_event_logger.OnOtpAvailable();
+          }
+          std::move(callback).Run(reply);
+        });
   }
 
   one_time_tokens::OtpFetchReply CreateOtpFetchReply(bool returns_otp) {
@@ -142,6 +155,25 @@ class OtpFormEventLoggerIntegrationTest
     }
 
     return one_time_tokens::OtpFetchReply(token, /*request_complete=*/true);
+  }
+
+  void VerifyInteractedWithFormUkmMetric(
+      const FormData& form,
+      size_t expected_local_record_type_count) {
+    using Ukm = UkmInteractedWithFormType;
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{Ukm::kIsForCreditCardName, false},
+              {Ukm::kLocalRecordTypeCountName,
+               expected_local_record_type_count},
+              {Ukm::kServerRecordTypeCountName, 0},
+              {Ukm::kFormSignatureName,
+               autofill_metrics::Collapse(CalculateFormSignature(form))
+                   .value()}}}));
+    EXPECT_THAT(
+        autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+        testing::ElementsAre(form.main_frame_origin().GetURL()));
   }
 };
 
@@ -180,6 +212,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
   VerifySingleSubmissionKeyMetricExpectations(
       histogram_tester, "OneTimePassword",
       {.readiness = true, .assistance = false});
+  VerifyInteractedWithFormUkmMetric(otp_form,
+                                    /*expected_local_record_type_count=*/1);
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
@@ -207,6 +241,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
   VerifySingleSubmissionKeyMetricExpectations(
       histogram_tester, "OneTimePassword",
       {.readiness = false, .assistance = false});
+  VerifyInteractedWithFormUkmMetric(otp_form,
+                                    /*expected_local_record_type_count=*/0);
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
@@ -245,6 +281,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
                                                .acceptance = true,
                                                .assistance = true,
                                                .correctness = true});
+  VerifyInteractedWithFormUkmMetric(otp_form,
+                                    /*expected_local_record_type_count=*/1);
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
@@ -280,6 +318,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
   VerifySingleSubmissionKeyMetricExpectations(
       histogram_tester, "OneTimePassword",
       {.readiness = true, .acceptance = false, .assistance = false});
+  VerifyInteractedWithFormUkmMetric(otp_form,
+                                    /*expected_local_record_type_count=*/1);
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
@@ -321,6 +361,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
                                                .acceptance = true,
                                                .assistance = true,
                                                .correctness = false});
+  VerifyInteractedWithFormUkmMetric(otp_form,
+                                    /*expected_local_record_type_count=*/1);
 }
 
 }  // namespace
