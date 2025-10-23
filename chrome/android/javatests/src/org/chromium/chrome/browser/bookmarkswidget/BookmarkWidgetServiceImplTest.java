@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
@@ -83,9 +82,9 @@ public class BookmarkWidgetServiceImplTest {
                 });
 
         mFactory.onDataSetChanged();
-        assertEquals(1, mFactory.getCount());
 
-        RemoteViews views = mFactory.getViewAt(0);
+        // Position 0 is the label for the bookmark folder, so bookmark is at position 1.
+        RemoteViews views = mFactory.getViewAt(1);
         assertNotNull(views);
 
         FrameLayout parent = new FrameLayout(mContext);
@@ -93,13 +92,19 @@ public class BookmarkWidgetServiceImplTest {
 
         TextView titleView = itemView.findViewById(R.id.title);
         ImageView favicon = itemView.findViewById(R.id.favicon);
+        ImageView backButton = itemView.findViewById(R.id.back_button);
 
         assertNotNull(titleView);
         assertNotNull(favicon);
+        assertNotNull(backButton);
 
         assertEquals(TEST_TITLE, titleView.getText().toString());
         assertEquals(
                 "Favicon should be visible for a bookmark.", View.VISIBLE, favicon.getVisibility());
+        assertEquals(
+                "Back button should be hidden for a bookmark.",
+                View.GONE,
+                backButton.getVisibility());
     }
 
     @Test
@@ -118,8 +123,9 @@ public class BookmarkWidgetServiceImplTest {
                 });
 
         mFactory.onDataSetChanged();
-        assertEquals(1, mFactory.getCount());
-        RemoteViews views = mFactory.getViewAt(0);
+
+        // Position 0 is the label for the bookmark folder, so bookmark folder is at position 1.
+        RemoteViews views = mFactory.getViewAt(1);
         assertNotNull(views);
 
         FrameLayout parent = new FrameLayout(mContext);
@@ -127,15 +133,21 @@ public class BookmarkWidgetServiceImplTest {
 
         TextView titleView = itemView.findViewById(R.id.title);
         ImageView favicon = itemView.findViewById(R.id.favicon);
+        ImageView backButton = itemView.findViewById(R.id.back_button);
 
         assertNotNull(titleView);
         assertNotNull(favicon);
+        assertNotNull(backButton);
 
         assertEquals(FOLDER_TITLE, titleView.getText().toString());
         assertEquals(
                 "Favicon should be visible for a bookmark folder.",
                 View.VISIBLE,
                 favicon.getVisibility());
+        assertEquals(
+                "Back button should be hidden for a bookmark folder.",
+                View.GONE,
+                backButton.getVisibility());
     }
 
     @Test
@@ -148,58 +160,37 @@ public class BookmarkWidgetServiceImplTest {
                             return mBookmarkModel.addFolder(mobileFolderId, 0, FOLDER_TITLE);
                         });
 
-        BookmarkItem subfolder =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mBookmarkModel.getBookmarkById(subfolderId));
-        BookmarkItem parent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mBookmarkModel.getBookmarkById(subfolder.getParentId()));
+        SharedPreferences prefs = BookmarkWidgetServiceImpl.getWidgetState(WIDGET_ID);
+        prefs.edit().putString("bookmarkswidget.current_folder", subfolderId.toString()).apply();
 
-        RemoteViews remoteViews =
-                BookmarkWidgetServiceImpl.createBookmarkWidgetRemoteView(
-                        mContext, WIDGET_ID, subfolder, parent, 0);
-        assertNotNull(remoteViews);
+        mFactory.onDataSetChanged();
 
-        FrameLayout parentView = new FrameLayout(mContext);
-        View widgetView = remoteViews.apply(mContext, parentView);
+        assertEquals(
+                "Factory should have one parent folder navigation item in the empty folder.",
+                1,
+                mFactory.getCount());
 
-        View upNavigation = widgetView.findViewById(R.id.up_navigation);
-        ImageView backButton = widgetView.findViewById(R.id.back_button);
-        TextView titleView = widgetView.findViewById(R.id.folder_title);
+        RemoteViews views = mFactory.getViewAt(0);
+        assertNotNull(views);
 
-        assertNotNull(upNavigation);
-        assertNotNull(backButton);
+        FrameLayout parent = new FrameLayout(mContext);
+
+        View itemView = views.apply(mContext, parent);
+
+        TextView titleView = itemView.findViewById(R.id.title);
+        ImageView favicon = itemView.findViewById(R.id.favicon);
+        ImageView backButton = itemView.findViewById(R.id.back_button);
+
         assertNotNull(titleView);
+        assertNotNull(favicon);
+        assertNotNull(backButton);
 
         assertEquals(
-                "Up navigation should be visible.", View.VISIBLE, upNavigation.getVisibility());
-        assertEquals(
-                "Title for up navigation item should be the current folder's title.",
+                "Title for parent folder navigation item should be the current folder's title.",
                 FOLDER_TITLE,
                 titleView.getText().toString());
-    }
-
-    @Test
-    @MediumTest
-    public void testRootFolderNavigationItem_shouldNotBeVisible() {
-        BookmarkItem rootFolder =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mBookmarkModel.getBookmarkById(mBookmarkModel.getRootFolderId()));
-
-        RemoteViews remoteViews =
-                BookmarkWidgetServiceImpl.createBookmarkWidgetRemoteView(
-                        mContext, WIDGET_ID, rootFolder, null, 0);
-        assertNotNull(remoteViews);
-
-        FrameLayout parentView = new FrameLayout(mContext);
-        View widgetView = remoteViews.apply(mContext, parentView);
-
-        View upNavigation = widgetView.findViewById(R.id.up_navigation);
-        assertNotNull(upNavigation);
-        assertEquals(
-                "Up navigation should be gone for root folder.",
-                View.GONE,
-                upNavigation.getVisibility());
+        assertEquals("Favicon should be hidden.", View.GONE, favicon.getVisibility());
+        assertEquals("Back button should be visible.", View.VISIBLE, backButton.getVisibility());
     }
 
     @Test

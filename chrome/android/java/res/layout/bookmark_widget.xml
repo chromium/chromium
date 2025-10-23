@@ -5,62 +5,33 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.Chromium.Widget"
-    android:background="@drawable/bookmark_widget_background"
-    android:clipToOutline="true"
     tools:ignore="MergeRootFrame">
-
-    <LinearLayout
-        android:id="@+id/up_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingEnd="16dp"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_alignParentTop="true">
-
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="@dimen/bookmark_widget_min_width"
-            android:layout_height="wrap_content"
-            android:scaleType="center"
-            android:src="@drawable/ic_arrow_back_white_24dp"
-            android:contentDescription=
-                "@string/accessibility_toolbar_btn_back" />
-
-        <TextView
-            android:id="@+id/folder_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-    </LinearLayout>
 
     <ListView
         android:id="@+id/bookmarks_list"
         style="@style/DarkModeCompatibleVerticalScrolling"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/up_navigation"
+        android:background="@drawable/bookmark_widget_background"
         android:divider="@null"
         android:drawSelectorOnTop="true"
-        android:listSelector="@drawable/bookmark_widget_list_selector" />
+        android:listSelector="@drawable/bookmark_widget_list_selector"
+        android:clipToOutline="true" />
 
     <TextView
         android:id="@+id/empty_message"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/bookmark_widget_min_height"
+        android:paddingBottom="@dimen/bookmark_widget_min_height"
         android:gravity="center"
         android:text="@string/bookmark_widget_empty_msg"
-        android:textAppearance=
-            "@style/TextAppearance.TextSmall.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:visibility="gone" />
 
-</RelativeLayout>
+</FrameLayout>

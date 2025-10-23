@@ -82,12 +82,6 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
     private static final String ACTION_CHANGE_FOLDER_SUFFIX = ".CHANGE_FOLDER";
     private static final String PREF_CURRENT_FOLDER = "bookmarkswidget.current_folder";
     private static final String EXTRA_FOLDER_ID = "folderId";
-    private static final String EXTRA_FOLDER_TITLE = "folderTitle";
-    private static final String SET_COLOR_FILTER = "setColorFilter";
-
-    // Store map of WidgetId -> Map<BookmarkId, BookmarkItem> for multiple instances of widget.
-    private static final Map<Integer, Map<String, BookmarkItem>> sBookmarkParentMaps =
-            new HashMap<>();
 
     @UiThread
     @Override
@@ -115,107 +109,14 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         if (preferences != null) preferences.edit().clear().apply();
     }
 
-    static int getIconColor(Context context) {
-        ContextThemeWrapper wrapper =
-                new ContextThemeWrapper(context, R.style.Theme_Chromium_Widget);
-
-        return SemanticColorUtils.getDefaultIconColorSecondary(wrapper);
-    }
-
     static void changeFolder(Intent intent) {
         int widgetId = IntentUtils.safeGetIntExtra(intent, AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
         String serializedFolder = IntentUtils.safeGetStringExtra(intent, EXTRA_FOLDER_ID);
-        if (widgetId < 0 || serializedFolder == null) return;
-
-        SharedPreferences prefs = getWidgetState(widgetId);
-        prefs.edit().putString(PREF_CURRENT_FOLDER, serializedFolder).apply();
-
-        // Provide an instantaneous partial update to the up_navigation (folder title and back
-        // arrow) to avoid UI lag while the full bookmark list loads asynchronously. We cannot
-        // access the BookmarkModel on this thread, so we rely on navigation data pre-packaged
-        // through the parent bookmark folder map.
-        String folderTitle = IntentUtils.safeGetStringExtra(intent, EXTRA_FOLDER_TITLE);
-        BookmarkItem parentFolder;
-        synchronized (sBookmarkParentMaps) {
-            Map<String, BookmarkItem> parentMap = sBookmarkParentMaps.get(widgetId);
-            parentFolder = (parentMap == null) ? null : parentMap.get(serializedFolder);
+        if (widgetId >= 0 && serializedFolder != null) {
+            SharedPreferences prefs = getWidgetState(widgetId);
+            prefs.edit().putString(PREF_CURRENT_FOLDER, serializedFolder).apply();
+            redrawWidget(widgetId);
         }
-        String parentFolderId = null;
-        String parentFolderTitle = null;
-        if (parentFolder != null) {
-            parentFolderId = parentFolder.getId().toString();
-            parentFolderTitle = parentFolder.getTitle();
-        }
-
-        Context context = ContextUtils.getApplicationContext();
-        int iconColor = getIconColor(context);
-
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bookmark_widget);
-        views.setTextViewText(R.id.folder_title, folderTitle);
-
-        // Add parent folder id and title to the up_navigation intent.
-        if (parentFolderId != null && parentFolderTitle != null) {
-            Intent upIntent =
-                    new Intent(context, BookmarkWidgetProxy.class)
-                            .setAction(getChangeFolderAction())
-                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-                            .putExtra(EXTRA_FOLDER_ID, parentFolderId)
-                            .putExtra(EXTRA_FOLDER_TITLE, parentFolderTitle);
-            IntentUtils.addTrustedIntentExtras(upIntent);
-
-            PendingIntent pendingIntent =
-                    PendingIntent.getActivity(
-                            context,
-                            widgetId,
-                            upIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                                    | IntentUtils.getPendingIntentMutabilityFlag(true));
-            views.setOnClickPendingIntent(R.id.up_navigation, pendingIntent);
-            views.setInt(R.id.back_button, SET_COLOR_FILTER, iconColor);
-            views.setViewVisibility(R.id.up_navigation, View.VISIBLE);
-        } else {
-            views.setViewVisibility(R.id.up_navigation, View.GONE);
-        }
-        views.setViewVisibility(R.id.bookmarks_list, View.GONE);
-        AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(widgetId, views);
-        redrawWidget(widgetId);
-    }
-
-    @VisibleForTesting
-    static RemoteViews createBookmarkWidgetRemoteView(
-            Context context,
-            int widgetId,
-            BookmarkItem folder,
-            @Nullable BookmarkItem parent,
-            int iconColor) {
-
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bookmark_widget);
-        views.setTextViewText(R.id.folder_title, folder.getTitle());
-
-        if (parent != null) {
-            Intent upIntent =
-                    new Intent(context, BookmarkWidgetProxy.class)
-                            .setAction(getChangeFolderAction())
-                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-                            .putExtra(EXTRA_FOLDER_ID, parent.getId().toString())
-                            .putExtra(EXTRA_FOLDER_TITLE, parent.getTitle());
-
-            IntentUtils.addTrustedIntentExtras(upIntent);
-
-            PendingIntent pendingIntent =
-                    PendingIntent.getActivity(
-                            context,
-                            widgetId,
-                            upIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                                    | IntentUtils.getPendingIntentMutabilityFlag(true));
-            views.setOnClickPendingIntent(R.id.up_navigation, pendingIntent);
-            views.setInt(R.id.back_button, SET_COLOR_FILTER, iconColor);
-            views.setViewVisibility(R.id.up_navigation, View.VISIBLE);
-        } else {
-            views.setViewVisibility(R.id.up_navigation, View.GONE);
-        }
-        return views;
     }
 
     /**
@@ -276,7 +177,7 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
                     new ImprovedBookmarkQueryHandler(
                             mBookmarkModel,
                             new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
-                            /* shoppingService */ null,
+                            /* shoppingService= */ null,
                             BookmarkNodeMaskBit.NONE);
             mBookmarkModel.finishLoadingBookmarkModel(
                     new Runnable() {
@@ -364,6 +265,7 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         private final Context mContext;
         private final int mWidgetId;
         private final SharedPreferences mPreferences;
+        private final RemoteViews mBookmarkWidgetRemoteView;
         private int mIconColor;
 
         // Accessed only on the UI thread
@@ -382,6 +284,11 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             mPreferences = getWidgetState(mWidgetId);
             mIconColor = getIconColor(mContext);
             SystemNightModeMonitor.getInstance().addObserver(this);
+            mBookmarkWidgetRemoteView =
+                    new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget);
+            mBookmarkWidgetRemoteView.setOnClickPendingIntent(
+                    R.id.empty_message,
+                    BookmarkWidgetProxy.createBookmarkProxyLaunchIntent(context));
             mEntries = new ArrayList<>();
             mFavicons = new HashMap<>();
         }
@@ -450,9 +357,6 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
                     () -> {
                         SystemNightModeMonitor.getInstance().removeObserver(this);
                     });
-            synchronized (sBookmarkParentMaps) {
-                sBookmarkParentMaps.remove(mWidgetId);
-            }
             deleteWidgetState(mWidgetId);
         }
 
@@ -470,7 +374,9 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
 
             // Blocks until bookmarks are loaded from the UI thread.
             loadBookmarks(folderId);
-            updateBookmarkWidgetView();
+
+            // Update empty message visibility right after mCurrentFolder is updated.
+            updateFolderEmptyMessageVisibility();
 
             if (mCurrentFolder != null) {
                 mPreferences
@@ -481,13 +387,24 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         }
 
         @BinderThread
-        private void updateBookmarkWidgetView() {
-            assertNonNull(mCurrentFolder);
-            RemoteViews views =
-                    createBookmarkWidgetRemoteView(
-                            mContext, mWidgetId, mCurrentFolder, mParentFolder, mIconColor);
-            views.setViewVisibility(R.id.bookmarks_list, View.VISIBLE);
-            AppWidgetManager.getInstance(mContext).partiallyUpdateAppWidget(mWidgetId, views);
+        private void updateFolderEmptyMessageVisibility() {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+            if (!BookmarkWidgetProvider.shouldShowIconsOnly(appWidgetManager, mWidgetId)) {
+                boolean folderIsEmpty = mEntries != null && mEntries.isEmpty();
+                mBookmarkWidgetRemoteView.setViewVisibility(
+                        R.id.empty_message, folderIsEmpty ? View.VISIBLE : View.GONE);
+
+                // Directly update the widget on the UI thread.
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            // Use AppWidgetManager#partiallyUpdateAppWidget to update only the
+                            // empty_message visibility, avoiding full widget redraws and redundant
+                            // intent setup from BookmarkWidgetProvider#performUpdate.
+                            appWidgetManager.partiallyUpdateAppWidget(
+                                    mWidgetId, mBookmarkWidgetRemoteView);
+                        });
+            }
         }
 
         @BinderThread
@@ -517,31 +434,6 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
                                         }
                                         mFavicons.clear();
                                         mFavicons.putAll(favicons);
-
-                                        synchronized (sBookmarkParentMaps) {
-                                            Map<String, BookmarkItem> parentMap =
-                                                    sBookmarkParentMaps.get(mWidgetId);
-                                            if (parentMap == null) {
-                                                parentMap = new HashMap<>();
-                                                sBookmarkParentMaps.put(mWidgetId, parentMap);
-                                            }
-
-                                            if (mCurrentFolder != null) {
-                                                parentMap.put(
-                                                        mCurrentFolder.getId().toString(),
-                                                        mParentFolder);
-                                            }
-                                            if (entries != null && mCurrentFolder != null) {
-                                                for (BookmarkListEntry entry : entries) {
-                                                    BookmarkItem item = entry.getBookmarkItem();
-                                                    if (item != null && item.isFolder()) {
-                                                        parentMap.put(
-                                                                item.getId().toString(),
-                                                                mCurrentFolder);
-                                                    }
-                                                }
-                                            }
-                                        }
                                         latch.countDown();
                                     }
                                 });
@@ -590,12 +482,21 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             if (mCurrentFolder == null) {
                 return 0;
             }
-            return mEntries.size();
+            return mEntries.size() + (mParentFolder != null ? 1 : 0);
         }
 
         @BinderThread
         @Override
         public long getItemId(int position) {
+            if (mParentFolder != null) {
+                if (position == 0) {
+                    assertNonNull(mCurrentFolder);
+                    // mCurrentFolder is BookmarkItem:getId -> BookmarkId:getId -> long
+                    return mCurrentFolder.getId().getId();
+                }
+                position--;
+            }
+
             BookmarkListEntry entry = getBookmarkAtPosition(position);
             if (entry == null) return BookmarkId.INVALID_FOLDER_ID;
             if (entry.getBookmarkItem() != null) {
@@ -615,11 +516,22 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         @BinderThread
         @Override
         public @Nullable RemoteViews getViewAt(int position) {
+            // Handle navigation bookmark item to the parent folder.
+            if (mParentFolder != null) {
+                // The position 0 is saved for an entry of the current folder used to go up.
+                // This is not the case when the current node has no parent (it's the root node).
+                if (position == 0) {
+                    if (mCurrentFolder == null) return getLoadingView();
+                    return createUpView();
+                }
+                position--;
+            }
+
             BookmarkListEntry entry = getBookmarkAtPosition(position);
             if (entry == null) return getLoadingView();
 
             if (entry.getViewType() == BookmarkListEntry.ViewType.SECTION_HEADER) {
-                return createSectionHeaderView(entry, position);
+                return createHeaderView(entry, position);
             }
 
             return createBookmarkView(entry);
@@ -631,7 +543,24 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             redrawWidget(mWidgetId);
         }
 
-        private RemoteViews createSectionHeaderView(BookmarkListEntry entry, int position) {
+        private RemoteViews createUpView() {
+            assertNonNull(mCurrentFolder);
+            assertNonNull(mParentFolder);
+            RemoteViews views =
+                    new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget_item);
+            views.setTextViewText(R.id.title, mCurrentFolder.getTitle());
+            views.setInt(R.id.back_button, "setColorFilter", mIconColor);
+            setWidgetItemBackButtonVisible(true, views);
+
+            Intent fillIn =
+                    new Intent(getChangeFolderAction())
+                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mWidgetId)
+                            .putExtra(EXTRA_FOLDER_ID, mParentFolder.getId().toString());
+            views.setOnClickFillInIntent(R.id.list_item, fillIn);
+            return views;
+        }
+
+        private RemoteViews createHeaderView(BookmarkListEntry entry, int position) {
             RemoteViews headerViews =
                     new RemoteViews(
                             mContext.getPackageName(), R.layout.bookmark_widget_section_header);
@@ -661,17 +590,16 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             Intent fillIn;
 
             if (item.isFolder()) {
-                views.setInt(R.id.favicon, SET_COLOR_FILTER, mIconColor);
+                views.setInt(R.id.favicon, "setColorFilter", mIconColor);
                 views.setImageViewResource(R.id.favicon, R.drawable.ic_folder_blue_24dp);
 
                 fillIn =
                         new Intent(getChangeFolderAction())
                                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mWidgetId)
-                                .putExtra(EXTRA_FOLDER_ID, item.getId().toString())
-                                .putExtra(EXTRA_FOLDER_TITLE, item.getTitle());
+                                .putExtra(EXTRA_FOLDER_ID, item.getId().toString());
             } else {
                 // Clear any color filter so that it doesn't cover the favicon bitmap.
-                views.setInt(R.id.favicon, SET_COLOR_FILTER, 0);
+                views.setInt(R.id.favicon, "setColorFilter", 0);
                 views.setImageViewBitmap(R.id.favicon, mFavicons.get(item.getId()));
 
                 fillIn = new Intent(Intent.ACTION_VIEW);
@@ -684,9 +612,21 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
                     fillIn.addCategory(Intent.CATEGORY_LAUNCHER);
                 }
             }
-            views.setViewVisibility(R.id.favicon, View.VISIBLE);
+            setWidgetItemBackButtonVisible(false, views);
             views.setOnClickFillInIntent(R.id.list_item, fillIn);
             return views;
+        }
+
+        private void setWidgetItemBackButtonVisible(boolean visible, RemoteViews views) {
+            views.setViewVisibility(R.id.favicon, visible ? View.GONE : View.VISIBLE);
+            views.setViewVisibility(R.id.back_button, visible ? View.VISIBLE : View.GONE);
+        }
+
+        private int getIconColor(Context context) {
+            ContextThemeWrapper wrapper =
+                    new ContextThemeWrapper(context, R.style.Theme_Chromium_Widget);
+
+            return SemanticColorUtils.getDefaultIconColorSecondary(wrapper);
         }
     }
 }
