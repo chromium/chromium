@@ -87,7 +87,8 @@ bool ExternalInstallOptions::operator==(
         options.disable_if_touchscreen_with_stylus_not_supported,
         options.handles_file_open_intents,
         options.expected_app_id,
-        options.install_without_os_integration
+        options.install_without_os_integration,
+        options.only_uninstall_and_replace_when_compatible_
         // clang-format on
     );
   };
@@ -168,6 +169,8 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("placeholder_resolution_behavior",
            base::Value(static_cast<int>(placeholder_resolution_behavior)));
   root.Set("install_without_os_integration", install_without_os_integration);
+  root.Set("only_uninstall_and_replace_when_compatible",
+           only_uninstall_and_replace_when_compatible_.value_or(""));
 
   return base::Value(std::move(root));
 }
@@ -220,6 +223,12 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   }
 
   return params;
+}
+
+void ExternalInstallOptions::SetOnlyUninstallAndReplaceWhenCompatible(
+    const webapps::AppId& overriding_app_id,
+    SetOnlyUninstallAndReplaceWhenCompatiblePassKey) {
+  only_uninstall_and_replace_when_compatible_ = overriding_app_id;
 }
 
 }  // namespace web_app

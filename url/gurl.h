@@ -440,6 +440,11 @@ class COMPONENT_EXPORT(URL) GURL {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  template <typename H>
+  friend H AbslHashValue(H h, const GURL& c) {
+    return H::combine(std::move(h), c.spec_);
+  }
+
  private:
   // Variant of the string parsing constructor that allows the caller to elect
   // retain trailing whitespace, if any, on the passed URL spec, but only if

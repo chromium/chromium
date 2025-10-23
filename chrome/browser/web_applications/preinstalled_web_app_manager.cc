@@ -432,6 +432,19 @@ SynchronizeDecision GetSynchronizeDecision(
     }
   }
 
+  if (options.only_uninstall_and_replace_when_compatible().has_value() &&
+      UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+          .DoesAppIdExist(
+              *options.only_uninstall_and_replace_when_compatible())) {
+    // TODO(https://crbug.com/454418950): Migrate the user uninstalled state to
+    // the new app somehow, either here or elsewhere in the code.
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreReplacingAppUninstalledByUser,
+            .log = base::StrCat(
+                {options.install_url.spec(),
+                 " ignore because app to replace was uninstalled."})};
+  }
+
   // Only install if device has a built-in touch screen with stylus support.
   if (options.disable_if_touchscreen_with_stylus_not_supported) {
     std::optional<bool> has_stylus = HasStylusEnabledTouchscreen();

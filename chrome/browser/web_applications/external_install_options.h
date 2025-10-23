@@ -244,7 +244,33 @@ struct ExternalInstallOptions {
   // downgrade an existing install.
   bool install_without_os_integration = false;
 
+  // Similar to `uninstall_and_replace`, however if this is set the app will not
+  // be installed if the app to be replaced was installed from any other
+  // sources, or if the app being installed is asking for a kBrowser display
+  // mode while the old app was (manually) changed to a standalone display mode.
+  // (and in those cases the old app will remain installed instead).
+  // If the user explicitly uninstalled the old (default installed) app, this
+  // replacement app will also not get installed.
+  const std::optional<webapps::AppId>&
+  only_uninstall_and_replace_when_compatible() const {
+    return only_uninstall_and_replace_when_compatible_;
+  }
+
+  class SetOnlyUninstallAndReplaceWhenCompatiblePassKey {
+    friend ExternalInstallOptions GetConfigForGoogleChat(
+        bool is_standalone,
+        bool only_for_new_users);
+    friend class PreinstalledWebAppMigrationTest;
+    SetOnlyUninstallAndReplaceWhenCompatiblePassKey() = default;
+  };
+  void SetOnlyUninstallAndReplaceWhenCompatible(
+      const webapps::AppId& overriding_app_id,
+      SetOnlyUninstallAndReplaceWhenCompatiblePassKey);
+
   // Note: All new fields must be added to AsDebugValue() and the == operator.
+ private:
+  std::optional<webapps::AppId> only_uninstall_and_replace_when_compatible_ =
+      std::nullopt;
 };
 
 WebAppInstallParams ConvertExternalInstallOptionsToParams(

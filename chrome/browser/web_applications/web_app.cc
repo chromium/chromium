@@ -1272,6 +1272,11 @@ base::Value WebApp::AsDebugValue() const {
 
   root.Set("client_data", client_data_.AsDebugValue());
 
+  // The user_display_mode getter CHECK fails if sync_proto_ isn't initialized.
+  if (sync_proto_.has_start_url()) {
+    root.Set("user_display_mode", base::ToString(user_display_mode()));
+  }
+
   return value;
 }
 
