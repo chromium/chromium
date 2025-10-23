@@ -632,7 +632,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebUIReloadButton)) {
+  if (features::IsWebUIReloadButtonEnabled()) {
     registry.ForWebUI<ReloadButtonUI>()
         .Add<reload_button::mojom::PageHandlerFactory>();
   }
