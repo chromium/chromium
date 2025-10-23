@@ -1528,7 +1528,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     update_rect_.Write(*this) = gfx::Rect();
   }
 
-  layer->SetNeedsPushProperties();
+  layer->SetNeedsPushProperties(dirty_flag);
 }
 
 void Layer::PushPropertiesTo(LayerImpl* layer_impl,
