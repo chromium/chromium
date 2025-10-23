@@ -89,8 +89,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
 
  private:
   void RecomputeScrollChain(const Node& start_node,
-                            Deque<DOMNodeId>& scroll_chain,
-                            bool is_autoscroll);
+                            Deque<DOMNodeId>& scroll_chain);
   bool CanScroll(const Node& current_node, bool for_autoscroll);
 
   const Member<LocalFrame> frame_;
