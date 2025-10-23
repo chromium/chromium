@@ -170,6 +170,7 @@
       <meta-data android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE_V2" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_PROFILES_TO_LOAD" android:value="true"/>
     </service>  # DIFF-ANCHOR: c52936d7
     <service  # DIFF-ANCHOR: dc926e35

@@ -236,6 +236,14 @@ public class SharedStatics {
     }
 
     public boolean isMultiProcessEnabled() {
+        if (mAwInit.isAsyncStartupWithMultiProcessExperimentEnabled()) {
+            try (TraceEvent event =
+                    TraceEvent.scoped("WebView.APICall.Framework.IS_MULTI_PROCESS_ENABLED")) {
+                recordStaticApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
+                return mAwInit.isMultiProcessEnabled();
+            }
+        }
+
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_IS_MULTI_PROCESS_ENABLED);
         try (TraceEvent event =

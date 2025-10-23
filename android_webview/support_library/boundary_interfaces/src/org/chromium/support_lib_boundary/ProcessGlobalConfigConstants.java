@@ -95,4 +95,11 @@ public final class ProcessGlobalConfigConstants {
      * #UI_THREAD_STARTUP_MODE_ASYNC_SHORT_TASKS}
      */
     public static final int UI_THREAD_STARTUP_MODE_ASYNC_VERY_SHORT_TASKS = 3;
+
+    /**
+     * This is the same as {@link #UI_THREAD_STARTUP_MODE_ASYNC_VERY_SHORT_TASKS} in addition to
+     * stopping {@link androidx.webkit.WebViewCompat#isMultiProcessEnabled()} check from triggering
+     * startup.
+     */
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_PLUS_MULTI_PROCESS = 4;
 }

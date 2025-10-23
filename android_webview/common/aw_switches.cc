@@ -125,6 +125,12 @@ const char kWebViewUseStartupTasksLogicP2[] =
 const char kWebViewStartupTasksYieldToNative[] =
     "webview-startup-tasks-yield-to-native";
 
+// Enables running native startup tasks asynchronously if WebView startup is
+// asynchronous in addition to preventing multiprocess enabled checks from
+// starting chromium.
+const char kWebViewStartupTasksPlusMultiProcess[] =
+    "webview-startup-tasks-plus-multi-process";
+
 const char kStartupNonBlockingWebViewConstructor[] =
     "startup-non-blocking-webview-constructor";
 

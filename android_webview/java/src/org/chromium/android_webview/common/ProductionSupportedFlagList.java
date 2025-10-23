@@ -1035,6 +1035,11 @@ public final class ProductionSupportedFlagList {
                     + " Note: This also enables the same behaviour as WebViewUseStartupTasksLogic"
                     + " and WebViewUseStartupTasksLogicP2, with minor additions."),
         Flag.commandLine(
+                AwSwitches.WEBVIEW_STARTUP_TASKS_PLUS_MULTI_PROCESS,
+                "Enables running native startup tasks asynchronously if WebView startup is"
+                        + " asynchronous, in addition to stopping multiprocess enabled checks from"
+                        + " starting chromium."),
+        Flag.commandLine(
                 AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR,
                 "When enabled, WebView constructor will not block on WebView process global"
                         + " startup"),

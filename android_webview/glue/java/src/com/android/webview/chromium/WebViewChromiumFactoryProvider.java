@@ -258,6 +258,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private Statics mStaticsAdapter;
 
     private boolean mIsSafeModeEnabled;
+    private boolean mIsMultiProcessEnabled;
+    private boolean mIsAsyncStartupWithMultiProcessExperimentEnabled;
 
     public static class InitInfo {
         // Timestamp of init start and duration, used in the
@@ -394,6 +396,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
         return WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE);
+    }
+
+    boolean isAsyncStartupWithMultiProcessExperimentEnabled() {
+        if (CommandLine.getInstance()
+                .hasSwitch(AwSwitches.WEBVIEW_STARTUP_TASKS_PLUS_MULTI_PROCESS)) {
+            return true;
+        }
+
+        return mIsAsyncStartupWithMultiProcessExperimentEnabled;
     }
 
     @SuppressWarnings({"NoContextGetApplicationContext", "DiscouragedApi"})
@@ -533,8 +544,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             {
                 CommandLine cl = CommandLine.getInstance();
 
-                boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
-                if (multiProcess) {
+                mIsMultiProcessEnabled = webViewDelegate.isMultiProcessEnabled();
+                if (mIsMultiProcessEnabled) {
                     cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
                 }
                 Log.i(
@@ -543,7 +554,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         VersionConstants.PRODUCT_VERSION,
                         BuildConfig.VERSION_CODE,
                         BuildConfig.MIN_SDK_VERSION,
-                        multiProcess,
+                        mIsMultiProcessEnabled,
                         packageId,
                         BundleUtils.getInstalledSplitNamesForLogging());
 
@@ -776,6 +787,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         /* enablePhase2= */ false,
                         /* enableYieldToNative= */ true);
                 return;
+            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_PLUS_MULTI_PROCESS:
+                setStartupTaskExperimentValues(
+                        /* enablePhase1= */ false,
+                        /* enablePhase2= */ false,
+                        /* enableYieldToNative= */ true);
+                mIsAsyncStartupWithMultiProcessExperimentEnabled = true;
+                return;
             default:
                 throw new RuntimeException(
                         "Invalid AndroidXProcessGlobalConfig UI thread startup mode: "
@@ -874,6 +892,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
      */
     public boolean isSafeModeEnabled() {
         return mIsSafeModeEnabled;
+    }
+
+    /**
+     * @return true if WebView is running in multiprocess mode.
+     */
+    boolean isMultiProcessEnabled() {
+        return mIsMultiProcessEnabled;
     }
 
     @Override

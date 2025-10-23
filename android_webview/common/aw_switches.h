@@ -39,6 +39,7 @@ extern const char kWebViewOptInToGmsBindServiceOptimization[];
 extern const char kWebViewRendererLibraryPrefetch[];
 extern const char kWebViewRendererLibraryPrefetchDisabled[];
 extern const char kWebViewRendererLibraryPrefetchEnabled[];
+extern const char kWebViewStartupTasksPlusMultiProcess[];
 
 }  // namespace switches
 
