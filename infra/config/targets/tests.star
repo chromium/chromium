@@ -3297,7 +3297,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3306,7 +3305,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3315,7 +3313,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3324,7 +3321,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3333,7 +3329,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3345,11 +3340,23 @@ targets.tests.gpu_telemetry_test(
     args = [
         "--use-worker=service",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
     name = "webgpu_cts_dedicated_worker_tests",
+    telemetry_test_name = "webgpu_cts",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--use-worker=dedicated",
+    ],
+)
+
+# A copy of webgpu_cts_worker_tests but with the module_scheme turned on.
+# This target can be removed after the webgpu_cts module schemes are enabled.
+targets.tests.gpu_telemetry_test(
+    name = "webgpu_cts_structured_test_id_dedicated_worker_tests",
     telemetry_test_name = "webgpu_cts",
     mixins = [
         "has_native_resultdb_integration",
@@ -3369,7 +3376,6 @@ targets.tests.gpu_telemetry_test(
     args = [
         "--use-worker=shared",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3378,7 +3384,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.isolated_script_test(
@@ -3403,7 +3408,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3412,7 +3416,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-    module_scheme = "webgpucts",
 )
 
 targets.tests.script_test(
