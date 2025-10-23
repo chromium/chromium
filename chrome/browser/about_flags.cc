@@ -11812,6 +11812,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicDefaultToLastActiveConversationDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicDefaultToLastActiveConversation)},
+    {"glic-capture-region", flag_descriptions::kGlicCaptureRegionName,
+     flag_descriptions::kGlicCaptureRegionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kGlicCaptureRegion)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

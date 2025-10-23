@@ -1349,6 +1349,9 @@ inline constexpr char kActorFormFillingServiceEnableCreditCardName[] =
 inline constexpr char kActorFormFillingServiceEnableCreditCardDescription[] =
     "Enables the credit card type to be filled by the Actor Form Filling "
     "Service.";
+inline constexpr char kGlicCaptureRegionDescription[] =
+    "Enables Glic to capture a region of the screen.";
+inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";
 inline constexpr char kGlicDetachedName[] = "Glic detached-only mode";
 inline constexpr char kGlicDetachedDescription[] =
     "Detach only mode forces the Glic UI to always be floating";

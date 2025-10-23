@@ -10232,6 +10232,7 @@ from previous Chrome versions.
   <int value="-1446427484" label="FilesSearchV2:disabled"/>
   <int value="-1446425986" label="ProtectSyncCredentialOnReauth:disabled"/>
   <int value="-1445676705" label="ReparentAuxiliaryNavigationFromPWA:enabled"/>
+  <int value="-1445649658" label="GlicCaptureRegion:enabled"/>
   <int value="-1445312295" label="UiaProvider:enabled"/>
   <int value="-1444550831" label="AndroidWindowPopupLargeScreen:disabled"/>
   <int value="-1444051091" label="ash-disable-night-light"/>
@@ -14876,6 +14877,7 @@ from previous Chrome versions.
   <int value="212361556" label="ComposeProactiveNudge:disabled"/>
   <int value="212459881" label="AndroidSmsOtpFilling:enabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
+  <int value="212822683" label="GlicCaptureRegion:disabled"/>
   <int value="212959824" label="SafetyHubWeakAndReusedPasswords:disabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="213214333" label="UnifiedPasswordManagerReenrollment:enabled"/>
