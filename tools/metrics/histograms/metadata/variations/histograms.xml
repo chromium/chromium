@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FieldTriamParamsLogInvalidValue"
-    enum="VariationsLogInvalidValue" expires_after="2025-09-01">
+    enum="VariationsLogInvalidValue" expires_after="2026-11-01">
   <owner>thiabaud@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRun.SeedConnectTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -163,11 +163,13 @@ chromium-metrics-reviews@google.com.
     variations seed during Android Chrome first run. This is included in the
     Variations.FirstRun.SeedFetchTime measurement. Only considers cases where an
     HTTP 200 result was received.
+
+    Note: This expired in January 2025 and was revived in M143.
   </summary>
 </histogram>
 
 <histogram name="Variations.FirstRun.SeedFetchResult"
-    enum="VariationsSeedFetchResult" expires_after="2025-11-01">
+    enum="VariationsSeedFetchResult" expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -180,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRun.SeedFetchTime" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -206,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ForcedFieldTrialsAtStartupForInternalsPage"
-    enum="Boolean" expires_after="2025-12-14">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>harringtond@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -216,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.DomainOwner" enum="VariationsHeadersOwner"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -241,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.RequestContextCategory"
-    enum="VariationsHeadersRequestContextCategory" expires_after="2025-11-01">
+    enum="VariationsHeadersRequestContextCategory" expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -305,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Limits.VariationKeySize.{Size}" units="KiB"
-    expires_after="2025-09-07">
+    expires_after="2026-11-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -326,7 +328,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.LoadPermanentConsistencyCountryResult"
     enum="VariationsPermanentConsistencyCountryResult"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -381,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.CrashStreakDiscrepancy" units="crashes"
-    expires_after="2025-05-09">
+    expires_after="2026-11-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -389,6 +391,8 @@ chromium-metrics-reviews@google.com.
     streak and the local-state-based crash streak. Recorded during startup after
     successfully reading the beacon file's crash streak and before any updates
     are made (in memory) to the Local State crash streak.
+
+    Note: This expired in May 2025 and was revived in M143.
   </summary>
 </histogram>
 
@@ -546,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFetchTimeOnFirstRun" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2026-11-01">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -555,6 +559,8 @@ chromium-metrics-reviews@google.com.
     received.
 
     The respective metric for Android's is Variations.FirstRun.SeedFetchTime.
+
+    Note: This expired in May 2025 and was revived in M143.
   </summary>
 </histogram>
 
@@ -653,7 +659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedLoadBlockingTime" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -752,7 +758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.StoreSeedSignature" enum="VariationSeedSignature"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -764,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.TimeSinceLastFetchAttempt" units="minutes"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
