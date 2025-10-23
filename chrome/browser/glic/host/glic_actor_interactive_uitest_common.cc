@@ -373,8 +373,24 @@ MultiStep GlicActorUiTest::PauseActorTask() {
                RoundTrip());
 }
 
-MultiStep GlicActorUiTest::ResumeActorTask(base::Value::Dict context_options,
-                                           bool expected) {
+MultiStep GlicActorUiTest::ResumeActorTask(
+    base::Value::Dict context_options,
+    ExpectedResumeResult expected_result) {
+  static constexpr std::string_view kFailureString = "<Failure>";
+
+  const std::string expected_result_string = std::visit(
+      absl::Overload{
+          [](std::monostate) {
+            return base::ToString(actor::mojom::ActionResultCode::kOk);
+          },
+          [](actor::mojom::ActionResultCode r) { return base::ToString(r); },
+          [](bool r) {
+            return r ? base::ToString(actor::mojom::ActionResultCode::kOk)
+                     : std::string(kFailureString);
+          },
+      },
+      expected_result);
+
   return InAnyContext(CheckElement(
       kGlicContentsElementId,
       [&task_id = task_id_, context_options = std::move(context_options)](
@@ -383,19 +399,29 @@ MultiStep GlicActorUiTest::ResumeActorTask(base::Value::Dict context_options,
             AsInstrumentedWebContents(el)->web_contents();
         std::string script = content::JsReplace(
             R"js(
-                              (async () => {
-                                try {
-                                  await client.browser.resumeActorTask($1, $2);
-                                  return true;
-                                } catch (err) {
-                                  return false;
-                                }
-                              })();
-                            )js",
+                  (async () => {
+                    try {
+                      const res = await client.browser.resumeActorTask($1, $2);
+                      return res.actionResult;
+                    } catch (err) {
+                      return false;
+                    }
+                  })();
+          )js",
             task_id.value(), std::move(context_options));
-        return content::EvalJs(glic_contents, script).ExtractBool();
+
+        auto res = content::EvalJs(glic_contents, script);
+        if (res.is_bool()) {
+          return res.ExtractBool()
+                     ? base::ToString(actor::mojom::ActionResultCode::kOk)
+                     : std::string(kFailureString);
+        }
+        auto result_enum =
+            static_cast<actor::mojom::ActionResultCode>(res.ExtractInt());
+        EXPECT_TRUE(actor::mojom::IsKnownEnumValue(result_enum));
+        return base::ToString(result_enum);
       },
-      expected));
+      expected_result_string));
 }
 
 MultiStep GlicActorUiTest::WaitForActorTaskState(

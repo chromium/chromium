@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
     ExecuteJs(kNewActorTabId, "() => { button_clicked = false; }"),
 
     PauseActorTask(),
-    ResumeActorTask(UpdatedContextOptions(), true),
+    ResumeActorTask(UpdatedContextOptions(), actor::mojom::ActionResultCode::kOk),
     CheckIsActingOnTab(kNewActorTabId, true),
 
     // Ensure actions work acter pause and resume.
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
     }),
     CreateTask(task_id_, ""),
     PauseActorTask(),
-    ResumeActorTask(UpdatedContextOptions(), true),
+    ResumeActorTask(UpdatedContextOptions(), actor::mojom::ActionResultCode::kOk),
     CheckIsActingOnTab(kNewActorTabId, true),
     // Ensure actions work after pause and resume.
     GetPageContextFromFocusedTab(),
@@ -285,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   PauseActorTask(),
-                  ResumeActorTask(UpdatedContextOptions(), true),
+                  ResumeActorTask(UpdatedContextOptions(),
+                                  actor::mojom::ActionResultCode::kOk),
                   ResumeActorTask(UpdatedContextOptions(), false));
 }
 
@@ -311,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
       CheckIsWebContentsCaptured(kNewActorTabId, true),
       PauseActorTask(),
       CheckIsWebContentsCaptured(kNewActorTabId, false),
-      ResumeActorTask(UpdatedContextOptions(), true),
+      ResumeActorTask(UpdatedContextOptions(), actor::mojom::ActionResultCode::kOk),
       CheckIsWebContentsCaptured(kNewActorTabId, true),
       ClickAction(kClickableButtonLabel,
                   ClickAction::LEFT, ClickAction::SINGLE),

@@ -334,7 +334,7 @@ export declare interface GlicBrowserHost {
    *
    */
   resumeActorTask?(taskId: number, tabContextOptions: TabContextOptions):
-      Promise<TabContextResult>;
+      Promise<ResumeActorTaskResult>;
 
   /**
    * Returns the observable state of the actor task with the given ID. Updates
@@ -1223,6 +1223,19 @@ export declare interface TabContextResult {
 }
 
 /**
+ * Extension of TabContextResult to include an ActionResultCode while
+ * maintaining backwards-compatibility.
+ */
+export declare interface ResumeActorTaskResult extends TabContextResult {
+  // ActionResultCode that may have been supplied along with the
+  // TabContextResult.
+  // Note that this is an enum ActionResultCode from chrome/common/actor.mojom.
+  // It is expected that the client has an equivalent enum definition. See
+  // http://shortn/_gLyPxrRm6p
+  actionResult?: number;
+}
+
+/**
  * Used for customizing the list of pin candidates.
  */
 export declare interface GetPinCandidatesOptions {
@@ -1943,6 +1956,7 @@ export interface BackwardsCompatibleTypes {
   subscriber: Subscriber;
   tabContextOptions: TabContextOptions;
   tabContextResult: TabContextResult;
+  resumeActorTaskResult: ResumeActorTaskResult;
   tabData: TabData;
   userConfirmationDialogRequest: UserConfirmationDialogRequest;
   userConfirmationDialogResponse: UserConfirmationDialogResponse;

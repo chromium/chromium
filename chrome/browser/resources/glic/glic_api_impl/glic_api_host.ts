@@ -30,7 +30,7 @@ import {OneShotTimer} from '../timer.js';
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {AdditionalContextPartPrivate, AdditionalContextPrivate, AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
+import type {AdditionalContextPartPrivate, AdditionalContextPrivate, AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, HOST_REQUEST_TYPES, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -815,17 +815,25 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserResumeActorTask(
       request: {taskId: number, tabContextOptions: TabContextOptions},
-      extras: ResponseExtras):
-      Promise<{tabContextResult: TabContextResultPrivate}> {
-    const {result: {errorReason, tabContext}} =
+      extras: ResponseExtras): Promise<{
+    resumeActorTaskResult: ResumeActorTaskResultPrivate,
+  }> {
+    const {
+      result: {
+        getContextResult,
+        actionResult,
+      },
+    } =
         await this.handler.resumeActorTask(
             request.taskId,
             tabContextOptionsFromClient(request.tabContextOptions));
-    if (!tabContext) {
-      throw new Error(`resumeActorTask failed: ${errorReason}`);
+    if (!getContextResult.tabContext || actionResult === null) {
+      throw new Error(
+          `resumeActorTask failed: ${getContextResult.errorReason}`);
     }
     return {
-      tabContextResult: tabContextToClient(tabContext, extras),
+      resumeActorTaskResult: resumeActorTaskResultToClient(
+          getContextResult.tabContext, actionResult, extras),
     };
   }
 
@@ -2120,6 +2128,28 @@ function tabContextToClient(tabContext: TabContextMojo, extras: ResponseExtras):
     viewportScreenshot,
     pdfDocumentData,
     annotatedPageData,
+  };
+}
+
+function resumeActorTaskResultToClient(
+    tabContext: TabContextMojo, actionResult: number,
+    extras: ResponseExtras): ResumeActorTaskResultPrivate {
+  const tabData: TabDataPrivate = tabDataToClient(tabContext.tabData, extras);
+  const webPageData = webPageDataToClient(tabContext.webPageData);
+  const viewportScreenshot =
+      screenshotToClient(tabContext.viewportScreenshot, extras);
+  const pdfDocumentData =
+      pdfDocumentDataToClient(tabContext.pdfDocumentData, extras);
+  const annotatedPageData =
+      annotatedPageDataToClient(tabContext.annotatedPageData, extras);
+
+  return {
+    tabData,
+    webPageData,
+    viewportScreenshot,
+    pdfDocumentData,
+    annotatedPageData,
+    actionResult,
   };
 }
 

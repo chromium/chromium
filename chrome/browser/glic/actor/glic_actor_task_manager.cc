@@ -217,8 +217,8 @@ void GlicActorTaskManager::ResumeActorTask(
                                                .AddError(error_message)
                                                .Add("id", task_id.value())
                                                .Build());
-    std::move(callback).Run(
-        mojom::GetContextResult::NewErrorReason(error_message));
+    std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New(
+        mojom::GetContextResult::NewErrorReason(error_message), std::nullopt));
     return;
   }
 
@@ -244,8 +244,8 @@ void GlicActorTaskManager::ResumeActorTask(
                                                .AddError(error_message)
                                                .Add("id", task_id.value())
                                                .Build());
-    std::move(callback).Run(
-        glic::mojom::GetContextResult::NewErrorReason(error_message));
+    std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New(
+        mojom::GetContextResult::NewErrorReason(error_message), std::nullopt));
     return;
   }
 
@@ -255,8 +255,9 @@ void GlicActorTaskManager::ResumeActorTask(
          actor::ActorKeyedService::TabObservationResult result) {
         if (!result.has_value()) {
           std::move(reply_callback)
-              .Run(glic::mojom::GetContextResult::NewErrorReason(
-                  result.error()));
+              .Run(mojom::GetContextResultWithActionResultCode::New(
+                  mojom::GetContextResult::NewErrorReason(result.error()),
+                  std::nullopt));
           return;
         }
 
@@ -287,10 +288,13 @@ void GlicActorTaskManager::ResumeActorTask(
         glic_tab_context->annotated_page_data->metadata =
             std::move(page_context.annotated_page_content_result->metadata);
 
-        glic::mojom::GetContextResultPtr glic_result =
+        glic::mojom::GetContextResultPtr tab_context_ptr =
             glic::mojom::GetContextResult::NewTabContext(
                 std::move(glic_tab_context));
-        std::move(reply_callback).Run(std::move(glic_result));
+
+        std::move(reply_callback)
+            .Run(mojom::GetContextResultWithActionResultCode::New(
+                std::move(tab_context_ptr), 0));
       },
       std::move(callback), CreateTabData(tab_of_resumed_task->GetContents()));
 

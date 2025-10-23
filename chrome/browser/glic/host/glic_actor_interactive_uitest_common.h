@@ -35,6 +35,9 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   using ExpectedErrorResult = std::variant<std::monostate,
                                            actor::mojom::ActionResultCode,
                                            mojom::PerformActionsErrorReason>;
+  using ExpectedResumeResult =
+      std::variant<std::monostate, actor::mojom::ActionResultCode, bool>;
+
   static constexpr int32_t kNonExistentContentNodeId =
       std::numeric_limits<int32_t>::max();
   static constexpr char kActivateSurfaceIncompatibilityNotice[] =
@@ -137,7 +140,8 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep PauseActorTask();
 
   // Resumes a paused task by calling the glic ResumeActorTask API.
-  MultiStep ResumeActorTask(base::Value::Dict context_options, bool expected);
+  MultiStep ResumeActorTask(base::Value::Dict context_options,
+                            ExpectedResumeResult expected_result);
 
   MultiStep WaitForActorTaskState(mojom::ActorTaskState expected_state);
 

@@ -240,6 +240,15 @@ union GetContextResult {
   TabContext tab_context;
 };
 
+struct GetContextResultWithActionResultCode {
+  GetContextResult get_context_result;
+  // Note that this is an enum ActionResultCode from chrome/common/actor.mojom.
+  // It would be tedious to import the actual enum here and the renderer doesn't
+  // need the type, so we just use an int here. It is expected that the client
+  // has an equivalent enum definition. See http://shortn/_gLyPxrRm6p
+  int32? action_result;
+};
+
 union CaptureScreenshotResult {
   CaptureScreenshotErrorReason error_reason;
   Screenshot screenshot;
@@ -633,7 +642,7 @@ interface WebClientHandler {
   // with the task according to the given `context_options` and returns the
   // result. Returns an error if the task doesn't exist or is not paused.
   ResumeActorTask(int32 task_id, GetTabContextOptions context_options)
-      => (GetContextResult result);
+      => (GetContextResultWithActionResultCode result);
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
