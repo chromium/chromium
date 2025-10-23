@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
   mock_login_service().SetCredential(MakeTestCredential(
       u"username", url, /*immediately_available_to_login=*/true));
   mock_login_service().SetLoginStatus(
-      actor_login::LoginStatusResult::kErrorFillingNotAllowed);
+      base::unexpected(actor_login::ActorLoginError::kFillingNotAllowed));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;

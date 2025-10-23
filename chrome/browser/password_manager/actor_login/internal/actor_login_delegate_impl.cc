@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_get_credentials_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"

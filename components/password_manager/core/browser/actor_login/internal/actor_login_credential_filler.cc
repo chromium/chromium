@@ -116,17 +116,16 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_ATTEMPT_STARTED);
 
-  // AttemptLogin wouldn't fill even without this check, because
-  // `PasswordFormManager` isn't created if this returns false. However, if we
-  // don't add the check here, the error message returned to the caller would be
-  // "kErrorNoSigninForm", which would be inaccurate.
+  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
+
+  // The check is added separately in order to differentiate between having
+  // no signin form on the page and filling being disallowed.
   if (!client_->IsFillingEnabled(origin_.GetURL())) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_NOT_ALLOWED);
-    std::move(callback_).Run(LoginStatusResult::kErrorFillingNotAllowed);
+    std::move(callback_).Run(
+        base::unexpected(ActorLoginError::kFillingNotAllowed));
     return;
   }
-
-  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 
   PasswordFormCache* form_cache = password_manager->GetPasswordFormCache();
   CHECK(form_cache);

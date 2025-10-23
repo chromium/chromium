@@ -1052,7 +1052,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillingIsDisabled) {
                                     mock_callback.Get());
 
   EXPECT_CALL(mock_callback,
-              Run(Eq(LoginStatusResult::kErrorFillingNotAllowed)));
+              Run(Eq(base::unexpected(ActorLoginError::kFillingNotAllowed))));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
 

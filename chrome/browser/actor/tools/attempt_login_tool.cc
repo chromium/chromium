@@ -39,6 +39,8 @@ mojom::ActionResultCode LoginErrorToActorError(
       return mojom::ActionResultCode::kError;
     case actor_login::ActorLoginError::kInvalidTabInterface:
       return mojom::ActionResultCode::kTabWentAway;
+    case actor_login::ActorLoginError::kFillingNotAllowed:
+      return mojom::ActionResultCode::kLoginFillingNotAllowed;
     case actor_login::ActorLoginError::kUnknown:
     default:
       return mojom::ActionResultCode::kError;
@@ -60,8 +62,6 @@ mojom::ActionResultCode LoginResultToActorResult(
       return mojom::ActionResultCode::kLoginNoCredentialsAvailable;
     case actor_login::LoginStatusResult::kErrorNoFillableFields:
       return mojom::ActionResultCode::kLoginNoFillableFields;
-    case actor_login::LoginStatusResult::kErrorFillingNotAllowed:
-      return mojom::ActionResultCode::kLoginFillingNotAllowed;
     case actor_login::LoginStatusResult::kErrorDeviceReauthRequired:
       // TODO(crbug.com/449923972): Handle this error: draw attention of the
       // user to the tab and retry once the tab is in the foreground.

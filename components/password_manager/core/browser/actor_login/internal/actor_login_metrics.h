@@ -20,7 +20,8 @@ enum class GetCredentialsResult {
   kSuccess = 1,
   kErrorServiceBusy = 2,
   kErrorInvalidTabInterface = 3,
-  kMaxValue = kErrorInvalidTabInterface,
+  kErrorFillingNotAllowed = 4,
+  kMaxValue = kErrorFillingNotAllowed
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:ActorLoginGetCredentialsResult)
 

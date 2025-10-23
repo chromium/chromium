@@ -83,6 +83,8 @@ enum ActorLoginError {
   // The provided `TabInterface` was invalid (e.g. no associated `WebContents`
   // was loaded, or tab is no longer present)
   kInvalidTabInterface,
+  // Filling is disallowed (e.g. because of a policy)
+  kFillingNotAllowed,
   // There was an error of unknown type.
   kUnknown,
 };
@@ -108,8 +110,6 @@ enum class LoginStatusResult {
   kErrorInvalidCredential,
   // Neither the username, nor the password field could be filled.
   kErrorNoFillableFields,
-  // Filling is disallowed (e.g. because of a policy).
-  kErrorFillingNotAllowed,
   // Returned if the task is in a background tab and filling requires device
   // reauth. The user needs to focus that tab first.
   kErrorDeviceReauthRequired,

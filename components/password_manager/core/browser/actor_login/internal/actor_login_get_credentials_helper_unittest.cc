@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -46,6 +47,7 @@ class FakePasswordManagerClient
               (),
               (override, const));
 
+  MOCK_METHOD(bool, IsFillingEnabled, (const GURL& url), (override, const));
   FakePasswordManagerClient() {
     profile_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>(
         password_manager::IsAccountStore(false));
@@ -102,6 +104,7 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
     ON_CALL(password_manager_, GetClient()).WillByDefault(Return(&client_));
     ON_CALL(client_, GetPasswordManager)
         .WillByDefault(Return(&password_manager_));
+    ON_CALL(client_, IsFillingEnabled).WillByDefault(Return(true));
   }
 
   void TearDown() override {
@@ -392,6 +395,17 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"affiliated_username");
   EXPECT_TRUE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest, FillingNotAllowed) {
+  EXPECT_CALL(*client(), IsFillingEnabled(kOrigin.GetURL()))
+      .WillOnce(Return(false));
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(), ActorLoginError::kFillingNotAllowed);
 }
 
 }  // namespace actor_login

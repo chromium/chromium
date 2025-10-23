@@ -9,6 +9,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -126,6 +127,14 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
   LogStatus(logger.get(),
             Logger::STRING_ACTOR_LOGIN_GET_CREDENTIALS_FETCHING_STARTED);
 
+  // The check is added separately in order to differentiate between having
+  // no signin form on the page and filling being disallowed.
+  if (!client->IsFillingEnabled(origin.GetURL())) {
+    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_NOT_ALLOWED);
+    std::move(callback_).Run(
+        base::unexpected(ActorLoginError::kFillingNotAllowed));
+    return;
+  }
   password_manager::PasswordFormCache* form_cache =
       password_manager_->GetPasswordFormCache();
   ActorLoginFormFinder login_form_finder(client);
