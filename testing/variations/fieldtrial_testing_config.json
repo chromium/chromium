@@ -21103,22 +21103,6 @@
             ]
         }
     ],
-    "RetrieveTrustedVaultKeyKeyboardAccessoryAction": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RetrieveTrustedVaultKeyKeyboardAccessoryAction"
-                    ]
-                }
-            ]
-        }
-    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [

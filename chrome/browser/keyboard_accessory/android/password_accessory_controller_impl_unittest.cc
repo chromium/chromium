@@ -102,7 +102,7 @@ using password_manager::TestPasswordStore;
 using plus_addresses::FakePlusAddressService;
 using plus_addresses::PlusProfile;
 using testing::_;
-using testing::AtMost;
+using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
 using testing::Mock;
@@ -401,12 +401,13 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
 
     // Make StrictMock ignore calls to hide the trusted vault key retrieval
-    // action.
+    // action - this call happens regularly as a side product of updating other
+    // actions.
     EXPECT_CALL(mock_manual_filling_controller_,
                 OnAccessoryActionAvailabilityChanged(
                     ShouldShowAction(false),
                     autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY))
-        .Times(AtMost(1));
+        .Times(AnyNumber());
   }
 
   webauthn::WebAuthnCredManDelegate* cred_man_delegate() {
