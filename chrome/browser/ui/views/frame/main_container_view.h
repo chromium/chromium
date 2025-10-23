@@ -29,8 +29,6 @@ class MainContainerView : public views::View {
   MainContainerView& operator=(const MainContainerView&) = delete;
   ~MainContainerView() override;
 
-  views::View::Views GetChildrenInZOrder() override;
-
  private:
   const raw_ref<BrowserView> browser_view_;
 };

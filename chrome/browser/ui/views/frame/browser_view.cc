@@ -4029,6 +4029,13 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   top_container()->DestroyLayer();
 
   AddChildView(tab_strip_region_view_);
+  if (web_app_frame_toolbar_) {
+    AddChildView(web_app_frame_toolbar_);
+  }
+  if (web_app_window_title_) {
+    AddChildView(web_app_window_title_);
+  }
+
   main_container_->AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
 }
@@ -5060,11 +5067,11 @@ void BrowserView::AddedToWidget() {
   // WebAppFrameToolbarView depends on ImmersiveModeController so initialize it
   // here.
   if (GetIsWebAppType()) {
-    web_app_frame_toolbar_ = top_container_->AddChildView(
-        std::make_unique<WebAppFrameToolbarView>(this));
+    web_app_frame_toolbar_ =
+        AddChildView(std::make_unique<WebAppFrameToolbarView>(this));
     if (ShouldShowWindowTitle()) {
-      web_app_window_title_ = top_container_->AddChildView(
-          std::make_unique<views::Label>(GetWindowTitle()));
+      web_app_window_title_ =
+          AddChildView(std::make_unique<views::Label>(GetWindowTitle()));
       web_app_window_title_->SetID(VIEW_ID_WINDOW_TITLE);
     }
   }
@@ -6004,10 +6011,26 @@ void BrowserView::OnImmersiveFullscreenEntered() {
 
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
+
+#if BUILDFLAG(IS_MAC)
+  if (!UsesImmersiveFullscreenTabbedMode()) {
+    top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
   top_container()->SetBackground(
       views::CreateSolidBackground(ui::kColorFrameActive));
+  top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (web_app_frame_toolbar_) {
+    top_container()->AddChildView(web_app_frame_toolbar_);
+  }
+  if (web_app_window_title_) {
+    top_container()->AddChildView(web_app_window_title_);
+  }
+
   CHECK(overlay_view_tracker_);
   overlay_view_tracker_.view()->AddChildView(top_container());
 }

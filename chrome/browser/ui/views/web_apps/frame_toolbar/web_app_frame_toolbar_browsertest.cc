@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(window_title);
 #else
-  EXPECT_EQ(window_title->parent(), helper()->browser_view()->top_container());
+  EXPECT_EQ(window_title->parent(), helper()->browser_view());
 #endif
 
   WebAppToolbarButtonContainer* const toolbar_right_container =
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
   WebAppToolbarButtonContainer* const toolbar_right_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
 
-  EXPECT_EQ(window_title->parent(), helper()->browser_view()->top_container());
+  EXPECT_EQ(window_title->parent(), helper()->browser_view());
   window_title->SetText(std::u16string(30, 't'));
 
   // Ensure we initially have abundant space. Set the size from the root view
