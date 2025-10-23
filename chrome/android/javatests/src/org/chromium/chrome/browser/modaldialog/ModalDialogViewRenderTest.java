@@ -178,6 +178,38 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_MultiLineTitle() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+
+        // A long title string designed to wrap across multiple lines.
+        String longTitle =
+                "This is a significantly long title designed to test how the ModalDialogView"
+                        + " handles text wrapping across multiple lines when the title exceeds the"
+                        + " available width.";
+
+        // Load the title icon
+        final Drawable icon =
+                UiUtils.getTintedDrawable(
+                        sActivity, R.drawable.ic_add, R.color.default_icon_color_tint_list);
+
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, longTitle)
+                        .with(ModalDialogProperties.TITLE_ICON, icon)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "multi_line_title_and_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TitleAndMessage() throws IOException {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
@@ -309,18 +341,16 @@ public class ModalDialogViewRenderTest {
                     mCustomScrollView.addView(mCustomTextView1);
                 });
 
-        ModalDialogProperties.ModalDialogButtonSpec[] button_spec_list =
+        ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList =
                 new ModalDialogButtonSpec[10];
-        for (int i = 0; i < button_spec_list.length; i++) {
-            button_spec_list[i] =
+        for (int i = 0; i < buttonSpecList.length; i++) {
+            buttonSpecList[i] =
                     new ModalDialogProperties.ModalDialogButtonSpec(ButtonType.POSITIVE, "OK");
         }
         createModel(
                 mModelBuilder
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomScrollView)
-                        .with(
-                                ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
-                                button_spec_list));
+                        .with(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, buttonSpecList));
         mRenderTestRule.render(
                 mModalDialogView, "custom_view_with_button_group_has_two_scrollables");
     }
@@ -344,19 +374,17 @@ public class ModalDialogViewRenderTest {
                     mCustomFrameLayout.addView(mCustomTextView1);
                 });
 
-        ModalDialogProperties.ModalDialogButtonSpec[] button_spec_list =
+        ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList =
                 new ModalDialogButtonSpec[10];
-        for (int i = 0; i < button_spec_list.length; i++) {
-            button_spec_list[i] =
+        for (int i = 0; i < buttonSpecList.length; i++) {
+            buttonSpecList[i] =
                     new ModalDialogProperties.ModalDialogButtonSpec(ButtonType.POSITIVE, "OK");
         }
         createModel(
                 mModelBuilder
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomFrameLayout)
                         .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
-                        .with(
-                                ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
-                                button_spec_list));
+                        .with(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, buttonSpecList));
         mRenderTestRule.render(
                 mModalDialogView,
                 "scrollable_contained_custom_view_with_button_group_has_one_scrollable");
