@@ -4,9 +4,11 @@
 
 #include "chrome/browser/web_applications/test/web_app_test.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +62,12 @@ web_app::WebAppProvider& WebAppTest::provider() const {
 
 web_app::FakeWebAppProvider& WebAppTest::fake_provider() const {
   return *web_app::FakeWebAppProvider::Get(profile());
+}
+
+web_app::FakeWebContentsManager& WebAppTest::fake_web_contents_manager() const {
+  web_app::FakeWebContentsManager* ptr =
+      provider().web_contents_manager().AsFakeWebContentsManagerForTesting();
+  return CHECK_DEREF(ptr);
 }
 
 web_app::OsIntegrationTestOverrideImpl& WebAppTest::fake_os_integration()

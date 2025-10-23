@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -167,6 +168,8 @@ class FakeWebAppProvider : public WebAppProvider {
           origin_association_manager);
   void SetWebContentsManager(
       std::unique_ptr<WebContentsManager> web_contents_manager);
+  void SetExtensionsManager(
+      std::unique_ptr<ExtensionsManager> extensions_manager);
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See

@@ -451,6 +451,10 @@ std::unique_ptr<WebAppIconDownloader>
 FakeWebContentsManager::CreateIconDownloader() {
   return std::make_unique<FakeWebAppIconDownloader>(weak_factory_.GetWeakPtr());
 }
+FakeWebContentsManager*
+FakeWebContentsManager::AsFakeWebContentsManagerForTesting() {
+  return this;
+}
 
 void FakeWebContentsManager::SetIconState(
     const GURL& icon_url,
@@ -471,7 +475,6 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     const GURL& start_url,
     std::u16string_view name) {
   const GURL kIconUrl(kBasicInstallIconUrl);
-  constexpr int kIconSize = 144;
 
   FakePageState& install_page_state = GetOrCreatePageState(install_url);
   install_page_state.url_load_result =
@@ -494,13 +497,13 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
   manifest.short_name = name;
   blink::Manifest::ImageResource icon;
   icon.src = kIconUrl;
-  icon.sizes = {{kIconSize, kIconSize}};
+  icon.sizes = {{kBasicInstallIconSize, kBasicInstallIconSize}};
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
   manifest.icons = {icon};
 
   // Set icons in content.
   GetOrCreateIconState(kIconUrl).bitmaps = {
-      gfx::test::CreateBitmap(kIconSize, SK_ColorBLUE)};
+      gfx::test::CreateBitmap(kBasicInstallIconSize, SK_ColorBLUE)};
 
   return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
 }

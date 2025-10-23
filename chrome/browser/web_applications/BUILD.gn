@@ -735,6 +735,8 @@ source_set("web_applications_test_support") {
     "test/fake_data_retriever.h",
     "test/fake_environment.cc",
     "test/fake_environment.h",
+    "test/fake_extensions_manager.cc",
+    "test/fake_extensions_manager.h",
     "test/fake_os_integration_manager.cc",
     "test/fake_os_integration_manager.h",
     "test/fake_web_app_database_factory.cc",

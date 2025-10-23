@@ -16,6 +16,7 @@ namespace web_app {
 
 class WebAppDataRetriever;
 class WebAppIconDownloader;
+class FakeWebContentsManager;
 
 // This manager is intended to wrap all of the functionality that the
 // `WebAppProvider` system needs from `WebContents`. This encompasses retrieving
@@ -40,6 +41,9 @@ class WebContentsManager {
 
   // Creates a `WebAppIconDownloader` to download icons for a web app.
   virtual std::unique_ptr<WebAppIconDownloader> CreateIconDownloader();
+
+  // Safely downcast to the fake version for tests.
+  virtual FakeWebContentsManager* AsFakeWebContentsManagerForTesting();
 
   base::WeakPtr<WebContentsManager> GetWeakPtr();
 

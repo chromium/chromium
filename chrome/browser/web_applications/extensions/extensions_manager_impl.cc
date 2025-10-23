@@ -1,16 +1,17 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/extensions_manager.h"
+#include "chrome/browser/web_applications/extensions/extensions_manager_impl.h"
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_prefs.h"
@@ -51,16 +52,19 @@ class ExtensionInstallGateImpl : public extensions::InstallGate,
   raw_ptr<Profile> profile_ = nullptr;
 };
 
-ExtensionInstallGate::~ExtensionInstallGate() = default;
-
-ExtensionsManager::ExtensionsManager(Profile* profile)
+ExtensionsManagerImpl::ExtensionsManagerImpl(Profile* profile)
     : profile_(profile),
       registry_(extensions::ExtensionRegistry::Get(profile)) {}
 
-ExtensionsManager::~ExtensionsManager() = default;
+ExtensionsManagerImpl::~ExtensionsManagerImpl() = default;
+
+void ExtensionsManagerImpl::OnExtensionSystemReady(base::OnceClosure closure) {
+  extensions::ExtensionSystem::Get(profile_)->ready().Post(FROM_HERE,
+                                                           std::move(closure));
+}
 
 std::unordered_set<base::FilePath>
-ExtensionsManager::GetIsolatedStoragePaths() {
+ExtensionsManagerImpl::GetIsolatedStoragePaths() {
   std::unordered_set<base::FilePath> allowlist;
   extensions::ExtensionSet extensions =
       registry_->GenerateInstalledExtensionsSet();
@@ -75,10 +79,17 @@ ExtensionsManager::GetIsolatedStoragePaths() {
 }
 
 std::unique_ptr<ExtensionInstallGate>
-ExtensionsManager::RegisterGarbageCollectionInstallGate() {
+ExtensionsManagerImpl::RegisterGarbageCollectionInstallGate() {
   return std::make_unique<web_app::ExtensionInstallGateImpl>(profile_);
 }
 
+// Implementation of ExtensionsManager static methods:
+// static
+std::unique_ptr<ExtensionsManager> ExtensionsManager::CreateForProfile(
+    Profile* profile) {
+  return std::make_unique<ExtensionsManagerImpl>(profile);
+}
+// static
 KeyedServiceBaseFactory* ExtensionsManager::GetExtensionSystemSharedFactory() {
   return extensions::ChromeExtensionSystemSharedFactory::GetInstance();
 }

@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -775,7 +776,8 @@ void PreinstalledWebAppManager::LoadAndSynchronize(
   device_data_initialized_event_->Post(concurrent.CreateClosure());
   // Make sure ExtensionSystem is ready to know if default apps new installation
   // will be performed.
-  extensions::OnExtensionSystemReady(profile_, concurrent.CreateClosure());
+  provider_->extensions_manager().OnExtensionSystemReady(
+      concurrent.CreateClosure());
   std::move(concurrent).Done(std::move(load_and_synchronize));
 }
 

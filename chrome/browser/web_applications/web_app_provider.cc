@@ -374,7 +374,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
   isolated_web_app_policy_manager_ =
       std::make_unique<IsolatedWebAppPolicyManager>(profile);
-  extensions_manager_ = std::make_unique<ExtensionsManager>(profile);
+  extensions_manager_ = ExtensionsManager::CreateForProfile(profile);
   generated_icon_fix_manager_ = std::make_unique<GeneratedIconFixManager>();
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);

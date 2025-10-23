@@ -16,21 +16,31 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/test/fake_extensions_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -39,7 +49,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/test/sk_gmock_support.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -603,5 +617,162 @@ TEST_F(DisabledPreinstalledWebAppManagerTest, LoadConfigsWhileDisabled) {
             0u);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// This test does not 'start' the web app provider in the setup, so each test
+// can override the exact preinstall config they want, then start the provider.
+class PreinstalledWebAppManagerBasicTest : public WebAppTest {
+ public:
+  static constexpr std::string_view kInstallUrl =
+      "https://www.example.com/install_url.html";
+  static constexpr std::string_view kManifestUrl =
+      "https://www.example.com/manifest_url.json";
+  static constexpr std::string_view kManifestId = "https://www.example.com/id";
+  static constexpr std::string_view kStartUrl =
+      "https://www.example.com/index.html";
+  static constexpr std::string_view kScope = "https://www.example.com/";
+  static constexpr std::u16string_view kAppName = u"Example App";
+
+  static ExternalInstallOptions GetInstallOptionsWithFactory() {
+    ExternalInstallOptions options(
+        /*install_url=*/GURL(kInstallUrl),
+        /*user_display_mode=*/
+        mojom::UserDisplayMode::kBrowser,
+        /*install_source=*/ExternalInstallSource::kExternalDefault);
+
+    options.user_type_allowlist = {"unmanaged", "managed", "child"};
+    options.expected_app_id =
+        GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
+    options.app_info_factory = base::BindRepeating([]() {
+      GURL start_url = GURL(kStartUrl);
+      webapps::ManifestId manifest_id = webapps::ManifestId(kManifestId);
+      auto info = std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
+      info->title = kAppName;
+      info->scope = GURL(kScope);
+      info->display_mode = DisplayMode::kStandalone;
+      info->install_url = GURL(kInstallUrl);
+      info->icon_bitmaps.any = {
+          {144,
+           ::gfx::test::CreateBitmap(
+               FakeWebContentsManager::kBasicInstallIconSize, SK_ColorGREEN)}};
+      return info;
+    });
+
+    return options;
+  }
+
+  static ExternalInstallOptions GetInstallOptionsFromManifest() {
+    ExternalInstallOptions options(
+        /*install_url=*/GURL(kInstallUrl),
+        /*user_display_mode=*/
+        mojom::UserDisplayMode::kBrowser,
+        /*install_source=*/ExternalInstallSource::kExternalDefault);
+
+    options.user_type_allowlist = {"unmanaged", "managed", "child"};
+    options.expected_app_id =
+        GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
+    return options;
+  }
+
+  PreinstalledWebAppManagerBasicTest()
+      : app_id_(GenerateAppIdFromManifestId(GURL(kManifestId))) {}
+  ~PreinstalledWebAppManagerBasicTest() override = default;
+
+  void SetUp() override {
+    WebAppTest::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+    statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
+                                             "2023-18");
+#endif
+
+    preinstalled_app_override_ =
+        std::make_unique<ScopedTestingPreinstalledAppData>();
+    fake_provider().SetSynchronizePreinstalledAppsOnStartup(true);
+    auto fake_extensions_manager = std::make_unique<FakeExtensionsManager>();
+    fake_extensions_manager->SetExtensionsSytemReady(true);
+    fake_provider().SetExtensionsManager(std::move(fake_extensions_manager));
+
+    // Make sure the 'manifest' preinstall state matches the app factory
+    // preinstall state
+    fake_web_contents_manager().CreateBasicInstallPageState(
+        GURL(kInstallUrl), GURL(kManifestUrl), GURL(kStartUrl));
+
+    // Make the manifest state match GetInstallOptionsWithFactory().
+    auto& page_state =
+        fake_web_contents_manager().GetOrCreatePageState(GURL(kInstallUrl));
+    page_state.manifest_before_default_processing->id = GURL(kManifestId);
+    page_state.manifest_before_default_processing->name = kAppName;
+
+    auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
+        GURL(FakeWebContentsManager::kBasicInstallIconUrl));
+    icon_state.bitmaps = {::gfx::test::CreateBitmap(144, SK_ColorGREEN)};
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
+#endif
+    WebAppTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<ScopedTestingPreinstalledAppData> preinstalled_app_override_;
+
+// This might be good to move to the WebAppTest base class.
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::system::FakeStatisticsProvider statistics_provider_;
+#endif
+
+  const webapps::AppId app_id_;
+};
+
+TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaFactory) {
+  preinstalled_app_override_->apps = {GetInstallOptionsWithFactory()};
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      GenerateAppIdFromManifestId(GURL(kManifestId)),
+      WebAppFilter::InstalledInChrome()));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      GenerateAppIdFromManifestId(GURL(kManifestId)),
+      WebAppFilter::OpensInBrowserTab()));
+
+  // State matches.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id_),
+            base::UTF16ToUTF8(kAppName));
+  WebAppIconManager::WebAppBitmaps bitmaps;
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icons;
+  provider().icon_manager().ReadAllIcons(app_id_, icons.GetCallback());
+  ASSERT_TRUE(icons.Wait());
+  ASSERT_TRUE(base::Contains(icons.Get().trusted_icons.any, 144));
+  EXPECT_THAT(
+      icons.Get().trusted_icons.any.at(144),
+      gfx::test::EqualsBitmap(gfx::test::CreateBitmap(144, SK_ColorGREEN)));
+}
+
+TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaManifest) {
+  preinstalled_app_override_->apps = {GetInstallOptionsWithFactory()};
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      GenerateAppIdFromManifestId(GURL(kManifestId)),
+      WebAppFilter::InstalledInChrome()));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      GenerateAppIdFromManifestId(GURL(kManifestId)),
+      WebAppFilter::OpensInBrowserTab()));
+
+  // State matches.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id_),
+            base::UTF16ToUTF8(kAppName));
+  WebAppIconManager::WebAppBitmaps bitmaps;
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icons;
+  provider().icon_manager().ReadAllIcons(app_id_, icons.GetCallback());
+  ASSERT_TRUE(icons.Wait());
+  ASSERT_TRUE(base::Contains(icons.Get().trusted_icons.any, 144));
+  EXPECT_THAT(
+      icons.Get().trusted_icons.any.at(144),
+      gfx::test::EqualsBitmap(gfx::test::CreateBitmap(144, SK_ColorGREEN)));
+}
 
 }  // namespace web_app

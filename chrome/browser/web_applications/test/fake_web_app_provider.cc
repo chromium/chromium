@@ -247,6 +247,12 @@ void FakeWebAppProvider::SetWebContentsManager(
   web_contents_manager_ = std::move(web_contents_manager);
 }
 
+void FakeWebAppProvider::SetExtensionsManager(
+    std::unique_ptr<ExtensionsManager> extensions_manager) {
+  CheckNotStartedAndDisconnect();
+  extensions_manager_ = std::move(extensions_manager);
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
