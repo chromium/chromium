@@ -220,6 +220,7 @@ content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
   deps = [
     ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
+    "//content/browser/indexed_db",
     "//content/browser/indexed_db:unit_tests",
     "//content/public/browser:browser_sources",
     "//third_party/blink/public/mojom:mojom_modules_mojolpm",

@@ -51,4 +51,6 @@ message Testcase {
   repeated Action actions = 1;
   repeated Sequence sequences = 2;
   repeated uint32 sequence_indexes = 3 [packed = true];
+  required bool in_memory = 4;
+  required bool use_sqlite = 5;
 }

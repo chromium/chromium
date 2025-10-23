@@ -78,3 +78,5 @@ sequences {
   action_indexes: 1
 }
 sequence_indexes: 0
+in_memory: false
+use_sqlite: false

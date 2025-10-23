@@ -13,6 +13,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -112,10 +113,14 @@ class IdbFactoryTestcase
   void CreateAndAddIdbFactory(uint32_t id, base::OnceClosure done_closure)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Prerequisite state.
+  const bool in_memory_;
+  const bool use_sqlite_;
+  const base::AutoReset<std::optional<bool>> sqlite_override_;
+  const storage::BucketLocator bucket_locator_;
+
+  // These are set up on the UI thread.
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   mojo::Remote<storage::mojom::IndexedDBControlTest> indexed_db_control_test_;
-  const storage::BucketLocator bucket_locator_;
 
   // These live on the fuzzer thread for now.
   MockIndexedDBClientStateChecker mock_client_state_checker_;
@@ -126,6 +131,11 @@ class IdbFactoryTestcase
 IdbFactoryTestcase::IdbFactoryTestcase(
     const content::fuzzing::idb_factory::proto::Testcase& testcase)
     : Testcase<ProtoTestcase, ProtoAction>(testcase),
+      in_memory_(testcase.in_memory()),
+      use_sqlite_(testcase.use_sqlite()),
+      sqlite_override_(
+          content::indexed_db::BucketContext::OverrideShouldUseSqliteForTesting(
+              use_sqlite_)),
       bucket_locator_(storage::BucketLocator::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(
               Origin::Create(GURL("https://example.com"))))) {
@@ -144,6 +154,7 @@ void IdbFactoryTestcase::SetUp(base::OnceClosure done_closure) {
 
 void IdbFactoryTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
   browser_context_ = std::make_unique<content::TestBrowserContext>();
+  browser_context_->set_is_off_the_record(in_memory_);
   browser_context_->GetDefaultStoragePartition()
       ->GetIndexedDBControl()
       .BindTestInterfaceForTesting(
