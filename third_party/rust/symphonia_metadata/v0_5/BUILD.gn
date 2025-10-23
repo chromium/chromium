@@ -33,7 +33,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Project Symphonia multimedia tag and metadata readers."
   cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
-  cargo_pkg_version = "0.5.4"
+  cargo_pkg_version = "0.5.5"
 
   allow_unsafe = false
 
