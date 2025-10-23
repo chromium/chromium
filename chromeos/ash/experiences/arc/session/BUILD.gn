@@ -68,6 +68,7 @@ static_library("session") {
     "//components/prefs",
     "//components/user_manager",
     "//components/version_info",
+    "//content/public/browser",
     "//mojo/proxy:switches",
     "//services/accessibility/android/public/mojom",
     "//ui/display/manager",
