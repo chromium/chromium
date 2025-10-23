@@ -31,12 +31,14 @@ public class TipsUtils {
             Context context, @TipsNotificationsFeatureType int featureType) {
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
+        final @StringRes int detailPageTitleRes;
         final List<String> detailPageSteps = new ArrayList<>();
 
         switch (featureType) {
             case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_esb;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_esb));
                 detailPageSteps.add(
@@ -47,6 +49,7 @@ public class TipsUtils {
             case TipsNotificationsFeatureType.QUICK_DELETE:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 detailPageSteps.add(
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_first_step_quick_delete));
@@ -60,6 +63,7 @@ public class TipsUtils {
             case TipsNotificationsFeatureType.GOOGLE_LENS:
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_lens;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_lens));
                 detailPageSteps.add(
@@ -71,6 +75,7 @@ public class TipsUtils {
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox;
                 mainPageDescriptionRes =
                         R.string.tips_promo_bottom_sheet_description_bottom_omnibox;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox_short;
                 detailPageSteps.add(
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_first_step_bottom_omnibox));
@@ -86,11 +91,13 @@ public class TipsUtils {
 
                 mainPageTitleRes = Resources.ID_NULL;
                 mainPageDescriptionRes = Resources.ID_NULL;
+                detailPageTitleRes = Resources.ID_NULL;
         }
 
         return new FeatureTipPromoData(
                 context.getString(mainPageTitleRes),
                 context.getString(mainPageDescriptionRes),
+                context.getString(detailPageTitleRes),
                 detailPageSteps);
     }
 }

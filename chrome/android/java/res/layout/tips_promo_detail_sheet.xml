@@ -14,11 +14,39 @@ found in the LICENSE file.
     android:layout_marginBottom="20dp">
 
     <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_title_padding"
+        android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageButton
+            android:id="@+id/details_page_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:src="@drawable/ic_arrow_back_24dp"
+            app:tint="@macro/default_icon_color"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/tips_promo_bottom_sheet_back_button_description"/>
+        <TextView
+            android:id="@+id/details_page_title_text"
+            android:accessibilityHeading="true"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tips_notifications_bottom_sheet_step_content_margin_start"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:singleLine="true"
+            style="@style/TextAppearance.Headline"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/steps_container"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
-        android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
         android:orientation="vertical"
         android:focusable="true"/>
 

@@ -95,6 +95,11 @@ public class TipsPromoCoordinatorUnitTest {
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
+        mView.findViewById(R.id.details_page_back_button).performClick();
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+
         assertEquals(
                 3,
                 mPropertyModel
@@ -119,6 +124,11 @@ public class TipsPromoCoordinatorUnitTest {
         mView.findViewById(R.id.tips_promo_details_button).performClick();
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.details_page_back_button).performClick();
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
 
         assertEquals(
                 3,
@@ -146,6 +156,11 @@ public class TipsPromoCoordinatorUnitTest {
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
+        mView.findViewById(R.id.details_page_back_button).performClick();
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+
         assertEquals(
                 3,
                 mPropertyModel
@@ -170,6 +185,11 @@ public class TipsPromoCoordinatorUnitTest {
         mView.findViewById(R.id.tips_promo_details_button).performClick();
         assertEquals(
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.details_page_back_button).performClick();
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
 
         assertEquals(
                 3,

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -33,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -112,6 +114,21 @@ public class TipsPromoCoordinator {
         FeatureTipPromoData data = TipsUtils.getFeatureTipPromoDataForType(mContext, featureType);
         mPropertyModel.set(TipsPromoProperties.FEATURE_TIP_PROMO_DATA, data);
         mPropertyModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.MAIN_SCREEN);
+        setupButtonClickHandlers(featureType);
+        setupDetailPageSteps(data.detailPageSteps);
+        mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+    }
+
+    private void setupButtonClickHandlers(@TipsNotificationsFeatureType int featureType) {
+        // The button click handlers are setup such that from the MAIN_SCREEN, the details button
+        // will link it to the DETAILS_SCREEN. That is the only secondary screen accessible from the
+        // MAIN_SCREEN. From there, only the back button and system backpress can go back to the
+        // MAIN_SCREEN from the DETAIL_SCREEN as the only final destination.
+        mPropertyModel.set(
+                TipsPromoProperties.BACK_BUTTON_CLICK_LISTENER,
+                (view) -> {
+                    mPropertyModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.MAIN_SCREEN);
+                });
         mPropertyModel.set(
                 TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER,
                 (view) -> {
@@ -124,9 +141,6 @@ public class TipsPromoCoordinator {
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                     performFeatureAction(featureType);
                 });
-
-        setupDetailPageSteps(data.detailPageSteps);
-        mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
     }
 
     private void setupDetailPageSteps(List<String> steps) {
@@ -148,6 +162,12 @@ public class TipsPromoCoordinator {
             TextView stepContent = (TextView) stepView.findViewById(R.id.step_content);
             stepContent.setText(steps.get(i));
             stepsContainer.addView(stepView);
+        }
+
+        if (LocalizationUtils.isLayoutRtl()) {
+            // Flip the image horizontally, so that the arrow points the right way for RTL.
+            ImageView backArrow = mContentView.findViewById(R.id.details_page_back_button);
+            backArrow.setScaleX(-1);
         }
     }
 
@@ -182,6 +202,7 @@ public class TipsPromoCoordinator {
         }
     }
 
+    @NullMarked
     private class TipsPromoSheetContent implements BottomSheetContent {
         private final View mContentView;
         private final PropertyModel mModel;

@@ -7198,6 +7198,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         =1 {1}
         other {#}}
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_BOTTOM_OMNIBOX_SHORT" desc="Title of the Bottom Omnibox feature tip detail page promo. [CHAR_LIMIT=32]">
+        Choose address bar position
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_BACK_BUTTON_DESCRIPTION" desc="Acessibility string describing the back icon on the info details page of the promo.">
+        Back
+      </message>
 
       <!-- Caret Browsing -->
       <message name="IDS_CARET_BROWSING_DIALOG_TITLE" desc="Title of the caret browsing confirmation dialog" formatter_data="android_java">

@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 public class TipsPromoViewBinderUnitTest {
     private static final String PROMO_TITLE = "title";
     private static final String PROMO_DESCRIPTION = "description";
+    private static final String DETAILS_TITLE = "details_title";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -53,6 +54,7 @@ public class TipsPromoViewBinderUnitTest {
     private View mView;
     private TextView mTitleView;
     private TextView mDescriptionView;
+    private TextView mDetailsTitleView;
 
     @Before
     public void setUp() {
@@ -64,6 +66,7 @@ public class TipsPromoViewBinderUnitTest {
                         .inflate(R.layout.tips_promo_bottom_sheet, null, false);
         mTitleView = mView.findViewById(R.id.main_page_title_text);
         mDescriptionView = mView.findViewById(R.id.main_page_description_text);
+        mDetailsTitleView = mView.findViewById(R.id.details_page_title_text);
 
         mModel = TipsPromoProperties.createDefaultModel();
         PropertyModelChangeProcessor.create(mModel, mView, TipsPromoViewBinder::bind);
@@ -77,11 +80,13 @@ public class TipsPromoViewBinderUnitTest {
     @Test
     public void testFeatureTipPromoData() {
         FeatureTipPromoData promoData =
-                new FeatureTipPromoData(PROMO_TITLE, PROMO_DESCRIPTION, Collections.emptyList());
+                new FeatureTipPromoData(
+                        PROMO_TITLE, PROMO_DESCRIPTION, DETAILS_TITLE, Collections.emptyList());
         mModel.set(TipsPromoProperties.FEATURE_TIP_PROMO_DATA, promoData);
 
         assertEquals(PROMO_TITLE, mTitleView.getText());
         assertEquals(PROMO_DESCRIPTION, mDescriptionView.getText());
+        assertEquals(DETAILS_TITLE, mDetailsTitleView.getText());
     }
 
     @SmallTest
@@ -117,5 +122,21 @@ public class TipsPromoViewBinderUnitTest {
         assertNotNull(settingsDetailsOnClickListener);
         settingsDetailsOnClickListener.performClick();
         callbackHelper.waitForNext();
+    }
+
+    @SmallTest
+    @Test
+    public void testBackButtonClickListener() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        OnClickListener clickListener =
+                (view) -> {
+                    callbackHelper.notifyCalled();
+                };
+
+        mModel.set(TipsPromoProperties.BACK_BUTTON_CLICK_LISTENER, clickListener);
+        View onClickListener = mView.findViewById(R.id.details_page_back_button);
+        assertNotNull(onClickListener);
+        onClickListener.performClick();
+        callbackHelper.waitForOnly();
     }
 }
