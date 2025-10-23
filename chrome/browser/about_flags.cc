@@ -1597,97 +1597,71 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
      std::size(kOmniboxToolbeltAllActionsZeroTypedInputs), nullptr},
 };
 
-const FeatureEntry::FeatureParam kComposeboxShowZps[] = {
-    {"ShowComposeboxZps", "true"},
-};
-const FeatureEntry::FeatureParam kComposeboxShowTypedSuggestAndZps[] = {
-    {"ShowComposeboxZps", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-};
-const FeatureEntry::FeatureParam kComposeboxNoClickOutsideClosure[] = {
-    {"ConfigParam", "EgIQAA=="},
-};
-const FeatureEntry::FeatureParam kComposeboxNoEscClosure[] = {
-    {"ConfigParam", "EgIIAA=="},
-};
-const FeatureEntry::FeatureParam kComposeboxShowContextMenu[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowRecentTabChip", "true"},
-};
-const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
-    {"ShowComposeboxZps", "true"},
-    {"ShowContextMenu", "true"},
-    {"ShowRecentTabChip", "true"},
-};
-const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
-    {"MaxNumFiles", "5"},
-    {"ShowComposeboxZps", "true"},
-    {"ShowContextMenu", "true"},
-    {"ShowRecentTabChip", "true"},
-};
 const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndZpsMultiFileNoViewport[] = {
+    kComposeboxShowContextMenuAndSuggestMultiFile[] = {
         {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
+        {"ShowComposeboxTypedSuggest", "true"},
+        {"ShowContextMenu", "true"},
+        {"ShowRecentTabChip", "true"},
+};
+const FeatureEntry::FeatureParam
+    kComposeboxShowContextMenuAndSuggestMultiFileNoViewport[] = {
+        {"MaxNumFiles", "5"},
+        {"ShowComposeboxZps", "true"},
+        {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
         {"ShowRecentTabChip", "true"},
         {"EnableViewportImages", "false"},
 };
 const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews[] = {
+    kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews[] = {
         {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
+        {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
         {"ShowRecentTabChip", "true"},
         {"ShowContextMenuTabPreviews", "true"},
 };
 const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowToolsAndModels", "true"},
-    {"ShowComposeboxZps", "true"},
+    {"ShowContextMenu", "true"},     {"ShowToolsAndModels", "true"},
+    {"ShowComposeboxZps", "true"},   {"ShowComposeboxTypedSuggest", "true"},
     {"ForceToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
     {"ShowContextMenu", "true"},     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"}, {"ShowComposeboxZps", "true"},
-    {"ForceToolsAndModels", "true"},
+    {"ForceToolsAndModels", "true"}, {"ShowComposeboxTypedSuggest", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"MaxNumFiles", "5"},
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxZps", "true"},
+    {"ShowComposeboxTypedSuggest", "true"},
     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"},
     {"ForceToolsAndModels", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
-    {"- Show ZPS", kComposeboxShowZps, std::size(kComposeboxShowZps), nullptr},
-    {"- Show Typed Suggest and ZPS", kComposeboxShowTypedSuggestAndZps,
-     std::size(kComposeboxShowTypedSuggestAndZps), nullptr},
-    {"- Disable Click Outside Closure", kComposeboxNoClickOutsideClosure,
-     std::size(kComposeboxNoClickOutsideClosure), nullptr},
-    {"- Disable Escape Closure", kComposeboxNoEscClosure,
-     std::size(kComposeboxNoEscClosure), nullptr},
-    {"- Show Contextual Input Menu", kComposeboxShowContextMenu,
-     std::size(kComposeboxShowContextMenu), nullptr},
-    {"- Show Contextual Input Menu and ZPS", kComposeboxShowContextMenuAndZps,
-     std::size(kComposeboxShowContextMenuAndZps), nullptr},
-    {"- Show Contextual Input Menu and ZPS 5 File Limit",
-     kComposeboxShowContextMenuAndZpsMultiFile,
-     std::size(kComposeboxShowContextMenuAndZpsMultiFile), nullptr},
-    {"- Show Contextual Input Menu and ZPS 5 File Limit, no viewport uploading",
-     kComposeboxShowContextMenuAndZpsMultiFileNoViewport,
-     std::size(kComposeboxShowContextMenuAndZpsMultiFileNoViewport), nullptr},
-    {"- Show Contextual Input Menu, ZPS 5 File Limit and Tab Previews",
-     kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews,
-     std::size(kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews),
+    {"- Show Contextual Input Menu and Suggest, 5 File Limit",
+     kComposeboxShowContextMenuAndSuggestMultiFile,
+     std::size(kComposeboxShowContextMenuAndSuggestMultiFile), nullptr},
+    {"- Show Contextual Input Menu and Suggest, 5 File Limit, no viewport "
+     "uploading",
+     kComposeboxShowContextMenuAndSuggestMultiFileNoViewport,
+     std::size(kComposeboxShowContextMenuAndSuggestMultiFileNoViewport),
      nullptr},
-    {"- Show Context Menu with Tools and Models, ZPS", kShowToolsAndModels,
-     std::size(kShowToolsAndModels), nullptr},
-    {"- Show Create Image in Context Menu, ZPS", kShowCreateImageTool,
-     std::size(kShowCreateImageTool), nullptr},
+    {"- Show Contextual Input Menu and Suggest, Tab Previews, 5 File Limit",
+     kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews,
+     std::size(kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews),
+     nullptr},
+    {"- Show Contextual Input Menu and Suggest with Tools and Models",
+     kShowToolsAndModels, std::size(kShowToolsAndModels), nullptr},
+    {"- Show Contextual Input Menu and Suggest with Tools and Models including "
+     "Create Images",
+     kShowCreateImageTool, std::size(kShowCreateImageTool), nullptr},
     {"- Next Experience", kComposeboxNext, std::size(kComposeboxNext), nullptr},
 };
 
