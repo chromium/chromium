@@ -18,6 +18,7 @@
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/drive/drive_api_util.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -35,6 +36,7 @@
 #include "net/http/http_status_code.h"
 #include "net/socket/socket.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace save_to_drive {
@@ -50,7 +52,6 @@ constexpr std::string_view kMetadataContentType =
     "Content-Type: application/json; charset=UTF-8";
 constexpr std::string_view kParentFolderUrl =
     "https://www.googleapis.com/drive/v3beta/files";
-constexpr std::string_view kSuggestedFolderName = "Saved from Chrome";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("save_to_drive", R"(
@@ -237,7 +238,8 @@ void DriveUploader::FetchParentFolder() {
   url = net::AppendOrReplaceQueryParameter(url, "create_as_client_folder",
                                            "true");
   base::Value::Dict metadata;
-  metadata.Set("name", kSuggestedFolderName);
+  metadata.Set("name",
+               l10n_util::GetStringUTF16(IDS_SAVE_TO_DRIVE_FOLDER_NAME));
   metadata.Set("mimeType", drive::util::kDriveFolderMimeType);
   std::optional<std::string> metadata_string = base::WriteJson(metadata);
   parent_endpoint_fetcher_ = CreateEndpointFetcher(

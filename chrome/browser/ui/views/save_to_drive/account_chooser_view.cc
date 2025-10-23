@@ -242,7 +242,7 @@ std::unique_ptr<views::StyledLabel> AccountChooserView::CreateSubtitleLabel() {
   subtitle_label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
 
   std::u16string saved_from_chrome =
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_SAVED_FROM_CHROME);
+      l10n_util::GetStringUTF16(IDS_SAVE_TO_DRIVE_FOLDER_NAME);
 
   // Find the offsets of the text to style.
   std::vector<size_t> offsets;
