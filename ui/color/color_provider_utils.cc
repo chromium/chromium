@@ -708,7 +708,7 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlProgressValue] = {
         SkColorSetRGB(0x00, 0x75, 0xFF)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {
-        SkColorSetARGB(0x4D, 0xF1, 0xF1, 0xF1)};
+        SkColorSetRGB(0xF1, 0xF1, 0xF1)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
         SkColorSetRGB(0xD2, 0xD2, 0xD2)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
