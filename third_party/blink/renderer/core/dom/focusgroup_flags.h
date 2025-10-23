@@ -88,7 +88,10 @@ struct FocusgroupData {
   bool operator!=(const FocusgroupData& other) const = default;
 };
 
-FocusgroupData FindNearestFocusgroupAncestorData(const Element* element);
+// Returns the nearest ancestor Element that is an actual focusgroup owner or
+// nullptr if none exists.
+Element* FindFocusgroupOwner(const Element* element);
+
 CORE_EXPORT FocusgroupData ParseFocusgroup(const Element* element,
                                            const AtomicString& input);
 

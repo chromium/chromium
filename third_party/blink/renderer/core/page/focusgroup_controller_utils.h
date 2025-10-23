@@ -78,6 +78,11 @@ class CORE_EXPORT FocusgroupControllerUtils {
       Element* stop_ancestor,
       FocusgroupDirection direction);
 
+  // Returns the focusgroup owner of |element| if |element| is a focusgroup
+  // item, or nullptr otherwise. This combines focusgroup owner lookup with
+  // validation that the element is actually a focusgroup item.
+  static Element* GetFocusgroupOwnerOfItem(const Element* element);
+
   static bool IsFocusgroupItemWithOwner(const Element* element,
                                         const Element* focusgroup_owner);
   static bool IsGridFocusgroupItem(const Element* element);

@@ -1746,8 +1746,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual bool IsInertRoot() const;
 
   FocusgroupData GetFocusgroupData() const;
-  Element* FocusgroupLastFocused() const;
-  void SetFocusgroupLastFocused(Element* element);
+  Element* GetFocusgroupLastFocused() const;
+  // May only be called on a focusgroup that supports restoring the last focused
+  // element.
+  void SetFocusgroupLastFocused(Element& element);
+  void ClearFocusgroupLastFocused();
 
   bool checkVisibility(CheckVisibilityOptions* options) const;
 

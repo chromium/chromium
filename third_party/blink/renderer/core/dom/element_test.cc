@@ -66,13 +66,47 @@ TEST_F(ElementTest, FocusgroupLastFocusedStorageBasic) {
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
 
-  EXPECT_EQ(nullptr, container->FocusgroupLastFocused());
+  EXPECT_EQ(nullptr, container->GetFocusgroupLastFocused());
 
-  container->SetFocusgroupLastFocused(a);
-  EXPECT_EQ(a, container->FocusgroupLastFocused());
+  container->SetFocusgroupLastFocused(*a);
+  EXPECT_EQ(a, container->GetFocusgroupLastFocused());
 
-  container->SetFocusgroupLastFocused(b);
-  EXPECT_EQ(b, container->FocusgroupLastFocused());
+  container->SetFocusgroupLastFocused(*b);
+  EXPECT_EQ(b, container->GetFocusgroupLastFocused());
+}
+
+TEST_F(ElementTest, FocusgroupLastFocusedUpdatedOnFocus) {
+  Document& document = GetDocument();
+
+  SetBodyContent(R"HTML(
+    <div id='container' focusgroup="toolbar">
+      <button id='a'>a</button>
+      <button id='b'>b</button>
+    </div>
+  )HTML");
+
+  Element* container = document.getElementById(AtomicString("container"));
+  Element* a = document.getElementById(AtomicString("a"));
+  Element* b = document.getElementById(AtomicString("b"));
+
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  // Initially, no last focused element should be stored.
+  EXPECT_EQ(nullptr, container->GetFocusgroupLastFocused());
+
+  // Focus on button 'a' - should update last focused.
+  a->Focus();
+  EXPECT_EQ(a, container->GetFocusgroupLastFocused());
+
+  // Focus on button 'b' - should update last focused.
+  b->Focus();
+  EXPECT_EQ(b, container->GetFocusgroupLastFocused());
+
+  // Focus back to button 'a' - should update last focused.
+  a->Focus();
+  EXPECT_EQ(a, container->GetFocusgroupLastFocused());
 }
 
 TEST_F(ElementTest, FocusgroupLastFocusedWeakReference) {
@@ -91,8 +125,8 @@ TEST_F(ElementTest, FocusgroupLastFocusedWeakReference) {
   container->appendChild(button);
 
   // Set the last focused element.
-  container->SetFocusgroupLastFocused(button);
-  EXPECT_EQ(button, container->FocusgroupLastFocused());
+  container->SetFocusgroupLastFocused(*button);
+  EXPECT_EQ(button, container->GetFocusgroupLastFocused());
 
   // Remove the button from the tree.
   button->remove();
@@ -104,7 +138,7 @@ TEST_F(ElementTest, FocusgroupLastFocusedWeakReference) {
 
   // The weak reference should now return nullptr since the element was garbage
   // collected.
-  EXPECT_EQ(nullptr, container->FocusgroupLastFocused())
+  EXPECT_EQ(nullptr, container->GetFocusgroupLastFocused())
       << "WeakMember should not prevent garbage collection of removed elements";
 }
 

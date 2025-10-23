@@ -204,57 +204,20 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
   return nullptr;
 }
 
+Element* FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
+    const Element* element) {
+  if (!element || !element->IsFocusable()) {
+    return nullptr;
+  }
+
+  return focusgroup::FindFocusgroupOwner(element);
+}
+
 bool FocusgroupControllerUtils::IsFocusgroupItemWithOwner(
     const Element* element,
     const Element* focusgroup_owner) {
-  if (!element || !element->IsFocusable() || !focusgroup_owner) {
-    return false;
-  }
-  if (!IsActualFocusgroup(focusgroup_owner->GetFocusgroupData())) {
-    return false;
-  }
-
-  // An element is a focusgroup item in a specific focusgroup context if:
-  // 1. It is focusable.
-  // 2. It is not opted out or in an opted out subtree.
-  // 3. It is a descendant of a focusgroup.
-  // 4. It is not inside a nested focusgroup which would create a separate
-  // scope.
-
-  // Check if this element has been opted out from focusgroup participation.
-  if (IsElementInOptedOutSubtree(element)) {
-    return false;
-  }
-
-  // Check if the element is a descendant of the focusgroup context.
-  bool is_descendant = false;
-  for (Element* ancestor = FlatTreeTraversal::ParentElement(*element); ancestor;
-       ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
-    if (ancestor == focusgroup_owner) {
-      is_descendant = true;
-      break;
-    }
-  }
-  if (!is_descendant) {
-    return false;
-  }
-
-  // Check if there's any nested focusgroup between this element and the
-  // focusgroup context. If so, this element belongs to the nested focusgroup,
-  // not the outer focusgroup.
-  for (Element* ancestor = FlatTreeTraversal::ParentElement(*element);
-       ancestor && ancestor != focusgroup_owner;
-       ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
-    FocusgroupData ancestor_data = ancestor->GetFocusgroupData();
-    if (IsActualFocusgroup(ancestor_data)) {
-      // Found a nested focusgroup - this element belongs to that scope instead.
-      return false;
-    }
-  }
-
-  return true;
+  return GetFocusgroupOwnerOfItem(element) == focusgroup_owner;
 }
-
 // This function is called whenever the |element| passed by parameter has fallen
 // into a subtree while navigating backward. Its objective is to prevent
 // |element| from having descended into an opted-out focusgroup. When it

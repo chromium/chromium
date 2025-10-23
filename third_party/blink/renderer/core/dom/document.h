@@ -1119,6 +1119,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void ClearFocusedElement(bool omit_blur_events = false);
   Element* FocusedElement() const { return focused_element_.Get(); }
   void ClearFocusedElementIfNeeded();
+  void UpdateFocusgroupLastFocused(Element& focused_element);
   UserActionElementSet& UserActionElements() { return user_action_elements_; }
   const UserActionElementSet& UserActionElements() const {
     return user_action_elements_;

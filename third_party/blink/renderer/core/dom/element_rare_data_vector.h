@@ -335,9 +335,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ElementAnimationTriggerData* AnimationTriggerData();
   ElementAnimationTriggerData& EnsureAnimationTriggerData();
 
-  void SetFocusgroupLastFocused(Element* element);
-  Element* GetFocusgroupLastFocused() const;
-
   void SetDidAttachInternals() { fields_.did_attach_internals = true; }
   bool DidAttachInternals() const { return fields_.did_attach_internals; }
   bool HasUndoStack() const { return fields_.has_undo_stack; }
@@ -373,7 +370,12 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void ClearFocusgroupData() {
     fields_.focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
     fields_.focusgroup_flags = FocusgroupFlags::kNone;
+    SetFocusgroupLastFocused(nullptr);
   }
+  void SetFocusgroupLastFocused(Element* element);
+  Element* GetFocusgroupLastFocused() const;
+  void ClearFocusgroupLastFocused() { SetFocusgroupLastFocused(nullptr); }
+
   void SetAffectedByStartingStyles() {
     fields_.affected_by_starting_styles = true;
   }

@@ -737,4 +737,57 @@ TEST_F(FocusgroupControllerTest, NestedFocusgroupsHaveSeparateScopes) {
   EXPECT_EQ(utils::NextElement(inner2, /* skip_subtree */ false), inner3);
 }
 
+TEST_F(FocusgroupControllerTest, GetFocusgroupOwnerOfItem) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=fg focusgroup="toolbar">
+      <span id=item1 tabindex=0></span>
+      <span id=item2 tabindex=-1></span>
+      <span id=non_focusable>Not focusable</span>
+      <div id=opted_out focusgroup="none">
+        <span id=opted_out_item tabindex=0></span>
+      </div>
+      <div id=nested_fg focusgroup="toolbar">
+        <span id=nested_item tabindex=0></span>
+      </div>
+    </div>
+    <span id=outside_item tabindex=0></span>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* nested_fg = GetElementById("nested_fg");
+  auto* item1 = GetElementById("item1");
+  auto* item2 = GetElementById("item2");
+  auto* non_focusable = GetElementById("non_focusable");
+  auto* opted_out_item = GetElementById("opted_out_item");
+  auto* nested_item = GetElementById("nested_item");
+  auto* outside_item = GetElementById("outside_item");
+
+  // Basic focusgroup items should return their owner.
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(item1), fg);
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(item2), fg);
+  EXPECT_TRUE(utils::IsFocusgroupItemWithOwner(item1, fg));
+  EXPECT_TRUE(utils::IsFocusgroupItemWithOwner(item2, fg));
+
+  // Non-focusable elements are not considered items, so expect nullptr.
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(non_focusable), nullptr);
+  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(non_focusable, fg));
+
+  // Opted-out item elements are not considered items, so expect nullptr.
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(opted_out_item), nullptr);
+  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(opted_out_item, fg));
+
+  // Nested focusgroup item is part of nested focusgroup.
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(nested_item), nested_fg);
+  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(nested_item, fg));
+
+  // Element outside any focusgroup should have no owner.
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(outside_item), nullptr);
+  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(outside_item, fg));
+
+  // Null element in should return nullptr.
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(nullptr), nullptr);
+  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(nullptr, fg));
+}
+
 }  // namespace blink

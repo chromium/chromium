@@ -12007,19 +12007,40 @@ FocusgroupData Element::GetFocusgroupData() const {
   return {};
 }
 
-Element* Element::FocusgroupLastFocused() const {
+void Element::SetFocusgroupLastFocused(Element& element) {
+  // We can't have a focusgroup at all if the feature is not enabled.
+  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(GetExecutionContext()));
+  // It only makes sense to set this on a focusgroup that supports memory (no
+  // memory flag should not be set).
+  DCHECK(IsActualFocusgroup(GetFocusgroupData()));
+  DCHECK(!(GetFocusgroupData().flags & FocusgroupFlags::kNoMemory));
+  EnsureElementRareData().SetFocusgroupLastFocused(&element);
+}
+
+void Element::ClearFocusgroupLastFocused() {
+  ExecutionContext* context = GetExecutionContext();
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
+    return;
+  }
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->ClearFocusgroupLastFocused();
+  }
+}
+
+Element* Element::GetFocusgroupLastFocused() const {
+  ExecutionContext* context = GetExecutionContext();
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
+    return nullptr;
+  }
   // It only makes sense to check this on a focusgroup.
   DCHECK(IsActualFocusgroup(GetFocusgroupData()));
+  if (GetFocusgroupData().flags & FocusgroupFlags::kNoMemory) {
+    return nullptr;
+  }
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetFocusgroupLastFocused();
   }
   return nullptr;
-}
-
-void Element::SetFocusgroupLastFocused(Element* element) {
-  // It only makes sense to set this on a focusgroup.
-  DCHECK(IsActualFocusgroup(GetFocusgroupData()));
-  EnsureElementRareData().SetFocusgroupLastFocused(element);
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
