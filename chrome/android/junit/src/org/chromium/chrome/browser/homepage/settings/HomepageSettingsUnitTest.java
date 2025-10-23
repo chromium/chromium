@@ -881,7 +881,7 @@ public class HomepageSettingsUnitTest {
 
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
-                HomepageManager.getInstance().getHomepageGurl().isEmpty());
+                HomepageManager.getInstance().getHomepageGurl(/* isIncognito= */ false).isEmpty());
         Assert.assertEquals(
                 ASSERT_HOME_SWITCH_STATUS_MISMATCH,
                 HomeButtonStatus.USER_OFF,
@@ -991,7 +991,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 TEST_URL_FOO,
-                homepageManager.getHomepageGurl().getSpec());
+                homepageManager.getHomepageGurl(/* isIncognito= */ false).getSpec());
         assertUserActionRecorded(false);
 
         // Check radio button to select NTP as homepage.
@@ -1020,7 +1020,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 TEST_URL_FOO,
-                homepageManager.getHomepageGurl().getSpec());
+                homepageManager.getHomepageGurl(/* isIncognito= */ false).getSpec());
         assertUserActionRecorded(true);
     }
 
@@ -1095,7 +1095,8 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 "HomepageManager should be updated to NTP immediately after the radio button"
                         + " is clicked.",
-                UrlUtilities.isNtpUrl(HomepageManager.getInstance().getHomepageGurl()));
+                UrlUtilities.isNtpUrl(
+                        HomepageManager.getInstance().getHomepageGurl(/* isIncognito= */ false)));
     }
 
     /**
@@ -1145,7 +1146,7 @@ public class HomepageSettingsUnitTest {
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
-                UrlUtilities.isNtpUrl(homepageManager.getHomepageGurl()));
+                UrlUtilities.isNtpUrl(homepageManager.getHomepageGurl(/* isIncognito= */ false)));
         assertUserActionRecorded(false);
 
         // Update the text box. To do this, request focus for customized radio button so that the
@@ -1169,7 +1170,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 TEST_URL_BAR,
-                homepageManager.getHomepageGurl().getSpec());
+                homepageManager.getHomepageGurl(/* isIncognito= */ false).getSpec());
         assertUserActionRecorded(true);
     }
 

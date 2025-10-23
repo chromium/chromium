@@ -210,7 +210,7 @@ public class MultiWindowUtilsUnitTest {
                 };
 
         when(mHomepageManager.isHomepageEnabled()).thenReturn(true);
-        when(mHomepageManager.getHomepageGurl()).thenReturn(NTP_GURL);
+        when(mHomepageManager.getHomepageGurl(/* isIncognito= */ false)).thenReturn(NTP_GURL);
         HomepageManager.setInstanceForTesting(mHomepageManager);
 
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
@@ -386,7 +386,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void
             testIsMoveOtherWindowSupported_HasOneTabWithHomePageEnabledAsCustomUrl_ReturnsFalse() {
-        when(mHomepageManager.getHomepageGurl()).thenReturn(TEST_GURL);
+        when(mHomepageManager.getHomepageGurl(/* isIncognito= */ false)).thenReturn(TEST_GURL);
         when(mHomepageManager.isHomepageEnabled()).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
         assertFalse(

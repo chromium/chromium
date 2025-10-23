@@ -28,7 +28,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -167,9 +166,9 @@ public class ToolbarTabControllerImplTest {
     @Test
     public void openHomepage_loadsHomePage() {
         mToolbarTabController.openHomepage();
-        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl();
+        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl(/* isIncognito= */ false);
         if (homePageGurl.isEmpty()) {
-            homePageGurl = ChromeUrlConstants.nativeNtpGurl();
+            homePageGurl = UrlConstantResolverFactory.getOriginalResolver().getNtpGurl();
         }
         verify(mTab)
                 .loadUrl(

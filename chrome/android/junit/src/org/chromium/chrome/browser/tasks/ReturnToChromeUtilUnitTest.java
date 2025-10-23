@@ -108,7 +108,9 @@ public class ReturnToChromeUtilUnitTest {
         // HomepageManager:
         HomepageManager.setInstanceForTesting(mHomepageManager);
         doReturn(true).when(mHomepageManager).isHomepageEnabled();
-        doReturn(UrlConstants.ntpGurl()).when(mHomepageManager).getHomepageGurl();
+        doReturn(UrlConstants.ntpGurl())
+                .when(mHomepageManager)
+                .getHomepageGurl(/* isIncognito= */ false);
 
         doReturn(mProfile).when(mCurrentTabModel).getProfile();
         doReturn(mCurrentTabModel).when(mTabModelSelector).getCurrentModel();
