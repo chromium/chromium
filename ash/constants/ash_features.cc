@@ -1236,9 +1236,6 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
 BASE_FEATURE(kInternalServerSideSpeechRecognitionUSMModelFinch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables sending `client-info` values to IPP printers on ChromeOS.
-BASE_FEATURE(kIppClientInfo, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables new experimental IPP-first setup path for USB printers on ChromeOS.
 // Used in finch experiment.
 BASE_FEATURE(kIppFirstSetupForUsbPrinters, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3054,10 +3051,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-bool IsIppClientInfoEnabled() {
-  return base::FeatureList::IsEnabled(kIppClientInfo);
 }
 
 bool IsJupiterScreensaverEnabled() {

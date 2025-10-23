@@ -739,10 +739,6 @@ void LocalPrinterAsh::GetOAuthAccessToken(
 
 void LocalPrinterAsh::GetIppClientInfo(const std::string& printer_id,
                                        GetIppClientInfoCallback callback) {
-  if (!ash::features::IsIppClientInfoEnabled()) {
-    std::move(callback).Run({});
-    return;
-  }
   Profile* profile = GetProfile();
   DCHECK(profile);
   ash::CupsPrintersManager* printers_manager =

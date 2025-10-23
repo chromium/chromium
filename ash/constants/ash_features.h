@@ -569,7 +569,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInternalServerSideSpeechRecognitionByFinch);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInternalServerSideSpeechRecognitionUSMModelFinch);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kIppClientInfo);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kIppFirstSetupForUsbPrinters);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1244,7 +1243,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionEnabledByFinch();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionControlEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIppClientInfoEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJupiterScreensaverEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKerberosRememberPasswordByDefaultEnabled();
