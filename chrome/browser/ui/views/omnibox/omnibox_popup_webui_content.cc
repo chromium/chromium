@@ -19,9 +19,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/zoom/zoom_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/controls/menu/menu_runner.h"
 
 OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
     OmniboxPopupPresenter* presenter,
@@ -79,20 +77,6 @@ void OmniboxPopupWebUIContent::ShowUI() {
 void OmniboxPopupWebUIContent::CloseUI() {
   // The OmniboxPopupPresenter manages the widget visibility,
   // so this is a no-op.
-}
-
-void OmniboxPopupWebUIContent::ShowCustomContextMenu(
-    gfx::Point point,
-    std::unique_ptr<ui::MenuModel> menu_model) {
-  ConvertPointToScreen(this, &point);
-  context_menu_model_ = std::move(menu_model);
-  context_menu_runner_ = std::make_unique<views::MenuRunner>(
-      context_menu_model_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
-  context_menu_runner_->RunMenuAt(
-      GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
-      contents_wrapper_->web_contents()->GetContentNativeView());
 }
 
 void OmniboxPopupWebUIContent::ResizeDueToAutoResize(

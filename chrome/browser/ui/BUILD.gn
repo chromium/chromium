@@ -3954,8 +3954,6 @@ static_library("ui") {
       "views/media_router/web_contents_display_observer_view.h",
       "views/message_box_dialog.cc",
       "views/message_box_dialog.h",
-      "views/omnibox/omnibox_context_menu.cc",
-      "views/omnibox/omnibox_context_menu.h",
       "views/omnibox/omnibox_header_view.cc",
       "views/omnibox/omnibox_header_view.h",
       "views/omnibox/omnibox_local_answer_header_view.cc",

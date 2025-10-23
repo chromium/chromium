@@ -218,9 +218,6 @@ interface PageHandler {
                 mojo_base.mojom.TimeTicks match_selection_timestamp,
                 bool is_mouse_event);
 
-  // Opens Context Menu
-  ShowContextMenu(gfx.mojom.Point point);
-
   // Executes the Pedal Action. `match_selection_timestamp` is the number of
   // microseconds since Jan. 1, 1970 (ECMAScript epoch). `url` is only used to
   // confirm the match `line` selection. `mouse_button`, and modifier keys are

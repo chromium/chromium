@@ -19,11 +19,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -78,16 +75,15 @@ searchbox::mojom::SelectionLineState ConvertLineState(
 
 WebuiOmniboxHandler::WebuiOmniboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+    Profile* profile,
+    content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
-    OmniboxController* omnibox_controller,
-    OmniboxPopupUI* omnibox_popup_ui,
-    content::WebUI* web_ui)
+    OmniboxController* omnibox_controller)
     : SearchboxHandler(std::move(pending_page_handler),
-                       Profile::FromWebUI(web_ui),
-                       web_ui->GetWebContents(),
+                       profile,
+                       web_contents,
                        /*controller=*/nullptr),
-      metrics_reporter_(metrics_reporter),
-      omnibox_popup_ui_(*omnibox_popup_ui) {
+      metrics_reporter_(metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the
   // `OmniboxView`.
   CHECK(omnibox_controller);
@@ -167,15 +163,6 @@ void WebuiOmniboxHandler::ActivateKeyword(
                                   ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
                                   : metrics::OmniboxEventProto::TAP_HINT_VIEW;
     edit_model()->AcceptKeyword(entry_method);
-  }
-}
-
-void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
-  auto embedder = omnibox_popup_ui_->embedder();
-  if (embedder) {
-    std::unique_ptr<OmniboxContextMenu> context_menu =
-        std::make_unique<OmniboxContextMenu>(embedder);
-    embedder->ShowContextMenu(point, std::move(context_menu));
   }
 }
 

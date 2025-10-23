@@ -15,10 +15,10 @@
 
 class MetricsReporter;
 class OmniboxController;
-class OmniboxPopupUI;
+class Profile;
 
 namespace content {
-class WebUI;
+class WebContents;
 }  // namespace content
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
@@ -27,10 +27,10 @@ class WebuiOmniboxHandler : public SearchboxHandler,
  public:
   WebuiOmniboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      Profile* profile,
+      content::WebContents* web_contents,
       MetricsReporter* metrics_reporter,
-      OmniboxController* omnibox_controller,
-      OmniboxPopupUI* omnibox_popup_ui,
-      content::WebUI* web_ui);
+      OmniboxController* omnibox_controller);
 
   WebuiOmniboxHandler(const WebuiOmniboxHandler&) = delete;
   WebuiOmniboxHandler& operator=(const WebuiOmniboxHandler&) = delete;
@@ -43,7 +43,6 @@ class WebuiOmniboxHandler : public SearchboxHandler,
                        base::TimeTicks match_selection_timestamp,
                        bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
-  void ShowContextMenu(const gfx::Point& point) override;
 
   // SearchboxHandler:
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
@@ -69,8 +68,6 @@ class WebuiOmniboxHandler : public SearchboxHandler,
       edit_model_observation_{this};
 
   raw_ptr<MetricsReporter> metrics_reporter_;
-
-  raw_ref<OmniboxPopupUI> omnibox_popup_ui_;
 
   base::WeakPtrFactory<WebuiOmniboxHandler> weak_ptr_factory_{this};
 };

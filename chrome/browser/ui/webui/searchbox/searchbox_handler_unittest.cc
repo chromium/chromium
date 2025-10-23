@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
@@ -32,7 +31,6 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/public/test/test_web_ui.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "content/public/test/web_contents_tester.h"
 #include "lens_searchbox_handler.h"
@@ -394,13 +392,10 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    web_ui_.set_web_contents(web_contents_.get());
-
-    omnibox_popup_ui_ = std::make_unique<OmniboxPopupUI>(&web_ui_);
     handler_ = std::make_unique<WebuiOmniboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        /*metrics_reporter=*/nullptr, omnibox_controller_.get(),
-        omnibox_popup_ui_.get(), &web_ui_);
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        web_contents_.get(), /*metrics_reporter=*/nullptr,
+        omnibox_controller_.get());
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -410,8 +405,6 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
   }
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
-  std::unique_ptr<OmniboxPopupUI> omnibox_popup_ui_;
-  content::TestWebUI web_ui_;
 };
 
 TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
