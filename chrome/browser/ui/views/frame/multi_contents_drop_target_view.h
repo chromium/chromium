@@ -117,8 +117,6 @@ class MultiContentsDropTargetView : public views::View,
 
   bool ShouldShowAnimation() const;
 
-  void DisableAnimationsForTesting();
-
  private:
   void UpdateVisibility(bool should_be_open);
 
@@ -153,8 +151,6 @@ class MultiContentsDropTargetView : public views::View,
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
-
-  bool should_show_animations_for_testing_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_DROP_TARGET_VIEW_H_

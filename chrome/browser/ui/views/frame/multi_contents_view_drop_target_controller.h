@@ -85,9 +85,6 @@ class MultiContentsViewDropTargetController final
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
 
-  // Called when a tab is inserted into the tab strip.
-  void OnTabInserted();
-
   bool IsDropTimerRunningForTesting();
 
  private:

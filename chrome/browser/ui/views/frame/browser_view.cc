@@ -3588,10 +3588,6 @@ void BrowserView::OnTabStripModelChanged(
     return;
   }
 
-  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
-    multi_contents_view_->drop_target_controller().OnTabInserted();
-  }
-
   for ([[maybe_unused]] const auto& contents : change.GetInsert()->contents) {
 #if defined(USE_AURA)
     // WebContents inserted in tabs might not have been added to the root
