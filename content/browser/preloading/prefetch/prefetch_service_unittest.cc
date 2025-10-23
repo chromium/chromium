@@ -6856,7 +6856,9 @@ std::vector<Event> CalculateOutputEventSequence(
         prefetch_container_destroyed = true;
         output_event_sequence.push_back(Event::kObserverOnWillBeDestroyed);
 
-        if (!prefetch_completed && during_redirect_eligibility_check) {
+        if (!base::FeatureList::IsEnabled(
+                features::kPrefetchGracefulNotification) &&
+            !prefetch_completed && during_redirect_eligibility_check) {
           // TODO(https://crbug.com/400761083): Currently we issue
           // `OnDeterminedHead()` upon `PrefetchStreamingURLLoader` cancellation
           // during redirect eligibility check. Fix this, i.e. no observer call

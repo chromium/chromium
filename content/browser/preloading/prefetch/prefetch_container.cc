@@ -892,6 +892,14 @@ void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
 }
 
 void PrefetchContainer::OnDeterminedHead() {
+  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification) &&
+      is_in_dtor_) {
+    // This can be called due to the loader cancellation during the
+    // `PrefetchContainer` destruction. No state changes should be made and
+    // observers shouldn't be notified during destruction.
+    return;
+  }
+
   SetLoadState(LoadState::kDeterminedHead);
 
   if (GetNonRedirectHead()) {
