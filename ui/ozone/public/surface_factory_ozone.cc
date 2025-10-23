@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/notimplemented.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_implementation.h"
@@ -141,7 +142,8 @@ SurfaceFactoryOzone::GetSupportedFormatsForGLNativePixmapImport() {
 
   for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
     const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
-    if (gl_ozone->CanImportNativePixmap(buffer_format)) {
+    if (gl_ozone->CanImportNativePixmap(
+            viz::GetSharedImageFormat(buffer_format))) {
       supported_buffer_formats.push_back(buffer_format);
     }
   }

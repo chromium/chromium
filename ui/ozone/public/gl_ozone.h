@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_ui_types.h"
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
 
   // Returns true if the NativePixmap of the specified type and format can be
   // imported into GL using ImportNativePixmap().
-  virtual bool CanImportNativePixmap(gfx::BufferFormat format) = 0;
+  virtual bool CanImportNativePixmap(viz::SharedImageFormat format) = 0;
 
   // Imports NativePixmap into GL and binds it to the provided texture_id. The
   // NativePixmapGLBinding does not take ownership of the provided texture_id

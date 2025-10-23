@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -303,7 +304,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // GetCurrentGLOzone().ImportNativePixmap() for NV12 frames, so we should
   // ensure that's supported.
   if (!GetCurrentGLOzone().CanImportNativePixmap(
-          gfx::BufferFormat::YUV_420_BIPLANAR)) {
+          viz::MultiPlaneFormat::kNV12)) {
     LOG(ERROR) << "Importing NV12 buffers is not supported";
     done->Signal();
     return;

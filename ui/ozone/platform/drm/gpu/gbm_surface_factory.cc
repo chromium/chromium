@@ -121,13 +121,13 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
 
   ~GLOzoneEGLGbm() override = default;
 
-  bool CanImportNativePixmap(gfx::BufferFormat format) override {
+  bool CanImportNativePixmap(viz::SharedImageFormat format) override {
     if (!gl::GLSurfaceEGL::GetGLDisplayEGL()
              ->ext->b_EGL_EXT_image_dma_buf_import) {
       return false;
     }
 
-    return NativePixmapEGLBinding::IsBufferFormatSupported(format);
+    return NativePixmapEGLBinding::IsSharedImageFormatSupported(format);
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(

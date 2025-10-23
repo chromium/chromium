@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/glx.h"
@@ -24,7 +25,7 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
   explicit NativePixmapEGLX11Binding(gfx::BufferFormat format);
   ~NativePixmapEGLX11Binding() override;
 
-  static bool IsBufferFormatSupported(gfx::BufferFormat format);
+  static bool IsSharedImageFormatSupported(viz::SharedImageFormat format);
 
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,

@@ -22,13 +22,9 @@
 namespace gl {
 
 namespace {
-bool IsFormatSupported(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::BGRA_8888:
-      return true;
-    default:
-      return false;
-  }
+bool IsFormatSupported(viz::SharedImageFormat format) {
+  // Only supports BGRA_8888 format.
+  return format == viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 uint8_t Depth(gfx::BufferFormat format) {
@@ -152,8 +148,8 @@ NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() {
   }
 }
 
-bool NativePixmapEGLX11Binding::IsBufferFormatSupported(
-    gfx::BufferFormat format) {
+bool NativePixmapEGLX11Binding::IsSharedImageFormatSupported(
+    viz::SharedImageFormat format) {
   return gl::IsFormatSupported(format);
 }
 
@@ -205,10 +201,10 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     gfx::Size plane_size,
     GLenum target,
     GLuint texture_id) {
-  if (native_pixmap->GetSharedImageFormat() !=
-          viz::GetSharedImageFormat(plane_format) ||
-      !gl::IsFormatSupported(plane_format)) {
-    VLOG(1) << "Format " << viz::GetSharedImageFormat(plane_format).ToString()
+  auto plane_si_format = viz::GetSharedImageFormat(plane_format);
+  if (native_pixmap->GetSharedImageFormat() != plane_si_format ||
+      !gl::IsFormatSupported(plane_si_format)) {
+    VLOG(1) << "Format " << plane_si_format.ToString()
             << " is unsupported or does not match the NativePixmap's format ("
             << native_pixmap->GetSharedImageFormat().ToString() << ")";
     return nullptr;

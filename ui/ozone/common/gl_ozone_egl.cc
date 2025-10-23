@@ -59,7 +59,7 @@ void GLOzoneEGL::ShutdownGL(gl::GLDisplay* display) {
   gl::ClearBindingsEGL();
 }
 
-bool GLOzoneEGL::CanImportNativePixmap(gfx::BufferFormat format) {
+bool GLOzoneEGL::CanImportNativePixmap(viz::SharedImageFormat format) {
   return false;
 }
 

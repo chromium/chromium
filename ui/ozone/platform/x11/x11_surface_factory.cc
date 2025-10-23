@@ -68,17 +68,17 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
-  bool CanImportNativePixmap(gfx::BufferFormat format) override {
+  bool CanImportNativePixmap(viz::SharedImageFormat format) override {
     if (GetNativePixmapSupportType() == NativePixmapSupportType::kNone) {
       return false;
     }
 
     switch (GetNativePixmapSupportType()) {
       case NativePixmapSupportType::kDMABuf: {
-        return NativePixmapEGLBinding::IsBufferFormatSupported(format);
+        return NativePixmapEGLBinding::IsSharedImageFormatSupported(format);
       }
       case NativePixmapSupportType::kX11Pixmap: {
-        return NativePixmapEGLX11Binding::IsBufferFormatSupported(format);
+        return NativePixmapEGLX11Binding::IsSharedImageFormatSupported(format);
       }
       default:
         return false;

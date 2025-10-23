@@ -54,7 +54,7 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
 
   ~GLOzoneEGLWayland() override {}
 
-  bool CanImportNativePixmap(gfx::BufferFormat format) override;
+  bool CanImportNativePixmap(viz::SharedImageFormat format) override;
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
@@ -87,13 +87,13 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   gl::EGLDisplayPlatform native_display_;
 };
 
-bool GLOzoneEGLWayland::CanImportNativePixmap(gfx::BufferFormat format) {
+bool GLOzoneEGLWayland::CanImportNativePixmap(viz::SharedImageFormat format) {
   if (!gl::GLSurfaceEGL::GetGLDisplayEGL()
            ->ext->b_EGL_EXT_image_dma_buf_import) {
     return false;
   }
 
-  return NativePixmapEGLBinding::IsBufferFormatSupported(format);
+  return NativePixmapEGLBinding::IsSharedImageFormatSupported(format);
 }
 
 std::unique_ptr<NativePixmapGLBinding> GLOzoneEGLWayland::ImportNativePixmap(

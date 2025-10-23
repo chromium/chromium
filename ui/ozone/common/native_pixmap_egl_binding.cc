@@ -52,8 +52,9 @@ NativePixmapEGLBinding::~NativePixmapEGLBinding() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-bool NativePixmapEGLBinding::IsBufferFormatSupported(gfx::BufferFormat format) {
-  return GetFourCCFormatFromBufferFormat(format) != DRM_FORMAT_INVALID;
+bool NativePixmapEGLBinding::IsSharedImageFormatSupported(
+    viz::SharedImageFormat format) {
+  return GetFourCCFormatFromSharedImageFormat(format) != DRM_FORMAT_INVALID;
 }
 
 // static

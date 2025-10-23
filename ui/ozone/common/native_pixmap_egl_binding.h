@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/scoped_egl_image.h"
@@ -23,7 +24,7 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
                          gfx::BufferPlane plane);
   ~NativePixmapEGLBinding() override;
 
-  static bool IsBufferFormatSupported(gfx::BufferFormat format);
+  static bool IsSharedImageFormatSupported(viz::SharedImageFormat format);
 
   // Create an EGLImage from a given NativePixmap and plane and bind
   // |texture_id| to |target| followed by binding the image to |target|. The
