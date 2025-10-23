@@ -157,7 +157,9 @@ bool EntityDataManager::HasPendingQueries() const {
 }
 
 void EntityDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
-  if (data_type == syncer::AUTOFILL_VALUABLE && WalletPublicPassesEnabled()) {
+  if ((data_type == syncer::AUTOFILL_VALUABLE && WalletPublicPassesEnabled()) ||
+      (data_type == syncer::AUTOFILL_VALUABLE_METADATA &&
+       base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata))) {
     LoadEntities();
   }
 }

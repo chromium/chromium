@@ -369,5 +369,36 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, OnOtherDataTypeChangedBySync) {
   EXPECT_THAT(GetEntityInstances(), IsEmpty());
 }
 
+// Tests that a change notification for AUTOFILL_VALUABLE_METADATA from sync
+// triggers a reload of entities.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       OnAutofillValuableMetadataChangedBySync) {
+  base::test::ScopedFeatureList feature_list{
+      syncer::kSyncAutofillValuableMetadata};
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
+  // 1. Add an entity directly to the DB to simulate a sync change.
+  EntityInstance vh = test::GetVehicleEntityInstance();
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      vh, base::DoNothing());
+
+  // The EDM's cache is not updated yet.
+  EXPECT_THAT(GetEntityInstances(), IsEmpty());
+
+  // 2. Trigger the sync notification.
+  EXPECT_CALL(observer, OnEntityInstancesChanged);
+  helper().autofill_webdata_service()->GetAutofillBackend(
+      base::BindOnce([](AutofillWebDataBackend* backend) {
+        backend->NotifyOnAutofillChangedBySync(
+            syncer::DataType::AUTOFILL_VALUABLE_METADATA);
+      }));
+  helper().WaitUntilIdle();
+  // 3. Verify that the cache is reloaded.
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(vh));
+}
+
 }  // namespace
 }  // namespace autofill
