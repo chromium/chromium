@@ -819,8 +819,7 @@ public class ContextualSearchManager
             doLiteralSearch = true;
         }
 
-        // TODO(crbug.com/437389354): Convert into an assert
-        assumeNonNull(message);
+        assert message != null;
 
         mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
         mResolvedSearchTerm = resolvedSearchTerm;
@@ -874,8 +873,7 @@ public class ContextualSearchManager
             doPreventPreload = true;
         }
 
-        // TODO(crbug.com/437389354): Convert into an assert
-        assumeNonNull(searchTerm);
+        assert searchTerm != null;
 
         List<String> inBarRelatedSearches = buildRelatedSearches(searchTerm);
 
