@@ -20,6 +20,9 @@ found in the LICENSE file.
     <dimen name="menu_item_icon_badge_size">8dp</dimen>
     <dimen name="menu_item_icon_badge_border_size">2dp</dimen>
 
+    <!-- Menu item text dimensions. -->
+    <dimen name="menu_item_text_padding_start">12dp</dimen>
+
     <!-- Menu divider dimens -->
     <dimen name="overflow_menu_divider_line_padding">5dp</dimen>
 </resources>

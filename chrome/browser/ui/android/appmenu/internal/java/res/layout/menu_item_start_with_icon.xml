@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:paddingStart="12dp"
+        android:paddingStart="@dimen/menu_item_text_padding_start"
         android:minHeight="?attr/listItemHeight"
         android:duplicateParentState="true" />
 </LinearLayout>
