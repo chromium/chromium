@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -189,13 +190,14 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           // TODO(crbug.com/40896839): Add metric for when the
-                           // credential is nil.
                            if (credential.has_value()) {
                              [weakSelf
                                  showPasswordDetailsForCredential:credential
                                                                       .value()];
                            }
+                           base::UmaHistogramBoolean("IOS.PasswordBottomSheet."
+                                                     "Details.ValidCredential",
+                                                     credential.has_value());
                            [weakSelf.browserCoordinatorCommandsHandler
                                    dismissPasswordSuggestions];
                          }];

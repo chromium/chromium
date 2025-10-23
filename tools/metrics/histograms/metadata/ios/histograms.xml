@@ -4520,6 +4520,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordBottomSheet.Details.ValidCredential"
+    enum="Boolean" expires_after="2026-10-31">
+  <owner>sugoi@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Tracks whether the credential used to open the credential details menu from
+    the password suggestion bottom sheet is valid.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordBottomSheet.ExitReason"
     enum="PasswordSuggestionBottomSheetExitReason" expires_after="2026-03-22">
   <owner>sugoi@chromium.org</owner>
