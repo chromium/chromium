@@ -94,7 +94,7 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
   CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M142);
+        base::NotFatalUntil::M148);
   _signinLogger = [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
                                                     promoAction:_promoAction];
   [_signinLogger logSigninStarted];
