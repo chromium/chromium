@@ -110,8 +110,8 @@ AtomicString AtomicString::UpperASCII() const {
 }
 
 AtomicString AtomicString::Number(double number, unsigned precision) {
-  NumberToStringBuffer buffer;
-  return AtomicString(buffer.ToFixedPrecisionString(number, precision));
+  DoubleToStringConverter converter;
+  return AtomicString(converter.ToStringWithFixedPrecision(number, precision));
 }
 
 std::ostream& operator<<(std::ostream& out, const AtomicString& s) {

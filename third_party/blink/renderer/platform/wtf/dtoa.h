@@ -31,28 +31,29 @@
 
 namespace blink {
 
-class WTF_EXPORT NumberToStringBuffer {
+class WTF_EXPORT DoubleToStringConverter {
   STACK_ALLOCATED();
 
  public:
   // Size = 80 for sizeof(DtoaBuffer) + some sign bits, decimal point, 'e',
   // exponent digits.
-  constexpr static unsigned kBufferLength = 96;
+  constexpr static unsigned kBufferSize = 96;
 
-  NumberToStringBuffer() = default;
+  DoubleToStringConverter() = default;
 
-  // To*String() functions serialize the specified `double` value into
+  // ToString*() functions serialize the specified `double` value into
   // this instance.  The returned span points to a buffer in the instance.
 
   base::span<const LChar> ToString(double) LIFETIME_BOUND;
-  base::span<const LChar> ToFixedPrecisionString(double,
-                                                 unsigned significant_figures)
-      LIFETIME_BOUND;
-  base::span<const LChar> ToFixedWidthString(double, unsigned decimal_places)
+  base::span<const LChar> ToStringWithFixedPrecision(
+      double,
+      unsigned significant_figures) LIFETIME_BOUND;
+  base::span<const LChar> ToStringWithFixedWidth(double,
+                                                 unsigned decimal_places)
       LIFETIME_BOUND;
 
  private:
-  std::array<char, kBufferLength> buffer_;
+  std::array<char, kBufferSize> buffer_;
 };
 
 WTF_EXPORT double ParseDouble(base::span<const LChar> string,

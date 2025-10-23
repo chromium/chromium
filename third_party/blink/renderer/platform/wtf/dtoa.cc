@@ -64,8 +64,8 @@ const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
 
 }  // namespace
 
-base::span<const LChar> NumberToStringBuffer::ToString(double d) {
-  double_conversion::StringBuilder builder(buffer_.data(), kBufferLength);
+base::span<const LChar> DoubleToStringConverter::ToString(double d) {
+  double_conversion::StringBuilder builder(buffer_.data(), kBufferSize);
   const double_conversion::DoubleToStringConverter& converter =
       double_conversion::DoubleToStringConverter::EcmaScriptConverter();
   converter.ToShortest(d, &builder);
@@ -77,7 +77,7 @@ base::span<const LChar> NumberToStringBuffer::ToString(double d) {
 
 static inline base::span<const char>
 FormatStringTruncatingTrailingZerosIfNeeded(
-    base::span<char, NumberToStringBuffer::kBufferLength> buffer,
+    base::span<char, DoubleToStringConverter::kBufferSize> buffer,
     double_conversion::StringBuilder& builder) {
   size_t length = static_cast<size_t>(builder.position());
   builder.Finalize();
@@ -122,7 +122,7 @@ FormatStringTruncatingTrailingZerosIfNeeded(
   return result.first(truncated_length + 1);
 }
 
-base::span<const LChar> NumberToStringBuffer::ToFixedPrecisionString(
+base::span<const LChar> DoubleToStringConverter::ToStringWithFixedPrecision(
     double d,
     unsigned significant_figures) {
   // Mimic String::format("%.[precision]g", ...), but use dtoas rounding
@@ -135,7 +135,7 @@ base::span<const LChar> NumberToStringBuffer::ToFixedPrecisionString(
   // it.
   // "precision": The precision specifies the maximum number of significant
   // digits printed.
-  double_conversion::StringBuilder builder(buffer_.data(), kBufferLength);
+  double_conversion::StringBuilder builder(buffer_.data(), kBufferSize);
   const double_conversion::DoubleToStringConverter& converter =
       double_conversion::DoubleToStringConverter::EcmaScriptConverter();
   converter.ToPrecision(d, significant_figures, &builder);
@@ -146,7 +146,7 @@ base::span<const LChar> NumberToStringBuffer::ToFixedPrecisionString(
       FormatStringTruncatingTrailingZerosIfNeeded(buffer_, builder));
 }
 
-base::span<const LChar> NumberToStringBuffer::ToFixedWidthString(
+base::span<const LChar> DoubleToStringConverter::ToStringWithFixedWidth(
     double d,
     unsigned decimal_places) {
   // Mimic String::format("%.[precision]f", ...), but use dtoas rounding
@@ -158,7 +158,7 @@ base::span<const LChar> NumberToStringBuffer::ToFixedWidthString(
   // "precision": The precision value specifies the number of digits after the
   // decimal point.  If a decimal point appears, at least one digit appears
   // before it.  The value is rounded to the appropriate number of digits.
-  double_conversion::StringBuilder builder(buffer_.data(), kBufferLength);
+  double_conversion::StringBuilder builder(buffer_.data(), kBufferSize);
   const double_conversion::DoubleToStringConverter& converter =
       double_conversion::DoubleToStringConverter::EcmaScriptConverter();
   converter.ToFixed(d, decimal_places, &builder);
