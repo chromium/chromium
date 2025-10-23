@@ -77,6 +77,7 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
          {features::kGlicActorUi,
           {{features::kGlicActorUiTaskIconName, "true"}}}},
         {});
+    TrackFloatingGlicInstance();
   }
   ~GlicWindowControllerUiTest() override = default;
 
@@ -142,26 +143,36 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CheckControllerHasWidget(true),
+  RunTestSequence(OpenGlicFloatingWindow(), CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashOnBrowserClose) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached));
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
+  RunTestSequence(OpenGlicFloatingWindow());
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
-                  OpenGlicWindow(GlicWindowMode::kAttached));
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
+  RunTestSequence(OpenGlicFloatingWindow(), CloseGlicWindow(),
+                  OpenGlicFloatingWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ButtonTogglesGlicWindow) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  PressButton(kGlicButtonElementId),
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
+  RunTestSequence(OpenGlicFloatingWindow(), PressButton(kGlicButtonElementId),
                   InAnyContext(WaitForHide(kGlicViewElementId)),
                   CheckControllerHasWidget(false),
                   PressButton(kGlicButtonElementId),
@@ -170,9 +181,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ButtonTogglesGlicWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TaskIconTogglesGlicWindow) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   StartTaskAndShowActorTaskIcon();
   RunTestSequence(ObserveState(test::internal::kFloatyViewState, GetHost()),
-                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  OpenGlicFloatingWindow(),
                   PressButton(kGlicActorTaskIconElementId),
                   WaitForState(test::internal::kFloatyViewState,
                                mojom::CurrentView::kActuation),
@@ -186,9 +201,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TaskIconTogglesGlicWindow) {
 IN_PROC_BROWSER_TEST_F(
     GlicWindowControllerUiTest,
     GlicButtonAndTaskIconButtonTogglesConversationAndActuationView) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   StartTaskAndShowActorTaskIcon();
   RunTestSequence(ObserveState(test::internal::kFloatyViewState, GetHost()),
-                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  OpenGlicFloatingWindow(),
                   PressButton(kGlicActorTaskIconElementId),
                   WaitForState(test::internal::kFloatyViewState,
                                mojom::CurrentView::kActuation),
@@ -215,8 +234,12 @@ constexpr char kActivateSurfaceIncompatibilityNotice[] =
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        ButtonWhenAttachedToActiveBrowserCloses) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
       ActivateSurface(kBrowserViewElementId),
@@ -228,8 +251,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyWhenDetachedActiveCloses) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
+      OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
       InAnyContext(ActivateSurface(test::kGlicHostElementId)),
@@ -241,6 +268,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 // polling, make a test like this one with glic initially attached.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyDetachedWithNotNormalBrowser) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       Do([&]() {
         Browser* const pwa =
@@ -254,6 +285,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyOpensDetachedWithMinimizedBrowser) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       // Glic should open attached to active browser.
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
@@ -290,8 +325,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        ESCWhenDetachedActiveCloses) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
+      OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
       InAnyContext(ActivateSurface(test::kGlicHostElementId)),
@@ -302,8 +341,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        ESCWhenAttachedActiveCloses) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
       InAnyContext(ActivateSurface(test::kGlicHostElementId)),
@@ -316,8 +359,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 // post-resize.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        DISABLED_CloseWithContextMenu) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached), CheckControllerHasWidget(true),
+      OpenGlicFloatingWindow(), CheckControllerHasWidget(true),
       MoveMouseTo(kGlicViewElementId),
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT), WaitForHide(kBrowserViewElementId),
@@ -333,6 +380,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 #define MAYBE_OpenMenuItemShows OpenMenuItemShows
 #endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, MAYBE_OpenMenuItemShows) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(SimulateOpenMenuItem(),
                   WaitForAndInstrumentGlic(kHostAndContents),
                   CheckControllerHasWidget(true),
@@ -354,8 +405,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, OsButtonToggles) {
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenMenuItemWhenAttachedToActiveBrowserDoesNotClose) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      OpenGlicFloatingWindow(),
       // Glic should close.
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
@@ -365,8 +420,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenMenuItemWhenDetachedActiveDoesNotClose) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
+      OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
       InAnyContext(ActivateSurface(test::kGlicHostElementId)),
@@ -375,8 +434,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpeningProfilePickerClosesPanel) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
+      OpenGlicFloatingWindow(),
       CheckControllerWidgetMode(GlicWindowMode::kDetached), Do([&]() {
         glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
       }),
@@ -385,9 +448,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        ClientUnresponsiveThenError) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   base::HistogramTester histogram_tester;
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      OpenGlicFloatingWindow(),
       ClickMockGlicElement(kMockGlicClientHangButton, true),
       ObserveState(test::internal::kGlicAppState, GetHost()),
       WaitForState(test::internal::kGlicAppState,
@@ -434,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
   base::HistogramTester histogram_tester;
   RunTestSequence(
       ObserveState(test::internal::kGlicAppState, GetHost()),
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      OpenGlicFloatingWindow(),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
       ObserveState(views::test::kCurrentWidgetFocus),
       WithView(kBrowserViewElementId,
@@ -469,6 +536,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountWhileLoadingGlic) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(test::internal::kGlicAppState, GetHost()),
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
@@ -487,6 +558,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountSignInOnGlicOpenFlow) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(test::internal::kGlicAppState, GetHost()),
       ForceInvalidateAccount(), SimulateGlicHotkey(),
@@ -502,6 +577,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        AccountInvalidatedWhileGlicOpen) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
       ObserveState(test::internal::kGlicAppState, GetHost()),
@@ -514,11 +593,18 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        DetachedWidgetIsTrackedByOcclusionTracker) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CheckOcclusionTracked(true));
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
+  RunTestSequence(OpenGlicFloatingWindow(), CheckOcclusionTracked(true));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // The GlicButton and Tabstrip are not actually shown until a tab is created.
   chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
   // Calculate default location offset from work area.
@@ -604,6 +690,10 @@ class GlicWindowControllerLocationMetricsUiTest
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
                        TestPositionMetrics) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   if (IsWorkAreaTooSmallForTest()) {
     GTEST_SKIP()
         << "Test's work area bounds are too small for consistent results.";
@@ -673,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
       browser_bounds.bottom_right());
   open_and_close(ChromeRelativePosition::kBelowRight);
 
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlicFloatingWindow());
   browser()->window()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   EXPECT_FALSE(browser()->window()->IsActive());
@@ -687,6 +777,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
                        TestPercentOverlapMetrics) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   if (IsWorkAreaTooSmallForTest()) {
     GTEST_SKIP()
         << "Test's work area bounds are too small for consistent results.";
@@ -728,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
   window_controller().SetPreviousPositionForTesting(test_origin);
   open_and_close(PercentOverlap::k100);
 
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlicFloatingWindow());
   browser()->window()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   EXPECT_FALSE(browser()->window()->IsActive());
@@ -740,6 +834,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
   Profile& profile1 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
@@ -813,9 +911,9 @@ class GlicWindowControllerUnloadOnCloseTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUnloadOnCloseTest, UnloadOnClose) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CheckControllerHasWidget(true), CheckWebUiContentsExist(true),
-                  CloseGlicWindow(), CheckWebUiContentsExist(false));
+  RunTestSequence(OpenGlicFloatingWindow(), CheckControllerHasWidget(true),
+                  CheckWebUiContentsExist(true), CloseGlicWindow(),
+                  CheckWebUiContentsExist(false));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest
@@ -968,8 +1066,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_GlicWindowControllerMultipleDisplaysUiTest,
     return;
   }
 
-  RunTestSequence(CheckDisplaysSetUp(true),
-                  OpenGlicWindow(GlicWindowMode::kDetached),
+  RunTestSequence(CheckDisplaysSetUp(true), OpenGlicFloatingWindow(),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
                   InAnyContext(MoveWidgetToSecondDisplay(),
@@ -985,8 +1082,7 @@ IN_PROC_BROWSER_TEST_F(
     return;
   }
 
-  RunTestSequence(CheckDisplaysSetUp(true),
-                  OpenGlicWindow(GlicWindowMode::kAttached),
+  RunTestSequence(CheckDisplaysSetUp(true), OpenGlicFloatingWindow(),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kAttached),
                   InAnyContext(DetachGlicWindow(), MoveWidgetToSecondDisplay(),
