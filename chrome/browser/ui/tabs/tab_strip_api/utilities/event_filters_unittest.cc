@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/event_filters.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/browser_apis/tab_strip/types/node_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs_api::events {

@@ -6,9 +6,9 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

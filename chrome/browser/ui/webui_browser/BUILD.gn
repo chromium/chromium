@@ -72,7 +72,6 @@ source_set("impl") {
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
-    "//chrome/browser/resources/tab_strip_api:resources",
     "//chrome/browser/resources/webui_browser:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui/bookmarks",
@@ -88,6 +87,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/util",
     "//chrome/common:chrome_features",
+    "//components/browser_apis/tab_strip/resources",
     "//components/guest_contents/browser",
     "//components/input",
     "//components/omnibox/browser:vector_icons",
@@ -124,7 +124,7 @@ mojom("browser_mojo_bindings") {
     "extensions_bar.mojom",
   ]
   public_deps = [
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
+    "//components/browser_apis/tab_strip:mojom",
     "//mojo/public/mojom/base",
     "//ui/base/mojom:ui_base_types",
     "//url/mojom:url_mojom_gurl",

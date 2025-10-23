@@ -57,6 +57,8 @@ source_set("passwords") {
       "password_cross_domain_confirmation_popup_view.h",
     ]
   }
+
+  deps = [ "//chrome/browser/ui:browser_navigator_params_headers" ]
 }
 
 source_set("impl") {
@@ -78,6 +80,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser",

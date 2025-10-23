@@ -23,7 +23,11 @@ source_set("tab_alert") {
     "//ui/base/unowned_user_data",
   ]
 
-  deps = [ "//chrome/browser/media/webrtc" ]
+  deps = [
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+  ]
 }
 
 source_set("impl") {
@@ -39,6 +43,7 @@ source_set("impl") {
     "//chrome/browser/actor/ui",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/color:color_headers",
     "//chrome/common:chrome_features",
     "//components/vector_icons",
   ]

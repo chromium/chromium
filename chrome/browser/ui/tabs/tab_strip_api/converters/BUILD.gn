@@ -11,8 +11,9 @@ source_set("converters") {
   deps = [
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/alert:tab_alert",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
-    "//chrome/browser/ui/tabs/tab_strip_api/types",
+    "//chrome/browser/ui/tabs/alert:tab_alert_enum",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/types",
   ]
 }
 
@@ -24,8 +25,8 @@ source_set("unit_tests") {
   deps = [
     ":converters",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
-    "//chrome/browser/ui/tabs/tab_strip_api/types",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/types",
     "//testing/gtest",
   ]
 }

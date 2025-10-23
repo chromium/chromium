@@ -7,6 +7,8 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "tab_strip_api"
 
+  # TODO (crbug.com/453756445): make it easier to share components. Users
+  # should not need to mess around with WebUIDataSource.
   # The files in this package are served from:
   #     chrome://<webui-host>/tab_strip_api/...
   # This package's resources need to be added to a WebUI's WebUIDataSource.
@@ -29,20 +31,18 @@ build_webui("build") {
   ]
 
   mojo_files = [
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/node_id_converter.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-converters.ts",
-    "$root_gen_dir/chrome/browser/ui/webui/tabs/tabs.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/node_id_converter.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_data_model.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_events.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-converters.ts",
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom_ts__copy_converters",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom_ts__generator",
-    "//chrome/browser/ui/webui/tabs:mojo_bindings_ts__generator",
+    "//components/browser_apis/tab_strip:mojom_ts__copy_converters",
+    "//components/browser_apis/tab_strip:mojom_ts__generator",
     "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",
   ]
 }

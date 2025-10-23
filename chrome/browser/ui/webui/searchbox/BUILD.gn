@@ -100,6 +100,7 @@ source_set("searchbox_test_utils") {
     "//testing/gtest",
   ]
   deps = [
+    "//chrome/browser/ui/omnibox",
     "//components/omnibox/browser:vector_icons",
     "//components/search",
   ]

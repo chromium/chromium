@@ -11,7 +11,7 @@ source_set("adapters") {
   public_deps = [
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
+    "//components/browser_apis/tab_strip:mojom",
     "//components/tabs:public",
     "//content/public/browser",
   ]

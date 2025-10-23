@@ -7,8 +7,8 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace tabs_api::events {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_api/types/split_tab_visual_data_traits.h"
+#include "components/browser_apis/tab_strip/types/split_tab_visual_data_traits.h"
 
 MojoSplitLayout mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout>::ToMojom(
     NativeSplitLayout input) {

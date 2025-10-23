@@ -4,7 +4,7 @@
 
 module webui_browser.mojom;
 
-import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 

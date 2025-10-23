@@ -2060,6 +2060,7 @@ static_library("browser") {
     "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
     "//chrome/browser/webid:impl",
+    "//components/browser_apis/tab_strip:mojom",
     "//components/enterprise/connectors/core",
 
     # TODO(crbug.com/369436587): Remove this dependency when
@@ -8615,7 +8616,6 @@ static_library("browser_generated_files") {
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
       "//chrome/browser/ui:webui_name_variants",
-      "//chrome/browser/ui/tabs/tab_strip_api:mojom",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
       "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
@@ -8643,6 +8643,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui_browser:browser_mojo_bindings",
       "//chrome/browser/webauthn/proto",
       "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
+      "//components/browser_apis/tab_strip:mojom",
     ]
     if (!is_official_build) {
       public_deps +=

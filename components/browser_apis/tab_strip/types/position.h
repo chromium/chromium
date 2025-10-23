@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_POSITION_H_
-#define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_POSITION_H_
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_POSITION_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_POSITION_H_
 
 #include <optional>
 
-#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
+#include "components/browser_apis/tab_strip/types/node_id.h"
 
 namespace tabs_api {
 
@@ -40,4 +40,4 @@ class Position {
 
 }  // namespace tabs_api
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_POSITION_H_
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_POSITION_H_

@@ -4,8 +4,8 @@
 
 module tabs_api.mojom;
 
-import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom";
-import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
 
 struct OnTabsCreatedEvent {
   // Tab ids of the newly created tabs.

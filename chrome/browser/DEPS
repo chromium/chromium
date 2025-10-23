@@ -67,6 +67,7 @@ include_rules = [
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
   "+components/breadcrumbs/core",
+  "+components/browser_apis/tab_strip",
   "+components/browser_sync",
   "+components/browser_ui/accessibility",
   "+components/browser_ui/desktop_windowing/android",

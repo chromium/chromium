@@ -51,9 +51,9 @@ build_webui("build") {
   mojo_files = [
     # TODO(crbug.com/439641430): fix mojo ts bindings to account for cross
     # reference import issue.
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/node_id_converter.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-converters.ts",
-    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/node_id_converter.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-converters.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui_browser/bookmark_bar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui_browser/browser.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui_browser/extensions_bar.mojom-webui.ts",
@@ -62,10 +62,10 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom_ts__copy_converters",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom_ts__generator",
     "//chrome/browser/ui/webui/tabs:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui_browser:browser_mojo_bindings_ts__generator",
+    "//components/browser_apis/tab_strip:mojom_ts__copy_converters",
+    "//components/browser_apis/tab_strip:mojom_ts__generator",
     "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",
   ]
 
@@ -74,7 +74,7 @@ build_webui("build") {
   ts_definitions = [ "chrome_browser.d.ts" ]
 
   ts_deps = [
-    "//chrome/browser/resources/tab_strip_api:build_ts",
+    "//components/browser_apis/tab_strip/resources:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
@@ -85,6 +85,6 @@ build_webui("build") {
 
   ts_path_mappings =
       [ "/tab_strip_api/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/tab_strip_api/tsc/*",
+            "$root_gen_dir/components/browser_apis/tab_strip/resources/tsc/*",
             target_gen_dir) ]
 }

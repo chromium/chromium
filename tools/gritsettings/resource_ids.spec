@@ -711,10 +711,6 @@
     "META": {"sizes": {"includes": [40]}},
     "includes": [5060],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip_api/resources.grd": {
-    "META": {"sizes": {"includes": [15]}},
-    "includes": [5065],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tts_engine/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5070],
@@ -1132,11 +1128,15 @@
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/autofill/core/browser/autofill_and_password_manager_internals/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
-    "includes": [7290],
+    "includes": [7270],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/autofill_ml_internals/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
-    "includes": [7295],
+    "includes": [7280],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/components/browser_apis/tab_strip/resources/resources.grd": {
+    "META": {"sizes": {"includes": [15]}},
+    "includes": [7290],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [30]}},

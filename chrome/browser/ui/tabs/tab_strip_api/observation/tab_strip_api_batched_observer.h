@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_OBSERVATION_TAB_STRIP_API_BATCHED_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 
 namespace tabs_api::observation {
 

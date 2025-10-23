@@ -11,9 +11,9 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_types.mojom.h"
 
 namespace views {
 class View;

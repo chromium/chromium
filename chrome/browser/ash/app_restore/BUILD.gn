@@ -97,6 +97,7 @@ static_library("app_restore") {
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/notifications",
     "//chrome/browser/prefs:util",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/startup:startup_tab",

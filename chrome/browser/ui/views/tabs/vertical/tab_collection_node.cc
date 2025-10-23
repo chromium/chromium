@@ -8,13 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_types.mojom.h"
 #include "ui/views/view.h"
 
 namespace {

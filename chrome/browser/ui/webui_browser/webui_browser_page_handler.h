@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/webui_browser/browser.mojom.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "components/browser_apis/tab_strip/types/node_id.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

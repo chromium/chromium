@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_NODE_ID_H_
-#define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_NODE_ID_H_
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_H_
 
 #include <string>
 #include <string_view>
@@ -53,4 +53,4 @@ class NodeId {
 
 }  // namespace tabs_api
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_NODE_ID_H_
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_H_

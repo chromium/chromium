@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 
 RootTabCollectionNode::RootTabCollectionNode(
     tabs_api::TabStripService* tab_strip_service,

@@ -45,9 +45,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)

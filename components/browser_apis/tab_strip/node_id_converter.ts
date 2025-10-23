@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import type {NodeIdDataView, NodeIdTypeMapper} from './tab_strip_api_types.mojom-converters.js';
-import {NodeId_Type} from './tab_strip_api_types.mojom-webui.js';
+import type {NodeId_Type} from './tab_strip_api_types.mojom-webui.js';
 
 const SEPARATOR = ':';
 
-export class NodeIdConverter implements NodeIdTypeMapper<String> {
+export class NodeIdConverter implements NodeIdTypeMapper<string> {
   private validateAndSplit(token: string): [string, string] {
     const parts = token.split(SEPARATOR);
     if (parts.length !== 2 || !parts[0] || !parts[1]) {

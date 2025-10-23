@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
@@ -18,6 +19,68 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api::converters {
+
+mojom::NetworkState ToMojo(TabNetworkState state) {
+  switch (state) {
+    case TabNetworkState::kNone:
+      return mojom::NetworkState::kNone;
+    case TabNetworkState::kWaiting:
+      return mojom::NetworkState::kWaiting;
+    case TabNetworkState::kLoading:
+      return mojom::NetworkState::kLoading;
+    case TabNetworkState::kError:
+      return mojom::NetworkState::kError;
+  }
+}
+
+mojom::AlertState ToMojo(tabs::TabAlert state) {
+  switch (state) {
+    case tabs::TabAlert::MEDIA_RECORDING:
+      return mojom::AlertState::kMediaRecording;
+    case tabs::TabAlert::TAB_CAPTURING:
+      return mojom::AlertState::kTabCapturing;
+    case tabs::TabAlert::AUDIO_PLAYING:
+      return mojom::AlertState::kAudioPlaying;
+    case tabs::TabAlert::AUDIO_MUTING:
+      return mojom::AlertState::kAudioMuting;
+    case tabs::TabAlert::BLUETOOTH_CONNECTED:
+      return mojom::AlertState::kBluetoothConnected;
+    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
+      return mojom::AlertState::kBluetoothScanActive;
+    case tabs::TabAlert::USB_CONNECTED:
+      return mojom::AlertState::kUsbConnected;
+    case tabs::TabAlert::HID_CONNECTED:
+      return mojom::AlertState::kHidConnected;
+    case tabs::TabAlert::SERIAL_CONNECTED:
+      return mojom::AlertState::kSerialConnected;
+    case tabs::TabAlert::PIP_PLAYING:
+      return mojom::AlertState::kPipPlaying;
+    case tabs::TabAlert::DESKTOP_CAPTURING:
+      return mojom::AlertState::kDesktopCapturing;
+    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
+      return mojom::AlertState::kVrPresentingInHeadset;
+    case tabs::TabAlert::AUDIO_RECORDING:
+      return mojom::AlertState::kAudioRecording;
+    case tabs::TabAlert::VIDEO_RECORDING:
+      return mojom::AlertState::kVideoRecording;
+    case tabs::TabAlert::GLIC_ACCESSING:
+      return mojom::AlertState::kGlicAccessing;
+    case tabs::TabAlert::GLIC_SHARING:
+      return mojom::AlertState::kGlicSharing;
+    case tabs::TabAlert::ACTOR_ACCESSING:
+      return mojom::AlertState::kActorAccessing;
+  }
+}
+
+std::vector<mojom::AlertState> ToMojo(
+    const std::vector<tabs::TabAlert>& states) {
+  std::vector<mojom::AlertState> result;
+  result.reserve(states.size());
+  for (auto state : states) {
+    result.push_back(ToMojo(state));
+  }
+  return result;
+}
 
 tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
                                      const TabRendererData& data,
@@ -30,10 +93,10 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
   result->title = base::UTF16ToUTF8(data.title);
   result->favicon = data.favicon.Rasterize(&color_provider);
   result->url = data.visible_url;
-  result->network_state = data.network_state;
+  result->network_state = ToMojo(data.network_state);
   if (handle.Get() != nullptr) {
-    result->alert_states =
-        tabs::TabAlertController::From(handle.Get())->GetAllActiveAlerts();
+    result->alert_states = ToMojo(
+        tabs::TabAlertController::From(handle.Get())->GetAllActiveAlerts());
   }
 
   result->is_active = states.is_active;

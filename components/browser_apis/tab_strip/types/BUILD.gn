@@ -29,7 +29,7 @@ source_set("unit_tests") {
   deps = [
     ":types",
     "//base/test:test_support",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
+    "//components/browser_apis/tab_strip:mojom",
     "//testing/gtest",
   ]
 }

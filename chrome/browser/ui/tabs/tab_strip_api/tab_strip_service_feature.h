@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_FEATURE_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_FEATURE_H_
 
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // Public interface for retrieving the tab strip service, either through mojo

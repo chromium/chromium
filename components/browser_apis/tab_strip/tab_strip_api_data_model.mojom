@@ -4,14 +4,42 @@
 
 module tabs_api.mojom;
 
-import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom";
-import "chrome/browser/ui/webui/tabs/tabs.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "url/mojom/url.mojom";
 
 // Holds a data URL representation of an image, ie: favicon.
 struct Image {
   url.mojom.Url data_url;
+};
+
+// Must contain the same values as `TabAlertState` in
+// chrome/browser/ui/tabs/alert/tab_alert.h Matching order is not important.
+enum AlertState {
+  kAudioMuting,
+  kAudioRecording,
+  kAudioPlaying,
+  kBluetoothConnected,
+  kBluetoothScanActive,
+  kDesktopCapturing,
+  kActorAccessing,
+  kGlicAccessing,
+  kGlicSharing,
+  kHidConnected,
+  kMediaRecording,
+  kPipPlaying,
+  kSerialConnected,
+  kTabCapturing,
+  kUsbConnected,
+  kVideoRecording,
+  kVrPresentingInHeadset,
+};
+
+enum NetworkState {
+  kNone,
+  kWaiting,
+  kLoading,
+  kError,
 };
 
 struct Tab {
@@ -21,8 +49,8 @@ struct Tab {
 
   Image favicon;
 
-  array<tabs.mojom.TabAlertState> alert_states;
-  tabs.mojom.TabNetworkState network_state;
+  array<AlertState> alert_states;
+  NetworkState network_state;
 
   // The current tab is active.
   bool is_active;
