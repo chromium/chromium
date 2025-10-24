@@ -5592,7 +5592,6 @@
 <translation id="4857304314344645169">查看任何問題的逐步說明</translation>
 <translation id="485806788160414322">播放或暫停播放媒體</translation>
 <translation id="4858913220355269194">飛球</translation>
-<translation id="4860114370595561279">已儲存的資訊會儲存在裝置上</translation>
 <translation id="486213875233855629">已由系統管理員設為靜音</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
 <translation id="4863702650881330715">擴充相容性</translation>
@@ -5742,6 +5741,7 @@
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4961594008939394243">隨時隨地使用相機購物、翻譯及辨識所見內容</translation>
 <translation id="496185450405387901">你的系統管理員已安裝此應用程式。</translation>
+<translation id="4963068409841400707">瞭解如何在 <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> 和 <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /> 裝置上開始使用</translation>
 <translation id="4963603093937263654">確認「<ph name="DEVICE_NAME" />」已開啟通知功能</translation>
 <translation id="4963789650715167449">移除目前的分頁</translation>
 <translation id="4964455510556214366">排列</translation>
@@ -5794,7 +5794,6 @@
 <translation id="5003070249435823986">使用表情進入捲動模式，然後將頭部轉向要捲動的方向。再次做出表情即可退出捲動模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5005113238422129109">使用麥克風與 Gemini 對話。對話過程中，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)</translation>
-<translation id="5005311809885666699">透過 Chrome 儲存</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
 <translation id="5006778209728626987">閃電</translation>

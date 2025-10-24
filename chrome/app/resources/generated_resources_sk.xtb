@@ -5601,7 +5601,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4857304314344645169">Zobrazte si podrobné vysvetlenie akéhokoľvek problému</translation>
 <translation id="485806788160414322">Prehratie alebo pozastavenie médií</translation>
 <translation id="4858913220355269194">Fritz</translation>
-<translation id="4860114370595561279">Uložené informácie sa ukladajú vo vašom zariadení</translation>
 <translation id="486213875233855629">Zvuk vypol správca</translation>
 <translation id="4862642413395066333">Podpisovanie odpovedí protokolu OCSP</translation>
 <translation id="4863702650881330715">Rozšíriť kompatibilitu</translation>
@@ -5751,6 +5750,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4961318399572185831">Prenos obrazovky</translation>
 <translation id="4961594008939394243">Nakupujte, prekladajte a identifikujte na cestách to, čo vidíte, pomocou kamery</translation>
 <translation id="496185450405387901">Túto aplikáciu nainštaloval váš správca.</translation>
+<translation id="4963068409841400707">Ako začať v systémoch <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> a <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">V zariadení <ph name="DEVICE_NAME" /> musíte zapnúť upozornenia</translation>
 <translation id="4963789650715167449">Odstrániť aktuálnu kartu</translation>
 <translation id="4964455510556214366">Usporiadanie</translation>
@@ -5803,7 +5803,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5003070249435823986">Použite gesto na prepnutie do režimu posúvania a potom pohybom hlavy naznačte smer posúvania. Opätovným gestom ukončite režim posúvania.</translation>
 <translation id="5003993274120026347">Ďalšia veta</translation>
 <translation id="5005113238422129109">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá).</translation>
-<translation id="5005311809885666699">Uložené z Chromu</translation>
 <translation id="5005498671520578047">Kopírovanie hesla</translation>
 <translation id="5006218871145547804">ADB aplikácií pre Android v systéme Crostini</translation>
 <translation id="5006778209728626987">Blesk</translation>

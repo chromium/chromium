@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" />: чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="1138458427267715730">Получайте оповещения о скидках, когда они появляются на каком-либо сайте.</translation>
 <translation id="1142713751288681188">Тип бумаги</translation>
+<translation id="1142965388643537393">Информация о поездке</translation>
 <translation id="1144136880160289237">Этот список пока пуст.</translation>
 <translation id="1149617035358809955">проверить вашу личность, чтобы ввести платежные данные</translation>
 <translation id="1150565364351027703">Солнцезащитные очки</translation>
@@ -837,6 +838,7 @@
 <translation id="2357481397660644965">Вашим устройством управляет <ph name="DEVICE_MANAGER" />, а аккаунтом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Несколько</translation>
 <translation id="2359808026110333948">Продолжить</translation>
+<translation id="236000571258713023">Транспортные средства</translation>
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню изменения размера</translation>
 <translation id="2365355378251437925">Заполните поле "<ph name="FIELD" />".</translation>
@@ -2198,6 +2200,7 @@
 <translation id="4598556348158889687">Управление хранилищем</translation>
 <translation id="459914240367517409">Веб-разработка и веб-дизайн</translation>
 <translation id="4602465984861132303">Боулинг</translation>
+<translation id="4603727370377253901">Забронированные авиабилеты</translation>
 <translation id="4607608436550361748">Посмотреть советы по работе с Chrome</translation>
 <translation id="460848736049414407">Заблокировано администратором</translation>
 <translation id="4610279718074907952">Этот сайт входит в группу <ph name="SET_OWNER" /> и может отслеживать ваши действия</translation>
@@ -2206,6 +2209,7 @@
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4622292761762557753">Все равно передать</translation>
 <translation id="4622647778991854660">Включите уведомления в Центре уведомлений. <ph name="LINK" /></translation>
+<translation id="4623894491222334521">Удостоверения личности</translation>
 <translation id="4627675673814409125">Это правило нельзя установить на уровне профиля Chrome, поэтому оно будет игнорироваться.</translation>
 <translation id="4628678854894591460">Туристические предложения</translation>
 <translation id="4628948037717959914">Фото</translation>
@@ -4033,7 +4037,7 @@
 <translation id="7598391785903975535">Менее <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Сайт <ph name="HOST_NAME" /> пока не может обработать этот запрос.</translation>
 <translation id="7599089013883397081">Превышено время ожидания</translation>
-<translation id="7602868996817972616">Спросите Google об этой странице</translation>
+<translation id="7602868996817972616">Спросить Google об этой странице</translation>
 <translation id="7610193165460212391">Значение <ph name="VALUE" /> лежит за пределами разрешенного диапазона.</translation>
 <translation id="761261689936461781">Толстая</translation>
 <translation id="7613889955535752492">Срок действия: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -5598,7 +5598,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4857304314344645169">Pogledajte detaljno objašnjenje bilo kog problema</translation>
 <translation id="485806788160414322">Pusti ili pauziraj medije</translation>
 <translation id="4858913220355269194">Fric</translation>
-<translation id="4860114370595561279">Sačuvane informacije se čuvaju na uređaju</translation>
 <translation id="486213875233855629">Administrator je isključio zvuk</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>
 <translation id="4863702650881330715">Povećaj kompatibilnost</translation>
@@ -5748,6 +5747,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
 <translation id="4961594008939394243">Kupujte, prevodite i identifikujte ono što vidite pomoću kamere u pokretu</translation>
 <translation id="496185450405387901">Administrator je instalirao ovu aplikaciju.</translation>
+<translation id="4963068409841400707">Saznajte kako da započnete na <ph name="BEGIN_LINK_ANDROID" />Android-u<ph name="END_LINK_ANDROID" /> i <ph name="BEGIN_LINK_IOS" />iOS-u<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Uverite se da su obaveštenja uključena na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Ukloni aktuelnu karticu</translation>
 <translation id="4964455510556214366">Raspored</translation>
@@ -5800,7 +5800,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5003070249435823986">Koristite pokret da biste ušli u režim skrolovanja, pa pomerite glavu u pravcu u kom želite da skrolujete. Ponovo koristite pokret da biste izašli iz režima skrolovanja.</translation>
 <translation id="5003993274120026347">Sledeća rečenica</translation>
 <translation id="5005113238422129109">Koristite mikrofon da biste razgovarali sa Gemini-jem. Kada razgovarate sa Gemini-jem, zvuk se čuva u Aktivnostima u Gemini aplikacijama (ako su uključene)</translation>
-<translation id="5005311809885666699">Sačuvano je iz Chrome-a</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5006218871145547804">ADB za Android aplikacije za Crostini</translation>
 <translation id="5006778209728626987">Munja</translation>

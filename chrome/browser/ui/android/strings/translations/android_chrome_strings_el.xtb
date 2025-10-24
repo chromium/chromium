@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1812027881030482584">Το <ph name="SITE_ETLD_PLUS_ONE" /> δεν μπορεί να συνεχίσει να χρησιμοποιεί το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Φύλλο κάτω μέρους για σύνδεση</translation>
+<translation id="1823492026305965829">Σύνδεση ως <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Οι τρόποι πληρωμής και οι διευθύνσεις πληρωμών από το Google Pay δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.
 Μόνο κάποιος που γνωρίζει τη φράση πρόσβασης μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. H φράση πρόσβασης δεν αποστέλλεται στην Google, ούτε αποθηκεύεται από αυτή. Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, <ph name="BEGIN_LINK" />διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
@@ -856,6 +857,7 @@
 <translation id="4910889077668685004">Εφαρμογές πληρωμών</translation>
 <translation id="4912413785358399818">Μετακίνηση καρτέλας</translation>
 <translation id="4913169188695071480">Διακοπή ανανέωσης</translation>
+<translation id="4921224083091001889">Για να έχετε πρόσβαση στους κωδικούς πρόσβασής σας και σε άλλα στοιχεία σε όλες τις συσκευές σας, συνδεθείτε στο Chrome ως <ph name="EMAIL" /></translation>
 <translation id="4925120120285606924">Στιγμιότυπο οθόνης <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Μπορείτε να αποθηκεύσετε εικόνες και αρχεία για προβολή εκτός σύνδεσης ή για κοινοποίηση σε άλλες εφαρμογές</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 σελιδοδείκτης και κάποια άλλα στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google.}other{# σελιδοδείκτες και κάποια άλλα στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google.}}</translation>
@@ -880,6 +882,7 @@
 <translation id="5007392906805964215">Έλεγχος</translation>
 <translation id="5010886807652684893">Οπτική προβολή</translation>
 <translation id="5011311129201317034">Ο ιστότοπος <ph name="SITE" /> επιθυμεί σύνδεση</translation>
+<translation id="5012016139642806466">Αποκτήστε πρόσβαση στους κωδικούς πρόσβασης και σε άλλα στοιχεία σε όλες τις συσκευές σας</translation>
 <translation id="5012253429094023177">Φαίνεται ότι οι ιστότοποι <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> και <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> σχετίζονται. Βεβαιωθείτε ότι εμπιστεύεστε τον ιστότοπο <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />, προτού χρησιμοποιήσετε τον κωδικό πρόσβασής σας.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Τελευταία 15 λεπτά</translation>
@@ -1622,6 +1625,7 @@
 <translation id="8135406045838672858">Τα PDF που κατεβάζετε ανοίγουν αυτόματα με την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Δεν θα χρειάζεται να θυμάστε αυτόν τον κωδικό πρόσβασης. Θα αποθηκευτεί στον Διαχειριστή κωδικών πρόσβασης Google.</translation>
 <translation id="8152331954420209374">Μετάβαση στο Lens</translation>
+<translation id="8153206878708357851">Εναλλαγή περιήγησης με σύμβολα προσθήκης</translation>
 <translation id="8163820386638255770">Για να χρησιμοποιήσετε και να αποθηκεύσετε κωδικούς πρόσβασης στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) ανενεργό στοιχείο}other{(#) ανενεργά στοιχεία}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> αρχεία απομένουν</translation>
@@ -1647,6 +1651,7 @@
 <translation id="8260126382462817229">Δοκιμάστε να συνδεθείτε ξανά</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="82619448491672958">Δείτε άλλες καρτέλες</translation>
+<translation id="8265730590513812063">Άνοιγμα του Μενού του Chrome</translation>
 <translation id="8266753737658117282">Συνέχεια με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Τοποθεσία λήψης</translation>
 <translation id="8271267069224406035">Αναφορά ως ανεπιθύμητου</translation>

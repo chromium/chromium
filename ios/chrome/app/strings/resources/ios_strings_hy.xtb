@@ -1692,6 +1692,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7484645889979462775">Երբեք չպահել այս կայքի համար</translation>
 <translation id="7486006552035434095">Համաժամացրեք ձեր սարքերը</translation>
 <translation id="7491131399623468277">Բացել կարգավորումները…</translation>
+<translation id="7491161827858509164">Նախկինում ձեր ներբեռնած ֆայլերը տեսնելու համար բացեք <ph name="BEGIN_LINK" />Ֆայլեր<ph name="END_LINK" /> հավելվածը</translation>
 <translation id="7498234416455752244">Շարունակել աշխատանքը</translation>
 <translation id="7500244509706269886">Ավտոմատ լրացնել ձևը</translation>
 <translation id="750493650310597496">Ընտրվել է 0 էջանիշ</translation>
@@ -1729,6 +1730,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7612619742409846846">Մուտք եք գործել Google որպես՝</translation>
 <translation id="7612849887607288481">Բացել ԱԲ-ի նախատիպի ընտրացանկը</translation>
 <translation id="7620522820075868385">Չեղարկել</translation>
+<translation id="762078666799342162">Նախկինում ձեր ներբեռնած ֆայլերը կարող եք դիտել <ph name="BEGIN_LINK" />Ֆայլեր<ph name="END_LINK" /> հավելվածում</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Կոտրված գաղտնաբառեր}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="7640669552036055091">Android-ում վերջերս օգտագործած ներդիրներ</translation>

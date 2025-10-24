@@ -387,6 +387,7 @@
 <translation id="1244917379075403655">คลิก "การตั้งค่า"</translation>
 <translation id="1245331638296910488">ไฟล์จะย้ายไปที่ OneDrive เมื่อเปิดใน Microsoft 365</translation>
 <translation id="1245628370644070008">การกู้คืนข้อมูลในเครื่อง</translation>
+<translation id="1246420197935327230">เลือกพื้นที่</translation>
 <translation id="1246863218384630739">ไม่สามารถติดตั้ง <ph name="VM_NAME" />: URL ของรูปภาพแสดงรหัสข้อผิดพลาด <ph name="HTTP_ERROR" /> โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="1247372569136754018">ไมโครโฟน (ภายใน)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{ไม่อนุญาตให้มีการแจ้งเตือนสำหรับ 1 เว็บไซต์}other{ไม่อนุญาตให้มีการแจ้งเตือนสำหรับ {NUM_SITES} เว็บไซต์}}</translation>
@@ -2816,6 +2817,7 @@
 <translation id="2916745397441987255">ค้นหาส่วนขยาย</translation>
 <translation id="2918484639460781603">ไปที่การตั้งค่า</translation>
 <translation id="2918484644467055090">ลงทะเบียนอุปกรณ์นี้กับองค์กรที่ใช้บัญชีของคุณอยู่ไม่ได้ เนื่องจากอุปกรณ์มีเครื่องหมายกำกับว่าได้รับการจัดการโดยองค์กรอื่น</translation>
+<translation id="2920346489891435227">เปิดลิงก์ในมุมมองด้านขวา</translation>
 <translation id="2920852127376356161">ไม่อนุญาตให้จัดการโปรโตคอล</translation>
 <translation id="2921081876747860777">โปรดสร้างรหัสผ่านเพื่อปกป้องข้อมูลในเครื่อง</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> ของคุณจะล็อกในตอนนี้
@@ -4591,6 +4593,7 @@
 <translation id="4133265950310064865">การปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="4134838386867070505">ขั้นตอนที่ 1 จาก 4: อธิบายปัญหา</translation>
 <translation id="413534985210133938">"<ph name="LOCAL_FOLDER" />" จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากย้ายบุ๊กมาร์กนี้ไปยัง "<ph name="LOCAL_FOLDER" />" คุณจะไม่เห็นบุ๊กมาร์กนี้ในอุปกรณ์อื่นๆ อีกต่อไป</translation>
+<translation id="4135370802895537423">เปิดลิงก์ในมุมมองด้านขวา</translation>
 <translation id="4135746311382563554">ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS</translation>
 <translation id="4136203100490971508">แสงตอนกลางคืนจะปิดโดยอัตโนมัติเมื่อพระอาทิตย์ขึ้น</translation>
 <translation id="41365691917097717">การดำเนินการต่อจะเป็นการเปิดใช้การแก้ไขข้อบกพร่อง ADB ของการสร้างและทดสอบแอป Android โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
@@ -4676,6 +4679,7 @@
 <translation id="4209251085232852247">ปิดอยู่</translation>
 <translation id="4210048056321123003">กำลังดาวน์โหลดเครื่องเสมือน</translation>
 <translation id="4210380525132844778">เหตุผล: พบ <ph name="RULE" /> ในรายการ "<ph name="LIST_NAME" />"</translation>
+<translation id="4210428686880035809">เปิดลิงก์ในมุมมองด้านซ้าย</translation>
 <translation id="4211362364312260125">ระบุจุดสังเกตหลักในหน้าเว็บสำหรับเทคโนโลยีความช่วยเหลือพิเศษ</translation>
 <translation id="421182450098841253">&amp;แสดงแถบบุ๊กมาร์ก</translation>
 <translation id="4211904048067111541">หยุดใช้กับแอป Android</translation>
@@ -5597,7 +5601,6 @@
 <translation id="4857304314344645169">ดูคำอธิบายของปัญหาต่างๆ แบบทีละขั้นตอน</translation>
 <translation id="485806788160414322">เล่นหรือหยุดสื่อชั่วคราว</translation>
 <translation id="4858913220355269194">ฟริทซ์</translation>
-<translation id="4860114370595561279">ระบบจะเก็บข้อมูลที่บันทึกไว้ในอุปกรณ์ของคุณ</translation>
 <translation id="486213875233855629">ผู้ดูแลระบบได้ปิดเสียง</translation>
 <translation id="4862642413395066333">การเซ็นชื่อในการตอบสนอง OCSP</translation>
 <translation id="4863702650881330715">เพิ่มความเข้ากันได้</translation>
@@ -5799,7 +5802,6 @@
 <translation id="5003070249435823986">ใช้ท่าทางสัมผัสเพื่อเข้าสู่โหมดเลื่อน จากนั้นขยับศีรษะไปในทิศทางที่ต้องการเลื่อน ใช้ท่าทางสัมผัสอีกครั้งเพื่อออกจากโหมดเลื่อน</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
 <translation id="5005113238422129109">ใช้ไมโครโฟนเพื่อแชทกับ Gemini เมื่อคุณพูดกับ Gemini ระบบจะจัดเก็บเสียงไว้ในกิจกรรมบนแอป Gemini (หากเปิดอยู่)</translation>
-<translation id="5005311809885666699">บันทึกจาก Chrome แล้ว</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5006218871145547804">ADB ของแอป Android ใน Crostini</translation>
 <translation id="5006778209728626987">สายฟ้า</translation>
@@ -6052,6 +6054,7 @@
 <translation id="5184662919967270437">กำลังอัปเดตอุปกรณ์</translation>
 <translation id="5185386675596372454">รุ่นใหม่ล่าสุดของ "<ph name="EXTENSION_NAME" />" ถูกปิดใช้งาน เนื่องจากต้องได้รับการอนุญาตมากกว่านี้</translation>
 <translation id="5185500136143151980">ไม่มีอินเทอร์เน็ต</translation>
+<translation id="5186362203408605578">ใช้อุปกรณ์อื่นโดยสแกนคิวอาร์โค้ด</translation>
 <translation id="5186381005592669696">ปรับแต่งภาษาที่แสดงสำหรับแอปที่รองรับ</translation>
 <translation id="5186788525428341874">คุณสามารถใช้พาสคีย์นี้เพื่อลงชื่อเข้าใช้อุปกรณ์ต่างๆ ได้เร็วขึ้น เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT_NAME" /></translation>
 <translation id="5187641678926990264">ติดตั้งหน้าเว็บเป็นแอป...</translation>
@@ -6436,6 +6439,7 @@
 <translation id="5457082343331641453">เพิ่มไปยังการค้นหาของคุณ</translation>
 <translation id="5457113250005438886">ไม่ถูกต้อง</translation>
 <translation id="5457459357461771897">อ่านและลบรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
+<translation id="5457795687441958389">อยู่ในโหมดออกจากระบบ</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">คุณป้อน PIN ผิดหลายครั้งเกินไป หากต้องการเข้าถึงพาสคีย์และรหัสผ่าน ให้เปลี่ยน PIN</translation>
 <translation id="5459470938885464873">เกิดข้อผิดพลาดในการนำเข้าใบรับรอง</translation>
@@ -7444,6 +7448,7 @@
 <translation id="6175910054050815932">รับลิงก์</translation>
 <translation id="6177412385419165772">กำลังนำออก...</translation>
 <translation id="6177478397823976397">ไม่พบอุปกรณ์ โปรดเปิดบทความในศูนย์ช่วยเหลือในแท็บใหม่</translation>
+<translation id="6177779807714496775">เปิดลิงก์ในมุมมองด้านซ้าย</translation>
 <translation id="6178664161104547336">เลือกใบรับรอง</translation>
 <translation id="6178682841350631965">อัปเดตข้อมูลการลงชื่อเข้าใช้แล้ว</translation>
 <translation id="6179830757749383456">เบราว์เซอร์ที่จัดการโดย <ph name="BROWSER_DOMAIN" /> โปรไฟล์ที่จัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
@@ -8581,6 +8586,7 @@
 <translation id="6973611239564315524">มีการอัปเกรดเป็น Debian 10 (Buster) พร้อมใช้งาน</translation>
 <translation id="69739764870135975">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
 <translation id="697508444536771064">ปิด Linux</translation>
+<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> ต้องการบันทึกข้อมูลในมือถือของคุณ</translation>
 <translation id="6978121630131642226">เครื่องมือค้นหา</translation>
 <translation id="6978717888677691380">เว็บไซต์ที่คุณบล็อก</translation>
 <translation id="6979041727349121225">โหมดประหยัดพลังงาน</translation>
@@ -11959,6 +11965,7 @@
 <translation id="984705303330760860">เพิ่มภาษาที่ใช้การตรวจตัวสะกดได้</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ทั่วไป</translation>
+<translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ต้องการรับข้อมูลจากมือถือของคุณ</translation>
 <translation id="988320949174893488">กระตุกเป็นบางครั้ง</translation>
 <translation id="988978206646512040">ต้องระบุรหัสผ่าน</translation>
 <translation id="992032470292211616">ส่วนขยาย แอป และธีมอาจเป็นอันตรายต่ออุปกรณ์ของคุณ คุณแน่ใจไหมว่าต้องการดำเนินการต่อ</translation>

@@ -5613,7 +5613,6 @@
 <translation id="4857304314344645169">Δείτε μια επεξήγηση βήμα προς βήμα για τυχόν προβλήματα</translation>
 <translation id="485806788160414322">Αναπαραγωγή ή παύση μέσου</translation>
 <translation id="4858913220355269194">Fritz</translation>
-<translation id="4860114370595561279">Οι αποθηκευμένες πληροφορίες φυλάσσονται στη συσκευή σας</translation>
 <translation id="486213875233855629">Σίγαση από τον διαχειριστή σας</translation>
 <translation id="4862642413395066333">Υπογραφή αποκρίσεων OCSP</translation>
 <translation id="4863702650881330715">Επέκταση συμβατότητας</translation>
@@ -5763,6 +5762,7 @@
 <translation id="4961318399572185831">Μετάδοση οθόνης</translation>
 <translation id="4961594008939394243">Αγοράστε, μεταφράστε και αναγνωρίστε ό,τι βλέπετε με την κάμερά σας εν κινήσει</translation>
 <translation id="496185450405387901">Αυτή η εφαρμογή έχει εγκατασταθεί από τον διαχειριστή σας.</translation>
+<translation id="4963068409841400707">Μάθετε πώς να ξεκινήσετε σε <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> και <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Βεβαιωθείτε ότι οι ειδοποιήσεις είναι ενεργοποιημένες στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Κατάργηση τρέχουσας καρτέλας</translation>
 <translation id="4964455510556214366">Διάταξη</translation>
@@ -5815,7 +5815,6 @@
 <translation id="5003070249435823986">Χρησιμοποιήστε την κίνηση, για να μεταβείτε στη λειτουργία κύλισης και, στη συνέχεια, μετακινήστε το κεφάλι σας προς την κατεύθυνση που θέλετε να γίνει κύλιση. Χρησιμοποιήστε ξανά την κίνηση, για να εξέλθετε από τη λειτουργία κύλισης.</translation>
 <translation id="5003993274120026347">Επόμενη πρόταση</translation>
 <translation id="5005113238422129109">Χρησιμοποιήστε το μικρόφωνό σας, για να συνομιλήσετε με το Gemini. Όταν μιλάτε στο Gemini, ο ήχος αποθηκεύεται στη Δραστηριότητα στις Εφαρμογές Gemini (αν είναι ενεργοποιημένη)</translation>
-<translation id="5005311809885666699">Αποθηκεύτηκε από το Chrome</translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
 <translation id="5006218871145547804">ADB εφαρμογής Android Crostini</translation>
 <translation id="5006778209728626987">Αστραπή</translation>

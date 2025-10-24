@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – aby zamknąć pełny ekran, przeciągnij od góry i kliknij przycisk Wstecz</translation>
 <translation id="1138458427267715730">Otrzymuj alerty, gdy cena spadnie w dowolnej witrynie w internecie</translation>
 <translation id="1142713751288681188">Typ papieru</translation>
+<translation id="1142965388643537393">Informacje o podróży</translation>
 <translation id="1144136880160289237">Nie masz jeszcze żadnych aktywnych tematów</translation>
 <translation id="1149617035358809955">zweryfikować Twoją tożsamość, aby móc uzupełnić dane do płatności</translation>
 <translation id="1150565364351027703">Okulary przeciwsłoneczne</translation>
@@ -837,6 +838,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
+<translation id="236000571258713023">Pojazdy</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu przełączania rozmiaru</translation>
 <translation id="2365355378251437925">Wpisz <ph name="FIELD" /></translation>
@@ -2199,6 +2201,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4598556348158889687">Zarządzanie pamięcią</translation>
 <translation id="459914240367517409">Projektowanie i programowanie stron internetowych</translation>
 <translation id="4602465984861132303">Kręgle</translation>
+<translation id="4603727370377253901">Rezerwacje lotów</translation>
 <translation id="4607608436550361748">Zobacz wskazówki na temat Chrome</translation>
 <translation id="460848736049414407">Zablokowany przez administratora</translation>
 <translation id="4610279718074907952">Ta witryna należy do zdefiniowanej przez firmę <ph name="SET_OWNER" /> grupy, która ma dostęp do danych o Twojej aktywności</translation>
@@ -2207,6 +2210,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4622292761762557753">Przenieś mimo to</translation>
 <translation id="4622647778991854660">Włącz powiadomienia w Centrum powiadomień. Otwórz <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Dokumenty tożsamości</translation>
 <translation id="4627675673814409125">Tej zasady nie można ustawić na poziomie profilu Chrome, dlatego zostanie ona zignorowana.</translation>
 <translation id="4628678854894591460">Oferty wakacyjne</translation>
 <translation id="4628948037717959914">Zdjęcie</translation>

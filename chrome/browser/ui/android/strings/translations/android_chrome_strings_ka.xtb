@@ -1625,6 +1625,7 @@
 <translation id="8135406045838672858">ჩამოტვირთული PDF-ები ავტომატურად გაიხსნება <ph name="APP_NAME" />-ით</translation>
 <translation id="8137562778192957619">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში.</translation>
 <translation id="8152331954420209374">Lens-ზე გადასვლა</translation>
+<translation id="8153206878708357851">კურსორით დათვალიერების გადართვა</translation>
 <translation id="8163820386638255770">თქვენს Google ანგარიშში პაროლები რომ გამოიყენოთ და შეინახოთ, დაადასტურეთ ვინაობა</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) არააქტიური ერთეული}other{(#) არააქტიური ერთეული}}</translation>
 <translation id="8186512483418048923">დარჩენილია <ph name="FILES" /> ფაილი</translation>
@@ -1650,6 +1651,7 @@
 <translation id="8260126382462817229">ცადეთ სისტემაში ხელახლა შესვლა</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="82619448491672958">სხვა ჩანართების ნახვა</translation>
+<translation id="8265730590513812063">გახსენით Chrome-ის მენიუ</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით გაგრძელება</translation>
 <translation id="8266862848225348053">ჩამოტვირთვის მდებარეობა</translation>
 <translation id="8271267069224406035">სპამის შესახებ შეტყობინება</translation>

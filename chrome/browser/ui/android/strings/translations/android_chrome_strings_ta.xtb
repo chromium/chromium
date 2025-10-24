@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1007349221964075684">திறந்துள்ள மறைநிலைச் சாளரங்களைப் பார்க்க திரைப் பூட்டு அம்சத்தைப் பயன்படுத்தவும்</translation>
 <translation id="1010283278930414892">இந்தச் சாதனத்தில் சேமிக்கப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை</translation>
 <translation id="1011749477052068769">இங்கு நகர்த்து</translation>
 <translation id="1014083013111769343">வாசிப்புப் பயன்முறை விருப்பங்கள் முழு அளவிற்குத் திறந்துள்ளன</translation>
@@ -1167,6 +1168,7 @@
 <translation id="6312687380483398334">இணைய ஆப்ஸ் (நிசப்தம்)</translation>
 <translation id="6315386555979018699">நீக்கிவிட்டுத் தொடர்க</translation>
 <translation id="6316139424528454185">Android பதிப்பு ஆதரிக்கப்படாது</translation>
+<translation id="631839948975905034">Chromeமில் இருந்து வெளியேறும்போது மறைநிலைச் சாளரங்களைப் பூட்டு</translation>
 <translation id="6324916366299863871">ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="6324977638108296054">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> வழியாகப் பகிர்</translation>
@@ -1625,6 +1627,7 @@
 <translation id="8135406045838672858">பதிவிறக்கிய PDF ஃபைல்கள் <ph name="APP_NAME" /> ஆப்ஸில் தானாகத் திறக்கப்படும்</translation>
 <translation id="8137562778192957619">இந்தக் கடவுச்சொல்லை நீங்கள் நினைவில் வைத்திருக்க வேண்டியதில்லை. Google Password Managerரில் இது சேமிக்கப்படும்.</translation>
 <translation id="8152331954420209374">Lensஸிற்குச் செல்லும்</translation>
+<translation id="8153206878708357851">கேரெட் பிரவுசிங்கை ஆன்/ஆஃப் செய்ய</translation>
 <translation id="8163820386638255770">உங்கள் Google கணக்கில் உள்ள கடவுச்சொற்களைப் பயன்படுத்தவும் சேமிக்கவும் இது நீங்கள்தான் என்பதை உறுதிப்படுத்தவும்</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) செயலில் இல்லை}other{(#) செயலில் இல்லை}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ஃபைல்கள்  மீதமுள்ளன</translation>
@@ -1650,6 +1653,7 @@
 <translation id="8260126382462817229">மீண்டும் உள்நுழையவும்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="82619448491672958">மற்ற பக்கங்களைக் காட்டு</translation>
+<translation id="8265730590513812063">Chrome மெனுவைத் திறக்கவும்</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் தொடருங்கள்</translation>
 <translation id="8266862848225348053">பதிவிறக்க இருப்பிடம்</translation>
 <translation id="8271267069224406035">ஸ்பேமைப் புகாரளி</translation>

@@ -1692,6 +1692,7 @@
 <translation id="7484645889979462775">一律不保存此网站的密码</translation>
 <translation id="7486006552035434095">让您的各部设备保持同步</translation>
 <translation id="7491131399623468277">前往“设置”…</translation>
+<translation id="7491161827858509164">如需查看您之前下载的文件，请打开<ph name="BEGIN_LINK" />文件<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">继续修改</translation>
 <translation id="7500244509706269886">自动填充表单</translation>
 <translation id="750493650310597496">未选中任何项</translation>
@@ -1729,6 +1730,7 @@
 <translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612849887607288481">打开 AI 原型设计菜单</translation>
 <translation id="7620522820075868385">取消</translation>
+<translation id="762078666799342162">您可以在<ph name="BEGIN_LINK" />文件<ph name="END_LINK" />中查看之前的下载内容</translation>
 <translation id="7638584964844754484">密码不正确</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{有密码遭泄露}=1{有 {COUNT} 个密码遭泄露}other{有 {COUNT} 个密码遭泄露}}</translation>
 <translation id="7640669552036055091">Android 设备中的标签页</translation>

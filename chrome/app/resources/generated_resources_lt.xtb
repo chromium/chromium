@@ -5616,7 +5616,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4857304314344645169">Peržiūrėkite nuoseklų bet kokios problemos paaiškinimą</translation>
 <translation id="485806788160414322">Paleisti arba pristabdyti mediją</translation>
 <translation id="4858913220355269194">Šemberas</translation>
-<translation id="4860114370595561279">Išsaugota informacija saugoma įrenginyje</translation>
 <translation id="486213875233855629">Nutildė administratorius</translation>
 <translation id="4862642413395066333">OCSP atsakų pasirašymas</translation>
 <translation id="4863702650881330715">Praplėsti suderinamumą</translation>
@@ -5766,6 +5765,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4961318399572185831">Perduoti ekraną</translation>
 <translation id="4961594008939394243">Apsipirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą keliaudami</translation>
 <translation id="496185450405387901">Šią programą įdiegė administratorius.</translation>
+<translation id="4963068409841400707">Sužinokite, kaip pradėti naudojant <ph name="BEGIN_LINK_ANDROID" />„Android“<ph name="END_LINK_ANDROID" /> ir <ph name="BEGIN_LINK_IOS" />„iOS“<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Įsitikinkite, kad pranešimai įjungti įrenginyje „<ph name="DEVICE_NAME" />“</translation>
 <translation id="4963789650715167449">Pašalinti dabartinį skirtuką</translation>
 <translation id="4964455510556214366">Išdėstymas</translation>
@@ -5818,7 +5818,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5003070249435823986">Atlikite gestą, kad įjungtumėte slinkimo režimą, tada pasukite galvą norima slinkimo kryptimi. Dar kartą atlikite gestą, kad išeitumėte iš slinkimo režimo.</translation>
 <translation id="5003993274120026347">Kitas sakinys</translation>
 <translation id="5005113238422129109">Naudokite mikrofoną, kad galėtumėte kalbėtis su „Gemini“. Kai kalbate su „Gemini“, garso įrašas saugomas „Gemini Apps“ veikloje (jei ji įjungta)</translation>
-<translation id="5005311809885666699">Išsaugota iš „Chrome“</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5006218871145547804">„Android“ programų ADB „Crostini“</translation>
 <translation id="5006778209728626987">Žaibas</translation>

@@ -1693,6 +1693,7 @@
 <translation id="7484645889979462775">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7486006552035434095">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>
 <translation id="7491131399623468277">সেটিংসে যান…</translation>
+<translation id="7491161827858509164">আগে ডাউনলোড করা ফাইল দেখতে, <ph name="BEGIN_LINK" />ফাইল<ph name="END_LINK" /> খুলুন</translation>
 <translation id="7498234416455752244">এডিট করতে থাকুন</translation>
 <translation id="7500244509706269886">ফর্ম অটোফিল করুন</translation>
 <translation id="750493650310597496">০টি নির্বাচিত</translation>
@@ -1730,6 +1731,7 @@
 <translation id="7612619742409846846">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="7612849887607288481">AI প্রোটোটাইপিং মেনু খুলুন</translation>
 <translation id="7620522820075868385">বাতিল করুন</translation>
+<translation id="762078666799342162"><ph name="BEGIN_LINK" />ফাইল<ph name="END_LINK" /> থেকে আগে ডাউনলোড করা ফাইল দেখতে পারবেন</translation>
 <translation id="7638584964844754484">ত্রুটিপূর্ণ পাসফ্রেজ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{চুরি হয়ে যাওয়া পাসওয়ার্ড}=1{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}other{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}}</translation>
 <translation id="7640669552036055091">Android-এ অ্যাক্টিভ থাকা ট্যাব</translation>

@@ -1692,6 +1692,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7484645889979462775">اس سائٹ کیلئے کبھی نہیں</translation>
 <translation id="7486006552035434095">اپنے آلات کو مطابقت پذیر رکھیں</translation>
 <translation id="7491131399623468277">ترتیبات پر جائیں…</translation>
+<translation id="7491161827858509164">‏پہلے ڈاؤن لوڈ کی گئی فائلز دیکھنے کے لیے، <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> کھولیں</translation>
 <translation id="7498234416455752244">ترمیم جاری رکھیں</translation>
 <translation id="7500244509706269886">آٹو فل فارم</translation>
 <translation id="750493650310597496">0 منتخب کیا گیا</translation>
@@ -1729,6 +1730,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7612619742409846846">‏Google میں سائن ان ہے بطور</translation>
 <translation id="7612849887607288481">‏‫AI پروٹو ٹائپنگ مینو کھولیں</translation>
 <translation id="7620522820075868385">منسوخ کریں</translation>
+<translation id="762078666799342162">‏آپ اپنے پہلے کے ڈاؤن لوڈز کو <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> میں دیکھ سکتے ہیں</translation>
 <translation id="7638584964844754484">غلط پاس فریز</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{متاثرہ پاس ورڈز}=1{‫{COUNT} متاثرہ پاس ورڈ}other{‫{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="7640669552036055091">‏Android سے ٹیبز</translation>

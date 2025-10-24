@@ -5600,7 +5600,6 @@
 <translation id="4857304314344645169">იხილეთ თითოეული პრობლემის დეტალური ახსნა</translation>
 <translation id="485806788160414322">მედიის დაკვრა ან დაპაუზება</translation>
 <translation id="4858913220355269194">ფრიცი</translation>
-<translation id="4860114370595561279">თქვენი შენახული ინფორმაცია შენახულია თქვენს მოწყობილობაში</translation>
 <translation id="486213875233855629">დადუმებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="4862642413395066333">ხელმოწერის OCSP პასუხები</translation>
 <translation id="4863702650881330715">გაფართოებული თავსებადობა</translation>
@@ -5750,6 +5749,7 @@
 <translation id="4961318399572185831">ეკრანის ტრანსლირება</translation>
 <translation id="4961594008939394243">შეიძინეთ, თარგმნეთ და ამოიცანით, რასაც ხედავთ მგზავრობისას თქვენი კამერის მეშვეობით</translation>
 <translation id="496185450405387901">ეს აპი დაინსტალირებულია თქვენი ადმინისტრატორის მიერ.</translation>
+<translation id="4963068409841400707">შეიტყვეთ, რა გჭირდებათ დასაწყისისთვის <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" />-სა და <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" />-ზე</translation>
 <translation id="4963603093937263654">დარწმუნდით, რომ თქვენს <ph name="DEVICE_NAME" />-ზე ჩართულია შეტყობინებები</translation>
 <translation id="4963789650715167449">ამჟამინდელი ჩანართის ამოშლა</translation>
 <translation id="4964455510556214366">მოწყობა</translation>
@@ -5802,7 +5802,6 @@
 <translation id="5003070249435823986">გამოიყენეთ ჟესტი გადაადგილების რეჟიმში შესასვლელად, შემდეგ გაამოძრავეთ თავი იმ მიმართულებით, საითაც გსურთ გადაადგილება. გადაადგილების რეჟიმიდან გასასვლელად კვლავ გამოიყენეთ ჟესტი.</translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
 <translation id="5005113238422129109">გამოიყენეთ თქვენი მიკროფონი Gemini-სთან ჩეთისთვის. როდესაც Gemini-სთან საუბრობთ, აუდიო ინახება Gemini აპებში აქტივობაში (თუ ის ჩართულია)</translation>
-<translation id="5005311809885666699">Chrome-იდან შენახული</translation>
 <translation id="5005498671520578047">პაროლის კოპირება</translation>
 <translation id="5006218871145547804">Crostini-ს Android აპის ADB</translation>
 <translation id="5006778209728626987">ელვა</translation>

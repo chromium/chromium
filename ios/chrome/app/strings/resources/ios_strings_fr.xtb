@@ -1692,6 +1692,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7484645889979462775">Jamais pour ce site</translation>
 <translation id="7486006552035434095">Maintenir la synchronisation de vos appareils</translation>
 <translation id="7491131399623468277">Accéder aux réglages…</translation>
+<translation id="7491161827858509164">Pour voir les fichiers que vous avez téléchargés précédemment, ouvrez <ph name="BEGIN_LINK" />Fichiers<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Poursuivre les modifications</translation>
 <translation id="7500244509706269886">Compléter automatiquement le formulaire</translation>
 <translation id="750493650310597496">Aucun favori sélectionné.</translation>
@@ -1729,6 +1730,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7612619742409846846">Connecté à Google en tant que</translation>
 <translation id="7612849887607288481">Ouvrir le menu de prototypage IA</translation>
 <translation id="7620522820075868385">Annuler</translation>
+<translation id="762078666799342162">Vous pouvez afficher vos téléchargements précédents dans <ph name="BEGIN_LINK" />Fichiers<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mots de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="7640669552036055091">Onglets d'Android</translation>

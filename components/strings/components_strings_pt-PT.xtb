@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair do ecrã inteiro, arraste a partir da parte superior e toque no botão anterior</translation>
 <translation id="1138458427267715730">Receba alertas quando o preço descer em qualquer site na Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
+<translation id="1142965388643537393">Informações de viagem</translation>
 <translation id="1144136880160289237">Ainda não tem tópicos ativos</translation>
 <translation id="1149617035358809955">validar a sua identidade para poder preencher as informações de pagamento</translation>
 <translation id="1150565364351027703">Óculos de sol</translation>
@@ -837,6 +838,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2357481397660644965">O seu dispositivo é gerido por <ph name="DEVICE_MANAGER" /> e a sua conta é gerida por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="236000571258713023">Veículos</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu de interruptores de redimensionamento</translation>
 <translation id="2365355378251437925">Introduza o(a) <ph name="FIELD" /></translation>
@@ -2199,6 +2201,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="459914240367517409">Web design e programação</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Reservas de voos</translation>
 <translation id="4607608436550361748">Ver sugestões do Chrome</translation>
 <translation id="460848736049414407">Bloqueado pelo administrador</translation>
 <translation id="4610279718074907952">Este site está num grupo, definido por <ph name="SET_OWNER" />, que pode ver a sua atividade</translation>
@@ -2207,6 +2210,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
 <translation id="4622647778991854660">Ative as notificações no Centro de notificações. Abra as <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Documentos de identificação</translation>
 <translation id="4627675673814409125">Não é possível definir esta política ao nível do perfil do Chrome e a mesma será ignorada.</translation>
 <translation id="4628678854894591460">Ofertas de férias</translation>
 <translation id="4628948037717959914">Fotografia</translation>

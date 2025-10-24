@@ -5598,7 +5598,6 @@
 <translation id="4857304314344645169">Погледајте детаљно објашњење било ког проблема</translation>
 <translation id="485806788160414322">Пусти или паузирај медије</translation>
 <translation id="4858913220355269194">Фриц</translation>
-<translation id="4860114370595561279">Сачуване информације се чувају на уређају</translation>
 <translation id="486213875233855629">Администратор је искључио звук</translation>
 <translation id="4862642413395066333">Потписивање OCSP одговора</translation>
 <translation id="4863702650881330715">Повећај компатибилност</translation>
@@ -5748,6 +5747,7 @@
 <translation id="4961318399572185831">Пребацивање екрана</translation>
 <translation id="4961594008939394243">Купујте, преводите и идентификујте оно што видите помоћу камере у покрету</translation>
 <translation id="496185450405387901">Администратор је инсталирао ову апликацију.</translation>
+<translation id="4963068409841400707">Сазнајте како да започнете на <ph name="BEGIN_LINK_ANDROID" />Android-у<ph name="END_LINK_ANDROID" /> и <ph name="BEGIN_LINK_IOS" />iOS-у<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Уверите се да су обавештења укључена на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Уклони актуелну картицу</translation>
 <translation id="4964455510556214366">Распоред</translation>
@@ -5800,7 +5800,6 @@
 <translation id="5003070249435823986">Користите покрет да бисте ушли у режим скроловања, па померите главу у правцу у ком желите да скролујете. Поново користите покрет да бисте изашли из режима скроловања.</translation>
 <translation id="5003993274120026347">Следећа реченица</translation>
 <translation id="5005113238422129109">Користите микрофон да бисте разговарали са Gemini-јем. Када разговарате са Gemini-јем, звук се чува у Активностима у Gemini апликацијама (ако су укључене)</translation>
-<translation id="5005311809885666699">Сачувано је из Chrome-а</translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
 <translation id="5006218871145547804">ADB за Android апликације за Crostini</translation>
 <translation id="5006778209728626987">Муња</translation>

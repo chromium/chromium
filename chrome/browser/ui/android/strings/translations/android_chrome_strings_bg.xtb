@@ -181,6 +181,7 @@
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продължи да използва <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1820408774134375111">Долен лист за вход в профила</translation>
+<translation id="1823492026305965829">Вход като <ph name="USER_FULL_NAME" /></translation>
 <translation id="1825772852827001597">Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.
 Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
@@ -856,6 +857,7 @@
 <translation id="4910889077668685004">Приложения за плащане</translation>
 <translation id="4912413785358399818">Преместване на раздел</translation>
 <translation id="4913169188695071480">Спиране на опресняването</translation>
+<translation id="4921224083091001889">Влезте в Chrome с профила <ph name="EMAIL" />, за да получите паролите си и др. на всичките си устройства</translation>
 <translation id="4925120120285606924">Екранна снимка от <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Можете да запазвате изображения и файлове, за да ги преглеждате офлайн или да ги споделяте в други приложения</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 отметка и други елементи са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google.}other{# отметки и други елементи са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google.}}</translation>
@@ -880,6 +882,7 @@
 <translation id="5007392906805964215">Преглед</translation>
 <translation id="5010886807652684893">Детайлен изглед</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> иска да се свърже</translation>
+<translation id="5012016139642806466">Получете паролите си и др. на всичките си устройства</translation>
 <translation id="5012253429094023177">Изглежда, че <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> и <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> са свързани. Уверете се, че имате доверие на <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />, преди да използвате паролата си.</translation>
 <translation id="5016205925109358554">Серифен</translation>
 <translation id="5017529052065664584">Последните 15 минути</translation>
@@ -1622,6 +1625,7 @@
 <translation id="8135406045838672858">Изтеглените PDF файлове се отварят автоматично чрез <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Няма да е нужно да помните тази парола. Тя ще бъде запазена в Google Мениджър на пароли.</translation>
 <translation id="8152331954420209374">Към Обектив</translation>
+<translation id="8153206878708357851">Превключване на клавишното сърфиране</translation>
 <translation id="8163820386638255770">Потвърдете, че сте вие, за да използвате и запазвате паролите в профила си в Google</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) неактивен елемент}other{(#) неактивни елемента}}</translation>
 <translation id="8186512483418048923">Остават <ph name="FILES" /> файла</translation>
@@ -1647,6 +1651,7 @@
 <translation id="8260126382462817229">Опитайте да влезете отново</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="82619448491672958">Преглед на другите раздели</translation>
+<translation id="8265730590513812063">Отваряне на менюто на Chrome</translation>
 <translation id="8266753737658117282">Продължаване чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Местоположение за изтеглянията</translation>
 <translation id="8271267069224406035">Подаване на сигнал за спам</translation>

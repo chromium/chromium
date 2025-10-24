@@ -1692,6 +1692,7 @@
 <translation id="7484645889979462775">Никога за този сайт</translation>
 <translation id="7486006552035434095">Синхронизирайте устройствата си</translation>
 <translation id="7491131399623468277">Към настройките…</translation>
+<translation id="7491161827858509164">За да видите файловете, които сте изтеглили преди, отворете <ph name="BEGIN_LINK" />Файлове<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Продължаване с редактирането</translation>
 <translation id="7500244509706269886">Автоматично попълване на формуляра</translation>
 <translation id="750493650310597496">Избрахте 0</translation>
@@ -1729,6 +1730,7 @@
 <translation id="7612619742409846846">Влезли сте в Google като</translation>
 <translation id="7612849887607288481">Отваряне на менюто с AI прототипи</translation>
 <translation id="7620522820075868385">Отказ</translation>
+<translation id="762078666799342162">Можете да прегледате файловете, които сте изтеглили по-рано, във <ph name="BEGIN_LINK" />Файлове<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="7640669552036055091">Раздели от Android</translation>

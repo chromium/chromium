@@ -387,6 +387,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1244917379075403655">Clique em "Definições"</translation>
 <translation id="1245331638296910488">Os ficheiros vão ser movidos para o OneDrive quando os abrir no Microsoft 365</translation>
 <translation id="1245628370644070008">Recuperação de dados locais</translation>
+<translation id="1246420197935327230">Selecione uma área</translation>
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem devolveu um código de erro <ph name="HTTP_ERROR" />. Contacte o seu administrador.</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notificações não permitidas para 1 site}other{Notificações não permitidas para {NUM_SITES} sites}}</translation>
@@ -2816,6 +2817,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2916745397441987255">Pesquisar extensões</translation>
 <translation id="2918484639460781603">Ir para definições</translation>
 <translation id="2918484644467055090">Não é possível inscrever este dispositivo na entidade a que pertence a sua conta, porque está marcado para gestão por uma entidade diferente.</translation>
+<translation id="2920346489891435227">Abrir link na vista direita</translation>
 <translation id="2920852127376356161">Sem autorização para processar protocolos</translation>
 <translation id="2921081876747860777">Crie uma palavra-passe para proteger os seus dados locais.</translation>
 <translation id="2923006468155067296">O dispositivo <ph name="DEVICE_TYPE" /> será bloqueado agora.
@@ -4594,6 +4596,7 @@ Quer pará-lo?</translation>
 <translation id="4133265950310064865">Proteção melhorada</translation>
 <translation id="4134838386867070505">Passo 1 de 4: descreva o problema</translation>
 <translation id="413534985210133938">A pasta "<ph name="LOCAL_FOLDER" />" está guardada apenas neste dispositivo. Se mover este marcador para "<ph name="LOCAL_FOLDER" />", deixa de o ter nos seus outros dispositivos.</translation>
+<translation id="4135370802895537423">Abrir link na vista direita</translation>
 <translation id="4135746311382563554">Termos de Utilização adicionais do Google Chrome e do Chrome OS</translation>
 <translation id="4136203100490971508">A Luz noturna irá desativar-se automaticamente ao nascer do sol.</translation>
 <translation id="41365691917097717">Se continuar, vai ativar a depuração do adb para criar e testar aplicações para Android. Tenha em atenção que esta ação permite a instalação de aplicações para Android que não foram validadas pela Google. Além disso, se pretender desativar o adb, terá de efetuar uma reposição de fábrica.</translation>
@@ -4679,6 +4682,7 @@ Quer pará-lo?</translation>
 <translation id="4209251085232852247">Desativado</translation>
 <translation id="4210048056321123003">A transferir a máquina virtual…</translation>
 <translation id="4210380525132844778">Motivo: a regra <ph name="RULE" /> foi encontrada na lista "<ph name="LIST_NAME" />".</translation>
+<translation id="4210428686880035809">Abrir link na vista esquerda</translation>
 <translation id="4211362364312260125">Identifique o principal ponto de referência nas páginas Web para a tecnologia de assistência</translation>
 <translation id="421182450098841253">&amp;Mostrar Barra de Marcadores</translation>
 <translation id="4211904048067111541">Parar de utilizar com apps Android</translation>
@@ -5601,7 +5605,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4857304314344645169">Veja uma explicação passo a passo de qualquer problema</translation>
 <translation id="485806788160414322">Reproduzir ou pausar o conteúdo multimédia</translation>
 <translation id="4858913220355269194">Fritz</translation>
-<translation id="4860114370595561279">As suas informações guardadas são armazenadas no seu dispositivo</translation>
 <translation id="486213875233855629">Som desativado pelo seu administrador</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
 <translation id="4863702650881330715">Expandir compatibilidade</translation>
@@ -5751,6 +5754,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
 <translation id="4961594008939394243">Compre, traduza e identifique o que vê com a câmara quando estiver em viagem</translation>
 <translation id="496185450405387901">Esta aplicação foi instalada pelo seu administrador.</translation>
+<translation id="4963068409841400707">Saiba como começar a usar no <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> e <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Certifique-se de que as notificações estão ativadas no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Remover separador atual</translation>
 <translation id="4964455510556214366">Disposição</translation>
@@ -5803,7 +5807,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5003070249435823986">Use o gesto para entrar no modo de deslocamento e, de seguida, mova a cabeça na direção para a qual quer deslocar a página. Use novamente o gesto para sair do modo de deslocamento.</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5005113238422129109">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada)</translation>
-<translation id="5005311809885666699">Guardado a partir do Chrome</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5006218871145547804">ADB de apps Android do Crostini</translation>
 <translation id="5006778209728626987">Relâmpago</translation>
@@ -6056,6 +6059,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5184662919967270437">A atualizar o dispositivo…</translation>
 <translation id="5185386675596372454">A versão mais recente de "<ph name="EXTENSION_NAME" />" foi desativada porque necessita de mais permissões.</translation>
 <translation id="5185500136143151980">Sem Internet</translation>
+<translation id="5186362203408605578">Use outro dispositivo lendo o código QR</translation>
 <translation id="5186381005592669696">Personalize o idioma de apresentação das apps suportadas</translation>
 <translation id="5186788525428341874">Pode usar esta chave de acesso para iniciar sessão mais rapidamente nos seus dispositivos. Vai ser guardada no Gestor de Palavras-passe da Google de <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
@@ -6441,6 +6445,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5457082343331641453">Adicione à sua pesquisa</translation>
 <translation id="5457113250005438886">Inválido</translation>
 <translation id="5457459357461771897">Ler e eliminar fotos, música e outros elementos multimédia a partir do computador</translation>
+<translation id="5457795687441958389">Não iniciar sessão</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Introduziu o PIN incorreto demasiadas vezes. Para aceder às suas chaves de acesso e palavras-passe, altere o PIN.</translation>
 <translation id="5459470938885464873">Erro ao importar o certificado</translation>
@@ -7453,6 +7458,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6175910054050815932">Receba um link</translation>
 <translation id="6177412385419165772">A remover…</translation>
 <translation id="6177478397823976397">Não foram encontrados dispositivos. Abrir um artigo do Centro de Ajuda num novo separador</translation>
+<translation id="6177779807714496775">Abrir link na vista esquerda</translation>
 <translation id="6178664161104547336">Selecionar um certificado</translation>
 <translation id="6178682841350631965">Os seus dados de início de sessão foram atualizados</translation>
 <translation id="6179830757749383456">Navegador gerido por <ph name="BROWSER_DOMAIN" />, perfil gerido por <ph name="PROFILE_DOMAIN" /></translation>
@@ -8590,6 +8596,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6973611239564315524">Está disponível uma atualização para a versão Debian 10 (Buster).</translation>
 <translation id="69739764870135975">Se o Google também for o seu motor de pesquisa predefinido, verá melhores sugestões contextualmente relevantes</translation>
 <translation id="697508444536771064">Encerrar o Linux</translation>
+<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> quer guardar informações no seu dispositivo móvel</translation>
 <translation id="6978121630131642226">Motores de pesquisa</translation>
 <translation id="6978717888677691380">Sites que bloqueou</translation>
 <translation id="6979041727349121225">Poupança de energia</translation>
@@ -11969,6 +11976,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="984705303330760860">Adicione idiomas com verificação ortográfica</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>
+<translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> quer receber informações do seu dispositivo móvel</translation>
 <translation id="988320949174893488">Interrupção ocasional</translation>
 <translation id="988978206646512040">Não é permitida uma frase de acesso vazia</translation>
 <translation id="992032470292211616">As extensões, as aplicações e os temas podem danificar o seu dispositivo móvel. Tem a certeza de que quer continuar?</translation>

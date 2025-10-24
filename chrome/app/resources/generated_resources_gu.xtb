@@ -5599,7 +5599,6 @@
 <translation id="4857304314344645169">કોઈ પણ પ્રશ્નની સ્પષ્ટતા પગલાંવાર જુઓ</translation>
 <translation id="485806788160414322">મીડિયા ચલાવો અથવા થોભાવો</translation>
 <translation id="4858913220355269194">Fritz</translation>
-<translation id="4860114370595561279">તમારી સાચવેલી માહિતી તમારા ડિવાઇસ પર સ્ટોર કરવામાં આવે છે</translation>
 <translation id="486213875233855629">તમારા ઍડમિનિસ્ટ્રેટર મ્યૂટ કરવામાં આવ્યું છે</translation>
 <translation id="4862642413395066333">OCSP પ્રતિસાદોને સાઇન ઇન કરે છે</translation>
 <translation id="4863702650881330715">સુસંગતતામાં વધારો કરો</translation>
@@ -5749,6 +5748,7 @@
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>
 <translation id="4961594008939394243">મુસાફરીમાં તમારા કૅમેરા વડે જે જુઓ, તેને ખરીદો, અનુવાદ કરો અને તેની ઓળખ કરો</translation>
 <translation id="496185450405387901">આ ઍપ તમારા વ્યવસ્થાપક દ્વારા બનાવવામાં આવી હતી.</translation>
+<translation id="4963068409841400707"><ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> અને <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /> પર શરૂઆત કરવાની રીત જાણો</translation>
 <translation id="4963603093937263654">તમારા <ph name="DEVICE_NAME" />માં નોટિફિકેશન ચાલુ કરવામાં આવ્યા હોવાની ખાતરી કરો</translation>
 <translation id="4963789650715167449">વર્તમાન ટૅબને કાઢી નાખો</translation>
 <translation id="4964455510556214366">ગોઠવણી</translation>
@@ -5801,7 +5801,6 @@
 <translation id="5003070249435823986">સ્ક્રોલ મોડમાં દાખલ થવા માટે સંકેતનો ઉપયોગ કરો, પછી તમે જે દિશામાં સ્ક્રોલ કરવા માગતા હો તે દિશામાં તમારું માથું હલાવો. સ્ક્રોલ મોડમાંથી બહાર નીકળવા માટે ફરીથી સંકેતનો ઉપયોગ કરો.</translation>
 <translation id="5003993274120026347">આગલું વાક્ય</translation>
 <translation id="5005113238422129109">Gemini સાથે ચૅટ કરવા માટે, તમારા માઇક્રોફોનનો ઉપયોગ કરો. જ્યારે તમે Gemini સાથે વાત કરો છો, ત્યારે ઑડિયો Gemini ઍપ ઍક્ટિવિટીમાં સ્ટોર કરવામાં આવે છે (જો તે ચાલુ હોય તો)</translation>
-<translation id="5005311809885666699">Chromeમાંથી સાચવેલા</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5006218871145547804">Crostini Android ઍપ ADB</translation>
 <translation id="5006778209728626987">વીજળી</translation>

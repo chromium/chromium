@@ -5610,7 +5610,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4857304314344645169">Вижте подробно обяснение за която и да е задача</translation>
 <translation id="485806788160414322">Пускане или поставяне на пауза на мултимедия</translation>
 <translation id="4858913220355269194">Фриц</translation>
-<translation id="4860114370595561279">Запазената от вас информация се съхранява на устройството ви</translation>
 <translation id="486213875233855629">Звукът е спрян от администратора ви</translation>
 <translation id="4862642413395066333">Подписване на OCSP отговори</translation>
 <translation id="4863702650881330715">Разширяване на съвместимостта</translation>
@@ -5760,6 +5759,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="4961594008939394243">Пазарувайте, превеждайте и идентифицирайте това, което виждате с камерата си, в движение</translation>
 <translation id="496185450405387901">Това приложение е инсталирано от администратора ви.</translation>
+<translation id="4963068409841400707">Научете как да започнете да използвате на <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> и <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Уверете се, че известията са включени на устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Премахване на текущия раздел</translation>
 <translation id="4964455510556214366">Подредба</translation>
@@ -5812,7 +5812,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5003070249435823986">Използвайте жеста, за да активирате режима за превъртане, след което преместете главата си в посоката, в която искате да превъртите съдържанието. Използвайте отново жеста, за да деактивирате режима за превъртане.</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5005113238422129109">Използвайте микрофона си, за да разговаряте с Gemini. Когато говорите с Gemini, аудиото се съхранява в активността в приложенията Gemini (ако опцията е включена).</translation>
-<translation id="5005311809885666699">Запазено от Chrome</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5006218871145547804">Отстраняване на грешки в приложения за Android през ADB за Crostini</translation>
 <translation id="5006778209728626987">Светкавица</translation>

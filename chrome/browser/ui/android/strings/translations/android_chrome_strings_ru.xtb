@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1007349221964075684">Чтобы посмотреть открытые окна в режиме инкогнито, нужно разблокировать экран</translation>
 <translation id="1010283278930414892">На устройстве нет сохраненных паролей</translation>
 <translation id="1011749477052068769">Переместить сюда</translation>
 <translation id="1014083013111769343">Настройки режима чтения открыты на весь экран</translation>
@@ -1167,6 +1168,7 @@
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
 <translation id="6315386555979018699">Удалить и продолжить</translation>
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
+<translation id="631839948975905034">Блокировать доступ к окнам в режиме инкогнито при закрытии Chrome</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6324977638108296054">Невозможно создать ссылку на выделенный текст.</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
@@ -1625,6 +1627,7 @@
 <translation id="8135406045838672858">Скачанные PDF-файлы автоматически открываются в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="8137562778192957619">Вам не нужно запоминать этот пароль. Он будет сохранен в Google Менеджере паролей.</translation>
 <translation id="8152331954420209374">Открыть Объектив</translation>
+<translation id="8153206878708357851">Включить или отключить режим активного курсора</translation>
 <translation id="8163820386638255770">Чтобы использовать и сохранять пароли в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) неактивный объект}one{(#) неактивный объект}few{(#) неактивных объекта}many{(#) неактивных объектов}other{(#) неактивного объекта}}</translation>
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>
@@ -1650,6 +1653,7 @@
 <translation id="8260126382462817229">Снова войдите в аккаунт</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="82619448491672958">Посмотреть другие вкладки</translation>
+<translation id="8265730590513812063">Откройте меню Google Chrome.</translation>
 <translation id="8266753737658117282">Продолжите с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Расположение скачиваемых файлов</translation>
 <translation id="8271267069224406035">Сообщить о спаме</translation>

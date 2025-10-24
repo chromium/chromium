@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1007349221964075684">Aby zobaczyć otwarte okna incognito, użyj blokady ekranu</translation>
 <translation id="1010283278930414892">Na tym urządzeniu nie ma zapisanych haseł</translation>
 <translation id="1011749477052068769">Przenieś tutaj</translation>
 <translation id="1014083013111769343">Ustawienia trybu czytania otwarte na całą wysokość</translation>
@@ -1167,6 +1168,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6312687380483398334">Aplikacje internetowe (wyciszenie)</translation>
 <translation id="6315386555979018699">Usuń i kontynuuj</translation>
 <translation id="6316139424528454185">Ta wersja Androida jest nieobsługiwana</translation>
+<translation id="631839948975905034">Blokowanie okien incognito po zamknięciu Chrome</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6324977638108296054">Nie udało się utworzyć linku do podświetlenia</translation>
 <translation id="6333140779060797560">Udostępnij przez: <ph name="APPLICATION" /></translation>
@@ -1625,6 +1627,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8135406045838672858">Pobrane pliki PDF otwierają się automatycznie w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nie musisz zapamiętywać tego hasła. Zapisze je Menedżer haseł Google.</translation>
 <translation id="8152331954420209374">Przejdź do Obiektywu</translation>
+<translation id="8153206878708357851">Przełącz przeglądanie przy użyciu kursora</translation>
 <translation id="8163820386638255770">Potwierdź swoją tożsamość, aby móc zapisywać hasła na koncie Google i ich używać</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) nieaktywny element}few{(#) nieaktywne elementy}many{(#) nieaktywnych elementów}other{(#) nieaktywnego elementu}}</translation>
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
@@ -1650,6 +1653,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8260126382462817229">Spróbuj zalogować się jeszcze raz</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="82619448491672958">Zobacz inne karty</translation>
+<translation id="8265730590513812063">Otwórz menu Chrome</translation>
 <translation id="8266753737658117282">Kontynuuj, używając konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Miejsce zapisywania pobranych plików</translation>
 <translation id="8271267069224406035">Zgłoś spam</translation>

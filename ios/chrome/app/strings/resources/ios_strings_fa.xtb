@@ -1692,6 +1692,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7484645889979462775">هرگز برای این سایت</translation>
 <translation id="7486006552035434095">دستگاه‌هایتان را همگام نگه دارید</translation>
 <translation id="7491131399623468277">رفتن به «تنظیمات»…</translation>
+<translation id="7491161827858509164">‏برای دیدن فایل‌هایی که قبلاً بارگیری کرده‌اید، <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> را باز کنید</translation>
 <translation id="7498234416455752244">ادامه ویرایش</translation>
 <translation id="7500244509706269886">تکمیل خودکار فرم</translation>
 <translation id="750493650310597496">۰ نشانک انتخاب شده است</translation>
@@ -1729,6 +1730,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
 <translation id="7612849887607288481">باز کردن «منو ساخت نمونه نخستین هوش مصنوعی»</translation>
 <translation id="7620522820075868385">لغو</translation>
+<translation id="762078666799342162">‏می‌توانید بارگیری‌های قبلی‌تان را در <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> مشاهده کنید</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{گذرواژه‌های لورفته}=1{‫{COUNT} گذرواژه لورفته}one{‫{COUNT} گذرواژه لورفته}other{‫{COUNT} گذرواژه لورفته}}</translation>
 <translation id="7640669552036055091">‏برگه‌ها از Android</translation>

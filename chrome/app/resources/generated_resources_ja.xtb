@@ -5589,7 +5589,6 @@
 <translation id="4857304314344645169">問題がある場合は詳しい説明を確認できます</translation>
 <translation id="485806788160414322">メディアを再生または一時停止する</translation>
 <translation id="4858913220355269194">フリッツ</translation>
-<translation id="4860114370595561279">保存した情報はデバイスに保存されます</translation>
 <translation id="486213875233855629">管理者によってミュートされています</translation>
 <translation id="4862642413395066333">OCSP 応答の署名</translation>
 <translation id="4863702650881330715">互換性を拡張する</translation>
@@ -5739,6 +5738,7 @@
 <translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4961594008939394243">カメラを使って、外出先で見たものを購入、翻訳、特定できます</translation>
 <translation id="496185450405387901">このアプリは管理者によってインストールされています。</translation>
+<translation id="4963068409841400707">スタートガイド（<ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" />、<ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" />）をご確認ください</translation>
 <translation id="4963603093937263654"><ph name="DEVICE_NAME" /> で通知がオンになっていることを確認してください</translation>
 <translation id="4963789650715167449">現在のタブを削除</translation>
 <translation id="4964455510556214366">配置</translation>
@@ -5791,7 +5791,6 @@
 <translation id="5003070249435823986">ジェスチャーでスクロール モードに切り替えてから、スクロールしたい方向に頭を動かします。スクロール モードを終了するには、もう一度ジェスチャーを使用します。</translation>
 <translation id="5003993274120026347">次の文</translation>
 <translation id="5005113238422129109">マイクを使用して Gemini と会話できます。Gemini に話しかけると、音声は Gemini アプリ アクティビティに保存されます（オンになっている場合）。</translation>
-<translation id="5005311809885666699">Chrome から保存</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5006218871145547804">Crostini Android アプリ ADB</translation>
 <translation id="5006778209728626987">稲妻</translation>

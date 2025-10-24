@@ -5612,7 +5612,6 @@
 <translation id="4857304314344645169">किसी सवाल को हल करने का सिलसिलेवार तरीका देखें</translation>
 <translation id="485806788160414322">मीडिया चलाएं या रोकें</translation>
 <translation id="4858913220355269194">फ्रिट्ज़</translation>
-<translation id="4860114370595561279">सेव की गई जानकारी, आपके डिवाइस में सेव होती है</translation>
 <translation id="486213875233855629">एडमिन ने म्यूट किया है</translation>
 <translation id="4862642413395066333">OCSP प्रतिसाद हस्ताक्षरित करना</translation>
 <translation id="4863702650881330715">काम करने की क्षमता बढ़ाएं</translation>
@@ -5762,6 +5761,7 @@
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
 <translation id="4961594008939394243">कैमरे की मदद से कभी भी, कहीं भी चीज़ों की पहचान करें और उनकी खरीदारी करें. यही नहीं, स्क्रीन पर दिखने वाले कॉन्टेंट का अनुवाद करने की सुविधा भी पाएं</translation>
 <translation id="496185450405387901">इस ऐप्लिकेशन को आपके एडमिन ने इंस्टॉल किया है.</translation>
+<translation id="4963068409841400707"><ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> और <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /> पर शुरू करने का तरीका जानें</translation>
 <translation id="4963603093937263654">पक्का करें कि <ph name="DEVICE_NAME" /> पर सूचनाएं पाने की सुविधा चालू हो</translation>
 <translation id="4963789650715167449">मौजूदा टैब हटाएं</translation>
 <translation id="4964455510556214366">व्यवस्था</translation>
@@ -5814,7 +5814,6 @@
 <translation id="5003070249435823986">स्क्रोल मोड में जाने के लिए, जेस्चर का इस्तेमाल करें. इसके बाद, अपने सिर को उस तरफ़ घुमाएं जिस तरफ़ आपको स्क्रोल करना है. स्क्रोल मोड से बाहर निकलने के लिए, जेस्चर का फिर से इस्तेमाल करें.</translation>
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
 <translation id="5005113238422129109">Gemini से चैट करने के लिए, माइक्रोफ़ोन का इस्तेमाल करें. Gemini से बोलकर बातचीत करने पर, ऑडियो को Gemini Apps में की गई गतिविधि के डेटा में सेव किया जाता है (अगर यह सेटिंग चालू है)</translation>
-<translation id="5005311809885666699">Chrome से सेव किया गया एल्बम</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
 <translation id="5006218871145547804">Crostini में Android ऐप्लिकेशन ADB की सेटिंग</translation>
 <translation id="5006778209728626987">चमकती बिजली</translation>

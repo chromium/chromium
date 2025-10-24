@@ -5614,7 +5614,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4857304314344645169">Fáðu ítarlega útskýringu á hvaða vandamáli sem er</translation>
 <translation id="485806788160414322">Spila eða gera hlé á efni</translation>
 <translation id="4858913220355269194">Falur</translation>
-<translation id="4860114370595561279">Vistuðu upplýsingarnar þínar eru geymdar í tækinu</translation>
 <translation id="486213875233855629">Stjórnandi slökkti á hljóði</translation>
 <translation id="4862642413395066333">Undirritar OCSP-svör</translation>
 <translation id="4863702650881330715">Auka samhæfi</translation>
@@ -5764,6 +5763,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4961318399572185831">Varpa skjá</translation>
 <translation id="4961594008939394243">Notaðu myndavélina þína á ferðinni til að versla, þýða og bera kennsl á það sem þú sérð</translation>
 <translation id="496185450405387901">Kerfisstjórinn þinn setti þetta forrit upp.</translation>
+<translation id="4963068409841400707">Kynntu þér hvernig þú hefst handa í <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> og <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Gakktu úr skugga um að kveikt sé á tilkynningum fyrir <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Fjarlægja núverandi flipa</translation>
 <translation id="4964455510556214366">Fyrirkomulag</translation>
@@ -5816,7 +5816,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5003070249435823986">Notaðu þessa bendingu til að opna flettistillingu og síðan skaltu hreyfa höfuðið í þá átt sem þú vilt fletta. Notaðu bendinguna aftur til að loka flettistillingu.</translation>
 <translation id="5003993274120026347">Næsta setning</translation>
 <translation id="5005113238422129109">Notaðu hljóðnemann til að spjalla við Gemini. Þegar þú spjallar við Gemini er hljóðupptakan vistuð í Gemini-forritavirkni (ef kveikt er á henni)</translation>
-<translation id="5005311809885666699">Vistað frá Chrome</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5006218871145547804">ADB Android forrita í Crostini</translation>
 <translation id="5006778209728626987">Elding</translation>
