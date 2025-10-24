@@ -372,9 +372,6 @@ class CONTENT_EXPORT StoragePartition {
   // Wait until all deletions tasks are finished. For test use only.
   virtual void WaitForDeletionTasksForTesting() = 0;
 
-  // Wait until code cache's shutdown is complete. For test use only.
-  virtual void WaitForCodeCacheShutdownForTesting() = 0;
-
   virtual void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) = 0;
