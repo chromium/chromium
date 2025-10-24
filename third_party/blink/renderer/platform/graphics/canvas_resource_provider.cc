@@ -1605,7 +1605,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
       recorder_->ReleasableImageBytesUsed() > max_pinned_image_bytes_)
       [[unlikely]] {
-    FlushCanvas(FlushReason::kRecordingLimitExceeded);
+    FlushCanvas();
   }
 }
 
@@ -1696,7 +1696,7 @@ void CanvasResourceProvider::OnContextDestroyed() {
 
 void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
   if (Canvas().IsCachingImage(content_id)) {
-    FlushCanvas(FlushReason::kSourceImageWillChange);
+    FlushCanvas();
   }
 }
 
@@ -1770,7 +1770,7 @@ SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
 }
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
-    FlushReason reason) {
+    FlushReason reason /*=FlushReason::kOther*/) {
   if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }

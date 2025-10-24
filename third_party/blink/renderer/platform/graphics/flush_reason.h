@@ -117,33 +117,26 @@ enum class FlushReason {
   // This inhibits vector printing.
   kClipboard = 24,
 
-  // The canvas's recorded ops had a reference to an image whose contents
-  // were about to change.
-  // This inhibits vector printing.
-  kSourceImageWillChange = 25,
-
   // The canvas was uploade to a WebGPU texture.
   // This inhibits vector printing.
-  kWebGPUTexture = 26,
+  kWebGPUTexture = 25,
 
   // The HTMLCanvasElement.toDataURL method was called on the canvas.
-  kToDataURL = 27,
+  kToDataURL = 26,
 
   // The canvas's layer bridge was replaced. This happens when switching
   // between GPU and CPU rendering.
   // This inhibits vector printing.
-  kReplaceLayerBridge = 28,
-
-  // The auto-flush heuristic kicked-in. Should not happen while
-  // printing.
-  kRecordingLimitExceeded = 29,
+  kReplaceLayerBridge = 27,
 
   // The canvas was used as a source image in a call to
   // `CanvasRenderingContext2D.drawMesh`.
   // This inhibits vector printing.
-  kDrawMesh = 30,
+  kDrawMesh = 28,
 
-  kMaxValue = kDrawMesh,
+  kOther = 29,
+
+  kMaxValue = kOther,
 };
 
 }  // namespace blink
