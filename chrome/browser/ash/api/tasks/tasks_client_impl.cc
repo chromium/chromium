@@ -684,8 +684,7 @@ google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ = std::move(create_request_sender_callback_)
-                          .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope,
-                                GaiaConstants::kTasksOAuth2Scope},
+                          .Run(signin::OAuthConsumerId::kAuthServiceTasksClient,
                                traffic_annotation_tag_);
     CHECK(request_sender_);
   }

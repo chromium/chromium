@@ -147,7 +147,7 @@ class GlanceablesClassroomClientImplIsDisabledByAdminTest
     return GlanceablesClassroomClientImpl(
         profile, base::DefaultClock::GetInstance(),
         base::BindLambdaForTesting(
-            [](const std::vector<std::string>& scopes,
+            [](signin::OAuthConsumerId oauth_consumer_id,
                const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)
                 -> std::unique_ptr<google_apis::RequestSender> {
               return nullptr;
@@ -219,7 +219,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
     OverrideTime("10 Apr 2023 00:00 GMT");
 
     auto create_request_sender_callback = base::BindLambdaForTesting(
-        [&](const std::vector<std::string>& scopes,
+        [&](signin::OAuthConsumerId oauth_consumer_id,
             const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
           return std::make_unique<google_apis::RequestSender>(
               std::make_unique<google_apis::DummyAuthService>(),

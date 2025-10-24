@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 
@@ -49,7 +50,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Provides an instance of `google_apis::RequestSender` for the client.
   using CreateRequestSenderCallback =
       base::RepeatingCallback<std::unique_ptr<google_apis::RequestSender>(
-          const std::vector<std::string>& scopes,
+          signin::OAuthConsumerId oauth_consumer_id,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   using SortComparator = base::RepeatingCallback<bool(

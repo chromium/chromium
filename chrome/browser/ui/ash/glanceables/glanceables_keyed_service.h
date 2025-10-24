@@ -25,6 +25,7 @@ struct NetworkTrafficAnnotationTag;
 
 namespace signin {
 class IdentityManager;
+enum class OAuthConsumerId;
 }
 
 namespace ash {
@@ -56,12 +57,12 @@ class GlanceablesKeyedService : public KeyedService {
 
  private:
   // Helper method that creates a `google_apis::RequestSender` instance.
-  // `scopes` - OAuth 2 scopes needed for a client.
+  // `oauth_consumer_id` - OAuth2 consumer id needed for a client.
   // `traffic_annotation_tag` - describes requests issued by a client (for more
   // details see docs/network_traffic_annotations.md and
   // chrome/browser/privacy/traffic_annotation.proto).
   std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
-      const std::vector<std::string>& scopes,
+      signin::OAuthConsumerId oauth_consumer_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const;
 
   // The profile for which this keyed service was created.

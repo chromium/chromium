@@ -108,13 +108,13 @@ void GlanceablesKeyedService::Shutdown() {
 
 std::unique_ptr<google_apis::RequestSender>
 GlanceablesKeyedService::CreateRequestSenderForClient(
-    const std::vector<std::string>& scopes,
+    signin::OAuthConsumerId oauth_consumer_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const {
   const auto url_loader_factory = profile_->GetURLLoaderFactory();
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager_,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory, scopes);
+      url_loader_factory, oauth_consumer_id);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(

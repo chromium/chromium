@@ -76,7 +76,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // services in testing situations (See
 // chrome/browser/ash/api/tasks/tasks_client_impl_unittest.cc).
 std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
-    const std::vector<std::string>& scopes,
+    signin::OAuthConsumerId oauth_consumer_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   signin::IdentityManager* identity_manager =
@@ -88,7 +88,7 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
       std::make_unique<google_apis::AuthService>(
           identity_manager,
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          url_loader_factory, scopes);
+          url_loader_factory, oauth_consumer_id);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(

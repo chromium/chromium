@@ -936,13 +936,7 @@ RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {
     CHECK(create_request_sender_callback_);
     request_sender_ =
         std::move(create_request_sender_callback_)
-            .Run(/*scopes=*/
-                 {
-                     GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
-                     GaiaConstants::kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
-                     GaiaConstants::
-                         kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope,
-                 },
+            .Run(signin::OAuthConsumerId::kAuthServiceGlanceablesClassroom,
                  kTrafficAnnotationTag);
     CHECK(request_sender_);
   }

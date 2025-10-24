@@ -194,7 +194,7 @@ class TasksClientImplIsDisabledByAdminTest : public testing::Test {
     return TasksClientImpl(
         profile,
         base::BindLambdaForTesting(
-            [&](const std::vector<std::string>& scopes,
+            [&](signin::OAuthConsumerId oauth_consumer_id,
                 const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)
                 -> std::unique_ptr<google_apis::RequestSender> {
               return nullptr;
@@ -283,7 +283,7 @@ class TasksClientImplTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     auto create_request_sender_callback = base::BindLambdaForTesting(
-        [&](const std::vector<std::string>& scopes,
+        [&](signin::OAuthConsumerId oauth_consumer_id,
             const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
           return std::make_unique<google_apis::RequestSender>(
               std::make_unique<google_apis::DummyAuthService>(),

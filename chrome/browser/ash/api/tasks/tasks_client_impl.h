@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"
@@ -45,7 +46,7 @@ class TasksClientImpl : public TasksClient {
   // Provides an instance of `google_apis::RequestSender` for the client.
   using CreateRequestSenderCallback =
       base::RepeatingCallback<std::unique_ptr<google_apis::RequestSender>(
-          const std::vector<std::string>& scopes,
+          signin::OAuthConsumerId oauth_consumer_id,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   TasksClientImpl(
