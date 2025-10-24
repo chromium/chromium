@@ -163,6 +163,8 @@ export interface PageElementTypes {
   switchConversationBtn: HTMLButtonElement;
   registerConversationBtn: HTMLButtonElement;
   conversationId: HTMLInputElement;
+  textmode: HTMLInputElement;
+  audiomode: HTMLInputElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

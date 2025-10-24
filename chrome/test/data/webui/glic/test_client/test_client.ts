@@ -15,6 +15,7 @@ import './sections/multi_tab.js';
 import './sections/page_metadata.js';
 import './sections/view.js';
 import './sections/additional_context.js';
+import './sections/interaction.js';
 
 import type {OpenSettingsOptions} from '/glic/glic_api/glic_api.js';
 import {SettingsPageField, WebClientMode} from '/glic/glic_api/glic_api.js';
