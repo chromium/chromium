@@ -189,7 +189,19 @@ std::string ValuableMetadataSyncBridge::GetStorageKey(
 
 void ValuableMetadataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // TODO(crbug.com/436551488): Implement.
+  std::unique_ptr<sql::Transaction> transaction =
+      web_data_backend_->GetDatabase()->AcquireTransaction();
+  EntityTable* table = GetEntityTable();
+  // When sync is disabled, the metadata should be cleared.
+  for (const auto& [storage_key, metadata] :
+       GetEntityTable()->GetSyncedMetadata()) {
+    table->RemoveEntityMetadata(storage_key);
+  }
+
+  web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
 }
 
 sync_pb::EntitySpecifics

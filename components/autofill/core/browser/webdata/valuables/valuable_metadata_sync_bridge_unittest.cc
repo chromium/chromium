@@ -412,5 +412,32 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit) {
               UnorderedElementsAre(vehicle2.metadata()));
 }
 
+// Tests that ApplyDisableSyncChanges() clears all the metadata.
+TEST_F(ValuableMetadataSyncBridgeTest, ApplyDisableSyncChanges_ClearsMetadata) {
+  const EntityInstance server_vehicle1 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000",
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_count = 2});
+  const EntityInstance server_vehicle2 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000",
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
+       .use_count = 7});
+  const EntityInstance local_vehicle2 = test::GetVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-500000000000",
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(600),
+       .use_count = 9});
+  entity_table().AddOrUpdateEntityInstance(server_vehicle1);
+  entity_table().AddOrUpdateEntityInstance(server_vehicle2);
+  entity_table().AddOrUpdateEntityInstance(local_vehicle2);
+
+  ASSERT_THAT(GetMetadataEntries(),
+              UnorderedElementsAre(server_vehicle1.metadata(),
+                                   server_vehicle2.metadata(),
+                                   local_vehicle2.metadata()));
+
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  EXPECT_THAT(GetMetadataEntries(), ElementsAre(local_vehicle2.metadata()));
+}
+
 }  // namespace
 }  // namespace autofill
