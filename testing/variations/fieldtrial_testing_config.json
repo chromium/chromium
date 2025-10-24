@@ -11601,16 +11601,18 @@
             ]
         }
     ],
-    "GlicMultitabContext": [
+    "GlicMultiInstance": [
         {
             "platforms": [
                 "mac",
+                "linux",
                 "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "GlicMultiInstance",
                         "GlicMultiTab",
                         "GlicMultitabUnderlines"
                     ]
