@@ -25,9 +25,6 @@ class NavigationAttachmentsViewBinder {
         if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
         } else if (propertyKey == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE) {
-            view.navigationType.setChecked(
-                    model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
-                            == AutocompleteRequestType.AI_MODE);
             @StringRes
             int res =
                     switch (model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
@@ -51,9 +48,6 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-            if (visible) {
-                view.navigationType.setChecked(true);
-            }
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE) {
             view.attachmentsToolbar.setVisibility(
                     model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
@@ -68,14 +62,7 @@ class NavigationAttachmentsViewBinder {
                     model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE)
                             ? View.VISIBLE
                             : View.GONE;
-            view.navigationTypeGroup.setVisibility(visibility);
             view.popup.mAutocompleteRequestTypeGroup.setVisibility(visibility);
-        } else if (propertyKey == NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED) {
-            view.navigationType.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        model.get(NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED)
-                                .onResult(isChecked);
-                    });
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED).run());

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -46,10 +45,6 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Callback for when the Use AI Mode switch is toggled. */
-    public static final WritableObjectPropertyKey<Callback<Boolean>> ON_USE_AI_MODE_CHANGED =
-            new WritableObjectPropertyKey<>();
-
     /** Action to perform when the user clicks the AI Mode button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_AI_MODE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -87,7 +82,6 @@ class NavigationAttachmentsProperties {
         AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
-        ON_USE_AI_MODE_CHANGED,
         POPUP_AI_MODE_CLICKED,
         POPUP_CAMERA_CLICKED,
         POPUP_CLIPBOARD_BUTTON_VISIBLE,

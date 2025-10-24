@@ -64,31 +64,6 @@ found in the LICENSE file.
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:tint="@color/default_icon_color_tint_list"/>
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/location_bar_navigation_type_group"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:constraint_referenced_ids="location_bar_navigation_type_label,location_bar_navigation_type"/>
-
-    <TextView
-        android:id="@+id/location_bar_navigation_type_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/ai_mode_entrypoint_label"
-        android:textAppearance="@style/TextAppearance.TextSmall"
-        app:layout_constraintEnd_toStartOf="@id/location_bar_navigation_type"
-        app:layout_constraintTop_toTopOf="@id/location_bar_navigation_type"
-        app:layout_constraintBottom_toBottomOf="@id/location_bar_navigation_type"/>
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/location_bar_navigation_type"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/min_touch_target_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"/>
-
     <org.chromium.ui.widget.ButtonCompat
         style="@style/OutlinedButton"
         android:id="@+id/navigation_attachments_request_type"

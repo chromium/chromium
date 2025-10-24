@@ -115,15 +115,6 @@ class NavigationAttachmentsMediator {
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
                 this::activateSearchMode);
         mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
-        mModel.set(
-                NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED,
-                (checked) -> {
-                    if (checked) {
-                        activateAiMode();
-                    } else {
-                        activateSearchMode();
-                    }
-                });
     }
 
     /** Activate Search as the Next Request fulfillment type. */

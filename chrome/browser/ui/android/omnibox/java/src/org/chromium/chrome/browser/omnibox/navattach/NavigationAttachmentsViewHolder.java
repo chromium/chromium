@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.navattach;
 
 import android.view.ViewGroup;
 
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,8 +22,6 @@ class NavigationAttachmentsViewHolder {
     public final Group attachmentsToolbar;
     public final ChromeImageView addButton;
     public final ChromeImageView settingsButton;
-    public final Group navigationTypeGroup;
-    public final SwitchCompat navigationType;
     public final NavigationAttachmentsPopup popup;
     public final ButtonCompat requestType;
 
@@ -33,8 +30,6 @@ class NavigationAttachmentsViewHolder {
         attachmentsToolbar = parent.findViewById(R.id.location_bar_attachments_toolbar);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
-        navigationTypeGroup = parent.findViewById(R.id.location_bar_navigation_type_group);
-        navigationType = parent.findViewById(R.id.location_bar_navigation_type);
         requestType = parent.findViewById(R.id.navigation_attachments_request_type);
         this.popup = popup;
 

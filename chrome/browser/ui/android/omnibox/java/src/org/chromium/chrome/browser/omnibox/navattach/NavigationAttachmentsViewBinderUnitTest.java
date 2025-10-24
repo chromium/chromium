@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 
 import org.junit.Before;
@@ -27,10 +26,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -52,7 +49,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock Button mGalleryButton;
     private @Mock Button mFileButton;
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
-    private @Mock SwitchCompat mSwitch;
     private @Mock ButtonCompat mRequestType;
     private @Mock View mRecentTabsHeader;
 
@@ -75,7 +71,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 .when(mParent)
                 .findViewById(R.id.location_bar_attachments_settings);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
-        doReturn(mSwitch).when(mParent).findViewById(R.id.location_bar_navigation_type);
         doReturn(mRequestType).when(mParent).findViewById(R.id.navigation_attachments_request_type);
         doReturn(mRecentTabsHeader)
                 .when(mParent)
@@ -106,26 +101,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
         verify(mRecyclerView).setVisibility(View.GONE);
-    }
-
-    @Test
-    public void autocompleteRequestType_togglesSwitch() {
-        mModel.set(
-                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
-                AutocompleteRequestType.AI_MODE);
-        verify(mSwitch).setChecked(true);
-
-        mModel.set(
-                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
-                AutocompleteRequestType.SEARCH);
-        verify(mSwitch).setChecked(false);
-    }
-
-    @Test
-    public void useAiModeChanged_setsListener() {
-        Callback<Boolean> callback = mock(Callback.class);
-        mModel.set(NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, callback);
-        verify(mSwitch).setOnCheckedChangeListener(any());
     }
 
     @Test
