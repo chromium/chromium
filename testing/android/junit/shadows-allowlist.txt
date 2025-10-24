@@ -13,7 +13,6 @@
 +org.chromium.chrome.browser.firstrun.FirstRunUtils
 +org.chromium.chrome.browser.init.ChromeBrowserInitializer
 +org.chromium.chrome.browser.lens.LensController
-+org.chromium.chrome.browser.lens.LensPolicyUtils
 +org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
 +org.chromium.chrome.browser.night_mode.WebContentsDarkModeController
 +org.chromium.chrome.browser.omnibox.UrlBarData
