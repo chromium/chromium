@@ -5,7 +5,7 @@
 #ifndef CC_TREES_VIEWPORT_LAYERS_H_
 #define CC_TREES_VIEWPORT_LAYERS_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 

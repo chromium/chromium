@@ -7,7 +7,7 @@
 
 #include <atomic>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/cc_export.h"

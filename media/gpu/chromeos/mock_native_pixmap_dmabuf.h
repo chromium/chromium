@@ -5,7 +5,7 @@
 #ifndef MEDIA_GPU_CHROMEOS_MOCK_NATIVE_PIXMAP_DMABUF_H_
 #define MEDIA_GPU_CHROMEOS_MOCK_NATIVE_PIXMAP_DMABUF_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"

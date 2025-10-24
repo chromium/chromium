@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/cc_export.h"
 #include "cc/paint/directly_composited_image_info.h"

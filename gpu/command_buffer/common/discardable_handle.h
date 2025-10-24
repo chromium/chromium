@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_COMMON_DISCARDABLE_HANDLE_H_
 
 #include "base/atomicops.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 

@@ -15,7 +15,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shader_translator.h"
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/angle/include/GLSLANG/ShaderLang.h"

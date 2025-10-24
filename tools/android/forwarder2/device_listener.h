@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "tools/android/forwarder2/forwarders_manager.h"
 #include "tools/android/forwarder2/pipe_notifier.h"

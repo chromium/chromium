@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 
 namespace network {

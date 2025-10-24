@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

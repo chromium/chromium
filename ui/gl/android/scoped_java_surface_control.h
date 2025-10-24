@@ -11,7 +11,7 @@
 #include <optional>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_export.h"
 
