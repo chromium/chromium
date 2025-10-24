@@ -337,6 +337,7 @@ class CORE_EXPORT HTMLSelectElement final
   void setSelectedContentElement(HTMLSelectedContentElement*);
 
   void DefaultEventHandler(Event&) override;
+  void ChildrenChanged(const ChildrenChange&) override;
 
   void UpdateAllSelectedcontents(HTMLOptionElement* selected_option);
 

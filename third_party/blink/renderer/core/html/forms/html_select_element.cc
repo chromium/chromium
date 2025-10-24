@@ -1277,6 +1277,26 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
   HTMLFormControlElementWithState::DefaultEventHandler(event);
 }
 
+void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
+  HTMLFormControlElementWithState::ChildrenChanged(change);
+  if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
+    // OptionRemoved is normally called in HTMLOptionElement::RemovedFrom, but
+    // as a direct child we call OptionRemoved here in order to avoid
+    // https://issues.chromium.org/issues/444330901
+    if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
+      for (Node* node : change.removed_nodes) {
+        if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+          OptionRemoved(*option);
+        }
+      }
+    } else if (change.type == ChildrenChangeType::kElementRemoved) {
+      if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
+        OptionRemoved(*option);
+      }
+    }
+  }
+}
+
 HTMLOptionElement* HTMLSelectElement::LastSelectedOption() const {
   const ListItems& items = GetListItems();
   for (wtf_size_t i = items.size(); i;) {
