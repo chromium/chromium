@@ -22,11 +22,6 @@
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
-constexpr base::TimeDelta kProfileActivityThreshold =
-    base::Days(28);  // Should be integral number of weeks.
-#endif
-
 // Enum for getting net counts for adding and deleting users.
 enum class ProfileNetUserCounts {
   ADD_NEW_USER = 0,  // Total count of add new user
@@ -72,6 +67,53 @@ base::flat_map<std::u16string, ProfileCountByName> GetProfilesByGaiaName(
   }
   return profile_counts_by_name;
 }
+
+// Count and return summary information about the profiles currently in the
+// `storage`.
+profile_metrics::Counts CountProfileInformation(
+    ProfileAttributesStorage* storage,
+    profile_metrics::ProfileActivityThreshold activity_threshold) {
+  profile_metrics::Counts counts;
+
+  size_t number_of_profiles = storage->GetNumberOfProfiles();
+  counts.total = number_of_profiles;
+  // Ignore other metrics if we have no profiles.
+  if (!number_of_profiles) {
+    return counts;
+  }
+
+  std::vector<ProfileAttributesEntry*> entries =
+      storage->GetAllProfilesAttributes();
+  for (ProfileAttributesEntry* entry : entries) {
+    if (!ProfileMetrics::IsProfileActive(entry, activity_threshold)) {
+      counts.unused++;
+    } else {
+      counts.active++;
+      if (entry->IsSupervised()) {
+        counts.supervised++;
+      }
+      if (entry->IsAuthenticated()) {
+        counts.signedin++;
+      }
+    }
+  }
+
+  return counts;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+base::TimeDelta GetActivityThresholdDelta(
+    profile_metrics::ProfileActivityThreshold activity_threshold) {
+  switch (activity_threshold) {
+    case profile_metrics::ProfileActivityThreshold::kDuration1Day:
+      return base::Days(1);
+    case profile_metrics::ProfileActivityThreshold::kDuration7Days:
+      return base::Days(7);
+    case profile_metrics::ProfileActivityThreshold::kDuration28Days:
+      return base::Days(28);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -141,46 +183,32 @@ enum ProfileAvatar {
 };
 
 // static
-bool ProfileMetrics::IsProfileActive(const ProfileAttributesEntry* entry) {
+bool ProfileMetrics::IsProfileActive(
+    const ProfileAttributesEntry* entry,
+    profile_metrics::ProfileActivityThreshold activity_threshold) {
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(mlerman): iOS and Android should set an ActiveTime in the
   // ProfileAttributesStorage. (see ProfileManager::OnBrowserSetLastActive)
-  if (base::Time::Now() - entry->GetActiveTime() > kProfileActivityThreshold)
+  if (base::Time::Now() - entry->GetActiveTime() >
+      GetActivityThresholdDelta(activity_threshold)) {
     return false;
+  }
 #endif
   return true;
 }
 
-// static
-void ProfileMetrics::CountProfileInformation(ProfileAttributesStorage* storage,
-                                             profile_metrics::Counts* counts) {
-  size_t number_of_profiles = storage->GetNumberOfProfiles();
-  counts->total = number_of_profiles;
-
-  // Ignore other metrics if we have no profiles.
-  if (!number_of_profiles)
-    return;
-
-  std::vector<ProfileAttributesEntry*> entries =
-      storage->GetAllProfilesAttributes();
-  for (ProfileAttributesEntry* entry : entries) {
-    if (!IsProfileActive(entry)) {
-      counts->unused++;
-    } else {
-      counts->active++;
-      if (entry->IsSupervised())
-        counts->supervised++;
-      if (entry->IsAuthenticated())
-        counts->signedin++;
-    }
-  }
-}
-
 void ProfileMetrics::LogNumberOfProfiles(ProfileAttributesStorage* storage) {
   CHECK(storage);
-  profile_metrics::Counts counts;
-  CountProfileInformation(storage, &counts);
-  profile_metrics::LogProfileMetricsCounts(counts);
+  profile_metrics::LogTotalNumberOfProfiles(storage->GetNumberOfProfiles());
+
+  for (profile_metrics::ProfileActivityThreshold activity_threshold :
+       {profile_metrics::ProfileActivityThreshold::kDuration1Day,
+        profile_metrics::ProfileActivityThreshold::kDuration7Days,
+        profile_metrics::ProfileActivityThreshold::kDuration28Days}) {
+    profile_metrics::Counts counts =
+        CountProfileInformation(storage, activity_threshold);
+    profile_metrics::LogProfileMetricsCounts(counts, activity_threshold);
+  }
 
   // Records whether some profiles have primary accounts with the same first
   // name.

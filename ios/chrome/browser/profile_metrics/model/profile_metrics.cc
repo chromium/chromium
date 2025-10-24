@@ -49,7 +49,12 @@ void CountProfileInformation(const ProfileAttributesStorageIOS& storage,
 }  // namespace
 
 void LogNumberOfProfiles(ProfileManagerIOS* manager) {
+  const ProfileAttributesStorageIOS& storage =
+      *manager->GetProfileAttributesStorage();
+  profile_metrics::LogTotalNumberOfProfiles(storage.GetNumberOfProfiles());
+
   profile_metrics::Counts counts;
-  CountProfileInformation(*manager->GetProfileAttributesStorage(), &counts);
-  profile_metrics::LogProfileMetricsCounts(counts);
+  CountProfileInformation(storage, &counts);
+  profile_metrics::LogProfileMetricsCounts(
+      counts, profile_metrics::ProfileActivityThreshold::kDuration28Days);
 }

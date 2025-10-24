@@ -8,14 +8,11 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "components/profile_metrics/counts.h"
 
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
-
-namespace profile_metrics {
-struct Counts;
-}
 
 #if BUILDFLAG(IS_ANDROID)
 namespace signin {
@@ -120,13 +117,12 @@ class ProfileMetrics {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileGaiaNameShareStatus)
 
-  // Returns whether profile |entry| is considered active for metrics.
-  static bool IsProfileActive(const ProfileAttributesEntry* entry);
-
-  // Count and return summary information about the profiles currently in the
-  // |storage|. This information is returned in the output variable |counts|.
-  static void CountProfileInformation(ProfileAttributesStorage* storage,
-                                      profile_metrics::Counts* counts);
+  // Returns whether profile `entry` is considered active for metrics. "Active"
+  // is dependent on the `activity_threshold` duration, defaulted to 28 days.
+  static bool IsProfileActive(
+      const ProfileAttributesEntry* entry,
+      profile_metrics::ProfileActivityThreshold activity_threshold =
+          profile_metrics::ProfileActivityThreshold::kDuration28Days);
 
   static void LogNumberOfProfiles(ProfileAttributesStorage* storage);
   static void LogProfileAddNewUser(ProfileAdd metric);

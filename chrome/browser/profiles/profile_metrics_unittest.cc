@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -108,20 +109,14 @@ const ProfileMetricsParam profile_metrics_test_params[] = {
 
 }  // namespace
 
-class ProfileMetricsTest : public testing::TestWithParam<ProfileMetricsParam> {
- public:
-  void CheckProfileCountHistogram(const base::HistogramTester& histogram_tester,
-                                  const char* histogram,
-                                  int expected_count) {
-    histogram_tester.ExpectUniqueSample(histogram, expected_count, 1);
-  }
-
+class ProfileMetricsParamsTest
+    : public testing::TestWithParam<ProfileMetricsParam> {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_P(ProfileMetricsTest, LogNumberOfProfiles) {
+TEST_P(ProfileMetricsParamsTest, LogNumberOfProfiles) {
   ProfileAttributesStorage::RegisterPrefs(prefs_.registry());
   const ProfileMetricsParam test_param = GetParam();
   base::FilePath user_data_dir = base::FilePath(FILE_PATH_LITERAL("/Foo"));
@@ -161,24 +156,177 @@ TEST_P(ProfileMetricsTest, LogNumberOfProfiles) {
   histogram_tester.ExpectUniqueSample(
       "Profile.NumberOfSignedInProfiles",
       test_param.expected_sync_consent_profile_count, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Profile.NumberOfSignedInProfiles.1Day",
+      test_param.expected_sync_consent_profile_count, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Profile.NumberOfSignedInProfiles.7Days",
+      test_param.expected_sync_consent_profile_count, 1);
+
   histogram_tester.ExpectUniqueSample("Profile.NumberOfManagedProfiles",
+                                      test_param.expected_managed_profile_count,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfManagedProfiles.1Day",
+                                      test_param.expected_managed_profile_count,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfManagedProfiles.7Days",
                                       test_param.expected_managed_profile_count,
                                       1);
 #if BUILDFLAG(IS_ANDROID)
   // All profiles are considered active on Android.
   histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles",
                                       test_param.profiles.size(), 1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                      test_param.profiles.size(), 1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                      test_param.profiles.size(), 1);
+
   histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles", 0, 1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day", 0,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days", 0,
+                                      1);
 #else
   histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles",
                                       test_param.expected_active_profile_count,
                                       1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                      test_param.expected_active_profile_count,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                      test_param.expected_active_profile_count,
+                                      1);
+
   histogram_tester.ExpectUniqueSample(
       "Profile.NumberOfUnusedProfiles",
+      test_param.profiles.size() - test_param.expected_active_profile_count, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Profile.NumberOfUnusedProfiles.1Day",
+      test_param.profiles.size() - test_param.expected_active_profile_count, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Profile.NumberOfUnusedProfiles.7Days",
       test_param.profiles.size() - test_param.expected_active_profile_count, 1);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         ProfileMetricsTest,
+                         ProfileMetricsParamsTest,
                          testing::ValuesIn(profile_metrics_test_params));
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST(ProfileMetrics, ThresholdTest) {
+  content::BrowserTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple prefs_;
+  ProfileAttributesStorage::RegisterPrefs(prefs_.registry());
+
+  base::FilePath user_data_dir = base::FilePath(FILE_PATH_LITERAL("/Foo"));
+  ProfileAttributesStorage storage(&prefs_, user_data_dir);
+  // Create 2 profiles.
+  base::FilePath profile_path = user_data_dir.AppendASCII("profile");
+  {
+    ProfileAttributesInitParams profile_init_params;
+    profile_init_params.profile_path = profile_path;
+    profile_init_params.profile_name = u"profile";
+    storage.AddProfile(std::move(profile_init_params));
+  }
+
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_path);
+  CHECK(entry);
+  entry->SetActiveTimeToNow();
+
+  {
+    base::HistogramTester histogram_tester;
+    ProfileMetrics::LogNumberOfProfiles(&storage);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles", 0, 1);
+  }
+
+  // Total fast forward: 2 Days.
+  task_environment.FastForwardBy(base::Days(2));
+  {
+    base::HistogramTester histogram_tester;
+    ProfileMetrics::LogNumberOfProfiles(&storage);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles", 0, 1);
+  }
+
+  // Total fast forward: 8 Days.
+  task_environment.FastForwardBy(base::Days(6));
+  {
+    base::HistogramTester histogram_tester;
+    ProfileMetrics::LogNumberOfProfiles(&storage);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles", 0, 1);
+  }
+
+  // Total fast forward: 29 Days.
+  task_environment.FastForwardBy(base::Days(21));
+  {
+    base::HistogramTester histogram_tester;
+    ProfileMetrics::LogNumberOfProfiles(&storage);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 0, 1);
+
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles", 1, 1);
+  }
+
+  // Make profile active now again, all histograms should record.
+  entry->SetActiveTimeToNow();
+  {
+    base::HistogramTester histogram_tester;
+    ProfileMetrics::LogNumberOfProfiles(&storage);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.1Day",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
+                                        1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
+                                        0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles", 0, 1);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

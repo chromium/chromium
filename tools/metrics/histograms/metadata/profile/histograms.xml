@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(ProfileActivityThreshold) -->
+
+<variants name="ProfileActivityThreshold">
+  <variant name="" summary="28 days"/>
+  <variant name=".1Day" summary="1 day"/>
+  <variant name=".7Days" summary="7 days"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/profile_metrics/counts.cc:ProfileActivityThreshold) -->
+
 <variants name="ProfilePickerFlowType">
   <variant name="FREFlow" summary="Recorded for the FRE flow."/>
   <variant name="GlicFlow" summary="Recorded for the Glic flow."/>
@@ -389,19 +399,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfActiveProfiles" units="profiles"
-    expires_after="2026-03-22">
+<histogram name="Profile.NumberOfActiveProfiles{ProfileActivityThreshold}"
+    units="profiles" expires_after="2026-03-22">
   <owner>droger@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
-    Counts the number of profiles used in the last 28 days on a user's machine.
-    Only emitted for users with at least one profile (of any type). This
-    histogram can be compared with Profile.NumberOfProfiles, which counts all
-    profiles regardless of activity and also is emitted on clients with no
-    profiles of any type. These include only &quot;regular&quot; profiles;
-    neither of these histograms include system or guest profiles even if some
-    are open at the time the histogram is emitted. Both histograms do not count
-    incognito profiles separately; they are considered part of their
+    Counts the number of profiles used in the last {ProfileActivityThreshold} on
+    a user's machine. Only emitted for users with at least one profile (of any
+    type). This histogram can be compared with Profile.NumberOfProfiles, which
+    counts all profiles regardless of activity and also is emitted on clients
+    with no profiles of any type. These include only &quot;regular&quot;
+    profiles; neither of these histograms include system or guest profiles even
+    if some are open at the time the histogram is emitted. Both histograms do
+    not count incognito profiles separately; they are considered part of their
     &quot;parent&quot; profile.
 
     However, as of Feb 2024 intention is not reality. Chrome on Android assumes
@@ -431,8 +441,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfManagedProfiles" units="profiles"
-    expires_after="2026-03-22">
+<histogram name="Profile.NumberOfManagedProfiles{ProfileActivityThreshold}"
+    units="profiles" expires_after="2026-03-22">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -527,8 +537,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfSignedInProfiles" units="profiles"
-    expires_after="2026-03-01">
+<histogram name="Profile.NumberOfSignedInProfiles{ProfileActivityThreshold}"
+    units="profiles" expires_after="2026-03-01">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -556,8 +566,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfUnusedProfiles" units="profiles"
-    expires_after="2026-06-14">
+<histogram name="Profile.NumberOfUnusedProfiles{ProfileActivityThreshold}"
+    units="profiles" expires_after="2026-06-14">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -566,9 +576,9 @@ chromium-metrics-reviews@google.com.
     (of any type).
 
     This is intended to count only profiles that have not been used in the last
-    28 days. However, active usage detection does not work correctly on all
-    platforms and for all Chrome versions. See details in the description of
-    Profile.NumberOfActiveProfiles.
+    {ProfileActivityThreshold}. However, active usage detection does not work
+    correctly on all platforms and for all Chrome versions. See details in the
+    description of Profile.NumberOfActiveProfiles.
 
     On non-iOS platforms, this histogram is emitted on startup if it has been
     more than 24 hours since the last time the histogram was emitted. It is also
@@ -586,8 +596,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.PercentageOfManagedProfiles" units="units"
-    expires_after="2026-04-12">
+<histogram name="Profile.PercentageOfManagedProfiles{ProfileActivityThreshold}"
+    units="units" expires_after="2026-04-12">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -601,9 +611,9 @@ chromium-metrics-reviews@google.com.
     managed); they are considered part of their &quot;parent&quot; profile.
 
     This is intended to count only profiles in the numerator that have been used
-    in the last 28 days. However, active usage detection does not work correctly
-    on all platforms and for all Chrome versions. See details in the description
-    of Profile.NumberOfActiveProfiles.
+    in the last {ProfileActivityThreshold}. However, active usage detection does
+    not work correctly on all platforms and for all Chrome versions. See details
+    in the description of Profile.NumberOfActiveProfiles.
 
     On non-iOS platforms, this histogram is emitted on startup if it has been
     more than 24 hours since the last time the histogram was emitted. It is also
