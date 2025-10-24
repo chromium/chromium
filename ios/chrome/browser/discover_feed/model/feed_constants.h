@@ -39,17 +39,6 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType) {
   FeedLayoutUpdateTypeReload,
 };
 
-// The types of sorting for the Following feed.
-// TODO(crbug.com/448683013): Remove.
-typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
-  // Does not provide a sort type. Used for non-Following feeds.
-  FollowingFeedSortTypeUnspecified = 0,
-  // Sorts content in publisher groups that can be expanded.
-  FollowingFeedSortTypeByPublisher,
-  // Sorts content in reverse-chronological order without groups.
-  FollowingFeedSortTypeByLatest
-};
-
 /// Enums representing whether the user is eligible to view the feed, and if
 /// not, why.
 enum class DiscoverFeedEligibility {

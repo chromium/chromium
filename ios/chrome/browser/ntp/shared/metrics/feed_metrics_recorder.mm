@@ -39,15 +39,12 @@ using feed::FeedUserActionType;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngagedSimple.
 @property(nonatomic, assign) BOOL engagedSimpleReportedDiscover;
-@property(nonatomic, assign) BOOL engagedSimpleReportedFollowing;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngaged.
 @property(nonatomic, assign) BOOL engagedReportedDiscover;
-@property(nonatomic, assign) BOOL engagedReportedFollowing;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedScrolled.
 @property(nonatomic, assign) BOOL scrolledReportedDiscover;
-@property(nonatomic, assign) BOOL scrolledReportedFollowing;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kGoodVisit.
 @property(nonatomic, assign) BOOL goodVisitReportedDiscover;
@@ -63,8 +60,6 @@ using feed::FeedUserActionType;
     BOOL engagedWithLatestRefreshedContent;
 
 // Tracking property to record a scroll for Good Visits.
-// TODO(crbug.com/40871863) separate the property below in two, one for each
-// feed.
 @property(nonatomic, assign) BOOL goodVisitScroll;
 // The timestamp when the first metric is being recorded for this session.
 @property(nonatomic, assign) base::Time sessionStartTime;
@@ -116,13 +111,6 @@ using feed::FeedUserActionType;
 - (void)recordFeedScrolled:(int)scrollDistance {
   self.goodVisitScroll = YES;
   [self checkEngagementGoodVisitWithInteraction:NO];
-
-  // If neither feed has been scrolled into, log "AllFeeds" scrolled.
-  if (!self.scrolledReportedDiscover && !self.scrolledReportedFollowing) {
-    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedScrolled);
-  }
-
   // Log scrolled into Discover feed.
   if (!self.scrolledReportedDiscover) {
     base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
@@ -479,33 +467,6 @@ using feed::FeedUserActionType;
   base::UmaHistogramBoolean(kDiscoverUniformityFlag, flag);
 }
 
-#pragma mark - Follow
-
-- (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
-  switch (followRequestType) {
-    case FollowRequestType::kFollowRequestFollow:
-      base::RecordAction(base::UserMetricsAction(kFollowRequested));
-      break;
-    case FollowRequestType::kFollowRequestUnfollow:
-      base::RecordAction(base::UserMetricsAction(kUnfollowRequested));
-      break;
-  }
-}
-
-- (void)recordFollowFromMenu {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedFollowButton
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(kFollowFromMenu));
-}
-
-- (void)recordUnfollowFromMenu {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedUnfollowButton
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(kUnfollowFromMenu));
-}
-
 - (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId {
   base::RecordAction(
       hasUserId ? base::UserMetricsAction(kShowFeedSignInOnlyUIWithUserId)
@@ -760,10 +721,6 @@ using feed::FeedUserActionType;
 // Records any direct interaction with the Feed, this doesn't include scrolling.
 - (void)recordInteraction {
   [self recordEngagement:0 interacted:YES];
-  // Log interaction for all feeds
-  base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
-                                FeedEngagementType::kFeedInteracted);
-
   // Log interaction for the feed.
   base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
                                 FeedEngagementType::kFeedInteracted);
@@ -779,8 +736,6 @@ using feed::FeedUserActionType;
 - (void)recordEngagedSimple {
   // Log simple engagment for Discover feed.
   if (!self.engagedSimpleReportedDiscover) {
-    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedEngagedSimple);
     base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
                                   FeedEngagementType::kFeedEngagedSimple);
     self.engagedSimpleReportedDiscover = YES;
@@ -790,7 +745,7 @@ using feed::FeedUserActionType;
 // Records engagement for the currently selected feed.
 - (void)recordEngaged {
   // If neither feed has been engaged with, log "AllFeeds" engagement.
-  if (!self.engagedReportedDiscover && !self.engagedReportedFollowing) {
+  if (!self.engagedReportedDiscover) {
     // If the user has engaged with a feed, this is recorded as a user default.
     // This can be used for things which require feed engagement as a condition,
     // such as the top-of-feed signin promo.
@@ -799,9 +754,6 @@ using feed::FeedUserActionType;
 
     // Log engagement for Activity Buckets.
     [self logDailyActivity];
-
-    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedEngaged);
   }
 
   // Log engagment for Discover feed.
@@ -810,7 +762,6 @@ using feed::FeedUserActionType;
                                   FeedEngagementType::kFeedEngaged);
     self.engagedReportedDiscover = YES;
   }
-  // TODO(crbug.com/40838123): Separate user action for Following feed.
   base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
 }
 
@@ -841,19 +792,12 @@ using feed::FeedUserActionType;
 - (void)finalizeSession {
   // If simple engagement hasn't been logged, then there's no session to
   // finalize.
-  if (!self.engagedSimpleReportedDiscover &&
-      !self.engagedSimpleReportedFollowing) {
+  if (!self.engagedSimpleReportedDiscover) {
     return;
   }
-
   self.engagedReportedDiscover = NO;
-  self.engagedReportedFollowing = NO;
-
   self.engagedSimpleReportedDiscover = NO;
-  self.engagedSimpleReportedFollowing = NO;
-
   self.scrolledReportedDiscover = NO;
-  self.scrolledReportedFollowing = NO;
 }
 
 // Resets the Good Visits session tracking values, this occurs if there's been
@@ -923,21 +867,6 @@ using feed::FeedUserActionType;
   // in that page.
   self.prefService->SetTime(kArticleVisitTimestampKey, base::Time::Now());
   [self.NTPActionsDelegate feedArticleOpened];
-}
-
-#pragma mark - Converters
-
-// Converts a FollowingFeedSortType NSEnum into a FeedSortType enum.
-- (FeedSortType)convertFollowingFeedSortTypeForHistogram:
-    (FollowingFeedSortType)followingFeedSortType {
-  switch (followingFeedSortType) {
-    case FollowingFeedSortTypeUnspecified:
-      return FeedSortType::kUnspecifiedSortType;
-    case FollowingFeedSortTypeByPublisher:
-      return FeedSortType::kGroupedByPublisher;
-    case FollowingFeedSortTypeByLatest:
-      return FeedSortType::kSortedByLatest;
-  }
 }
 
 @end

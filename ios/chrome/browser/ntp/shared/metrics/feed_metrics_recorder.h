@@ -192,19 +192,6 @@ class PrefService;
 // Records the value of the uniformity flag value from Discover.
 - (void)recordUniformityFlagValue:(BOOL)flag;
 
-#pragma mark - Follow
-
-// Record metrics for when the user request to follow/unfollow a website,
-// according to `followRequestedType`. Ex. The user selects the 'Follow' item in
-// the overflow menu.
-- (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType;
-
-// Record metrics for when the user tapped "follow" from menu entry point.
-- (void)recordFollowFromMenu;
-
-// Record metrics for when the user tapped "unfollow" from menu entry point.
-- (void)recordUnfollowFromMenu;
-
 #pragma mark - Sign-in Promo
 
 // Record metrics for when a user triggered a sign-in only flow from Discover

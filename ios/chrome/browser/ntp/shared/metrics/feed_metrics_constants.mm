@@ -32,14 +32,8 @@ const char kDiscoverFeedUserActionCommandHistogram[] =
     "ContentSuggestions.Feed.UserActions.Commands";
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
-const char kFollowingFeedEngagementTypeHistogram[] =
-    "ContentSuggestions.Feed.WebFeed.EngagementType";
-const char kAllFeedsEngagementTypeHistogram[] =
-    "ContentSuggestions.Feed.AllFeeds.EngagementType";
 const char kDiscoverFeedCardShownAtIndex[] =
     "NewTabPage.ContentSuggestions.Shown";
-const char kFollowingFeedCardShownAtIndex[] =
-    "ContentSuggestions.Feed.WebFeed.Shown";
 const char kAllFeedsActivityBucketsHistogram[] =
     "ContentSuggestions.Feed.AllFeeds.Activity";
 const char kDiscoverFeedNoticeCardFulfilled[] =
@@ -110,13 +104,9 @@ const char kDiscoverFeedUserActionReportContentClosed[] =
     "ContentSuggestions.Feed.CardAction.ClosedReportContent";
 const char kDiscoverFeedUserActionPreviewTapped[] =
     "ContentSuggestions.Feed.CardAction.TapPreview";
-const char kFollowRequested[] = "ContentSuggestions.Follow.FollowRequested";
-const char kUnfollowRequested[] = "ContentSuggestions.Follow.UnfollowRequested";
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 const char kFeedWillRefresh[] = "ContentSuggestions.Feed.WillRefresh";
 const char kNTPViewHierarchyFixed[] = "NewTabPage.ViewHierarchyFixed";
-const char kFollowFromMenu[] = "MobileMenuFollow";
-const char kUnfollowFromMenu[] = "MobileMenuUnfollow";
 const char kShowFeedSignInOnlyUIWithUserId[] =
     "ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithUserId";
 const char kShowFeedSignInOnlyUIWithoutUserId[] =

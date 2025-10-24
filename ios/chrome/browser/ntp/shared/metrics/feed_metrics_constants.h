@@ -87,16 +87,6 @@ enum class FeedRefreshTrigger {
   kMaxValue = kBackgroundWarmStartAppClose,
 };
 
-// Enum class contains values indicating the type of follow request. Ex.
-// kFollowRequestFollow means the user has sent a request to follow a website.
-enum class FollowRequestType {
-  kFollowRequestFollow = 0,
-  kFollowRequestUnfollow = 1,
-
-  // Change this to match max value.
-  kMaxValue = kFollowRequestUnfollow,
-};
-
 // Values for the UMA ContentSuggestions.Feed.LoadStreamStatus.LoadMore
 // histogram. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused. This must be kept
@@ -156,22 +146,6 @@ enum class UserSettingsOnStart {
   kMaxValue = kSignedInNoRecentData,
 };
 
-// Values for UMA ContentSuggestions.Feed.WebFeed.SortType* histograms.
-// This enum is a copy of FollowingFeedSortType in feed_constants.h, used
-// exclusively for metrics recording. This should always be kept in sync with
-// that enum and FollowingFeedSortType in enums.xml.
-enum class FeedSortType {
-  // The sort type is unspecified. With the Following feed selected, this log
-  // indicates a problem.
-  kUnspecifiedSortType = 0,
-  // The feed is grouped by publisher.
-  kGroupedByPublisher = 1,
-  // The feed is sorted in reverse-chronological order.
-  kSortedByLatest = 2,
-  // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kSortedByLatest,
-};
-
 // The values for the Feed Activity Buckets metric.
 enum class FeedActivityBucket {
   // No activity bucket for users active 0/28 days.
@@ -196,19 +170,14 @@ extern const char kDiscoverFeedUserActionHistogram[];
 // Histogram name for the Discover feed user actions commands.
 extern const char kDiscoverFeedUserActionCommandHistogram[];
 
-// Histogram name for the feed engagement types.
+// Histogram name for the feed engagement.
 extern const char kDiscoverFeedEngagementTypeHistogram[];
-extern const char kFollowingFeedEngagementTypeHistogram[];
-extern const char kAllFeedsEngagementTypeHistogram[];
 
 // Histogram name for the feed activity bucket metric.
 extern const char kAllFeedsActivityBucketsHistogram[];
 
 // Histogram name for a Discover feed card shown at index.
 extern const char kDiscoverFeedCardShownAtIndex[];
-
-// Histogram name for a Following feed card shown at index.
-extern const char kFollowingFeedCardShownAtIndex[];
 
 // Histogram name to capture Feed Notice card impressions.
 extern const char kDiscoverFeedNoticeCardFulfilled[];
@@ -293,10 +262,6 @@ extern const char kDiscoverFeedUserActionReportContentOpened[];
 extern const char kDiscoverFeedUserActionReportContentClosed[];
 extern const char kDiscoverFeedUserActionPreviewTapped[];
 
-// User action names for following operations.
-extern const char kFollowRequested[];
-extern const char kUnfollowRequested[];
-
 // User action name for engaging with feed.
 extern const char kDiscoverFeedUserActionEngaged[];
 
@@ -307,10 +272,6 @@ extern const char kFeedWillRefresh[];
 // detected as broken.
 // TODO(crbug.com/40799579): Remove this when issue is fixed.
 extern const char kNTPViewHierarchyFixed[];
-
-// User actions for following and unfollowing publishers from the overflow menu.
-extern const char kFollowFromMenu[];
-extern const char kUnfollowFromMenu[];
 
 #pragma mark - User Actions for Feed Sign-in Promo
 
