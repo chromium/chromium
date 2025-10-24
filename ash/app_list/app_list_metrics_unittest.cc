@@ -13,8 +13,6 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/model/app_list_test_model.h"
-#include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -37,7 +35,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -120,15 +117,11 @@ class AppListMetricsTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-
-    search_model_ = AppListModelProvider::Get()->search_model();
-
     shelf_test_api_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
   }
 
   void TearDown() override {
-    search_model_ = nullptr;
     shelf_test_api_.reset();
     AshTestBase::TearDown();
   }
@@ -180,7 +173,6 @@ class AppListMetricsTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SearchModel> search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 
