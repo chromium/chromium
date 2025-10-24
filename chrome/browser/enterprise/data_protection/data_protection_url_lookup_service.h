@@ -37,6 +37,16 @@ class DataProtectionUrlLookupService : public KeyedService {
                 LookupCallback callback,
                 content::WebContents* web_contents);
 
+  enum class URLVerdictCacheEvent {
+    // Verdict obtained from cache.
+    kCacheHit = 0,
+
+    // Chrome made a URL scan request.
+    kUrlScanRequest = 1,
+
+    kMaxValue = kUrlScanRequest
+  };
+
  private:
   struct Verdict {
     Verdict();

@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -17,6 +18,9 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace {
+
+constexpr char kVerdictCacheEventHistogram[] =
+    "Enterprise.DataProtection.VerdictCacheEvent";
 
 int GetCacheDurationSec(safe_browsing::RTLookupResponse* rt_lookup_response) {
   DCHECK(rt_lookup_response);
@@ -70,9 +74,13 @@ void DataProtectionUrlLookupService::DoLookup(
         std::make_unique<safe_browsing::RTLookupResponse>(
             *cached_verdict->second.response);
     std::move(callback).Run(std::move(response));
+    base::UmaHistogramEnumeration(kVerdictCacheEventHistogram,
+                                  URLVerdictCacheEvent::kCacheHit);
     return;
   }
 
+  base::UmaHistogramEnumeration(kVerdictCacheEventHistogram,
+                                URLVerdictCacheEvent::kUrlScanRequest);
   lookup_service->StartMaybeCachedLookup(
       url,
       base::BindOnce(&DataProtectionUrlLookupService::OnRealTimeLookupComplete,
