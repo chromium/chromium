@@ -353,24 +353,12 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
 
     prompt_shown = true;
     AutofillClient::EntityImportPromptResultCallback prompt_result_callback =
-        [&] {
-          switch (prompt_type) {
-            case AutofillClient::AutofillAiImportPromptType::kSave:
-              return BindOnce(&AutofillAiManager::HandleSavePromptResult,
-                              GetWeakPtr(), form.ToFormData(), ukm_source_id,
-                              prompt_candidate);
-            case AutofillClient::AutofillAiImportPromptType::kUpdate:
-              return BindOnce(&AutofillAiManager::HandleUpdatePromptResult,
-                              GetWeakPtr(), form.ToFormData(), ukm_source_id,
-                              prompt_candidate, *existing_entity_id);
-            case AutofillClient::AutofillAiImportPromptType::kMigrate:
-              return BindOnce(&AutofillAiManager::HandleUpstreamEntityPrompt,
-                              GetWeakPtr(), form.ToFormData(), ukm_source_id,
-                              prompt_candidate, *existing_entity_id);
-          }
-          NOTREACHED();
-        }();
+        BindOnce(&AutofillAiManager::HandlePromptResult, GetWeakPtr(),
+                 form.ToFormData(), prompt_candidate, existing_entity_id,
+                 ukm_source_id, prompt_type);
 
+    CHECK(prompt_type != AutofillClient::AutofillAiImportPromptType::kUpdate ||
+          existing_entity_id);
     client_->ShowEntityImportBubble(
         std::move(prompt_candidate),
         prompt_type == AutofillClient::AutofillAiImportPromptType::kUpdate
@@ -382,90 +370,43 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
   return prompt_shown;
 }
 
-void AutofillAiManager::HandleUpstreamEntityPrompt(
+void AutofillAiManager::HandlePromptResult(
     const FormData& form,
-    ukm::SourceId ukm_source_id,
-    EntityInstance upstream_entity,
-    EntityInstance::EntityId local_entity,
-    AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  logger_.OnImportPromptResult(
-      form, AutofillClient::AutofillAiImportPromptType::kMigrate,
-      upstream_entity.type(), upstream_entity.record_type(), close_reason,
-      ukm_source_id);
-
-  if (close_reason != AutofillClient::AutofillAiBubbleClosedReason::kAccepted) {
-    if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
-      AddStrikeForSaveAttempt(form.url(), upstream_entity);
-    }
-    return;
-  }
-
-  EntityDataManager* entity_manager = client_->GetEntityDataManager();
-  if (!entity_manager) {
-    return;
-  }
-
-  ClearStrikesForSave(form.url(), upstream_entity);
-  entity_manager->AddOrUpdateEntityInstance(std::move(upstream_entity));
-}
-
-void AutofillAiManager::HandleSavePromptResult(
-    const FormData& form,
-    ukm::SourceId ukm_source_id,
     EntityInstance entity,
+    std::optional<EntityInstance::EntityId> existing_entity_id,
+    ukm::SourceId ukm_source_id,
+    AutofillClient::AutofillAiImportPromptType prompt_type,
     AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  logger_.OnImportPromptResult(
-      form, AutofillClient::AutofillAiImportPromptType::kSave, entity.type(),
-      entity.record_type(), close_reason, ukm_source_id);
+  logger_.OnImportPromptResult(form, prompt_type, entity.type(),
+                               entity.record_type(), close_reason,
+                               ukm_source_id);
+  EntityDataManager& entity_manager =
+      CHECK_DEREF(client_->GetEntityDataManager());
+
+  AddOrClearImportPromptStrikes(prompt_type, close_reason, form.url(), entity,
+                                existing_entity_id);
+
   const bool prompt_accepted =
       close_reason == AutofillClient::AutofillAiBubbleClosedReason::kAccepted;
-  EntityDataManager* entity_manager = client_->GetEntityDataManager();
-  if (entity_manager) {
-    client_->TriggerAutofillAiSavePromptSurvey(
-        prompt_accepted, entity.type(),
-        GetSaveEntitiesTypesNames(entity_manager->GetEntityInstances()));
+
+  // This switch should handle prompt-type-specific logic.
+  switch (prompt_type) {
+    case AutofillClient::AutofillAiImportPromptType::kSave:
+      client_->TriggerAutofillAiSavePromptSurvey(
+          prompt_accepted, entity.type(),
+          GetSaveEntitiesTypesNames(entity_manager.GetEntityInstances()));
+      break;
+    case AutofillClient::AutofillAiImportPromptType::kUpdate:
+    case AutofillClient::AutofillAiImportPromptType::kMigrate:
+      break;
   }
 
-  if (!prompt_accepted) {
-    if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
-      AddStrikeForSaveAttempt(form.url(), entity);
-    }
-    return;
+  // Only add logic that is common across all prompt types below this line.
+  // Otherwise use the switch above.
+
+  if (prompt_accepted) {
+    entity_manager.AddOrUpdateEntityInstance(std::move(entity));
   }
-
-  if (!entity_manager) {
-    return;
-  }
-
-  ClearStrikesForSave(form.url(), entity);
-  entity_manager->AddOrUpdateEntityInstance(std::move(entity));
-}
-
-void AutofillAiManager::HandleUpdatePromptResult(
-    const FormData& form,
-    ukm::SourceId ukm_source_id,
-    EntityInstance updated_entity,
-    const EntityInstance::EntityId& existing_entity_id,
-    AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  logger_.OnImportPromptResult(
-      form, AutofillClient::AutofillAiImportPromptType::kUpdate,
-      updated_entity.type(), updated_entity.record_type(), close_reason,
-      ukm_source_id);
-
-  if (close_reason != AutofillClient::AutofillAiBubbleClosedReason::kAccepted) {
-    if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
-      AddStrikeForUpdateAttempt(existing_entity_id);
-    }
-    return;
-  }
-
-  EntityDataManager* entity_manager = client_->GetEntityDataManager();
-  if (!entity_manager) {
-    return;
-  }
-
-  ClearStrikesForUpdate(existing_entity_id);
-  entity_manager->AddOrUpdateEntityInstance(std::move(updated_entity));
 }
 
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
@@ -548,6 +489,34 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
 
 LogManager* AutofillAiManager::GetCurrentLogManager() {
   return client_->GetCurrentLogManager();
+}
+
+void AutofillAiManager::AddOrClearImportPromptStrikes(
+    AutofillClient::AutofillAiImportPromptType prompt_type,
+    AutofillClient::AutofillAiBubbleClosedReason close_reason,
+    const GURL& url,
+    const EntityInstance& entity,
+    std::optional<EntityInstance::EntityId> existing_entity_id) {
+  switch (prompt_type) {
+    case AutofillClient::AutofillAiImportPromptType::kSave:
+    case AutofillClient::AutofillAiImportPromptType::kMigrate:
+      if (close_reason ==
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted) {
+        ClearStrikesForSave(url, entity);
+      } else if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
+        AddStrikeForSaveAttempt(url, entity);
+      }
+      break;
+    case AutofillClient::AutofillAiImportPromptType::kUpdate:
+      CHECK(existing_entity_id);
+      if (close_reason ==
+          AutofillClient::AutofillAiBubbleClosedReason::kAccepted) {
+        ClearStrikesForUpdate(*existing_entity_id);
+      } else if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
+        AddStrikeForUpdateAttempt(*existing_entity_id);
+      }
+      break;
+  }
 }
 
 void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,

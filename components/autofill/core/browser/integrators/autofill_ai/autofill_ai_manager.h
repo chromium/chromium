@@ -94,6 +94,12 @@ class AutofillAiManager {
   const size_t kSuggestionInteractionCacheMaxSize = 5;
 
   // Strike database related methods:
+  void AddOrClearImportPromptStrikes(
+      AutofillClient::AutofillAiImportPromptType prompt_type,
+      AutofillClient::AutofillAiBubbleClosedReason close_reason,
+      const GURL& url,
+      const EntityInstance& entity,
+      std::optional<EntityInstance::EntityId> existing_entity_id);
   void AddStrikeForSaveAttempt(const GURL& url, const EntityInstance& entity);
   void AddStrikeForUpdateAttempt(const EntityInstance::EntityId& entity_uuid);
   void ClearStrikesForSave(const GURL& url, const EntityInstance& entity);
@@ -179,31 +185,13 @@ class AutofillAiManager {
   // interested in the form. Returns whether an import bubble will be shown.
   bool MaybeImportForm(const FormStructure& form, ukm::SourceId ukm_source_id);
 
-  // Updates the `EntityDataManager` and the save strike database depending on
-  // the prompt `result`.
-  void HandleSavePromptResult(
+  // Handles the logic that needs to run when an import prompt is closed.
+  void HandlePromptResult(
       const FormData& form,
-      ukm::SourceId ukm_source_id,
       EntityInstance entity,
-      AutofillClient::AutofillAiBubbleClosedReason close_reason);
-
-  // Updates the `EntityDataManager` and the update strike database depending on
-  // the prompt `result`.
-  void HandleUpdatePromptResult(
-      const FormData& form,
+      std::optional<EntityInstance::EntityId> existing_entity_id,
       ukm::SourceId ukm_source_id,
-      EntityInstance updated_entity,
-      const EntityInstance::EntityId& existing_entity_id,
-      AutofillClient::AutofillAiBubbleClosedReason close_reason);
-
-  // Updates the `EntityDataManager` by deleting a local entity and moving it to
-  // the Google Wallet server. Updates the strike database depending on the
-  // prompt `result`.
-  void HandleUpstreamEntityPrompt(
-      const FormData& form,
-      ukm::SourceId ukm_source_id,
-      EntityInstance entity,
-      EntityInstance::EntityId local_entity,
+      AutofillClient::AutofillAiImportPromptType prompt_type,
       AutofillClient::AutofillAiBubbleClosedReason close_reason);
 
   LogManager* GetCurrentLogManager();
