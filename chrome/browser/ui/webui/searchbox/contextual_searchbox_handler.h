@@ -28,6 +28,12 @@
 class Profile;
 class SkBitmap;
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace contextual_tasks {
+class ContextualTasksContextService;
+}  // namespace contextual_tasks
+#endif
+
 namespace lens {
 struct ContextualInputData;
 struct ImageEncodingOptions;
@@ -129,6 +135,10 @@ class ContextualSearchboxHandler
   std::set<base::UnguessableToken> deleted_context_tokens_;
   std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder_;
   raw_ptr<content::WebContents> web_contents_;
+#if !BUILDFLAG(IS_ANDROID)
+  raw_ptr<contextual_tasks::ContextualTasksContextService>
+      contextual_tasks_context_service_;
+#endif
 
   base::ScopedObservation<ComposeboxQueryController,
                           ComposeboxQueryController::FileUploadStatusObserver>

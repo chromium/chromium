@@ -30,6 +30,11 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#endif
+
 using composebox::SessionState;
 
 namespace {
@@ -236,6 +241,12 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       browser_window_interface->GetTabStripModel()->AddObserver(this);
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  contextual_tasks_context_service_ =
+      contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
+          profile);
+#endif
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
@@ -464,6 +475,16 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
       SessionState::kNavigationOccurred);
   composebox_metrics_recorder_->RecordQueryMetrics(
       query_text.size(), query_controller->num_files_in_request());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Assume that if we're here and created a composebox query controller that
+  // this is an AIM search by default.
+  // Do not provide a callback as this method is only used for dark experiment.
+  if (contextual_tasks_context_service_) {
+    contextual_tasks_context_service_->GetRelevantTabsForQuery(
+        query_text, base::DoNothing());
+  }
+#endif
 }
 
 void ContextualSearchboxHandler::OnGetTabPageContext(

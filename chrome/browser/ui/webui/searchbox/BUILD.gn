@@ -80,6 +80,9 @@ source_set("searchbox") {
     "//ui/base",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/contextual_tasks" ]
+  }
 }
 
 source_set("searchbox_test_utils") {
