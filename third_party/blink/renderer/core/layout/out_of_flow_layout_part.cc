@@ -2511,16 +2511,18 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   LogicalRect container_rect = base_rect;
   if (const std::optional<PositionAreaOffsets> offsets =
           candidate_style.PositionAreaOffsets()) {
-    Element* elm = To<Element>(node_info.node.GetDOMNode());
-    if (offsets->behaves_as_auto.top != offsets->behaves_as_auto.bottom ||
-        offsets->behaves_as_auto.left != offsets->behaves_as_auto.right) {
-      // When one inset for an axis is tethered to the default anchor, and the
-      // other one is tethered to the original containing block, the IMCB is
-      // affected by the default anchor scroll shift. Schedule for calculation
-      // of the default scroll shift.
-      elm->EnsureOutOfFlowData();
-      StyleEngine& style_engine = elm->GetDocument().GetStyleEngine();
-      style_engine.MarkForDefaultAnchorScrollShift(*elm);
+    if (!RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+      Element* element = To<Element>(node_info.node.GetDOMNode());
+      if (offsets->behaves_as_auto.top != offsets->behaves_as_auto.bottom ||
+          offsets->behaves_as_auto.left != offsets->behaves_as_auto.right) {
+        // When one inset for an axis is tethered to the default anchor, and the
+        // other one is tethered to the original containing block, the IMCB is
+        // affected by the default anchor scroll shift. Schedule for calculation
+        // of the default scroll shift.
+        element->EnsureOutOfFlowData();
+        StyleEngine& style_engine = element->GetDocument().GetStyleEngine();
+        style_engine.MarkForDefaultAnchorScrollShift(*element);
+      }
     }
     container_rect = ApplyPositionAreaOffsets(
         base_rect, *offsets, default_anchor_scroll_shift, container_info);
