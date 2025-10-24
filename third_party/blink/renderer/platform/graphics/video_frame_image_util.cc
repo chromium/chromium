@@ -158,11 +158,18 @@ bool DrawVideoFrameIntoResourceProvider(
   CHECK(!raster_context_provider ||
         raster_context_provider->ContextCapabilities().gpu_rasterization);
 
-  // A VF created from MappableSI will have a mappable shared image but might
-  // not be intended for rendering in the tests.
-  // |frame.IsTexturableForTesting()| here checks whether the tests have
-  // explicitly marked the VF as non texturable or not.
-  if (frame->HasSharedImage() && frame->IsTexturableForTesting()) {
+  // If the provider isn't accelerated, avoid GPU round trips to upload frame
+  // data from GpuMemoryBuffer backed frames which aren't mappable.
+  if (frame->HasMappableGpuBuffer() && !frame->IsMappable() &&
+      !resource_provider->IsAccelerated()) {
+    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
+    if (!frame) {
+      DLOG(ERROR) << "Failed to map VideoFrame.";
+      return false;
+    }
+  }
+
+  if (frame->HasSharedImage()) {
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
                      "RasterContextProvider.";
@@ -179,17 +186,6 @@ bool DrawVideoFrameIntoResourceProvider(
   if (!video_renderer) {
     local_video_renderer = std::make_unique<media::PaintCanvasVideoRenderer>();
     video_renderer = local_video_renderer.get();
-  }
-
-  // If the provider isn't accelerated, avoid GPU round trips to upload frame
-  // data from GpuMemoryBuffer backed frames which aren't mappable.
-  if (frame->HasMappableGpuBuffer() && !frame->IsMappable() &&
-      !resource_provider->IsAccelerated()) {
-    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
-    if (!frame) {
-      DLOG(ERROR) << "Failed to map VideoFrame.";
-      return false;
-    }
   }
 
   media::PaintCanvasVideoRenderer::PaintParams params;

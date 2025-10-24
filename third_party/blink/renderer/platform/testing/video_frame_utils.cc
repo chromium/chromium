@@ -61,10 +61,6 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           std::move(shared_image), test_sii->GenVerifiedSyncToken(),
           base::NullCallback(), visible_rect, natural_size, timestamp);
 
-      // Frame created here are not intended for rendering. Hence explicitly
-      // marking it as non texturable since checking
-      // VideoFrame::HasSharedImage() is not enough in this case.
-      frame->DisableTexturingForTesting();
       return frame;
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
