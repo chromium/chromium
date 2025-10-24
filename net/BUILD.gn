@@ -3173,6 +3173,7 @@ target(_test_target_type, "net_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
+    "//third_party/abseil-cpp:test_support",
     "//third_party/anonymous_tokens:anonymous_tokens_tests",
     "//third_party/perfetto:perfetto_test_support",
     "//third_party/protobuf:protobuf_lite",
