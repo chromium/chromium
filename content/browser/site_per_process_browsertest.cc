@@ -6737,10 +6737,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(pending_process->Shutdown(0));
   crash_observer.Wait();
 
-  // Since the navigation above didn't commit, the b.com RenderViewHost in the
-  // main tab should still not be active.
+  // The navigation may or may not get canceled, depending on whether the
+  // feature ResumeNavigationWithSpeculativeRFHProcessGone is enabled. However
+  // the navigation will never commit and hence the b.com RVH should not be
+  // active.
   EXPECT_FALSE(rvh->is_active());
-  EXPECT_EQ(net::ERR_ABORTED, handle_observer.net_error_code());
+  if (!base::FeatureList::IsEnabled(
+          features::kResumeNavigationWithSpeculativeRFHProcessGone)) {
+    EXPECT_EQ(net::ERR_ABORTED, handle_observer.net_error_code());
+  }
 
   // Navigate popup to b.com to recreate the b.com process.  When creating
   // opener proxies, |rvh| should be reused as a swapped out RVH.  In

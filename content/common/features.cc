@@ -543,6 +543,12 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 BASE_FEATURE(kRendererCancellationThrottleImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, allows a navigation to resume even if the renderer process for
+// its speculative RFH is killed. This only works for navigations that have not
+// yet received the response and picked the final RFH to commit in.
+BASE_FEATURE(kResumeNavigationWithSpeculativeRFHProcessGone,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, try to reuse any same-site process that is hosting
 // only prerendered frames for main-frame navigations.
 BASE_FEATURE(kReusePrerenderingProcessForMainFrames,

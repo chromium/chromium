@@ -594,7 +594,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
-    if (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kResumeNavigationWithSpeculativeRFHProcessGone) &&
+        (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled())) {
       EXPECT_FALSE(dip_navigation.was_committed());
       return;
     }
@@ -677,7 +679,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
-    if (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kResumeNavigationWithSpeculativeRFHProcessGone) &&
+        (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled())) {
       EXPECT_FALSE(non_dip_navigation.was_committed());
       EXPECT_EQ(current_frame_host()
                     ->policy_container_host()
@@ -720,25 +724,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // Finish the navigation to the non DIP page.
     ASSERT_TRUE(non_dip_navigation.WaitForNavigationFinished());
 
-    // The navigation will fail if we create speculative RFH when the navigation
-    // started (instead of only when the response started), because the renderer
-    // process will crash and trigger deletion of the speculative RFH and the
-    // navigation using that speculative RFH. BFCache forces a BrowsingInstance
-    // swap (even in this same-site case), hence it also necessitates a
-    // speculative RFH.
-    // TODO(crbug.com/40261276): If the final RenderFrameHost picked for the
-    // navigation doesn't use the same process the navigation should not stop
-    // but go on and commit normally
-    if (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(non_dip_navigation.was_committed());
-      EXPECT_EQ(current_frame_host()
-                    ->policy_container_host()
-                    ->policies()
-                    .document_isolation_policy,
-                GetDocumentIsolationPolicy());
-      return;
-    }
-
+    // The navigation will not fail after killing the process of the dip page.
+    // A new render process has been created during the navigation to the
+    // non-dip page.
     EXPECT_TRUE(non_dip_navigation.was_successful());
     EXPECT_EQ(current_frame_host()
                   ->policy_container_host()

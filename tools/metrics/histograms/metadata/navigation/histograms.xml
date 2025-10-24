@@ -2389,6 +2389,19 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
+<histogram name="Navigation.SpeculativeRFHProcessGone.MayResume" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Record if the navigation can be potentially resumed when the render process
+    is gone for the speculative RenderFrameHost. The UMA is recorded each time
+    the render process for the speculative RenderFrameHost is gone and the
+    corresponding navigation is not committed yet. The UMA records true if the
+    navigation has not processed the network response yet.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.StartAdjustment.AllFrames"
     enum="NavigationStartAdjustmentType" expires_after="2026-04-05">
   <owner>creis@chromium.org</owner>
