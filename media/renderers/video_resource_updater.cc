@@ -719,9 +719,17 @@ VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
   return all_resources_.back().get();
 }
 
-void VideoResourceUpdater::CopyHardwareResource(
-    VideoFrame* video_frame,
-    VideoFrameExternalResource* external_resource) {
+VideoFrameExternalResource VideoResourceUpdater::CopyHardwareResource(
+    VideoFrame* video_frame) {
+  VideoFrameExternalResource external_resource;
+  external_resource.type =
+      ExternalResourceTypeForHardware(*video_frame, GL_TEXTURE_2D);
+  if (external_resource.type == VideoFrameResourceType::NONE) {
+    DLOG(ERROR) << "Unsupported Texture format"
+                << VideoPixelFormatToString(video_frame->format());
+    return external_resource;
+  }
+
   const gfx::Size output_resource_size = video_frame->coded_size();
   auto shared_image = video_frame->shared_image();
   // The copy needs to be a direct transfer of pixel data, so we use an RGBA8
@@ -732,7 +740,7 @@ void VideoResourceUpdater::CopyHardwareResource(
   // We copy to RGBA image, so we need only RGBA portion of the color space.
   const auto copy_color_space = video_frame->ColorSpace().GetAsFullRangeRGB();
   SkAlphaType copy_alpha_type =
-      (external_resource->type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+      (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
           ? kPremul_SkAlphaType
           : kUnpremul_SkAlphaType;
 
@@ -777,10 +785,12 @@ void VideoResourceUpdater::CopyHardwareResource(
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
   transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
 
-  external_resource->resource = std::move(transferable_resource);
-  external_resource->release_callback =
+  external_resource.resource = std::move(transferable_resource);
+  external_resource.release_callback =
       base::BindOnce(&VideoResourceUpdater::RecycleResource,
                      weak_ptr_factory_.GetWeakPtr(), hardware_resource->id());
+
+  return external_resource;
 }
 
 VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
@@ -790,17 +800,15 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     return VideoFrameExternalResource();
   }
 
-  VideoFrameExternalResource external_resource;
-  const bool copy_required = video_frame->metadata().copy_required;
-  auto shared_image = video_frame->shared_image();
-  GLuint target = shared_image->GetTextureTarget();
-  // If |copy_required| then we will copy into a GL_TEXTURE_2D target.
-  if (copy_required) {
-    target = GL_TEXTURE_2D;
+  if (video_frame->metadata().copy_required) {
+    return CopyHardwareResource(video_frame.get());
   }
 
-  external_resource.type =
-      ExternalResourceTypeForHardware(*video_frame, target);
+  VideoFrameExternalResource external_resource;
+  auto shared_image = video_frame->shared_image();
+
+  external_resource.type = ExternalResourceTypeForHardware(
+      *video_frame, shared_image->GetTextureTarget());
   if (external_resource.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"
                 << VideoPixelFormatToString(video_frame->format());
@@ -810,11 +818,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   // Make a copy of the current release SyncToken so we know if it changes.
   CopyingSyncTokenClient client;
   auto original_release_token = video_frame->UpdateReleaseSyncToken(&client);
-
-  if (copy_required) {
-    CopyHardwareResource(video_frame.get(), &external_resource);
-    return external_resource;
-  }
 
   SkAlphaType alpha_type =
       (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)

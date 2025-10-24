@@ -153,8 +153,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // texture. This is used when there are multiple GPU threads (Android WebView)
   // and the source video frame texture can't be used on the output GL context.
   // https://crbug.com/582170
-  void CopyHardwareResource(VideoFrame* video_frame,
-                            VideoFrameExternalResource* external_resources);
+  VideoFrameExternalResource CopyHardwareResource(VideoFrame* video_frame);
 
   // Get resource ready to be appended into DrawQuad. This is used for GPU
   // compositing most of the time, except for the cases mentioned in
