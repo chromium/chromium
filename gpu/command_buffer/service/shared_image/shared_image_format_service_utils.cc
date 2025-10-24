@@ -259,21 +259,8 @@ class SharedImageFormatRestrictedUtilsAccessor {
   }
 };
 
-// This class method is primarily meant to be accessed by gpu service side code
-// with the exception of some client needing access temporarily until the
-// BufferFormat usage is deprecated. This requires usage of below wrapper class
-// to access this method from service side code conveniently.
-class GPU_GLES2_EXPORT SharedImageFormatToBufferFormatRestrictedUtilsAccessor {
- public:
-  static gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
-    return viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-        format);
-  }
-};
-
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
-  return SharedImageFormatToBufferFormatRestrictedUtilsAccessor::ToBufferFormat(
-      format);
+  return viz::SharedImageFormatToBufferFormat(format);
 }
 
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {

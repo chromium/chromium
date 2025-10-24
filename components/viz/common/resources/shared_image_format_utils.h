@@ -11,7 +11,6 @@
 namespace gpu {
 class GpuMemoryBufferSupport;
 class MappableBufferNativePixmap;
-class SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
 class SharedImageFormatRestrictedUtilsAccessor;
 }  // namespace gpu
 
@@ -145,7 +144,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
     SharedImageFormatToBufferFormatRestrictedUtils {
  private:
   friend class gpu::GpuMemoryBufferSupport;
-  friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
   friend class gpu::MappableBufferNativePixmap;
   friend class ui::WaylandOverlayManager;
 
