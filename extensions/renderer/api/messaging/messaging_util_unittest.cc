@@ -85,8 +85,8 @@ TEST_F(MessagingUtilTest, TestParseMessageOptionsFrameId) {
 
 // Tests the result of GetEventForChannel().
 TEST_F(MessagingUtilTest, TestGetEventForChannel) {
-  ExtensionId id1('a', 32);
-  ExtensionId id2('b', 32);
+  ExtensionId id1(32, 'a');
+  ExtensionId id2(32, 'b');
 
   // Exercise a bunch of possible channel endpoints -> extensions.
   // This technically isn't exhaustive, but should give us pretty reasonable
