@@ -134,8 +134,10 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
     return false;
   }
 
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      AimEligibilityServiceFactory::GetForProfile(profile), kNtpComposebox);
+  return base::FeatureList::IsEnabled(kNtpComposebox) &&
+         AimEligibilityService::GenericKillSwitchFeatureCheck(
+             AimEligibilityServiceFactory::GetForProfile(profile),
+             kNtpComposebox);
 }
 
 bool IsDeepSearchEnabled(Profile* profile) {
