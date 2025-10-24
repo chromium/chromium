@@ -448,6 +448,10 @@ class AvatarToolbarButtonBaseBrowserTest {
 
     signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager(),
                                                     token_operation_source);
+    ASSERT_TRUE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   void ClearSigninPending() {
@@ -455,6 +459,10 @@ class AvatarToolbarButtonBaseBrowserTest {
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
     signin::SetRefreshTokenForPrimaryAccount(GetIdentityManager());
+    ASSERT_FALSE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   // Enables sync for account with `email` and set the `name` to the account
@@ -496,6 +504,13 @@ class AvatarToolbarButtonBaseBrowserTest {
     // Simulates Sync Paused.
     GetTestSyncService()->SetPersistentAuthError();
     GetTestSyncService()->FireStateChanged();
+    signin::SetInvalidRefreshTokenForPrimaryAccount(
+        GetIdentityManager(), signin_metrics::SourceForRefreshTokenOperation::
+                                  kDiceResponseHandler_Signout);
+    ASSERT_TRUE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   void ClearSyncPaused() {
@@ -505,6 +520,11 @@ class AvatarToolbarButtonBaseBrowserTest {
     // Clear Sync Paused introduced in `SimulateSyncPaused()`.
     GetTestSyncService()->ClearAuthError();
     GetTestSyncService()->FireStateChanged();
+    signin::SetRefreshTokenForPrimaryAccount(GetIdentityManager());
+    ASSERT_FALSE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   void ExpectSyncPaused(AvatarToolbarButton* avatar_button) {
@@ -940,8 +960,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  AccountInfo account_info =
-      EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
+  AccountInfo account_info = SigninWithImageAndClearGreetingAndSyncPromo(
+      avatar_button, u"test@gmail.com");
   SimulatePassphraseError();
   SimulateSigninPending(/*web_sign_out=*/false);
   EXPECT_EQ(avatar_button->GetText(),

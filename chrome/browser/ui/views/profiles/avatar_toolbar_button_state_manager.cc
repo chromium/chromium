@@ -1478,6 +1478,10 @@ class SigninPendingStateProvider : public StateProvider,
 
   // StateProvider:
   bool IsActive() const override {
+    if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      return false;
+    }
+
     CoreAccountId primary_account_id =
         identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     if (primary_account_id.empty()) {
