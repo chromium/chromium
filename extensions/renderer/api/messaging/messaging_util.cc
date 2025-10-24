@@ -31,8 +31,7 @@
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 
-namespace extensions {
-namespace messaging_util {
+namespace extensions::messaging_util {
 
 namespace {
 
@@ -70,7 +69,7 @@ std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
   // A 64 MB JSON-ifiable object is scary enough as is.
   static constexpr size_t kMaxMessageLength = 1024 * 1024 * 64;
   if (message_length > kMaxMessageLength) {
-    *error_out = "Message length exceeded maximum allowed length.";
+    *error_out = "Message length exceeded maximum allowed length of 64MB.";
     return nullptr;
   }
 
@@ -428,5 +427,4 @@ std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
   return event_name;
 }
 
-}  // namespace messaging_util
-}  // namespace extensions
+}  // namespace extensions::messaging_util

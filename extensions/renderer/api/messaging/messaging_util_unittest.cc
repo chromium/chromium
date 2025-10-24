@@ -41,7 +41,7 @@ TEST_F(MessagingUtilTest, TestMaximumMessageSize) {
   v8::Local<v8::Context> context = MainContext();
 
   constexpr char kMessageTooLongError[] =
-      "Message length exceeded maximum allowed length.";
+      "Message length exceeded maximum allowed length of 64MB.";
 
   v8::Local<v8::Value> long_message =
       V8ValueFromScriptSource(context, "'a'.repeat(1024 *1024 * 65)");
