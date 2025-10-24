@@ -33,6 +33,10 @@ import {getHtml} from './most_visited.html.js';
 import type {MostVisitedInfo, MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from './window_proxy.js';
 
+const MAX_TILES_DEFAULT = 8;
+export const MAX_TILES_FOR_CUSTOM_LINKS = 10;
+const MAX_TILES_FOR_ENTERPRISE_SHORTCUTS = 10;
+
 function resetTilePosition(tile: HTMLElement) {
   tile.style.position = '';
   tile.style.left = '';
@@ -299,8 +303,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.visible_ = this.info_.visible;
       this.customLinksEnabled_ = this.info_.customLinksEnabled;
       this.enterpriseShortcutsEnabled_ = this.info_.enterpriseShortcutsEnabled;
-      this.maxTiles_ =
-          this.customLinksEnabled_ || this.enterpriseShortcutsEnabled_ ? 10 : 8;
+      this.maxTiles_ = (this.customLinksEnabled_ ? MAX_TILES_FOR_CUSTOM_LINKS :
+                                                   MAX_TILES_DEFAULT) +
+          (this.enterpriseShortcutsEnabled_ ?
+               MAX_TILES_FOR_ENTERPRISE_SHORTCUTS :
+               0);
       this.tiles_ = this.info_.tiles.slice(0, this.maxTiles_);
     }
 
@@ -423,8 +430,16 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (this.showShowMore_) {
       return false;
     }
-    return this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_ &&
-        this.tiles_ && this.tiles_.length < this.maxVisibleTiles_;
+    if (!this.customLinksEnabled_) {
+      return false;
+    }
+    // When uninitialized, the custom links may have a different source like
+    // TOP_SITES or POPULAR.
+    const customLinkTilesCount =
+        this.tiles_.filter(tile => !this.isFromEnterpriseShortcut_(tile.source))
+            .length;
+    return this.tiles_.length < this.maxVisibleTiles_ &&
+        customLinkTilesCount < MAX_TILES_FOR_CUSTOM_LINKS;
   }
 
   private computeMaxTilesBeforeShowMore_(): number {
@@ -543,12 +558,28 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const dragIndex = Number(dragElement.dataset['index']);
     const dropIndex = getHitIndex(this.tileRects_, x, y);
     if (dragIndex !== dropIndex && dropIndex > -1) {
+      const dragTile = this.tiles_[dragIndex];
+      assert(dragTile);
+      const dropTile = this.tiles_[dropIndex];
+      assert(dropTile);
+      if (this.isFromEnterpriseShortcut_(dragTile.source) !==
+          this.isFromEnterpriseShortcut_(dropTile.source)) {
+        return;
+      }
       const [draggingTile] = this.tiles_.splice(dragIndex, 1);
       assert(draggingTile);
       this.tiles_.splice(dropIndex, 0, draggingTile);
       this.requestUpdate();
 
-      this.pageHandler_.reorderMostVisitedTile(draggingTile, dropIndex);
+      let newDropIndex = dropIndex;
+      // When reordering custom links, the index needs to be adjusted by the
+      // number of enterprise shortcuts, which are always shown first.
+      if (!this.isFromEnterpriseShortcut_(draggingTile.source)) {
+        newDropIndex -=
+            this.tiles_.filter(t => this.isFromEnterpriseShortcut_(t.source))
+                .length;
+      }
+      this.pageHandler_.reorderMostVisitedTile(draggingTile, newDropIndex);
 
       // Remove the "dragging" class here to prevent flickering.
       dragElement.classList.remove('dragging');
@@ -579,7 +610,15 @@ export class MostVisitedElement extends MostVisitedElementBase {
       x: x - this.dragOffset_!.x,
       y: y - this.dragOffset_!.y,
     });
-    const dropIndex = getHitIndex(this.tileRects_, x, y);
+    let dropIndex = getHitIndex(this.tileRects_, x, y);
+    if (dropIndex > -1) {
+      const dragTile = this.tiles_[dragIndex]!;
+      const dropTile = this.tiles_[dropIndex]!;
+      if (this.isFromEnterpriseShortcut_(dragTile.source) !==
+          this.isFromEnterpriseShortcut_(dropTile.source)) {
+        dropIndex = -1;
+      }
+    }
     this.tileElements_.forEach((element, i) => {
       let positionIndex;
       if (i === dragIndex) {
@@ -749,7 +788,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onDragStart_(e: DragEvent) {
-    if (!this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_) {
+    const item = this.tiles_[this.getCurrentTargetIndex_(e)]!;
+    assert(item);
+    if (!this.customLinksEnabled_ &&
+        !this.isFromEnterpriseShortcut_(item.source)) {
       return;
     }
     // |dataTransfer| is null in tests.
@@ -979,8 +1021,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onTouchStart_(e: TouchEvent) {
-    if (this.reordering_ ||
-        (!this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_)) {
+    if (this.reordering_) {
+      return;
+    }
+    const item = this.tiles_[this.getCurrentTargetIndex_(e)]!;
+    assert(item);
+    if (!this.customLinksEnabled_ &&
+        !this.isFromEnterpriseShortcut_(item.source)) {
       return;
     }
     const tileElement =

@@ -4,7 +4,7 @@
 
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
-import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import {MAX_TILES_FOR_CUSTOM_LINKS, MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
@@ -221,6 +221,65 @@ suite('General', () => {
         new KeyboardEvent('keyup', {key: ' '}));
     assertTrue(mostVisited.$.dialog.open);
   });
+});
+
+suite('ShowAddButton', () => {
+  setup(async () => {
+    await setUpTest({reflowOnOverflow: true});
+  });
+
+  test('add shortcut button shows when custom links enabled', async () => {
+    await addTiles(0, /*customLinksEnabled=*/ true);
+    assertAddShortcutShown();
+  });
+
+  test('add shortcut button hidden when custom links disabled', async () => {
+    await addTiles(0, /*customLinksEnabled=*/ false);
+    assertAddShortcutHidden();
+  });
+
+  test(
+      'add shortcut button hidden when custom links disabled and max tiles',
+      async () => {
+        const tiles = Array(MAX_TILES_FOR_CUSTOM_LINKS).fill(0).map((_x, i) => {
+          const char = String.fromCharCode(i + /* 'a' */ 97);
+          return {
+            title: char,
+            titleDirection: TextDirection.LEFT_TO_RIGHT,
+            url: {url: `https://${char}/`},
+            source: i % 2 === 0 ? TileSource.TOP_SITES :
+                                  TileSource.CUSTOM_LINKS,
+            titleSource: i,
+            isQueryTile: false,
+            allowUserEdit: true,
+            allowUserDelete: true,
+          };
+        });
+        await addTiles(tiles, /*customLinksEnabled=*/ true);
+        assertAddShortcutHidden();
+      });
+
+  test(
+      'add shortcut button shown when custom links disabled and max enterprise tiles',
+      async () => {
+        const tiles = Array(MAX_TILES_FOR_CUSTOM_LINKS).fill(0).map((_x, i) => {
+          const char = String.fromCharCode(i + /* 'a' */ 97);
+          return {
+            title: char,
+            titleDirection: TextDirection.LEFT_TO_RIGHT,
+            url: {url: `https://${char}/`},
+            source: TileSource.ENTERPRISE_SHORTCUTS,
+            titleSource: i,
+            isQueryTile: false,
+            allowUserEdit: true,
+            allowUserDelete: true,
+          };
+        });
+        await addTiles(
+            tiles, /*customLinksEnabled=*/ true, /*visible=*/ true,
+            /*enterpriseShortcutsEnabled=*/ true);
+        assertAddShortcutShown();
+      });
 });
 
 suite('ShowMoreButton', () => {
@@ -1244,6 +1303,188 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
 
   test('most visited tiles cannot be reordered', async () => {
     await addTiles(2, /* customLinksEnabled= */ false);
+    const tiles = queryTiles();
+    const first = tiles[0]!;
+    const second = tiles[1]!;
+    assertEquals('https://a/', first.querySelector('a')!.href);
+    assertTrue(first.draggable);
+    assertEquals('https://b/', second.querySelector('a')!.href);
+    assertTrue(second.draggable);
+    const firstRect = first.getBoundingClientRect();
+    const secondRect = second.getBoundingClientRect();
+    first.dispatchEvent(new DragEvent('dragstart', {
+      clientX: firstRect.x + firstRect.width / 2,
+      clientY: firstRect.y + firstRect.height / 2,
+    }));
+    document.dispatchEvent(new DragEvent('drop', {
+      clientX: secondRect.x + 1,
+      clientY: secondRect.y + 1,
+    }));
+    document.dispatchEvent(new DragEvent('dragend', {
+      clientX: secondRect.x + 1,
+      clientY: secondRect.y + 1,
+    }));
+    await mostVisited.updateComplete;
+    assertEquals(0, handler.getCallCount('reorderMostVisitedTile'));
+    const [newFirst, newSecond] = queryTiles();
+    assertEquals('https://a/', newFirst!.querySelector('a')!.href);
+    assertEquals('https://b/', newSecond!.querySelector('a')!.href);
+  });
+
+  test('new index is adjusted by enterprise shortcuts', async () => {
+    const enterpriseShortcut = {
+      title: 'e1',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://e1/`},
+      source: TileSource.ENTERPRISE_SHORTCUTS,
+      titleSource: 0,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    const customLink1 = {
+      title: 'c1',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://c1/`},
+      source: TileSource.CUSTOM_LINKS,
+      titleSource: 1,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    const customLink2 = {
+      title: 'c2',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://c2/`},
+      source: TileSource.CUSTOM_LINKS,
+      titleSource: 2,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    await addTiles(
+        [enterpriseShortcut, customLink1, customLink2],
+        /*customLinksEnabled=*/ true, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+
+    const tiles = queryTiles();
+    const customLink1Element = tiles[1]!;
+    const customLink2Element = tiles[2]!;
+
+    const customLink1Rect = customLink1Element.getBoundingClientRect();
+    const customLink2Rect = customLink2Element.getBoundingClientRect();
+
+    // Drag customLink1 (index 1) to customLink2's position (index 2).
+    customLink1Element.dispatchEvent(new DragEvent('dragstart', {
+      clientX: customLink1Rect.x + customLink1Rect.width / 2,
+      clientY: customLink1Rect.y + customLink1Rect.height / 2,
+    }));
+
+    const reorderCalled = handler.whenCalled('reorderMostVisitedTile');
+
+    document.dispatchEvent(new DragEvent('drop', {
+      clientX: customLink2Rect.x + 1,
+      clientY: customLink2Rect.y + 1,
+    }));
+    document.dispatchEvent(new DragEvent('dragend', {
+      clientX: customLink2Rect.x + 1,
+      clientY: customLink2Rect.y + 1,
+    }));
+    await mostVisited.updateComplete;
+
+    const [tile, newPos] = await reorderCalled;
+    assertEquals('https://c1/', tile.url.url);
+    // Expected new position: original index of c1 in custom group (0) + 1
+    // (because it moved past c2 in the custom group).
+    // The dropIndex is 2, but there is 1 enterprise shortcut, so 2 - 1 = 1.
+    assertEquals(1, newPos);
+
+    const [newEnterprise, newCustom2, newCustom1] = queryTiles();
+    assertEquals('https://e1/', newEnterprise!.querySelector('a')!.href);
+    assertEquals('https://c2/', newCustom2!.querySelector('a')!.href);
+    assertEquals('https://c1/', newCustom1!.querySelector('a')!.href);
+  });
+
+  test('cannot drag custom link to enterprise shortcut position', async () => {
+    const enterpriseShortcut = {
+      title: 'a',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://a/`},
+      source: TileSource.ENTERPRISE_SHORTCUTS,
+      titleSource: 0,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    const customLink = {
+      title: 'b',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://b/`},
+      source: TileSource.CUSTOM_LINKS,
+      titleSource: 1,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    await addTiles(
+        [enterpriseShortcut, customLink],
+        /*customLinksEnabled=*/ true, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+
+    const tiles = queryTiles();
+    const first = tiles[0]!;
+    const second = tiles[1]!;
+    assertEquals('https://a/', first.querySelector('a')!.href);
+    assertTrue(first.draggable);
+    assertEquals('https://b/', second.querySelector('a')!.href);
+    assertTrue(second.draggable);
+    const firstRect = first.getBoundingClientRect();
+    const secondRect = second.getBoundingClientRect();
+    second.dispatchEvent(new DragEvent('dragstart', {
+      clientX: secondRect.x + secondRect.width / 2,
+      clientY: secondRect.y + secondRect.height / 2,
+    }));
+    document.dispatchEvent(new DragEvent('drop', {
+      clientX: firstRect.x + 1,
+      clientY: firstRect.y + 1,
+    }));
+    document.dispatchEvent(new DragEvent('dragend', {
+      clientX: firstRect.x + 1,
+      clientY: firstRect.y + 1,
+    }));
+    await mostVisited.updateComplete;
+    assertEquals(0, handler.getCallCount('reorderMostVisitedTile'));
+    const [newFirst, newSecond] = queryTiles();
+    assertEquals('https://a/', newFirst!.querySelector('a')!.href);
+    assertEquals('https://b/', newSecond!.querySelector('a')!.href);
+  });
+
+  test('cannot drag enterprise shortcut to custom link position', async () => {
+    const enterpriseShortcut = {
+      title: 'a',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://a/`},
+      source: TileSource.ENTERPRISE_SHORTCUTS,
+      titleSource: 0,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    const customLink = {
+      title: 'b',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://b/`},
+      source: TileSource.CUSTOM_LINKS,
+      titleSource: 1,
+      isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
+    };
+    await addTiles(
+        [enterpriseShortcut, customLink],
+        /*customLinksEnabled=*/ true, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+
     const tiles = queryTiles();
     const first = tiles[0]!;
     const second = tiles[1]!;

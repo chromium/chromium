@@ -188,6 +188,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Theming) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Theming');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShowAddButton) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ShowAddButton');");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShowMoreButton) {
   RunTest("cr_components/most_visited_test.js",
           "runMochaSuite('ShowMoreButton');");
