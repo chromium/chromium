@@ -492,10 +492,14 @@ void TestPlugin::DrawSceneSoftware(void* memory) {
     SkColor foreground_color = SkColorSetARGB(
         static_cast<uint8_t>(scene_.opacity * 255), scene_.primitive_color[0],
         scene_.primitive_color[1], scene_.primitive_color[2]);
-    SkPath triangle_path;
-    triangle_path.moveTo(0.5f * rect_.width(), 0.9f * rect_.height());
-    triangle_path.lineTo(0.1f * rect_.width(), 0.1f * rect_.height());
-    triangle_path.lineTo(0.9f * rect_.width(), 0.1f * rect_.height());
+    const SkPath triangle_path = SkPath::Polygon(
+        {
+            {0.5f * rect_.width(), 0.9f * rect_.height()},
+            {0.1f * rect_.width(), 0.1f * rect_.height()},
+            {0.9f * rect_.width(), 0.1f * rect_.height()},
+        },
+        /*isClosed=*/false);
+
     SkPaint paint;
     paint.setColor(foreground_color);
     paint.setStyle(SkPaint::kFill_Style);
