@@ -8,9 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/common/ui/button_stack/button_stack_consumer.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 
 @class ButtonStackConfiguration;
-@class ChromeButton;
 @protocol ButtonStackActionDelegate;
 
 // A view controller that displays a stack of action buttons at the bottom of
@@ -36,13 +36,13 @@
 @interface ButtonStackViewController : UIViewController <ButtonStackConsumer>
 
 // The primary action button.
-@property(nonatomic, strong, readonly) UIButton* primaryActionButton;
+@property(nonatomic, strong, readonly) ChromeButton* primaryActionButton;
 
 // The secondary action button.
-@property(nonatomic, strong, readonly) UIButton* secondaryActionButton;
+@property(nonatomic, strong, readonly) ChromeButton* secondaryActionButton;
 
 // The tertiary action button.
-@property(nonatomic, strong, readonly) UIButton* tertiaryActionButton;
+@property(nonatomic, strong, readonly) ChromeButton* tertiaryActionButton;
 
 // The delegate for button actions.
 @property(nonatomic, weak) id<ButtonStackActionDelegate> actionDelegate;
@@ -68,8 +68,6 @@
 // Designated initializer.
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
     NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;

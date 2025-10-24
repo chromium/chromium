@@ -7,37 +7,35 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 
 // Configuration object for a ButtonStackViewController.
 @interface ButtonStackConfiguration : NSObject
 
 // The properties for the primary action.
 @property(nonatomic, copy) NSString* primaryActionString;
-@property(nonatomic, assign) ButtonStackButtonStyle primaryButtonStyle;
-@property(nonatomic, strong) UIImage* primaryActionImage;
+@property(nonatomic, assign) ChromeButtonStyle primaryButtonStyle;
 
 // The properties for the secondary action.
 @property(nonatomic, copy) NSString* secondaryActionString;
-@property(nonatomic, assign) ButtonStackButtonStyle secondaryButtonStyle;
-@property(nonatomic, strong) UIImage* secondaryActionImage;
+@property(nonatomic, assign) ChromeButtonStyle secondaryButtonStyle;
 
 // The properties for the tertiary action.
 @property(nonatomic, copy) NSString* tertiaryActionString;
-@property(nonatomic, assign) ButtonStackButtonStyle tertiaryButtonStyle;
-@property(nonatomic, strong) UIImage* tertiaryActionImage;
+@property(nonatomic, assign) ChromeButtonStyle tertiaryButtonStyle;
 
 // When YES, the primaryActionButton will be disabled, its title text will be
 // hidden, and a UIActivityIndicatorView (spinner) will be displayed in its
 // place. The secondaryActionButton will also be disabled. When NO, the buttons
-// return to their default interactive state.
+// return to their default interactive state. This property is mutually
+// exclusive with `isConfirmed`.
 @property(nonatomic, assign) BOOL isLoading;
 
 // When YES, the primaryActionButton will be disabled, its title text will be
 // hidden, and a checkmark icon will be displayed. This is to provide clear
 // visual feedback that the action was completed successfully. This state is
 // typically set after an action has completed and is mutually exclusive with
-// isLoading.
+// `isLoading`.
 @property(nonatomic, assign) BOOL isConfirmed;
 
 @end

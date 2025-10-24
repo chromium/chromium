@@ -4,16 +4,14 @@
 
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
-
 @implementation ButtonStackConfiguration
 
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _primaryButtonStyle = ButtonStackButtonStylePrimary;
-    _secondaryButtonStyle = ButtonStackButtonStyleSecondary;
-    _tertiaryButtonStyle = ButtonStackButtonStyleSecondary;
+    _primaryButtonStyle = ChromeButtonStylePrimary;
+    _secondaryButtonStyle = ChromeButtonStyleSecondary;
+    _tertiaryButtonStyle = ChromeButtonStyleSecondary;
   }
   return self;
 }

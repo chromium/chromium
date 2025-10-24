@@ -7,7 +7,6 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
@@ -30,8 +29,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 }  // namespace
 
 @interface ButtonStackViewController () <UIScrollViewDelegate>
-// Publicly readable as `UIButton`, but privately writeable and backed by
-// `ChromeButton` instances for internal use.
+// Redefine properties as readwrite for internal use.
 @property(nonatomic, strong, readwrite) UIView* contentView;
 @property(nonatomic, strong, readwrite) ChromeButton* primaryActionButton;
 @property(nonatomic, strong, readwrite) ChromeButton* secondaryActionButton;
@@ -56,11 +54,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   BOOL _isConfirmed;
   // Whether the gradient view is shown.
   BOOL _showsGradientView;
-
-  // The last applied styles for each button.
-  ButtonStackButtonStyle _primaryButtonStyle;
-  ButtonStackButtonStyle _secondaryButtonStyle;
-  ButtonStackButtonStyle _tertiaryButtonStyle;
 }
 
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration {
@@ -72,17 +65,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     _scrollEnabled = YES;
     _showsVerticalScrollIndicator = YES;
     _showsGradientView = YES;
-
-    // Set the default styles for the buttons.
-    _primaryButtonStyle = configuration.primaryButtonStyle;
-    _secondaryButtonStyle = configuration.secondaryButtonStyle;
-    _tertiaryButtonStyle = configuration.tertiaryButtonStyle;
   }
   return self;
-}
-
-- (instancetype)init {
-  return [self initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
 }
 
 #pragma mark - UIViewController
@@ -258,18 +242,20 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
   // Create buttons for all possible actions. The `reconfigureButtons` method
   // will handle showing/hiding them based on the current configuration.
-  self.tertiaryActionButton = [self createButtonForStyle:_tertiaryButtonStyle];
+  self.tertiaryActionButton =
+      [self createButtonForStyle:_configuration.tertiaryButtonStyle];
   [self.tertiaryActionButton addTarget:self
                                 action:@selector(handleTertiaryAction)
                       forControlEvents:UIControlEventTouchUpInside];
 
-  self.primaryActionButton = [self createButtonForStyle:_primaryButtonStyle];
+  self.primaryActionButton =
+      [self createButtonForStyle:_configuration.primaryButtonStyle];
   [self.primaryActionButton addTarget:self
                                action:@selector(handlePrimaryAction)
                      forControlEvents:UIControlEventTouchUpInside];
 
   self.secondaryActionButton =
-      [self createButtonForStyle:_secondaryButtonStyle];
+      [self createButtonForStyle:_configuration.secondaryButtonStyle];
   [self.secondaryActionButton addTarget:self
                                  action:@selector(handleSecondaryAction)
                        forControlEvents:UIControlEventTouchUpInside];
@@ -308,69 +294,34 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 // Configures a button with the given properties.
 - (void)configureButtonForPosition:(ButtonStackButtonPosition)position
                         withString:(NSString*)string
-                             style:(ButtonStackButtonStyle)style {
+                             style:(ChromeButtonStyle)style {
   ChromeButton* button;
-  // Use a pointer to the cached style ivar to avoid repeating the update logic
-  // for each button position. This allows the code to read from and write to
-  // the correct ivar using a single, shared piece of logic.
-  ButtonStackButtonStyle* cachedStyle;
 
   switch (position) {
     case ButtonStackButtonPositionPrimary:
       button = _primaryActionButton;
-      cachedStyle = &_primaryButtonStyle;
       break;
     case ButtonStackButtonPositionSecondary:
       button = _secondaryActionButton;
-      cachedStyle = &_secondaryButtonStyle;
       break;
     case ButtonStackButtonPositionTertiary:
       button = _tertiaryActionButton;
-      cachedStyle = &_tertiaryButtonStyle;
       break;
   }
 
   BOOL hasAction = string.length > 0;
   button.hidden = !hasAction;
   if (hasAction) {
-    if (*cachedStyle != style) {
-      *cachedStyle = style;
-      switch (style) {
-        case ButtonStackButtonStylePrimary:
-          UpdateButtonToMatchPrimaryAction(button);
-          break;
-        case ButtonStackButtonStyleSecondary:
-          UpdateButtonToMatchSecondaryAction(button);
-          break;
-        case ButtonStackButtonStyleTertiary:
-          UpdateButtonToMatchTertiaryAction(button);
-          break;
-        case ButtonStackButtonStylePrimaryDestructive:
-          UpdateButtonToMatchPrimaryDestructiveAction(button);
-          break;
-      }
+    if (button.style != style) {
+      button.style = style;
     }
-    SetConfigurationTitle(button, string);
+    button.title = string;
   }
 }
 
-// Creates a styled button using the factory functions from button_util.h.
-- (ChromeButton*)createButtonForStyle:(ButtonStackButtonStyle)style {
-  ChromeButton* button;
-  switch (style) {
-    case ButtonStackButtonStylePrimary:
-      button = PrimaryActionButton();
-      break;
-    case ButtonStackButtonStyleSecondary:
-      button = SecondaryActionButton();
-      break;
-    case ButtonStackButtonStyleTertiary:
-      button = TertiaryActionButton();
-      break;
-    case ButtonStackButtonStylePrimaryDestructive:
-      button = PrimaryDestructiveActionButton();
-      break;
-  }
+// Creates a button with the given style.
+- (ChromeButton*)createButtonForStyle:(ChromeButtonStyle)style {
+  ChromeButton* button = [[ChromeButton alloc] initWithStyle:style];
   [button setContentHuggingPriority:UILayoutPriorityRequired
                             forAxis:UILayoutConstraintAxisVertical];
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -423,19 +374,18 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   _secondaryActionButton.enabled = !showingProgressState;
   _tertiaryActionButton.enabled = !showingProgressState;
 
+  _primaryActionButton.tunedDownStyle = _isConfirmed;
+
   if (_isLoading) {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageSpinner;
   } else if (_isConfirmed) {
-    _primaryActionButton.tunedDownStyle = YES;
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageCheckmark;
   } else {
-    _primaryActionButton.tunedDownStyle = NO;
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageNone;
   }
 
-  SetConfigurationTitle(
-      _primaryActionButton,
-      showingProgressState ? @"" : _configuration.primaryActionString);
+  _primaryActionButton.title =
+      showingProgressState ? @"" : _configuration.primaryActionString;
 }
 
 // Handles the tap event for the primary action button.

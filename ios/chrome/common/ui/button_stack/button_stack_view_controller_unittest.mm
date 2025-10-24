@@ -87,16 +87,16 @@ TEST_F(ButtonStackViewControllerTest, TestLoadingState) {
   EXPECT_FALSE(view_controller_.primaryActionButton.enabled);
   EXPECT_FALSE(view_controller_.secondaryActionButton.enabled);
   EXPECT_FALSE(view_controller_.tertiaryActionButton.enabled);
-  EXPECT_TRUE(view_controller_.primaryActionButton.configuration
-                  .showsActivityIndicator);
+  EXPECT_EQ(PrimaryButtonImageSpinner,
+            view_controller_.primaryActionButton.primaryButtonImage);
   EXPECT_NSEQ(@"", view_controller_.primaryActionButton.configuration.title);
 
   [view_controller_ setLoading:NO];
   EXPECT_TRUE(view_controller_.primaryActionButton.enabled);
   EXPECT_TRUE(view_controller_.secondaryActionButton.enabled);
   EXPECT_TRUE(view_controller_.tertiaryActionButton.enabled);
-  EXPECT_FALSE(view_controller_.primaryActionButton.configuration
-                   .showsActivityIndicator);
+  EXPECT_EQ(PrimaryButtonImageNone,
+            view_controller_.primaryActionButton.primaryButtonImage);
   EXPECT_NSEQ(configuration_.primaryActionString,
               view_controller_.primaryActionButton.configuration.title);
 }
@@ -107,15 +107,16 @@ TEST_F(ButtonStackViewControllerTest, TestConfirmedState) {
   EXPECT_FALSE(view_controller_.primaryActionButton.enabled);
   EXPECT_FALSE(view_controller_.secondaryActionButton.enabled);
   EXPECT_FALSE(view_controller_.tertiaryActionButton.enabled);
-  EXPECT_NE(nil, view_controller_.primaryActionButton.configuration.image);
+  EXPECT_EQ(PrimaryButtonImageCheckmark,
+            view_controller_.primaryActionButton.primaryButtonImage);
   EXPECT_NSEQ(@"", view_controller_.primaryActionButton.configuration.title);
 
   [view_controller_ setConfirmed:NO];
   EXPECT_TRUE(view_controller_.primaryActionButton.enabled);
   EXPECT_TRUE(view_controller_.secondaryActionButton.enabled);
   EXPECT_TRUE(view_controller_.tertiaryActionButton.enabled);
-  EXPECT_EQ(configuration_.primaryActionImage,
-            view_controller_.primaryActionButton.configuration.image);
+  EXPECT_EQ(PrimaryButtonImageNone,
+            view_controller_.primaryActionButton.primaryButtonImage);
   EXPECT_NSEQ(configuration_.primaryActionString,
               view_controller_.primaryActionButton.configuration.title);
 }
@@ -123,26 +124,23 @@ TEST_F(ButtonStackViewControllerTest, TestConfirmedState) {
 // Tests that setting loading to YES when confirmed is YES sets confirmed to NO.
 TEST_F(ButtonStackViewControllerTest, TestLoadingWhenConfirmed) {
   [view_controller_ setConfirmed:YES];
-  EXPECT_NE(nil, view_controller_.primaryActionButton.configuration.image);
+  EXPECT_EQ(PrimaryButtonImageCheckmark,
+            view_controller_.primaryActionButton.primaryButtonImage);
 
   [view_controller_ setLoading:YES];
-  EXPECT_TRUE(view_controller_.primaryActionButton.configuration
-                  .showsActivityIndicator);
-  // The image should be cleared when loading.
-  EXPECT_EQ(nil, view_controller_.primaryActionButton.configuration.image);
+  EXPECT_EQ(PrimaryButtonImageSpinner,
+            view_controller_.primaryActionButton.primaryButtonImage);
 }
 
 // Tests that setting confirmed to YES when loading is YES sets loading to NO.
 TEST_F(ButtonStackViewControllerTest, TestConfirmedWhenLoading) {
   [view_controller_ setLoading:YES];
-  EXPECT_EQ(
-      PrimaryButtonImageSpinner,
-      ((ChromeButton*)view_controller_.primaryActionButton).primaryButtonImage);
+  EXPECT_EQ(PrimaryButtonImageSpinner,
+            view_controller_.primaryActionButton.primaryButtonImage);
 
   [view_controller_ setConfirmed:YES];
-  EXPECT_EQ(
-      PrimaryButtonImageCheckmark,
-      ((ChromeButton*)view_controller_.primaryActionButton).primaryButtonImage);
+  EXPECT_EQ(PrimaryButtonImageCheckmark,
+            view_controller_.primaryActionButton.primaryButtonImage);
 }
 
 // Tests that buttons are only created if they have a title.
@@ -185,29 +183,10 @@ TEST_F(ButtonStackViewControllerTest, TestUpdateConfigurationStyle) {
   ButtonStackConfiguration* new_configuration =
       [[ButtonStackConfiguration alloc] init];
   new_configuration.primaryActionString = @"Destructive";
-  new_configuration.primaryButtonStyle =
-      ButtonStackButtonStylePrimaryDestructive;
+  new_configuration.primaryButtonStyle = ChromeButtonStylePrimaryDestructive;
   [view_controller_ updateConfiguration:new_configuration];
 
   // Verify the button style was updated.
-  UIColor* destructiveColor = [UIColor colorNamed:kRedColor];
-  UIButton* button = view_controller_.primaryActionButton;
-
-  BOOL background_as_tint;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  if (@available(iOS 26, *)) {
-    background_as_tint = true;
-  } else {
-#endif
-    background_as_tint = false;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  }
-#endif
-
-  if (background_as_tint) {
-    EXPECT_TRUE([destructiveColor isEqual:button.tintColor]);
-  } else {
-    EXPECT_TRUE([destructiveColor
-        isEqual:button.configuration.background.backgroundColor]);
-  }
+  EXPECT_EQ(ChromeButtonStylePrimaryDestructive,
+            view_controller_.primaryActionButton.style);
 }

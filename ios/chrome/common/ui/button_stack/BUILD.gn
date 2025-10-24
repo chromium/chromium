@@ -7,7 +7,6 @@ source_set("button_stack") {
     "button_stack_action_delegate.h",
     "button_stack_configuration.h",
     "button_stack_configuration.mm",
-    "button_stack_constants.h",
     "button_stack_consumer.h",
     "button_stack_view_controller.h",
     "button_stack_view_controller.mm",
