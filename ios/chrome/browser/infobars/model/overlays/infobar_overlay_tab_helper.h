@@ -19,13 +19,6 @@ class InfobarOverlayTabHelper
  public:
   ~InfobarOverlayTabHelper() override;
 
-  // Stops processing overlay requests until a message to continue
-  // is received.
-  void PauseOverlayRequests();
-
-  // Resumes processing overlay requests if it has previously been paused.
-  void ContinueOverlayRequests();
-
  private:
   friend class web::WebStateUserData<InfobarOverlayTabHelper>;
   InfobarOverlayTabHelper(web::WebState* web_state);
@@ -43,12 +36,6 @@ class InfobarOverlayTabHelper
                             InfobarOverlayTabHelper* tab_helper);
     ~OverlayRequestScheduler() override;
 
-    // Sets whether the overlay request scheduler will accept new infobar
-    // requests in the queue.
-    void set_is_accepting_requests(bool is_accepting_requests) {
-      is_accepting_requests_ = is_accepting_requests;
-    }
-
    private:
     // infobars::InfoBarManager::Observer:
     void OnInfoBarAdded(infobars::InfoBar* infobar) override;
@@ -58,7 +45,6 @@ class InfobarOverlayTabHelper
     // The owning tab helper.
     raw_ptr<InfobarOverlayTabHelper> tab_helper_ = nullptr;
     raw_ptr<web::WebState> web_state_ = nullptr;
-    bool is_accepting_requests_ = true;
     base::ScopedObservation<infobars::InfoBarManager,
                             infobars::InfoBarManager::Observer>
         scoped_observation_{this};

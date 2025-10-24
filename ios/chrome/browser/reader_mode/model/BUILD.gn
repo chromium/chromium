@@ -63,7 +63,6 @@ source_set("model") {
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model",
-    "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/language/model",

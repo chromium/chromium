@@ -22,7 +22,6 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
@@ -581,8 +580,6 @@ void ReaderModeTabHelper::CreateReaderModeContent(
         translate_client->GetTranslateManager()->RevertTranslation();
       }
     }
-    // Stop processing overlay messages while Reading Mode is shown.
-    InfobarOverlayTabHelper::FromWebState(web_state_)->PauseOverlayRequests();
     source_translation_state_ = source_translation_state;
   }
 
@@ -647,10 +644,6 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
         break;
       }
     }
-    // Resume showing overlay messages after the translate message request
-    // is processed.
-    InfobarOverlayTabHelper::FromWebState(web_state_)
-        ->ContinueOverlayRequests();
   }
   source_translation_state_ = {};
 

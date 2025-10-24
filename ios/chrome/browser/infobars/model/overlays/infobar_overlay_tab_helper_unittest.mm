@@ -48,9 +48,6 @@ class InfobarOverlayTabHelperTest : public PlatformTest {
   InfoBarManager* manager() {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
-  InfobarOverlayTabHelper* tab_helper() {
-    return InfobarOverlayTabHelper::FromWebState(&web_state_);
-  }
 
  private:
   web::FakeWebState web_state_;
@@ -77,31 +74,4 @@ TEST_F(InfobarOverlayTabHelperTest, HighPriorityInfoBar) {
   InfobarOverlayRequestConfig* config =
       request->GetConfig<InfobarOverlayRequestConfig>();
   ASSERT_TRUE(config->is_high_priority());
-}
-
-// Tests that an InfoBar added when the overlay tab helper is paused
-// will not be processed.
-TEST_F(InfobarOverlayTabHelperTest, PauseOverlayRequests) {
-  ASSERT_FALSE(front_request());
-  tab_helper()->PauseOverlayRequests();
-
-  manager()->AddInfoBar(std::make_unique<FakeInfobarIOS>());
-  ASSERT_FALSE(front_request());
-}
-
-// Tests that the overlay tab helper correctly processes an InfoBar
-// when it resumes from a paused state.
-TEST_F(InfobarOverlayTabHelperTest, ContinueOverlayRequests) {
-  ASSERT_FALSE(front_request());
-  tab_helper()->PauseOverlayRequests();
-
-  manager()->AddInfoBar(std::make_unique<FakeInfobarIOS>());
-  ASSERT_FALSE(front_request());
-
-  tab_helper()->ContinueOverlayRequests();
-
-  std::unique_ptr<FakeInfobarIOS> infobar = std::make_unique<FakeInfobarIOS>(
-      InfobarType::kInfobarTypeTranslate, u"FakeTranslateInfobar");
-  manager()->AddInfoBar(std::move(infobar));
-  ASSERT_TRUE(front_request());
 }
