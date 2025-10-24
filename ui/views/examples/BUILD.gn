@@ -47,6 +47,8 @@ component("views_examples_lib") {
     "designer_example.h",
     "dialog_example.cc",
     "dialog_example.h",
+    "dialog_model_example.cc",
+    "dialog_model_example.h",
     "example_base.cc",
     "example_base.h",
     "example_combobox_model.cc",
