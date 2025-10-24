@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_mediator.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_mediator_delegate.h"
+#import "ios/chrome/browser/bookmarks/editor/ui/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/bookmarks/folder_editor/coordinator/bookmarks_folder_editor_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

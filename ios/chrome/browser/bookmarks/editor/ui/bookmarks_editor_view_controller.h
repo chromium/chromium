@@ -1,13 +1,13 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_EDITOR_UI_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_EDITOR_UI_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_consumer.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_view_controller_delegate.h"
+#import "ios/chrome/browser/bookmarks/editor/ui/bookmarks_editor_consumer.h"
+#import "ios/chrome/browser/bookmarks/editor/ui/bookmarks_editor_view_controller_delegate.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
@@ -52,4 +52,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_EDITOR_UI_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_

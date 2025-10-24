@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_EDITOR_COORDINATOR_BOOKMARKS_EDITOR_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_EDITOR_COORDINATOR_BOOKMARKS_EDITOR_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mutator.h"
+#import "ios/chrome/browser/bookmarks/editor/ui/bookmarks_editor_mutator.h"
 
 class AuthenticationService;
 @protocol BookmarksEditorConsumer;
@@ -65,4 +65,4 @@ class SyncService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_EDITOR_COORDINATOR_BOOKMARKS_EDITOR_MEDIATOR_H_

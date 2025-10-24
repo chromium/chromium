@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_mediator.h"
 
 #import "base/auto_reset.h"
 #import "base/check.h"
@@ -14,13 +14,13 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/url_fixer.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_mediator_delegate.h"
+#import "ios/chrome/browser/bookmarks/editor/ui/bookmarks_editor_consumer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_consumer.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"

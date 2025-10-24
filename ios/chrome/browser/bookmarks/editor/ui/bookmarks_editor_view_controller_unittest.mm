@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_view_controller.h"
+#import "ios/chrome/browser/bookmarks/editor/ui/bookmarks_editor_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_mediator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
