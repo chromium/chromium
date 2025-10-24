@@ -453,31 +453,34 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationConfigManager customizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
 
+        Drawable mutateDrawable = mock(Drawable.class);
+        when(mDrawable.mutate()).thenReturn(mutateDrawable);
+
         // Test cases in light mode:
 
         // Verifies that no tint color is set for the default theme in light mode.
         customizationConfigManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.DEFAULT);
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable, never()).setTint(anyInt());
+        verify(mutateDrawable, never()).setTint(anyInt());
 
         // Verifies that color white is set for customized background images.
         customizationConfigManager.setBackgroundImageTypeForTesting(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable).setTint(eq(Color.WHITE));
+        verify(mutateDrawable).setTint(eq(Color.WHITE));
 
         // Test cases in dark mode:
         ColorUtils.setInNightModeForTesting(true);
-        clearInvocations(mDrawable);
+        clearInvocations(mutateDrawable);
 
         // Verifies that color white is set for customized background images.
         customizationConfigManager.setBackgroundImageTypeForTesting(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable).setTint(eq(Color.WHITE));
+        verify(mutateDrawable).setTint(eq(Color.WHITE));
 
         // Verifies that color white is set for the default theme.
         customizationConfigManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.DEFAULT);
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable, times(2)).setTint(eq(Color.WHITE));
+        verify(mutateDrawable, times(2)).setTint(eq(Color.WHITE));
 
         // Cleans up.
         customizationConfigManager.resetForTesting();
@@ -489,6 +492,9 @@ public class NtpCustomizationUtilsUnitTest {
         ColorUtils.setInNightModeForTesting(false);
         NtpCustomizationConfigManager customizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
+
+        Drawable mutateDrawable = mock(Drawable.class);
+        when(mDrawable.mutate()).thenReturn(mutateDrawable);
 
         // Test cases in light mode:
 
@@ -505,27 +511,27 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpThemeColorId.DEFAULT,
                 NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable, never()).setTint(anyInt());
+        verify(mutateDrawable, never()).setTint(anyInt());
 
         // Verifies that the saved primary color is set for customized color themes if exists.
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
         assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable).setTint(eq(primaryColor));
+        verify(mutateDrawable).setTint(eq(primaryColor));
 
         // Test cases in dark mode:
         ColorUtils.setInNightModeForTesting(true);
-        clearInvocations(mDrawable);
+        clearInvocations(mutateDrawable);
 
         // Verifies that the saved primary color is set for customized color themes.
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable).setTint(eq(primaryColor));
+        verify(mutateDrawable).setTint(eq(primaryColor));
 
         // Verifies when the primary color is missing, color white is set in dark mode.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mDrawable).setTint(eq(Color.WHITE));
+        verify(mutateDrawable).setTint(eq(Color.WHITE));
 
         // Cleans up.
         customizationConfigManager.resetForTesting();

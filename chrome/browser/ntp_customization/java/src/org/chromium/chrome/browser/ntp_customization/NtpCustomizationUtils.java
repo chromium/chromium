@@ -668,7 +668,7 @@ public class NtpCustomizationUtils {
             tintColor = Color.WHITE;
         }
 
-        defaultGoogleLogoDrawable.setTint(tintColor);
+        defaultGoogleLogoDrawable.mutate().setTint(tintColor);
     }
 
     public static void resetSharedPreferenceForTesting() {
