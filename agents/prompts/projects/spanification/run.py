@@ -3,24 +3,24 @@
 # found in the LICENSE file.
 """Applying Gemini CLI to Fix Chromium Unsafe Buffer Usage
 
-This is a script to discover, categorize and generate spanification fixes for
-given file.
+This is a script to discover and generate spanification fixes for a given file.
 """
 
-import subprocess
+import argparse
 import contextlib
 import json
 import os
-import sys
-import argparse
 import re
+import subprocess
+import sys
+import threading
 
 GEMINI_MD_PATH = 'GEMINI.md'  # Assuming the script is run from src
 SCRIPT_DIR = os.path.dirname(__file__)
 
-# Prompts:
-CATEGORIZE_PROMPT_MD = os.path.join(SCRIPT_DIR, 'prompt_categorize.md')
-FIXING_PROMPT_MD = os.path.join(SCRIPT_DIR, 'prompt_fixing.md')
+# Prompt:
+# This single prompt contains all logic for fixing.
+FIX_PROMPT_MD = os.path.join(SCRIPT_DIR, 'prompt.md')
 SPANIFICATION_GEMINI_MD = 'SPANIFICATION_GEMINI_MD'
 
 # `gemini-cli` expected outputs:
@@ -28,47 +28,70 @@ GEMINI_OUT_DIR = 'gemini_out'
 COMMIT_MESSAGE_PATH = GEMINI_OUT_DIR + '/commit_message.md'
 SUMMARY_PATH = GEMINI_OUT_DIR + '/summary.json'
 
+# Make sure patches are built and tests on all platforms.
+REQUIRED_BUILD_DIRS = [
+    'linux-rel',
+    'mac-rel',
+    'linux-win-cross-rel',
+    'android-14-x64-rel',
+    'chromeos-amd64-generic-dbg',
+]
+
+# Tools allowed for all tasks:
+ALLOWED_TOOLS = [
+    # Basic:
+    "read_file",
+    "replace",
+    "write_file",
+    "run_shell_command(fdfind)",
+    "run_shell_command(rg)",
+
+    # Build/Test
+    "run_shell_command(autoninja)",
+    "run_shell_command(tools/autotest.py)",
+    "run_shell_command(./tools/autotest.py)",
+
+    # Investigate:
+    "remote_code_search",
+    "run_debugging_agent"
+    "run_shell_command(cat)",
+    "run_shell_command(git diff)",
+    "run_shell_command(git log)",
+    "run_shell_command(git show)",
+    "run_shell_command(head)",
+    "run_shell_command(ls)",
+    "run_shell_command(tail)",
+
+    # Cleanup:
+    "run_shell_command(git cl format)",
+]
 
 def ensure_gn_build_dir():
     """Ensure that the required GN build directories exist."""
-    REQUIRED_BUILD_DIRS = [
-        'linux-rel',
-        'linux-win-cross-rel',
-        'android-14-x64-rel',
-    ]
     for build_dir in REQUIRED_BUILD_DIRS:
-        print(f"Checking for GN build directory 'out/UTR{build_dir}'...")
-        if os.path.exists(os.path.join('out', f'UTR{build_dir}')):
+        print(f"Checking for GN build directory 'out/{build_dir}'...")
+        if os.path.exists(os.path.join('out', f'{build_dir}')):
             continue
-        print(f"GN build directory 'out/UTR{build_dir}' not found. Create one")
+        print(f"GN build directory 'out/{build_dir}' not found. Create one")
         # Run the compile command to create the build directory.
         compile_cmd = [
             'vpython3', 'tools/utr', '-f', '-B', 'try', '-b', build_dir,
-            'compile'
+            '--build-dir', 'out/' + build_dir, 'compile'
         ]
         result = subprocess.run(compile_cmd, check=False)
         if result.returncode != 0:
             print(f"Error: Failed to create GN build directory "
-                  f"'out/UTR{build_dir}'. Exiting.")
+                  f"'out/{build_dir}'. Exiting.")
             sys.exit(1)
 
-def discover_unsafe_todos(folder=None):
-    cmd = [
-        'git', 'grep', '-l', '-e', 'UNSAFE_TODO', '--or', '-e',
-        'allow_unsafe_buffers'
-    ]
-    if folder:
-        cmd.append(folder)
 
-    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
-    if result.returncode != 0:
-        # git grep returns 1 if no lines are selected, which is not an error.
-        if result.returncode == 1 and result.stdout == "":
-            return []
-        print("Error discovering files:", result.stderr)
-        return []
-    return result.stdout.strip().split('\n')
-
+def ensure_docs():
+    # Copy ../../../../docs/unsafe_buffers.md to the script directory.
+    src_docs_path = os.path.abspath(
+        os.path.join(SCRIPT_DIR, '../../../../docs/unsafe_buffers.md'))
+    dest_docs_path = os.path.join(SCRIPT_DIR, 'unsafe_buffers.md')
+    if not os.path.exists(dest_docs_path):
+        subprocess.run(['cp', src_docs_path, dest_docs_path], check=True)
 
 @contextlib.contextmanager
 def setup_gemini_context_md(file_path):
@@ -108,21 +131,42 @@ def setup_gemini_context_md(file_path):
         modify_gemini_md('remove')
 
 
-def run_gemini(prompt, task_args):
+def stream_reader(process, output):
     """
-    Run the gemini CLI with the given prompt and task arguments.
+    Reads from process.stdout line by line and populates the list.
+    This blocks *only* this thread, not the main thread.
+    """
+    try:
+        for line in iter(process.stdout.readline, ''):
+            if not line.strip():  # Skip empty lines
+                continue
+
+            # Print and process the line immediately
+            try:
+                json_obj = json.loads(line)
+                output.append(json_obj)
+                print(json.dumps(json_obj, indent=2))
+
+            except json.JSONDecodeError:
+                # This will also print stderr lines since we merged them
+                print(line, end='')
+    except (IOError, ValueError):
+        # This can happen if the pipe is closed abruptly by process.kill()
+        pass
+
+
+def run_gemini(file):
+    """
+    Run the gemini CLI against the given file to fix unsafe buffer usage.
     Returns the parsed summary.json content.
     """
+    prompt = f"Fix the unsafe buffer usage in {file}."
 
-    # Ensure the directory for gemini outputs exists. This is important, because
-    # gemini is not allowed to create directories, and we ask it to write
-    # outputs there.
-    if not os.path.exists('gemini_out'):
-        os.makedirs('gemini_out')
-    # Clean up previous run files
-    for f in [SUMMARY_PATH, COMMIT_MESSAGE_PATH]:
-        if os.path.exists(f):
-            os.remove(f)
+    # Delete `gemini_out` directory if it exists, and recreate it. This is where
+    # gemini was instructed to write its outputs.
+    if os.path.exists(GEMINI_OUT_DIR):
+        subprocess.run(['rm', '-rf', GEMINI_OUT_DIR], check=True)
+    os.makedirs(GEMINI_OUT_DIR, exist_ok=True)
 
     cmd = ['gemini']
 
@@ -130,59 +174,53 @@ def run_gemini(prompt, task_args):
     # while running it.
     cmd.extend(['--output-format', 'stream-json'])
 
-    # Tools allowed for all tasks:
-    ALLOWED_TOOLS = [
-        # Basic:
-        "read_file",
-        "replace",
-        "write_file",
-        "run_shell_command(fdfind)",
-        "run_shell_command(rg)",
-
-        # Build/Test
-        "run_shell_command(autoninja)",
-        "run_shell_command(./tools/autotest.py)",
-
-        # Investigate:
-        "remote_code_search",
-        "run_debugging_agent"
-        "run_shell_command(git log)",
-        "run_shell_command(git diff)",
-
-        # Cleanup:
-        "run_shell_command(git cl format)",
-    ]
     cmd.extend(['--approval-mode', 'auto_edit'])
     cmd.extend(['--allowed-tools', ','.join(ALLOWED_TOOLS)])
 
     exit_code = 0
-
+    TIMEOUT_SECONDS = 1800  # 30 minutes
     output = []
-    with subprocess.Popen(cmd,
-                          stdin=subprocess.PIPE,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT,
-                          text=True,
-                          encoding='utf-8') as process:
-        try:
-            # Send the prompt to gemini's stdin.
+    try:
+        with subprocess.Popen(
+                cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,  # Merge stdout and stderr
+                text=True,
+                encoding='utf-8',
+                bufsize=1  # Use line-buffering
+        ) as process:
+            # stdout
+            reader_thread = threading.Thread(target=stream_reader,
+                                             args=(process, output))
+            reader_thread.daemon = True
+            reader_thread.start()
+
+            # stdin
             process.stdin.write(prompt)
             process.stdin.close()
 
-            # Read gemini's stdout line by line. They are in JSON format.
-            for line in iter(process.stdout.readline, ''):
-                try:
-                    json_obj = json.loads(line)
-                    print(json.dumps(json_obj, indent=2))
-                    output.append(json_obj)
-                except json.JSONDecodeError:
-                    print(line, end='')  # Print non-JSON lines as is
+            # Wait for the process to complete or timeout
+            exit_code = process.wait(timeout=TIMEOUT_SECONDS)
 
-            exit_code = process.wait(timeout=3000)
+    except subprocess.TimeoutExpired:
+        print(f"Error: Process timed out after {TIMEOUT_SECONDS} seconds.",
+              file=sys.stderr)
+        process.kill()  # Forcefully terminate the process
+        exit_code = 124  # Standard timeout exit code
 
-        except subprocess.TimeoutExpired:
-            process.kill()
-            exit_code = 124  # timeout exit code in linux
+    except Exception as e:
+        print(f"An error occurred: {e}", file=sys.stderr)
+        if 'process' in locals() and process.poll() is None:
+            process.kill()  # Ensure process is dead
+        exit_code = 1  # General error
+
+    finally:
+        if 'reader_thread' in locals() and reader_thread.is_alive():
+            reader_thread.join(timeout=5.0)
+
+    # You can now check the exit_code or inspect the 'output' list
+    print(f"\nProcess finished with exit code: {exit_code}")
 
     exit_code_to_status = {0: 'SUCCESS', 1: 'FAILURE', 124: 'TIMEOUT'}
 
@@ -194,224 +232,44 @@ def run_gemini(prompt, task_args):
     except (FileNotFoundError, json.JSONDecodeError):
         print(f"Warning: Could not read {SUMMARY_PATH}.")
 
+    diff_result = subprocess.run(['git', 'diff', file],
+                                 capture_output=True,
+                                 text=True,
+                                 check=False)
+
+    # The commit message is written by gemini to a file.
+    commit_message = None
+    if os.path.exists(COMMIT_MESSAGE_PATH):
+        with open(COMMIT_MESSAGE_PATH, 'r', encoding='utf-8') as f:
+            commit_message = f.read()
+
     return {
-        'task': {
-            'prompt': prompt,
-            'args': task_args,
-        },
-        'status': exit_code_to_status.get(exit_code, 'GEMINI_FAILURE'),
+        'commit_message': commit_message,
+        'diff': diff_result.stdout,
         'exit_code': exit_code,
+        'file': file,
         'output': output,
+        'status': exit_code_to_status.get(exit_code, 'GEMINI_FAILURE'),
         'summary': summary,
+        'prompt': prompt,
     }
-
-
-def categorize_file(file_path):
-    """Categorize the unsafe buffer usage in the given file."""
-    with setup_gemini_context_md(CATEGORIZE_PROMPT_MD):
-        prompt = (
-            f"detect the unsafe access and variable category for {file_path}")
-        return run_gemini(prompt, task_args=[file_path])
-
-
-def generate_fix(file_path, variable_type=None, access_type=None):
-    """Generate spanification fix for the given file based on its categories."""
-
-    VARIABLE_PROMPTS = {
-        'Already-Safe': 'No changes to the variable are needed.',
-        'Local-Variable': 'Arrayify the variable using `std::to_array`.',
-        'Local-Method-Argument': (
-            'Change the method signature to take a `std::span`.'
-        ),
-        'Class-Method-with-Safe-Variant': (
-            'Replace the unsafe methods (that return a buffer) '
-            'with a safe variant.'
-        ),
-        'Method-Argument': (
-            'Change the method signature to take a `std::span` '
-            'and update all call sites.'
-        ),
-        'Global-Variable': (
-            'Arrayify the variable using `std::to_array` '
-            'and update all usages.'
-        ),
-        'Class-Method-Safe-Variant-TODO': (
-            'Migrate the internal members to safe containers '
-            'and create a new safe method variant.'
-        ),
-    }
-
-    ACCESS_PROMPTS = {
-        'operator[]': (
-            'The access should be safe now, '
-            'just remove the `UNSAFE_TODO`.'
-        ),
-        'Pointer-Arithmetic': (
-            'Use `base::span::first(N)`, `base::span::subspan(offset, count)` '
-            '... instead.'
-        ),
-        'Safe-Container-Construction': (
-            'Convert `base::span(pointer, size)` to a safe constructor '
-            'like `base::span(container)`. If the size changed, you could use '
-            '`base::span(other_span).subspan(...)` or `first(...)` to create '
-            'safe views into existing spans.'
-        ),
-        'std::memcmp': 'Replace the comparison with `operator==`.',
-        'std::strcmp': 'Replace the comparison with `operator==`.',
-        'std::memcpy': 'Replace the copy with `base::span::copy_from()`.',
-        'std::strncpy': 'Replace the copy with `base::span::copy_from()`.',
-        'std::strcpy': 'Replace the copy with `base::span::copy_from()`.',
-        'std::memset': (
-            'Replace memset with `std::ranges::fill()` or `<instance> = {}`.'
-        ),
-        'std::strstr': 'Replace the search with `std::string_view::find()`.',
-        'std::wcslen': 'Just get size() from the safe container.',
-        'std::strlen': 'Just get size() from the safe container.',
-    }
-
-    variable_prompt = VARIABLE_PROMPTS.get(variable_type, '')
-    access_prompt = ACCESS_PROMPTS.get(access_type, '')
-    task_args = [file_path, variable_type, access_type]
-
-    if not variable_prompt and not access_prompt:
-        generated_prompt = f"Fix the unsafe buffer usage in {file_path}."
-    elif not variable_prompt:
-        print(f"Warning: Unknown variable_type ('{variable_type}').")
-        return {
-            'status': 'NOT_SUPPORTED',
-            'summary': f"Unknown variable_type: {variable_type}",
-            'task_args': task_args,
-            'duration': 0,
-        }
-    elif not access_prompt:
-        print(f"Warning: Unknown access_type ('{access_type}').")
-        return {
-            'status': 'NOT_SUPPORTED',
-            'summary': f"Unknown access_type: {access_type}",
-            'task_args': task_args,
-            'duration': 0,
-        }
-    else:
-        generated_prompt = (
-            f"The variable in {file_path} is of type {variable_type}. "
-            f"{variable_prompt} The unsafe access pattern is {access_type}. "
-            f"{access_prompt} ")
-
-    with setup_gemini_context_md(FIXING_PROMPT_MD):
-        return run_gemini(generated_prompt, task_args)
-
-
-def autocommit_changes(fix_result, file_path):
-    """Automatically commit changes if the fix was successful,
-    otherwise reset."""
-    is_success = fix_result.get('status') == 'SUCCESS'
-
-    if is_success:
-        print(f"Successfully fixed {file_path}. Committing changes.")
-        if os.path.exists(COMMIT_MESSAGE_PATH):
-            subprocess.run(['git', 'commit', '-a', '-F', COMMIT_MESSAGE_PATH],
-                           check=True)
-            print(f"Committed fix for {file_path}.")
-        else:
-            print(f"Warning: {COMMIT_MESSAGE_PATH} not found. Cannot commit. "
-                  "Resetting to HEAD.")
-            subprocess.run(['git', 'reset', '--hard', 'HEAD'], check=True)
-    else:
-        print(f"Fix generation failed for {file_path}. Resetting to HEAD.")
-        subprocess.run(['git', 'reset', '--hard', 'HEAD'], check=True)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Discover, categorize and generate spanification fixes.')
-    parser.add_argument('path',
-                        nargs='?',
-                        default=None,
-                        help='The file or folder to process.')
-    parser.add_argument('--categorize-only',
-                        action='store_true',
-                        help='Only run the categorization step.')
-    parser.add_argument('--fix-only',
-                        action='store_true',
-                        help='Only run the fix generation step.')
-    parser.add_argument('--autocommit',
-                        action='store_true',
-                        help='Automatically commit successful fixes.')
+        description='Run Gemini to fix unsafe buffer usage in a file.')
+    parser.add_argument('file', type=str, help='Path to the file to process.')
     args = parser.parse_args()
+    print(f"Processing {args.file}...")
 
     ensure_gn_build_dir()
+    ensure_docs()
 
-    outputs = []
+    with setup_gemini_context_md(FIX_PROMPT_MD):
+        output = run_gemini(args.file)
 
-    files_to_process = []
-    if args.path:
-        if os.path.isdir(args.path):
-            files_to_process = discover_unsafe_todos(args.path)
-        else:
-            files_to_process.append(args.path)
-    else:
-        files_to_process = discover_unsafe_todos()
-
-    if not files_to_process:
-        print("No files to process.")
-        return
-
-    for file_path in files_to_process:
-        output = {}
-
-        print("=" * 40)
-        print(f"Processing {file_path}...")
-        categorization_result = None
-        if not args.fix_only:
-            print("Categorization".center(40, '-'))
-            categorization_result = categorize_file(file_path)
-            output['categorization'] = categorization_result
-
-        if not args.categorize_only:
-            print("Fix Generation".center(40, '-'))
-            variable_type = None
-            access_type = None
-
-            if categorization_result:
-                if categorization_result.get('status') != 'SUCCESS':
-                    print(f"Skipping fix generation for {file_path} due to "
-                          "categorization failure.")
-                    continue
-                # The categorization step is expected to return 'variable_type'
-                # and 'access_type' in summary.json
-                summary = categorization_result.get('summary', {})
-                variable_type = summary.get('variable_type')
-                access_type = summary.get('access_type')
-
-            fix_result = generate_fix(file_path, variable_type, access_type)
-            output['fix'] = fix_result
-
-            # Retrieve the diff and commit message if available.
-            # The diff can be obtained using 'git diff' since gemini writes
-            diff_result = subprocess.run(['git', 'diff', file_path],
-                                         capture_output=True,
-                                         text=True,
-                                         check=False)
-            output['diff'] = diff_result.stdout
-
-            # The commit message is written by gemini to a file.
-            if os.path.exists(COMMIT_MESSAGE_PATH):
-                with open(COMMIT_MESSAGE_PATH, 'r', encoding='utf-8') as f:
-                    commit_message = f.read()
-                output['commit_message'] = commit_message
-            else:
-                output['commit_message'] = None
-
-            if args.autocommit:
-                print("Committing changes".center(40, '-'))
-                autocommit_changes(fix_result, file_path)
-
-            outputs.append({file_path: output})
-
-    # Save the outputs to a JSON file for further analysis.
     with open('gemini_spanification_output.json', 'w', encoding='utf-8') as f:
-        json.dump(outputs, f, indent=2)
-
+        json.dump(output, f, indent=2)
 
 if __name__ == '__main__':
     main()
