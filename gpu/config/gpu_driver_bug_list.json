@@ -3751,6 +3751,19 @@
         "disable_d3d11_video_decoder"
       ],
       "device_id": ["0x9a49", "0x9a78"]
+    },
+    {
+      "id": 466,
+      "description": "Program binaries don't contain transform feedback varyings on Imagination GPUs",
+      "cr_bugs": [442879525],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "gl_renderer": "PowerVR.*",
+      "features": [
+        "disable_program_caching_for_transform_feedback"
+      ]
     }
   ]
 }
