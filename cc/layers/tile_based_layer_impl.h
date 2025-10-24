@@ -19,6 +19,16 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   TileBasedLayerImpl& operator=(const TileBasedLayerImpl&) = delete;
 
+  void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
+    if (this->is_backdrop_filter_mask() == is_backdrop_filter_mask) {
+      return;
+    }
+    is_backdrop_filter_mask_ = is_backdrop_filter_mask;
+    SetNeedsPushProperties();
+  }
+
+  bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }
+
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id);
 
@@ -26,6 +36,9 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
                        AppendQuadsData* append_quads_data,
                        SkColor4f color);
+
+ private:
+  bool is_backdrop_filter_mask_ : 1 = false;
 };
 
 }  // namespace cc

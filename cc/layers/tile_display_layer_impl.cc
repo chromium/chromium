@@ -191,7 +191,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                                        AppendQuadsData* append_quads_data) {
   // If this layer is used as a backdrop filter, don't create and append a quad
   // as that will be done in RenderSurfaceImpl::AppendQuads.
-  if (is_backdrop_filter_mask_) {
+  if (is_backdrop_filter_mask()) {
     return;
   }
 
@@ -353,7 +353,7 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   *resource_id = viz::kInvalidResourceId;
 
   // We need contents resource for backdrop filter masks only.
-  if (!is_backdrop_filter_mask_) {
+  if (!is_backdrop_filter_mask()) {
     return;
   }
 

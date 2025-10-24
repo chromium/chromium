@@ -189,7 +189,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   }
 
   if (changed_other_props) {
-    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
+    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
     // Solid color layers have no tilings.
     DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
@@ -227,8 +227,9 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
   // the masked surface, which will apply to both the backdrop filter and the
   // contents of the masked surface, so we should not append quads of the mask
   // layer in DstIn blend mode which would apply the mask in another codepath.
-  if (is_backdrop_filter_mask_)
+  if (is_backdrop_filter_mask()) {
     return;
+  }
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
@@ -1033,8 +1034,9 @@ std::unique_ptr<Tile> PictureLayerImpl::CreateTile(
   // We don't handle solid color single texture masks for backdrop filters,
   // so we shouldn't bother analyzing those.
   // Otherwise, always analyze to maximize memory savings.
-  if (!is_backdrop_filter_mask_)
+  if (!is_backdrop_filter_mask()) {
     flags = Tile::USE_PICTURE_ANALYSIS;
+  }
 
   if (contents_opaque())
     flags |= Tile::IS_OPAQUE;
@@ -1813,8 +1815,8 @@ float PictureLayerImpl::MaximumContentsScale() const {
   // use a single tile for the entire tiling. Other layers can have tilings such
   // that dimension * scale does not overflow.
   float max_dimension = static_cast<float>(
-      is_backdrop_filter_mask_ ? layer_tree_impl()->max_texture_size()
-                               : std::numeric_limits<int>::max());
+      is_backdrop_filter_mask() ? layer_tree_impl()->max_texture_size()
+                                : std::numeric_limits<int>::max());
   int higher_dimension = std::max(bounds().width(), bounds().height());
   float max_scale = max_dimension / higher_dimension;
 

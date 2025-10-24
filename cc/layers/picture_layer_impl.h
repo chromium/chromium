@@ -51,15 +51,6 @@ class CC_EXPORT PictureLayerImpl
 
   PictureLayerImpl& operator=(const PictureLayerImpl&) = delete;
 
-  void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
-    if (is_backdrop_filter_mask_ == is_backdrop_filter_mask) {
-      return;
-    }
-    is_backdrop_filter_mask_ = is_backdrop_filter_mask;
-    SetNeedsPushProperties();
-  }
-  bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }
-
   // LayerImpl overrides.
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -341,8 +332,6 @@ class CC_EXPORT PictureLayerImpl
   float raster_contents_scale_key() const {
     return std::max(raster_contents_scale_.x(), raster_contents_scale_.y());
   }
-
-  bool is_backdrop_filter_mask_ : 1 = false;
 
   bool was_screen_space_transform_animating_ : 1 = false;
   bool produced_tile_last_append_quads_ : 1 = true;

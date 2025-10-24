@@ -1733,7 +1733,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
       static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
 
   EXPECT_FALSE(tile_display_layer_impl->solid_color_for_testing().has_value());
-  EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
+  EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask());
 
   // Second update: Set solid_color and is_backdrop_filter_mask.
   auto update2 = CreateDefaultUpdate();
@@ -1752,7 +1752,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_TRUE(tile_display_layer_impl->solid_color_for_testing().has_value());
   EXPECT_EQ(tile_display_layer_impl->solid_color_for_testing().value(),
             kSolidColor);
-  EXPECT_TRUE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
+  EXPECT_TRUE(tile_display_layer_impl->is_backdrop_filter_mask());
 
   // Third update: Clear solid_color and set is_backdrop_filter_mask to false.
   auto update3 = CreateDefaultUpdate();
@@ -1769,7 +1769,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
 
   EXPECT_FALSE(tile_display_layer_impl->solid_color_for_testing().has_value());
-  EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
+  EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask());
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
