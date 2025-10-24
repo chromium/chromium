@@ -104,6 +104,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   // TODO: crbug.com/452056256 - Include other criteria other than embedding
   // score.
   std::vector<content::WebContents*> relevant_web_contents;
+  int all_browsers_tab_count = 0;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!browser || browser->profile() != profile_) {
       continue;
@@ -111,6 +112,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
 
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     int tab_count = tab_strip_model->count();
+    all_browsers_tab_count += tab_count;
     for (int i = 0; i < tab_count; i++) {
       content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
       if (!web_contents) {
@@ -141,6 +143,11 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
       }
     }
   }
+  AUTO_CONTEXT_LOG(base::StringPrintf("Number of open tabs for query %s: %d",
+                                        query, all_browsers_tab_count));
+  AUTO_CONTEXT_LOG(
+          base::StringPrintf("Number of relevant tabs for query %s: %d", query,
+                             relevant_web_contents.size()));
   std::move(callback).Run(std::move(relevant_web_contents));
 }
 
