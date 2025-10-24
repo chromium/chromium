@@ -2095,8 +2095,8 @@ bool PDFiumEngine::OnKeyDown(const blink::WebKeyboardEvent& event) {
   if (event.windows_key_code == FWL_VKEY_Tab) {
     return HandleTabEvent(event.GetModifiers());
   }
-
-  if (caret_ && caret_->OnKeyDown(event)) {
+  if (focus_field_type_ == FocusFieldType::kNoFocus && caret_ &&
+      caret_->OnKeyDown(event)) {
     return true;
   }
 

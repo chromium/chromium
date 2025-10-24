@@ -3223,6 +3223,13 @@ TEST_P(PDFiumEngineCaretTest, FormFocus) {
   DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
                           kAnnotationFormFieldsVisiblePageSize);
 
+  // Press an arrow key, which is a key event that the caret may handle.
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_DOWN));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
   // Press tab, which will update focus to a different form field.
   EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
 
