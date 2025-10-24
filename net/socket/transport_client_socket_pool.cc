@@ -120,18 +120,6 @@ ConnectJob* TransportClientSocketPool::Request::ReleaseJob() {
   return job;
 }
 
-TransportClientSocketPool::ScopedReentrancyProtector::ScopedReentrancyProtector(
-    TransportClientSocketPool* parent)
-    : parent_(parent) {
-  CHECK(!parent_->reentrancy_protector_);
-  parent_->reentrancy_protector_ = true;
-}
-
-TransportClientSocketPool::ScopedReentrancyProtector::
-    ~ScopedReentrancyProtector() {
-  parent_->reentrancy_protector_ = false;
-}
-
 struct TransportClientSocketPool::IdleSocket {
   // An idle socket can't be used if it is disconnected or has been used
   // before and has received data unexpectedly (hence no longer idle).  The
@@ -271,7 +259,6 @@ int TransportClientSocketPool::RequestSocket(
     const ProxyAuthCallback& proxy_auth_callback,
     bool fail_if_alias_requires_proxy_override,
     const NetLogWithSource& net_log) {
-  ScopedReentrancyProtector protector(this);
   CHECK(callback);
   CHECK(handle);
 
@@ -325,8 +312,6 @@ int TransportClientSocketPool::RequestSockets(
     bool fail_if_alias_requires_proxy_override,
     CompletionOnceCallback callback,
     const NetLogWithSource& net_log) {
-  ScopedReentrancyProtector protector(this);
-
   // TODO(eroman): Split out the host and port parameters.
   net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKETS,
                    [&] { return NetLogGroupIdParams(group_id); });
@@ -592,8 +577,6 @@ void TransportClientSocketPool::LogBoundConnectJobToRequest(
 void TransportClientSocketPool::SetPriority(const GroupId& group_id,
                                             ClientSocketHandle* handle,
                                             RequestPriority priority) {
-  ScopedReentrancyProtector protector(this);
-
   auto group_it = group_map_.find(group_id);
   if (group_it == group_map_.end()) {
     DCHECK(base::Contains(pending_callback_map_, handle));
@@ -608,8 +591,6 @@ void TransportClientSocketPool::SetPriority(const GroupId& group_id,
 void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
                                               ClientSocketHandle* handle,
                                               bool cancel_connect_job) {
-  ScopedReentrancyProtector protector(this);
-
   auto callback_it = pending_callback_map_.find(handle);
   if (callback_it != pending_callback_map_.end()) {
     int result = callback_it->second.result;
@@ -628,8 +609,8 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
         if (group->unbound_request_count() == 0)
           socket->Disconnect();
       }
-      ReleaseSocketInternal(handle->group_id(), std::move(socket),
-                            handle->group_generation());
+      ReleaseSocket(handle->group_id(), std::move(socket),
+                    handle->group_generation());
     }
     return;
   }
@@ -670,7 +651,6 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
 
 void TransportClientSocketPool::CloseIdleSockets(
     const char* net_log_reason_utf8) {
-  ScopedReentrancyProtector protector(this);
   CleanupIdleSockets(true, net_log_reason_utf8);
   DCHECK_EQ(0, idle_socket_count_);
 }
@@ -1050,14 +1030,6 @@ void TransportClientSocketPool::ReleaseSocket(
     const GroupId& group_id,
     std::unique_ptr<StreamSocket> socket,
     int64_t group_generation) {
-  ScopedReentrancyProtector protector(this);
-  ReleaseSocketInternal(group_id, std::move(socket), group_generation);
-}
-
-void TransportClientSocketPool::ReleaseSocketInternal(
-    const GroupId& group_id,
-    std::unique_ptr<StreamSocket> socket,
-    int64_t group_generation) {
   auto i = group_map_.find(group_id);
   CHECK(i != group_map_.end());
 
@@ -1070,7 +1042,7 @@ void TransportClientSocketPool::ReleaseSocketInternal(
   CHECK_GT(group->active_socket_count(), 0);
   group->DecrementActiveSocketCount();
 
-  bool can_reuse_socket = false;
+  bool can_resuse_socket = false;
   std::string_view not_reusable_reason;
   if (!socket->IsConnectedAndIdle()) {
     if (!socket->IsConnected()) {
@@ -1081,10 +1053,10 @@ void TransportClientSocketPool::ReleaseSocketInternal(
   } else if (group_generation != group->generation()) {
     not_reusable_reason = kSocketGenerationOutOfDate;
   } else {
-    can_reuse_socket = true;
+    can_resuse_socket = true;
   }
 
-  if (can_reuse_socket) {
+  if (can_resuse_socket) {
     DCHECK(not_reusable_reason.empty());
 
     // Add it to the idle list.
@@ -1181,8 +1153,6 @@ void TransportClientSocketPool::OnIPAddressChanged(
 void TransportClientSocketPool::FlushWithError(
     int error,
     const char* net_log_reason_utf8) {
-  // This method doesn't use ScopedReentrancyProtector, because the methods it
-  // invokes all use their own.
   CancelAllConnectJobs();
   CloseIdleSockets(net_log_reason_utf8);
   CancelAllRequestsWithError(error);
@@ -1281,7 +1251,6 @@ void TransportClientSocketPool::AddIdleSocket(
 }
 
 void TransportClientSocketPool::CancelAllConnectJobs() {
-  ScopedReentrancyProtector protector(this);
   for (auto i = group_map_.begin(); i != group_map_.end();) {
     Group* group = i->second;
     CHECK(group);
@@ -1298,7 +1267,6 @@ void TransportClientSocketPool::CancelAllConnectJobs() {
 }
 
 void TransportClientSocketPool::CancelAllRequestsWithError(int error) {
-  ScopedReentrancyProtector protector(this);
   for (auto i = group_map_.begin(); i != group_map_.end();) {
     Group* group = i->second;
     CHECK(group);
@@ -1365,7 +1333,6 @@ bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(
 void TransportClientSocketPool::OnConnectJobComplete(Group* group,
                                                      int result,
                                                      ConnectJob* job) {
-  ScopedReentrancyProtector protector(this);
   DCHECK_NE(ERR_IO_PENDING, result);
   DCHECK(group_map_.find(group->group_id()) != group_map_.end());
   DCHECK_EQ(group, group_map_[group->group_id()]);

@@ -286,18 +286,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   using RequestQueue = PriorityQueue<std::unique_ptr<Request>>;
 
-  // Created on external methods to protect against reentrant calls, which can
-  // cause the Group we're working on to be modified or even deleted out from
-  // under us.
-  class ScopedReentrancyProtector {
-   public:
-    explicit ScopedReentrancyProtector(TransportClientSocketPool* parent);
-    ~ScopedReentrancyProtector();
-
-   private:
-    raw_ptr<TransportClientSocketPool> parent_;
-  };
-
   // A Group is allocated per GroupId when there are idle sockets, unbound
   // request, or bound requests. Otherwise, the Group object is removed from the
   // map.
@@ -633,13 +621,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       SSLClientContext* ssl_client_context,
       bool connect_backup_jobs_enabled);
 
-  // Implementation of ReleaseSocket(). Since it's called both internally and
-  // externally, need to have a separate internal method so external one can use
-  // a ScopedReentrancyProtector.
-  void ReleaseSocketInternal(const GroupId& group_id,
-                             std::unique_ptr<StreamSocket> socket,
-                             int64_t group_generation);
-
   base::TimeDelta ConnectRetryInterval() const {
     // TODO(mbelshe): Make this tuned dynamically based on measured RTT.
     //                For now, just use the max retry interval.
@@ -853,10 +834,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   std::set<raw_ptr<HigherLayeredPool, SetExperimental>> higher_pools_;
 
   const raw_ptr<SSLClientContext> ssl_client_context_;
-
-  // Set to true on calls from external callers by ScopedReentrancyProtector,
-  // which CHECKs if it's already true.
-  bool reentrancy_protector_ = false;
 
 #if DCHECK_IS_ON()
   // Reentrancy guard for RequestSocketInternal().
