@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/http/http_connection_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"

@@ -55,10 +55,6 @@
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
-#if INSIDE_BLINK
-#include "base/memory/scoped_refptr.h"
-#endif
-
 namespace base {
 class TickClock;
 }

@@ -10,7 +10,6 @@
 #include <optional>
 #include <variant>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"

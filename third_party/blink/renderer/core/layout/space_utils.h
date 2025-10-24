@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SPACE_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SPACE_UTILS_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"

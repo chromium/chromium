@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_FACE_SET_LOAD_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_FACE_SET_LOAD_EVENT_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 

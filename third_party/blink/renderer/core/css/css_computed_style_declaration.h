@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COMPUTED_STYLE_DECLARATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COMPUTED_STYLE_DECLARATION_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"

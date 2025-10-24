@@ -31,7 +31,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SHAPE_VALUE_H_
 
 #include "base/check_op.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"

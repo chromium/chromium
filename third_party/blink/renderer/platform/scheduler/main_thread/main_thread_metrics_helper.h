@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"

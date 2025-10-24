@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

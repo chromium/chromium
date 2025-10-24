@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "cc/paint/node_id.h"
 #include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"

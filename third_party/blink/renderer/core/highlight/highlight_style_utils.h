@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/containers/enum_set.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"

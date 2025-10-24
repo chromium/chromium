@@ -32,7 +32,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/single_thread_task_runner.h"

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_MEDIA_ELEMENT_AUDIO_SOURCE_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_MEDIA_ELEMENT_AUDIO_SOURCE_NODE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"

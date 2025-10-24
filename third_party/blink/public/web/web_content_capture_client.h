@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 
 namespace blink {

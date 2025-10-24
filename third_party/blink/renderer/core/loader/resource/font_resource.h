@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_FONT_RESOURCE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/core/core_export.h"

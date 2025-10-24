@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLOATS_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLOATS_UTILS_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
