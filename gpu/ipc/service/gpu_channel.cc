@@ -420,7 +420,8 @@ bool GpuChannelMessageFilter::IsNativeBufferSupported(
   }
   return base::Contains(
       supported_gmb_configurations_,
-      gfx::BufferUsageAndFormat(buffer_usage, ToBufferFormat(format)));
+      gfx::BufferUsageAndFormat(buffer_usage,
+                                viz::SharedImageFormatToBufferFormat(format)));
 }
 
 void GpuChannelMessageFilter::CreateGpuMemoryBuffer(

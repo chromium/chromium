@@ -92,7 +92,8 @@ OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   CHECK(viz::HasEquivalentBufferFormat(format));
-  gfx::BufferFormat buffer_format = ToBufferFormat(format);
+  gfx::BufferFormat buffer_format =
+      viz::SharedImageFormatToBufferFormat(format);
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
@@ -129,7 +130,8 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     SharedImageUsageSet usage,
     std::string debug_label,
     std::optional<gfx::BufferUsage> buffer_usage) {
-  gfx::BufferFormat buffer_format = ToBufferFormat(format);
+  gfx::BufferFormat buffer_format =
+      viz::SharedImageFormatToBufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
 #if BUILDFLAG(ENABLE_VULKAN)
   DCHECK(shared_context_state_);

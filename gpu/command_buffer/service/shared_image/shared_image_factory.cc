@@ -410,7 +410,8 @@ bool SharedImageFactory::IsNativeBufferSupported(viz::SharedImageFormat format,
   }
   return base::Contains(
       supported_gmb_configurations_,
-      gfx::BufferUsageAndFormat(usage, ToBufferFormat(format)));
+      gfx::BufferUsageAndFormat(usage,
+                                viz::SharedImageFormatToBufferFormat(format)));
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,

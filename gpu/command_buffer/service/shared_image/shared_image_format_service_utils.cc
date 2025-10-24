@@ -259,10 +259,6 @@ class SharedImageFormatRestrictedUtilsAccessor {
   }
 };
 
-gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
-  return viz::SharedImageFormatToBufferFormat(format);
-}
-
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
   switch (format.plane_config()) {
     case PlaneConfig::kY_U_V:

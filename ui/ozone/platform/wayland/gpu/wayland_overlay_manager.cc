@@ -63,8 +63,7 @@ bool WaylandOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
   if (!manager_gpu_->SupportsFormat(
-          viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-              candidate.format))) {
+          viz::SharedImageFormatToBufferFormat(candidate.format))) {
     return false;
   }
 

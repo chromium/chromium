@@ -58,10 +58,6 @@ struct GLFormatDesc {
 GPU_GLES2_EXPORT bool IsSizeForBufferHandleValid(const gfx::Size& size,
                                                  viz::SharedImageFormat format);
 
-// Returns BufferFormat for given `format`.
-GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
-    viz::SharedImageFormat format);
-
 // Returns SkYUVAInfo::PlaneConfig equivalent of
 // SharedImageFormat::PlaneConfig.
 GPU_GLES2_EXPORT SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(

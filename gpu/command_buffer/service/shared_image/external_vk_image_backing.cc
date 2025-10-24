@@ -342,7 +342,8 @@ ExternalVkImageBacking::CreateWithPixmap(
     gfx::BufferUsage buffer_usage) {
 #if BUILDFLAG(IS_OZONE)
   // Create a pixmap.
-  gfx::BufferFormat buffer_format = ToBufferFormat(format);
+  gfx::BufferFormat buffer_format =
+      viz::SharedImageFormatToBufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
   if (context_state->vk_context_provider()) {
     device_queue = context_state->vk_context_provider()->GetDeviceQueue();

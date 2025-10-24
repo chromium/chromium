@@ -100,9 +100,7 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
   }
   NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          format);
+  auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   return ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
       buffer_format, usage);
 #elif BUILDFLAG(IS_WIN)

@@ -9,8 +9,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 
 namespace gpu {
-class GpuMemoryBufferSupport;
-class MappableBufferNativePixmap;
 class SharedImageFormatRestrictedUtilsAccessor;
 }  // namespace gpu
 
@@ -20,10 +18,6 @@ class PerfContextProvider;
 
 namespace gfx {
 enum class BufferFormat : uint8_t;
-}
-
-namespace ui {
-class WaylandOverlayManager;
 }
 
 enum SkColorType : int;
@@ -136,19 +130,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   // GL_ANGLE_rgbx_internal_format extension is available.
   static unsigned int ToGLTextureStorageFormat(SharedImageFormat format,
                                                bool use_angle_rgbx_format);
-};
-
-// Utility function which conceptually belong only on the service side, but are
-// currently used by some clients. Usage is restricted to friended class.
-class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-    SharedImageFormatToBufferFormatRestrictedUtils {
- private:
-  friend class gpu::GpuMemoryBufferSupport;
-  friend class gpu::MappableBufferNativePixmap;
-  friend class ui::WaylandOverlayManager;
-
-  //  Returns BufferFormat for given `format`.
-  static gfx::BufferFormat ToBufferFormat(SharedImageFormat format);
 };
 
 }  // namespace viz

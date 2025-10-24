@@ -412,13 +412,6 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
   NOTREACHED();
 }
 
-// static
-gfx::BufferFormat
-SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-    SharedImageFormat format) {
-  return SharedImageFormatToBufferFormat(format);
-}
-
 gfx::BufferFormat SharedImageFormatToBufferFormat(SharedImageFormat format) {
   if (!HasEquivalentBufferFormat(format)) {
     DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();

@@ -77,9 +77,7 @@ base::OnceClosure MappableBufferNativePixmap::AllocateForTesting(
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   scoped_refptr<gfx::NativePixmap> pixmap;
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          format);
+  auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   pixmap = ui::OzonePlatform::GetInstance()
                ->GetSurfaceFactoryOzone()
                ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
