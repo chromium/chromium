@@ -2152,9 +2152,52 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20251023",
                     "enable_features": [
                         "AutofillAddressSuggestionsOnTyping"
+                    ]
+                },
+                {
+                    "name": "EnabledHigherMinCharactersToShowSuggestions_20251023",
+                    "params": {
+                        "min_number_characters_to_match": "4"
+                    },
+                    "enable_features": [
+                        "AutofillAddressSuggestionsOnTyping"
+                    ]
+                },
+                {
+                    "name": "EnabledLowerMinMissingCharactersToShowSuggestions_20251023",
+                    "params": {
+                        "min_missing_characters_number": "7"
+                    },
+                    "enable_features": [
+                        "AutofillAddressSuggestionsOnTyping"
+                    ]
+                },
+                {
+                    "name": "EnabledHigherMaxCharactersToHideSuggestions_20251023",
+                    "params": {
+                        "max_number_characters_to_match": "7"
+                    },
+                    "enable_features": [
+                        "AutofillAddressSuggestionsOnTyping"
+                    ]
+                },
+                {
+                    "name": "EnabledTopTypes_20251023",
+                    "params": {
+                        "field_types": "9-83-30-60-36-13-33-7"
+                    },
+                    "enable_features": [
+                        "AutofillAddressSuggestionsOnTyping"
+                    ]
+                },
+                {
+                    "name": "EnabledStrikeDatabase_20251023",
+                    "enable_features": [
+                        "AutofillAddressSuggestionsOnTyping",
+                        "AutofillAddressSuggestionsOnTypingHasStrikeDatabase"
                     ]
                 }
             ]
