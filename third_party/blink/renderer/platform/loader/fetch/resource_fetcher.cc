@@ -1551,12 +1551,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
         MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
     cached_resources_map_.Set(resource_url, resource);
     MaybeSaveResourceToStrongReference(resource);
-    if (PriorityObserverMapCreated() &&
-        PriorityObservers()->Contains(resource_url)) {
-      // Resolve the promise.
-      std::move(PriorityObservers()->Take(resource_url))
-          .Run(static_cast<int>(
-              resource->GetResourceRequest().InitialPriority()));
+    if (PriorityObserverMapCreated()) {
+      auto callback = PriorityObservers()->Take(resource_url);
+      if (callback) {
+        std::move(callback).Run(
+            static_cast<int>(resource->GetResourceRequest().InitialPriority()));
+      }
     }
   }
 
