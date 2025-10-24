@@ -407,7 +407,7 @@ message BoundingRect {
 // Note: ScrollerInfo is populated for ANNOTATED_PAGE_CONTENT_MODE_DEFAULT. The
 // rest of the fields are only populated for
 // ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
-// Next ID: 16
+// Next ID: 17
 message InteractionInfo {
   // Set if the content node is scrollable.
   ScrollerInfo scroller_info = 12 [features = { field_presence: EXPLICIT }];
@@ -475,6 +475,13 @@ message InteractionInfo {
   // Provides signals which indicate whether the node is actionable. The action
   // may be triggered by clicking or hovering on the element.
   repeated ClickabilityReason clickability_reasons = 15;
+
+  // Whether the content node is explicitly disabled from being actionable. For
+  // example, a `select` element with the `disabled` or `aria-disabled`
+  // attribute. Disabled nodes are still valid action targets and can consume
+  // events. This is not set for nodes which are not hit-testable and will
+  // ignore events, for example with `pointer-events: none`.
+  bool is_disabled = 16 [features = { field_presence: EXPLICIT }];
 
   reserved 8, 1, 2, 11;
 }
@@ -895,6 +902,35 @@ message PopupWindow {
   // Unique identifier for the node which opened this popup window. Relies on
   // opener_document_id to determine which document contains the node.
   int32 opener_common_ancestor_dom_node_id = 4 [features = { field_presence: EXPLICIT }];
+}
+
+// Autofill information that pertains to Autofill data on the client.
+// Next ID: 2
+message AutofillInformation {
+  // The type of data that can be autofilled into a form because the client has
+  // corresponding data on file. Note that this is coarse data: A user may have
+  // an address on file that does not contain an email address. So the autofill
+  // status may indicate that an address is fillable but autofill cannot be
+  // triggered on an email field.
+  enum FillableData {
+    UNSPECIFIED = 0;
+    // If reported, the user has at least one address on file.
+    ADDRESS = 1;
+
+    // The gap in numbering here exists to stay aligned with
+    // FormFillingRequest.RequestedData.
+
+    // If reported, the user has at least one credit card on file.
+    CREDIT_CARD = 6;
+  }
+
+  repeated FillableData fillable_data = 1;
+}
+
+// Information that pertains the user's Chrome profile.
+// Next ID: 2
+message ProfileInformation {
+  AutofillInformation autofill_information = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Uniquely identifies a DOM elements across all frames.
