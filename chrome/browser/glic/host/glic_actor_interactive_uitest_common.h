@@ -113,6 +113,18 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
       optimization_guide::proto::ClickAction::ClickCount click_count,
       ExpectedErrorResult expected_result = {});
 
+  // The above functions take the coordinate as an rvalue which means the value
+  // of the parameter is used at the time the step is declared, not when its
+  // run. This function takes the coordinate by address to emphasise that the
+  // step will use the value of the coordinate when the step runs, enabling
+  // tests to click on a dynamically generated point (e.g. read an element's
+  // bounding box and click on it).
+  MultiStep ClickAction(
+      const gfx::Point* coordinate,
+      optimization_guide::proto::ClickAction::ClickType click_type,
+      optimization_guide::proto::ClickAction::ClickCount click_count,
+      ExpectedErrorResult expected_result = {});
+
   MultiStep NavigateAction(GURL url,
                            actor::TaskId& task_id,
                            tabs::TabHandle& tab_handle,

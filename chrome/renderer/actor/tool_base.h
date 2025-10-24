@@ -38,10 +38,15 @@ struct ResolvedTarget {
   // resolved widget's origin.
   gfx::PointF widget_point;
 
+  // Set if the target hits a popup. If a popup is hit this handle identifies
+  // the popup and is used to confirm the popup widget is the one that was
+  // originally hit.
+  std::optional<blink::WebPagePopup::Handle> popup_handle;
+
   // The widget this target resolved to. This can be either the frame's widget
-  // or (soon) the popup widget. Since a widget can be destroyed by script or
-  // during async yields, callers should always access via this getter, rather
-  // than holding onto the pointer.
+  // or the popup widget. Since a widget can be destroyed by script or during
+  // async yields, callers should always access via this getter, rather than
+  // holding onto the pointer.
   blink::WebWidget* GetWidget(const ToolBase& tool) const;
 };
 

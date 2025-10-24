@@ -158,6 +158,11 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
   return page;
 }
 
+WebPagePopup::Handle NextPopupHandle() {
+  static WebPagePopup::Handle::Generator generator;
+  return generator.GenerateNextId();
+}
+
 }  // namespace
 
 class PagePopupChromeClient final : public EmptyChromeClient {
@@ -346,7 +351,8 @@ WebPagePopupImpl::WebPagePopupImpl(
           /*hidden=*/false,
           /*never_composited=*/false,
           /*is_embedded=*/false,
-          /*is_for_scalable_page=*/true)) {
+          /*is_for_scalable_page=*/true)),
+      handle_(NextPopupHandle()) {
   DCHECK(popup_client_);
   popup_widget_host_.set_disconnect_handler(blink::BindOnce(
       &WebPagePopupImpl::WidgetHostDisconnected, blink::Unretained(this)));
@@ -508,6 +514,13 @@ void WebPagePopupImpl::SetFocus(bool focus) {
 
 bool WebPagePopupImpl::HasFocus() {
   return widget_base_->has_focus();
+}
+
+WebHitTestResult WebPagePopupImpl::HitTestResultAt(const gfx::PointF& point) {
+  CHECK(page_);
+  HitTestLocation location(point);
+  return MainFrame().View()->HitTestWithThrottlingAllowed(
+      location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
 }
 
 void WebPagePopupImpl::FlushInputProcessedCallback() {
@@ -1049,6 +1062,14 @@ LocalDOMWindow* WebPagePopupImpl::Window() {
 
 WebDocument WebPagePopupImpl::GetDocument() {
   return WebDocument(MainFrame().GetDocument());
+}
+
+WebPagePopup::Handle WebPagePopupImpl::GetHandle() const {
+  if (!page_) {
+    WebPagePopup::Handle();
+  }
+
+  return handle_;
 }
 
 void WebPagePopupImpl::Cancel() {

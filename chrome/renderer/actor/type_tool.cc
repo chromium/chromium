@@ -497,9 +497,7 @@ void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
   // assume we're using a FrameWidget. We'd have to rewrite those to be Widget
   // agonistic in order to support these for popups. Skip for now since this
   // isn't really a use case today.
-  // TODO(b/454392379): Set this correctly once ResolveTarget resolves to
-  // popups.
-  bool is_for_popup = false;
+  bool is_for_popup = resolved_target_->popup_handle.has_value();
 
   // Note: Focus and preparing the target performs actions which lead to
   // script execution so `node` may no longer be focused (it or its frame

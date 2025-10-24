@@ -286,6 +286,20 @@ MultiStep GlicActorUiTest::ClickAction(const gfx::Point& coordinate,
                      std::move(expected_result));
 }
 
+MultiStep GlicActorUiTest::ClickAction(const gfx::Point* coordinate,
+                                       ClickType click_type,
+                                       ClickCount click_count,
+                                       ExpectedErrorResult expected_result) {
+  auto click_provider =
+      base::BindLambdaForTesting([this, coordinate, click_type, click_count]() {
+        Actions action =
+            actor::MakeClick(tab_handle_, *coordinate, click_type, click_count);
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+  return ExecuteAction(std::move(click_provider), std::move(expected_result));
+}
+
 MultiStep GlicActorUiTest::NavigateAction(GURL url,
                                           actor::TaskId& task_id,
                                           tabs::TabHandle& tab_handle,

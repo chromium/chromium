@@ -23,14 +23,18 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_page_popup.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 using base::UmaHistogramEnumeration;
 using blink::WebElement;
+using blink::WebFrameWidget;
 using blink::WebHitTestResult;
 using blink::WebLocalFrame;
 using blink::WebNode;
+using blink::WebPagePopup;
 using blink::WebWidget;
 
 namespace actor {
@@ -63,7 +67,20 @@ WebWidget* ResolvedTarget::GetWidget(const ToolBase& tool) const {
     return nullptr;
   }
 
-  return web_frame->FrameWidget();
+  if (!popup_handle.has_value()) {
+    return web_frame->FrameWidget();
+  }
+
+  // If the frame widget isn't the one that was originally targeted,
+  // it must be a popup but we can't directly use it since it may
+  // have been closed.
+  WebPagePopup* current_popup_widget = web_frame->View()->GetPagePopup();
+  if (current_popup_widget &&
+      current_popup_widget->GetHandle() == *popup_handle) {
+    return current_popup_widget;
+  }
+
+  return nullptr;
 }
 
 base::TimeDelta ToolBase::ExecutionObservationDelay() const {
@@ -89,53 +106,84 @@ ToolBase::~ToolBase() = default;
 
 ToolBase::ResolveResult ToolBase::ResolveTarget(
     const mojom::ToolTarget& target) const {
-  WebNode node;
-  gfx::PointF point;
-  WebWidget* widget = frame_->GetWebFrame()->FrameWidget();
-  CHECK(widget);
+  ResolvedTarget resolved_target;
+
+  WebPagePopup* popup = frame_->GetWebFrame()->View()->GetPagePopup();
+  blink::WebFrameWidget* frame_widget = frame_->GetWebFrame()->FrameWidget();
+  CHECK(frame_widget);
 
   if (target.is_coordinate_dip()) {
-    // TODO(bokan) Move DIPsToBlinkSpace onto WebWidget but this shouldn't
-    // matter since it's just a scale factor global to the page.
-    gfx::PointF coordinate_point =
-        frame_->GetWebFrame()->FrameWidget()->DIPsToBlinkSpace(
-            gfx::PointF(target.get_coordinate_dip()));
-    if (!IsPointWithinViewport(coordinate_point, frame_.get())) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds,
-                     /*requires_page_stabilization=*/false,
-                     absl::StrFormat("Point (physical) [%s]",
-                                     coordinate_point.ToString())));
+    // Check if the coordinate hits a popup widget first. Note, popups can draw
+    // outside of the frame so we don't check for the point being within the
+    // viewport.
+    if (popup && !popup->GetHandle().is_null()) {
+      gfx::Vector2d frame_origin_in_screen_dips =
+          frame_widget->ViewRect().OffsetFromOrigin();
+      gfx::Rect popup_rect_in_frame_dips = popup->ViewRect();
+      popup_rect_in_frame_dips.Offset(-frame_origin_in_screen_dips);
+
+      gfx::Point coordinate_dips = target.get_coordinate_dip();
+      if (popup_rect_in_frame_dips.Contains(coordinate_dips)) {
+        // Convert the point into popup-relative coordinates
+        gfx::PointF widget_point = frame_widget->DIPsToBlinkSpace(
+            gfx::PointF(target.get_coordinate_dip() -
+                        popup_rect_in_frame_dips.OffsetFromOrigin()));
+        return ResolvedTarget{
+            .node = popup->HitTestResultAt(widget_point).GetNodeOrPseudoNode(),
+            // TODO(bokan) Move DIPsToBlinkSpace onto WebWidget but this
+            // shouldn't matter since it's just a scale factor global to the
+            // page.
+            .widget_point = widget_point,
+            .popup_handle = popup->GetHandle()};
+      }
     }
-    point = coordinate_point;
+
+    gfx::PointF widget_point = frame_widget->DIPsToBlinkSpace(
+        gfx::PointF(target.get_coordinate_dip()));
+
+    if (!IsPointWithinViewport(widget_point, frame_.get())) {
+      return base::unexpected(MakeResult(
+          mojom::ActionResultCode::kCoordinatesOutOfBounds,
+          /*requires_page_stabilization=*/false,
+          absl::StrFormat("Point (physical) [%s]", widget_point.ToString())));
+    }
 
     // Perform a hit test to find the node at the coordinates.
-    const WebHitTestResult hit_test_result = widget->HitTestResultAt(point);
-    node = hit_test_result.GetNodeOrPseudoNode();
-  } else if (target.is_dom_node_id()) {
-    int32_t dom_node_id = target.get_dom_node_id();
-    node = GetNodeFromId(frame_.get(), dom_node_id);
-    if (node.IsNull()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
-    }
-
-    std::optional<gfx::PointF> node_interaction_point =
-        InteractionPointFromWebNode(node);
-    if (!node_interaction_point.has_value()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kElementOffscreen,
-                     /*requires_page_stabilization=*/false,
-                     absl::StrFormat("[Element %s]", base::ToString(node))));
-    }
-    point = *node_interaction_point;
-  } else {
-    NOTREACHED();
+    return ResolvedTarget{
+        .node =
+            frame_widget->HitTestResultAt(widget_point).GetNodeOrPseudoNode(),
+        .widget_point = widget_point,
+        .popup_handle = std::nullopt};
   }
 
-  // TODO(b/454392379): Add a popup_handle so GetWidget can return the popup
-  // widget.
-  return ResolvedTarget{.node = node, .widget_point = point};
+  CHECK(target.is_dom_node_id());
+
+  WebNode node = GetNodeFromId(frame_.get(), target.get_dom_node_id());
+  if (node.IsNull()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
+  }
+
+  std::optional<gfx::PointF> node_interaction_point =
+      InteractionPointFromWebNode(node);
+  if (!node_interaction_point.has_value()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kElementOffscreen,
+                   /*requires_page_stabilization=*/false,
+                   absl::StrFormat("[Element %s]", base::ToString(node))));
+  }
+
+  std::optional<WebPagePopup::Handle> popup_handle;
+
+  // This comparison is enough because popups can't contain subframes.
+  if (popup && !popup->GetHandle().is_null() &&
+      node.GetDocument() == popup->GetDocument()) {
+    popup_handle = popup->GetHandle();
+  }
+
+  return ResolvedTarget{.node = node,
+                        .widget_point = *node_interaction_point,
+                        .popup_handle = popup_handle};
 }
 
 ToolBase::ResolveResult ToolBase::ValidateAndResolveTarget() const {
