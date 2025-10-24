@@ -36,16 +36,17 @@ class ModelDownloaderAndroid {
     // The backend API is not constructed. This happens if this is an upstream
     // build.
     kApiNotAvailable = 1,
-    // The backend is not able to find the feature ID. This happens if the
-    // ID is newly added and the AICore APK is on an older version.
+    // The backend is not able to find the feature ID. This can happen if AICore
+    // doesn't enable the feature as part of experiments or device filters.
     kFeatureIsNull = 2,
-    // An exception is thrown when getting the feature.
+    // An exception is thrown when getting the feature. This can happen if the
+    // AICore APK is not installed on the device.
     kGetFeatureError = 3,
     // An exception is thrown when getting the status of the feature.
     kGetFeatureStatusError = 4,
-    // The status of the feature is not available. This can happen if the
-    // feature is only enabled for certain device types or certain dogfood
-    // groups.
+    // The status of the feature is not available. This can happen if Chrome is
+    // not allowlisted to call this feature, attestation verification has
+    // failed, or the feature manifest file failed to be downloaded.
     kFeatureNotAvailable = 5,
     // A general exception is thrown when downloading the model.
     kDownloadGeneralError = 6,

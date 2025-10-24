@@ -12,8 +12,8 @@
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/on_device_model/backend_session.h"
 #include "services/on_device_model/android/sequence_checker_helper.h"
+#include "services/on_device_model/backend_session.h"
 
 namespace on_device_model {
 
@@ -32,10 +32,11 @@ class BackendSessionImplAndroid : public BackendSession {
     // The backend API is not constructed. This happens if this is an upstream
     // build.
     kApiNotAvailable = 2,
-    // The backend is not able to find the feature ID. This happens if the
-    // ID is newly added and the AICore APK is on an older version.
+    // The backend is not able to find the feature ID. This can happen if AICore
+    // doesn't enable the feature as part of experiments or device filters.
     kFeatureIsNull = 3,
-    // An exception is thrown when getting the feature.
+    // An exception is thrown when getting the feature. This can happen if the
+    // AICore APK is not installed on the device.
     kGetFeatureError = 4,
     // A general exception is thrown when running inference.
     kInferenceGeneralError = 5,
