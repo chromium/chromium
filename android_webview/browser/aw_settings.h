@@ -185,8 +185,6 @@ class AwSettings : public content::WebContentsObserver {
   bool allow_third_party_cookies_{false};
   bool allow_file_access_{false};
   bool allow_file_access_from_file_urls_{false};
-  // TODO(b/222053757,ayushsha): Change this policy to be by
-  // default false from next Android version(Maybe Android U).
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
   AttributionBehavior attribution_behavior_;
