@@ -149,6 +149,7 @@ All changes to this list should go through Blink's feature review process: http:
     column-rule-color
     column-rule-outset
     column-rule-style
+    column-rule-visibility-items
     column-rule-width
     column-span
     column-width

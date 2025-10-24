@@ -140,6 +140,7 @@ columnRuleBreak
 columnRuleColor
 columnRuleOutset
 columnRuleStyle
+columnRuleVisibilityItems
 columnRuleWidth
 columnSpan
 columnWidth

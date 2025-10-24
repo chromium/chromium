@@ -141,6 +141,7 @@ column-rule-break: spanning-item
 column-rule-color: rgb(0, 0, 0)
 column-rule-outset: 50%
 column-rule-style: none
+column-rule-visibility-items: all
 column-rule-width: 3px
 column-span: none
 column-width: auto

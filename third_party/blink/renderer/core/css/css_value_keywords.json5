@@ -1305,6 +1305,12 @@
     // intersection
     // spanning-item
 
+    // column-rule-visibility-items
+    // none
+    // all
+    "around",
+    "between",
+
     // dominant-baseline
     // auto
     "use-script",
