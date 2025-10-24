@@ -551,7 +551,7 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevModeWithColor(
   const DRIVER_INFO_6* p = info_6.get();
 
   // Only HP known to have issues.
-  if (!p->pszMfgName || UNSAFE_TODO(wcscmp(p->pszMfgName, L"HP")) != 0) {
+  if (!p->pszMfgName || std::wstring_view(p->pszMfgName) != L"HP") {
     return default_ticket;
   }
 
