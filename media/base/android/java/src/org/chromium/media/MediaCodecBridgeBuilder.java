@@ -75,7 +75,7 @@ class MediaCodecBridgeBuilder {
 
                 // TODO(crbug.com/439294798): This should probably be limited to Dimensity chips.
                 if (decoderName.contains("mtk")) {
-                    format.setInteger("vendor.mtk.vdec.cpu.boost.mode", 1);
+                    format.setInteger("vendor.mtk.vdec.cpu.boost.mode.value", 1);
                 }
             }
 
