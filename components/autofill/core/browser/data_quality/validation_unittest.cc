@@ -349,9 +349,13 @@ INSTANTIATE_TEST_SUITE_P(ValidZip,
                              ZipCodeTestCase{true, u"100-8799", "JP", true},
                              ZipCodeTestCase{true, u"100", "JP", false},
                              ZipCodeTestCase{true, u"AB-100-8799", "JP", false},
+                             ZipCodeTestCase{true, u"٥٥١١١١٤٣٩٩", "IR", true},
+                             ZipCodeTestCase{true, u"01310-000", "BR", true},
+                             ZipCodeTestCase{true, u"01.310-000", "BR", true},
                              ZipCodeTestCase{true, u"ABC-123", "BR", false},
                              ZipCodeTestCase{true, u"ABC-123", "XX", true},
-                             ZipCodeTestCase{true, u"ABC_123", "XX", false}));
+                             ZipCodeTestCase{true, u"ABC_123", "XX", true},
+                             ZipCodeTestCase{true, u"any string", "XX", true}));
 
 }  // namespace
 }  // namespace autofill
