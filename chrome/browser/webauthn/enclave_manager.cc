@@ -56,6 +56,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -3791,8 +3792,14 @@ void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
     if (store_keys_lock_depth_) {
+      webauthn::metrics::RecordGPMRecoveryEvent(
+          webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+              kStoreKeysFromExplicitFlowStarted);
       StorePendingKeys(gaia_id, std::move(keys), last_key_version);
     } else {
+      webauthn::metrics::RecordGPMRecoveryEvent(
+          webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+              kStoreKeysFromOpportunisticFlowStarted);
       // TODO(crbug.com/450851888): Refactor the logic related to storing the
       // keys from the out of context retrieval.
       StoreKeysFromOutOfContextRetrieval(gaia_id, std::move(keys),
@@ -3819,6 +3826,9 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   if (is_registered()) {
     FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
                     << last_key_version;
+    webauthn::metrics::RecordGPMRecoveryEvent(
+        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+            kStoreKeysFromOpportunisticFlowIgnoredRedundant);
     return;
   }
 
@@ -4413,6 +4423,9 @@ void EnclaveManager::OpportunisticStoreKeysUVCheckComplete(
 
   if (!can_make_uv_keys) {
     // Without local UV we can't make use of opportunistic keys.
+    webauthn::metrics::RecordGPMRecoveryEvent(
+        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+            kStoreKeysFromOpportunisticFlowIgnoredNoUV);
     return;
   }
 
@@ -4426,6 +4439,11 @@ void EnclaveManager::OpportunisticStoreKeysUVCheckComplete(
 
 void EnclaveManager::OpportunisticStoreKeysAddComplete(bool success) {
   FIDO_LOG(EVENT) << "Opportunistic keys device add result: " << success;
+  if (success) {
+    webauthn::metrics::RecordGPMRecoveryEvent(
+        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+            kStoreKeysFromOpportunisticFlowSucceeded);
+  }
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {

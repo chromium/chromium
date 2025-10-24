@@ -15,6 +15,8 @@ constexpr std::string_view kCombinedSelectorActionHistogram =
     "WebAuthentication.GetCredentials.Immediate.CombinedSelectorActions";
 constexpr std::string_view kCombinedSelectorCredentialCountHistogram =
     "WebAuthentication.GetCredentials.Immediate.CredentialCount";
+constexpr std::string_view kRecoveryEventTypeHistogram =
+    "WebAuthentication.GPM.RecoveryEvent";
 
 // LINT.IfChange
 // These values are persisted to logs. Entries should not be renumbered and
@@ -54,6 +56,11 @@ void RecordCombinedSelectorAccept(int credential_count, bool default_selected) {
 void RecordCombinedSelectorCancelButtonClicked() {
   base::UmaHistogramEnumeration(kCombinedSelectorActionHistogram,
                                 CombinedSelectorAction::kCancelButtonClicked);
+}
+
+void RecordGPMRecoveryEvent(
+    webauthn::metrics::WebAuthenticationGPMRecoveryEvent event) {
+  base::UmaHistogramEnumeration(kRecoveryEventTypeHistogram, event);
 }
 
 }  // namespace webauthn::metrics

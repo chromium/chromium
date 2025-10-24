@@ -46,6 +46,7 @@
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
@@ -502,7 +503,13 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                               std::vector<uint8_t> key,
                               int last_key_version) {
     auto store_keys_lock = manager->GetStoreKeysLock();
+    base::HistogramTester histogram_tester;
     manager->StoreKeys(gaia_id_, {std::move(key)}, last_key_version);
+    histogram_tester.ExpectBucketCount(
+        "WebAuthentication.GPM.RecoveryEvent",
+        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+            kStoreKeysFromExplicitFlowStarted,
+        1);
   }
 
   base::test::TaskEnvironment task_env_;
@@ -2461,13 +2468,24 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeys) {
   EXPECT_EQ(manager_.store_keys_count(), 0u);
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  base::HistogramTester histogram_tester;
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted,
+      1);
   EXPECT_EQ(manager_.store_keys_count(), 1u);
 
   while (!manager_.is_ready()) {
     task_env_.RunUntilIdle();
   }
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowSucceeded,
+      1);
 }
 
 TEST_F(EnclaveUVTest, OpportunisticStoreKeysAreIgnoredWhenFeatureIsDisabled) {
@@ -2479,8 +2497,19 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeysAreIgnoredWhenFeatureIsDisabled) {
   EXPECT_EQ(manager_.store_keys_count(), 0u);
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  base::HistogramTester histogram_tester;
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowSucceeded,
+      0);
   EXPECT_EQ(manager_.store_keys_count(), 1u);
   EXPECT_FALSE(manager_.is_registered());
 }
@@ -2494,8 +2523,19 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeysRedundant) {
   EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  base::HistogramTester histogram_tester;
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowIgnoredRedundant,
+      1);
   EXPECT_EQ(manager_.store_keys_count(), 0u);
 
   // If the existing registration doesn't cause the keys to be discarded then
@@ -2514,8 +2554,19 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeysNoUV) {
   DisableUVKeySupport();
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  base::HistogramTester histogram_tester;
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowIgnoredNoUV,
+      1);
   EXPECT_EQ(manager_.store_keys_count(), 0u);
 
   // If the lack of UV doesn't cause the keys to be discarded then several

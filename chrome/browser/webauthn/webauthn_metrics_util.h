@@ -42,6 +42,21 @@ enum class OnboardingEvents {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 };
 
+// Enum for the WebAuthentication.StoreKeysFlowType histogram.
+enum class WebAuthenticationGPMRecoveryEvent {
+  // LINT.IfChange(WebAuthenticationGPMRecoveryEvent)
+  kStoreKeysFromExplicitFlowStarted = 0,
+  kStoreKeysFromExplicitFlowSucceeded = 1,
+  kStoreKeysFromOpportunisticFlowStarted = 2,
+  kStoreKeysFromOpportunisticFlowSucceeded = 3,
+  kStoreKeysFromOpportunisticFlowIgnoredRedundant = 4,
+  kStoreKeysFromOpportunisticFlowIgnoredNoUV = 5,
+  kMaxValue = kStoreKeysFromOpportunisticFlowIgnoredNoUV,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationGPMRecoveryEvent)
+};
+
+void RecordGPMRecoveryEvent(WebAuthenticationGPMRecoveryEvent event);
+
 void RecordCombinedSelectorShown(int credential_count);
 void RecordCombinedSelectorAccept(int credential_count, bool default_selected);
 void RecordCombinedSelectorCancelButtonClicked();

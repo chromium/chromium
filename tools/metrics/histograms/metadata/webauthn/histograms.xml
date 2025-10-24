@@ -397,6 +397,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.GPM.RecoveryEvent"
+    enum="WebAuthenticationGPMRecoveryEvent" expires_after="2026-06-30">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <summary>
+    Records the type of the key retrieval flow used for retrieving the passkey
+    secret.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IOS.ContentAreaEvent"
     enum="WebAuthenticationIOSContentAreaEvent" expires_after="2026-03-08">
   <owner>rgod@google.com</owner>
