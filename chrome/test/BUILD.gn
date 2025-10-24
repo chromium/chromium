@@ -10507,6 +10507,7 @@ test("unit_tests") {
       "../browser/ui/views/extensions/media_galleries_dialog_views_unittest.cc",
       "../browser/ui/views/frame/browser_frame_view_unittest.cc",
       "../browser/ui/views/frame/browser_view_unittest.cc",
+      "../browser/ui/views/frame/layout/browser_view_layout_params_unittest.cc",
       "../browser/ui/views/frame/layout/browser_view_layout_unittest.cc",
       "../browser/ui/views/frame/multi_contents_drop_target_view_unittest.cc",
       "../browser/ui/views/frame/multi_contents_view_drop_target_controller_unittest.cc",

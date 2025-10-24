@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_H_
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/gfx/native_ui_types.h"
 
 class ImmersiveModeController;
@@ -30,6 +31,7 @@ class BrowserViewLayoutDelegate {
   virtual gfx::Rect GetBoundsForTabStripRegionInBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const = 0;
+  virtual BrowserLayoutParams GetBrowserLayoutParams() const = 0;
   virtual void LayoutWebAppWindowTitle(
       const gfx::Rect& available_space,
       views::Label& window_title_label) const = 0;

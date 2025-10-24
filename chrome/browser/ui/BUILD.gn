@@ -3837,6 +3837,8 @@ static_library("ui") {
       "views/frame/layout/browser_view_layout_impl.h",
       "views/frame/layout/browser_view_layout_impl_old.cc",
       "views/frame/layout/browser_view_layout_impl_old.h",
+      "views/frame/layout/browser_view_layout_params.cc",
+      "views/frame/layout/browser_view_layout_params.h",
       "views/frame/main_container_view.cc",
       "views/frame/main_container_view.h",
       "views/frame/main_region_view.cc",

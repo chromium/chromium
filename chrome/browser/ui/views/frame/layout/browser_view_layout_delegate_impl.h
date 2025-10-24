@@ -25,6 +25,7 @@ class BrowserViewLayoutDelegateImplBase : public BrowserViewLayoutDelegate {
 
   bool ShouldDrawTabStrip() const override;
   bool GetBorderlessModeEnabled() const override;
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   int GetTopInsetInBrowserView() const override;
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                views::Label& window_title_label) const override;

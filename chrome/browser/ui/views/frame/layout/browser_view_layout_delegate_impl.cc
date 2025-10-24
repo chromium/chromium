@@ -51,6 +51,12 @@ bool BrowserViewLayoutDelegateImplBase::GetBorderlessModeEnabled() const {
   return browser_view_->IsBorderlessModeEnabled();
 }
 
+BrowserLayoutParams BrowserViewLayoutDelegateImplBase::GetBrowserLayoutParams()
+    const {
+  return GetFrameView()->GetBrowserLayoutParams().InLocalCoordinates(
+      browser_view_->bounds());
+}
+
 int BrowserViewLayoutDelegateImplBase::GetTopInsetInBrowserView() const {
   // BrowserView should fill the full window when window controls overlay
   // is enabled or when immersive fullscreen with tabs is enabled.
