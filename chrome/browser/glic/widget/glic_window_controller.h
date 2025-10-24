@@ -179,10 +179,6 @@ class GlicWindowControllerInterface : public GlicWindowController,
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
   virtual bool IsWarmed() const = 0;
 
-  // Returns whether the views::Widget associated with the glic window is active
-  // (e.g. will receive keyboard events).
-  virtual bool IsActive() = 0;
-
   virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
   virtual std::unique_ptr<views::View> CreateViewForSidePanel(
       tabs::TabInterface& tab) = 0;

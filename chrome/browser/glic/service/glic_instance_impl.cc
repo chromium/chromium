@@ -776,6 +776,7 @@ void GlicInstanceImpl::OnTabAddedToTask(
 }
 
 void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
+  is_active_ = is_active;
   if (is_active) {
     last_active_time_ = base::TimeTicks::Now();
     inactivity_timer_.Stop();
@@ -789,6 +790,10 @@ void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
   if (coordinator_delegate_) {
     coordinator_delegate_->OnInstanceActivationChanged(this, is_active);
   }
+}
+
+bool GlicInstanceImpl::IsActive() {
+  return is_active_;
 }
 
 base::TimeTicks GlicInstanceImpl::GetLastActiveTime() const {

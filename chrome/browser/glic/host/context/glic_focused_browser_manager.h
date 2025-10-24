@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -34,7 +35,8 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
                                   public GlicWindowController::StateObserver {
  public:
   explicit GlicFocusedBrowserManager(
-      GlicWindowControllerInterface* window_controller);
+      GlicInstance::UIDelegate* window_controller,
+      Profile* profile);
   ~GlicFocusedBrowserManager() override;
 
   GlicFocusedBrowserManager(const GlicFocusedBrowserManager&) = delete;
@@ -123,7 +125,7 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
   void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
   void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
 
-  raw_ref<GlicWindowControllerInterface> window_controller_;
+  raw_ref<GlicInstance::UIDelegate> window_controller_;
 
   BrowserState browser_state_;
 
@@ -139,6 +141,8 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
       focused_browser_callback_list_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)>
       active_browser_callback_list_;
+
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace glic

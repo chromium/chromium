@@ -107,6 +107,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool IsShowing() const override;
   bool IsAttached() override;
   gfx::Size GetPanelSize() override;
+  bool IsActive() override;
 
   bool IsActuating() const;
 
@@ -292,6 +293,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::OneShotTimer inactivity_timer_;
   base::TimeTicks last_active_time_;
+  bool is_active_;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

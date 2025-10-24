@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
+#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -43,12 +44,15 @@ void GlicFocusedBrowserManager::SetTestingModeForTesting(bool testing_mode) {
 }
 
 GlicFocusedBrowserManager::GlicFocusedBrowserManager(
-    GlicWindowControllerInterface* window_controller)
-    : window_controller_(*window_controller) {
+    GlicInstance::UIDelegate* window_controller,
+    Profile* profile)
+    : window_controller_(*window_controller), profile_(profile) {
   BrowserList::GetInstance()->AddObserver(this);
   if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    GlicWindowControllerImpl* window_controller_impl =
+        static_cast<GlicWindowControllerImpl*>(window_controller);
     window_activation_subscription_ =
-        window_controller->AddWindowActivationChangedCallback(
+        window_controller_impl->AddWindowActivationChangedCallback(
             base::BindRepeating(
                 &GlicFocusedBrowserManager::OnGlicWindowActivationChanged,
                 base::Unretained(this)));
@@ -88,8 +92,7 @@ GlicFocusedBrowserManager::AddActiveBrowserChangedCallback(
 }
 
 void GlicFocusedBrowserManager::OnBrowserAdded(Browser* browser) {
-  if (IsBrowserValidForSharingInProfile(browser,
-                                        window_controller_->profile())) {
+  if (IsBrowserValidForSharingInProfile(browser, profile_)) {
     std::vector<base::CallbackListSubscription> subscriptions;
     subscriptions.push_back(browser->RegisterDidBecomeActive(
         base::BindRepeating(&GlicFocusedBrowserManager::OnBrowserBecameActive,
@@ -207,21 +210,9 @@ GlicFocusedBrowserManager::ComputeFocusedBrowserState() {
 }
 
 BrowserWindowInterface* GlicFocusedBrowserManager::ComputeBrowserCandidate() {
-  if (window_controller_->IsAttached()) {
-    // When attached, we only allow focus if attached window is active.
-    Browser* const attached_browser = window_controller_->attached_browser();
-    if (attached_browser &&
-        (attached_browser->IsActive() || window_controller_->IsActive()) &&
-        IsBrowserValidForSharingInProfile(attached_browser,
-                                          window_controller_->profile())) {
-      return attached_browser;
-    }
-    return nullptr;
-  }
-
   BrowserWindowInterface* active_browser = ComputeActiveBrowser();
-  if (!active_browser || !IsBrowserValidForSharingInProfile(
-                             active_browser, window_controller_->profile())) {
+  if (!active_browser ||
+      !IsBrowserValidForSharingInProfile(active_browser, profile_)) {
     return nullptr;
   }
 
@@ -244,7 +235,10 @@ BrowserWindowInterface* GlicFocusedBrowserManager::ComputeActiveBrowser() {
     VLOG(1) << "ActiveBrowserCalc: No active browser";
     return nullptr;
   }
-  if (!window_controller_->IsActive() && !bwi->IsActive()) {
+  if (!(window_controller_->IsActive() &&
+        window_controller_->GetPanelState().kind ==
+            mojom::PanelStateKind::kDetached) &&
+      !bwi->IsActive()) {
     VLOG(1) << "ActiveBrowserCalc: !IsActive()";
     return nullptr;
   }

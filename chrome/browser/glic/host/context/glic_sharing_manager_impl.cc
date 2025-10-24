@@ -52,7 +52,8 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
     GlicWindowControllerInterface* window_controller,
     GlicMetrics* metrics)
     : focused_browser_manager_(
-          std::make_unique<GlicFocusedBrowserManager>(window_controller)),
+          std::make_unique<GlicFocusedBrowserManager>(window_controller,
+                                                      profile)),
       focused_tab_manager_(std::make_unique<GlicFocusedTabManager>(
           static_cast<GlicFocusedBrowserManager*>(
               focused_browser_manager_.get()))),

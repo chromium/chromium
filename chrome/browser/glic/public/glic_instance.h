@@ -47,6 +47,17 @@ class UIDelegate {
 
   virtual bool IsShowing() const = 0;
 
+  virtual bool IsActive() = 0;
+
+  // Whether the instance's active embedder is attached to a chrome window.
+  virtual bool IsAttached() = 0;
+
+  virtual void AddStateObserver(PanelStateObserver* observer) = 0;
+  virtual void RemoveStateObserver(PanelStateObserver* observer) = 0;
+
+  // Returns the current panel state.
+  virtual mojom::PanelState GetPanelState() = 0;
+
   // Register for this callback to detect UI changes to the instance.
   using StateChangeCallback =
       base::RepeatingCallback<void(bool, mojom::CurrentView view)>;
@@ -65,19 +76,11 @@ class GlicInstance : public glic_instance_internal::UIDelegate {
   // Get this instance's Host which manages the chrome://glic WebContents.
   virtual Host& host() = 0;
 
-  // Whether the instance's active embedder is attached to a chrome window.
-  virtual bool IsAttached() = 0;
-
   // Gets the window size of the active embedder.
   virtual gfx::Size GetPanelSize() = 0;
 
   // Get this instance's unique identifier.
   virtual const InstanceId& id() const = 0;
-
-  virtual void AddStateObserver(PanelStateObserver* observer) = 0;
-  virtual void RemoveStateObserver(PanelStateObserver* observer) = 0;
-  // Returns the current panel state.
-  virtual mojom::PanelState GetPanelState() = 0;
 };
 
 }  // namespace glic
