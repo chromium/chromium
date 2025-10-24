@@ -84,7 +84,7 @@ class GlicInstanceCoordinatorImpl
   // GlicWindowController implementation
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;
-  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
+  GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
 
   // Toggles the side panel for the active tab if `browser` is provided,
   // otherwise toggles the floating window for the instance. Focus is given
@@ -104,6 +104,8 @@ class GlicInstanceCoordinatorImpl
   mojom::PanelState GetGlobalPanelState() override;
 
   bool IsDetached() const override;
+  bool IsPanelShowingForBrowser(
+      const BrowserWindowInterface& bwi) const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
   void Preload() override;
@@ -135,8 +137,8 @@ class GlicInstanceCoordinatorImpl
  private:
   void OnTabCreated(tabs::TabInterface& old_tab, tabs::TabInterface& new_tab);
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
-  GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id);
-  GlicInstanceImpl* GetInstanceImplForTab(tabs::TabInterface* tab);
+  GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;
+  GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
   GlicInstanceImpl* GetOrCreateInstanceImplForFloaty();
   GlicInstanceImpl* CreateGlicInstance();
   void CreateWarmedInstance();

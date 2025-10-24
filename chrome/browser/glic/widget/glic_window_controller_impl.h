@@ -92,6 +92,8 @@ class GlicWindowControllerImpl
   void AddGlobalStateObserver(PanelStateObserver* observer) override;
   void RemoveGlobalStateObserver(PanelStateObserver* observer) override;
   mojom::PanelState GetGlobalPanelState() override;
+  bool IsPanelShowingForBrowser(
+      const BrowserWindowInterface& bwi) const override;
 
   bool IsActive() override;
   bool IsAttached() override;
@@ -168,7 +170,7 @@ class GlicWindowControllerImpl
 
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;
-  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
+  GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
 
   // GlicInstance implementation
   Host& host() override;

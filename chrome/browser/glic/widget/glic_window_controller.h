@@ -65,7 +65,8 @@ class GlicWindowController {
 
   virtual HostManager& host_manager() = 0;
   virtual std::vector<GlicInstance*> GetInstances() = 0;
-  virtual GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) = 0;
+  virtual GlicInstance* GetInstanceForTab(
+      const tabs::TabInterface* tab) const = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
@@ -87,6 +88,11 @@ class GlicWindowController {
   // Returns wehether or not the glic window is currently showing detached.
   // When True |GetGlicWidget| will return a valid ptr.
   virtual bool IsDetached() const = 0;
+
+  // Returns whether the given browser is showing a glic panel for its active
+  // tab.
+  virtual bool IsPanelShowingForBrowser(
+      const BrowserWindowInterface& bwi) const = 0;
 
   using WindowActivationChangedCallback =
       base::RepeatingCallback<void(bool active)>;

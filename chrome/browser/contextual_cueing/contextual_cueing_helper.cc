@@ -314,7 +314,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   auto* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
-  if (glic_service->IsWindowShowing()) {
+  if (glic_service->IsPanelShowingForBrowser(*browser_window_interface)) {
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownWindowShowing);
     return true;
   }

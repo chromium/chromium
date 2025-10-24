@@ -129,12 +129,12 @@ void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
-    tabs::TabInterface* tab) {
+    const tabs::TabInterface* tab) const {
   if (!tab) {
     return nullptr;
   }
 
-  auto* helper = GlicInstanceHelper::From(tab);
+  auto* helper = GlicInstanceHelper::From(const_cast<tabs::TabInterface*>(tab));
   if (!helper) {
     return nullptr;
   }
@@ -161,7 +161,7 @@ std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
-    tabs::TabInterface* tab) {
+    const tabs::TabInterface* tab) const {
   return GetInstanceImplForTab(tab);
 }
 
@@ -224,6 +224,15 @@ void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
 
 bool GlicInstanceCoordinatorImpl::IsDetached() const {
   return GetInstanceWithFloaty() != nullptr;
+}
+
+bool GlicInstanceCoordinatorImpl::IsPanelShowingForBrowser(
+    const BrowserWindowInterface& bwi) const {
+  if (const auto* instance = GetInstanceForTab(
+          const_cast<BrowserWindowInterface&>(bwi).GetActiveTabInterface())) {
+    return instance->IsShowing();
+  }
+  return false;
 }
 
 base::CallbackListSubscription
@@ -330,7 +339,7 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
-    const InstanceId& id) {
+    const InstanceId& id) const {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
     return it->second.get();

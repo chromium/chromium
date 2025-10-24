@@ -142,6 +142,9 @@ class GlicKeyedService : public KeyedService,
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
 
+  // Returns true if `bwi` has a glic panel showing for its active tab.
+  bool IsPanelShowingForBrowser(const BrowserWindowInterface& bwi) const;
+
   // Virtual for testing.
   virtual bool IsWindowDetached() const;
 

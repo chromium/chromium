@@ -22,8 +22,8 @@ class MockGlicWindowController
   MOCK_METHOD(std::vector<GlicInstance*>, GetInstances, (), (override));
   MOCK_METHOD(GlicInstance*,
               GetInstanceForTab,
-              (tabs::TabInterface*),
-              (override));
+              (const tabs::TabInterface*),
+              (const, override));
 
   MOCK_METHOD(void,
               Toggle,
@@ -50,6 +50,10 @@ class MockGlicWindowController
   MOCK_METHOD(bool, IsShowing, (), (const));
   MOCK_METHOD(bool, IsAttached, (), (override));
   MOCK_METHOD(bool, IsDetached, (), (const, override));
+  MOCK_METHOD(bool,
+              IsPanelShowingForBrowser,
+              (const BrowserWindowInterface&),
+              (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               AddWindowActivationChangedCallback,
               (WindowActivationChangedCallback),

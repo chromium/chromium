@@ -468,8 +468,8 @@ std::vector<GlicInstance*> GlicWindowControllerImpl::GetInstances() {
 }
 
 GlicInstance* GlicWindowControllerImpl::GetInstanceForTab(
-    tabs::TabInterface* tab) {
-  return this;
+    const tabs::TabInterface* tab) const {
+  return const_cast<GlicWindowControllerImpl*>(this);
 }
 
 bool GlicWindowControllerImpl::BeforeViewCreated(
@@ -1063,6 +1063,11 @@ mojom::PanelState GlicWindowControllerImpl::GetPanelState() {
 
 mojom::PanelState GlicWindowControllerImpl::GetGlobalPanelState() {
   return panel_state_;
+}
+
+bool GlicWindowControllerImpl::IsPanelShowingForBrowser(
+    const BrowserWindowInterface& bwi) const {
+  return IsShowing();
 }
 
 void GlicWindowControllerImpl::OnDragComplete() {
