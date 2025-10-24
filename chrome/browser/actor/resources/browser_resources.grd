@@ -24,6 +24,12 @@
       <message name="IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
         Task complete
       </message>
+      <message name="IDS_TAKE_OVER_TASK_LABEL" desc="[Placeholder Description]" translateable="false">
+        Take over task
+      </message>
+      <message name="IDS_GIVE_TASK_BACK_LABEL" desc="[Placeholder Description]" translateable="false">
+        Give task back
+      </message>
     </messages>
   </release>
 </grit>
