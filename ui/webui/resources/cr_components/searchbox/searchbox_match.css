@@ -169,8 +169,10 @@
 }
 
 #suggestion {
-  display: flex;
-  overflow: hidden;
+  display: inherit;
+  overflow: inherit;
+  flex-direction: inherit;
+  max-width: 100%;
 }
 
 :host([is-top-chrome-searchbox_]) #text-container #suggestion {
