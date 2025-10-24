@@ -32,12 +32,11 @@ class MockProvider : public ObservableProvider {
                                 ContentSettingsType content_type,
                                 bool off_the_record) const override;
 
-  bool SetWebsiteSetting(
-      const ContentSettingsPattern& requesting_url_pattern,
-      const ContentSettingsPattern& embedding_url_pattern,
-      ContentSettingsType content_type,
-      base::Value&& value,
-      const ContentSettingConstraints& constraints = {}) override;
+  bool SetWebsiteSetting(const ContentSettingsPattern& requesting_url_pattern,
+                         const ContentSettingsPattern& embedding_url_pattern,
+                         ContentSettingsType content_type,
+                         base::Value&& value,
+                         const ContentSettingConstraints& constraints) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override {
   }

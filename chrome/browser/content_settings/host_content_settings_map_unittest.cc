@@ -1498,7 +1498,7 @@ TEST_F(HostContentSettingsMapTest,
         /*read_only=*/false);
     mock_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
+        ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK), {});
     map_tester.map->RegisterProvider(
         content_settings::ProviderType::kProviderForTests,
         std::move(mock_provider));
