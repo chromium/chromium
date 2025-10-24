@@ -252,6 +252,7 @@ bool ComputeMargins(LogicalSize margin_percentage_resolution_size,
                     const Length& margin_end_length,
                     const LayoutUnit size,
                     bool has_auto_inset,
+                    bool has_anchor_positioning,
                     bool is_start_dominant,
                     bool is_block_direction,
                     LayoutUnit* margin_start_out,
@@ -267,45 +268,49 @@ bool ComputeMargins(LogicalSize margin_percentage_resolution_size,
         margin_end_length, margin_percentage_resolution_size.inline_size);
   }
 
-  const bool apply_auto_margins =
-      !has_auto_inset && (!margin_start || !margin_end);
+  // We *don't* apply auto margins if:
+  //  - We have any auto insets.
+  //  - We have "anchor-positioning" present, e.g. "align-self:anchor-center",
+  //    or "position-area" with a valid anchor.
+  //  - We don't have any auto margins in the first place.
+  if (has_auto_inset || has_anchor_positioning ||
+      (margin_start && margin_end)) {
+    // Resolve any auto margins to zero.
+    *margin_start_out = margin_start.value_or(LayoutUnit());
+    *margin_end_out = margin_end.value_or(LayoutUnit());
+    return false;
+  }
 
   // Solving the equation:
   // |margin_start| + |size| + |margin_end| = |imcb_size|
-  if (apply_auto_margins) {
-    // "If left, right, and width are not auto:"
-    // Compute margins.
-    const LayoutUnit free_space = imcb_size - size -
-                                  margin_start.value_or(LayoutUnit()) -
-                                  margin_end.value_or(LayoutUnit());
+  const LayoutUnit free_space = imcb_size - size -
+                                margin_start.value_or(LayoutUnit()) -
+                                margin_end.value_or(LayoutUnit());
 
-    if (!margin_start && !margin_end) {
-      // When both margins are auto.
-      if (free_space > LayoutUnit() || is_block_direction) {
-        margin_start = free_space / 2;
-        margin_end = free_space - *margin_start;
+  if (!margin_start && !margin_end) {
+    // When both margins are auto.
+    if (free_space > LayoutUnit() || is_block_direction) {
+      margin_start = free_space / 2;
+      margin_end = free_space - *margin_start;
+    } else {
+      // Margins are negative.
+      if (is_start_dominant) {
+        margin_start = LayoutUnit();
+        margin_end = free_space;
       } else {
-        // Margins are negative.
-        if (is_start_dominant) {
-          margin_start = LayoutUnit();
-          margin_end = free_space;
-        } else {
-          margin_start = free_space;
-          margin_end = LayoutUnit();
-        }
+        margin_start = free_space;
+        margin_end = LayoutUnit();
       }
-    } else if (!margin_start) {
-      margin_start = free_space;
-    } else if (!margin_end) {
-      margin_end = free_space;
     }
+  } else if (!margin_start) {
+    margin_start = free_space;
+  } else if (!margin_end) {
+    margin_end = free_space;
   }
 
-  // Set any unknown margins, auto margins with any auto inset resolve to zero.
-  *margin_start_out = margin_start.value_or(LayoutUnit());
-  *margin_end_out = margin_end.value_or(LayoutUnit());
-
-  return apply_auto_margins;
+  *margin_start_out = *margin_start;
+  *margin_end_out = *margin_end;
+  return true;
 }
 
 // Align the margin box within the inset-modified containing block as defined by
@@ -767,10 +772,14 @@ bool ComputeOofInlineDimensions(
   const bool is_block_direction = !IsParallelWritingMode(
       container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
+  const bool has_anchor_positioning =
+      style.PositionAreaOffsets() || anchor_center_position.inline_offset;
+
   const bool applied_auto_margins = ComputeMargins(
       space.MarginPaddingPercentageResolutionSize(), imcb.InlineSize(),
       style.MarginInlineStart(), style.MarginInlineEnd(), inline_size,
-      imcb.has_auto_inline_inset, is_margin_start_dominant, is_block_direction,
+      imcb.has_auto_inline_inset, has_anchor_positioning,
+      is_margin_start_dominant, is_block_direction,
       &dimensions->margins.inline_start, &dimensions->margins.inline_end);
 
   if (applied_auto_margins) {
@@ -878,10 +887,14 @@ const LayoutResult* ComputeOofBlockDimensions(
   const bool is_block_direction = IsParallelWritingMode(
       container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
+  const bool has_anchor_positioning =
+      style.PositionAreaOffsets() || anchor_center_position.block_offset;
+
   const bool applied_auto_margins = ComputeMargins(
       space.MarginPaddingPercentageResolutionSize(), imcb.BlockSize(),
       style.MarginBlockStart(), style.MarginBlockEnd(), block_size,
-      imcb.has_auto_block_inset, is_margin_start_dominant, is_block_direction,
+      imcb.has_auto_block_inset, has_anchor_positioning,
+      is_margin_start_dominant, is_block_direction,
       &dimensions->margins.block_start, &dimensions->margins.block_end);
 
   if (applied_auto_margins) {
