@@ -115,6 +115,10 @@ BASE_FEATURE(kIOSProactivePasswordGenerationBottomSheet,
 BASE_FEATURE(kIOSFillRecoveryPassword, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOtpPhishGuard, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordFormGroupedAffiliations,

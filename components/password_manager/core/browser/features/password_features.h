@@ -142,6 +142,11 @@ BASE_DECLARE_FEATURE(kIOSFillRecoveryPassword);
 
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables OTP phishing checks.
+BASE_DECLARE_FEATURE(kOtpPhishGuard);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Populate the `date_last_filled` timestamp for passwords.
 BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
 
