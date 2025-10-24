@@ -5931,6 +5931,26 @@
     "expires": "Nov 1, 2025"
   },
   {
+    "prefix": "unrestricted-spellcheck",
+    "owners": [
+      "arichiv@chromium.org",
+      "katabolism-finch@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "editing/spelling"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--disable-features=RestrictSpellingAndGrammarHighlights"
+    ],
+    "expires": "Oct 24, 2026"
+  },
+  {
     "prefix": "xslt-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

@@ -37,6 +37,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
@@ -257,7 +258,10 @@ class SpellCheckBrowserTestHelper {
 
 class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
  public:
-  ChromeSitePerProcessSpellCheckTest() = default;
+  ChromeSitePerProcessSpellCheckTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kRestrictSpellingAndGrammarHighlights);
+  }
 
   void SetUp() override { ChromeSitePerProcessTest::SetUp(); }
 

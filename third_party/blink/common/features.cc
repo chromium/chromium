@@ -2131,6 +2131,24 @@ BASE_FEATURE(kResamplingScrollEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kResourceFetcherStoresStrongReferences,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRestrictSpellingAndGrammarHighlights,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kRestrictSpellingAndGrammarHighlightsChangedContents,
+                   &kRestrictSpellingAndGrammarHighlights,
+                   "RestrictSpellingAndGrammarHighlightsChangedContents",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kRestrictSpellingAndGrammarHighlightsChangedEnablement,
+                   &kRestrictSpellingAndGrammarHighlights,
+                   "RestrictSpellingAndGrammarHighlightsChangedEnablement",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kRestrictSpellingAndGrammarHighlightsChangedSelection,
+                   &kRestrictSpellingAndGrammarHighlights,
+                   "RestrictSpellingAndGrammarHighlightsChangedSelection",
+                   false);
+
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 BASE_FEATURE(kSafelistPaytoToRegisterProtocolHandler,
              base::FEATURE_DISABLED_BY_DEFAULT);

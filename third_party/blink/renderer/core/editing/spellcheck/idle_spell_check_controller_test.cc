@@ -6,10 +6,10 @@
 
 #include <gtest/gtest.h>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
-#include "third_party/blink/renderer/core/editing/spellcheck/features.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -37,15 +37,15 @@ class IdleSpellCheckControllerTest
           features::kRestrictSpellingAndGrammarHighlights,
           {
               {
-                  "changed_contents",
+                  "RestrictSpellingAndGrammarHighlightsChangedContents",
                   IsRestrictionActiveForContents() ? "true" : "false",
               },
               {
-                  "changed_enablement",
+                  "RestrictSpellingAndGrammarHighlightsChangedEnablement",
                   IsRestrictionActiveForEnablement() ? "true" : "false",
               },
               {
-                  "changed_selection",
+                  "RestrictSpellingAndGrammarHighlightsChangedSelection",
                   IsRestrictionActiveForSelection() ? "true" : "false",
               },
           });
