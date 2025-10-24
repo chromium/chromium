@@ -852,6 +852,9 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   bool is_duplicate_navigation = false;
   base::TimeDelta nav_start_diff;
   if (ongoing_navigation_request &&
+      ongoing_navigation_request->HasCookieChangeListener() &&
+      !ongoing_navigation_request->DidCookiesChangeAfterStart(
+          /*exclude_http_only=*/false) &&
       ongoing_navigation_request->IsRendererInitiated() ==
           request->IsRendererInitiated() &&
       request->GetURL() == ongoing_navigation_request->GetURL() &&
