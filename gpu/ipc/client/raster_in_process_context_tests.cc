@@ -81,8 +81,7 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   auto* sii = context_->GetSharedImageInterface();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                              gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
       {kSharedImageFormat, kBufferSize, color_space, flags, "TestLabel"},
       kNullSurfaceHandle);

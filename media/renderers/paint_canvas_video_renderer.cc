@@ -786,8 +786,7 @@ class VideoTextureBacking : public cc::TextureBacking {
     // GLES2 interface.
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     shared_image_ =
         sii->CreateSharedImage({SHARED_IMAGE_FORMAT, coded_size, color_space,
                                 flags, "PaintCanvasVideoRenderer"},
@@ -1425,9 +1424,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   // read out its contents into a destination GL texture via the GLES2
   // interface.
   gpu::SharedImageUsageSet src_usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   auto [rgb_shared_image, rgb_sync_token, status] =
       rgb_shared_image_cache_->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
@@ -1522,9 +1519,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // SI into the destination GL texture via the GLES2 interface.
   CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   gpu::SharedImageUsageSet src_usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
   // Recreate both the caches if not set.
   if (!rgb_shared_image_cache_) {

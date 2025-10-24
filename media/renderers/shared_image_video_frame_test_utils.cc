@@ -145,11 +145,8 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   // These SharedImages will be read by the raster interface to create
   // intermediate copies in copy to canvas and 2-copy upload to WebGL and
   // written to through WritePixelsYUV.
-  // In the context of the tests using these SharedImages, GPU rasterization is
-  // always used.
   auto usages = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
 #if !BUILDFLAG(IS_ANDROID)
   // These SharedImages may be read by the GLES2 interface for 1-copy upload to
   // WebGL (not supported on Android).
@@ -234,11 +231,8 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   // These SharedImages will be read by the raster interface to create
   // intermediate copies in copy to canvas and 2-copy upload to WebGL and
   // written to through WritePixelsYUV.
-  // In the context of the tests using these SharedImages, GPU rasterization is
-  // always used.
   auto usages = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
 #if !BUILDFLAG(IS_ANDROID)
   // These SharedImages may be read by the GLES2 interface for 1-copy upload to
   // WebGL (not supported on Android).

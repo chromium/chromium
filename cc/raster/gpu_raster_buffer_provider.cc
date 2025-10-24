@@ -279,8 +279,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     // This SharedImage will serve as the destination of the raster defined by
     // `raster_source` before being sent off to the display compositor.
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     if (client_->tile_overlay_candidate_) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     } else if (client_->is_using_raw_draw_) {

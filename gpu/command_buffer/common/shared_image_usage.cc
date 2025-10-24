@@ -36,7 +36,6 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_DISPLAY_READ, "DisplayRead"},
       {SHARED_IMAGE_USAGE_DISPLAY_WRITE, "DisplayWrite"},
       {SHARED_IMAGE_USAGE_SCANOUT, "Scanout"},
-      {SHARED_IMAGE_USAGE_OOP_RASTERIZATION, "OopRasterization"},
       {SHARED_IMAGE_USAGE_WEBGPU_READ, "WebgpuRead"},
       {SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE, "ConcurrentReadWrite"},
       {SHARED_IMAGE_USAGE_VIDEO_DECODE, "VideoDecode"},

@@ -112,9 +112,6 @@ void ResourcePool::InUsePoolResource::InstallGpuBacking(
 
   gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-  if (use_gpu_rasterization) {
-    flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  }
   if (is_overlay_candidate) {
     flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

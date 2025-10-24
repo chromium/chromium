@@ -225,7 +225,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
