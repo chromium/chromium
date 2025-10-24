@@ -53,6 +53,51 @@ found in the LICENSE file.
 
     </style>
 
+    <style name="NavigationAttachments"/>
+    <style name="NavigationAttachments.PopupMenu"/>
+    <style
+        name="NavigationAttachments.PopupMenu.Header"
+        parent="@style/TextButton">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">
+            @dimen/min_touch_target_size
+        </item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextSmall.Primary
+        </item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="drawableTint">
+            @color/default_icon_color_tint_list
+        </item>
+        <item name="buttonTextColor">@null</item>
+
+    </style>
+
+    <style
+        name="NavigationAttachments.PopupMenu.Item"
+        parent="@style/NavigationAttachments.PopupMenu.Header">
+
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextMedium.Primary
+        </item>
+
+    </style>
+
+    <style name="NavigationAttachments.PopupMenu.Divider">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
     <style name="OmniboxIcon" parent="LocationBarButton">
         <item name="android:layout_width">
             @dimen/location_bar_status_icon_width

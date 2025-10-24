@@ -10,18 +10,18 @@ found in the LICENSE file.
 
     <org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerView
         android:id="@+id/location_bar_attachments"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:requiresFadingEdge="horizontal"
         android:fadingEdgeLength="8dp"
         android:paddingStart="@dimen/omnibox_suggestion_content_padding"
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
+        android:focusable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/url_bar"
-        android:focusable="false"/>
+        app:layout_constraintTop_toBottomOf="@id/url_bar"/>
 
     <!-- Helper group allowing us to toggle all attachment views. -->
     <androidx.constraintlayout.widget.Group
@@ -76,11 +76,11 @@ found in the LICENSE file.
         android:singleLine="true"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextSmall"
-        app:buttonColor="@color/gm3_baseline_surface_container"
-        app:drawableTint="?attr/colorPrimary"
-        app:buttonTextColor="@macro/default_text_color"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_settings"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"/>
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
+        app:buttonColor="@color/gm3_baseline_surface_container"
+        app:drawableTint="?attr/colorPrimary"
+        app:buttonTextColor="@null"/>
 
 </merge>
