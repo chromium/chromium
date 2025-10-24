@@ -577,16 +577,11 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 // Ensure that if the policy changes to disabled at runtime, and the user has an
 // an open Glic window, that window should show the unavailable page.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/454076166): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   // The pref defaults to enabled.
   ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
-  ASSERT_FALSE(service->IsWindowShowing());
 
   GlicInstanceTracker instance_tracker(profile_1_);
   // Show the panel as if the glic button was clicked.
@@ -597,8 +592,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
     ASSERT_TRUE(instance_tracker.WaitForShow());
   }
 
-  ASSERT_TRUE(service->IsWindowShowing());
-
+  ASSERT_TRUE(GetGlicInstance());
+  ASSERT_TRUE(GetGlicInstance()->IsShowing());
   Host* host = GetHost();
   GlicAppStateObserver app_observer(host);
   app_observer.Wait(mojom::WebUiState::kError);
@@ -611,6 +606,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
     return host->GetPrimaryWebUiState() == mojom::WebUiState::kDisabledByAdmin;
   })) << "Timed out waiting for unavailable state. Current state: "
       << host->GetPrimaryWebUiState();
+
   ASSERT_TRUE(GetGlicInstance());
   ASSERT_TRUE(GetGlicInstance()->IsShowing());
 
@@ -622,13 +618,9 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
   run_loop.Run();
-  ClickElementWithId(
-      static_cast<GlicWindowControllerImpl&>(service->window_controller())
-          .GetGlicViewForTesting()
-          ->GetWebContents(),
-      "disabledByAdminCloseButton");
+  ClickElementWithId(GetHost()->webui_contents(), "disabledByAdminCloseButton");
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !service->IsWindowShowing();
+    return !GetGlicInstance()->IsShowing();
   })) << "Timed out waiting for glic to close";
 #endif
 }
