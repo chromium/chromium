@@ -4,15 +4,54 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 constexpr int kTopButtonContainerHeight = 28;
+}  // namespace
+
+namespace {
+
+class TopContainerButton : public views::LabelButton {
+  METADATA_HEADER(TopContainerButton, views::LabelButton)
+ public:
+  TopContainerButton() = default;
+
+  // views::LabelButton:
+  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
+};
+BEGIN_METADATA(TopContainerButton)
+END_METADATA
+
+class TopContainerButtonActionViewInterface
+    : public views::LabelButtonActionViewInterface {
+ public:
+  explicit TopContainerButtonActionViewInterface(
+      TopContainerButton* action_view)
+      : views::LabelButtonActionViewInterface(action_view),
+        action_view_(action_view) {}
+
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override {
+    ButtonActionViewInterface::ActionItemChangedImpl(action_item);
+    action_view_->SetImageModel(action_view_->GetState(),
+                                action_item->GetImage());
+  }
+
+ private:
+  raw_ptr<TopContainerButton> action_view_ = nullptr;
+};
+
+std::unique_ptr<views::ActionViewInterface>
+TopContainerButton::GetActionViewInterface() {
+  return std::make_unique<TopContainerButtonActionViewInterface>(this);
+}
 }  // namespace
 
 VerticalTabStripTopContainer::VerticalTabStripTopContainer(
@@ -22,6 +61,11 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
       root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+
+  tab_search_button_ = AddChildButtonFor(kActionTabSearch);
+
+  tab_search_button_->SetProperty(views::kElementIdentifierKey,
+                                  kTabSearchButtonElementId);
 
   SetProperty(views::kElementIdentifierKey,
               kVerticalTabStripTopContainerElementId);
@@ -41,7 +85,59 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     layout.host_size = gfx::Size(parent()->width(), kTopButtonContainerHeight);
   }
 
+  CHECK(tab_search_button_);
+
+  const gfx::Size button_pref_size =
+      tab_search_button_->GetPreferredSize(views::SizeBounds(layout.host_size));
+
+  // Calculate bounds to right-align the button horizontally and center it
+  // vertically within the available space.
+  gfx::Rect button_bounds(
+      layout.host_size.width() - button_pref_size.width(),
+      (layout.host_size.height() - button_pref_size.height()) / 2,
+      button_pref_size.width(), button_pref_size.height());
+
+  layout.child_layouts.emplace_back(
+      tab_search_button_.get(), tab_search_button_->GetVisible(), button_bounds,
+      views::SizeBounds(button_pref_size));
+
   return layout;
+}
+
+views::LabelButton* VerticalTabStripTopContainer::AddChildButtonFor(
+    actions::ActionId action_id) {
+  std::unique_ptr<TopContainerButton> label_button =
+      std::make_unique<TopContainerButton>();
+  actions::ActionItem* action_item =
+      actions::ActionManager::Get().FindAction(action_id, root_action_item_);
+  CHECK(action_item);
+
+  action_view_controller_->CreateActionViewRelationship(
+      label_button.get(), action_item->GetAsWeakPtr());
+
+  TopContainerButton* raw_label_button = AddChildView(std::move(label_button));
+
+  raw_label_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+
+  return raw_label_button;
+}
+
+bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
+    const gfx::Point& point) {
+  const auto get_target_rect = [&](views::View* target) {
+    const gfx::Rect& rect = gfx::Rect(point, gfx::Size(1, 1));
+    gfx::RectF rect_in_target_coords_f(rect);
+    View::ConvertRectToTarget(this, target, &rect_in_target_coords_f);
+    return gfx::ToEnclosingRect(rect_in_target_coords_f);
+  };
+
+  if (tab_search_button_ && tab_search_button_->GetLocalBounds().Intersects(
+                                get_target_rect(tab_search_button_))) {
+    return !tab_search_button_->HitTestRect(
+        get_target_rect(tab_search_button_));
+  }
+
+  return true;
 }
 
 BEGIN_METADATA(VerticalTabStripTopContainer)

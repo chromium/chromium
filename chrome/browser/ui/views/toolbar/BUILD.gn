@@ -283,6 +283,7 @@ if (!is_android && !is_chromeos_device) {
         "browser_app_menu_button_interactive_uitest.cc",
         "reload_button_browsertest.cc",
         "split_tabs_button_interactive_ui_test.cc",
+        "tab_search_toolbar_button_interactive_uitest.cc",
         "toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
         "toolbar_controller_interactive_uitest.cc",
         "toolbar_view_interactive_uitest.cc",

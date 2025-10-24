@@ -88,7 +88,6 @@ TabSearchBubbleHost::TabSearchBubbleHost(
       base::BindRepeating(&TabSearchBubbleHost::ButtonPressed,
                           base::Unretained(this)),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(button));
-  menu_button_controller_ = menu_button_controller.get();
   button->SetButtonController(std::move(menu_button_controller));
   webui_bubble_manager_observer_.Observe(webui_bubble_manager_.get());
 }
@@ -278,7 +277,9 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   }
 
   // Hold the pressed lock while the |bubble_| is active.
-  pressed_lock_ = menu_button_controller_->TakeLock();
+  pressed_lock_ =
+      static_cast<views::MenuButtonController*>(button_->button_controller())
+          ->TakeLock();
   return true;
 }
 

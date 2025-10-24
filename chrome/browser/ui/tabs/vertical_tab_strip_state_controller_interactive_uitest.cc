@@ -68,11 +68,6 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
 // This test checks that we can click the show tabs to the side button
 IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                        MAYBE_VerifyTabsToTheSideButton) {
-  browser()
-      ->browser_window_features()
-      ->vertical_tab_strip_state_controller()
-      ->SetVerticalTabsEnabled(false);
-
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
 
   RunTestSequence(

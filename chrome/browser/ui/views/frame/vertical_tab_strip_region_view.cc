@@ -104,10 +104,10 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
 
 bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  // TODO(crbug.com/439961435): Add logic once buttons are present
   if (GetTopContainer()->bounds().Contains(point)) {
-    return true;
+    return GetTopContainer()->IsPositionInWindowCaption(point);
   }
+
   return false;
 }
 

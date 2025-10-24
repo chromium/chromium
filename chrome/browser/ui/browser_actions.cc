@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
@@ -475,7 +476,10 @@ void BrowserActions::InitializeBrowserActions() {
           .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
           .Build());
 
-  if (features::HasTabSearchToolbarButton()) {
+  // Both TabSearch in the toolbar and in Vertical Tabs implementations use
+  // ActionItems to represent the 'TabSearch' action.
+  if (features::HasTabSearchToolbarButton() ||
+      tabs::IsVerticalTabsFeatureEnabled()) {
     root_action_item_->AddChild(
         ChromeMenuAction(
             base::BindRepeating(

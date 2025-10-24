@@ -97,8 +97,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   base::ObserverList<TabSearchBubbleHostObserver> observers_;
 
-  raw_ptr<views::MenuButtonController> menu_button_controller_ = nullptr;
-
   // A lock to keep its `button_` pressed while |bubble_| is showing or in the
   // process of being shown.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;

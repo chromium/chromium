@@ -189,6 +189,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -1366,6 +1367,7 @@ bool BrowserView::IsInSplitView() const {
 
 void BrowserView::OnVerticalTabStripStateChanged(
     tabs::VerticalTabStripStateController* controller) {
+  UpdateTabSearchBubbleHost();
   InvalidateLayout();
 }
 
@@ -4445,13 +4447,25 @@ void BrowserView::UpdateTabSearchBubbleHost() {
     return;
   }
 
-  if (features::HasTabSearchToolbarButton()) {
+  auto* toolbar_button_controller =
+      browser_->GetFeatures().tab_search_toolbar_button_controller();
+
+  if (toolbar_button_controller) {
+    toolbar_button_controller->UpdateBubbleHost(nullptr);
+  }
+
+  if (tabs::IsVerticalTabsFeatureEnabled() &&
+      browser_->GetFeatures()
+          .vertical_tab_strip_state_controller()
+          ->ShouldDisplayVerticalTabs()) {
+    tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
+        vertical_tab_strip_container_->GetTopContainer()->GetTabSearchButton(),
+        browser_.get());
+  } else if (features::HasTabSearchToolbarButton()) {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         toolbar_->tab_search_button(), browser_.get());
-    auto* controller = browser_->browser_window_features()
-                           ->tab_search_toolbar_button_controller();
-    CHECK(controller);
-    controller->UpdateBubbleHost(tab_search_bubble_host_.get());
+    CHECK(toolbar_button_controller);
+    toolbar_button_controller->UpdateBubbleHost(tab_search_bubble_host_.get());
   } else {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         BrowserElementsViews::From(browser_.get())
