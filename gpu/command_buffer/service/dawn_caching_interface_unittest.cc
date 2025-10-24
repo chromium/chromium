@@ -15,7 +15,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/mocks.h"
@@ -298,32 +300,19 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
 }
 
 // Verifies that data stored in a persistent cache can be loaded back.
-// TODO: crbug.com/450470858 - Reenable the test after failure is fixed.
-TEST_F(DawnCachingInterfaceTest, DISABLED_StoreAndLoadWithPersistentCache) {
+TEST_F(DawnCachingInterfaceTest, StoreAndLoadWithPersistentCache) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  auto shared_lock = base::UnsafeSharedMemoryRegion::Create(
-      sizeof(persistent_cache::LockState));
-  ASSERT_TRUE(shared_lock.IsValid());
   auto OpenPersistentCache =
-      [&temp_dir, &shared_lock]() -> std::unique_ptr<GpuPersistentCache> {
-    auto db_path = temp_dir.GetPath().AppendASCII("test.db");
-    auto journal_path = temp_dir.GetPath().AppendASCII("test.journal");
-
-    persistent_cache::BackendParams params;
-    params.type = persistent_cache::BackendType::kSqlite;
-    params.db_file =
-        base::File(db_path, base::File::FLAG_OPEN_ALWAYS |
-                                base::File::FLAG_READ | base::File::FLAG_WRITE);
-    params.journal_file = base::File(
-        journal_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                          base::File::FLAG_WRITE);
-    params.shared_lock = shared_lock.Duplicate();
-    CHECK(params.db_file.IsValid());
-    CHECK(params.journal_file.IsValid());
-
+      [&temp_dir]() -> std::unique_ptr<GpuPersistentCache> {
+    auto backend = persistent_cache::BackendStorage(temp_dir.GetPath())
+                       .MakeBackend(base::FilePath(FILE_PATH_LITERAL("test")));
+    CHECK(backend);
+    auto params = backend->ExportReadWriteParams();
+    CHECK(params);
+    backend.reset();
     auto persistent_cache = std::make_unique<GpuPersistentCache>("Test");
-    persistent_cache->InitializeCache(std::move(params));
+    persistent_cache->InitializeCache(*std::move(params));
     return persistent_cache;
   };
 
