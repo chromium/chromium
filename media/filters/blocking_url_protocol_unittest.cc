@@ -49,12 +49,12 @@ TEST_F(BlockingUrlProtocolTest, Read) {
 
   // Read 32 bytes from offset zero and verify position.
   uint8_t buffer[32];
-  EXPECT_EQ(32, url_protocol_->Read(32, buffer));
+  EXPECT_EQ(32, url_protocol_->Read(buffer));
   EXPECT_TRUE(url_protocol_->GetPosition(&position));
   EXPECT_EQ(32, position);
 
   // Read an additional 32 bytes and verify position.
-  EXPECT_EQ(32, url_protocol_->Read(32, buffer));
+  EXPECT_EQ(32, url_protocol_->Read(buffer));
   EXPECT_TRUE(url_protocol_->GetPosition(&position));
   EXPECT_EQ(64, position);
 
@@ -62,15 +62,15 @@ TEST_F(BlockingUrlProtocolTest, Read) {
   int64_t size = 0;
   EXPECT_TRUE(url_protocol_->GetSize(&size));
   EXPECT_TRUE(url_protocol_->SetPosition(size - 48));
-  EXPECT_EQ(32, url_protocol_->Read(32, buffer));
+  EXPECT_EQ(32, url_protocol_->Read(buffer));
   EXPECT_TRUE(url_protocol_->GetPosition(&position));
   EXPECT_EQ(size - 16, position);
 
-  EXPECT_EQ(16, url_protocol_->Read(32, buffer));
+  EXPECT_EQ(16, url_protocol_->Read(buffer));
   EXPECT_TRUE(url_protocol_->GetPosition(&position));
   EXPECT_EQ(size, position);
 
-  EXPECT_EQ(AVERROR_EOF, url_protocol_->Read(32, buffer));
+  EXPECT_EQ(AVERROR_EOF, url_protocol_->Read(buffer));
   EXPECT_TRUE(url_protocol_->GetPosition(&position));
   EXPECT_EQ(size, position);
 }
@@ -80,7 +80,7 @@ TEST_F(BlockingUrlProtocolTest, ReadError) {
 
   uint8_t buffer[32];
   EXPECT_CALL(*this, OnDataSourceError());
-  EXPECT_EQ(AVERROR(EIO), url_protocol_->Read(32, buffer));
+  EXPECT_EQ(AVERROR(EIO), url_protocol_->Read(buffer));
 }
 
 TEST_F(BlockingUrlProtocolTest, GetSetPosition) {
