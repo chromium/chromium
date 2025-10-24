@@ -79,6 +79,11 @@ bool AutofillBubbleControllerBase::ShouldShowPageAction() {
   return IsShowingBubble();
 }
 
+std::optional<std::u16string>
+AutofillBubbleControllerBase::GetPageActionTooltipText() {
+  return std::nullopt;
+}
+
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -120,9 +125,15 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   }
 
   if (ShouldShowPageAction()) {
+    if (auto tooltip_text = GetPageActionTooltipText()) {
+      page_action_controller->OverrideText(*action_id, *tooltip_text);
+      page_action_controller->OverrideTooltip(*action_id, *tooltip_text);
+    }
     page_action_controller->Show(*action_id);
   } else {
     page_action_controller->Hide(*action_id);
+    page_action_controller->ClearOverrideText(*action_id);
+    page_action_controller->ClearOverrideTooltip(*action_id);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

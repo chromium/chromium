@@ -143,6 +143,13 @@ constexpr auto kPageActionProperties =
                 .element_identifier = kCookieControlsIconElementId,
             },
         },
+        {
+            kActionShowAddressesBubbleOrPage,
+            {
+                .histogram_name = "AddressAutofill",
+                .type = PageActionIconType::kAutofillAddress,
+            },
+        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {

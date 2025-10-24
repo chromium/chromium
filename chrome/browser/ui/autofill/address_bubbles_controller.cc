@@ -22,6 +22,7 @@
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -129,14 +130,14 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
                                 save_address_bubble_type)
           // Update address bubble.
           : base::BindRepeating(ShowUpdateBubble, profile, *original_profile);
-  std::u16string page_action_icon_tootip = l10n_util::GetStringUTF16(
+  std::u16string page_action_icon_tooltip = l10n_util::GetStringUTF16(
       is_save_bubble ? (is_migration_to_account
                             ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
                             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE)
                      : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 
   controller->SetUpAndShowBubble(
-      std::move(show_bubble_view_impl), std::move(page_action_icon_tootip),
+      std::move(show_bubble_view_impl), std::move(page_action_icon_tooltip),
       is_migration_to_account, user_has_any_profile_saved, std::move(callback));
 }
 
@@ -205,8 +206,8 @@ bool AddressBubblesController::IsBubbleActive() const {
          is_showing_sign_in_promo_;
 }
 
-std::u16string AddressBubblesController::GetPageActionIconTootip() const {
-  return page_action_icon_tootip_;
+std::u16string AddressBubblesController::GetPageActionIconTooltip() const {
+  return page_action_icon_tooltip_;
 }
 
 AutofillBubbleBase* AddressBubblesController::GetBubbleView() const {
@@ -225,10 +226,17 @@ void AddressBubblesController::WebContentsDestroyed() {
                  std::nullopt);
 }
 
-std::optional<PageActionIconType>
-AddressBubblesController::GetPageActionIconType() {
-  return PageActionIconType::kAutofillAddress;
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+AddressBubblesController::GetActionIdForPageAction() {
+  return kActionShowAddressesBubbleOrPage;
 }
+
+std::optional<std::u16string>
+AddressBubblesController::GetPageActionTooltipText() {
+  return GetPageActionIconTooltip();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void AddressBubblesController::DoShowBubble() {
   CHECK(!bubble_view());
@@ -251,7 +259,7 @@ AddressBubblesController::GetBubbleControllerBaseWeakPtr() {
 
 void AddressBubblesController::SetUpAndShowBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
-    std::u16string page_action_icon_tootip,
+    std::u16string page_action_icon_tooltip,
     bool is_migration_to_account,
     bool user_has_any_profile_saved,
     AutofillClient::AddressProfileSavePromptCallback
@@ -280,7 +288,7 @@ void AddressBubblesController::SetUpAndShowBubble(
   was_bubble_shown_ = false;
 
   SetUpBubble(std::move(show_bubble_view_callback),
-              std::move(page_action_icon_tootip), is_migration_to_account,
+              std::move(page_action_icon_tooltip), is_migration_to_account,
               user_has_any_profile_saved,
               std::move(address_profile_save_prompt_callback));
 
@@ -289,13 +297,13 @@ void AddressBubblesController::SetUpAndShowBubble(
 
 void AddressBubblesController::SetUpBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
-    std::u16string page_action_icon_tootip,
+    std::u16string page_action_icon_tooltip,
     bool is_migration_to_account,
     bool user_has_any_profile_saved,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   show_bubble_view_callback_ = std::move(show_bubble_view_callback);
-  page_action_icon_tootip_ = std::move(page_action_icon_tootip);
+  page_action_icon_tooltip_ = std::move(page_action_icon_tooltip);
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
@@ -304,7 +312,10 @@ void AddressBubblesController::SetUpBubble(
 }
 
 void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
-  Browser* browser = BrowserWindow::FindBrowserWindowWithWebContents(web_contents())->AsBrowserView()->browser();
+  Browser* browser =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents())
+          ->AsBrowserView()
+          ->browser();
 
   // Verify if user is eligible for iOS promo, and attempt showing if they are.
   ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress, browser);

@@ -62,8 +62,7 @@ class IOSAddressPromoBubbleTest : public DialogBrowserTest {
     // Test for iOS Promo Bubble for Desktop Address promo.
     IOSPromoBubble::ShowPromoBubble(
         {button_provider->GetAnchorView(kActionShowAddressesBubbleOrPage)},
-        button_provider->GetPageActionIconView(
-            PageActionIconType::kAutofillAddress),
+        button_provider->GetPageActionView(kActionShowAddressesBubbleOrPage),
         browser()->profile(), IOSPromoType::kAddress,
         IOSPromoBubbleType::kQRCode);
   }
@@ -139,23 +138,6 @@ IN_PROC_BROWSER_TEST_F(IOSPasswordPromoBubbleTest, InvokeUi_default) {
 }
 
 IN_PROC_BROWSER_TEST_F(IOSAddressPromoBubbleTest, InvokeUi_default) {
-  if (IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
-    GTEST_SKIP()
-        << "This test should be merged with InvokeUi_with_no_page_action after "
-           "page action migration (See: https://crbug.com/424188577).\n";
-  }
-
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(IOSAddressPromoBubbleTest,
-                       InvokeUi_with_no_page_action) {
-  if (!IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
-    GTEST_SKIP()
-        << "This test should be merged with InvokeUi_default after "
-           "page action migration (See: https://crbug.com/424188577).\n";
-  }
-
   ShowAndVerifyUi();
 }
 

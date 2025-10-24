@@ -64,16 +64,12 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
           profile, IOSPromoType::kPassword, bubble_type);
       break;
     case IOSPromoType::kAddress: {
-      views::Button* highlighted_button =
-          IsPageActionMigrated(PageActionIconType::kAutofillAddress)
-              ? nullptr
-              : toolbar_button_provider->GetPageActionIconView(
-                    PageActionIconType::kAutofillAddress);
-
-      IOSPromoBubble::ShowPromoBubble({toolbar_button_provider->GetAnchorView(
-                                          kActionShowAddressesBubbleOrPage)},
-                                      highlighted_button, profile,
-                                      IOSPromoType::kAddress, bubble_type);
+      IOSPromoBubble::ShowPromoBubble(
+          {toolbar_button_provider->GetAnchorView(
+              kActionShowAddressesBubbleOrPage)},
+          toolbar_button_provider->GetPageActionView(
+              kActionShowAddressesBubbleOrPage),
+          profile, IOSPromoType::kAddress, bubble_type);
       break;
     }
     case IOSPromoType::kPayment:

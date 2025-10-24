@@ -64,7 +64,7 @@ class AddressBubblesController
   // SaveAddressProfileIconController:
   void OnIconClicked() override;
   bool IsBubbleActive() const override;
-  std::u16string GetPageActionIconTootip() const override;
+  std::u16string GetPageActionIconTooltip() const override;
   AutofillBubbleBase* GetBubbleView() const override;
 
   // BubbleControllerBase:
@@ -77,8 +77,11 @@ class AddressBubblesController
  protected:
   // AutofillBubbleControllerBase:
   void WebContentsDestroyed() override;
-  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+  std::optional<std::u16string> GetPageActionTooltipText() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   using ShowBubbleViewCallback = base::RepeatingCallback<AutofillBubbleBase*(
@@ -92,7 +95,7 @@ class AddressBubblesController
   // TODO(crbug.com/325440757): Remove `profile` and `original_profile`, put
   // them in specific bubble controllers.
   void SetUpAndShowBubble(ShowBubbleViewCallback show_bubble_view_callback,
-                          std::u16string page_action_icon_tootip,
+                          std::u16string page_action_icon_tooltip,
                           bool is_migration_to_account,
                           bool user_has_any_profile_saved,
                           AutofillClient::AddressProfileSavePromptCallback
@@ -100,7 +103,7 @@ class AddressBubblesController
 
   // Sets up the controller's state for showing a save/update address bubble.
   void SetUpBubble(ShowBubbleViewCallback show_bubble_view_callback,
-                   std::u16string page_action_icon_tootip,
+                   std::u16string page_action_icon_tooltip,
                    bool is_migration_to_account,
                    bool user_has_any_profile_saved,
                    AutofillClient::AddressProfileSavePromptCallback
@@ -142,7 +145,7 @@ class AddressBubblesController
   // the hosting widget is expected to be the owner.
   ShowBubbleViewCallback show_bubble_view_callback_;
 
-  std::u16string page_action_icon_tootip_;
+  std::u16string page_action_icon_tooltip_;
 
   std::string app_locale_;
 

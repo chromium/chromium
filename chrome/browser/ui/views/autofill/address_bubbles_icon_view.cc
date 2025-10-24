@@ -70,7 +70,7 @@ std::u16string AddressBubblesIconView::GetTextForTooltipAndAccessibleName()
     // sure the accessible name isn't empty to avoid test flakiness.
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
-  return controller->GetPageActionIconTootip();
+  return controller->GetPageActionIconTooltip();
 }
 
 void AddressBubblesIconView::OnExecuting(

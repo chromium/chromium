@@ -121,6 +121,10 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // visibility logic with the new page action framework.
   virtual bool ShouldShowPageAction();
 
+  // For migrated page actions, subclasses can override this method to supply
+  // custom tooltip text.
+  virtual std::optional<std::u16string> GetPageActionTooltipText();
+
   // If the BubbleManager feature is enabled, this returns `false` if a bubble
   // is already queued to be shown.
   [[nodiscard]] bool MaySetUpBubble();

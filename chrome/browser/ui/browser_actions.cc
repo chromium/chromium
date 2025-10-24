@@ -662,6 +662,14 @@ void BrowserActions::InitializeBrowserActions() {
               [](BrowserWindowInterface* bwi, TabStripModel* tab_strip_model,
                  actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                auto page_action_trigger =
+                    context.GetProperty(page_actions::kPageActionTriggerKey);
+                // If triggered by omnibox page action, do nothing.
+                if (page_action_trigger !=
+                    page_actions::kInvalidPageActionTrigger) {
+                  return;
+                }
+
                 auto* controller = autofill::AddressBubblesIconController::Get(
                     tab_strip_model->GetActiveWebContents());
                 if (controller && controller->GetBubbleView()) {

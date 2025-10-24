@@ -74,14 +74,8 @@ View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
           toolbar_button_provider->GetPageActionIconView(page_action_icon_type);
     }
 
-    if (icon_view) {
-      bubble->SetHighlightedButton(icon_view);
-    } else {
-      // Autofill address bubble is anchored to the omnibox RHS, not to a page
-      // action.
-      CHECK(page_action_icon_type == PageActionIconType::kAutofillAddress &&
-            IsPageActionMigrated(PageActionIconType::kAutofillAddress));
-    }
+    CHECK(icon_view);
+    bubble->SetHighlightedButton(icon_view);
   }
 
   View* const bubble_ptr = bubble.get();
@@ -196,11 +190,10 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
       toolbar_button_provider_->GetAnchorView(kActionShowAddressesBubbleOrPage);
   AddressSignInPromoView* bubble =
       new AddressSignInPromoView(anchor_view, web_contents, autofill_profile);
-  if (!views::Button::AsButton(anchor_view) &&
-      !IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
-    PageActionIconView* icon_view =
-        toolbar_button_provider_->GetPageActionIconView(
-            PageActionIconType::kAutofillAddress);
+  if (!views::Button::AsButton(anchor_view)) {
+    IconLabelBubbleView* icon_view =
+        toolbar_button_provider_->GetPageActionView(
+            kActionShowAddressesBubbleOrPage);
     CHECK(icon_view);
     bubble->SetHighlightedButton(icon_view);
   }
