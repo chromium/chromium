@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_load_waiter.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -81,6 +82,51 @@ void UpdateBookmarksForSubscriptionsResult(
   }
 
   std::move(callback).Run(success);
+}
+
+void RemoveDanglingSubscriptionsImpl(
+    ShoppingService* service,
+    bookmarks::BookmarkModel* model,
+    base::OnceCallback<void(size_t)> callback,
+    std::vector<CommerceSubscription> subscriptions) {
+  if (!service) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  std::unique_ptr<std::vector<CommerceSubscription>> dangling_subs =
+      std::make_unique<std::vector<CommerceSubscription>>();
+
+  for (CommerceSubscription sub : subscriptions) {
+    if (sub.management_type != ManagementType::kUserManaged) {
+      continue;
+    }
+
+    uint64_t cluster_id;
+    if (!base::StringToUint64(sub.id, &cluster_id)) {
+      continue;
+    }
+
+    // If there is at least one bookmark with the corresponding subscription,
+    // no need to clean up.
+    if (GetBookmarksWithClusterId(model, cluster_id, 1).size() > 0) {
+      continue;
+    }
+
+    dangling_subs->push_back(sub);
+  }
+
+  size_t sub_count = dangling_subs->size();
+  if (sub_count > 0) {
+    service->Unsubscribe(
+        std::move(dangling_subs),
+        base::BindOnce(
+            [](base::OnceCallback<void(size_t)> callback, size_t count,
+               bool success) { std::move(callback).Run(count); },
+            std::move(callback), sub_count));
+  } else {
+    std::move(callback).Run(0);
+  }
 }
 
 }  // namespace
@@ -564,55 +610,32 @@ void RemoveDanglingSubscriptions(
     return;
   }
 
-  shopping_service->GetAllSubscriptions(
-      commerce::SubscriptionType::kPriceTrack,
-      base::BindOnce(
-          [](base::WeakPtr<ShoppingService> service,
-             bookmarks::BookmarkModel* model,
-             base::OnceCallback<void(size_t)> callback,
-             std::vector<CommerceSubscription> subscriptions) {
-            if (!service) {
-              std::move(callback).Run(0);
-              return;
-            }
-
-            std::unique_ptr<std::vector<CommerceSubscription>> dangling_subs =
-                std::make_unique<std::vector<CommerceSubscription>>();
-
-            for (CommerceSubscription sub : subscriptions) {
-              if (sub.management_type != ManagementType::kUserManaged) {
-                continue;
+  auto scheduled_task = base::BindOnce(
+      [](base::WeakPtr<ShoppingService> service,
+         bookmarks::BookmarkModel* model,
+         base::OnceCallback<void(size_t)> completed_callback) {
+        auto subs_callback = base::BindOnce(
+            [](base::WeakPtr<ShoppingService> service,
+               bookmarks::BookmarkModel* model,
+               base::OnceCallback<void(size_t)> callback,
+               std::vector<CommerceSubscription> subscriptions) {
+              if (!service) {
+                std::move(callback).Run(0);
+                return;
               }
+              RemoveDanglingSubscriptionsImpl(
+                  service.get(), model, std::move(callback), subscriptions);
+            },
+            service, model, std::move(completed_callback));
 
-              uint64_t cluster_id;
-              if (!base::StringToUint64(sub.id, &cluster_id)) {
-                continue;
-              }
+        service->GetAllSubscriptions(commerce::SubscriptionType::kPriceTrack,
+                                     std::move(subs_callback));
+      },
+      shopping_service->AsWeakPtr(), bookmark_model,
+      std::move(completed_callback));
 
-              // If there is at least one bookmark with the corresponding
-              // subscription, no need to clean up.
-              if (GetBookmarksWithClusterId(model, cluster_id, 1).size() > 0) {
-                continue;
-              }
-
-              dangling_subs->push_back(sub);
-            }
-
-            size_t sub_count = dangling_subs->size();
-            if (sub_count > 0) {
-              service->Unsubscribe(
-                  std::move(dangling_subs),
-                  base::BindOnce(
-                      [](base::OnceCallback<void(size_t)> callback,
-                         size_t count,
-                         bool success) { std::move(callback).Run(count); },
-                      std::move(callback), sub_count));
-            } else {
-              std::move(callback).Run(0);
-            }
-          },
-          shopping_service->AsWeakPtr(), bookmark_model,
-          std::move(completed_callback)));
+  bookmarks::ScheduleCallbackOnBookmarkModelLoad(*bookmark_model,
+                                                 std::move(scheduled_task));
 }
 
 }  // namespace commerce
