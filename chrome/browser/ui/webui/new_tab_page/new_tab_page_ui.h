@@ -301,6 +301,7 @@ class NewTabPageUI
       content::NavigationHandle* navigation_handle) override;
   void OnColorProviderChanged() override;
 
+  bool IsTopSitesEnabled() const;
   bool IsCustomLinksEnabled() const;
   bool IsEnterpriseShortcutsEnabled() const;
   bool IsShortcutsVisible() const;

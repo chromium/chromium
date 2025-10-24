@@ -139,8 +139,7 @@ class MostVisitedSites :
       std::unique_ptr<CustomLinksManager> custom_links,
       std::unique_ptr<EnterpriseShortcutsManager> enterprise_shortcuts,
       std::unique_ptr<IconCacher> icon_cacher,
-      bool is_default_chrome_app_migrated,
-      bool is_custom_links_mixable);
+      bool is_default_chrome_app_migrated);
 
   MostVisitedSites(const MostVisitedSites&) = delete;
   MostVisitedSites& operator=(const MostVisitedSites&) = delete;
@@ -197,17 +196,18 @@ class MostVisitedSites :
 
   // Returns true if custom links has been initialized and not disabled, false
   // otherwise.
-  bool IsCustomLinksInitialized();
+  bool IsCustomLinksInitialized() const;
 
-  // Returns whether custom links should be the only data source.
-  bool IsExclusivelyCustomLinks();
-
-  // TODO(crbug.com/441727485): Add `enable_top_sites` here to simplify
-  // mixability. For android, set `enable_top_sites` and `enable_custom_links`
-  // to true. For desktop, only set `enable_custom_links` to true. See
-  // https://crrev.com/c/6871359 for more details. Options for
-  // MostVisitedSites::EnableTileTypes. By default, all tile types are disabled.
+  // TODO(crbug.com/454775651): Look into renaming this to a more accurate
+  // description like `AssignTileTypesEnablement()`.
+  // Options for MostVisitedSites::EnableTileTypes. By default, all tile types
+  // are disabled.
   struct EnableTileTypesOptions {
+    EnableTileTypesOptions& with_top_sites(bool b) {
+      enable_top_sites = b;
+      return *this;
+    }
+
     EnableTileTypesOptions& with_custom_links(bool b) {
       enable_custom_links = b;
       return *this;
@@ -218,6 +218,9 @@ class MostVisitedSites :
       return *this;
     }
 
+    bool operator==(const EnableTileTypesOptions&) const = default;
+
+    bool enable_top_sites = false;
     bool enable_custom_links = false;
     bool enable_enterprise_shortcuts = false;
   };
@@ -226,6 +229,9 @@ class MostVisitedSites :
   // Called when the user switches between custom links and Most Visited sites
   // on the 1P Desktop NTP.
   void EnableTileTypes(const EnableTileTypesOptions& options);
+
+  // Returns whether top sites are enabled.
+  bool IsTopSitesEnabled() const;
 
   // Returns whether custom links are enabled.
   bool IsCustomLinksEnabled() const;
@@ -455,6 +461,9 @@ class MostVisitedSites :
   // Returns true if there is a valid homepage that can be pinned as tile.
   bool ShouldAddHomeTile() const;
 
+  // Returns true if top sites should be queried.
+  bool ShouldQueryTopSites() const;
+
   // history::TopSitesObserver implementation.
   void TopSitesLoaded(history::TopSites* top_sites) override;
   void TopSitesChanged(history::TopSites* top_sites,
@@ -477,7 +486,6 @@ class MostVisitedSites :
   std::unique_ptr<IconCacher> const icon_cacher_;
   std::unique_ptr<HomepageClient> homepage_client_;
   bool is_default_chrome_app_migrated_;
-  bool is_custom_links_mixable_;
 
   base::ObserverList<Observer> observers_;
 
@@ -489,8 +497,8 @@ class MostVisitedSites :
   // incremented if custom links was not initialized during this session.
   int custom_links_action_count_ = -1;
 
-  bool is_custom_links_enabled_ = true;
-  bool is_enterprise_shortcuts_enabled_ = false;
+  EnableTileTypesOptions enabled_tile_types_ =
+      EnableTileTypesOptions().with_custom_links(true);
   bool is_shortcuts_visible_ = true;
 
   base::ScopedObservation<history::TopSites, history::TopSitesObserver>

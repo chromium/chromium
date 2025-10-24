@@ -322,8 +322,7 @@ class MagicStackRankingModelTest : public PlatformTest {
             /*popular_sites*/ nullptr,
             /*custom_links*/ nullptr,
             /*managed_custom_links*/ nullptr, /*icon_cacher*/ nullptr,
-            /*is_default_chrome_app_migrated*/ true,
-            /*is_custom_links_mixable*/ false);
+            /*is_default_chrome_app_migrated*/ true);
     _mostVisitedTilesMediator = [[FakeMostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(most_visited_sites)
                     prefService:GetProfile()->GetPrefs()

@@ -183,8 +183,7 @@ MostVisitedSites::MostVisitedSites(
     std::unique_ptr<CustomLinksManager> custom_links_manager,
     std::unique_ptr<EnterpriseShortcutsManager> enterprise_shortcuts_manager,
     std::unique_ptr<IconCacher> icon_cacher,
-    bool is_default_chrome_app_migrated,
-    bool is_custom_links_mixable)
+    bool is_default_chrome_app_migrated)
     : prefs_(prefs),
       identity_manager_(identity_manager),
       supervised_user_service_(supervised_user_service),
@@ -194,7 +193,6 @@ MostVisitedSites::MostVisitedSites(
       enterprise_shortcuts_manager_(std::move(enterprise_shortcuts_manager)),
       icon_cacher_(std::move(icon_cacher)),
       is_default_chrome_app_migrated_(is_default_chrome_app_migrated),
-      is_custom_links_mixable_(is_custom_links_mixable),
       max_num_sites_(0u),
       is_observing_(false) {
   DCHECK(prefs_);
@@ -315,7 +313,7 @@ void MostVisitedSites::InitializeCustomLinks() {
     return;
   }
 
-  if (is_custom_links_mixable_) {
+  if (IsTopSitesEnabled()) {
     // Custom Tiles can mix with other tiles: Initialize as empty list.
     if (custom_links_manager_->Initialize(NTPTilesVector())) {
       custom_links_action_count_ = 0;
@@ -340,42 +338,43 @@ void MostVisitedSites::UninitializeCustomLinks() {
   BuildCurrentTiles(/* is_user_triggered= */ true);
 }
 
-bool MostVisitedSites::IsCustomLinksInitialized() {
+bool MostVisitedSites::IsCustomLinksInitialized() const {
   return custom_links_manager_ && IsCustomLinksEnabled() &&
          custom_links_manager_->IsInitialized();
 }
 
-bool MostVisitedSites::IsExclusivelyCustomLinks() {
-  return !is_custom_links_mixable_ && IsCustomLinksInitialized();
-}
-
 void MostVisitedSites::EnableTileTypes(
     const MostVisitedSites::EnableTileTypesOptions& options) {
-  // For now, enterprise shortcuts cannot be mixed or enabled with any other
-  // tile type.
-  if (options.enable_custom_links && options.enable_enterprise_shortcuts) {
+  // TODO(crbug.com/444714364): Once enterprise shortcuts support mixing,
+  // a case where enable_top_sites and enable_custom_links are both false
+  // is possible and this check should be removed. For now, there should be no
+  // case where enable_top_sites and enable_custom_links are both false.
+  if (!options.enable_top_sites && !options.enable_custom_links &&
+      !options.enable_enterprise_shortcuts) {
     NOTIMPLEMENTED();
   }
-  bool requires_build = false;
-  if (is_custom_links_enabled_ != options.enable_custom_links) {
-    is_custom_links_enabled_ = options.enable_custom_links;
-    requires_build = true;
+  // Mixing of personal types is only supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (options.enable_top_sites && options.enable_custom_links) {
+    NOTIMPLEMENTED();
   }
-  if (is_enterprise_shortcuts_enabled_ != options.enable_enterprise_shortcuts) {
-    is_enterprise_shortcuts_enabled_ = options.enable_enterprise_shortcuts;
-    requires_build = true;
-  }
-  if (requires_build) {
+#endif
+  if (enabled_tile_types_ != options) {
+    enabled_tile_types_ = options;
     BuildCurrentTiles(/* is_user_triggered= */ true);
   }
 }
 
+bool MostVisitedSites::IsTopSitesEnabled() const {
+  return enabled_tile_types_.enable_top_sites;
+}
+
 bool MostVisitedSites::IsCustomLinksEnabled() const {
-  return is_custom_links_enabled_;
+  return enabled_tile_types_.enable_custom_links;
 }
 
 bool MostVisitedSites::IsEnterpriseShortcutsEnabled() const {
-  return is_enterprise_shortcuts_enabled_;
+  return enabled_tile_types_.enable_enterprise_shortcuts;
 }
 
 void MostVisitedSites::SetShortcutsVisible(bool visible) {
@@ -561,8 +560,8 @@ void MostVisitedSites::InitiateTopSitesQuery(bool is_user_triggered) {
 void MostVisitedSites::OnMostVisitedURLsAvailable(
     bool is_user_triggered,
     const history::MostVisitedURLList& visited_list) {
-  // Ignore the event if tiles are exclusively provided by custom links.
-  if (IsExclusivelyCustomLinks()) {
+  // Ignore the event if top sites should not be queried.
+  if (!ShouldQueryTopSites()) {
     return;
   }
 
@@ -600,16 +599,18 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
 }
 
 void MostVisitedSites::BuildCurrentTiles(bool is_user_triggered) {
+  // TODO(crbug.com/444714364): Remove this short-circuit check once enterprise
+  // shortcuts can be mixed with personal shortcuts.
   if (IsEnterpriseShortcutsEnabled()) {
     InitiateEnterpriseFlow(is_user_triggered);
     return;
   }
   ReloadCustomLinksCache();
-  if (IsExclusivelyCustomLinks()) {
+  if (ShouldQueryTopSites()) {
+    InitiateTopSitesQuery(is_user_triggered);
+  } else {
     SaveTilesAndNotify(is_user_triggered, NTPTilesVector(),
                        std::map<SectionType, NTPTilesVector>());
-  } else {
-    InitiateTopSitesQuery(is_user_triggered);
   }
 }
 
@@ -917,6 +918,8 @@ void MostVisitedSites::SaveTilesAndNotify(
     bool is_user_triggered,
     NTPTilesVector new_tiles,
     std::map<SectionType, NTPTilesVector> sections) {
+  // TODO(crbug.com/444714364): Remove this short-circuit check once enterprise
+  // shortcuts can be mixed with personal shortcuts.
   if (IsEnterpriseShortcutsEnabled()) {
     current_tiles_.emplace(std::move(new_tiles));
   } else {
@@ -1022,7 +1025,7 @@ void MostVisitedSites::TopSitesLoaded(TopSites* top_sites) {}
 
 void MostVisitedSites::TopSitesChanged(TopSites* top_sites,
                                        ChangeReason change_reason) {
-  if (!IsExclusivelyCustomLinks()) {
+  if (ShouldQueryTopSites()) {
     // Call InitiateTopSitesQuery() instead of BuildCurrentTiles() to skip
     // unneeded |custom_links_cache_| update.
     bool is_user_triggered =
@@ -1038,6 +1041,10 @@ bool MostVisitedSites::ShouldAddHomeTile() const {
          !homepage_client_->GetHomepageUrl().is_empty() &&
          !(top_sites_ &&
            top_sites_->IsBlocked(homepage_client_->GetHomepageUrl()));
+}
+
+bool MostVisitedSites::ShouldQueryTopSites() const {
+  return IsTopSitesEnabled() || !IsCustomLinksInitialized();
 }
 
 void MostVisitedSites::AddToHostsAndTotalCount(const NTPTilesVector& new_tiles,

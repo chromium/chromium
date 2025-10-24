@@ -518,10 +518,12 @@ class MostVisitedSitesTest : public ::testing::Test {
         /*supervised_user_service=*/nullptr, mock_top_sites_,
         popular_sites_factory_.New(), std::move(mock_custom_links_manager),
         std::move(mock_enterprise_shortcuts_manager), std::move(icon_cacher),
-        /*is_default_chrome_app_migrated=*/true, is_custom_links_mixable_);
+        /*is_default_chrome_app_migrated=*/true);
   }
 
-  bool IsCustomLinkMixingEnabled() const { return is_custom_links_mixable_; }
+  bool IsCustomLinkMixingEnabled() const {
+    return is_top_sites_enabled_ && is_custom_links_enabled_;
+  }
 
   bool VerifyAndClearExpectations() {
     base::RunLoop().RunUntilIdle();
@@ -540,17 +542,13 @@ class MostVisitedSitesTest : public ::testing::Test {
     return raw_client_ptr;
   }
 
+  void EnableTopSites() { is_top_sites_enabled_ = true; }
   void EnableCustomLinks() { is_custom_links_enabled_ = true; }
   void EnableEnterpriseShortcuts() { is_enterprise_shortcuts_enabled_ = true; }
-  void EnableCustomLinkMixing() { is_custom_links_mixable_ = true; }
 
+  bool is_top_sites_enabled_ = false;
   bool is_custom_links_enabled_ = false;
   bool is_enterprise_shortcuts_enabled_ = false;
-#if BUILDFLAG(IS_ANDROID)
-  bool is_custom_links_mixable_ = true;
-#else
-  bool is_custom_links_mixable_ = false;
-#endif
   TopSitesCallbackList top_sites_callbacks_;
 
   base::test::TaskEnvironment task_environment_;
@@ -1343,15 +1341,14 @@ TEST_F(MostVisitedSitesWithCustomLinksTest,
           MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _)).Times(1);
   most_visited_sites_->EnableTileTypes(
-      MostVisitedSites::EnableTileTypesOptions());
+      MostVisitedSites::EnableTileTypesOptions().with_top_sites(true));
   base::RunLoop().RunUntilIdle();
 
   // Try to disable custom links again. This should not rebuild the tiles.
   EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_)).Times(0);
   EXPECT_CALL(*mock_custom_links_manager_, GetLinks()).Times(0);
   most_visited_sites_->EnableTileTypes(
-      MostVisitedSites::EnableTileTypesOptions().with_enterprise_shortcuts(
-          false));
+      MostVisitedSites::EnableTileTypesOptions().with_top_sites(true));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1389,7 +1386,7 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, DisableCustomLinksWhenInitialized) {
       .WillOnce(SaveArg<1>(&sections));
 
   most_visited_sites_->EnableTileTypes(
-      MostVisitedSites::EnableTileTypesOptions());
+      MostVisitedSites::EnableTileTypesOptions().with_top_sites(true));
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       sections.at(SectionType::PERSONALIZED),
@@ -1938,7 +1935,7 @@ TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
       .WillOnce(SaveArg<1>(&sections));
   most_visited_sites_->EnableTileTypes(
-      MostVisitedSites::EnableTileTypesOptions());
+      MostVisitedSites::EnableTileTypesOptions().with_top_sites(true));
   ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
   tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));

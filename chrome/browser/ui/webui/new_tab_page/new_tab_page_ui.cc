@@ -1107,6 +1107,7 @@ void NewTabPageUI::CreatePageHandler(
       navigation_start_time_);
   most_visited_page_handler_->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+          .with_top_sites(IsTopSitesEnabled())
           .with_custom_links(IsCustomLinksEnabled())
           .with_enterprise_shortcuts(IsEnterpriseShortcutsEnabled()));
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
@@ -1220,21 +1221,25 @@ void NewTabPageUI::DidStartNavigation(
   }
 }
 
+bool NewTabPageUI::IsTopSitesEnabled() const {
+  return !IsCustomLinksEnabled();
+}
+
 bool NewTabPageUI::IsCustomLinksEnabled() const {
   // If the enterprise shortcuts feature is disabled, but the preference is set
   // to enterprise shortcuts visible, treat MostVisitedSites as if enterpise
   // shortcuts is disabled and custom links is enabled. This may occur if the
   // user is moved in and out of the experiment.
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible) ||
-         (profile_->GetPrefs()->GetBoolean(
-              ntp_prefs::kNtpEnterpriseShortcutsVisible) &&
-          !base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts));
+         (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+          profile_->GetPrefs()->GetBoolean(
+              ntp_prefs::kNtpEnterpriseShortcutsVisible));
 }
 
 bool NewTabPageUI::IsEnterpriseShortcutsEnabled() const {
-  return profile_->GetPrefs()->GetBoolean(
-             ntp_prefs::kNtpEnterpriseShortcutsVisible) &&
-         base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
+  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+         profile_->GetPrefs()->GetBoolean(
+             ntp_prefs::kNtpEnterpriseShortcutsVisible);
 }
 
 bool NewTabPageUI::IsShortcutsVisible() const {
@@ -1245,6 +1250,7 @@ void NewTabPageUI::OnShortcutsTypePrefChanged() {
   if (most_visited_page_handler_) {
     most_visited_page_handler_->EnableTileTypes(
         ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+            .with_top_sites(IsTopSitesEnabled())
             .with_custom_links(IsCustomLinksEnabled())
             .with_enterprise_shortcuts(IsEnterpriseShortcutsEnabled()));
   }
