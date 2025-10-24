@@ -54,6 +54,8 @@ public class ChipViewRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     // TODO: crbug.com/385172647 - Figure out why night mode test is flaky.
+    // TODO: crbug.com/385172647 - Figure out why secondary text doesn't have start padding in
+    // the RTL layout.
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
             Arrays.asList(
@@ -64,7 +66,7 @@ public class ChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     private ViewGroup mContentView;
@@ -90,7 +92,7 @@ public class ChipViewRenderTest {
                             activity.setContentView(
                                     contentView,
                                     new LayoutParams(
-                                            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                             return contentView;
                         });
     }
@@ -98,36 +100,84 @@ public class ChipViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void renderSuggestions() throws Exception {
-        // All suggestion types are rendered in the same test to minimize the number of render
-        // tests.
-        // TODO: crbug.com/385172647 - Figure out why secondary text doesn't have start padding in
-        // the RTL layout.
-        ChipView singleLineChip =
+    public void renderSingleLineChip() throws Exception {
+        ChipView chip =
                 new ChipView(mActivityTestRule.getActivity(), null, 0, R.style.AssistiveChip);
-        ChipView twoLineChip =
+        chip.getPrimaryTextView().setText("Primary text");
+        chip.getSecondaryTextView().setText("Secondary text");
+        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.addRemoveIcon();
+
+        renderChip(chip, "single_line_chip");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void renderTwoLineChip() throws Exception {
+        ChipView chip =
                 (ChipView)
                         mActivityTestRule
                                 .getActivity()
                                 .getLayoutInflater()
                                 .inflate(R.layout.two_line_chip_view_test_item, null);
+        chip.getPrimaryTextView().setText("Primary text");
+        chip.getSecondaryTextView().setText("Secondary text");
+        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.addRemoveIcon();
 
-        List<ChipView> chips = List.of(singleLineChip, twoLineChip);
+        renderChip(chip, "two_line_chip");
+    }
 
-        for (ChipView chip : chips) {
-            chip.getPrimaryTextView().setText("Primary text");
-            chip.getSecondaryTextView().setText("Secondary text");
-            chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
-            chip.addRemoveIcon();
-            runOnUiThreadBlocking(
-                    () -> {
-                        mContentView.addView(
-                                chip,
-                                new LayoutParams(
-                                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                    });
-        }
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void renderSingleLineChipWithReducedWidth() throws Exception {
+        ChipView chip =
+                new ChipView(mActivityTestRule.getActivity(), null, 0, R.style.AssistiveChip);
+        chip.getPrimaryTextView().setText("Primary looooooooong text");
+        chip.getSecondaryTextView().setText("S. t.");
+        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.addRemoveIcon();
+        reduceChipWidth(chip);
 
-        mRenderTestRule.render(mContentView, "chip_views");
+        renderChip(chip, "single_line_chip_with_reduced_width");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void renderTwoLineChipWithReducedWidth() throws Exception {
+        ChipView chip =
+                (ChipView)
+                        mActivityTestRule
+                                .getActivity()
+                                .getLayoutInflater()
+                                .inflate(R.layout.two_line_chip_view_test_item, null);
+        chip.getPrimaryTextView().setText("Primary loooooooong text");
+        chip.getSecondaryTextView().setText("S. t. ");
+        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.addRemoveIcon();
+        reduceChipWidth(chip);
+
+        renderChip(chip, "two_line_chip_with_reduced_width");
+    }
+
+    private void renderChip(ChipView chipView, String name) throws Exception {
+        runOnUiThreadBlocking(
+                () -> {
+                    mContentView.addView(
+                            chipView,
+                            new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                });
+
+        mRenderTestRule.render(mContentView, name);
+    }
+
+    private void reduceChipWidth(ChipView chip) {
+        runOnUiThreadBlocking(
+                () -> {
+                    chip.setMaxWidth(500);
+                });
     }
 }

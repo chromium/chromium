@@ -579,22 +579,14 @@ public class ChipView extends LinearLayout {
         // If the chip width exceeds the maximum allowed size, resize the contents to respect the
         // width constraint.
         if (getMeasuredWidth() > mMaxWidth) {
-            // Subtract padding and icon width first.
-            int newTextWidth =
-                    mMaxWidth
-                            - getPaddingLeft()
-                            - getPaddingRight()
-                            - ((mStartIcon != null && mStartIcon.getVisibility() != GONE)
-                                    ? mStartIcon.getMeasuredWidth()
-                                    : 0);
-
-            if (isSingleLineChip()) {
-                // If the text views are stacked horizontally, reduce the primary text view size.
-                newTextWidth -=
-                        ((mSecondaryText != null && mSecondaryText.getVisibility() != GONE)
-                                ? mSecondaryText.getMeasuredWidth()
-                                : 0);
-            }
+            final int textWidth =
+                    isSingleLineChip()
+                            ? mPrimaryText.getMeasuredWidth()
+                            : mTextViewsWrapper.getMeasuredWidth();
+            final int excessWidth = getMeasuredWidth() - mMaxWidth;
+            // The text width should be reduced by the difference between the actual width and the
+            // width constraint imposed on this ChipView.
+            final int newTextWidth = textWidth - excessWidth;
 
             // TODO (crbug.com/1376691): The primary text must be at least a few pixels wide,
             // else only the ellipses will be visible. If there is space for displaying the
@@ -608,18 +600,20 @@ public class ChipView extends LinearLayout {
                     mSecondaryText.setMaxWidth(newTextWidth);
                     mSecondaryText.setEllipsize(TextUtils.TruncateAt.END);
                 }
+                super.onMeasure(
+                        MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY),
+                        heightMeasureSpec);
             } else if (isSingleLineChip()
                     && mSecondaryText != null
                     && mSecondaryText.getVisibility() != GONE) {
                 // If the text views are stacked horizontally and the second text view is displayed,
                 // hide the primary text view.
                 mPrimaryText.setVisibility(GONE);
-            } else {
-                return;
+                super.onMeasure(
+                        MeasureSpec.makeMeasureSpec(
+                                getMeasuredWidth() - textWidth, MeasureSpec.EXACTLY),
+                        heightMeasureSpec);
             }
-
-            super.onMeasure(
-                    MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
         }
     }
 
