@@ -14,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -24,6 +26,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,7 +36,8 @@ import org.chromium.url.GURL;
 
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
-public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
+public class NavigationAttachmentsCoordinator
+        implements UrlFocusChangeListener, TemplateUrlServiceObserver {
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
@@ -47,6 +52,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     private final ModelList mTabAttachmentsModelList = new ModelList();
     private @Nullable NavigationAttachmentsMediator mMediator;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private boolean mDefaultSearchEngineIsGoogle = true;
+    private TemplateUrlService mTemplateUrlService;
 
     public NavigationAttachmentsCoordinator(
             Context context,
@@ -54,7 +61,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
             ViewGroup parent,
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -70,6 +78,7 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
         mAimToggleOnly = OmniboxFeatures.sAimToggleOnly.getValue();
         mLocationBarDataProvider = locationBarDataProvider;
+        templateUrlServiceSupplier.onAvailable(this::onTemplateUrlServiceAvailable);
 
         var popup =
                 new NavigationAttachmentsPopup(
@@ -127,7 +136,11 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     /** Called when the URL focus changes. */
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
-        if (mMediator == null || mLocationBarDataProvider == null) return;
+        if (mMediator == null
+                || mLocationBarDataProvider == null
+                || !mDefaultSearchEngineIsGoogle) {
+            return;
+        }
 
         int pageClass =
                 mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH);
@@ -145,6 +158,20 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
         mMediator.setAutocompleteRequestTypeChangeable(isChangeable);
         boolean shouldShowToolbar = isChangeable && !mAimToggleOnly;
         mMediator.setToolbarVisible(shouldShowToolbar);
+    }
+
+    // TemplateUrlServiceObserver
+    @Override
+    public void onTemplateURLServiceChanged() {
+        boolean isDseGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+        if (isDseGoogle == mDefaultSearchEngineIsGoogle) return;
+
+        mDefaultSearchEngineIsGoogle = isDseGoogle;
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mDefaultSearchEngineIsGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+        if (mMediator != null && !mDefaultSearchEngineIsGoogle) {
+            mMediator.setToolbarVisible(false);
+        }
     }
 
     /**
@@ -176,5 +203,12 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
     @Nullable NavigationAttachmentsMediator getMediatorForTesting() {
         return mMediator;
+    }
+
+    @Initializer
+    private void onTemplateUrlServiceAvailable(TemplateUrlService templateUrlService) {
+        mTemplateUrlService = templateUrlService;
+        mTemplateUrlService.addObserver(this);
+        onTemplateURLServiceChanged();
     }
 }

@@ -32,8 +32,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -68,6 +71,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     private @Mock TabModel mTabModel;
     private @Mock Bitmap mBitmap;
     private @Mock Profile mProfile;
+    private @Mock TemplateUrlService mTemplateUrlService;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -76,6 +80,8 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
             new ObservableSupplierImpl<>(mTabModelSelector);
+    private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
+            new OneshotSupplierImpl<>();
     private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
     private final List<Tab> mTabs = new ArrayList<>();
 
@@ -105,7 +111,8 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                         mParent,
                         mProfileSupplier,
                         mLocationBarDataProvider,
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mTemplateUrlServiceSupplier);
 
         // By default, make the Mediator available.
         mCoordinator.setMediatorForTesting(mMediator);
@@ -222,5 +229,15 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                 mCoordinator
                         .getModelForTesting()
                         .get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNonGoogleDse() {
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mTemplateUrlServiceSupplier.set(mTemplateUrlService);
+        ShadowLooper.idleMainLooper();
+
+        verify(mMediator).setToolbarVisible(false);
     }
 }

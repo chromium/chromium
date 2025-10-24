@@ -248,7 +248,8 @@ public class LocationBarCoordinator
                         mLocationBarLayout,
                         profileObservableSupplier,
                         locationBarDataProvider,
-                        tabModelSelectorSupplier);
+                        tabModelSelectorSupplier,
+                        templateUrlServiceSupplier);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null
