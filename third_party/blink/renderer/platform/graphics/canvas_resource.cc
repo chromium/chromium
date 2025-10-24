@@ -236,6 +236,8 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   // so we instead ensure that it is verified now.
   owning_thread_data().sync_token =
       shared_image_interface->GenVerifiedSyncToken();
+  GetClientSharedImage()->UpdateDestructionSyncToken(
+      owning_thread_data().sync_token);
 }
 
 scoped_refptr<CanvasResourceSharedImage>
@@ -309,12 +311,12 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     CHECK(client_shared_image);
   }
 
-  // Wait for the mailbox to be ready to be used.
-  WaitSyncToken(shared_image_interface->GenUnverifiedSyncToken());
-
   auto* raster_interface = RasterInterface();
   DCHECK(raster_interface);
   owning_thread_data().client_shared_image = client_shared_image;
+
+  // Wait for the mailbox to be ready to be used.
+  WaitSyncToken(client_shared_image->creation_sync_token());
 }
 
 scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
@@ -375,21 +377,6 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
 
   if (Provider()) {
     Provider()->OnDestroyResource();
-  }
-
-  // The context deletes all shared images on destruction which means no
-  // cleanup is needed if the context was lost.
-  if (ContextProviderWrapper() && IsValid()) {
-    auto* raster_interface = RasterInterface();
-    auto* shared_image_interface =
-        ContextProviderWrapper()->ContextProvider().SharedImageInterface();
-    if (raster_interface && shared_image_interface) {
-      gpu::SyncToken shared_image_sync_token;
-      raster_interface->GenUnverifiedSyncTokenCHROMIUM(
-          shared_image_sync_token.GetData());
-      owning_thread_data().client_shared_image->UpdateDestructionSyncToken(
-          shared_image_sync_token);
-    }
   }
 }
 
@@ -506,12 +493,15 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
   DCHECK(!is_cross_thread());
   owning_thread_data().sync_token =
       GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
+  GetClientSharedImage()->UpdateDestructionSyncToken(
+      owning_thread_data().sync_token);
 }
 
 void CanvasResourceSharedImage::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
+    GetClientSharedImage()->UpdateDestructionSyncToken(acquire_sync_token_);
     if (!base::FeatureList::IsEnabled(kCanvasResourceDefersWaitSyncToken)) {
       if (auto* interface_base = InterfaceBase()) {
         interface_base->WaitSyncTokenCHROMIUM(
@@ -534,6 +524,8 @@ void CanvasResourceSharedImage::EndAccess(
 
   owning_thread_data().sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(access));
+  GetClientSharedImage()->UpdateDestructionSyncToken(
+      owning_thread_data().sync_token);
 }
 
 void CanvasResourceSharedImage::VerifySyncToken() {
