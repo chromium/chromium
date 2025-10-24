@@ -176,11 +176,10 @@ void AutofillAiLogger::OnDidFillField(const FormStructure& form,
 }
 
 void AutofillAiLogger::OnImportPromptResult(
+    const FormData& form,
     AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityType entity_type,
     EntityInstance::RecordType record_type,
-    uint64_t form_session_id,
-    const std::string& domain,
     AutofillClient::AutofillAiBubbleClosedReason close_reason,
     ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration(
@@ -199,9 +198,8 @@ void AutofillAiLogger::OnImportPromptResult(
                     EntityPromptTypeToMetricsString(prompt_type),
                     ".AllEntities"}),
       close_reason);
-  ukm_logger_.LogImportPromptResult(prompt_type, entity_type, record_type,
-                                    form_session_id, domain, close_reason,
-                                    ukm_source_id);
+  ukm_logger_.LogImportPromptResult(form, prompt_type, entity_type, record_type,
+                                    close_reason, ukm_source_id);
 }
 
 void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,

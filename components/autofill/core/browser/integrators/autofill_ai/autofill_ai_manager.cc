@@ -356,34 +356,17 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
         [&] {
           switch (prompt_type) {
             case AutofillClient::AutofillAiImportPromptType::kSave:
-              return BindOnce(
-                  &AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
-                  form.source_url(),
-                  autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
-                  net::registry_controlled_domains::GetDomainAndRegistry(
-                      form.main_frame_origin(),
-                      net::registry_controlled_domains::
-                          EXCLUDE_PRIVATE_REGISTRIES),
-                  ukm_source_id, prompt_candidate);
+              return BindOnce(&AutofillAiManager::HandleSavePromptResult,
+                              GetWeakPtr(), form.ToFormData(), ukm_source_id,
+                              prompt_candidate);
             case AutofillClient::AutofillAiImportPromptType::kUpdate:
-              return BindOnce(
-                  &AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
-                  autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
-                  net::registry_controlled_domains::GetDomainAndRegistry(
-                      form.main_frame_origin(),
-                      net::registry_controlled_domains::
-                          EXCLUDE_PRIVATE_REGISTRIES),
-                  ukm_source_id, prompt_candidate, *existing_entity_id);
+              return BindOnce(&AutofillAiManager::HandleUpdatePromptResult,
+                              GetWeakPtr(), form.ToFormData(), ukm_source_id,
+                              prompt_candidate, *existing_entity_id);
             case AutofillClient::AutofillAiImportPromptType::kMigrate:
-              return BindOnce(
-                  &AutofillAiManager::HandleUpstreamEntityPrompt, GetWeakPtr(),
-                  form.source_url(),
-                  autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
-                  net::registry_controlled_domains::GetDomainAndRegistry(
-                      form.main_frame_origin(),
-                      net::registry_controlled_domains::
-                          EXCLUDE_PRIVATE_REGISTRIES),
-                  ukm_source_id, prompt_candidate, *existing_entity_id);
+              return BindOnce(&AutofillAiManager::HandleUpstreamEntityPrompt,
+                              GetWeakPtr(), form.ToFormData(), ukm_source_id,
+                              prompt_candidate, *existing_entity_id);
           }
           NOTREACHED();
         }();
@@ -400,21 +383,19 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
 }
 
 void AutofillAiManager::HandleUpstreamEntityPrompt(
-    const GURL& form_url,
-    uint64_t form_session_id,
-    const std::string& domain,
+    const FormData& form,
     ukm::SourceId ukm_source_id,
     EntityInstance upstream_entity,
     EntityInstance::EntityId local_entity,
     AutofillClient::AutofillAiBubbleClosedReason close_reason) {
   logger_.OnImportPromptResult(
-      AutofillClient::AutofillAiImportPromptType::kMigrate,
-      upstream_entity.type(), upstream_entity.record_type(), form_session_id,
-      domain, close_reason, ukm_source_id);
+      form, AutofillClient::AutofillAiImportPromptType::kMigrate,
+      upstream_entity.type(), upstream_entity.record_type(), close_reason,
+      ukm_source_id);
 
   if (close_reason != AutofillClient::AutofillAiBubbleClosedReason::kAccepted) {
     if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
-      AddStrikeForSaveAttempt(form_url, upstream_entity);
+      AddStrikeForSaveAttempt(form.url(), upstream_entity);
     }
     return;
   }
@@ -424,21 +405,18 @@ void AutofillAiManager::HandleUpstreamEntityPrompt(
     return;
   }
 
-  ClearStrikesForSave(form_url, upstream_entity);
+  ClearStrikesForSave(form.url(), upstream_entity);
   entity_manager->AddOrUpdateEntityInstance(std::move(upstream_entity));
 }
 
 void AutofillAiManager::HandleSavePromptResult(
-    const GURL& form_url,
-    uint64_t form_session_id,
-    const std::string& domain,
+    const FormData& form,
     ukm::SourceId ukm_source_id,
     EntityInstance entity,
     AutofillClient::AutofillAiBubbleClosedReason close_reason) {
   logger_.OnImportPromptResult(
-      AutofillClient::AutofillAiImportPromptType::kSave, entity.type(),
-      entity.record_type(), form_session_id, domain, close_reason,
-      ukm_source_id);
+      form, AutofillClient::AutofillAiImportPromptType::kSave, entity.type(),
+      entity.record_type(), close_reason, ukm_source_id);
   const bool prompt_accepted =
       close_reason == AutofillClient::AutofillAiBubbleClosedReason::kAccepted;
   EntityDataManager* entity_manager = client_->GetEntityDataManager();
@@ -450,7 +428,7 @@ void AutofillAiManager::HandleSavePromptResult(
 
   if (!prompt_accepted) {
     if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {
-      AddStrikeForSaveAttempt(form_url, entity);
+      AddStrikeForSaveAttempt(form.url(), entity);
     }
     return;
   }
@@ -459,21 +437,20 @@ void AutofillAiManager::HandleSavePromptResult(
     return;
   }
 
-  ClearStrikesForSave(form_url, entity);
+  ClearStrikesForSave(form.url(), entity);
   entity_manager->AddOrUpdateEntityInstance(std::move(entity));
 }
 
 void AutofillAiManager::HandleUpdatePromptResult(
-    uint64_t form_session_id,
-    const std::string& domain,
+    const FormData& form,
     ukm::SourceId ukm_source_id,
     EntityInstance updated_entity,
     const EntityInstance::EntityId& existing_entity_id,
     AutofillClient::AutofillAiBubbleClosedReason close_reason) {
   logger_.OnImportPromptResult(
-      AutofillClient::AutofillAiImportPromptType::kUpdate,
-      updated_entity.type(), updated_entity.record_type(), form_session_id,
-      domain, close_reason, ukm_source_id);
+      form, AutofillClient::AutofillAiImportPromptType::kUpdate,
+      updated_entity.type(), updated_entity.record_type(), close_reason,
+      ukm_source_id);
 
   if (close_reason != AutofillClient::AutofillAiBubbleClosedReason::kAccepted) {
     if (DidUserExplicitlyDeclineImportPrompt(close_reason)) {

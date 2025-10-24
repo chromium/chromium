@@ -268,17 +268,22 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
 }
 
 void AutofillAiUkmLogger::LogImportPromptResult(
+    const FormData& form,
     AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityType entity_type,
     EntityInstance::RecordType record_type,
-    uint64_t form_session_id,
-    const std::string& domain,
     AutofillClient::AutofillAiBubbleClosedReason close_reason,
     ukm::SourceId ukm_source_id) {
+  uint64_t form_session_id =
+      autofill_metrics::FormGlobalIdToHash64Bit(form.global_id());
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
       uploader_ &&
       MayPerformAutofillAiAction(*client_, AutofillAiAction::kLogToMqls)) {
+    const std::string domain =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            form.main_frame_origin(),
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed. Also note that in this case it is not
     // necessary to check if the user is opted in because it is assumed that all

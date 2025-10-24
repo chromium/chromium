@@ -182,9 +182,7 @@ class AutofillAiManager {
   // Updates the `EntityDataManager` and the save strike database depending on
   // the prompt `result`.
   void HandleSavePromptResult(
-      const GURL& form_url,
-      uint64_t form_session_id,
-      const std::string& domain,
+      const FormData& form,
       ukm::SourceId ukm_source_id,
       EntityInstance entity,
       AutofillClient::AutofillAiBubbleClosedReason close_reason);
@@ -192,8 +190,7 @@ class AutofillAiManager {
   // Updates the `EntityDataManager` and the update strike database depending on
   // the prompt `result`.
   void HandleUpdatePromptResult(
-      uint64_t form_session_id,
-      const std::string& domain,
+      const FormData& form,
       ukm::SourceId ukm_source_id,
       EntityInstance updated_entity,
       const EntityInstance::EntityId& existing_entity_id,
@@ -203,9 +200,7 @@ class AutofillAiManager {
   // the Google Wallet server. Updates the strike database depending on the
   // prompt `result`.
   void HandleUpstreamEntityPrompt(
-      const GURL& form_url,
-      uint64_t form_session_id,
-      const std::string& domain,
+      const FormData& form,
       ukm::SourceId ukm_source_id,
       EntityInstance entity,
       EntityInstance::EntityId local_entity,

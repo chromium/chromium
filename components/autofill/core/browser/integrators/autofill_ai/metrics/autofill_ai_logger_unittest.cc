@@ -58,7 +58,6 @@ using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultUrl[] = "https://example.com";
-constexpr uint64_t kFormSession = 123456UL;
 
 Suggestion GetSuggestion(const EntityInstance& entity) {
   Suggestion suggestion(SuggestionType::kFillAutofillAi);
@@ -693,6 +692,10 @@ class AutofillAiPromptMetricsTest
     return std::get<2>(GetParam());
   }
   EntityInstance::RecordType record_type() { return std::get<3>(GetParam()); }
+
+  FormData CreateForm() {
+    return BaseAutofillAiTest::CreateForm(entity_type())->ToFormData();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -710,8 +713,7 @@ TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
   constexpr std::string_view kPromptHistogramMask = "Autofill.Ai.%s.%s%s";
   base::HistogramTester histogram_tester;
   test_api(manager()).logger().OnImportPromptResult(
-      prompt_type(), entity_type(), record_type(),
-      /*form_session_id*/ 0, /*domain=*/"", close_reason(),
+      CreateForm(), prompt_type(), entity_type(), record_type(), close_reason(),
       /*ukm_source_id=*/0);
 
   const std::string_view prompt_type_str =
@@ -890,10 +892,10 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
 }
 
 TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
   test_api(manager()).logger().OnImportPromptResult(
-      AutofillClient::AutofillAiImportPromptType::kUpdate,
+      form->ToFormData(), AutofillClient::AutofillAiImportPromptType::kUpdate,
       EntityType(EntityTypeName::kPassport), EntityInstance::RecordType::kLocal,
-      /*form_session_id=*/kFormSession, "myform_root.com",
       AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
       /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 1u);
@@ -901,7 +903,8 @@ TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
   const optimization_guide::proto::AutofillAiUserPromptMetrics&
       mqls_user_prompt = GetUserPromptMetrics();
   EXPECT_EQ(mqls_user_prompt.domain(), "myform_root.com");
-  EXPECT_EQ(mqls_user_prompt.form_session_identifier(), kFormSession);
+  EXPECT_EQ(mqls_user_prompt.form_session_identifier(),
+            autofill_metrics::FormGlobalIdToHash64Bit(form->global_id()));
   EXPECT_EQ(mqls_user_prompt.storage_type(),
             optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_LOCAL);
   EXPECT_EQ(mqls_user_prompt.prompt_type(),

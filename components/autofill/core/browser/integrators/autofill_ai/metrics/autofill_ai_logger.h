@@ -47,11 +47,10 @@ class AutofillAiLogger {
                       ukm::SourceId ukm_source_id);
 
   void OnImportPromptResult(
+      const FormData& form,
       AutofillClient::AutofillAiImportPromptType prompt_type,
       EntityType entity_type,
       EntityInstance::RecordType record_type,
-      uint64_t form_session_id,
-      const std::string& domain,
       AutofillClient::AutofillAiBubbleClosedReason close_reason,
       ukm::SourceId ukm_source_id);
 
