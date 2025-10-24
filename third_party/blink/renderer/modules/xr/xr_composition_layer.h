@@ -72,7 +72,7 @@ class XRCompositionLayer : public XRLayer {
   V8XRLayerLayout::Enum layout_ = V8XRLayerLayout::Enum::kDefault;
 
   const Member<XRGraphicsBinding> binding_;
-  bool blend_texture_source_alpha_{false};
+  bool blend_texture_source_alpha_{true};
   std::optional<bool> chromatic_aberration_correction_{std::nullopt};
   bool force_mono_presentation_{false};
   float opacity_{1.0};

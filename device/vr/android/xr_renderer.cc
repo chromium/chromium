@@ -39,9 +39,11 @@ static constexpr char const* kFragmentShaderExternal = OEIE_SHADER(
   precision highp float;
   uniform samplerExternalOES u_Texture;
   varying vec2 v_TexCoordinate;
+  uniform float u_Opacity;
 
   void main() {
-    gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
+    // Keep the pixels premultiplied.
+    gl_FragColor = texture2D(u_Texture, v_TexCoordinate) * u_Opacity;
   }
 );
 
@@ -49,12 +51,13 @@ static constexpr char const* kFragmentShader2D = OEIE_SHADER(
   precision highp float;
   uniform sampler2D u_Texture;
   varying vec2 v_TexCoordinate;
+  uniform float u_Opacity;
 
   void main() {
-    gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
+    // Keep the pixels premultiplied.
+    gl_FragColor = texture2D(u_Texture, v_TexCoordinate) * u_Opacity;
   }
 );
-
 // clang-format on
 
 }  // namespace
@@ -86,6 +89,7 @@ XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
       glGetUniformLocation(result.program_handle_, "u_Texture");
   result.uv_transform_ =
       glGetUniformLocation(result.program_handle_, "u_UvTransform");
+  result.opacity_ = glGetUniformLocation(result.program_handle_, "u_Opacity");
 
   return result;
 }
@@ -96,7 +100,8 @@ XrRenderer::XrRenderer() {
 }
 
 void XrRenderer::Draw(const LocalTexture& texture,
-                      const float (&uv_transform)[16]) {
+                      const float (&uv_transform)[16],
+                      float opacity) {
   if (!vertex_buffer_ || !index_buffer_) {
     GLuint buffers[2];
     glGenBuffersARB(2, buffers);
@@ -142,6 +147,7 @@ void XrRenderer::Draw(const LocalTexture& texture,
   glUniform1i(program.texture_handle_, 0);
 
   glUniformMatrix4fv(program.uv_transform_, 1, GL_FALSE, &uv_transform[0]);
+  glUniform1f(program.opacity_, std::clamp(opacity, 0.f, 1.f));
 
   // Blit texture to buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);

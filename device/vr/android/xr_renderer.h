@@ -23,7 +23,9 @@ class XrRenderer {
 
   // Blits the provided texture handle onto the currently bound framebuffer,
   // applying the provided uv_transform.
-  void Draw(const LocalTexture& texture, const float (&uv_transform)[16]);
+  void Draw(const LocalTexture& texture,
+            const float (&uv_transform)[16],
+            float opacity = 1.f);
 
  private:
   struct Program {
@@ -31,6 +33,7 @@ class XrRenderer {
     GLuint position_handle_ = 0;
     GLuint texture_handle_ = 0;
     GLuint uv_transform_ = 0;
+    GLuint opacity_ = 1.f;
   };
 
   Program CreateProgram(const std::string& vertex, const std::string& fragment);

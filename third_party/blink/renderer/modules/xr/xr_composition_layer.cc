@@ -35,6 +35,7 @@ bool XRCompositionLayer::blendTextureSourceAlpha() const {
 
 void XRCompositionLayer::setBlendTextureSourceAlpha(bool value) {
   blend_texture_source_alpha_ = value;
+  SetModified(true);
 }
 
 std::optional<bool> XRCompositionLayer::chromaticAberrationCorrection() const {
@@ -60,6 +61,7 @@ float XRCompositionLayer::opacity() const {
 
 void XRCompositionLayer::setOpacity(float value) {
   opacity_ = value;
+  SetModified(true);
 }
 
 uint16_t XRCompositionLayer::mipLevels() const {

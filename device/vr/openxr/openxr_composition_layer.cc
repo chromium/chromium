@@ -115,6 +115,9 @@ XrResult OpenXrCompositionLayer::CreateSwapchain(XrSession session,
 }
 
 void OpenXrCompositionLayer::DestroySwapchain(gpu::SharedImageInterface* sii) {
+  // In case we still hold an active swapchain image.
+  ReleaseActiveSwapchainImage();
+
   // As long as we have a context provider we need to destroy any SharedImages
   // that may exist.
   for (OpenXrSwapchainInfo& info : GetSwapchainImages()) {

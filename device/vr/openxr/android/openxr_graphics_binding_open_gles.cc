@@ -366,8 +366,8 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
   transform.GetColMajorF(transform_floats);
 
   if (webxr_visible_) {
-    // TODO(crbug.com/446668508): To support opacity.
-    renderer_->Draw(swap_chain_info->shared_buffer_texture, transform_floats);
+    renderer_->Draw(swap_chain_info->shared_buffer_texture, transform_floats,
+                    layer.mutable_data().opacity);
   }
 
   // The overlay is rendred to the base layer, which has an invalid layer id.
