@@ -103,10 +103,9 @@ class DataTypeManager {
   // not tied to sync-the-feature).
   virtual DataTypeSet GetDataTypesForTransportOnlyMode() const = 0;
 
-  // Get the set of current active data types (those chosen or configured by the
-  // user which have not also encountered a runtime error). Note that during
-  // configuration, this will the the empty set. Once the configuration
-  // completes the set will be updated.
+  // Get the set of current active data types, as reported by their controllers.
+  // Note that this may, in some edge cases, temporarily include types that are
+  // not enabled/chosen by the user.
   virtual DataTypeSet GetActiveDataTypes() const = 0;
 
   // Returns the datatypes that are stopped, with or without having cleared

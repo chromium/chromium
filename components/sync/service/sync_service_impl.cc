@@ -1634,9 +1634,14 @@ DataTypeSet SyncServiceImpl::GetActiveDataTypes() const {
     return DataTypeSet();
   }
 
-  // Persistent auth errors lead to PAUSED, which implies
-  // engine_==null above.
+  // Persistent auth errors lead to PAUSED, which implies engine_==null above.
   CHECK(!GetAuthError().IsPersistentError());
+
+  // Mostly for historic reasons, return an empty set unless the DataTypeManager
+  // is CONFIGURED. (There may also be active types while it is CONFIGURING.)
+  if (data_type_manager_->state() != DataTypeManager::CONFIGURED) {
+    return DataTypeSet();
+  }
 
   return data_type_manager_->GetActiveDataTypes();
 }

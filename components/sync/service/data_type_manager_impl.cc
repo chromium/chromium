@@ -11,6 +11,7 @@
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -35,6 +36,9 @@
 namespace syncer {
 
 namespace {
+
+BASE_FEATURE(kDataTypeManagerImplCorrectActiveTypes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DataTypeController::TypeMap BuildControllerMap(
     DataTypeController::TypeVector controllers) {
@@ -424,18 +428,16 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
 void DataTypeManagerImpl::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) const {
   const DataTypeSet active_types = GetActiveDataTypes();
-  if (active_types.empty()) {
+  if (active_types.empty() || state_ != CONFIGURED) {
     // `GetAllNodesRequestBarrier` only supports waiting for a non-empty set of
     // types, so return empty here if there are no active types. This can happen
-    // if `state_` is not CONFIGURED.
+    // if no data types have been successfully configured yet.
     std::move(callback).Run(base::Value::List());
     return;
   }
 
-  // If there are active types, the configurer must have been initialized and
-  // the configuration completed.
+  // If there are active types, the configurer must have been initialized.
   CHECK(configurer_);
-  CHECK_EQ(state_, CONFIGURED);
 
   auto barrier = base::MakeRefCounted<GetAllNodesRequestBarrier>(
       active_types, std::move(callback));
@@ -854,10 +856,26 @@ DataTypeSet DataTypeManagerImpl::GetDataTypesForTransportOnlyMode() const {
 }
 
 DataTypeSet DataTypeManagerImpl::GetActiveDataTypes() const {
-  if (state_ != CONFIGURED) {
-    return DataTypeSet();
+  if (!base::FeatureList::IsEnabled(kDataTypeManagerImplCorrectActiveTypes)) {
+    if (state_ != CONFIGURED) {
+      return DataTypeSet();
+    }
+    return GetEnabledTypes();
   }
-  return GetEnabledTypes();
+
+  DataTypeSet types;
+  // ControlTypes() (in practice, NIGORI) are not controlled by this class, by
+  // by the `configurer_` (in practice, the SyncEngine). If the `configurer_`
+  // has been set, then the ControlTypes() can be considered active.
+  if (configurer_) {
+    types.PutAll(ControlTypes());
+  }
+  for (const auto& [type, controller] : controllers_) {
+    if (controller->state() == DataTypeController::RUNNING) {
+      types.Put(type);
+    }
+  }
+  return types;
 }
 
 DataTypeSet DataTypeManagerImpl::GetTypesWithPendingDownloadForInitialSync()

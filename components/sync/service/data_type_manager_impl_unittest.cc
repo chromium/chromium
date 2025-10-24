@@ -2128,6 +2128,43 @@ TEST_F(DataTypeManagerImplTest, ShouldReturnNoDebuggingNodesWhileConfiguring) {
   dtm_->GetAllNodesForDebugging(mock_completion_callback.Get());
 }
 
+// Regression test for crbug.com/450233625.
+TEST_F(DataTypeManagerImplTest, ResetDataTypeErrors) {
+  InitDataTypeManager({BOOKMARKS});
+  GetController(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+
+  // Bookmarks is never started due to failing preconditions.
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, OnConfigureStart());
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
+
+  Configure({BOOKMARKS});
+  ASSERT_EQ(DataTypeSet(), FinishDownload());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+
+  ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
+
+  ASSERT_EQ(dtm_->GetActiveDataTypes(), DataTypeSet{NIGORI});
+  ASSERT_TRUE(dtm_->GetDataTypesWithPermanentErrors().Has(BOOKMARKS));
+
+  dtm_->ResetDataTypeErrors();
+  // Bookmarks is not marked as having an error anymore. (The error will get
+  // re-set during the next Restart()).
+  ASSERT_FALSE(dtm_->GetDataTypesWithPermanentErrors().Has(BOOKMARKS));
+  // However, Bookmarks should still not be considered active.
+  EXPECT_EQ(dtm_->GetActiveDataTypes(), DataTypeSet{NIGORI});
+
+  // GetAllNodesForDebugging() should return just the entry for Nigori (and
+  // specifically, should not crash, see crbug.com/450233625).
+  base::MockCallback<base::OnceCallback<void(base::Value::List)>>
+      mock_completion_callback;
+  EXPECT_CALL(mock_completion_callback,
+              Run(UnorderedElementsAre(base::test::DictionaryHasValue(
+                  "type", base::Value("Encryption Keys")))));
+  dtm_->GetAllNodesForDebugging(mock_completion_callback.Get());
+}
+
 }  // namespace
 
 }  // namespace syncer
