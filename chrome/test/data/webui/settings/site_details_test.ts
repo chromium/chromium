@@ -7,7 +7,7 @@ import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteDetailsElement, WebsiteUsageBrowserProxy} from 'chrome://settings/lazy_load.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsBrowserProxyImpl, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, JavascriptOptimizerSetting, SiteSettingSource, SiteSettingsBrowserProxyImpl, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -220,8 +220,9 @@ suite('SiteDetails', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function createSiteDetails(origin: string) {
+  function createSiteDetails(origin: string, prefs?: {[key: string]: any}) {
     const siteDetailsElement = document.createElement('site-details');
+    siteDetailsElement.prefs = prefs;
     document.body.appendChild(siteDetailsElement);
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS,
@@ -365,6 +366,40 @@ suite('SiteDetails', function() {
       assertEquals(expectedMenuValue, siteDetailsPermission.$.permission.value);
     });
   });
+
+  test(
+      'javascript optimizer pref sets use-block-if-unfamiliar-label-for-default property',
+      async function() {
+        const testCases = [
+          JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES,
+          JavascriptOptimizerSetting.BLOCKED,
+        ];
+
+        for (const testCase of testCases) {
+          const prefs = {
+            generated: {javascript_optimizer: {value: testCase}},
+          };
+          testElement = createSiteDetails('https://foo.com:443', prefs);
+
+          await browserProxy.whenCalled('isOriginValid');
+          await browserProxy.whenCalled('getOriginPermissions');
+
+          const siteDetailsPermissions =
+              testElement.shadowRoot!.querySelectorAll(
+                  'site-details-permission');
+          const javascriptOptimizerPermission =
+              siteDetailsPermissions.values().find(siteDetailsPermission => {
+                return siteDetailsPermission.category ===
+                    ContentSettingsTypes.JAVASCRIPT_OPTIMIZER;
+              });
+
+          assertEquals(
+              (testCase ===
+               JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES),
+              javascriptOptimizerPermission!
+                  .useBlockIfUnfamiliarLabelForDefault);
+        }
+      });
 
   test('categories can be hidden', async function() {
     browserProxy.setPrefs(prefs);

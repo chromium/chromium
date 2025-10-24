@@ -3199,6 +3199,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLOCK_DEFAULT_MENU" desc="Label for the default menu item to block a permission for a particular site.">
     Block (default)
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ACTION_BLOCK_ON_UNFAMILIAR_SITES_DEFAULT_MENU" desc="Label for the default menu item for blocking permission on sites which the browser thinks are unfamiliar to the user based on the user's chrome history.">
+    Block if site is unfamiliar (default)
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MUTE_DEFAULT_MENU" desc="Label for the default menu item to mute sound for a particular site.">
     Mute (default)
   </message>

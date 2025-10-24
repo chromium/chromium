@@ -58,6 +58,12 @@ export class SiteDetailsPermissionElement extends
       useAutomaticLabel: {type: Boolean, value: false},
 
       /**
+       * Controls whether the content setting should use "Block if site is
+       * unfamiliar" as the default setting label.
+       */
+      useBlockIfUnfamiliarLabelForDefault: {type: Boolean, value: false},
+
+      /**
        * The site that this widget is showing details for, or null if this
        * widget should be hidden.
        */
@@ -120,6 +126,7 @@ export class SiteDetailsPermissionElement extends
   }
 
   declare useAutomaticLabel: boolean;
+  declare useBlockIfUnfamiliarLabelForDefault: boolean;
   declare site: RawSiteException;
   declare private chooserExceptions_: ChooserException[];
   declare chooserType: ChooserType;
@@ -287,10 +294,14 @@ export class SiteDetailsPermissionElement extends
    */
   private defaultSettingString_(
       defaultSetting: ContentSetting, category: ContentSettingsTypes,
-      useAutomaticLabel: boolean): string {
+      useAutomaticLabel: boolean, useBlockIfUnfamiliarLabel: boolean): string {
     if (defaultSetting === undefined || category === undefined ||
         useAutomaticLabel === undefined) {
       return '';
+    }
+
+    if (useBlockIfUnfamiliarLabel) {
+      return this.i18n('siteSettingsActionBlockOnUnfamiliarSitesDefaultMenu');
     }
 
     if (defaultSetting === ContentSetting.ASK) {
