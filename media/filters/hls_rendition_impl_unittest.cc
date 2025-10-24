@@ -638,8 +638,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
                         base::Seconds(190), base::Seconds(202));
   EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(190)));
   task_environment_.FastForwardBy(base::Seconds(190));
-  rendition->CheckState(base::Seconds(10), 1.0,
-                        BindCheckState(base::Seconds(0)));
+  rendition->CheckState(base::Seconds(10), 1.0, BindCheckState(kNoTimestamp));
   task_environment_.RunUntilIdle();
 
   // this time, the ranges are only 2 seconds past media time, so more data is
@@ -1059,8 +1058,7 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
       });
   EXPECT_CALL(*mock_hrh_, Quit(_));
   task_environment_.FastForwardBy(base::Seconds(190));
-  rendition->CheckState(base::Seconds(10), 1.0,
-                        BindCheckState(base::Seconds(0)));
+  rendition->CheckState(base::Seconds(10), 1.0, BindCheckState(kNoTimestamp));
   task_environment_.RunUntilIdle();
 }
 

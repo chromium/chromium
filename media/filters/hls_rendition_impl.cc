@@ -93,7 +93,7 @@ void HlsRenditionImpl::CheckState(
 
     ResumeLivePlayback(
         pause_duration + media_time + segments_->GetMaxDuration(),
-        base::BindOnce(std::move(time_remaining_cb), base::Seconds(0)));
+        base::BindOnce(std::move(time_remaining_cb), kNoTimestamp));
     return;
   }
 
