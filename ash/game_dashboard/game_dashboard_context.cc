@@ -555,10 +555,10 @@ void GameDashboardContext::OnPreWindowStateTypeChange(
     chromeos::WindowStateType old_type) {
   // Hide the Game Dashboard button before the window switches to fullscreen.
   if (window_state->IsFullscreen()) {
-    DCHECK(!game_dashboard_button_reveal_controller_);
-    game_dashboard_button_reveal_controller_ =
-        std::make_unique<GameDashboardButtonRevealController>(this);
-
+    if (!game_dashboard_button_reveal_controller_) {
+      game_dashboard_button_reveal_controller_ =
+          std::make_unique<GameDashboardButtonRevealController>(this);
+    }
     if (!chromeos::IsMinimizedWindowStateType(old_type)) {
       // When the window goes from minimized to fullscreen, hide the Game
       // Dashboard widget.
@@ -618,7 +618,18 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
       wm::GetTransientParent(game_dashboard_button_widget_->GetNativeWindow()));
   UpdateGameDashboardButtonWidgetBounds();
   if (game_dashboard_utils::ShouldEnableFeatures()) {
-    SetGameDashboardButtonVisibility(/*visible=*/true);
+    const WindowState* window_state = WindowState::Get(game_window_);
+    // If the window is starting in fullscreen, create the
+    // GameDashboardButtonRevealController.
+    if (window_state->IsFullscreen()) {
+      DCHECK(!game_dashboard_button_reveal_controller_);
+      game_dashboard_button_reveal_controller_ =
+          std::make_unique<GameDashboardButtonRevealController>(this);
+    }
+    // If the window is minimized or fullscreen, the Game Dashboard button
+    // should not be visible
+    SetGameDashboardButtonVisibility(
+        !(window_state->IsMinimized() || window_state->IsFullscreen()));
   }
 }
 

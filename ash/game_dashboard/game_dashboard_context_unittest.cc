@@ -50,6 +50,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -66,6 +67,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -77,6 +79,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -85,6 +88,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -784,8 +788,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_EQ(test_api_->GetToolbarSnapLocation(), desired_location);
   }
 
-  void CreateAnArcAppInFullscreen(std::unique_ptr<chromeos::CaptionButtonModel>
-                                      caption_button_model = nullptr) {
+  void CreateAnArcAppAndToggleFullscreen(
+      std::unique_ptr<chromeos::CaptionButtonModel> caption_button_model =
+          nullptr) {
     // Create an ARC game window.
     SetAppBounds(gfx::Rect(50, 50, 800, 700));
     CreateGameWindow(/*is_arc_window=*/true,
@@ -1419,7 +1424,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeNonTogglable) {
 TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
   // Create an ARC game window in fullscreen that can be resized via the size
   // button in the frame header.
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
 
   // Open the Game Dashboard menu with the accelerator.
   AcceleratorControllerImpl* controller =
@@ -1438,7 +1443,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
 // description within the screen size row.
 TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenNonTogglable) {
   // Create an ARC game window in fullscreen that can't be resized.
-  CreateAnArcAppInFullscreen(
+  CreateAnArcAppAndToggleFullscreen(
       /*caption_button_model=*/std::make_unique<NonResizableButtonModel>());
 
   // Open the Game Dashboard menu with the accelerator.
@@ -1890,6 +1895,28 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {
   ASSERT_TRUE(button_widget->IsVisible());
 }
 
+TEST_F(GameDashboardContextTest, GameDashboardButtonInFullscreen) {
+  // Create an ARC game window in fullscreen.
+  views::Widget* widget =
+      views::test::TestWidgetBuilder()
+          .SetBounds(kScreenBounds)
+          .SetDelegate(CreateTestWidgetBuilderDelegate())
+          .SetWindowProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP)
+          .SetShowState(ui::mojom::WindowShowState::kFullscreen)
+          .BuildOwnedByNativeWidget();
+  game_window_ = base::WrapUnique(widget->GetNativeWindow());
+  game_window_->SetProperty(kAppIDKey, TestGameDashboardDelegate::kGameAppId);
+  test_api_ = std::make_unique<GameDashboardContextTestApi>(
+      GameDashboardController::Get()->GetGameDashboardContext(
+          game_window_.get()),
+      GetEventGenerator());
+
+  // Verify window is in full screen and GameDashboardButton is hidden.
+  auto* window_state = WindowState::Get(game_window_.get());
+  ASSERT_TRUE(window_state->IsFullscreen());
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+}
+
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
   // Create an ARC game window.
   SetAppBounds(gfx::Rect(50, 50, 800, 700));
@@ -1930,7 +1957,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
 
 TEST_F(GameDashboardContextTest,
        GameDashboardButtonFullscreen_MouseOverAndTouchGesture) {
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -1981,7 +2008,7 @@ TEST_F(GameDashboardContextTest,
 }
 
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -2007,7 +2034,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
 // cause a crash. This is a regression test for crbug.com/449107622.
 TEST_F(GameDashboardContextTest, NoCrashOnWindowDestroyInFullscreen) {
   // Create an ARC game window and put it in fullscreen.
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
 
   // Verify that the reveal controller is created.
   ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());

@@ -220,10 +220,11 @@ void GameDashboardController::OnWindowTransformed(
     ui::PropertyChangeReason reason) {
   if (auto* context = GetGameDashboardContext(window);
       context && game_dashboard_utils::ShouldEnableFeatures()) {
-    // Enable the features if the window is not minimized or undergoing an
-    // animation. Otherwise, disable them.
+    // Enable if the transformation is from an animation AND the window is not
+    // minimized or fullscreen.
     const bool enable = (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
-                        !(WindowState::Get(window)->IsMinimized());
+                        !(WindowState::Get(window)->IsMinimized() ||
+                          WindowState::Get(window)->IsFullscreen());
     context->EnableFeatures(enable,
                             GameDashboardMainMenuToggleMethod::kAnimation);
   }
