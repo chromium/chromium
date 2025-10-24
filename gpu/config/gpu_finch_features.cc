@@ -871,4 +871,10 @@ BASE_FEATURE(kWebGPUAndroidOpenGLES, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebGPUQualcommWindows, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Enables runtime configuration of the GPU watchdog timeout via
+// experimentation.
+BASE_FEATURE(kConfigurableGPUWatchdogTimeout,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kConfigurableGPUWatchdogTimeoutSeconds{
+    &kConfigurableGPUWatchdogTimeout, "watchdog_timeout_seconds", 30};
 }  // namespace features

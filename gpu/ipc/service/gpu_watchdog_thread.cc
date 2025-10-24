@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/result_codes.h"
 
@@ -46,6 +47,15 @@
 namespace gpu {
 
 base::TimeDelta GetGpuWatchdogTimeout(bool software_rendering) {
+  if (base::FeatureList::IsEnabled(features::kConfigurableGPUWatchdogTimeout)) {
+    int seconds = features::kConfigurableGPUWatchdogTimeoutSeconds.Get();
+    if (seconds > 0) {
+      return base::Seconds(seconds);
+    }
+    LOG(WARNING) << "Invalid GPU watchdog timeout seconds: " << seconds
+                 << ". Using default timeout.";
+  }
+
   std::string timeout_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kGpuWatchdogTimeoutSeconds);

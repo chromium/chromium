@@ -164,6 +164,10 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceMultiThreading);
 #endif
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kConfigurableGPUWatchdogTimeout);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kConfigurableGPUWatchdogTimeoutSeconds;
+
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUCompatibilityMode);
 
 GPU_CONFIG_EXPORT bool IsGraphiteContextThreadSafe();
