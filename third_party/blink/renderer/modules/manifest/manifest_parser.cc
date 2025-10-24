@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/part.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -2647,6 +2648,27 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
     // We must have a non-empty value.
     if (value.empty()) {
       continue;
+    }
+
+    // If no lang tag was specified for this entry, fall back to manifest-level
+    // lang.
+    std::optional<String> manifest_lang_opt =
+        ParseString(object, "lang", Trim(true));
+    String manifest_lang = manifest_lang_opt.value_or(String());
+    if (lang.empty() && !manifest_lang.empty()) {
+      lang = manifest_lang;
+    }
+
+    // Validate the language tag if present.
+    if (!lang.empty()) {
+      UErrorCode status = U_ZERO_ERROR;
+      StringUtf8Adaptor lang_utf8(lang);
+      icu::Locale::forLanguageTag(lang_utf8.AsStringView(), status);
+      if (U_FAILURE(status)) {
+        AddErrorInfo(StrCat({"property '", field_name, "' entry for '", key,
+                             "' ignored, invalid language tag '", lang, "'."}));
+        continue;
+      }
     }
 
     // Build and add the localized text object.
