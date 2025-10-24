@@ -34,19 +34,18 @@ namespace {
 // Get a UiResource to paint the texture. We try to reuse any
 // existing resources in `resource_manager` before creating a new resource.
 std::unique_ptr<UiResource> AcquireUiResource(
-    const gfx::Size& size,
     bool is_overlay_candidate,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
   CHECK(shared_image);
   std::unique_ptr<UiResource> resource = resource_manager->GetResourceToReuse(
-      size, kFastInkSharedImageFormat, kFastInkUiSourceId);
+      shared_image->size(), kFastInkSharedImageFormat, kFastInkUiSourceId);
 
   if (resource) {
     CHECK(shared_image == resource->client_shared_image());
   } else {
-    resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,
+    resource = CreateUiResource(kFastInkUiSourceId, is_overlay_candidate,
                                 shared_image, sync_token);
   }
 
@@ -111,12 +110,10 @@ scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
 }
 
 std::unique_ptr<UiResource> CreateUiResource(
-    const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
-  DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
   CHECK(shared_image);
 
@@ -134,7 +131,7 @@ std::unique_ptr<UiResource> CreateUiResource(
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
   resource->ui_source_id = ui_source_id;
-  resource->resource_size = size;
+  resource->resource_size = shared_image->size();
   return resource;
 }
 
@@ -161,11 +158,9 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   // method.
   CHECK(shared_image);
 
-  const gfx::Size buffer_size = shared_image->size();
-
   // In auto_update mode, we use hardware overlays to render the content.
-  auto resource = AcquireUiResource(buffer_size, auto_update, resource_manager,
-                                    shared_image, sync_token);
+  auto resource = AcquireUiResource(auto_update, resource_manager, shared_image,
+                                    sync_token);
 
   if (!resource) {
     return nullptr;
@@ -193,6 +188,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
 
   gfx::Rect quad_rect;
   gfx::Rect damage_rect;
+
+  const gfx::Size buffer_size = shared_image->size();
 
   // Continuously redraw the full output rectangle when in auto-update mode.
   // This is necessary in order to allow single buffered updates without having

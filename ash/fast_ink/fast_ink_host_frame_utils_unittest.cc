@@ -198,13 +198,23 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOn) {
 
 TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
   // Populate resources in the resource manager.
-  constexpr gfx::Size kResourceSizes[4] = {
-      {1000, 404}, {1000, 404}, {250, 150}, {50, 25}};
-  for (const auto& size : kResourceSizes) {
+  // Two resources from the same SharedImage
+  for (int i = 0; i < 2; i++) {
     resource_manager_.OfferResourceForTesting(
         fast_ink_internal::CreateUiResource(
-            size, fast_ink_internal::kFastInkUiSourceId,
+            fast_ink_internal::kFastInkUiSourceId,
             /*is_overlay_candidate=*/false, shared_image_, gpu::SyncToken()));
+  }
+
+  // Two resources of the different size / shared image.
+  constexpr gfx::Size kResourceSizes[2] = {{250, 150}, {50, 25}};
+  for (const auto& size : kResourceSizes) {
+    auto shared_image = fast_ink_internal::CreateMappableSharedImage(
+        size, shared_image_->usage(), gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+    resource_manager_.OfferResourceForTesting(
+        fast_ink_internal::CreateUiResource(
+            fast_ink_internal::kFastInkUiSourceId,
+            /*is_overlay_candidate=*/false, shared_image, gpu::SyncToken()));
   }
 
   EXPECT_EQ(resource_manager_.available_resources_count(), 4u);
