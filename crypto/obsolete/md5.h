@@ -58,6 +58,10 @@ namespace devtools {
 std::string Md5OfUrlAsHexForDevTools(std::string_view url);
 }
 
+namespace display {
+std::string Md5AsHexForEdid(std::string_view data);
+}
+
 namespace drive {
 crypto::obsolete::Md5 MakeMd5HasherForDriveFsAccount();
 }
@@ -180,6 +184,9 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(crbug.com/454363517): get rid of this.
   friend std::string devtools::Md5OfUrlAsHexForDevTools(std::string_view url);
+
+  // TODO(crbug.com/454630854): get rid of this.
+  friend std::string display::Md5AsHexForEdid(std::string_view data);
 
   // TODO(https://crbug.com/428022614): get rid of this.
   friend Md5 media::test::MakeMd5HasherForVideoFrameValidation();

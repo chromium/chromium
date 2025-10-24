@@ -10,8 +10,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/hash/md5.h"
 #include "base/numerics/ranges.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "crypto/obsolete/md5.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_constants.h"
@@ -25,6 +27,11 @@ using ::testing::ValuesIn;
 namespace display {
 
 namespace {
+
+std::string Md5AsHex(std::string_view data) {
+  return base::ToLowerASCII(base::HexEncode(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data))));
+}
 
 // EDID with non-ascii char in display name.
 constexpr unsigned char kBadDisplayName[] =
@@ -288,10 +295,9 @@ const gfx::Size kNoMaxImageSize = gfx::Size(0, 0);
 constexpr uint8_t kNoWeekOfManufactureTag = 0x00;
 constexpr uint8_t kModelYearTag = 0xff;
 // 16843009 == 0x01010101
-const std::string kGenericBlockZeroHashedSerialNumber =
-    base::MD5String(std::string("16843009"));
+const std::string kGenericBlockZeroHashedSerialNumber = Md5AsHex("16843009");
 const std::string kNormalDisplayHashedDescriptorBlockSerialNumber =
-    base::MD5String(std::string("CN4202137Q"));
+    Md5AsHex("CN4202137Q");
 
 // Primaries coordinates ({RX, RY, GX, GY, BX, BY, WX, WY}) calculated by hand
 // and rounded to 4 decimal places.
@@ -623,8 +629,8 @@ struct TestParams {
      .manufacturer_id = 0x10ACu,
      .product_id = 0x6440u,
      .block_zero_serial_number_hash =
-         base::MD5String("842018892"),  // == LSB of 0x4c, 0x30, 0x30, 0x32
-     .descriptor_block_serial_number_hash = base::MD5String("PH5NY13N200L"),
+         Md5AsHex("842018892"),  // == LSB of 0x4c, 0x30, 0x30, 0x32
+     .descriptor_block_serial_number_hash = Md5AsHex("PH5NY13N200L"),
      .max_image_size = gfx::Size(64, 40),
      .display_name = "DELL U3011",
      .active_pixel_size = gfx::Size(1920, 1200),
@@ -653,7 +659,7 @@ struct TestParams {
      .manufacturer_id = 0x22f0u,
      .product_id = 0x7626u,
      .block_zero_serial_number_hash = kGenericBlockZeroHashedSerialNumber,
-     .descriptor_block_serial_number_hash = base::MD5String("CNK80204HM"),
+     .descriptor_block_serial_number_hash = Md5AsHex("CNK80204HM"),
      .max_image_size = gfx::Size(52, 33),
      .display_name = "HP LP2465",
      .active_pixel_size = gfx::Size(1920, 1200),
@@ -679,7 +685,7 @@ struct TestParams {
      .manufacturer_id = 0x22f0u,
      .product_id = 0x7526u,
      .block_zero_serial_number_hash = kGenericBlockZeroHashedSerialNumber,
-     .descriptor_block_serial_number_hash = base::MD5String("CNK80204HM"),
+     .descriptor_block_serial_number_hash = Md5AsHex("CNK80204HM"),
      .max_image_size = gfx::Size(52, 33),
      .display_name = "HP LP2465",
      .active_pixel_size = gfx::Size(1920, 1200),
@@ -705,7 +711,7 @@ struct TestParams {
      .manufacturer_id = 0x22f0u,
      .product_id = 0x7532u,
      .block_zero_serial_number_hash = kGenericBlockZeroHashedSerialNumber,
-     .descriptor_block_serial_number_hash = base::MD5String("CNC7270MW0"),
+     .descriptor_block_serial_number_hash = Md5AsHex("CNC7270MW0"),
      .max_image_size = gfx::Size(70, 39),
      .display_name = "HP Z32x",
      .active_pixel_size = gfx::Size(3840, 2160),
@@ -783,7 +789,7 @@ struct TestParams {
      .manufacturer_id = 19501u,
      .product_id = 62989u,
      .block_zero_serial_number_hash =
-         base::MD5String("16780800"),  // == LSB of 0x00, 0x0e, 0x00 0x01
+         Md5AsHex("16780800"),  // == LSB of 0x00, 0x0e, 0x00 0x01
      .descriptor_block_serial_number_hash = kNoSerialNumber,
      .max_image_size = gfx::Size(95, 54),
      .display_name = "SAMSUNG",

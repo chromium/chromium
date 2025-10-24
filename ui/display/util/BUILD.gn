@@ -25,6 +25,7 @@ component("util") {
     "//base",
     "//components/device_event_log",
     "//components/viz/common/resources:shared_image_format",
+    "//crypto",
     "//skia",
     "//ui/display/types",
     "//ui/gfx:color_space",
