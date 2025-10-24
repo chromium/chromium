@@ -125,7 +125,9 @@ namespace autofill::payments {
 ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
     ContentAutofillClient* client)
     : content::WebContentsObserver(&client->GetWebContents()),
-      client_(CHECK_DEREF(client)) {}
+      client_(CHECK_DEREF(client)),
+      save_and_fill_manager_(
+          std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get())) {}
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
 
@@ -1069,10 +1071,6 @@ SaveAndFillManager* ChromePaymentsAutofillClient::GetSaveAndFillManager() {
 #if BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
-  if (!save_and_fill_manager_) {
-    save_and_fill_manager_ =
-        std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get());
-  }
   return save_and_fill_manager_.get();
 #endif  // BUILDFLAG(IS_ANDROID)
 }

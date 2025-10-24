@@ -47,6 +47,8 @@ namespace autofill::payments {
 
 TestPaymentsAutofillClient::TestPaymentsAutofillClient(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
+      mock_save_and_fill_manager_(
+          std::make_unique<testing::NiceMock<MockSaveAndFillManager>>()),
       mock_merchant_promo_code_manager_(
           &client_->GetPersonalDataManager().payments_data_manager()) {}
 
@@ -417,10 +419,6 @@ TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 }
 
 MockSaveAndFillManager* TestPaymentsAutofillClient::GetSaveAndFillManager() {
-  if (!mock_save_and_fill_manager_) {
-    mock_save_and_fill_manager_ =
-        std::make_unique<testing::NiceMock<MockSaveAndFillManager>>();
-  }
   return mock_save_and_fill_manager_.get();
 }
 

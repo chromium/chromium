@@ -70,4 +70,9 @@ const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()
   return const_cast<PaymentsAutofillClient*>(this)->GetPaymentsDataManager();
 }
 
+const payments::SaveAndFillManager*
+PaymentsAutofillClient::GetSaveAndFillManager() const {
+  return const_cast<PaymentsAutofillClient*>(this)->GetSaveAndFillManager();
+}
+
 }  // namespace autofill::payments

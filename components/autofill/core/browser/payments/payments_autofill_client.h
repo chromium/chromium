@@ -586,6 +586,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // platforms).
   virtual AutofillOfferManager* GetAutofillOfferManager() = 0;
 
+  // Gets a const version of the AutofillOfferManager.
+  const AutofillOfferManager* GetAutofillOfferManager() const;
+
   // TODO(crbug.com/40134864): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the
   //                          urls. "Domain" is no longer accurate.
@@ -678,6 +681,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   //   and updating its state accordingly.
   virtual PaymentsDataManager& GetPaymentsDataManager() = 0;
 
+  // Gets a const version of the PaymentsDataManager.
+  const PaymentsDataManager& GetPaymentsDataManager() const;
+
 #if !BUILDFLAG(IS_IOS)
   // Creates the appropriate implementation of InternalAuthenticator. May be
   // null for platforms that don't support this, in which case standard CVC
@@ -694,6 +700,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the payments Save and Fill manager owned by the client. This will be
   // used to handle the Save and Fill dialog.
   virtual payments::SaveAndFillManager* GetSaveAndFillManager() = 0;
+
+  // Gets a const version of payments Save and Fill manager owned by the client.
+  const payments::SaveAndFillManager* GetSaveAndFillManager() const;
 
   // Shows the local `Save and Fill` modal dialog.
   virtual void ShowCreditCardLocalSaveAndFillDialog(
@@ -725,12 +734,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the `BnplUiDelegate` instance associated with the client. Handles the
   // UI in the BNPL flow depending on the platform.
   virtual BnplUiDelegate* GetBnplUiDelegate() = 0;
-
-  // Gets a const version of the AutofillOfferManager.
-  const AutofillOfferManager* GetAutofillOfferManager() const;
-
-  // Gets a const version of the PaymentsDataManager.
-  const PaymentsDataManager& GetPaymentsDataManager() const;
 };
 
 }  // namespace payments
