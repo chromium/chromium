@@ -1771,23 +1771,22 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
   }
 
   AdsPageLoadMetricsObserverResourceBrowserTestBase() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{subresource_filter::kAdTagging, {}},
-         {subresource_filter::kAdsInterventionsEnforced, {}},
-         {heavy_ad_intervention::features::kHeavyAdIntervention, {}},
-         {heavy_ad_intervention::features::
-              kHeavyAdInterventionSendReportToEmbedder,
-          {}},
-         {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
-          {{"host-threshold", "3"}}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled{
+        {subresource_filter::kAdTagging, {}},
+        {subresource_filter::kAdsInterventionsEnforced, {}},
+        {heavy_ad_intervention::features::kHeavyAdIntervention, {}},
+        {heavy_ad_intervention::features::
+             kHeavyAdInterventionSendReportToEmbedder,
+         {}},
+        {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
+         {{"host-threshold", "3"}}}};
+    std::vector<base::test::FeatureRef> disabled;
     if (IsReduceTransferSizeUpdatedIPCEnabled()) {
-      reduce_ipc_feature_list_.InitAndEnableFeature(
-          network::features::kReduceTransferSizeUpdatedIPC);
+      enabled.push_back({network::features::kReduceTransferSizeUpdatedIPC, {}});
     } else {
-      reduce_ipc_feature_list_.InitAndDisableFeature(
-          network::features::kReduceTransferSizeUpdatedIPC);
+      disabled.push_back(network::features::kReduceTransferSizeUpdatedIPC);
     }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   ~AdsPageLoadMetricsObserverResourceBrowserTestBase() override = default;
@@ -1858,7 +1857,6 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedFeatureList reduce_ipc_feature_list_;
 };
 
 class AdsPageLoadMetricsObserverResourceBrowserTest
