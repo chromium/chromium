@@ -71,6 +71,10 @@ COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
     SharedImageFormat format);
 
+// Returns the BufferFormat corresponding to `format`.
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+gfx::BufferFormat SharedImageFormatToBufferFormat(SharedImageFormat format);
+
 // Returns the SharedImageFormat corresponding to `buffer_format`.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format);
@@ -145,10 +149,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   friend class gpu::MappableBufferNativePixmap;
   friend class ui::WaylandOverlayManager;
 
-  // BufferFormat is being transitioned out of SharedImage code (to use
-  // SharedImageFormat instead). Refrain from using this function or preferably
-  // use with single planar SharedImageFormats. Returns BufferFormat for given
-  // `format`.
+  //  Returns BufferFormat for given `format`.
   static gfx::BufferFormat ToBufferFormat(SharedImageFormat format);
 };
 

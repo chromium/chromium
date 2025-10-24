@@ -58,10 +58,7 @@ struct GLFormatDesc {
 GPU_GLES2_EXPORT bool IsSizeForBufferHandleValid(const gfx::Size& size,
                                                  viz::SharedImageFormat format);
 
-// BufferFormat is being transitioned out of SharedImage code (to use
-// SharedImageFormat instead). Refrain from using this function or preferably
-// use with single planar SharedImageFormats. Returns BufferFormat for given
-// `format`.
+// Returns BufferFormat for given `format`.
 GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
     viz::SharedImageFormat format);
 
