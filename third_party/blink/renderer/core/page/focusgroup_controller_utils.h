@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUSGROUP_CONTROLLER_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUSGROUP_CONTROLLER_UTILS_H_
 
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -28,6 +29,36 @@ enum class FocusgroupType {
   kLinear,
 };
 
+// Focusgroup Terminology:
+//
+// - Focusgroup Owner: An element with a focusgroup attribute that creates
+//   an actual focusgroup (not focusgroup="none"). This element defines the
+//   scope and behavior for its focusgroup items.
+//
+// - Focusgroup Scope: The DOM subtree under a focusgroup owner, containing
+//   all potential focusgroup items. The scope ends at nested focusgroup owners
+//   or opted-out subtrees (focusgroup="none").
+//
+// - Focusgroup Item: A focusable element within a focusgroup scope that is not
+//   inside a nested focusgroup or opted-out subtree. These are the elements
+//   that participate in focusgroup arrow key navigation.
+//
+// - Focusgroup Segment: A contiguous sequence of focusgroup items within a
+//   focusgroup scope, bounded by barriers. Barriers include nested focusgroup
+//   owners and opted-out subtrees that contain focusable elements participating
+//   in sequential focus navigation (Tab/Shift+Tab). Segments are used to
+//   determine guaranteed tab stops during sequential navigation.
+//
+// Example:
+//   <div focusgroup="toolbar">           <!-- Focusgroup Owner -->
+//     <button>A</button>                 <!-- Item in segment 1 -->
+//     <button>B</button>                 <!-- Item in segment 1 -->
+//     <div focusgroup="none">
+//       <button>Help</button>            <!-- Barrier -->
+//     </div>
+//     <button>C</button>                 <!-- Item in segment 2 -->
+//     <button>D</button>                 <!-- Item in segment 2 -->
+//   </div>
 class CORE_EXPORT FocusgroupControllerUtils {
   STATIC_ONLY(FocusgroupControllerUtils);
 
@@ -43,8 +74,20 @@ class CORE_EXPORT FocusgroupControllerUtils {
                                FocusgroupDirection direction);
   static Element* FindNearestFocusgroupAncestor(const Element* element,
                                                 FocusgroupType type);
+
+  // Returns the next element in the DOM tree relative to |current| in the
+  // specified |direction|. If |skip_subtree| is true, the subtree of |current|
+  // will be skipped. These helpers are equivalent, but use different direction
+  // types for convenience.
+  // This overload is is useful when the caller is managing directional
+  // (arrow-key) navigation in focusgroups.
   static Element* NextElementInDirection(const Element* current,
                                          FocusgroupDirection direction,
+                                         bool skip_subtree);
+  // This overload is useful when the caller is managing sequential
+  // (Tab/Shift+Tab) navigation in focusgroups.
+  static Element* NextElementInDirection(const Element* current,
+                                         mojom::blink::FocusType direction,
                                          bool skip_subtree);
   static Element* NextElement(const Element* current, bool skip_subtree);
   static Element* PreviousElement(const Element* current,
@@ -73,10 +116,26 @@ class CORE_EXPORT FocusgroupControllerUtils {
   static Element* FirstFocusgroupItemWithin(const Element* owner);
   static Element* LastFocusgroupItemWithin(const Element* owner);
 
-  static Element* AdjustElementOutOfUnrelatedFocusgroup(
-      Element* element,
-      Element* stop_ancestor,
-      FocusgroupDirection direction);
+  // Checks if a focusgroup contains barriers.
+  static bool DoesFocusgroupContainBarrier(const Element& focusgroup);
+
+  // Checks if an opted-out subtree contains barriers.
+  static bool DoesOptOutSubtreeContainBarrier(const Element& opted_out_root);
+
+  // These helpers work on segments, not entire focusgroups. (see class comment
+  // above for definition of segment).
+  // If item is a focusgroup item, returns the first item in its segment.
+  static Element* FirstFocusgroupItemInSegment(const Element& item);
+  // If item is a focusgroup item, returns the last item in its segment.
+  static Element* LastFocusgroupItemInSegment(const Element& item);
+
+  // |item| must be a focusgroup item. Returns the next item in its segment in
+  // the given direction. Returns nullptr if |item| is not a focusgroup item or
+  // if there is no next item in the segment in that direction.
+  static Element* NextFocusgroupItemInSegmentInDirection(
+      const Element& item,
+      const Element& focusgroup_owner,
+      mojom::blink::FocusType direction);
 
   // Returns the focusgroup owner of |element| if |element| is a focusgroup
   // item, or nullptr otherwise. This combines focusgroup owner lookup with
@@ -90,6 +149,10 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // Returns true if the element is opted out or within an opted-out focusgroup
   // subtree.
   static bool IsElementInOptedOutSubtree(const Element* element);
+  // Returns the root of the opted-out subtree containing |element|, or nullptr
+  // if |element| is not in an opted-out subtree. The root of an opted-out
+  // subtree is the nearest ancestor (or self) with focusgroup="none".
+  static const Element* GetOptedOutSubtreeRoot(const Element* element);
 
   static GridFocusgroupStructureInfo*
   CreateGridFocusgroupStructureInfoForGridRoot(Element* root);

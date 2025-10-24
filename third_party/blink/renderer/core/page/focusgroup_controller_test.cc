@@ -790,4 +790,156 @@ TEST_F(FocusgroupControllerTest, GetFocusgroupOwnerOfItem) {
   EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(nullptr, fg));
 }
 
+TEST_F(FocusgroupControllerTest, SegmentDetectionBasic) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  // All items in a single segment (no boundaries).
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="item1">Item 1</button>
+      <button id="item2">Item 2</button>
+      <button id="item3">Item 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* item1 = GetElementById("item1");
+  auto* item2 = GetElementById("item2");
+  auto* item3 = GetElementById("item3");
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item3);
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item2), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item2), item3);
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item3), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item3), item3);
+}
+
+TEST_F(FocusgroupControllerTest, SegmentDetectionWithOptedOutBoundary) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="item1">Item 1</button>
+      <button id="item2">Item 2</button>
+      <div focusgroup="none">
+        <button id="boundary">Boundary</button>
+      </div>
+      <button id="item3">Item 3</button>
+      <button id="item4">Item 4</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* item1 = GetElementById("item1");
+  auto* item2 = GetElementById("item2");
+  auto* boundary = GetElementById("boundary");
+  auto* item3 = GetElementById("item3");
+  auto* item4 = GetElementById("item4");
+
+  // Segment 1: [item1, item2].
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item2);
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item2), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item2), item2);
+
+  // Boundary element is not a focusgroup item (opted out).
+  EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(boundary), nullptr);
+
+  // Segment 2: [item3, item4].
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item3), item3);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item3), item4);
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item4), item3);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item4), item4);
+}
+
+TEST_F(FocusgroupControllerTest, SegmentDetectionMultipleBoundaries) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="item1">Item 1</button>
+      <div focusgroup="none">
+        <button id="boundary1">Boundary 1</button>
+      </div>
+      <button id="item2">Item 2</button>
+      <div focusgroup="none">
+        <button id="boundary2">Boundary 2</button>
+      </div>
+      <button id="item3">Item 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* item1 = GetElementById("item1");
+  auto* item2 = GetElementById("item2");
+  auto* item3 = GetElementById("item3");
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item1);
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item2), item2);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item2), item2);
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item3), item3);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item3), item3);
+}
+
+TEST_F(FocusgroupControllerTest, SegmentDetectionOptedOutNotFocusable) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="item1">Item 1</button>
+      <button id="item2">Item 2</button>
+      <div focusgroup="none">
+        <div id="not_boundary">Not a boundary (not focusable)</div>
+      </div>
+      <button id="item3">Item 3</button>
+      <button id="item4">Item 4</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* item1 = GetElementById("item1");
+  auto* item4 = GetElementById("item4");
+  auto* not_boundary = GetElementById("not_boundary");
+
+  // The opted-out element is not focusable, so it doesn't create a boundary.
+  // All items remain in one segment.
+  EXPECT_FALSE(not_boundary->IsFocusable());
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item4);
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item4), item1);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item4), item4);
+}
+
+TEST_F(FocusgroupControllerTest, SegmentDetectionNonFocusgroupItem) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="item1">Item 1</button>
+      <div id="not_item">Not an item (not focusable)</div>
+      <button id="item2">Item 2</button>
+    </div>
+    <button id="outside">Outside focusgroup</button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* not_item = GetElementById("not_item");
+  auto* outside = GetElementById("outside");
+
+  // Non-focusgroup items should return nullptr.
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*not_item), nullptr);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*not_item), nullptr);
+
+  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*outside), nullptr);
+  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*outside), nullptr);
+}
+
 }  // namespace blink
