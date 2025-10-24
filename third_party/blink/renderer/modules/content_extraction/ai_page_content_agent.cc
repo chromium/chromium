@@ -413,6 +413,10 @@ void AddClickabilityReasons(
     interaction_info.clickability_reasons.push_back(Reason::kCursorPointer);
   }
 
+  if (style.AffectedByHover()) {
+    interaction_info.clickability_reasons.push_back(Reason::kHoverPseudoClass);
+  }
+
   if (ui::IsClickable(role)) {
     interaction_info.clickability_reasons.push_back(Reason::kAriaRole);
   }

@@ -192,6 +192,9 @@ enum AIPageContentClickabilityReason {
   // The node has autocomplete, as indicated by the same-named attribute or
   // aria-autocomplete.
   kAutocomplete,
+
+  // The node has a CSS :hover pseudo-class that would affect it on hover.
+  kHoverPseudoClass,
 };
 
 struct AIPageContentNodeInteractionInfo {

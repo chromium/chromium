@@ -3908,7 +3908,8 @@ TEST_F(AIPageContentAgentTest, SelectLabelNotActionable) {
   const auto& select = *root.children_nodes.at(1);
   ASSERT_TRUE(select.content_attributes->node_interaction_info);
   CheckHitTestableAndInteractive(select,
-                                 {ClickabilityReason::kClickableControl});
+                                 {ClickabilityReason::kClickableControl,
+                                  ClickabilityReason::kHoverPseudoClass});
 }
 
 TEST_F(AIPageContentAgentTest, ClickabilityReasonClickableControl) {
@@ -4338,6 +4339,67 @@ TEST_F(AIPageContentAgentTest, ClipPathEmpty) {
   const auto& div_node = *ContentRootNode().children_nodes[0];
 
   CheckGeometry(div_node, gfx::Rect(), gfx::Rect());
+}
+
+TEST_F(AIPageContentAgentTest, CSSHoverPseudoClass) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          div:hover {
+            background-color: red;
+          }
+        </style>
+        <div onclick=console.log(1)></div>
+        <p>sibling</p>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  EXPECT_TRUE(
+      div_node.content_attributes->node_interaction_info->clickability_reasons
+          .Contains(ClickabilityReason::kHoverPseudoClass));
+
+  const auto& p_node = *ContentRootNode().children_nodes[1];
+  EXPECT_FALSE(
+      p_node.content_attributes->node_interaction_info->clickability_reasons
+          .Contains(ClickabilityReason::kHoverPseudoClass));
+}
+
+TEST_F(AIPageContentAgentTest, CSSHoverPseudoClassNotInherited) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          div:hover {
+            background-color: red;
+          }
+        </style>
+        <div onclick=console.log(1)>
+          <p>child</p>
+        </div>
+        <p>sibling</p>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  EXPECT_TRUE(
+      div_node.content_attributes->node_interaction_info->clickability_reasons
+          .Contains(ClickabilityReason::kHoverPseudoClass));
+
+  const auto& child_p_node = *div_node.children_nodes[0];
+  EXPECT_FALSE(child_p_node.content_attributes->node_interaction_info
+                   ->clickability_reasons.Contains(
+                       ClickabilityReason::kHoverPseudoClass));
+
+  const auto& sibling_p_node = *ContentRootNode().children_nodes[1];
+  EXPECT_FALSE(sibling_p_node.content_attributes->node_interaction_info
+                   ->clickability_reasons.Contains(
+                       ClickabilityReason::kHoverPseudoClass));
 }
 
 // Tests hit-testing and z-order computations for AIPageContentAgent.

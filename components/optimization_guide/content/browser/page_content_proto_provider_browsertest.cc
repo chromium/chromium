@@ -408,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP,
-          optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX));
+          optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX,
+          optimization_guide::proto::CLICKABILITY_REASON_HOVER_PSEUDO_CLASS));
   EXPECT_THAT(
       button_node.content_attributes()
           .interaction_info()
@@ -424,7 +425,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP,
-          optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX));
+          optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX,
+          optimization_guide::proto::CLICKABILITY_REASON_HOVER_PSEUDO_CLASS));
 
   const auto& expanded = ActionableContentRootNode().children_nodes()[1];
   ASSERT_TRUE(expanded.content_attributes().has_interaction_info());
