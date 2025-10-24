@@ -362,10 +362,6 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
   }
 }
 
-SidePanelEntry* SidePanelCoordinator::GetCurrentSidePanelEntryForTesting() {
-  return GetEntryForUniqueKey(*current_key());
-}
-
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
   waiter(SidePanelEntry::PanelType::kContent)
       ->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST

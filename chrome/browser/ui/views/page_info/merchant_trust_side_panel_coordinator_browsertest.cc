@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
@@ -101,6 +102,15 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
 
   SidePanelCoordinator* side_panel_coordinator() {
     return browser()->GetFeatures().side_panel_coordinator();
+  }
+
+  SidePanelEntry* GetMerchantTrustEntryForActiveTab() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->side_panel_registry()
+        ->GetEntryForKey(
+            SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -201,11 +211,9 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kMerchantTrust)));
 
   // Check that the MerchantTrust url remains the same.
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
-            kMerchantReviewsGURL);
+  SidePanelEntry* current_entry = GetMerchantTrustEntryForActiveTab();
+  EXPECT_TRUE(current_entry);
+  EXPECT_EQ(current_entry->GetOpenInNewTabURL(), kMerchantReviewsGURL);
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
@@ -233,11 +241,9 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kMerchantTrust)));
 
   // Check that the MerchantTrust url remains the same.
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
-            kMerchantReviewsGURL);
+  SidePanelEntry* current_entry = GetMerchantTrustEntryForActiveTab();
+  EXPECT_TRUE(current_entry);
+  EXPECT_EQ(current_entry->GetOpenInNewTabURL(), kMerchantReviewsGURL);
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
@@ -262,11 +268,9 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kMerchantTrust)));
 
   // Check that the AboutThisSite url remains the same.
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
-            kMerchantReviewsGURL);
+  SidePanelEntry* current_entry = GetMerchantTrustEntryForActiveTab();
+  EXPECT_TRUE(current_entry);
+  EXPECT_EQ(current_entry->GetOpenInNewTabURL(), kMerchantReviewsGURL);
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
@@ -293,12 +297,9 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kMerchantTrust)));
 
   // Check that the MerchantTrust url isn't changed.
-
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
-            kGURLWithMerchantTrustData);
+  SidePanelEntry* current_entry = GetMerchantTrustEntryForActiveTab();
+  EXPECT_TRUE(current_entry);
+  EXPECT_EQ(current_entry->GetOpenInNewTabURL(), kGURLWithMerchantTrustData);
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
@@ -336,9 +337,7 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kMerchantTrust)));
 
-  auto view = side_panel_coordinator()
-                  ->GetCurrentSidePanelEntryForTesting()
-                  ->GetContent();
+  auto view = GetMerchantTrustEntryForActiveTab()->GetContent();
   auto* side_panel_view = static_cast<WebViewSidePanelView*>(view.get());
 
   EXPECT_EQ(side_panel_view->GetLastUrlForTesting(),

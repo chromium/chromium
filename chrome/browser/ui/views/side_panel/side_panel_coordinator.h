@@ -62,8 +62,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
 
-  SidePanelEntry* GetCurrentSidePanelEntryForTesting();
-
   SidePanelEntry* GetLoadingEntryForTesting(
       SidePanelEntry::PanelType type) const;
 

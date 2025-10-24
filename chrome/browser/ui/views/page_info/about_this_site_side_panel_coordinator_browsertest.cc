@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -71,6 +72,14 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  SidePanelEntry* GetAboutThisSiteEntryForActiveTab() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->side_panel_registry()
+        ->GetEntryForKey(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
+  }
+
   SidePanelCoordinator* side_panel_coordinator() {
     return browser()->GetFeatures().side_panel_coordinator();
   }
@@ -117,10 +126,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   // Check that the AboutThisSite url was updated.
   std::string kAboutThisSiteRegularUrl2 = CreateAboutThisSiteUrl(kRegularGURL2);
 
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
+  EXPECT_TRUE(GetAboutThisSiteEntryForActiveTab());
+  EXPECT_EQ(GetAboutThisSiteEntryForActiveTab()->GetOpenInNewTabURL(),
             kAboutThisSiteRegularUrl2);
 }
 
@@ -143,10 +150,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kAboutThisSite)));
 
   // Check that the AboutThisSite url remains the same.
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
+  EXPECT_TRUE(GetAboutThisSiteEntryForActiveTab());
+  EXPECT_EQ(GetAboutThisSiteEntryForActiveTab()->GetOpenInNewTabURL(),
             kAboutThisSiteGURL);
 }
 
@@ -175,10 +180,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   std::string kAboutThisSiteRegularUrl1WithPath2 =
       CreateAboutThisSiteUrl(kRegularGURL1WithPath2);
 
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
+  EXPECT_TRUE(GetAboutThisSiteEntryForActiveTab());
+  EXPECT_EQ(GetAboutThisSiteEntryForActiveTab()->GetOpenInNewTabURL(),
             kAboutThisSiteRegularUrl1WithPath2);
 }
 
@@ -207,10 +210,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   std::string kAboutThisSiteRegularUrl1WithPath2 =
       CreateAboutThisSiteUrl(kRegularGURL1WithPath2);
 
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
+  EXPECT_TRUE(GetAboutThisSiteEntryForActiveTab());
+  EXPECT_EQ(GetAboutThisSiteEntryForActiveTab()->GetOpenInNewTabURL(),
             kAboutThisSiteRegularUrl1WithPath2);
 }
 
@@ -235,10 +236,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kAboutThisSite)));
 
   // Check that the AboutThisSite url remains the same.
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
+  EXPECT_TRUE(GetAboutThisSiteEntryForActiveTab());
+  EXPECT_EQ(GetAboutThisSiteEntryForActiveTab()->GetOpenInNewTabURL(),
             kAboutThisSiteGURL);
 }
 
@@ -265,10 +264,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   std::string kAboutThisSiteInvalidUrl =
       CreateAboutThisSiteUrl(kInvalidGURL.GetWithEmptyPath());
 
-  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(side_panel_coordinator()
-                ->GetCurrentSidePanelEntryForTesting()
-                ->GetOpenInNewTabURL(),
+  EXPECT_TRUE(GetAboutThisSiteEntryForActiveTab());
+  EXPECT_EQ(GetAboutThisSiteEntryForActiveTab()->GetOpenInNewTabURL(),
             kAboutThisSiteInvalidUrl);
 }
 

@@ -252,8 +252,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
 
-  EXPECT_EQ(SidePanelEntryKey(SidePanelEntryId::kReadAnything),
-            coordinator->GetCurrentSidePanelEntryForTesting()->key());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 }
 
 // Verify that we can open the CustomizeChrome side panel from the 3dot -> More
@@ -305,8 +305,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL);
 
-  EXPECT_EQ(SidePanelEntryKey(SidePanelEntryId::kHistoryClusters),
-            coordinator->GetCurrentSidePanelEntryForTesting()->key());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kHistoryClusters)));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
