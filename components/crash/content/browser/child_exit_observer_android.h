@@ -145,7 +145,7 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
   void ChildReceivedCrashSignal(base::ProcessId pid, int signo) override;
 
   // content::RenderProcessHostCreationObserver implementation.
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
 
  private:
   // content::BrowserChildProcessObserver implementation:

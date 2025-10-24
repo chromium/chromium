@@ -120,7 +120,7 @@ void ContentStabilityMetricsProvider::ClearSavedStabilityMetrics() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void ContentStabilityMetricsProvider::OnRenderProcessHostCreated(
+void ContentStabilityMetricsProvider::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   bool was_extension_process =
       extensions_helper_ && extensions_helper_->IsExtensionProcess(host);

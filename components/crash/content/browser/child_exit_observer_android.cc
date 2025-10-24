@@ -71,7 +71,7 @@ void ChildExitObserver::ChildReceivedCrashSignal(base::ProcessId pid,
   DCHECK(result);
 }
 
-void ChildExitObserver::OnRenderProcessHostCreated(
+void ChildExitObserver::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   // The child process pid isn't available when process is gone, keep a mapping
   // between process_host_id and pid, so we can find it later.

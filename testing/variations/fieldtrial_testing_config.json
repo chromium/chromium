@@ -23938,6 +23938,29 @@
             ]
         }
     ],
+    "SkipIPCChanelPausingForNonGuests": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "internal_webui_only": "false"
+                    },
+                    "enable_features": [
+                        "SkipIPCChanelPausingForNonGuests"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipModerateMemoryPressureLevelMac": [
         {
             "platforms": [

@@ -1305,6 +1305,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const GlobalRenderFrameHostId& render_frame_host_id,
       bool is_prerendering);
 
+  bool ShouldPauseChannelUntilProcessLaunched();
+
   mojo::OutgoingInvitation mojo_invitation_;
 
   // These cover mutually-exclusive cases. While keep-alive is time-based,
@@ -1539,7 +1541,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   bool channel_connected_ = false;
   bool sent_render_process_ready_ = false;
-  bool sent_process_created_ = false;
+  bool sent_process_launched_ = false;
 
   std::unique_ptr<FileSystemManagerImpl, BrowserThread::DeleteOnIOThread>
       file_system_manager_impl_;

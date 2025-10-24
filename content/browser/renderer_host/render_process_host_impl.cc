@@ -292,6 +292,21 @@
 #define MAYBEVLOG DVLOG
 #endif
 
+namespace features {
+
+// When enabled, the IPC channel will not be paused when launching non-guest
+// renderer processes. This makes it possible for all kinds of mojo calls
+// to be sent to the renderer process before OnProcessLaunched fires. When the
+// feature is disabled, those messages are instead queued because the IPC
+// channel is paused, and only flushed at OnProcessLaunched.
+BASE_FEATURE(kSkipIPCChannelPausingForNonGuests,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> skip_channel_pausing_for_internal_webui_only{
+    &features::kSkipIPCChannelPausingForNonGuests, "internal_webui_only",
+    false};
+
+}  // namespace features
+
 namespace content {
 
 namespace {
@@ -1819,14 +1834,16 @@ bool RenderProcessHostImpl::Init() {
   if (!channel_)
     InitializeChannelProxy();
 
-  // Unpause the Channel briefly. This will be paused again below if we launch a
-  // real child process. Note that messages may be sent in the short window
-  // between now and then (e.g. in response to RenderProcessWillLaunch) and we
-  // depend on those messages being sent right away.
-  //
-  // |channel_| must always be non-null here: either it was initialized in
-  // the constructor, or in the most recent call to ProcessDied().
-  channel_->Unpause(false /* flush */);
+  if (ShouldPauseChannelUntilProcessLaunched()) {
+    // Unpause the Channel briefly. This will be paused again below if we launch
+    // a real child process. Note that messages may be sent in the short window
+    // between now and then (e.g. in response to RenderProcessWillLaunch) and we
+    // depend on those messages being sent right away.
+    //
+    // |channel_| must always be non-null here: either it was initialized in
+    // the constructor, or in the most recent call to ProcessDied().
+    channel_->Unpause(false /* flush */);
+  }
 
   // Call the embedder first so that their IPC filters have priority.
   GetContentClient()->browser()->RenderProcessWillLaunch(this);
@@ -1883,15 +1900,20 @@ bool RenderProcessHostImpl::Init() {
     // on starting in-process-render-thread.
     // So put it here to trigger Channel initialization earlier to enable
     // in-process-render-thread using Channel there.
+    for (auto* observer : GetAllCreationObservers()) {
+      observer->OnRenderProcessHostCreated(this);
+    }
     OnProcessLaunched();  // Fake a callback that the process is ready.
 
     in_process_renderer_->StartWithOptions(std::move(options));
 
     g_in_process_thread = in_process_renderer_.get();
 
-    // Make sure any queued messages on the channel are flushed in the case
-    // where we aren't launching a child process.
-    channel_->Flush();
+    if (ShouldPauseChannelUntilProcessLaunched()) {
+      // Make sure any queued messages on the channel are flushed in the case
+      // where we aren't launching a child process.
+      channel_->Flush();
+    }
   } else {
     // Build command line for renderer.  We call AppendRendererCommandLine()
     // first so the process type argument will appear first.
@@ -1939,14 +1961,26 @@ bool RenderProcessHostImpl::Init() {
             : nullptr,
         tracing_config_memory_region_, tracing_output_memory_region_);
 
-    TRACE_EVENT_BEGIN(
-        "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpause",
-        tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
-    TRACE_EVENT_BEGIN(
-        "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToFlush",
-        tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
-    pause_channel_on_process_launch_time_ = base::TimeTicks::Now();
-    channel_->Pause();
+    // Send initialization messages to the renderer, before any other messages
+    // that might need them (e.g. navigation commits).
+    // Pass bits of global renderer state to the renderer.
+    NotifyRendererOfLockedStateUpdate();
+    // Send the initial system color info to the renderer.
+    ThemeHelper::GetInstance()->SendSystemColorInfo(GetRendererInterface());
+    for (auto* observer : GetAllCreationObservers()) {
+      observer->OnRenderProcessHostCreated(this);
+    }
+
+    if (ShouldPauseChannelUntilProcessLaunched()) {
+      TRACE_EVENT_BEGIN(
+          "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpause",
+          tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
+      TRACE_EVENT_BEGIN(
+          "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToFlush",
+          tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
+      pause_channel_on_process_launch_time_ = base::TimeTicks::Now();
+      channel_->Pause();
+    }
 
     // In single process mode, browser-side tracing and memory will cover the
     // whole process including renderers.
@@ -2043,14 +2077,15 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   renderer_interface_.reset();
   channel_->GetRemoteAssociatedInterface(&renderer_interface_);
 
-  // We start the Channel in a paused state. It will be briefly unpaused again
-  // in Init() if applicable, before process launch is initiated.
-  TRACE_EVENT_BEGIN(
-      "ipc", "RenderProcessHostImpl.Channel.InitPauseToUnpauseTime",
-      tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
-  pause_channel_on_init_time_ = base::TimeTicks::Now();
-  channel_->Pause();
-
+  if (ShouldPauseChannelUntilProcessLaunched()) {
+    // We start the Channel in a paused state. It will be briefly unpaused again
+    // in Init() if applicable, before process launch is initiated.
+    TRACE_EVENT_BEGIN(
+        "ipc", "RenderProcessHostImpl.Channel.InitPauseToUnpauseTime",
+        tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
+    pause_channel_on_init_time_ = base::TimeTicks::Now();
+    channel_->Pause();
+  }
   InitializeSharedMemoryRegionsOnceChannelIsUp();
 }
 
@@ -3430,6 +3465,32 @@ bool RenderProcessHostImpl::DisallowV8FeatureFlagOverrides() {
 
 bool RenderProcessHostImpl::IsPdf() {
   return !!(flags_ & RenderProcessFlags::kPdf);
+}
+
+bool RenderProcessHostImpl::ShouldPauseChannelUntilProcessLaunched() {
+  if (IsForGuestsOnly()) {
+    // GuestView initialization requires WebViewRendererState, which is created
+    // when the speculative RenderFrameHost for the GuestView is created. This
+    // is after OnRenderProcessHostCreated(), and since we need to ensure no
+    // navigation is committeed before GuestView initialization, we still depend
+    // on IPC Channel pausing.
+    // TODO(crbug.com/448511116): Support earlier initialization for GuestViews,
+    // so that we can skip pausing in this case too.
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kSkipIPCChannelPausingForNonGuests)) {
+    if (features::skip_channel_pausing_for_internal_webui_only.Get()) {
+#if !BUILDFLAG(IS_ANDROID)
+      return IsForInitialWebUI();
+#else
+      return false;
+#endif
+    }
+    return true;
+  }
+  return false;
 }
 
 StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
@@ -5305,7 +5366,7 @@ void RenderProcessHostImpl::ProcessDied(
 
   within_process_died_observer_ = false;
 
-  if (!sent_process_created_) {
+  if (!sent_process_launched_) {
     // Observers who listen for process creation will not get the
     // RenderProcessExited event if the process fails to launch and dies
     // before creation, so we send a different event to the creation observers.
@@ -5704,19 +5765,21 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     // yet to ensure that any initialization messages sent here (e.g., things
     // done in response to OnRenderProcessHostCreated; see below) preempt
     // already queued messages.
-    base::UmaHistogramMediumTimes(
-        "Mojo.Channel.ChannelInitPauseToUnpauseTime",
-        base::TimeTicks::Now() - pause_channel_on_init_time_);
-    base::UmaHistogramMediumTimes(
-        "Mojo.Channel.ProcessLaunchPauseToUnpauseTime",
-        base::TimeTicks::Now() - pause_channel_on_process_launch_time_);
-    // "RenderProcessHostImpl.Channel.InitPauseToUnpauseTime"
-    TRACE_EVENT_END("ipc", tracing_track_, ChromeTrackEvent::kRenderProcessHost,
-                    *this);
-    // "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpauseTime"
-    TRACE_EVENT_END("ipc", tracing_track_, ChromeTrackEvent::kRenderProcessHost,
-                    *this);
-    channel_->Unpause(false /* flush */);
+    if (ShouldPauseChannelUntilProcessLaunched()) {
+      base::UmaHistogramMediumTimes(
+          "Mojo.Channel.ChannelInitPauseToUnpauseTime",
+          base::TimeTicks::Now() - pause_channel_on_init_time_);
+      base::UmaHistogramMediumTimes(
+          "Mojo.Channel.ProcessLaunchPauseToUnpauseTime",
+          base::TimeTicks::Now() - pause_channel_on_process_launch_time_);
+      // "RenderProcessHostImpl.Channel.InitPauseToUnpauseTime"
+      TRACE_EVENT_END("ipc", tracing_track_,
+                      ChromeTrackEvent::kRenderProcessHost, *this);
+      // "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpauseTime"
+      TRACE_EVENT_END("ipc", tracing_track_,
+                      ChromeTrackEvent::kRenderProcessHost, *this);
+      channel_->Unpause(false /* flush */);
+    }
 
     gpu_client_->SetClientPid(GetProcess().Pid());
 
@@ -5754,15 +5817,9 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     ShareMetricsMemoryRegion();
   }
 
-  // Pass bits of global renderer state to the renderer.
-  NotifyRendererOfLockedStateUpdate();
-
-  // Send the initial system color info to the renderer.
-  ThemeHelper::GetInstance()->SendSystemColorInfo(GetRendererInterface());
-
   // Remember when we call the creation observers, so we know when to send
   // creation failed events to the observers.
-  sent_process_created_ = true;
+  sent_process_launched_ = true;
 
   // NOTE: This needs to be before flushing queued messages, because
   // ExtensionService uses this notification to initialize the renderer
@@ -5771,10 +5828,11 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   // The queued messages contain such things as "navigate". If this
   // notification was after, we can end up executing JavaScript before the
   // initialization happens.
-  for (auto* observer : GetAllCreationObservers())
-    observer->OnRenderProcessHostCreated(this);
+  for (auto* observer : GetAllCreationObservers()) {
+    observer->OnRenderProcessLaunched(this);
+  }
 
-  if (child_process_launcher_) {
+  if (child_process_launcher_ && ShouldPauseChannelUntilProcessLaunched()) {
     base::UmaHistogramMediumTimes(
         "Mojo.Channel.ChannelInitPauseToFlushTime",
         base::TimeTicks::Now() - pause_channel_on_init_time_);

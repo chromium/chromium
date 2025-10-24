@@ -228,6 +228,28 @@ RendererStartupHelper::~RendererStartupHelper() {
 
 void RendererStartupHelper::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
+  if (host->IsForGuestsOnly()) {
+    // GuestView initialization is done in OnRenderProcessLaunched()
+    // instead, because WebViewRendererState set up is not yet done at this
+    // point.
+    return;
+  }
+  InitializeProcess(host);
+}
+
+void RendererStartupHelper::OnRenderProcessLaunched(
+    content::RenderProcessHost* host) {
+  if (!host->IsForGuestsOnly()) {
+    // Any process that *isn't* for guests should have already been
+    // initialized in OnRenderProcessHostCreated(), if it corresponds
+    // to the same context.
+    ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
+    CHECK(GetRenderer(host) != nullptr ||
+          !client->IsSameContext(browser_context_, host->GetBrowserContext()));
+    return;
+  }
+  // Otherwise, we should *not* have initialized the host yet.
+  CHECK_EQ(nullptr, GetRenderer(host));
   InitializeProcess(host);
 }
 
