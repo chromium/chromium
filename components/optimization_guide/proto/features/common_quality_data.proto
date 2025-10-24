@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 9
+// Next ID: 10
 message AnnotatedPageContent {
   // The version of the proto. Each time a backwards incompatible change is made
   // to the proto, the version should be incremented.
@@ -231,6 +231,11 @@ message AnnotatedPageContent {
   // details are populated here. The popup window draws on top of the tab and as
   // such has a higher z order than the main frame's Document.
   PopupWindow popup_window = 8 [features = { field_presence: EXPLICIT }];
+
+  // Information that pertains to the user's profile, not the page.
+  // TODO(b/454610456): This should be moved out of AnnotatedPageContent because
+  // it does not semantically belong here.
+  ProfileInformation profile_information = 9 [features = { field_presence: EXPLICIT }];
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
