@@ -14,6 +14,14 @@ namespace glic {
 
 struct ShowOptions;
 
+enum class DaisyChainSource {
+  kUnknown = 0,
+  kGlicContents = 1,
+  kTabContents = 2,
+  kActorAddTab = 3,
+  kMaxValue = kActorAddTab,
+};
+
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics {
  public:
@@ -66,7 +74,7 @@ class GlicInstanceMetrics {
   void OnDetach();
 
   // Called when daisy chaining occurs on the instance.
-  void OnDaisyChain();
+  void OnDaisyChain(DaisyChainSource source, bool success);
 
   // Called when GlicInstanceImpl::RegisterConversation is called.
   void OnRegisterConversation(const std::string& conversation_id);

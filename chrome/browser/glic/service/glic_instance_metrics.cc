@@ -14,6 +14,19 @@
 
 namespace glic {
 
+std::string GetDaisyChainSourceString(DaisyChainSource source) {
+  switch (source) {
+    case DaisyChainSource::kGlicContents:
+      return "GlicContents";
+    case DaisyChainSource::kTabContents:
+      return "TabContents";
+    case DaisyChainSource::kActorAddTab:
+      return "ActorAddTab";
+    default:
+      return "Unknown";
+  }
+}
+
 GlicInstanceMetrics::GlicInstanceMetrics() = default;
 
 GlicInstanceMetrics::~GlicInstanceMetrics() = default;
@@ -90,8 +103,12 @@ void GlicInstanceMetrics::OnDetach() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Detach"));
 }
 
-void GlicInstanceMetrics::OnDaisyChain() {
-  base::RecordAction(base::UserMetricsAction("Glic.Instance.OnDaisyChain"));
+void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source, bool success) {
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"Glic.Instance.DaisyChain.",
+                    GetDaisyChainSourceString(source), ".",
+                    success ? "Success" : "Failure"})
+          .c_str()));
 }
 
 void GlicInstanceMetrics::OnRegisterConversation(

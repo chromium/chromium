@@ -72,8 +72,6 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
     if (!new_contents) {
       return;
     }
-    // TODO(crbug.com/450026474): Record daisy chaining events in
-    // GlicInstanceMetrics.
 
     tabs::TabInterface* tab_to_bind =
         tabs::TabInterface::MaybeGetFromContents(new_contents);
@@ -93,6 +91,12 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
       auto show_options = ShowOptions{SidePanelShowOptions{*tab_to_bind}};
       show_options.focus_on_show = tab_to_bind->IsActivated();
       instance_->Show(show_options);
+      instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                                         /*success=*/true);
+    } else {
+      // Record the failure.
+      instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                                         /*success=*/false);
     }
   }
 
@@ -306,12 +310,16 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   tabs::TabInterface* created_tab = service_->CreateTab(
       url, open_in_background, window_id, std::move(callback));
   if (!created_tab) {
+    instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
+                                   /*success=*/false);
     return nullptr;
   }
 
   auto show_options = ShowOptions::ForSidePanel(*created_tab);
   show_options.focus_on_show = created_tab->IsActivated();
   Show(show_options);
+  instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
+                                 /*success=*/true);
   return nullptr;
 }
 
@@ -748,9 +756,13 @@ void GlicInstanceImpl::OnTabAddedToTask(
     const tabs::TabInterface::Handle& tab_handle) {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !task_id) {
+    instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
+                                   /*success=*/false);
     return;
   }
   Show(ShowOptions::ForSidePanel(*tab));
+  instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
+                                 /*success=*/true);
 }
 
 void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {

@@ -135,6 +135,26 @@ should be able to be added at any place in this file.
   <variant name="_SecureButton" summary="Secure pillar page button"/>
 </variants>
 
+<variants name="GlicDaisyChain_Outcome">
+  <variant name="" summary="aggregated"/>
+  <variant name="Failure"
+      summary="Glic failed to daisy chain a new side panel."/>
+  <variant name="Success"
+      summary="Glic successfully daisy chained a side panel."/>
+</variants>
+
+<variants name="GlicDaisyChain_Type">
+  <variant name="" summary="aggregated"/>
+  <variant name="ActorAddTab"
+      summary="Daisy chaining initiated from Actor creating a new tab."/>
+  <variant name="GlicContents"
+      summary="Daisy chaining initiated from clicking a link in the Glic Host
+               UI."/>
+  <variant name="TabContents"
+      summary="Daisy chaining initiated from clicking a link in the active
+               Glic Instance's Tab Contents."/>
+</variants>
+
 <variants name="InProductHelp_Type">
   <variant name="" summary="aggregated"/>
   <variant name="_AccountSettingsHistorySync"
@@ -13968,6 +13988,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Glic.Instance.DaisyChain.{GlicDaisyChain_Type}.{GlicDaisyChain_Outcome}">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <description>
+    Glic side panel daisy chained to a new tab through {GlicDaisyChain_Type}
+    with a result of {GlicDaisyChain_Outcome}.
+  </description>
+  <token key="GlicDaisyChain_Type" variants="GlicDaisyChain_Type"/>
+  <token key="GlicDaisyChain_Outcome" variants="GlicDaisyChain_Outcome"/>
+</action>
+
 <action name="Glic.Instance.Destroyed">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
@@ -13989,14 +14021,6 @@ should be able to be added at any place in this file.
   <description>
     Logged when a Glic instance is hidden from the user (e.g., the side panel is
     closed, the tab is backgrounded, or the floaty is dismissed).
-  </description>
-</action>
-
-<action name="Glic.Instance.OnDaisyChain">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <description>
-    Logged when daisy chaining is detected on an instance.
   </description>
 </action>
 
