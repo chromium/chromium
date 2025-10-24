@@ -44,7 +44,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-namespace autofill {
+namespace autofill::payments {
+
+using IssuerId = autofill::BnplIssuer::IssuerId;
+using ::testing::_;
+using ::testing::AnyOf;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::FieldsAre;
+using ::testing::InSequence;
+using ::testing::Matcher;
+using ::testing::NiceMock;
+using ::testing::Property;
+using ::testing::Return;
+using ::testing::ReturnRef;
+using ::testing::SaveArg;
+using ::testing::Test;
+
+namespace {
 class MockCreditCardFormEventLogger
     : public autofill_metrics::CreditCardFormEventLogger {
  public:
@@ -66,26 +83,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (),
               (override));
 };
-}  // namespace autofill
 
-namespace autofill::payments {
-
-using IssuerId = autofill::BnplIssuer::IssuerId;
-using ::testing::_;
-using ::testing::AnyOf;
-using ::testing::Eq;
-using ::testing::Field;
-using ::testing::FieldsAre;
-using ::testing::InSequence;
-using ::testing::Matcher;
-using ::testing::NiceMock;
-using ::testing::Property;
-using ::testing::Return;
-using ::testing::ReturnRef;
-using ::testing::SaveArg;
-using ::testing::Test;
-
-namespace {
 class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
  public:
   PaymentsNetworkInterfaceMock()
@@ -252,7 +250,7 @@ class BnplManagerTest : public Test,
     CreateAutofillDriver();
 
     credit_card_form_event_logger_ =
-        std::make_unique<NiceMock<autofill::MockCreditCardFormEventLogger>>(
+        std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             &autofill_manager());
 
     ON_CALL(autofill_manager(), GetCreditCardFormEventLogger())
@@ -335,8 +333,7 @@ class BnplManagerTest : public Test,
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<autofill::MockCreditCardFormEventLogger>
-      credit_card_form_event_logger_;
+  std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
   std::unique_ptr<BnplManager> bnpl_manager_;
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   base::test::ScopedFeatureList scoped_feature_list_;
