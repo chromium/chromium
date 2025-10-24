@@ -26,7 +26,7 @@ void OnMultiBufferReadComplete(
     std::unique_ptr<HlsDataSourceStream> stream,
     HlsDataSourceProviderImpl::ReadCb callback,
     base::OnceCallback<void(HlsDataSourceStream&)> update_metadata,
-    int requested_read_size,
+    size_t requested_read_size,
     uint64_t trace_key,
     int read_size) {
   TRACE_EVENT_END("media", perfetto::Track(trace_key), "size", read_size);
@@ -134,8 +134,8 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   }
 
   size_t read_size = kDefaultReadSize;
-  auto pos = stream->read_position();
-  auto max_position = stream->max_read_position();
+  const size_t pos = stream->read_position();
+  const std::optional<size_t> max_position = stream->max_read_position();
   if (max_position.has_value()) {
     // If the read head is greater than max, `CanReadMore` should have returned
     // false.
@@ -144,17 +144,17 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   }
 
   auto int_read_size = base::checked_cast<int>(read_size);
-  auto* buffer_data = stream->LockStreamForWriting(int_read_size);
+  base::span<uint8_t> buffer_data = stream->LockStreamForWriting(read_size);
   auto stream_id = stream->stream_id();
   uint64_t async_event_key = reinterpret_cast<std::uintptr_t>(this);
 
   it->second->Read(
-      base::checked_cast<int64_t>(pos), int_read_size, buffer_data,
+      base::checked_cast<int64_t>(pos), int_read_size, buffer_data.data(),
       base::BindOnce(
           &OnMultiBufferReadComplete, std::move(stream), std::move(callback),
           base::BindOnce(&HlsDataSourceProviderImpl::UpdateStreamMetadata,
                          weak_factory_.GetWeakPtr(), stream_id),
-          int_read_size, async_event_key));
+          read_size, async_event_key));
 }
 
 void HlsDataSourceProviderImpl::OnDataSourceCreated(

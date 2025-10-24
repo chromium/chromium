@@ -50,8 +50,8 @@ StringHlsDataSourceStreamFactory::CreateStream(std::string content,
   auto stream = std::make_unique<HlsDataSourceStream>(
       HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
       base::DoNothing());
-  auto* buffer = stream->LockStreamForWriting(content.length());
-  UNSAFE_TODO(memcpy(buffer, content.c_str(), content.length()));
+  base::span<uint8_t> buffer = stream->LockStreamForWriting(content.length());
+  buffer.copy_from(base::as_byte_span(content));
   stream->UnlockStreamPostWrite(content.length(), true);
   if (taint_origin) {
     stream->set_would_taint_origin();
@@ -71,11 +71,11 @@ FileHlsDataSourceStreamFactory::CreateStream(std::string filename,
   auto stream = std::make_unique<HlsDataSourceStream>(
       HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
       base::DoNothing());
-  auto* buffer = stream->LockStreamForWriting(file_size.value());
-  CHECK_EQ(file_size.value(),
-           base::ReadFile(file_path, reinterpret_cast<char*>(buffer),
-                          file_size.value()));
-  stream->UnlockStreamPostWrite(file_size.value(), true);
+  base::span<uint8_t> buffer = stream->LockStreamForWriting(
+      base::checked_cast<size_t>(file_size.value()));
+  CHECK_EQ(buffer.size(), base::ReadFile(file_path, buffer).value_or(0));
+  stream->UnlockStreamPostWrite(base::checked_cast<size_t>(file_size.value()),
+                                true);
   if (taint_origin) {
     stream->set_would_taint_origin();
   }
