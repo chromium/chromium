@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -79,7 +78,6 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/442838631")
     public void testOpenedHistoryItem_HistoryItemsAreDisplayed() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
@@ -98,7 +96,6 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/442651404")
     public void testOpenedHistoryItem_SearchMatch() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
