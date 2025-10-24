@@ -301,6 +301,13 @@ void GlicStablePinningDelegatingSharingManager::SetDelegate(
         sharing_manager_delegate->pinned_tab_manager_ ==
             old_delegate->pinned_tab_manager_);
   GlicDelegatingSharingManagerBase::SetDelegate(sharing_manager_delegate);
+
+  // Make sure Glic window activation state is current since multi-instance
+  // doesn't allow the focused browser manager to handle its own subscription.
+  GlicSharingManagerImpl* delegate =
+      static_cast<GlicSharingManagerImpl*>(GetDelegate());
+  delegate->focused_browser_manager_->OnGlicWindowActivationChanged(
+      glic_window_active_);
 }
 
 void GlicStablePinningDelegatingSharingManager::SubscribeToPinCandidates(
@@ -310,6 +317,14 @@ void GlicStablePinningDelegatingSharingManager::SubscribeToPinCandidates(
     GetDelegate()->SubscribeToPinCandidates(std::move(options),
                                             std::move(observer));
   }
+}
+
+void GlicStablePinningDelegatingSharingManager::OnGlicWindowActivationChanged(
+    bool active) {
+  glic_window_active_ = active;
+  GlicSharingManagerImpl* delegate =
+      static_cast<GlicSharingManagerImpl*>(GetDelegate());
+  delegate->focused_browser_manager_->OnGlicWindowActivationChanged(active);
 }
 
 }  // namespace glic

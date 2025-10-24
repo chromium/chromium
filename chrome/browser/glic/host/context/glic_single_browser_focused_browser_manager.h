@@ -32,6 +32,7 @@ class GlicSingleBrowserFocusedBrowserManager
       base::RepeatingCallback<void(BrowserWindowInterface*)> callback) override;
   BrowserWindowInterface* GetFocusedBrowser() const override;
   BrowserWindowInterface* GetActiveBrowser() const override;
+  void OnGlicWindowActivationChanged(bool active) override {}
 
  private:
   raw_ptr<BrowserWindowInterface> bwi_;

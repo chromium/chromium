@@ -51,6 +51,7 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
       base::RepeatingCallback<void(BrowserWindowInterface*)> callback) override;
   BrowserWindowInterface* GetFocusedBrowser() const override;
   BrowserWindowInterface* GetActiveBrowser() const override;
+  void OnGlicWindowActivationChanged(bool active) override;
 
   // Returns the candidate for the focused browser window, if there is one.
   // This browser must not be one that will never be shareable (see
@@ -82,9 +83,6 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
   // Sets whether the manager is in testing mode. When in testing mode, logic
   // for determining the active browser is modified to be more deterministic.
   static void SetTestingModeForTesting(bool testing_mode);
-
-  // Callback for when a detached instance's window activation changes.
-  void OnGlicWindowActivationChanged(bool active);
 
  private:
   // Tracks the state of the focused browser and candidate focused browser.

@@ -41,6 +41,9 @@ class GlicFocusedBrowserManagerInterface {
   // focused window if the Glic panel is focused instead. This can return a
   // browser that belongs to a different profile.
   virtual BrowserWindowInterface* GetActiveBrowser() const = 0;
+
+  // Callback for when a detached instance's window activation changes.
+  virtual void OnGlicWindowActivationChanged(bool active) = 0;
 };
 
 }  // namespace glic

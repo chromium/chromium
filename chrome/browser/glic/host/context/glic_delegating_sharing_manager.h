@@ -175,6 +175,14 @@ class GlicStablePinningDelegatingSharingManager
   // Changes the delegate. Crashes if the GlicPinnedTabManager instance is not
   // the same as the current delegate.
   void SetDelegate(GlicSharingManagerImpl* sharing_manager_delegate);
+
+  // Callback for when the glic window activation state changes.
+  void OnGlicWindowActivationChanged(bool active);
+
+ private:
+  // Last known state for glic window being active. We hold this so we can set
+  // it on delegate swaps (delegates are not longer able to subscribe directly).
+  bool glic_window_active_ = false;
 };
 
 }  // namespace glic
