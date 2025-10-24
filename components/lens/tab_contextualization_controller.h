@@ -14,7 +14,6 @@
 #include "base/task/task_runner.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,6 +31,7 @@ struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
 namespace optimization_guide {
+class PageContextEligibility;
 struct AIPageContentResult;
 }  // namespace optimization_guide
 
@@ -158,12 +158,13 @@ class TabContextualizationController : public content::WebContentsObserver {
       const SkBitmap& screenshot);
 
   // The page context eligibility API if it has been fetched. Can be nullptr.
-  raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
+  raw_ptr<optimization_guide::PageContextEligibility>
+      page_context_eligibility_ = nullptr;
 
   ::ui::ScopedUnownedUserData<TabContextualizationController>
       scoped_unowned_user_data_;
 
-  raw_ptr<tabs::TabInterface> tab_;
+  const raw_ptr<tabs::TabInterface> tab_;
 
   base::CallbackListSubscription tab_subscription_;
 

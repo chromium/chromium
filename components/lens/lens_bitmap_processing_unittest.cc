@@ -15,6 +15,7 @@
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_client_logs.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_phase_latencies_metadata.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"

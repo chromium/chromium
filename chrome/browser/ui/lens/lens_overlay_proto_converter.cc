@@ -15,8 +15,6 @@
 #include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/lens_server_proto/lens_overlay_deep_gleam_data.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"

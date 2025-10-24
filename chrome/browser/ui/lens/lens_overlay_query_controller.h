@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -26,9 +28,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_interaction_request_metadata.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -47,6 +46,8 @@ class VariationsClient;
 
 namespace lens {
 
+class ImageCrop;
+class ImageData;
 class LensComposeboxController;
 struct ImageCropAndBitmap;
 
@@ -754,7 +755,7 @@ class LensOverlayQueryController {
   LensOverlayUrlResponseCallback url_callback_;
 
   // The last received cluster info.
-  std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
+  std::optional<lens::LensOverlayClusterInfo> cluster_info_;
 
   // The callback for issuing a pending interaction request. Will be used to
   // send the interaction request after the cluster info is available and the

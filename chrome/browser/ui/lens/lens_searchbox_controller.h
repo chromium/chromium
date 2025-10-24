@@ -11,7 +11,6 @@
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
-#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
@@ -26,6 +25,9 @@ using GetIsContextualSearchboxCallback =
 namespace lens {
 
 struct SearchQuery;
+namespace proto {
+class LensOverlaySuggestInputs;
+}  // namespace proto
 
 // Controller for the Lens searchbox. This class is responsible for handling
 // communications between the Lens WebUI searchbox and other Lens components.

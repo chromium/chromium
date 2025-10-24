@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -42,9 +43,7 @@
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
-#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_matcher/regex_set_matcher.h"
@@ -81,6 +80,10 @@ class LensSearchboxController;
 class LensSearchContextualizationController;
 struct SearchQuery;
 class SidePanelInUse;
+namespace proto {
+class LensOverlaySuggestInputs;
+class LensOverlayUrlResponse;
+}  // namespace proto
 }  // namespace lens
 
 namespace signin {

@@ -14,6 +14,7 @@
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
+#include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_IOS)

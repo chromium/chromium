@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -16,6 +15,8 @@
 #endif  // !BUILDFLAG(IS_IOS)
 
 namespace lens {
+
+class ImageData;
 
 // Image encoding options for an uploaded image.
 struct ImageEncodingOptions {

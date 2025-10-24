@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
 #define COMPONENTS_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
 
+#include <memory>
 #include <optional>
+#include <string>
 
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_routing_info.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
 namespace lens {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -19,6 +19,7 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 namespace lens {
 
