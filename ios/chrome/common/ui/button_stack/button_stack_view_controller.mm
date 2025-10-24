@@ -296,20 +296,26 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
                         withString:(NSString*)string
                              style:(ChromeButtonStyle)style {
   ChromeButton* button;
+  UIImage* image = nil;
 
   switch (position) {
     case ButtonStackButtonPositionPrimary:
       button = _primaryActionButton;
       break;
-    case ButtonStackButtonPositionSecondary:
+    case ButtonStackButtonPositionSecondary: {
       button = _secondaryActionButton;
+      image = _configuration.secondaryActionImage;
+      UIButtonConfiguration* config = button.configuration;
+      config.image = image;
+      button.configuration = config;
       break;
+    }
     case ButtonStackButtonPositionTertiary:
       button = _tertiaryActionButton;
       break;
   }
 
-  BOOL hasAction = string.length > 0;
+  BOOL hasAction = string.length > 0 || image;
   button.hidden = !hasAction;
   if (hasAction) {
     if (button.style != style) {

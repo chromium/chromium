@@ -18,6 +18,7 @@
 
 // The properties for the secondary action.
 @property(nonatomic, copy) NSString* secondaryActionString;
+@property(nonatomic, strong) UIImage* secondaryActionImage;
 @property(nonatomic, assign) ChromeButtonStyle secondaryButtonStyle;
 
 // The properties for the tertiary action.
