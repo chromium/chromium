@@ -3607,6 +3607,7 @@ TEST_F(AIPageContentAgentTest, DisabledButton) {
   ASSERT_EQ(root.children_nodes.size(), 1u);
   const auto& button = *root.children_nodes.at(0);
   CheckHitTestableButNotInteractive(button);
+  EXPECT_TRUE(button.content_attributes->node_interaction_info->is_disabled);
 }
 
 TEST_F(AIPageContentAgentTest, InertButton) {
@@ -3715,11 +3716,14 @@ TEST_F(AIPageContentAgentTest, AriaDisabled) {
   const auto& section = *root.children_nodes.at(0);
   CheckContainerNode(section);
   CheckHitTestableButNotInteractive(section);
+  EXPECT_TRUE(section.content_attributes->node_interaction_info->is_disabled);
 
   // The child is also not actionable.
   ASSERT_EQ(section.children_nodes.size(), 1u);
   const auto& input = *section.children_nodes.at(0);
   CheckHitTestableButNotInteractive(input);
+  // Parent element `aria-disable` value overrides child element's.
+  EXPECT_TRUE(input.content_attributes->node_interaction_info->is_disabled);
 }
 
 TEST_F(AIPageContentAgentTest, DisabledInheritance) {
@@ -3747,9 +3751,11 @@ TEST_F(AIPageContentAgentTest, DisabledInheritance) {
   const auto& fieldset = *form.children_nodes.at(0);
   CheckHitTestableButNotInteractive(fieldset);
   ASSERT_EQ(fieldset.children_nodes.size(), 1u);
+  EXPECT_TRUE(fieldset.content_attributes->node_interaction_info->is_disabled);
 
   const auto& button = *fieldset.children_nodes.at(0);
   CheckHitTestableButNotInteractive(button);
+  EXPECT_TRUE(button.content_attributes->node_interaction_info->is_disabled);
 }
 
 TEST_F(AIPageContentAgentTest, Fieldset) {

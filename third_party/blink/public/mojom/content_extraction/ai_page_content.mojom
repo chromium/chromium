@@ -223,6 +223,13 @@ struct AIPageContentNodeInteractionInfo {
   // Provides signals which indicate whether the node is actionable. The action
   // may be triggered by clicking or hovering on the element.
   array<AIPageContentClickabilityReason> clickability_reasons;
+
+  // Whether the content node is explicitly disabled from being actionable. For
+  // example, a `select` element with the `disabled` or `aria-disabled`
+  // attribute. Disabled nodes are still valid action targets and can consume
+  // events. This is false for nodes which are not hit-testable and will ignore
+  // events, for example with `pointer-events: none`.
+  bool is_disabled;
 };
 
 // The coordinate space for the dimensions here is physical coordinates (not

@@ -353,6 +353,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   const auto& child = page_content().root_node().children_nodes().at(0);
   EXPECT_TRUE(child.content_attributes().has_interaction_info());
+  EXPECT_FALSE(child.content_attributes().interaction_info().is_disabled());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
@@ -1539,6 +1540,43 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           .form_control_data()
           .redaction_decision(),
       optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, DisabledButton) {
+  LoadPage(https_server()->GetURL("/disabled_button.html"),
+           GetActionableAIPageContentOptions());
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
+  const auto& button = ActionableContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(button.content_attributes().has_interaction_info());
+  EXPECT_TRUE(button.content_attributes()
+                  .interaction_info()
+                  .debug_clickability_reasons()
+                  .empty());
+  EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
+  EXPECT_FALSE(button.content_attributes().interaction_info().is_clickable());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AriaDisabledButton) {
+  LoadPage(https_server()->GetURL("/aria_disabled_button.html"),
+           GetActionableAIPageContentOptions());
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
+  const auto& button = ActionableContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(button.content_attributes().has_interaction_info());
+  EXPECT_TRUE(button.content_attributes()
+                  .interaction_info()
+                  .debug_clickability_reasons()
+                  .empty());
+  EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
+  EXPECT_FALSE(button.content_attributes().interaction_info().is_clickable());
 }
 
 }  // namespace

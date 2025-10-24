@@ -237,6 +237,9 @@ void ConvertNodeInteractionInfo(
     proto_interaction_info->add_clickability_reasons(
         ConvertClickabilityReason(reason));
   }
+
+  proto_interaction_info->set_is_disabled(
+      mojom_node_interaction_info.is_disabled);
 }
 
 void ConvertPoint(const gfx::Point& mojom_point,

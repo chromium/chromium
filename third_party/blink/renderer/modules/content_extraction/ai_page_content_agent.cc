@@ -1819,6 +1819,9 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   if (disabled) {
     if (node_interaction_info->document_scoped_z_order) {
       attributes.node_interaction_info = std::move(node_interaction_info);
+      // `is_disabled` is only set for nodes with `document_scoped_z_order`.
+      // This implies offscreen nodes will not be marked as disabled.
+      attributes.node_interaction_info->is_disabled = true;
     }
 
     return;

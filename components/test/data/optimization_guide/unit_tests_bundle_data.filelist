@@ -5,6 +5,7 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 //components/test/data/optimization_guide/actionable_elements.html
+//components/test/data/optimization_guide/aria_disabled_button.html
 //components/test/data/optimization_guide/aria_role.html
 //components/test/data/optimization_guide/bert_page_topics_model.tflite
 //components/test/data/optimization_guide/canvas.html
@@ -13,6 +14,7 @@
 //components/test/data/optimization_guide/data_image.html
 //components/test/data/optimization_guide/deep.html
 //components/test/data/optimization_guide/deep_sparse.html
+//components/test/data/optimization_guide/disabled_button.html
 //components/test/data/optimization_guide/fenced_frame/basic.html
 //components/test/data/optimization_guide/fenced_frame/basic.html.mock-http-headers
 //components/test/data/optimization_guide/fenced_frame/simple.html
