@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"

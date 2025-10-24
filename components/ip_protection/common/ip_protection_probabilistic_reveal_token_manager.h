@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

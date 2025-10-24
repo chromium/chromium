@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/containers/queue.h"
+#include "base/sequence_checker.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/media_segment.h"
 

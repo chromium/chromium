@@ -15,6 +15,7 @@
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
 #import "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/system_account_updater.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"

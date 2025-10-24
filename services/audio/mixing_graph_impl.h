@@ -5,12 +5,12 @@
 #ifndef SERVICES_AUDIO_MIXING_GRAPH_IMPL_H_
 #define SERVICES_AUDIO_MIXING_GRAPH_IMPL_H_
 
-#include "base/gtest_prod_util.h"
-#include "services/audio/mixing_graph.h"
-
 #include <map>
 
+#include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "services/audio/mixing_graph.h"
 
 namespace media {
 class LoopbackAudioConverter;

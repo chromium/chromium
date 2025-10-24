@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "components/memory_pressure/memory_pressure_voter.h"

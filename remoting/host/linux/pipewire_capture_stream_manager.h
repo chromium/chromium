@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "remoting/host/base/loggable.h"
 #include "remoting/host/base/screen_resolution.h"

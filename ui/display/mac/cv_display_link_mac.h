@@ -15,6 +15,7 @@
 #include "base/apple/scoped_typeref.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

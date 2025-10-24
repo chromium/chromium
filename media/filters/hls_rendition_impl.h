@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/sequence_checker.h"
 #include "crypto/aes_cbc.h"
 #include "media/filters/hls_rendition.h"
 #include "media/formats/hls/segment_stream.h"

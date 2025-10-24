@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SUPPORT_TOOL_SCREENSHOT_DATA_COLLECTOR_H_
 
 #include "base/memory/ref_counted_memory.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "content/public/browser/desktop_capture.h"

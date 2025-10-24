@@ -7,6 +7,7 @@
 
 #include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "net/http/http_request_headers.h"
 

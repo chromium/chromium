@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "net/cert/x509_certificate.h"
 

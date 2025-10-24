@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/performance_manager/public/graph/graph_registered.h"

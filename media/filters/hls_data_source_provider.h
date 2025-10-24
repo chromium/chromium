@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "base/types/id_type.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"

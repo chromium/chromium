@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"

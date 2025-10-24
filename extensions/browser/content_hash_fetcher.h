@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/common/extension_id.h"
 

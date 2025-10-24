@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BTM_BTM_DATABASE_MIGRATOR_H_
 #define CONTENT_BROWSER_BTM_BTM_DATABASE_MIGRATOR_H_
 
+#include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"

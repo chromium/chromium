@@ -16,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
+#include "base/sequence_checker.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/base/bitstream_buffer.h"

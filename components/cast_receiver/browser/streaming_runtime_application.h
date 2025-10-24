@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 
+#include "base/sequence_checker.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"

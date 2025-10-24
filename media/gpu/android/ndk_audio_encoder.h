@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/requires_api.h"
+#include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"

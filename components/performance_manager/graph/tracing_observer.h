@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 

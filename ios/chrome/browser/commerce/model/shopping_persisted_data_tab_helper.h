@@ -11,6 +11,7 @@
 #include <optional>
 
 #import "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #import "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"

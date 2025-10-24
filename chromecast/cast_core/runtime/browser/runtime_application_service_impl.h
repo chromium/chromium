@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/cast_content_window.h"

@@ -14,6 +14,7 @@
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/no_destructor.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/sequence_checker.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"

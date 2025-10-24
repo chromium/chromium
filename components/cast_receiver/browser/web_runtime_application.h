@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "components/cast_receiver/browser/bindings_manager.h"
 #include "components/cast_receiver/browser/page_state_observer.h"
 #include "components/cast_receiver/browser/public/application_config.h"

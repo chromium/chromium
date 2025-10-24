@@ -6,6 +6,7 @@
 #define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"

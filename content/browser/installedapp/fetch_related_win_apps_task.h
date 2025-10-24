@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "content/browser/installedapp/fetch_related_apps_task.h"
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 #include "content/browser/installedapp/native_win_app_fetcher.h"

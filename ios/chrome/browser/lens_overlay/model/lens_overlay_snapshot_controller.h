@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"

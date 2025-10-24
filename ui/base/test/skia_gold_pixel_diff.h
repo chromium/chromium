@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 
 namespace base {
 class CommandLine;

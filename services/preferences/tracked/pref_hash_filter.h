@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/prefs/transparent_unordered_string_map.h"

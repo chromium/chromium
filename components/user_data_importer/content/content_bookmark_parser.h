@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_CONTENT_BOOKMARK_PARSER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_CONTENT_CONTENT_BOOKMARK_PARSER_H_
 
+#include "base/sequence_checker.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"

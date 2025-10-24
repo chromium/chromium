@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_STREAM_HANDLE_INPUT_STREAM_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_STREAM_HANDLE_INPUT_STREAM_H_
 
+#include "base/sequence_checker.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_stream.mojom.h"
 #include "components/download/public/common/input_stream.h"

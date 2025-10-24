@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/sequence_checker.h"
 #include "media/muxers/muxer.h"
 #include "third_party/libwebm/source/mkvmuxer.hpp"
 

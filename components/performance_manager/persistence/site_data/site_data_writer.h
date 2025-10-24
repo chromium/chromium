@@ -7,6 +7,7 @@
 
 #include "base/byte_count.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 
 namespace performance_manager {

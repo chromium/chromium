@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "components/account_id/account_id.h"

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder.h"

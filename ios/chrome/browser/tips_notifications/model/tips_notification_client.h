@@ -10,6 +10,7 @@
 
 #import <optional>
 
+#include "base/sequence_checker.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 

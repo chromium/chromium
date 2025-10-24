@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/sync_socket.h"
 #include "base/unguessable_token.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"

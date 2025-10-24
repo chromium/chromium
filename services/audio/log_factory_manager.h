@@ -5,6 +5,7 @@
 #ifndef SERVICES_AUDIO_LOG_FACTORY_MANAGER_H_
 #define SERVICES_AUDIO_LOG_FACTORY_MANAGER_H_
 
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/log_factory_adapter.h"

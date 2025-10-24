@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"

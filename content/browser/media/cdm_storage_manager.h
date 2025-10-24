@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/browser/media/cdm_file_impl.h"

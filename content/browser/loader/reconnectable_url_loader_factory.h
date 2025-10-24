@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_RECONNECTABLE_URL_LOADER_FACTORY_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

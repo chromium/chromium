@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/video_frame_mapper.h"
 

@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/process/process.h"
+#include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"

@@ -6,6 +6,7 @@
 #define COMPONENTS_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
 
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/memory_pressure/memory_pressure_level_reporter.h"

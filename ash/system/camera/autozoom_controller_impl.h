@@ -6,12 +6,12 @@
 #define ASH_SYSTEM_CAMERA_AUTOZOOM_CONTROLLER_IMPL_H_
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
-
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/camera/autozoom_nudge_controller.h"
 #include "ash/system/camera/autozoom_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

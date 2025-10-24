@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace language_detection {

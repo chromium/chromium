@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 

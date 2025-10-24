@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

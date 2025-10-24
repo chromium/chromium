@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_DATA_IMPORTER_CONTENT_STABLE_PORTABILITY_DATA_IMPORTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"

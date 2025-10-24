@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/video_frame_pool.h"
 #include "components/viz/service/viz_service_export.h"

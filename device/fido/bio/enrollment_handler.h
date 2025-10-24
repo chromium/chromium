@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "device/fido/bio/enroller.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/fido_constants.h"
