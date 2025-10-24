@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <title>
-    CSS Gap Decorations: column flex gaps are painted when container is fragmented.
+    CSS Gap Decorations: flex gaps are painted when the container is fragmented, and we have rule-break intersection.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="flex-gap-decorations-038-ref.html">
+<link rel="match" href="flex-gap-decorations-fragmentation-004-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     .multi-column {
         columns: 3;
-        height: 100px;
-        column-width: 110px;
-        width: 330px;
-        column-fill: auto;
+        height: 47px;
+        column-width: 170px;
+        width: 510px;
     }
 
     body {
@@ -23,19 +22,28 @@
         display: flex;
         column-gap: 10px;
         row-gap: 10px;
-        width: 110px;
+        row-rule-style: solid;
+        row-rule-color: blue;
+        row-rule-width: 10px;
+        column-rule-style: solid;
+        column-rule-color: red;
+        column-rule-width: 10px;
+        column-rule-break: intersection;
+        column-rule-outset: -1px;
+        width: 170px;
         flex-wrap: wrap;
-        height: 140px;
-        column-rule: 10px solid blue;
-        row-rule: 10px solid gold;
     }
 
     .items {
         background-color: rgb(96 139 168 / 0.2);
+        flex-shrink: 1;
         width: 50px;
-        height: 44px;
+        height: 50px;
     }
 
+    #four {
+        width: 100px;
+    }
 </style>
 
 <div class="multi-column">
@@ -43,8 +51,7 @@
         <div class="items">One</div>
         <div class="items">Two</div>
         <div class="items">Three</div>
-        <div class="items">Four</div>
+        <div class="items" id="four">Four</div>
         <div class="items">Five</div>
-      <div class="items">Six</div>
     </div>
 </div>

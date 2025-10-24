@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <title>
-    CSS Gap Decorations: column flex gaps with break-before avoid-column are painted when container is fragmented.
+    CSS Gap Decorations: column flex gaps are painted when container is fragmented.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="flex-gap-decorations-037-ref.html">
+<link rel="match" href="flex-gap-decorations-fragmentation-010-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     .multi-column {
-        columns: 2;
-        height: 90px;
-        column-width: 100px;
+        columns: 3;
+        height: 100px;
+        column-width: 110px;
         width: 330px;
+        column-fill: auto;
     }
 
     body {
@@ -22,27 +23,28 @@
         display: flex;
         column-gap: 10px;
         row-gap: 10px;
-        width: 90px;
+        width: 110px;
         flex-wrap: wrap;
-        height: 170px;
+        height: 140px;
         column-rule: 10px solid blue;
         row-rule: 10px solid gold;
-        flex-direction: column;
     }
 
     .items {
         background-color: rgb(96 139 168 / 0.2);
-        width: 30px;
-        height: 30px;
-        break-before: avoid-column;
+        width: 50px;
+        height: 44px;
     }
+
 </style>
 
 <div class="multi-column">
     <div id="flexbox">
-        <div class="items">1</div>
-        <div class="items">2</div>
-        <div class="items">3</div>
-        <div class="items">4</div>
+        <div class="items">One</div>
+        <div class="items">Two</div>
+        <div class="items">Three</div>
+        <div class="items">Four</div>
+        <div class="items">Five</div>
+      <div class="items">Six</div>
     </div>
 </div>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <title>
-    CSS Gap Decorations: column flex gaps are painted when container is fragmented and an item in line is monolithic.
+    CSS Gap Decorations: column flex gaps are painted when container is fragmented and first item in line is smaller
+    than others.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="flex-gap-decorations-042-ref.html">
+<link rel="match" href="flex-gap-decorations-fragmentation-013-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     .multi-column {
@@ -11,7 +12,6 @@
         height: 47px;
         column-width: 110px;
         width: 330px;
-        column-fill: auto;
     }
 
     body {
@@ -19,6 +19,7 @@
     }
 
     #flexbox {
+        border: 2px solid rgb(96 139 168);
         display: flex;
         column-gap: 10px;
         row-gap: 10px;
@@ -26,7 +27,10 @@
         flex-wrap: wrap;
         height: 110px;
         column-rule: 10px solid blue;
+        row-rule: 10px solid gold;
         flex-direction: column;
+        row-rule-break: intersection;
+        row-rule-outset: 0;
     }
 
     .items {
@@ -35,16 +39,18 @@
         height: 50px;
     }
 
-    #monolithic {
-       contain: size;
+    #one {
+        height: 25px;
     }
 </style>
 
 <div class="multi-column">
     <div id="flexbox">
-        <div class="items" id="monolithic">One</div>
-        <div class="items" >Two</div>
+        <div class="items" id="one">One</div>
+        <div class="items">Two</div>
         <div class="items">Three</div>
         <div class="items">Four</div>
     </div>
 </div>
+
+</html>

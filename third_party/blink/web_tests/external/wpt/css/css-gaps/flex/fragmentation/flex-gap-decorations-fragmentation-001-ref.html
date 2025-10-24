@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<title>
-    CSS Gap Decorations: flex gaps are painted when the container is fragmented, and we have rule-break intersection.
-</title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="flex-gap-decorations-031-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     .multi-column {
@@ -22,14 +18,6 @@
         display: flex;
         column-gap: 10px;
         row-gap: 10px;
-        row-rule-style: solid;
-        row-rule-color: blue;
-        row-rule-width: 10px;
-        column-rule-style: solid;
-        column-rule-color: red;
-        column-rule-width: 10px;
-        column-rule-break: intersection;
-        column-rule-outset: -1px;
         width: 170px;
         flex-wrap: wrap;
     }
@@ -44,7 +32,33 @@
     #four {
         width: 100px;
     }
+
+    .column-rule {
+        position: absolute;
+        top: 0px;
+        background: red;
+        width: 10px;
+    }
+
+    .row-rule {
+        position: absolute;
+        background: blue;
+        width: 170px;
+        height: 10px;
+        top: 5px;
+        left: 265px;
+    }
 </style>
+
+<div class="column-rule" style="top: 2px; height: 45px; left: 52px;"></div>
+<div class="column-rule" style="top: 2px; height: 45px; left: 112px;"></div>
+
+<div class="column-rule" style="height: 5px; left: 315px;"></div>
+<div class="column-rule" style="height: 5px; left: 375px;"></div>
+<div class="column-rule" style="top: 15px; height: 32px; left: 365px;"></div>
+<div class=row-rule></div>
+
+<div class="column-rule" style="height: 18px; left: 628px;"></div>
 
 <div class="multi-column">
     <div id="flexbox">
