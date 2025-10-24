@@ -110,6 +110,7 @@ void ModelContext::unregisterTool(ScriptState* script_state,
   }
 
   tool_map_.erase(it);
+  OnToolsChanged();
 }
 
 void ModelContext::provideContext(ScriptState* script_state,
@@ -128,6 +129,7 @@ void ModelContext::provideContext(ScriptState* script_state,
 void ModelContext::clearContext(ScriptState* script_state,
                                 ExceptionState& exception_state) {
   tool_map_.clear();
+  OnToolsChanged();
 }
 
 void ModelContext::ExecuteTool(
@@ -151,7 +153,8 @@ void ModelContext::ExecuteTool(
   ScriptState::Scope scope(script_state);
 
   auto script_object = JSONStringToScriptObject(script_state, input_arguments);
-  if (script_object.IsNull()) {
+  ScriptValue script_value = script_object;
+  if (script_value.IsEmpty()) {
     task_runner_->PostTask(
         FROM_HERE,
         blink::BindOnce(
@@ -233,6 +236,7 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
   tool_data->tool_function = params->execute();
 
   tool_map_.insert(params->name(), std::move(tool_data));
+  OnToolsChanged();
   return true;
 }
 
@@ -248,6 +252,12 @@ void ModelContext::OnToolExecuted(uint32_t execution_id,
         base::unexpected(WebDocument::ScriptToolError::kToolInvocationFailed));
   }
   pending_executions_.erase(it);
+}
+
+void ModelContext::OnToolsChanged() {
+  if (tools_changed_closure_) {
+    task_runner_->PostTask(FROM_HERE, *tools_changed_closure_);
+  }
 }
 
 void ModelContext::Trace(Visitor* visitor) const {

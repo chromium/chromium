@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+async function echo(obj) {
+  return obj.text;
+}
+navigator.modelContext.registerTool({
+  execute: echo,
+  name: "echo",
+  description: "echo input",
+  inputSchema: {
+      type: "object",
+      properties: {
+          "text": {
+              description: "Value to echo",
+              type: "string",
+          }
+      },
+      required: ["text"]
+  },
+});
+
+async function greet(obj) {
+  return `Hello, ${obj.name}!`;
+}
+
+function print(message) {
+    document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
+}
+
+async function runTests() {
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+    if (!window.navigator.modelContext) {
+        print("FAIL: modelContext API disabled");
+        if (window.testRunner) testRunner.notifyDone();
+        return;
+    }
+    if (!window.navigator.modelContextTesting) {
+        print("FAIL: Testing API disabled");
+        if (window.testRunner) testRunner.notifyDone();
+        return;
+    }
+
+    let callbackCount = 0;
+    let expectedCallbacks = 0;
+    let currentResolve = null;
+
+    // Register a callback to track when tools change
+    navigator.modelContextTesting.registerToolsChangedCallback(() => {
+        callbackCount++;
+        print(`INFO: Tools changed callback invoked (count: ${callbackCount})`);
+        if (currentResolve) {
+            currentResolve();
+            currentResolve = null;
+        }
+    });
+
+    function waitForCallback() {
+        return new Promise(resolve => {
+            currentResolve = resolve;
+        });
+    }
+
+    // Initial tool count should be 1 (echo tool registered at startup)
+    let tools = navigator.modelContextTesting.listTools();
+    if (tools.length === 1 && tools[0].name === "echo") {
+        print("PASS: Initial tool list correct");
+    } else {
+        print(`FAIL: Expected 1 tool (echo), got ${tools.length}`);
+    }
+
+    // Test 1: Register a new tool - should trigger callback
+    expectedCallbacks++;
+    navigator.modelContext.registerTool({
+        execute: greet,
+        name: "greet",
+        description: "greet someone",
+        inputSchema: {
+            type: "object",
+            properties: {
+                "name": {
+                    description: "Name to greet",
+                    type: "string",
+                }
+            },
+            required: ["name"]
+        },
+    });
+
+    await waitForCallback();
+
+    if (callbackCount === expectedCallbacks) {
+        print("PASS: Callback fired after registerTool");
+    } else {
+        print(`FAIL: Expected ${expectedCallbacks} callbacks, got ${callbackCount}`);
+    }
+
+    // Verify tool was added
+    tools = navigator.modelContextTesting.listTools();
+    if (tools.length === 2) {
+        print("PASS: Tool list has 2 tools after registration");
+    } else {
+        print(`FAIL: Expected 2 tools, got ${tools.length}`);
+    }
+
+    // Test 2: Unregister a tool - should trigger callback
+    expectedCallbacks++;
+    navigator.modelContext.unregisterTool("greet");
+
+    await waitForCallback();
+
+    if (callbackCount === expectedCallbacks) {
+        print("PASS: Callback fired after unregisterTool");
+    } else {
+        print(`FAIL: Expected ${expectedCallbacks} callbacks, got ${callbackCount}`);
+    }
+
+    // Verify tool was removed
+    tools = navigator.modelContextTesting.listTools();
+    if (tools.length === 1 && tools[0].name === "echo") {
+        print("PASS: Tool list back to 1 tool after unregistration");
+    } else {
+        print(`FAIL: Expected 1 tool (echo), got ${tools.length}`);
+    }
+
+    // Test 3: provideContext should trigger callback
+    expectedCallbacks++;
+    navigator.modelContext.provideContext({
+        tools: [
+            {
+                execute: greet,
+                name: "greet",
+                description: "greet someone",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        "name": {
+                            description: "Name to greet",
+                            type: "string",
+                        }
+                    },
+                    required: ["name"]
+                },
+            }
+        ]
+    });
+
+    await waitForCallback();
+
+    if (callbackCount === expectedCallbacks) {
+        print("PASS: Callback fired after provideContext");
+    } else {
+        print(`FAIL: Expected ${expectedCallbacks} callbacks, got ${callbackCount}`);
+    }
+
+    // Test 4: clearContext should trigger callback
+    expectedCallbacks++;
+    navigator.modelContext.clearContext();
+
+    await waitForCallback();
+
+    if (callbackCount === expectedCallbacks) {
+        print("PASS: Callback fired after clearContext");
+    } else {
+        print(`FAIL: Expected ${expectedCallbacks} callbacks, got ${callbackCount}`);
+    }
+
+    // Verify all tools cleared
+    tools = navigator.modelContextTesting.listTools();
+    if (tools.length === 0) {
+        print("PASS: Tool list empty after clearContext");
+    } else {
+        print(`FAIL: Expected 0 tools, got ${tools.length}`);
+    }
+
+    if (window.testRunner) {
+        testRunner.notifyDone();
+    }
+}
+</script>
+</head>
+<body onload="runTests();">
+This tests that navigator.modelContextTesting.registerToolsChangedCallback works correctly.
+<pre id="console">
+</pre>
+</body>
+</html>

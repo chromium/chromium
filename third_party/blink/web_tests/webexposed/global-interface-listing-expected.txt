@@ -6791,6 +6791,7 @@ interface Navigator
     getter mediaSession
     getter mimeTypes
     getter modelContext
+    getter modelContextTesting
     getter onLine
     getter pdfViewerEnabled
     getter permissions
@@ -6851,6 +6852,7 @@ interface Navigator
     method vibrate
     method webkitGetUserMedia
     setter modelContext
+    setter modelContextTesting
 interface NavigatorLogin
     attribute @@toStringTag
     method constructor

@@ -34,11 +34,18 @@ ModelContext* ModelContextSupplement::modelContext(Navigator& navigator) {
   return From(navigator).modelContext();
 }
 
+// static
+ModelContextTesting* ModelContextSupplement::modelContextTesting(
+    Navigator& navigator) {
+  return From(navigator).modelContextTesting();
+}
+
 ModelContextSupplement::ModelContextSupplement(Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
 void ModelContextSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(model_context_);
+  visitor->Trace(model_context_testing_);
   Supplement<Navigator>::Trace(visitor);
 }
 
@@ -50,6 +57,14 @@ ModelContext* ModelContextSupplement::modelContext() {
     }
   }
   return model_context_.Get();
+}
+
+ModelContextTesting* ModelContextSupplement::modelContextTesting() {
+  if (!model_context_testing_) {
+    model_context_testing_ =
+        MakeGarbageCollected<ModelContextTesting>(modelContext());
+  }
+  return model_context_testing_.Get();
 }
 
 }  // namespace blink

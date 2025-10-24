@@ -1,0 +1,6 @@
+This tests that document.navigator.modelContextTesting works correctly.
+PASS
+INFO: Received expected error for non-existent tool: UnknownError
+INFO: Received expected error for invalid JSON: SyntaxError
+FAIL: executeTool should have thrown an error for input mismatching schema but got 'undefined'
+

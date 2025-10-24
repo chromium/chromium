@@ -5761,6 +5761,10 @@
       status: "experimental",
     },
     {
+      name: "WebMCPTesting",
+      status: "experimental",
+    },
+    {
       name: "WebNFC",
       public: true,
       status: {"Android": "stable", "iOS": "stable", "default": "test"},

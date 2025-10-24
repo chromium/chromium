@@ -43,6 +43,10 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                    const String& input_arguments,
                    WebDocument::ScriptToolExecutedCallback tool_executed_cb);
 
+  void SetToolsChangedCallback(std::optional<base::RepeatingClosure> cb) {
+    tools_changed_closure_ = std::move(cb);
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -62,12 +66,15 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
   void OnToolExecuted(uint32_t execution_id, std::optional<String> result);
 
+  void OnToolsChanged();
+
   HeapHashMap<String, Member<ToolData>> tool_map_;
 
   uint32_t next_execution_id_ = 0;
   HashMap<uint32_t, WebDocument::ScriptToolExecutedCallback>
       pending_executions_;
 
+  std::optional<base::RepeatingClosure> tools_changed_closure_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

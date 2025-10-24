@@ -7,4 +7,5 @@
   ImplementedAs=ModelContextSupplement
 ] partial interface Navigator {
   [Replaceable] readonly attribute ModelContext modelContext;
+  [Replaceable, RuntimeEnabled=WebMCPTesting] readonly attribute ModelContextTesting modelContextTesting;
 };
