@@ -587,6 +587,44 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
+// Test reentrancy issue, the complete details are here crbug.com/453147449.
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
+                       NoCrashWithReaderCancelWhileReading) {
+  // 1. Write data to tcp server socket first.
+  constexpr int32_t kRequiredBytes = 10000;
+  const int listening_port = StartTcpServer();
+  ReadWriteWaiter waiter(/*required_receive_bytes=*/0,
+                         /*required_send_bytes=*/kRequiredBytes,
+                         tcp_server_socket());
+
+  // 2. Read the data.
+  const std::string read_script = JsReplace(
+      R"(
+      (async() => {
+        const socket = new TCPSocket($1, $2);
+        const { readable } = await socket.opened;
+        const reader = readable.getReader()
+
+        // ScriptPromiseResolver::Resolve executes Object.prototype.then getter synchronously according to
+        // step 9 of 27.2.1.3.2 Promise Resolve Functions in ECMAScript spec
+        // https://tc39.es/ecma262/#sec-promise-resolve-functions.
+        Object.prototype.__defineGetter__('then', () => {
+
+          // This will synchronously call TCPReadableStreamWrapper::ResetPipe()
+          // and invalidate the data_pipe_ handle.
+          reader.cancel();
+        });
+
+        await reader.read();
+      })();
+    )",
+      kLocalhostAddress, listening_port);
+
+  ASSERT_TRUE(ExecJs(shell(), read_script));
+
+  waiter.Await();
+}
+
 class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
  public:
 #if BUILDFLAG(IS_CHROMEOS)

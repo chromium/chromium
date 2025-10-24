@@ -119,6 +119,11 @@ void TCPReadableStreamWrapper::Pull() {
         Controller()->enqueue(script_state, buffer, exception_state);
       }
 
+      // It is necessary to check |data_pipe_| as |enqueue()| may run
+      // JavaScript, leading to invalidation of |data_pipe_|.
+      if (!data_pipe_.is_valid()) {
+        return;
+      }
       result = data_pipe_->EndReadData(data_buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
