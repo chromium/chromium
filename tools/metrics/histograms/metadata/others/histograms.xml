@@ -6416,6 +6416,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NQE.Duration.{MethodName}" units="ms"
+    expires_after="2026-06-25">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The duration of NetworkQualityEstimator::{MethodName}. This is recorded
+    every time when the method is invoked.
+  </summary>
+  <token key="MethodName">
+    <variant name="NotifyBytesRead"/>
+    <variant name="NotifyHeadersReceived"/>
+    <variant name="NotifyRequestCompleted"/>
+    <variant name="NotifyStartTransaction"/>
+    <variant name="NotifyURLRequestDestroyed"/>
+  </token>
+</histogram>
+
 <histogram name="NQE.RTT.Error.Absolute" units="ms" expires_after="2025-06-08">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

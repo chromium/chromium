@@ -250,6 +250,9 @@ NetworkQualityEstimator::~NetworkQualityEstimator() {
 
 void NetworkQualityEstimator::NotifyStartTransaction(
     const URLRequest& request) {
+  TRACE_EVENT(NetTracingCategory(),
+              "NetworkQualityEstimator::NotifyStartTransaction");
+  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyStartTransaction");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!RequestSchemeIsHTTPOrHTTPS(request))
@@ -317,8 +320,9 @@ bool NetworkQualityEstimator::IsHangingRequest(
 void NetworkQualityEstimator::NotifyHeadersReceived(
     const URLRequest& request,
     int64_t prefilter_total_bytes_read) {
-  TRACE_EVENT0(NetTracingCategory(),
-               "NetworkQualityEstimator::NotifyHeadersReceived");
+  TRACE_EVENT(NetTracingCategory(),
+              "NetworkQualityEstimator::NotifyHeadersReceived");
+  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyHeadersReceived");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!RequestSchemeIsHTTPOrHTTPS(request) ||
@@ -384,14 +388,18 @@ void NetworkQualityEstimator::NotifyHeadersReceived(
 void NetworkQualityEstimator::NotifyBytesRead(
     const URLRequest& request,
     int64_t prefilter_total_bytes_read) {
+  TRACE_EVENT(NetTracingCategory(), "NetworkQualityEstimator::NotifyBytesRead");
+  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyBytesRead");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   throughput_analyzer_->NotifyBytesRead(request);
 }
 
 void NetworkQualityEstimator::NotifyRequestCompleted(
     const URLRequest& request) {
-  TRACE_EVENT0(NetTracingCategory(),
-               "NetworkQualityEstimator::NotifyRequestCompleted");
+  TRACE_EVENT(NetTracingCategory(),
+              "NetworkQualityEstimator::NotifyRequestCompleted");
+  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyRequestCompleted");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!RequestSchemeIsHTTPOrHTTPS(request))
@@ -402,7 +410,10 @@ void NetworkQualityEstimator::NotifyRequestCompleted(
 
 void NetworkQualityEstimator::NotifyURLRequestDestroyed(
     const URLRequest& request) {
+  TRACE_EVENT(NetTracingCategory(),
+              "NetworkQualityEstimator::NotifyURLRequestDestroyed");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyURLRequestDestroyed");
 
   if (!RequestSchemeIsHTTPOrHTTPS(request))
     return;
