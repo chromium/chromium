@@ -24,13 +24,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.transition.ChangeBounds;
+import android.transition.ChangeTransform;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
-import android.transition.TransitionValues;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
 import android.view.Gravity;
@@ -1004,25 +1004,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         updateUrlExpansionFraction();
-        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
-            updateToolbarWithFocusChangeFraction();
-        } else {
-            invokeTransition();
-        }
-    }
-
-    private void updateToolbarWithFocusChangeFraction() {
-        // Update toolbar Y-translation and NTP page for fakebox focus using fraction.
-        // TODO(crbug.com/430347234): Refactor these to Transitions.
-        if (isLocationBarShownInNtp()) {
-            updateNtpTransitionAnimation();
-        }
-        // Update LB child views - updates visibility of buttons, margins, etc using fraction.
-        // TODO(crbug.com/430347234): Refactor these to Transitions.
-        mLocationBar.setUrlFocusChangeFraction(
-                mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
-        // Update the toolbar / LB background color and corner radius using fraction.
-        updateToolbarAndLocationBarColorForFocusChange();
+        invokeTransition();
     }
 
     private void updateUrlExpansionFraction() {
@@ -2175,42 +2157,34 @@ public class ToolbarPhone extends ToolbarLayout
 
     // TODO(crbug.com/430347234): Refine animations to match the spec.
     private void createAndRunFocusAnimatorRefactored(boolean hasFocus) {
-        TransitionSet transition = new TransitionSet();
-        transition.setOrdering(TransitionSet.ORDERING_TOGETHER);
-
         int toolbarBtnTransitionDuration =
                 hasFocus && animatingSuggestionsListOnNtp()
                         ? 0
                         : URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS;
-
-        Transition startButtonSlide =
-                new Slide(Gravity.START)
+        TransitionSet buttonsTransition =
+                new TransitionSet()
+                        .addTransition(
+                                new Slide(Gravity.START).addTarget(mHomeButtonDisplay.getView()))
+                        .addTransition(new Slide(Gravity.END).addTarget(mToolbarButtonsContainer))
+                        .addTransition(new Fade().addTarget(mToolbarButtonsContainer))
                         .setDuration(toolbarBtnTransitionDuration)
-                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
-                        .addTarget(mHomeButtonDisplay.getView());
-        transition.addTransition(startButtonSlide);
+                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
 
-        Transition endButtonSlide =
-                new Slide(Gravity.END)
-                        .setDuration(toolbarBtnTransitionDuration)
-                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
-                        .addTarget(mToolbarButtonsContainer);
-        transition.addTransition(endButtonSlide);
+        // We explicitly #setResizeClip(true) for the location bar as it contains text.
+        ChangeBounds changeBoundsWithText = new ChangeBounds();
+        changeBoundsWithText.setResizeClip(true);
+        TransitionSet locationBarTransition =
+                new TransitionSet()
+                        .addTransition(
+                                changeBoundsWithText.addTarget(mLocationBar.getContainerView()))
+                        .addTransition(
+                                new ChangeTransform().addTarget(mLocationBar.getContainerView()))
+                        .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
 
-        Transition btnsFade =
-                new Fade()
-                        .setDuration(toolbarBtnTransitionDuration)
-                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
-                        .addTarget(mToolbarButtonsContainer);
-        transition.addTransition(btnsFade);
-
-        ChangeBounds changeBounds = new ChangeBounds();
-        changeBounds.addTarget(mLocationBar.getContainerView());
-        changeBounds.setResizeClip(true);
-        transition.addTransition(changeBounds);
-
-        Transition focusFractionTransition = buildUrlFocusFractionTransition();
-        transition.addTransition(focusFractionTransition);
+        TransitionSet transition =
+                new TransitionSet()
+                        .addTransition(buttonsTransition)
+                        .addTransition(locationBarTransition);
 
         transition.addListener(
                 new TransitionListenerAdapter() {
@@ -2257,69 +2231,12 @@ public class ToolbarPhone extends ToolbarLayout
         layoutParams.width = locationBarWidth;
         mLocationBar.getContainerView().setLayoutParams(layoutParams);
         mUrlActionContainer.setVisibility(urlActionContainerVis);
+
+        // TODO(crbug.com/425817689): In the end state of the refactored animations, we don't want
+        //  to rely on the interpolation methods that will be called by #setUrlFocusChangeFraction
+        //  (namely #invokeTransition). We instead want to directly set the appropriate end state,
+        //  like we do with the button visibility and location bar layout params above.
         setUrlFocusChangeFraction(hasFocus ? 1f : 0f);
-    }
-
-    private Transition buildUrlFocusFractionTransition() {
-        return new Transition() {
-            private static final String URL_FOCUS_FRACTION_KEY =
-                    "ToolbarPhone.mUrlFocusChangeFraction";
-
-            @Override
-            public void captureEndValues(TransitionValues transitionValues) {
-                captureValues(transitionValues);
-            }
-
-            @Override
-            public void captureStartValues(TransitionValues transitionValues) {
-                captureValues(transitionValues);
-            }
-
-            private void captureValues(TransitionValues transitionValues) {
-                if (transitionValues.view instanceof ToolbarPhone) {
-                    ToolbarPhone toolbar = (ToolbarPhone) transitionValues.view;
-                    transitionValues.values.put(
-                            URL_FOCUS_FRACTION_KEY, toolbar.mUrlFocusChangeFraction);
-                }
-            }
-
-            @Override
-            public @Nullable Animator createAnimator(
-                    ViewGroup sceneRoot,
-                    @Nullable TransitionValues startValues,
-                    @Nullable TransitionValues endValues) {
-                if (startValues == null
-                        || startValues.values == null
-                        || !startValues.values.containsKey(URL_FOCUS_FRACTION_KEY)
-                        || endValues == null
-                        || endValues.values == null
-                        || !endValues.values.containsKey(URL_FOCUS_FRACTION_KEY)) {
-                    return null;
-                }
-
-                float startFraction = (float) startValues.values.get(URL_FOCUS_FRACTION_KEY);
-                float endFraction = (float) endValues.values.get(URL_FOCUS_FRACTION_KEY);
-
-                if (startFraction == endFraction) {
-                    return null;
-                }
-
-                // Get the target view and set its initial state
-                ToolbarPhone toolbar = (ToolbarPhone) endValues.view;
-                toolbar.setUrlFocusChangeFraction(startFraction);
-
-                // Create and return the ObjectAnimator
-                Animator fractionAnimator =
-                        ObjectAnimator.ofFloat(
-                                toolbar,
-                                mUrlFocusChangeFractionProperty,
-                                startFraction,
-                                endFraction);
-                fractionAnimator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
-                fractionAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
-                return fractionAnimator;
-            }
-        };
     }
 
     // ToolbarDataProvider.Observer implementation.

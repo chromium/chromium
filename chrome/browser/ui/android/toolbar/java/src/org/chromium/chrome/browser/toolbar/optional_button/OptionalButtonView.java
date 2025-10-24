@@ -936,6 +936,12 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void beginDelayedTransition(Transition transition) {
+        // TODO(crbug.com/425817689): The optional button transition was clobbering the URL focus
+        //  animations for the GTS and app menu buttons. Revisit to see if this is always safe to
+        //  add this target, or if we need to limit this to the URL focus change case.
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            transition.addTarget(this);
+        }
         if (mFakeBeginTransitionForTesting != null) {
             mFakeBeginTransitionForTesting.onResult(transition);
             return;

@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Matrix;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -196,7 +197,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
     @Override
     public float getVerticalTranslationForAnimation() {
-        return mAlignmentView.getTranslationY();
+        // With TOOLBAR_PHONE_ANIMATION_REFACTOR, the alignment view's translation may be handled by
+        // the animation matrix instead of directly through the view's translationY.
+        Matrix matrix = mAlignmentView.getAnimationMatrix();
+        if (matrix != null) {
+            float[] values = new float[9];
+            matrix.getValues(values);
+            return values[Matrix.MTRANS_Y];
+        } else {
+            return mAlignmentView.getTranslationY();
+        }
     }
 
     /**
