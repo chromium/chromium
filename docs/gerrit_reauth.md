@@ -344,7 +344,7 @@ should see "ReAuth succeed" in the command prompt.
 For the first security key touch, there might be a delay before your security
 key starts blinking. This is caused by `luci-auth-fido2-plugin` bootstrapping.
 
-#### I’m using a Windows client, I want to SSH into Linux
+### I’m using a Windows client, I want to SSH into Linux
 
 First, start `luci-auth-ssh-helper` in daemon mode on a TCP port (we use 10899
 in the example). The helper will listen for incoming ReAuth challenges.
