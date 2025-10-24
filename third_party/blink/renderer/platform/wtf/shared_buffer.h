@@ -225,8 +225,7 @@ inline std::vector<char> SegmentedBuffer::CopyAs() const {
   buffer.reserve(size_);
 
   for (const auto& span : *this) {
-    buffer.insert(buffer.end(), span.data(),
-                  UNSAFE_TODO(span.data() + span.size()));
+    buffer.insert(buffer.end(), span.begin(), span.end());
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
@@ -238,9 +237,8 @@ inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
   buffer.reserve(size_);
 
   for (const auto& span : *this) {
-    buffer.insert(buffer.end(), reinterpret_cast<const uint8_t*>(span.data()),
-                  reinterpret_cast<const uint8_t*>(
-                      UNSAFE_TODO(span.data() + span.size())));
+    auto byte_span = base::as_bytes(span);
+    buffer.insert(buffer.end(), byte_span.begin(), byte_span.end());
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;

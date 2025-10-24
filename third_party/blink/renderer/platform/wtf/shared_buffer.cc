@@ -39,8 +39,9 @@
 namespace blink {
 
 SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
-  DCHECK(!IsEnd());
-  UNSAFE_TODO(++segment_it_);
+  CHECK(!IsEnd());
+  // SAFETY: The above CHECK ensures it's safe.
+  UNSAFE_BUFFERS(++segment_it_);
   Init(0);
   return *this;
 }
@@ -107,7 +108,9 @@ SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
                         [](const size_t& position, const Segment& segment) {
                           return position < segment.start_position();
                         });
-  UNSAFE_TODO(--it);
+  // SAFETY: The above `if` handles a case for the first segment, so `it` must
+  // not be `begin()`.
+  UNSAFE_BUFFERS(--it);
   return Iterator(it, position - it->start_position(), this);
 }
 
