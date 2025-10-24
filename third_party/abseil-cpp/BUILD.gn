@@ -134,6 +134,7 @@ group("absl_component_deps") {
 component("test_support") {
   testonly = true
   public_deps = [ "//third_party/abseil-cpp/absl/hash:hash_testing" ]
+  deps = [ ":absl" ]
 }
 
 # Some third-party libraries use additional parts of absl that are banned in
