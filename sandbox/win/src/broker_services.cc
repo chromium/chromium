@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -161,10 +162,8 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
           // with it has terminated. It is safe to free the tracker
           // and release its reference to the associated policy object
           // which will Close the job handle.
-          jobs.erase(std::remove_if(
-                         jobs.begin(), jobs.end(),
-                         [&](auto&& p) -> bool { return p.get() == tracker; }),
-                     jobs.end());
+          std::erase_if(jobs,
+                        [&](auto&& p) -> bool { return p.get() == tracker; });
           break;
         }
 
