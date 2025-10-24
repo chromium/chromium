@@ -2379,8 +2379,12 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
           });
     }
     // Only run the rest of the steps here if resize observer is done.
-    if (needs_to_repeat_lifecycle)
+    if (needs_to_repeat_lifecycle) {
+      if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+        should_run_scroll_snapshot_client_steps = true;
+      }
       continue;
+    }
 
     // ViewTransition mutates the tree and mirrors post layout transform for
     // transitioning elements to UA created elements. This may dirty
