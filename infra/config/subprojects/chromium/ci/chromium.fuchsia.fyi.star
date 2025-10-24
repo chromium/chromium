@@ -256,6 +256,7 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
+    execution_timeout = 24 * time.hour,
 )
 
 ci.builder(
