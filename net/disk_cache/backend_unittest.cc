@@ -5311,7 +5311,13 @@ TEST_F(DiskCacheBackendTest, BlockfileEmptyIndex) {
 #endif
 
 // See https://crbug.com/1486958
-TEST_F(DiskCacheBackendTest, SimpleDoomIter) {
+// Disabled on Mac due to flakiness: crbug.com/438569911.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SimpleDoomIter DISABLED_SimpleDoomIter
+#else
+#define MAYBE_SimpleDoomIter SimpleDoomIter
+#endif
+TEST_F(DiskCacheBackendTest, MAYBE_SimpleDoomIter) {
   const int kEntries = 1000;
 
   SetBackendToTest(BackendToTest::kSimple);
