@@ -56,7 +56,7 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle) override;
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,

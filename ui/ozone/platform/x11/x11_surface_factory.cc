@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/linux/gbm_buffer.h"
@@ -243,12 +244,13 @@ scoped_refptr<gfx::NativePixmap>
 X11SurfaceFactory::CreateNativePixmapFromHandle(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
   auto buffer =
       ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBufferFromHandle(
-          size, format, std::move(handle));
+          size, viz::SharedImageFormatToBufferFormat(format),
+          std::move(handle));
   if (buffer) {
     gfx::NativePixmapHandle buffer_handle = buffer->ExportHandle();
     if (buffer_handle.planes.empty()) {

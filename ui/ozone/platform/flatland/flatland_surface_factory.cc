@@ -185,7 +185,7 @@ scoped_refptr<gfx::NativePixmap>
 FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   auto collection = flatland_sysmem_buffer_manager_.GetCollectionByHandle(
       handle.buffer_collection_handle);

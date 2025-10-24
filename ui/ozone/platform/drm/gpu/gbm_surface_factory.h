@@ -70,7 +70,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle) override;
   void SetGetProtectedNativePixmapDelegate(
       const GetProtectedNativePixmapCallback&

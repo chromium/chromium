@@ -100,7 +100,7 @@ scoped_refptr<gfx::NativePixmap>
 SurfaceFactoryOzone::CreateNativePixmapFromHandle(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   return nullptr;
 }

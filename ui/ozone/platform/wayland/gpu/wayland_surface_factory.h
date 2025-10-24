@@ -50,7 +50,7 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle) override;
   std::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
       const override;

@@ -408,7 +408,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     pixmap_ = ui::OzonePlatform::GetInstance()
                   ->GetSurfaceFactoryOzone()
                   ->CreateNativePixmapFromHandle(
-                      kNullSurfaceHandle, size, ToBufferFormat(format),
+                      kNullSurfaceHandle, size, format,
                       std::move(handle).native_pixmap_handle());
   }
 #endif  // BUILDFLAG(IS_OZONE)

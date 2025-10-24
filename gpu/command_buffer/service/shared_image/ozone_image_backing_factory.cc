@@ -239,7 +239,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     ui::SurfaceFactoryOzone* surface_factory =
         ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     pixmap = surface_factory->CreateNativePixmapFromHandle(
-        kNullSurfaceHandle, size, ToBufferFormat(format),
+        kNullSurfaceHandle, size, format,
         std::move(handle).native_pixmap_handle());
     if (!pixmap) {
       return nullptr;
