@@ -206,6 +206,7 @@ class CORE_EXPORT FragmentBuilder {
   static void PropagateChildAnchors(const PhysicalFragment& child,
                                     const LogicalOffset& child_offset,
                                     const LayoutObject& container_object,
+                                    WritingDirectionMode,
                                     LogicalSize container_logical_size,
                                     PhysicalAnchorQuery::SetOptions options,
                                     PhysicalAnchorQuery** out_anchor_query);

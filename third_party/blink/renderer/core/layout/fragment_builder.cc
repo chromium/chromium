@@ -209,14 +209,15 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
 
   PhysicalAnchorQuery::SetOptions options =
       AnchorQuerySetOptionsForChild(child);
-  PropagateChildAnchors(child, child_offset, *container_object, Size(), options,
-                        &anchor_query_);
+  PropagateChildAnchors(child, child_offset, *container_object,
+                        GetWritingDirection(), Size(), options, &anchor_query_);
 }
 
 void FragmentBuilder::PropagateChildAnchors(
     const PhysicalFragment& child,
     const LogicalOffset& child_offset,
     const LayoutObject& container_object,
+    WritingDirectionMode writing_direction,
     LogicalSize container_logical_size,
     PhysicalAnchorQuery::SetOptions options,
     PhysicalAnchorQuery** out_anchor_query) {
@@ -240,8 +241,6 @@ void FragmentBuilder::PropagateChildAnchors(
       }
     }
   }
-  WritingDirectionMode writing_direction =
-      container_object.Style()->GetWritingDirection();
   PhysicalSize physical_container_size = ToPhysicalSize(
       container_logical_size, writing_direction.GetWritingMode());
   if (child.IsAnchor()) {
