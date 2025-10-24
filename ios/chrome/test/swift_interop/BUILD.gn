@@ -33,11 +33,14 @@ source_set("swift_interop_tests_support_files") {
     "include/outlined_class.h",
     "include/pointer_returner.h",
     "include/polymorphism.h",
+    "include/shared_ptr.h",
     "include/struct.h",
     "include/unique_ptr.h",
     "pointer/pointer_returner.cc",
+    "pointer/shared_ptr.cc",
     "pointer/unique_ptr.cc",
   ]
+  deps = [ "//base" ]
 }
 
 swift_source_set("swift_interop_tests") {
@@ -55,6 +58,7 @@ swift_source_set("swift_interop_tests") {
     "namespace/namespace_xctest.swift",
     "pointer/object_passing_xctest.swift",
     "pointer/pointer_xctest.swift",
+    "pointer/shared_ptr_xctest.swift",
     "pointer/unique_ptr_xctest.swift",
     "struct/struct_xctest.swift",
   ]
