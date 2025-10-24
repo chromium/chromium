@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/sync/protocol/entity_data.h"
 
 namespace sync_pb {
 class AutofillValuableMetadataSpecifics;
@@ -37,6 +38,10 @@ sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
 // EntityInstance::EntityMetadata.
 EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
     const sync_pb::AutofillValuableMetadataSpecifics& specifics);
+
+// Converts the given `metadata` into a `syncer::EntityData`.
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
+    const EntityInstance::EntityMetadata& metadata);
 
 }  // namespace autofill
 

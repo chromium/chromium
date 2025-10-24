@@ -347,5 +347,45 @@ TEST_F(EntityTableTest, AddOrUpdateEntityMetadata_Update) {
   EXPECT_THAT(test_api(table()).GetMetadataEntries(), ElementsAre(metadata));
 }
 
+// Tests that GetSyncedMetadata() returns nothing if only local entities are
+// present.
+TEST_F(EntityTableTest, GetSyncedMetadata_OnlyLocal) {
+  EntityInstance local_pp = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_pp));
+  EXPECT_THAT(table().GetSyncedMetadata(), IsEmpty());
+}
+
+// Tests that GetSyncedMetadata() returns metadata for all entities if only
+// server entities are present.
+TEST_F(EntityTableTest, GetSyncedMetadata_OnlyServer) {
+  EntityInstance server_dl = test::GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance server_vr = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_dl));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_vr));
+
+  EXPECT_THAT(table().GetSyncedMetadata(),
+              testing::UnorderedElementsAre(
+                  testing::Pair(server_dl.guid(), server_dl.metadata()),
+                  testing::Pair(server_vr.guid(), server_vr.metadata())));
+}
+
+// Tests that GetSyncedMetadata() returns only metadata for server entities when
+// both local and server entities are present.
+TEST_F(EntityTableTest, GetSyncedMetadata_Mixed) {
+  EntityInstance local_pp = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance server_dl = test::GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_pp));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_dl));
+
+  EXPECT_THAT(table().GetSyncedMetadata(),
+              testing::UnorderedElementsAre(
+                  testing::Pair(server_dl.guid(), server_dl.metadata())));
+}
+
 }  // namespace
 }  // namespace autofill

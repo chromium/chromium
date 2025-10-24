@@ -414,7 +414,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
     return false;
   }
   // Add the entity's metadata.
-  if (!AddEntityMetadata(entity.get_metadata())) {
+  if (!AddEntityMetadata(entity.metadata())) {
     return false;
   }
   return transaction.Commit();
@@ -491,6 +491,20 @@ bool EntityTable::EntityInstanceExists(
   return SelectByGuid(db(), s, entities::kTableName, {entities::kGuid},
                       *guid) &&
          s.Succeeded();
+}
+
+std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+EntityTable::GetSyncedMetadata() const {
+  std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+      all_metadata = LoadMetadata();
+  // Keeping only kWallet entities is not enough, because it does not handle
+  // orphan metadata. Hence we are removing kLocal metadata entities from the
+  // full set of metadata entries.
+  for (const EntityInstance& local_entity :
+       GetEntityInstances(EntityInstance::RecordType::kLocal)) {
+    all_metadata.erase(local_entity.guid());
+  }
+  return all_metadata;
 }
 
 std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>

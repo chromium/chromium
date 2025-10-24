@@ -128,6 +128,12 @@ class EntityTable : public WebDatabaseTable {
       std::optional<EntityInstance::RecordType> record_type =
           std::nullopt) const;
 
+  // Returns the content of `autofill_ai_entities_metadata` table that is synced
+  // by the server i.e. all metadata entries without a corresponding `local`
+  // entity.
+  std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+  GetSyncedMetadata() const;
+
  private:
   // Contains information about an attribute stored in the `attributes` table.
   // Note that this doesn't contain the owning entity's GUID or the attribute

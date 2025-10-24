@@ -10,6 +10,8 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table_test_api.h"
@@ -34,6 +36,7 @@ namespace {
 using base::test::EqualsProto;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::Pair;
 using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -55,6 +58,24 @@ EntityInstance::EntityMetadata test_metadata() {
       .use_date = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(13379000000000000u))};
 }
+std::vector<EntityInstance::EntityMetadata>
+ExtractEntitiesMetadataFromDataBatch(std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<EntityInstance::EntityMetadata> entities;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    entities.push_back(CreateValuableMetadataFromSpecifics(
+        data_pair.second->specifics.autofill_valuable_metadata()));
+  }
+  return entities;
+}
+
+EntityInstance CreateServerVehicleEntityInstance(
+    test::VehicleOptions options = {}) {
+  options.nickname = "";
+  options.record_type = EntityInstance::RecordType::kServerWallet;
+  return test::GetVehicleEntityInstance(options);
+}
+
 }  // namespace
 
 class ValuableMetadataSyncBridgeTest : public testing::Test {
@@ -78,6 +99,8 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
   ValuableMetadataSyncBridge& bridge() { return *bridge_; }
 
   testing::NiceMock<MockAutofillWebDataBackend>& backend() { return backend_; }
+
+  EntityTable& entity_table() { return entity_table_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -249,6 +272,50 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
 
   // The metadata should still be there.
   EXPECT_THAT(GetMetadataEntries(), SizeIs(1));
+}
+
+// Tests that GetAllData() returns all metadata entries from the database.
+TEST_F(ValuableMetadataSyncBridgeTest, GetAllData) {
+  const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_count = 2});
+  const EntityInstance vehicle2 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
+       .use_count = 7});
+  entity_table().AddOrUpdateEntityInstance(vehicle1);
+  entity_table().AddOrUpdateEntityInstance(vehicle2);
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
+  ASSERT_TRUE(batch);
+  EXPECT_THAT(ExtractEntitiesMetadataFromDataBatch(std::move(batch)),
+              UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
+}
+
+// Tests that GetDataForCommit() returns the specified metadata entries.
+TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit) {
+  const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_count = 2});
+  const EntityInstance vehicle2 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
+       .use_count = 7});
+  entity_table().AddOrUpdateEntityInstance(vehicle1);
+  entity_table().AddOrUpdateEntityInstance(vehicle2);
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({"00000000-0000-4000-8000-300000000000"});
+
+  ASSERT_TRUE(batch);
+  EXPECT_THAT(ExtractEntitiesMetadataFromDataBatch(std::move(batch)),
+              UnorderedElementsAre(vehicle2.metadata()));
 }
 
 }  // namespace

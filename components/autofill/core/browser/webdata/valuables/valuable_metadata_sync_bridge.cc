@@ -99,15 +99,27 @@ ValuableMetadataSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::MutableDataBatch>
 ValuableMetadataSyncBridge::GetAllData() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  // TODO(crbug.com/436551488): Implement actual data retrieval.
+  for (const auto& [storage_key, metadata] :
+       GetEntityTable()->GetSyncedMetadata()) {
+    batch->Put(*storage_key, CreateEntityDataFromEntityMetadata(metadata));
+  }
   return batch;
 }
 
 std::unique_ptr<syncer::DataBatch> ValuableMetadataSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/436551488): Implement.
-  return nullptr;
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  absl::flat_hash_set<std::string> keys_set(storage_keys.begin(),
+                                            storage_keys.end());
+  std::unique_ptr<syncer::DataBatch> all_data = GetAllData();
+  while (all_data->HasNext()) {
+    syncer::KeyAndData item = all_data->Next();
+    if (keys_set.contains(item.first)) {
+      batch->Put(item.first, std::move(item.second));
+    }
+  }
+  return batch;
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -182,6 +194,7 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
         EntityInstance::EntityMetadata remote =
             CreateValuableMetadataFromSpecifics(specifics);
         if (!table->AddOrUpdateEntityMetadata(remote)) {
+          // TODO(crbug.com/436551488): Update to the correct error type.
           return syncer::ModelError(
               FROM_HERE, syncer::ModelError::Type::
                              kAutofillValuableMetadataFailedToLoadDatabase);

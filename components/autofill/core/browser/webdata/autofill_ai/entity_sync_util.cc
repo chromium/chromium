@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
@@ -356,6 +357,17 @@ EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
       .use_count = static_cast<size_t>(specifics.use_count()),
       .use_date = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(specifics.last_used_date_unix_epoch_micros()))};
+}
+
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
+    const EntityInstance::EntityMetadata& metadata) {
+  sync_pb::AutofillValuableMetadataSpecifics metadata_specifics =
+      CreateSpecificsFromEntityMetadata(metadata);
+  std::unique_ptr<syncer::EntityData> entity_data =
+      std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_autofill_valuable_metadata() =
+      std::move(metadata_specifics);
+  return entity_data;
 }
 
 }  // namespace autofill

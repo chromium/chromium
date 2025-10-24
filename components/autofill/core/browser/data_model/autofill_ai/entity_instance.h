@@ -313,7 +313,7 @@ class EntityInstance final {
   size_t use_count() const { return entity_metadata_.use_count; }
 
   // Returns the metadata for this instance.
-  const EntityMetadata& get_metadata() const { return entity_metadata_; }
+  const EntityMetadata& metadata() const { return entity_metadata_; }
 
   // Returns true if the attributes of this entity instance cannot be edited by
   // the user.
