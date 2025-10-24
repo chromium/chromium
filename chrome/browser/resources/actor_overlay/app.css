@@ -44,7 +44,18 @@
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  border: 3px solid #3186FF;
+  background: #3186FF;
+  mask-image:
+    linear-gradient(white, white),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6px' ry='6px' fill='white'/></svg>");
+  mask-composite: subtract;
+  mask-size:
+    100% 100%,
+    calc(100% - 6px) calc(100% - 6px);
+  mask-position:
+    0 0,
+    center;
+  mask-repeat: no-repeat, no-repeat;
   z-index: 15;
   pointer-events: none;
 }
