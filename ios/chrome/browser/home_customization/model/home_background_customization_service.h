@@ -239,18 +239,6 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Decodes a previously-encoded string into theme specifics.
   sync_pb::ThemeSpecificsIos DecodeThemeSpecificsIos(std::string string);
 
-  // Adds the provided `recent_background` to the list of recently used
-  // backgrounds. The list has the newest items at the front, and also a max
-  // size. The oldest item is removed when the size is exceeded. Does not
-  // persist the list to disk.
-  void AddToRecentlyUsedBackgroundsList(
-      RecentlyUsedBackgroundInternal&& recent_background);
-
-  // Deletes a recently used background (identified by iterator) from the local
-  // state.
-  void DeleteRecentlyUsedBackground(
-      RecentlyUsedBackgroundsCache::iterator recent_background_iterator);
-
   // Deletes the listed image from disk.
   void DeleteUserBackgroundImage(
       HomeUserUploadedBackground user_background_image);

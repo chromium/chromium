@@ -62,9 +62,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
     PrefService* pref_service,
     UserUploadedImageManager* user_image_manager,
     HomeBackgroundImageService* home_background_image_service)
-    : recently_used_backgrounds_(
-          base::HashingLRUCacheSet<
-              RecentlyUsedBackgroundInternal>::NO_AUTO_EVICT),
+    : recently_used_backgrounds_(MaxRecentlyUsedBackgrounds()),
       pref_service_(pref_service),
       user_image_manager_(user_image_manager),
       home_background_image_service_(home_background_image_service),
@@ -122,7 +120,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   }
   if (current_background) {
     // Make sure the current background is first in the recently used list.
-    AddToRecentlyUsedBackgroundsList(std::move(current_background.value()));
+    recently_used_backgrounds_.Put(std::move(current_background.value()));
     StoreRecentlyUsedBackgroundsList();
   }
 
@@ -297,7 +295,7 @@ void HomeBackgroundCustomizationService::DeleteRecentlyUsedBackground(
   RecentlyUsedBackgroundsCache::iterator iterator =
       recently_used_backgrounds_.Peek(internal_background);
   if (iterator != recently_used_backgrounds_.end()) {
-    DeleteRecentlyUsedBackground(iterator);
+    recently_used_backgrounds_.Erase(iterator);
   }
   StoreRecentlyUsedBackgroundsList();
 }
@@ -333,7 +331,7 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
   }
 
   if (new_recent_background) {
-    AddToRecentlyUsedBackgroundsList(std::move(new_recent_background.value()));
+    recently_used_backgrounds_.Put(std::move(new_recent_background.value()));
     StoreRecentlyUsedBackgroundsList();
   }
 }
@@ -499,34 +497,6 @@ HomeBackgroundCustomizationService::DecodeThemeSpecificsIos(
   return theme_specifics_ios;
 }
 
-void HomeBackgroundCustomizationService::AddToRecentlyUsedBackgroundsList(
-    RecentlyUsedBackgroundInternal&& recent_background) {
-  recently_used_backgrounds_.Put(
-      std::forward<RecentlyUsedBackgroundInternal>(recent_background));
-
-  while (recently_used_backgrounds_.size() >
-         static_cast<size_t>(MaxRecentlyUsedBackgrounds())) {
-    auto last_element = --recently_used_backgrounds_.end();
-    DeleteRecentlyUsedBackground(last_element);
-  }
-}
-
-void HomeBackgroundCustomizationService::DeleteRecentlyUsedBackground(
-    RecentlyUsedBackgroundsCache::iterator recent_background_iterator) {
-  if (std::holds_alternative<HomeUserUploadedBackground>(
-          *recent_background_iterator)) {
-    DeleteUserBackgroundImage(
-        std::get<HomeUserUploadedBackground>(*recent_background_iterator));
-  }
-  recently_used_backgrounds_.Erase(recent_background_iterator);
-}
-
-void HomeBackgroundCustomizationService::DeleteUserBackgroundImage(
-    HomeUserUploadedBackground user_background_image) {
-  user_image_manager_->DeleteUserUploadedImage(
-      base::FilePath(user_background_image.image_path));
-}
-
 void HomeBackgroundCustomizationService::DefaultRecentlyUsedBackgroundsLoaded(
     const HomeBackgroundImageService::CollectionImageMap& collection_map) {
   // Iterate backwards so the items at the end of the list are pushed into the
@@ -555,7 +525,7 @@ void HomeBackgroundCustomizationService::DefaultRecentlyUsedBackgroundsLoaded(
       sync_pb::ThemeSpecificsIos new_theme_specifics;
       *new_theme_specifics.mutable_ntp_background() = new_background;
 
-      AddToRecentlyUsedBackgroundsList(new_theme_specifics);
+      recently_used_backgrounds_.Put(new_theme_specifics);
     }
   }
 

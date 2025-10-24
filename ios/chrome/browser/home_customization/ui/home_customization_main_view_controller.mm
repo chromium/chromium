@@ -386,6 +386,9 @@
 
   [self.customizationMutator
       applyBackgroundForConfiguration:backgroundConfiguration];
+  // Main menu does not have Cancel/Done buttons, so save the background
+  // immediately.
+  [self.customizationMutator saveBackground];
 
   _recentBackgroundClickCount += 1;
 

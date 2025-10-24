@@ -50,6 +50,9 @@ using UserUploadImageCompletion = void (^)(UIImage*, UserUploadedImageError);
 // last one saved.
 - (void)discardBackground;
 
+// Commits any in-progress customization changes.
+- (void)saveBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CONFIGURATION_MUTATOR_H_

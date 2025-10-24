@@ -386,6 +386,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       [self generateRecentBackgroundForConfiguration:configurationItem]);
 }
 
+- (void)saveBackground {
+  [self saveCurrentTheme];
+}
+
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
 - (void)onBackgroundChanged {
