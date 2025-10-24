@@ -11,16 +11,19 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -32,6 +35,7 @@ namespace base {
 namespace {
 
 using ::testing::_;
+using SequenceManager = sequence_manager::SequenceManager;
 using TaskQueue = sequence_manager::TaskQueue;
 
 // Types of task to post while a fence is up.
@@ -42,10 +46,12 @@ enum class TaskType {
   kThreadPoolBestEffort,
   // Task posted to a TaskQueue with default priority.
   kTaskQueueDefault,
+  // Task posted to a TaskQueue with best-effort priority.
+  kTaskQueueBestEffort,
 };
 using TaskTypes = EnumSet<TaskType,
                           TaskType::kThreadPoolDefault,
-                          TaskType::kTaskQueueDefault>;
+                          TaskType::kTaskQueueBestEffort>;
 
 std::ostream& operator<<(std::ostream& os, TaskType task_type) {
   switch (task_type) {
@@ -55,6 +61,8 @@ std::ostream& operator<<(std::ostream& os, TaskType task_type) {
       return os << "kThreadPoolBestEffort";
     case TaskType::kTaskQueueDefault:
       return os << "kTaskQueueDefault";
+    case TaskType::kTaskQueueBestEffort:
+      return os << "kTaskQueueBestEffort";
   }
 }
 
@@ -68,19 +76,37 @@ std::ostream& operator<<(std::ostream& os, TaskTypes task_types) {
   return os << "]";
 }
 
-// A TaskEnvironment that creates an extra TaskQueue, to give a destination for
-// PostTask while the test runs on the main thread.
-class TaskEnvironmentWithExtraTaskQueue final : public test::TaskEnvironment {
+enum class TestTaskQueuePriority : TaskQueue::QueuePriority {
+  kDefault = 0,
+  kBestEffort = 1,
+  // Must be last.
+  kCount = 2,
+};
+
+// A TaskEnvironment that creates some extra TaskQueues, to give a destination
+// for PostTask while the test runs on the main thread.
+class TaskEnvironmentWithExtraTaskQueues final : public test::TaskEnvironment {
  public:
   // Don't use MOCK_TIME since it doesn't run ThreadPool tasks without using
   // RunUntilIdle, which spins forever if there are any tasks blocked by fences.
-  TaskEnvironmentWithExtraTaskQueue()
-      : test::TaskEnvironment(SubclassCreatesDefaultTaskRunner{}) {
+  TaskEnvironmentWithExtraTaskQueues()
+      : test::TaskEnvironment(
+            SequenceManager::PrioritySettings(TestTaskQueuePriority::kCount,
+                                              TestTaskQueuePriority::kDefault),
+            SubclassCreatesDefaultTaskRunner{},
+            ScopedExecutionFenceBehaviour::MAIN_THREAD_AND_THREAD_POOL) {
+    extra_task_queue_->SetQueuePriority(TestTaskQueuePriority::kDefault);
+    best_effort_task_queue_->SetQueuePriority(
+        TestTaskQueuePriority::kBestEffort);
     DeferredInitFromSubclass(default_task_queue_->task_runner());
   }
 
   scoped_refptr<SequencedTaskRunner> task_queue_task_runner() {
     return extra_task_queue_->task_runner();
+  }
+
+  scoped_refptr<SequencedTaskRunner> best_effort_task_queue_task_runner() {
+    return best_effort_task_queue_->task_runner();
   }
 
  private:
@@ -89,12 +115,34 @@ class TaskEnvironmentWithExtraTaskQueue final : public test::TaskEnvironment {
           sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
   TaskQueue::Handle extra_task_queue_ = sequence_manager()->CreateTaskQueue(
       TaskQueue::Spec(sequence_manager::QueueName::TEST_TQ));
+  TaskQueue::Handle best_effort_task_queue_ =
+      sequence_manager()->CreateTaskQueue(
+          TaskQueue::Spec(sequence_manager::QueueName::TEST2_TQ));
 };
 
 }  // namespace
 
-class ExecutionFenceTest : public ::testing::Test {
+struct TestParams {
+  // Whether or not ScopedBestEffortExecutionFence should block TaskQueue tasks.
+  bool block_best_effort_task_queue = false;
+
+  // All TaskQueue task types that should run while a
+  // ScopedBestEffortExecutionFence is up.
+  TaskTypes task_queue_types_during_best_effort_fence;
+
+  // All TaskQueue task types that should run as soon as the last
+  // ScopedBestEffortExecutionFence comes down.
+  TaskTypes task_queue_types_after_best_effort_fence;
+};
+
+class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
  public:
+  ExecutionFenceTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kScopedBestEffortExecutionFenceForTaskQueue,
+        GetParam().block_best_effort_task_queue);
+  }
+
   ~ExecutionFenceTest() override {
     // Flush every task runner being tested.
     RepeatingClosure barrier_closure =
@@ -160,7 +208,8 @@ class ExecutionFenceTest : public ::testing::Test {
   }
 
  protected:
-  TaskEnvironmentWithExtraTaskQueue task_env_;
+  test::ScopedFeatureList scoped_feature_list_;
+  TaskEnvironmentWithExtraTaskQueues task_env_;
 
   // A TaskRunner for each TaskType.
   std::map<TaskType, scoped_refptr<SequencedTaskRunner>> task_runners_{
@@ -168,6 +217,8 @@ class ExecutionFenceTest : public ::testing::Test {
       {TaskType::kThreadPoolBestEffort,
        ThreadPool::CreateSequencedTaskRunner({TaskPriority::BEST_EFFORT})},
       {TaskType::kTaskQueueDefault, task_env_.task_queue_task_runner()},
+      {TaskType::kTaskQueueBestEffort,
+       task_env_.best_effort_task_queue_task_runner()},
   };
 
   // Lock protecting `tasks_that_ran_`. This doesn't need to be held while
@@ -187,18 +238,39 @@ class ExecutionFenceTest : public ::testing::Test {
   TaskTypes tasks_that_ran_ GUARDED_BY(tasks_that_ran_lock_);
 };
 
-TEST_F(ExecutionFenceTest, SingleFence) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionFenceTest,
+                         ::testing::Values(
+                             TestParams{
+                                 .block_best_effort_task_queue = false,
+                                 .task_queue_types_during_best_effort_fence =
+                                     {TaskType::kTaskQueueDefault,
+                                      TaskType::kTaskQueueBestEffort},
+                                 .task_queue_types_after_best_effort_fence = {},
+                             },
+                             TestParams{
+                                 .block_best_effort_task_queue = true,
+                                 .task_queue_types_during_best_effort_fence =
+                                     {TaskType::kTaskQueueDefault},
+                                 .task_queue_types_after_best_effort_fence =
+                                     {TaskType::kTaskQueueBestEffort},
+                             }));
+
+TEST_P(ExecutionFenceTest, SingleFence) {
   {
     ScopedBestEffortExecutionFence best_effort_fence;
 
     // While this fence is up, only default-priority tasks should run.
     PostTestTasks();
     RunPostedTasksAndExpect(
-        {TaskType::kThreadPoolDefault, TaskType::kTaskQueueDefault});
+        Union({TaskType::kThreadPoolDefault},
+              GetParam().task_queue_types_during_best_effort_fence));
   }
 
   // After bringing the fence down, unblocked best-effort tasks should run.
-  RunPostedTasksAndExpect({TaskType::kThreadPoolBestEffort});
+  RunPostedTasksAndExpect(
+      Union({TaskType::kThreadPoolBestEffort},
+            GetParam().task_queue_types_after_best_effort_fence));
 
   // Now that the fence is down all tasks should run.
   PostTestTasks();
@@ -209,7 +281,8 @@ TEST_F(ExecutionFenceTest, SingleFence) {
 
     // While this fence is up, only TaskQueue tasks should run.
     PostTestTasks();
-    RunPostedTasksAndExpect({TaskType::kTaskQueueDefault});
+    RunPostedTasksAndExpect(
+        {TaskType::kTaskQueueDefault, TaskType::kTaskQueueBestEffort});
   }
 
   // After bringing the fence down, unblocked ThreadPool tasks should run.
@@ -221,7 +294,7 @@ TEST_F(ExecutionFenceTest, SingleFence) {
   RunPostedTasksAndExpect(TaskTypes::All());
 }
 
-TEST_F(ExecutionFenceTest, NestedFences) {
+TEST_P(ExecutionFenceTest, NestedFences) {
   auto best_effort_fence1 =
       std::make_optional<ScopedBestEffortExecutionFence>();
   auto best_effort_fence2 =
@@ -230,16 +303,17 @@ TEST_F(ExecutionFenceTest, NestedFences) {
   // While these fences are up, only default-priority tasks should run.
   PostTestTasks();
   RunPostedTasksAndExpect(
-      {TaskType::kThreadPoolDefault, TaskType::kTaskQueueDefault});
+      Union({TaskType::kThreadPoolDefault},
+            GetParam().task_queue_types_during_best_effort_fence));
 
   auto thread_pool_fence1 =
       std::make_optional<ScopedThreadPoolExecutionFence>();
   auto thread_pool_fence2 =
       std::make_optional<ScopedThreadPoolExecutionFence>();
 
-  // Now both types of fence are up, so only TaskPool tasks should run.
+  // Now both types of fence are up, so only TaskQueue tasks should run.
   PostTestTasks();
-  RunPostedTasksAndExpect({TaskType::kTaskQueueDefault});
+  RunPostedTasksAndExpect(GetParam().task_queue_types_during_best_effort_fence);
 
   thread_pool_fence2.reset();
 
@@ -248,7 +322,7 @@ TEST_F(ExecutionFenceTest, NestedFences) {
 
   // New ThreadPool tasks still shouldn't run.
   PostTestTasks();
-  RunPostedTasksAndExpect({TaskType::kTaskQueueDefault});
+  RunPostedTasksAndExpect(GetParam().task_queue_types_during_best_effort_fence);
 
   thread_pool_fence1.reset();
 
@@ -259,7 +333,8 @@ TEST_F(ExecutionFenceTest, NestedFences) {
   // But new best-effort tasks shouldn't.
   PostTestTasks();
   RunPostedTasksAndExpect(
-      {TaskType::kThreadPoolDefault, TaskType::kTaskQueueDefault});
+      Union({TaskType::kThreadPoolDefault},
+            GetParam().task_queue_types_during_best_effort_fence));
 
   best_effort_fence2.reset();
 
@@ -269,34 +344,38 @@ TEST_F(ExecutionFenceTest, NestedFences) {
   // New best-effort tasks still shouldn't run.
   PostTestTasks();
   RunPostedTasksAndExpect(
-      {TaskType::kThreadPoolDefault, TaskType::kTaskQueueDefault});
+      Union({TaskType::kThreadPoolDefault},
+            GetParam().task_queue_types_during_best_effort_fence));
 
   best_effort_fence1.reset();
 
   // After bringing the last fence down, unblocked best-effort tasks should
   // run.
-  RunPostedTasksAndExpect({TaskType::kThreadPoolBestEffort});
+  RunPostedTasksAndExpect(
+      Union({TaskType::kThreadPoolBestEffort},
+            GetParam().task_queue_types_after_best_effort_fence));
 
   // No more fences. All posted tasks run.
   PostTestTasks();
   RunPostedTasksAndExpect(TaskTypes::All());
 }
 
-TEST_F(ExecutionFenceTest, StaggeredFences) {
+TEST_P(ExecutionFenceTest, StaggeredFences) {
   auto best_effort_fence1 =
       std::make_optional<ScopedBestEffortExecutionFence>();
 
   // Best-effort tasks don't run.
   PostTestTasks();
   RunPostedTasksAndExpect(
-      {TaskType::kThreadPoolDefault, TaskType::kTaskQueueDefault});
+      Union({TaskType::kThreadPoolDefault},
+            GetParam().task_queue_types_during_best_effort_fence));
 
   auto thread_pool_fence1 =
       std::make_optional<ScopedThreadPoolExecutionFence>();
 
   // Best-effort and ThreadPool tasks don't run.
   PostTestTasks();
-  RunPostedTasksAndExpect({TaskType::kTaskQueueDefault});
+  RunPostedTasksAndExpect(GetParam().task_queue_types_during_best_effort_fence);
 
   auto best_effort_fence2 =
       std::make_optional<ScopedBestEffortExecutionFence>();
@@ -305,7 +384,7 @@ TEST_F(ExecutionFenceTest, StaggeredFences) {
 
   // Best-effort and ThreadPool tasks still don't run.
   PostTestTasks();
-  RunPostedTasksAndExpect({TaskType::kTaskQueueDefault});
+  RunPostedTasksAndExpect(GetParam().task_queue_types_during_best_effort_fence);
 
   // Bring down the first best-effort fence. Another one's still up, so
   // nothing's unblocked.
@@ -317,10 +396,10 @@ TEST_F(ExecutionFenceTest, StaggeredFences) {
   thread_pool_fence1.reset();
   RunPostedTasksAndExpect({});
 
-  // Bring down the second best-effort fence. All best-effort tasks are on the
-  // ThreadPool, so still nothing's unblocked.
+  // Bring down the second best-effort fence. Only best-effort TaskQueue tasks
+  // are unblocked.
   best_effort_fence2.reset();
-  RunPostedTasksAndExpect({});
+  RunPostedTasksAndExpect(GetParam().task_queue_types_after_best_effort_fence);
 
   // Bring down the second ThreadPool fence. All tasks are now unblocked.
   thread_pool_fence2.reset();

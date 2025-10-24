@@ -87,6 +87,11 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kReducePPMs, FEATURE_DISABLED_BY_DEFAULT);
 
+// Apply base::ScopedBestEffortExecutionFence to registered task queues as well
+// as the thread pool.
+BASE_FEATURE(kScopedBestEffortExecutionFenceForTaskQueue,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to restrict the max gap between the frame pointer and the stack end
 // for stack scanning. If the gap is beyond the given gap threshold, the stack
 // end is treated as unreliable. Stack scanning stops when that happens.

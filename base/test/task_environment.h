@@ -186,6 +186,19 @@ class TaskEnvironment {
     DEFAULT = COM_MTA,
   };
 
+  // Defines how the scoped execution fences defined in
+  // base/task/execution_fence.h interact with TaskEnvironment threads.
+  enum class ScopedExecutionFenceBehaviour {
+    // Scoped execution fences only block tasks on the ThreadPool.
+    THREAD_POOL_ONLY,
+    // Scoped execution fences block tasks on the main thread as well as the
+    // ThreadPool. (Except for ScopedThreadPoolExecutionFence which only ever
+    // affects the ThreadPool.)
+    MAIN_THREAD_AND_THREAD_POOL,
+
+    DEFAULT = THREAD_POOL_ONLY
+  };
+
   // List of traits that are valid inputs for the constructor below.
   struct ValidTraits {
     ValidTraits(TimeSource);
@@ -194,6 +207,7 @@ class TaskEnvironment {
     ValidTraits(SubclassCreatesDefaultTaskRunner);
     ValidTraits(ThreadingMode);
     ValidTraits(ThreadPoolCOMEnvironment);
+    ValidTraits(ScopedExecutionFenceBehaviour);
   };
 
   // Constructor accepts zero or more traits which customize the testing
@@ -425,6 +439,9 @@ class TaskEnvironment {
             trait_helpers::GetEnum<ThreadPoolCOMEnvironment,
                                    ThreadPoolCOMEnvironment::DEFAULT>(
                 traits...),
+            trait_helpers::GetEnum<ScopedExecutionFenceBehaviour,
+                                   ScopedExecutionFenceBehaviour::DEFAULT>(
+                traits...),
             trait_helpers::HasTrait<SubclassCreatesDefaultTaskRunner,
                                     TaskEnvironmentTraits...>(),
             trait_helpers::NotATraitTag()) {}
@@ -473,6 +490,7 @@ class TaskEnvironment {
       ThreadPoolExecutionMode thread_pool_execution_mode,
       ThreadingMode threading_mode,
       ThreadPoolCOMEnvironment thread_pool_com_environment,
+      ScopedExecutionFenceBehaviour scoped_execution_fence_behaviour,
       bool subclass_creates_default_taskrunner,
       trait_helpers::NotATraitTag tag);
 
@@ -480,6 +498,7 @@ class TaskEnvironment {
   const ThreadPoolExecutionMode thread_pool_execution_mode_;
   const ThreadingMode threading_mode_;
   const ThreadPoolCOMEnvironment thread_pool_com_environment_;
+  const ScopedExecutionFenceBehaviour scoped_execution_fence_behaviour_;
   const bool subclass_creates_default_taskrunner_;
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;

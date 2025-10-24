@@ -151,6 +151,12 @@ SequenceManager::Settings::Builder::SetShouldReportLockMetrics(bool enable) {
   return *this;
 }
 
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetShouldBlockOnScopedFences(bool enable) {
+  settings_.should_block_on_scoped_fences = enable;
+  return *this;
+}
+
 #if DCHECK_IS_ON()
 
 SequenceManager::Settings::Builder&

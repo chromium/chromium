@@ -34,6 +34,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kLowMemoryDeviceThresholdMB);
 // is to measure their aggregated impact.
 BASE_EXPORT BASE_DECLARE_FEATURE(kReducePPMs);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kScopedBestEffortExecutionFenceForTaskQueue);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kStackScanMaxFramePointerToStackEndGap);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,

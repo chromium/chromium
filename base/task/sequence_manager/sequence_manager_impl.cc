@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
@@ -30,6 +31,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/task/execution_fence.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -178,12 +180,20 @@ SequenceManagerImpl::SequenceManagerImpl(
       main_thread_clock()->NowTicks() + kReclaimMemoryInterval;
 
   controller_->SetSequencedTaskSource(this);
+
+  if (settings_.should_block_on_scoped_fences && GetBestEffortPriority()) {
+    ScopedBestEffortExecutionFence::AddSequenceManager(this);
+  }
 }
 
 SequenceManagerImpl::~SequenceManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
+
+  if (settings_.should_block_on_scoped_fences && GetBestEffortPriority()) {
+    ScopedBestEffortExecutionFence::RemoveSequenceManager(this);
+  }
 
 #if BUILDFLAG(IS_IOS)
   if (settings_.message_loop_type == MessagePumpType::UI &&
@@ -1236,6 +1246,38 @@ internal::TaskQueueImpl* SequenceManagerImpl::currently_executing_task_queue()
 
 TaskQueue::QueuePriority SequenceManagerImpl::GetPriorityCount() const {
   return settings().priority_settings.priority_count();
+}
+
+std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>>
+SequenceManagerImpl::CreateBestEffortTaskQueueEnabledVoters() {
+  std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
+  if (std::optional<TaskQueue::QueuePriority> best_effort_priority =
+          GetBestEffortPriority()) {
+    for (internal::TaskQueueImpl* task_queue :
+         main_thread_only().active_queues) {
+      if (task_queue->GetQueuePriority() == *best_effort_priority) {
+        voters.push_back(task_queue->CreateQueueEnabledVoter());
+      }
+    }
+  }
+  return voters;
+}
+
+std::optional<TaskQueue::QueuePriority>
+SequenceManagerImpl::GetBestEffortPriority() const {
+  const PrioritySettings& priority_settings = settings().priority_settings;
+  const size_t priority_count =
+      static_cast<size_t>(priority_settings.priority_count());
+  CHECK_GT(priority_count, 0u);
+  if (priority_count == 1) {
+    return std::nullopt;
+  }
+  auto lowest_priority =
+      static_cast<TaskQueue::QueuePriority>(priority_count - 1);
+  if (lowest_priority == priority_settings.default_priority()) {
+    return std::nullopt;
+  }
+  return lowest_priority;
 }
 
 constexpr TimeDelta SequenceManagerImpl::kReclaimMemoryInterval;

@@ -23,6 +23,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
@@ -133,6 +134,8 @@ class BASE_EXPORT SequenceManagerImpl
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   std::optional<WakeUp> GetNextDelayedWakeUp() const override;
   TaskQueue::QueuePriority GetPriorityCount() const override;
+  std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>>
+  CreateBestEffortTaskQueueEnabledVoters() override;
 
   // SequencedTaskSource implementation:
   void SetRunTaskSynchronouslyAllowed(
@@ -215,6 +218,13 @@ class BASE_EXPORT SequenceManagerImpl
   friend class ::base::sequence_manager::SequenceManagerForTest;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SequenceManagerTest,
+                           BestEffortPriority_SinglePriority);
+  FRIEND_TEST_ALL_PREFIXES(SequenceManagerTest,
+                           BestEffortPriority_ManyHighPriorities);
+  FRIEND_TEST_ALL_PREFIXES(SequenceManagerTest,
+                           BestEffortPriority_ManyLowPriorities);
+
   // Returns the SequenceManager running the
   // current thread. It must only be used on the thread it was obtained.
   // Only to be used by CurrentThread for the moment
@@ -467,6 +477,10 @@ class BASE_EXPORT SequenceManagerImpl
   // task.
   TaskQueue::TaskTiming InitializeTaskTiming(
       internal::TaskQueueImpl* task_queue);
+
+  // Returns the priority to use for CreateBestEffortTaskQueueEnabledVoters(),
+  // or nullopt if there's no appropriate priority defined.
+  std::optional<TaskQueue::QueuePriority> GetBestEffortPriority() const;
 
   const scoped_refptr<AssociatedThreadId> associated_thread_;
 

@@ -5,9 +5,17 @@
 #ifndef BASE_TASK_EXECUTION_FENCE_H_
 #define BASE_TASK_EXECUTION_FENCE_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/base_export.h"
+#include "base/task/sequence_manager/task_queue.h"
 
 namespace base {
+
+namespace sequence_manager {
+class SequenceManager;
+}
 
 // A ScopedThreadPoolExecutionFence prevents new tasks from being scheduled in
 // the ThreadPool within its scope. Multiple fences can exist at the same time.
@@ -30,8 +38,10 @@ class BASE_EXPORT ScopedThreadPoolExecutionFence {
 // ScopedBestEffortExecutionFence is similar to ScopedThreadPoolExecutionFence,
 // but only prevents new tasks of BEST_EFFORT priority from being scheduled.
 // See ScopedThreadPoolExecutionFence for the full semantics.
-// TODO(crbug.com/441949788): By default, this only applies to tasks in the
-// ThreadPool. Add a way to opt-in other threads.
+//
+// By default this only applies to tasks posted to the ThreadPool, same as
+// ScopedThreadPoolExecutionFence. To apply fences to other task queues, call
+// AddSequenceManager.
 class BASE_EXPORT ScopedBestEffortExecutionFence {
  public:
   ScopedBestEffortExecutionFence();
@@ -40,6 +50,28 @@ class BASE_EXPORT ScopedBestEffortExecutionFence {
   ScopedBestEffortExecutionFence& operator=(
       const ScopedBestEffortExecutionFence&) = delete;
   ~ScopedBestEffortExecutionFence();
+
+  // ScopedBestEffortExecutionFences created after this will also preempt
+  // best-effort tasks posted to the backing sequence of `sequence_manager`.
+  // Existing fences aren't affected. Does nothing if `sequence_manager` doesn't
+  // define a best-effort priority. Must be called on the thread that created
+  // `sequence_manager`.
+  // TODO(crbug.com/441949788): Currently only sequence managers bound to the
+  // main thread are supported.
+  static void AddSequenceManager(
+      sequence_manager::SequenceManager* sequence_manager);
+
+  // ScopedBestEffortExecutionFences created after this will no longer preempt
+  // best-effort tasks posted to the backing sequence of `sequence_manager`.
+  // Existing fences aren't affected. Must be called on the thread that called
+  // AddSequenceManager().
+  static void RemoveSequenceManager(
+      sequence_manager::SequenceManager* sequence_manager);
+
+ private:
+  // Voters used to disable additional task queues.
+  std::vector<std::unique_ptr<sequence_manager::TaskQueue::QueueEnabledVoter>>
+      task_queue_voters_;
 };
 
 }  // namespace base

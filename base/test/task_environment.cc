@@ -86,7 +86,9 @@ base::MessagePumpType GetMessagePumpTypeForMainThreadType(
 std::unique_ptr<sequence_manager::SequenceManager>
 CreateSequenceManagerForMainThreadType(
     TaskEnvironment::MainThreadType main_thread_type,
-    sequence_manager::SequenceManager::PrioritySettings priority_settings) {
+    sequence_manager::SequenceManager::PrioritySettings priority_settings,
+    TaskEnvironment::ScopedExecutionFenceBehaviour
+        scoped_execution_fence_behaviour) {
   auto type = GetMessagePumpTypeForMainThreadType(main_thread_type);
   return sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(type),
@@ -94,6 +96,10 @@ CreateSequenceManagerForMainThreadType(
           .SetMessagePumpType(type)
           .SetPrioritySettings(std::move(priority_settings))
           .SetIsMainThread(true)
+          .SetShouldBlockOnScopedFences(
+              scoped_execution_fence_behaviour ==
+              TaskEnvironment::ScopedExecutionFenceBehaviour::
+                  MAIN_THREAD_AND_THREAD_POOL)
           .Build());
 }
 
@@ -418,16 +424,19 @@ TaskEnvironment::TaskEnvironment(
     ThreadPoolExecutionMode thread_pool_execution_mode,
     ThreadingMode threading_mode,
     ThreadPoolCOMEnvironment thread_pool_com_environment,
+    ScopedExecutionFenceBehaviour scoped_execution_fence_behaviour,
     bool subclass_creates_default_taskrunner,
     trait_helpers::NotATraitTag)
     : main_thread_type_(main_thread_type),
       thread_pool_execution_mode_(thread_pool_execution_mode),
       threading_mode_(threading_mode),
       thread_pool_com_environment_(thread_pool_com_environment),
+      scoped_execution_fence_behaviour_(scoped_execution_fence_behaviour),
       subclass_creates_default_taskrunner_(subclass_creates_default_taskrunner),
-      sequence_manager_(
-          CreateSequenceManagerForMainThreadType(main_thread_type,
-                                                 std::move(priority_settings))),
+      sequence_manager_(CreateSequenceManagerForMainThreadType(
+          main_thread_type,
+          std::move(priority_settings),
+          scoped_execution_fence_behaviour)),
       mock_time_domain_(
           time_source != TimeSource::SYSTEM_TIME
               ? std::make_unique<TaskEnvironment::MockTimeDomain>(

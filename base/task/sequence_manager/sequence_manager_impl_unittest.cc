@@ -217,6 +217,12 @@ class CallCountingTickClock : public TickClock {
 class FixtureWithMockTaskRunner final : public Fixture {
  public:
   FixtureWithMockTaskRunner()
+      : FixtureWithMockTaskRunner(SequenceManager::PrioritySettings(
+            TestQueuePriority::kQueuePriorityCount,
+            TestQueuePriority::kDefaultPriority)) {}
+
+  explicit FixtureWithMockTaskRunner(
+      SequenceManager::PrioritySettings priority_settings)
       : test_task_runner_(MakeRefCounted<TestMockTimeTaskRunner>(
             TestMockTimeTaskRunner::Type::kBoundToThread)),
         call_counting_clock_(BindRepeating(&TestMockTimeTaskRunner::NowTicks,
@@ -228,9 +234,7 @@ class FixtureWithMockTaskRunner final : public Fixture {
             SequenceManager::Settings::Builder()
                 .SetMessagePumpType(MessagePumpType::DEFAULT)
                 .SetTickClock(mock_tick_clock())
-                .SetPrioritySettings(SequenceManager::PrioritySettings(
-                    TestQueuePriority::kQueuePriorityCount,
-                    TestQueuePriority::kDefaultPriority))
+                .SetPrioritySettings(std::move(priority_settings))
                 .Build())) {
     // A null clock triggers some assertions.
     AdvanceMockTickClock(Milliseconds(1));
@@ -6106,6 +6110,54 @@ TEST(SequenceManagerTest, BindOnDifferentThreadWithActiveVoters) {
   done_event.Wait();
   thread.Stop();
   EXPECT_THAT(results, ElementsAre(false, true));
+}
+
+TEST(SequenceManagerTest, BestEffortPriority_SinglePriority) {
+  enum class SinglePriority : TaskQueue::QueuePriority {
+    kOnlyPriority = 0,
+    kPriorityCount = 1,
+  };
+  FixtureWithMockTaskRunner fixture(SequenceManager::PrioritySettings(
+      SinglePriority::kPriorityCount, SinglePriority::kOnlyPriority));
+  EXPECT_EQ(
+      fixture.sequence_manager()->GetPriorityCount(),
+      static_cast<TaskQueue::QueuePriority>(SinglePriority::kPriorityCount));
+  // Only one priority defined.
+  EXPECT_EQ(fixture.sequence_manager()->GetBestEffortPriority(), std::nullopt);
+}
+
+TEST(SequenceManagerTest, BestEffortPriority_ManyHighPriorities) {
+  enum class ManyHighPriorities : TaskQueue::QueuePriority {
+    kHighestPriority = 0,
+    kHigherPriority = 1,
+    kDefaultPriority = 2,
+    kPriorityCount = 3,
+  };
+  FixtureWithMockTaskRunner fixture(
+      SequenceManager::PrioritySettings(ManyHighPriorities::kPriorityCount,
+                                        ManyHighPriorities::kDefaultPriority));
+  EXPECT_EQ(fixture.sequence_manager()->GetPriorityCount(),
+            static_cast<TaskQueue::QueuePriority>(
+                ManyHighPriorities::kPriorityCount));
+  // Default is the lowest priority.
+  EXPECT_EQ(fixture.sequence_manager()->GetBestEffortPriority(), std::nullopt);
+}
+
+TEST(SequenceManagerTest, BestEffortPriority_ManyLowPriorities) {
+  enum class ManyLowPriorities : TaskQueue::QueuePriority {
+    kDefaultPriority = 0,
+    kLowerPriority = 1,
+    kLowestPriority = 2,
+    kPriorityCount = 3,
+  };
+  FixtureWithMockTaskRunner fixture(SequenceManager::PrioritySettings(
+      ManyLowPriorities::kPriorityCount, ManyLowPriorities::kDefaultPriority));
+  EXPECT_EQ(
+      fixture.sequence_manager()->GetPriorityCount(),
+      static_cast<TaskQueue::QueuePriority>(ManyLowPriorities::kPriorityCount));
+  EXPECT_THAT(fixture.sequence_manager()->GetBestEffortPriority(),
+              ::testing::Optional(static_cast<TaskQueue::QueuePriority>(
+                  ManyLowPriorities::kLowestPriority)));
 }
 
 }  // namespace base::sequence_manager::internal
