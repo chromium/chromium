@@ -1873,6 +1873,7 @@ ci.builder(
             "gfx_unittests",
             "google_apis_unittests",
             "ios_chrome_unittests",
+            "ios_credential_provider_extension_unittests",
             "ios_net_unittests",
             "ios_web_inttests",
             "ios_web_unittests",

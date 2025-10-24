@@ -1695,6 +1695,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "ios_credential_provider_extension_unittests",
+)
+
+targets.tests.isolated_script_test(
     name = "ios_net_unittests",
 )
 

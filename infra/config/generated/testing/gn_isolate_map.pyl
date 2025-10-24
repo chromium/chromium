@@ -1164,6 +1164,11 @@
     "type": "generated_script",
     "skip_usage_check": True,
   },
+  "ios_credential_provider_extension_unittests": {
+    "label": "//ios/chrome/test/extensions:ios_credential_provider_extension_unittests",
+    "type": "generated_script",
+    "skip_usage_check": True,
+  },
   "ios_net_unittests": {
     "label": "//ios/net:ios_net_unittests",
     "type": "generated_script",

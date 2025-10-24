@@ -1460,6 +1460,14 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "ios_credential_provider_extension_unittests",
+    label = "//ios/chrome/test/extensions:ios_credential_provider_extension_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "gtest",
+)
+
+targets.binaries.generated_script(
     name = "ios_net_unittests",
     label = "//ios/net:ios_net_unittests",
     # All references have been moved to starlark
