@@ -12,15 +12,12 @@ import bisect
 import copy
 import datetime
 import itertools
-
 import logging
 import os
 import re
 import sys
-from typing import Any, TypedDict
+from typing import TypedDict
 import xml.dom.minidom
-
-import histogram_configuration_model
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import xml_utils
@@ -32,6 +29,15 @@ MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH = 5
 EXPIRY_DATE_PATTERN = '%Y-%m-%d'
 EXPIRY_MILESTONE_RE = re.compile(r'M[0-9]{2,3}\Z')
 
+IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER = 'HIGHER_IS_BETTER'
+IMPROVEMENT_DIRECTION_LOWER_IS_BETTER = 'LOWER_IS_BETTER'
+IMPROVEMENT_DIRECTION_NEITHER_IS_BETTER = 'NEITHER_IS_BETTER'
+
+IMPROVEMENT_DIRECTION_VALID_VALUES = (
+    IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER,
+    IMPROVEMENT_DIRECTION_LOWER_IS_BETTER,
+    IMPROVEMENT_DIRECTION_NEITHER_IS_BETTER,
+)
 
 class Error(Exception):
   pass
@@ -326,8 +332,7 @@ def _ExtractImprovementDirection(
 
   improvement_node = improvement_nodes[0]
   direction = improvement_node.getAttribute('direction')
-  if (direction
-      not in histogram_configuration_model.IMPROVEMENT_DIRECTION_VALID_VALUES):
+  if direction not in IMPROVEMENT_DIRECTION_VALID_VALUES:
     histogram_name = histogram_node.getAttribute('name')
     errors.AppendAndLog(
         f'Histogram "{histogram_name}" has an invalid direction '
