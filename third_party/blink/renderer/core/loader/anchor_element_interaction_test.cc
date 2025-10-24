@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <tuple>
 
@@ -86,11 +87,13 @@ class MockAnchorElementInteractionHost
                       .is_eager = false});
   }
   void OnModerateViewportHeuristicTriggered(const KURL& target) override {
-    calls_.push_back({.url = target, .type = PointerEventType::kNone});
+    calls_.push_back(
+        {.url = target, .type = PointerEventType::kNone, .is_eager = false});
   }
   void OnEagerViewportHeuristicTriggered(const Vector<KURL>& targets) override {
     for (const KURL& url : targets) {
-      calls_.push_back({.url = url, .type = PointerEventType::kNone});
+      calls_.push_back(
+          {.url = url, .type = PointerEventType::kNone, .is_eager = true});
     }
   }
 
@@ -737,9 +740,12 @@ class AnchorElementInteractionViewportHeuristicsTest
           {{"delay", "100ms"},
            {"distance_from_ptr_down_low", "-0.3"},
            {"distance_from_ptr_down_hi", "0"},
-           {"largest_anchor_threshold", "0.5"}}}},
+           {"largest_anchor_threshold", "0.5"}}},
+         {features::kPreloadingEagerViewportHeuristics,
+          {{"viewport_present_time", "100ms"}}}},
         {});
-    config_scope_ = std::make_unique<ViewportHeuristicConfigTestingScope>();
+    config_scope_ =
+        std::make_unique<ModerateViewportHeuristicConfigTestingScope>();
   }
 
   static constexpr int kViewportWidth = 400;
@@ -749,6 +755,14 @@ class AnchorElementInteractionViewportHeuristicsTest
     return {{"random_anchor_sampling_period", "1"},
             {"intersection_observation_after_fcp_only", "true"},
             {"post_fcp_observation_delay", "10ms"}};
+  }
+
+  static base::TimeDelta EnoughWaitTimeForAllViewportHeuristics() {
+    // Any larger or equal value than max(
+    //   PreloadingModerateViewportHeuristics.delay,
+    //   PreloadingEagerViewportHeuristics.viewport_present_time
+    //   );
+    return base::Milliseconds(200);
   }
 
   void DispatchPointerDown(gfx::PointF coordinates) {
@@ -803,6 +817,10 @@ class AnchorElementInteractionViewportHeuristicsTest
     LoadURL(source);
     main_resource.Complete(params.main_resource_body);
 
+    GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+        platform_->test_task_runner(),
+        platform_->test_task_runner()->GetMockTickClock());
+
     Compositor().BeginFrame();
     // The 10ms matches the "post_fcp_observation_delay" param set for
     // kNavigationPredictor.
@@ -811,8 +829,8 @@ class AnchorElementInteractionViewportHeuristicsTest
                                          params.scroll_delta);
     ProcessPositionUpdates();
 
-    // The 100ms matches the delay param set for kPreloadingViewportHeuristic.
-    platform_->RunForPeriod(base::Milliseconds(100));
+    // Wait for all activation of viewport heuristics.
+    platform_->RunForPeriod(EnoughWaitTimeForAllViewportHeuristics());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -859,7 +877,7 @@ class AnchorElementInteractionViewportHeuristicsTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ViewportHeuristicConfigTestingScope> config_scope_;
+  std::unique_ptr<ModerateViewportHeuristicConfigTestingScope> config_scope_;
 };
 
 TEST_F(AnchorElementInteractionViewportHeuristicsTest, BasicTest) {
@@ -876,9 +894,15 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest, BasicTest) {
                        .scroll_delta = -100});
 
   ASSERT_EQ(hosts_.size(), 1u);
-  EXPECT_EQ(hosts_[0]->calls_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->calls_.size(), 2u);
   EXPECT_EQ(hosts_[0]->calls_[0].url, KURL("https://example.com/foo"));
   EXPECT_EQ(hosts_[0]->calls_[0].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.has_value());
+  EXPECT_EQ(hosts_[0]->calls_[1].url, KURL("https://example.com/foo"));
+  EXPECT_EQ(hosts_[0]->calls_[1].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[1].is_eager.has_value());
+  EXPECT_NE(hosts_[0]->calls_[0].is_eager.value(),
+            hosts_[0]->calls_[1].is_eager.value());
 }
 
 // Tests scenario where an anchor's distance_from_pointer_down_ratio after a
@@ -897,8 +921,13 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
                        .pointer_down_location = gfx::PointF(100, 350),
                        .scroll_delta = -100});
 
+  // "moderate" viewport heuristic should not be triggered.
   ASSERT_EQ(hosts_.size(), 1u);
-  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+  EXPECT_EQ(hosts_[0]->calls_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->calls_[0].url, KURL("https://example.com/foo"));
+  EXPECT_EQ(hosts_[0]->calls_[0].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.has_value());
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.value());
 }
 
 // Test scenario with two anchors where one anchor is < 50% larger than the
@@ -919,8 +948,17 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
                        .pointer_down_location = gfx::PointF(100, 200),
                        .scroll_delta = -25});
 
+  // "moderate" viewport heuristic should not be triggered for both anchors.
   ASSERT_EQ(hosts_.size(), 1u);
-  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+  EXPECT_EQ(hosts_[0]->calls_.size(), 2u);
+  EXPECT_EQ(hosts_[0]->calls_[0].url, KURL("https://example.com/foo"));
+  EXPECT_EQ(hosts_[0]->calls_[0].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.has_value());
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.value());
+  EXPECT_EQ(hosts_[0]->calls_[1].url, KURL("https://example.com/bar"));
+  EXPECT_EQ(hosts_[0]->calls_[1].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[1].is_eager.has_value());
+  EXPECT_TRUE(hosts_[0]->calls_[1].is_eager.value());
 }
 
 // Test scenario with two anchors where one anchor is > 50% larger than the
@@ -942,13 +980,18 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
                        .scroll_delta = -25});
 
   // This will also trigger some hover and pointer down calls, but we only care
-  // about the viewport one.
+  // about the "moderate" viewport one.
   ASSERT_EQ(hosts_.size(), 1u);
   ASSERT_GE(hosts_[0]->calls_.size(), 1u);
-  const MockAnchorElementInteractionHost::Call& final_call =
-      hosts_[0]->calls_.back();
-  EXPECT_EQ(final_call.url, KURL("https://example.com/foo"));
-  EXPECT_EQ(final_call.type, PointerEventType::kNone);
+  const auto moderate_viewport_call_it = std::ranges::find_if(
+      hosts_[0]->calls_,
+      [](const MockAnchorElementInteractionHost::Call& call) {
+        return call.type == PointerEventType::kNone &&
+               call.is_eager.has_value() && !call.is_eager.value();
+      });
+  EXPECT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
+  EXPECT_EQ(moderate_viewport_call_it->type, PointerEventType::kNone);
 }
 
 TEST_F(AnchorElementInteractionViewportHeuristicsTest, MultipleAnchors) {
@@ -975,13 +1018,17 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest, MultipleAnchors) {
   // One and five are too far away from the ptr down, two is much bigger than
   // three and four.
   // This will also trigger some hover and pointer down calls, but we only care
-  // about the viewport one.
+  // about the "moderate" viewport one.
   ASSERT_EQ(hosts_.size(), 1u);
   ASSERT_GE(hosts_[0]->calls_.size(), 1u);
-  const MockAnchorElementInteractionHost::Call& final_call =
-      hosts_[0]->calls_.back();
-  EXPECT_EQ(final_call.url, KURL("https://example.com/two"));
-  EXPECT_EQ(final_call.type, PointerEventType::kNone);
+  const auto moderate_viewport_call_it = std::ranges::find_if(
+      hosts_[0]->calls_,
+      [](const MockAnchorElementInteractionHost::Call& call) {
+        return call.type == PointerEventType::kNone &&
+               call.is_eager.has_value() && !call.is_eager.value();
+      });
+  EXPECT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/two"));
 }
 
 TEST_F(AnchorElementInteractionViewportHeuristicsTest,
@@ -995,6 +1042,10 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
          style="height: 100px; display: block;">link</a>
     <div style="height: 300px"></div>
   )HTML");
+
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      platform_->test_task_runner(),
+      platform_->test_task_runner()->GetMockTickClock());
 
   Compositor().BeginFrame();
   // The 10ms matches the "post_fcp_observation_delay" param set for
@@ -1012,9 +1063,46 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   base::RunLoop().RunUntilIdle();
 
   // Second pointerdown happening during the delay period should prevent the
-  // anchor from being selected.
+  // anchor from being selected from "moderate" viewport heuristics.
   ASSERT_EQ(hosts_.size(), 1u);
-  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+  EXPECT_EQ(hosts_[0]->calls_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->calls_[0].url, KURL("https://example.com/foo"));
+  EXPECT_EQ(hosts_[0]->calls_[0].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.has_value());
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.value());
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       EagerHeuristicsTriggerForAnchorsInViewport) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 50px"></div>
+      <a href="https://example.com/one"
+        style="display: block; height: 150px;">one</a>
+      <a href="https://example.com/two"
+        style="display: block; height: 200px;">two</a>
+      <a href="https://example.com/three"
+        style="display: block; height: 200px;">three</a>
+      <a href="https://example.com/four"
+        style="display: block; height: 200px;">four</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 10),
+                       .scroll_delta = -400});
+
+  // Only the third and fourth links are in viewport and triggered.
+  ASSERT_EQ(hosts_.size(), 1u);
+  ASSERT_GE(hosts_[0]->calls_.size(), 2u);
+  EXPECT_EQ(hosts_[0]->calls_[0].url, KURL("https://example.com/three"));
+  EXPECT_EQ(hosts_[0]->calls_[0].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.has_value());
+  EXPECT_TRUE(hosts_[0]->calls_[0].is_eager.value());
+  EXPECT_EQ(hosts_[0]->calls_[1].url, KURL("https://example.com/four"));
+  EXPECT_EQ(hosts_[0]->calls_[1].type, PointerEventType::kNone);
+  EXPECT_TRUE(hosts_[0]->calls_[1].is_eager.has_value());
+  EXPECT_TRUE(hosts_[0]->calls_[1].is_eager.value());
 }
 
 TEST_F(AnchorElementInteractionViewportHeuristicsTest,

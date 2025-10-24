@@ -10610,6 +10610,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
         {{"hover_dwell_time", "50ms"}});
     PrerenderBrowserTest::SetUp();
 #else
+    // TODO(crbug.com/453705264): Add browser tests for viewport-based
+    // predictors.
     // TODO(crbug.com/40269669): Add the implementation of pointer interaction
     // on Android to the function below.
     GTEST_SKIP();

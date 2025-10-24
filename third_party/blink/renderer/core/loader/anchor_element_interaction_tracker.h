@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -30,7 +31,7 @@ class PointerEvent;
 CORE_EXPORT BASE_DECLARE_FEATURE(kPreloadingNoSamePageFragmentAnchorTracking);
 
 // Config for viewport heuristic derived from field trial params.
-struct ViewportHeuristicConfig {
+struct ModerateViewportHeuristicConfig {
   // Min/max values of distance_from_pointer_down_ratio for an anchor to be
   // selected by the heuristic.
   std::pair<float, float> distance_from_ptr_down_ratio_bounds;
@@ -121,12 +122,16 @@ class BLINK_EXPORT AnchorElementInteractionTracker
  private:
   HTMLAnchorElementBase* FirstAnchorElementIncludingSelf(Node* node);
 
-  // Gets the `anchor's` href attribute if it is part
-  // of the HTTP family
+  // Gets the `anchor's` href attribute if it is part of the HTTP family.
   KURL GetHrefEligibleForPreloading(const HTMLAnchorElementBase& anchor);
-  void ViewportHeuristicTimerFired(TimerBase*);
+  void ModerateViewportHeuristicTimerFired(TimerBase*);
+  void EagerViewportHeuristicTimerFired(TimerBase*);
 
-  // AnchorElementViewportPositionTracker::Observer overrides
+  // AnchorElementViewportPositionTracker::Observer overrides.
+  void ViewportIntersectionUpdate(
+      const HeapVector<Member<const HTMLAnchorElementBase>>& entered_viewport,
+      const HeapVector<Member<const HTMLAnchorElementBase>>& left_viewport)
+      override;
   void AnchorPositionsUpdated(
       HeapVector<Member<AnchorPositionUpdate>>& position_updates) override;
 
@@ -157,15 +162,24 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   // heuristic.
   WeakMember<HTMLAnchorElementBase> largest_anchor_element_in_viewport_;
   HeapTaskRunnerTimer<AnchorElementInteractionTracker>
-      viewport_heuristic_timer_;
+      moderate_viewport_heuristic_timer_;
+
+  struct EagerViewportHeuristicsCandidate {
+    uint32_t anchor_id;
+    base::TimeTicks timestamp;
+  };
+  HashMap<KURL, EagerViewportHeuristicsCandidate>
+      eager_viewport_heuristics_candidates_;
+  HeapTaskRunnerTimer<AnchorElementInteractionTracker>
+      eager_viewport_heuristic_timer_;
 };
 
-struct BLINK_EXPORT ViewportHeuristicConfigTestingScope {
-  ViewportHeuristicConfigTestingScope();
-  ~ViewportHeuristicConfigTestingScope();
+struct BLINK_EXPORT ModerateViewportHeuristicConfigTestingScope {
+  ModerateViewportHeuristicConfigTestingScope();
+  ~ModerateViewportHeuristicConfigTestingScope();
 
  private:
-  ViewportHeuristicConfig config_;
+  ModerateViewportHeuristicConfig config_;
 };
 
 }  // namespace blink
