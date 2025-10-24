@@ -47,6 +47,14 @@ NSInteger const CWVDownloadErrorAborted = -101;
   return net::NSURLWithGURL(_internalTask->GetOriginalUrl());
 }
 
+- (NSURL*)redirectedURL {
+  return net::NSURLWithGURL(_internalTask->GetRedirectedUrl());
+}
+
+- (NSString*)originatingHost {
+  return _internalTask->GetOriginatingHost();
+}
+
 - (int64_t)totalBytes {
   return _internalTask->GetTotalBytes();
 }

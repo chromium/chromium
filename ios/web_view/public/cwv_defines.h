@@ -132,4 +132,10 @@
 // Support affiliation of passwords.
 #define IOS_WEB_VIEW_SUPPORTS_AFFILIATED_PASSWORDS 1
 
+// Supports -[CWVDownloadTask originatingHost]
+#define IOS_WEB_VIEW_SUPPORTS_DOWNLOAD_TASK_ORIGINATING_HOST 1
+
+// Supports -[CWVDownloadTask redirectedURL]
+#define IOS_WEB_VIEW_SUPPORTS_DOWNLOAD_TASK_REDIRECTED_URL 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
