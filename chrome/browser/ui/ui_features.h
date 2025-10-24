@@ -346,6 +346,8 @@ BASE_DECLARE_FEATURE(kNTPFooterBadgingPolicies);
 BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
 
+BASE_DECLARE_FEATURE(kUseNewTabbedBrowserLayout);
+
 BASE_DECLARE_FEATURE(kWebUITabStrip);
 
 // Controls whether the context menu is shown on a touch press or a touch

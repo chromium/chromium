@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/layout/flex_layout_types.h"
 
 class Browser;
 
@@ -15,8 +16,9 @@ class View;
 }
 
 // New browser layout implementation.
-// TODO(http://crbug.com/453717426): Move this to impl file that is only used by
-// .cc file.
+//
+// This may not work for browsers that are not normal, tabbed browsers;
+// `BrowserViewLayoutImplOld` should still be used for other browser types.
 class BrowserViewLayoutImpl : public BrowserViewLayout {
  public:
   BrowserViewLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
@@ -27,6 +29,20 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // BrowserViewLayout overrides:
   void Layout(views::View* host) override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
+  int GetMinWebContentsWidthForTesting() const override;
+
+ private:
+  // Hierarchical version of views::ProposedLayout that will allow us to run
+  // calculations without actually applying the layout.
+  struct ProposedLayout;
+  ProposedLayout CalculateProposedLayout() const;
+
+  // BrowserViewLayout overrides:
+  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
+  gfx::Size GetMaximumDialogSize() const override;
+  int GetDialogTop(const ProposedLayout& layout) const;
+  int GetDialogBottom(const ProposedLayout& layout) const;
+  views::Span GetDialogHorizontalTarget(const ProposedLayout& layout) const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_

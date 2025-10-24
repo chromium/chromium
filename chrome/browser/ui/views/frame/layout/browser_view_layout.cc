@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/views/view.h"
@@ -123,8 +125,12 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     Browser* browser,
     BrowserViewLayoutViews views) {
-  // TODO(http://crbug.com/453717426): Use a flag to switch between old and new
-  // layout.
+  // Browser can be null in unit tests.
+  if (browser && browser->is_type_normal() &&
+      base::FeatureList::IsEnabled(features::kUseNewTabbedBrowserLayout)) {
+    return std::make_unique<BrowserViewLayoutImpl>(std::move(delegate), browser,
+                                                   std::move(views));
+  }
   return std::make_unique<BrowserViewLayoutImplOld>(std::move(delegate),
                                                     browser, std::move(views));
 }
