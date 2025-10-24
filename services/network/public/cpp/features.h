@@ -153,6 +153,11 @@ BASE_DECLARE_FEATURE(kAvoidResourceRequestCopies);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kDocumentIsolationPolicy);
 
+// Should connection allowlists be enforced?
+// https://github.com/mikewest/anti-exfil
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kConnectionAllowlists);
+
 // To actually use the prefetch results, it's also necessary to enable
 // kNetworkContextPrefetchUseCache, below.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)

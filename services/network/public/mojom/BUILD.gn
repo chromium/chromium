@@ -696,6 +696,7 @@ mojom("url_loader_base") {
     ":cookies_mojom",
     ":mojom_ad_auction",
     ":mojom_attribution",
+    ":mojom_connection_allowlist",
     ":mojom_content_security_policy",
     ":mojom_integrity_algorithm",
     ":mojom_integrity_policy",
@@ -1760,7 +1761,6 @@ mojom("mojom") {
 
   public_deps = [
     ":cookies_mojom",
-    ":mojom_connection_allowlist",
     ":mojom_cors_origin_pattern",
     ":mojom_first_party_sets",
     ":mojom_host_resolver",
