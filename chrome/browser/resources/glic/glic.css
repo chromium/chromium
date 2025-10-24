@@ -437,3 +437,10 @@ cr-progress {
   width: 20px;
   height: 20px;
 }
+
+#fre-app-container .a {
+  width: 90px;
+  height: 45px;
+  border-radius: 48px;
+  align-self: flex-start;
+}

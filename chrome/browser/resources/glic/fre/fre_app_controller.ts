@@ -362,7 +362,14 @@ export class FreAppController {
     // webview. This is used to record timing metrics.
     this.freHandler.logWebUiLoadComplete();
 
-    this.webview.src = loadTimeData.getString('glicFreURL');
+    const glicFreURL = new URL(loadTimeData.getString('glicFreURL'));
+    // If `shouldSizeForDialog` is false, this indicates the side panel context.
+    // Append a query parameter to notify the webview of this context.
+    if (!this.shouldSizeForDialog) {
+      glicFreURL.searchParams.append('sidepanelFre', 'true');
+    }
+    this.webview.src = glicFreURL.toString();
+
     this.loadingTimer = setTimeout(() => {
       this.setState(FreWebUiState.kShowLoading);
     }, Math.max(0, showLoadingTime - performance.now()));
