@@ -64,10 +64,10 @@ function inferLabelFromSibling(
       // A text node's value will be empty if it is for a line break.
       const addSpace = nodeType === Node.TEXT_NODE && value.length === 0;
       if (forward) {
-        inferredLabel = gCrWebLegacy.fill.combineAndCollapseWhitespace(
+        inferredLabel = inferenceUtil.combineAndCollapseWhitespace(
             inferredLabel, value, addSpace);
       } else {
-        inferredLabel = gCrWebLegacy.fill.combineAndCollapseWhitespace(
+        inferredLabel = inferenceUtil.combineAndCollapseWhitespace(
             value, inferredLabel, addSpace);
       }
       continue;

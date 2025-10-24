@@ -14,6 +14,8 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 const fillApi = new CrWebApi();
 
 // go/keep-sorted start block=yes
+fillApi.addFunction(
+    'combineAndCollapseWhitespace', inferenceUtil.combineAndCollapseWhitespace);
 fillApi.addFunction('getAriaDescription', fillUtil.getAriaDescription);
 fillApi.addFunction('getAriaLabel', fillUtil.getAriaLabel);
 fillApi.addFunction(

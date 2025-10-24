@@ -88,7 +88,7 @@ function trimWhitespaceTrailing(input: string): string {
  *     be added as separator in the combination.
  * @return The combined string.
  */
-gCrWebLegacy.fill.combineAndCollapseWhitespace = function(
+export function combineAndCollapseWhitespace(
     prefix: string, suffix: string, forceWhitespace: boolean): string {
   const prefixTrimmed = trimWhitespaceTrailing(prefix);
   const prefixTrailingWhitespace = prefixTrimmed !== prefix;
@@ -99,7 +99,7 @@ gCrWebLegacy.fill.combineAndCollapseWhitespace = function(
   } else {
     return prefixTrimmed + suffixTrimmed;
   }
-};
+}
 
 /**
  * This is a helper function for the findChildText() function (see below).
@@ -170,8 +170,7 @@ function findChildTextInner(
     // Emulate apparently incorrect Chromium behavior tracked in
     // https://crbug.com/239819.
     addSpace = false;
-    nodeText = gCrWebLegacy.fill.combineAndCollapseWhitespace(
-        nodeText, childText, addSpace);
+    nodeText = combineAndCollapseWhitespace(nodeText, childText, addSpace);
   }
 
   // Recursively compute the siblings' text.
@@ -182,8 +181,7 @@ function findChildTextInner(
   // Emulate apparently incorrect Chromium behavior tracked in
   // https://crbug.com/239819.
   addSpace = false;
-  nodeText = gCrWebLegacy.fill.combineAndCollapseWhitespace(
-      nodeText, siblingText, addSpace);
+  nodeText = combineAndCollapseWhitespace(nodeText, siblingText, addSpace);
 
   return nodeText;
 }
