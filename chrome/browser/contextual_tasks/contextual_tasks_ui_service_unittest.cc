@@ -9,12 +9,18 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using testing::_;
+using testing::Return;
 
 namespace content {
 class WebContents;
@@ -51,9 +57,10 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
 
 }  // namespace
 
-class ContextualTasksUiServiceTest : public testing::Test {
+class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
     context_controller_ =
         std::make_unique<MockContextualTasksContextController>();
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
@@ -63,10 +70,14 @@ class ContextualTasksUiServiceTest : public testing::Test {
   void TearDown() override {
     service_for_nav_ = nullptr;
     context_controller_ = nullptr;
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    return std::make_unique<TestingProfile>();
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
   std::unique_ptr<MockContextualTasksContextController> context_controller_;
 };
@@ -82,7 +93,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       navigated_url, host_web_content_url, nullptr, false));
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 // Ensure we're not intercepting a link when it doesn't meet any of our
@@ -93,7 +104,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kTestUrl), GURL("https://example.com/foo"), nullptr, false));
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
@@ -102,7 +113,7 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kTestUrl), GURL("https://google.com/maps?udm=50"), nullptr, false));
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
@@ -114,7 +125,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
       .Times(1);
   EXPECT_TRUE(
       service_for_nav_->HandleNavigation(ai_url, tab_url, nullptr, false));
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
@@ -125,7 +136,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
       .Times(1);
   EXPECT_TRUE(
       service_for_nav_->HandleNavigation(ai_url, GURL(), nullptr, false));
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 // The AI page is allowed to load as long as it is part of the WebUI.
@@ -137,7 +148,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       GURL(kAiPageUrl), GURL(webui_url), nullptr, false));
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(ContextualTasksUiServiceTest, ContextControllerUpdatedOnUrlChange) {
@@ -197,6 +208,37 @@ TEST_F(ContextualTasksUiServiceTest,
       .Times(1);
 
   service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
+}
+
+TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
+  ContextualTasksUiService service(context_controller_.get());
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  TestingProfile profile;
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      &profile, content::SiteInstance::Create(&profile));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*context_controller_,
+              AssociateTabWithTask(
+                  task.GetTaskId(),
+                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
+      .Times(1);
+
+  service.OnNavigationToAiPageIntercepted(intercepted_url, web_contents.get(),
+                                          false);
+
+  GURL expected_initial_url(
+      "https://www.google.com/search?udm=50&aep=11&igu=1&q=test+query");
+  EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
+            expected_initial_url);
 }
 
 }  // namespace contextual_tasks
