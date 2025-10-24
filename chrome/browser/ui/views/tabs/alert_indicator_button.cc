@@ -209,7 +209,6 @@ void AlertIndicatorButton::SetActorAccessingSpinnerBounds() {
   const int x = (width() - spinner_scaled_size.width()) / 2;
   const int y = (height() - spinner_scaled_size.height()) / 2;
 
-  actor_indicator_spinner_->SetImageSize(spinner_scaled_size);
   actor_indicator_spinner_->SetBounds(x, y, spinner_scaled_size.width(),
                                       spinner_scaled_size.height());
 }
