@@ -770,7 +770,7 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
       // |test|.
       bool expect_dlp_blocked =
           test.dlp_source_url &&
-          UNSAFE_TODO(strcmp(test.dlp_source_url, blockedUrl)) == 0;
+          (std::string_view(test.dlp_source_url) == blockedUrl);
       EXPECT_EQ(expect_dlp_blocked,
                 std::ranges::all_of(resulting_tasks.tasks,
                                     &FullTaskDescriptor::is_dlp_blocked));
