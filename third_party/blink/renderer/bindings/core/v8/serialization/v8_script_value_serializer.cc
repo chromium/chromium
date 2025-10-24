@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
@@ -925,7 +926,7 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     StringView interface = ToWrapperTypeInfo(wrappable)->interface_name;
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
-        interface + " object could not be cloned.");
+        StrCat({interface, " object could not be cloned."}));
   }
   return v8::Nothing<bool>();
 }

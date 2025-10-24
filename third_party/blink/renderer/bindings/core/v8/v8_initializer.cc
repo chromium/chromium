@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8-profiler.h"
@@ -713,7 +714,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleWithPhaseDynamically(
   if (module_request.HasInvalidImportAttributeKey(&invalid_attribute_key)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
-        "Invalid attribute key \"" + invalid_attribute_key + "\"."));
+        StrCat({"Invalid attribute key \"", invalid_attribute_key, "\"."})));
   } else {
     ReferrerScriptInfo referrer_info =
         ReferrerScriptInfo::FromV8HostDefinedOptions(

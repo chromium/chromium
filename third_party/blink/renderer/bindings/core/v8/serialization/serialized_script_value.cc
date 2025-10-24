@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -316,10 +316,10 @@ SerializedScriptValue::TransferImageBitmapContents(
 
   for (wtf_size_t i = 0; i < image_bitmaps.size(); ++i) {
     if (image_bitmaps[i]->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "ImageBitmap at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"ImageBitmap at index ", String::Number(i),
+                  " is already detached."}));
       return contents;
     }
   }
@@ -580,10 +580,10 @@ SerializedScriptValue::TransferArrayBufferContents(
 
   for (wtf_size_t i = 0; const auto& array_buffer : array_buffers) {
     if (array_buffer->IsDetached()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "ArrayBuffer at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"ArrayBuffer at index ", String::Number(i),
+                  " is already detached."}));
       return ArrayBufferContentsArray();
     }
     i++;
@@ -608,10 +608,10 @@ SerializedScriptValue::TransferArrayBufferContents(
     visited.insert(array_buffer_base);
 
     if (array_buffer_base->IsShared()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "SharedArrayBuffer at index " +
-                                            String::Number(index) +
-                                            " is not transferable.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"SharedArrayBuffer at index ", String::Number(index),
+                  " is not transferable."}));
       return ArrayBufferContentsArray();
     } else {
       DOMArrayBuffer* array_buffer =
@@ -619,14 +619,14 @@ SerializedScriptValue::TransferArrayBufferContents(
 
       if (!array_buffer->IsDetachable(isolate)) {
         exception_state.ThrowTypeError(
-            "ArrayBuffer at index " + String::Number(index) +
-            " is not detachable and could not be transferred.");
+            StrCat({"ArrayBuffer at index ", String::Number(index),
+                    " is not detachable and could not be transferred."}));
         return ArrayBufferContentsArray();
       } else if (array_buffer->IsDetached()) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                          "ArrayBuffer at index " +
-                                              String::Number(index) +
-                                              " could not be transferred.");
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataCloneError,
+            StrCat({"ArrayBuffer at index ", String::Number(index),
+                    " could not be transferred."}));
         return ArrayBufferContentsArray();
       } else if (!array_buffer->Transfer(isolate, contents.at(index),
                                          exception_state)) {

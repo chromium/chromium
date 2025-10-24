@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -216,9 +216,9 @@ std::optional<size_t> FindIndexInEnumStringTable(
       FindIndexInEnumStringTable(str_value, enum_value_table);
 
   if (!index.has_value()) [[unlikely]] {
-    exception_state.ThrowTypeError("The provided value '" + str_value +
-                                   "' is not a valid enum value of type " +
-                                   enum_type_name + ".");
+    exception_state.ThrowTypeError(
+        StrCat({"The provided value '", str_value,
+                "' is not a valid enum value of type ", enum_type_name, "."}));
   }
   return index;
 }

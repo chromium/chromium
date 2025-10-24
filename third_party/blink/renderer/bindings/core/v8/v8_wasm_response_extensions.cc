@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -303,7 +304,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         case BytesConsumer::Result::kError:
           DCHECK_EQ(BytesConsumer::PublicState::kErrored,
                     consumer_->GetPublicState());
-          AbortCompilation("Network error: " + consumer_->GetError().Message());
+          AbortCompilation(
+              StrCat({"Network error: ", consumer_->GetError().Message()}));
           break;
       }
     }
