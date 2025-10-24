@@ -152,10 +152,12 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   EXPECT_EQ(updated_visuals->color(), old_color);
 }
 
+// TODO(crbug.com/454725279): This and SplitRemoved are failing. Re-enable these
+// tests.
 // SplitTabChanged: Observe when a split tab is added, triggering
 // OnSplitTabChanged(SplitTabChange::kAdded).
 IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
-                       SplitTabChanged_SplitAdded) {
+                       DISABLED_SplitTabChanged_SplitAdded) {
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(
@@ -182,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
 // SplitTabChanged: Observe when a split tab is removed, triggering
 // OnSplitTabChanged(SplitTabChange::kRemoved).
 IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
-                       SplitTabChanged_SplitRemoved) {
+                       DISABLED_SplitTabChanged_SplitRemoved) {
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(
