@@ -123,6 +123,7 @@ class Host : public GlicSharingManagerProvider {
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::RegisterConversationCallback callback) = 0;
 
+    virtual void OnWebClientCleared() = 0;
     virtual void PrepareForOpen() = 0;
   };
 

@@ -45,9 +45,7 @@ void GlicActorTaskManager::CreateTask(
     return;
   }
 
-  if (current_task_id_) {
-    StopActorTask(current_task_id_, /*success=*/false);
-  }
+  CancelTask();
 
   current_task_id_ = actor_keyed_service_->CreateTaskWithOptions(
       std::move(options), std::move(delegate));
@@ -345,6 +343,12 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
     return;
   }
   task->Uninterrupt();
+}
+
+void GlicActorTaskManager::CancelTask() {
+  if (current_task_id_) {
+    StopActorTask(current_task_id_, /*success=*/false);
+  }
 }
 
 base::WeakPtr<GlicActorTaskManager> GlicActorTaskManager::GetWeakPtr() {

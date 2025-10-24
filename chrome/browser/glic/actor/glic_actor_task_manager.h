@@ -49,6 +49,7 @@ class GlicActorTaskManager {
   void InterruptActorTask(actor::TaskId task_id);
   void UninterruptActorTask(actor::TaskId task_id);
 
+  void CancelTask();
   bool IsActuating() const;
 
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();

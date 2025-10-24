@@ -703,4 +703,8 @@ void GlicKeyedService::Close(
   }
 }
 
+void GlicKeyedService::OnWebClientCleared() {
+  actor_task_manager_->CancelTask();
+}
+
 }  // namespace glic

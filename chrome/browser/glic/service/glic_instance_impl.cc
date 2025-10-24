@@ -271,7 +271,8 @@ GlicSharingManager& GlicInstanceImpl::sharing_manager() {
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
-  NOTIMPLEMENTED();
+  // We have to do this here before the ActorKeyedService is shutdown.
+  actor_task_manager_->CancelTask();
 }
 
 void GlicInstanceImpl::RegisterConversation(
@@ -814,5 +815,9 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
       ShowInactiveSidePanelEmbedderFor(tab);
     }
   }
+}
+
+void GlicInstanceImpl::OnWebClientCleared() {
+  actor_task_manager_->CancelTask();
 }
 }  // namespace glic

@@ -170,6 +170,7 @@ class GlicInstanceImpl : public GlicInstance,
       const mojom::ZeroStateSuggestionsOptions& options,
       mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
           callback) override;
+  void OnWebClientCleared() override;
   void PrepareForOpen() override;
 
   // GlicUiEmbedder::Delegate:
