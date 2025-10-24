@@ -19,8 +19,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -75,7 +74,7 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
   CHECK(user);
   notifier_id.profile_id = user->GetAccountId().GetUserEmail();
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kLowDiskSpaceId,
       l10n_util::GetStringUTF16(IDS_ARC_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
@@ -98,10 +97,8 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
       kNotificationStorageFullIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
-  Profile* profile = Profile::FromBrowserContext(context);
-  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 // Singleton factory for ArcBootErrorNotificationFactory.
@@ -119,9 +116,7 @@ class ArcBootErrorNotificationFactory
 
  private:
   friend base::DefaultSingletonTraits<ArcBootErrorNotificationFactory>;
-  ArcBootErrorNotificationFactory() {
-    DependsOn(NotificationDisplayServiceFactory::GetInstance());
-  }
+  ArcBootErrorNotificationFactory() = default;
   ~ArcBootErrorNotificationFactory() override = default;
 };
 

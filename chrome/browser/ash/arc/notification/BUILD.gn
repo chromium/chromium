@@ -33,7 +33,6 @@ static_library("notification") {
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",

@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -28,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace arc {
 
@@ -71,8 +71,6 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(testing_profile_));
 
-    notification_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(testing_profile_);
     arc_vm_data_migration_notifier_ =
         std::make_unique<ArcVmDataMigrationNotifier>(testing_profile_);
 
@@ -85,7 +83,6 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
 
     // Destroy profile dependents before the profile.
     arc_vm_data_migration_notifier_.reset();
-    notification_tester_.reset();
 
     // Clear the raw_ptr BEFORE specifically deleting the profile it points to.
     testing_profile_ = nullptr;
@@ -102,10 +99,6 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     return arc_session_manager_.get();
   }
 
-  NotificationDisplayServiceTester* notification_tester() {
-    return notification_tester_.get();
-  }
-
   TestingProfile* profile() { return testing_profile_; }
 
  private:
@@ -116,7 +109,6 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_ =
       nullptr;  // Owned by |profile_manager_|.
-  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 };
 
 // Tests that no notification is shown when the migration is disabled.
@@ -125,7 +117,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationDisabled) {
   feature_list.InitAndDisableFeature(kEnableArcVmDataMigration);
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   // TODO(b/258278176): Use GetArcVmDataMigrationStatus() and stop using
   // Yoda-style comparisons. The same goes for other test cases.
   EXPECT_EQ(
@@ -142,7 +136,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManagedDefault) {
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
             ArcVmDataMigrationStatus::kUnnotified);
 }
@@ -158,7 +154,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManagedDoNotPrompt) {
       static_cast<int>(ArcVmDataMigrationStrategy::kDoNotPrompt));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
             ArcVmDataMigrationStatus::kUnnotified);
 }
@@ -177,7 +175,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManagedPromptAndStarted) {
       static_cast<int>(ArcVmDataMigrationStrategy::kPrompt));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
             ArcVmDataMigrationStatus::kStarted);
 }
@@ -196,7 +196,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManagedPromptAndFinished) {
       static_cast<int>(ArcVmDataMigrationStrategy::kPrompt));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
             ArcVmDataMigrationStatus::kFinished);
 }
@@ -212,7 +214,8 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManagedPrompt) {
       static_cast<int>(ArcVmDataMigrationStrategy::kPrompt));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_TRUE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
             ArcVmDataMigrationStatus::kNotified);
 }
@@ -224,7 +227,8 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationEnabled) {
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_TRUE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kNotificationId));
   EXPECT_EQ(
       ArcVmDataMigrationStatus::kNotified,
       static_cast<ArcVmDataMigrationStatus>(
@@ -241,7 +245,8 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationNotified) {
       static_cast<int>(ArcVmDataMigrationStatus::kNotified));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_TRUE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kNotificationId));
   EXPECT_EQ(
       ArcVmDataMigrationStatus::kNotified,
       static_cast<ArcVmDataMigrationStatus>(
@@ -258,7 +263,8 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationConfirmed) {
       static_cast<int>(ArcVmDataMigrationStatus::kConfirmed));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_TRUE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kNotificationId));
   // The migration status is set back to kNotified.
   EXPECT_EQ(
       ArcVmDataMigrationStatus::kNotified,
@@ -276,7 +282,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationStarted) {
   prefs->SetInteger(prefs::kArcVmDataMigrationAutoResumeCount, 0);
 
   arc_session_manager()->RequestEnable();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(prefs),
             ArcVmDataMigrationStatus::kStarted);
 }
@@ -292,7 +300,8 @@ TEST_F(ArcVmDataMigrationNotifierTest, MaxNumberOfAutoResumesReached) {
                     kArcVmDataMigrationMaxAutoResumeCount + 1);
 
   arc_session_manager()->RequestEnable();
-  EXPECT_TRUE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kNotificationId));
   EXPECT_EQ(GetArcVmDataMigrationStatus(prefs),
             ArcVmDataMigrationStatus::kStarted);
 }
@@ -306,7 +315,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationFinished) {
       static_cast<int>(ArcVmDataMigrationStatus::kFinished));
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
   EXPECT_EQ(
       ArcVmDataMigrationStatus::kFinished,
       static_cast<ArcVmDataMigrationStatus>(
@@ -321,7 +332,9 @@ TEST_F(ArcVmDataMigrationNotifierTest, VirtioBlkDataForced) {
       {kEnableArcVmDataMigration, kEnableVirtioBlkForData}, {});
 
   arc_session_manager()->StartArcForTesting();
-  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kNotificationId));
 }
 
 }  // namespace
