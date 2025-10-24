@@ -83,9 +83,7 @@ BASE_FEATURE(kNtpCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpChromeCartModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, customization of Chrome will be promoted on the NTP.
-BASE_FEATURE(kNtpCustomizeChromeAutoOpen,
-             "NtpCustomizeChromeAutoOpen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpCustomizeChromeAutoOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.

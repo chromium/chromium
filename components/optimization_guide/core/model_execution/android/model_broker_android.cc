@@ -148,7 +148,6 @@ void SolutionImpl::ReportHealthyCompletion() {
 
 namespace features {
 BASE_FEATURE(kRequirePersistentModeForScamDetection,
-             "RequirePersistentModeForScamDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
