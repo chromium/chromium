@@ -38,9 +38,6 @@ class InvalidationServiceImpl : public InvalidationService,
                                 public InvalidationsListener,
                                 public FCMRegistrationTokenObserver {
  public:
-  inline static constexpr char kSenderId[] = "947897361853";
-  inline static constexpr char kApplicationId[] =
-      "com.google.chrome.boca.fcm.invalidations";
   // `delegate` should outlive the InvalidationServiceImpl instance.
   InvalidationServiceImpl(gcm::GCMDriver* gcm_driver,
                           instance_id::InstanceIDDriver* instance_id_driver,
@@ -58,14 +55,14 @@ class InvalidationServiceImpl : public InvalidationService,
 
   void ShutDown() override;
 
-  FCMHandler* fcm_handler() { return fcm_handler_.get(); }
+  FCMHandlerImpl* fcm_handler() { return fcm_handler_.get(); }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
   net::BackoffEntry upload_retry_backoff_;
   base::OneShotTimer token_refresh_timer_;
-  std::unique_ptr<FCMHandler> fcm_handler_;
+  std::unique_ptr<FCMHandlerImpl> fcm_handler_;
   raw_ptr<InvalidationServiceDelegate> delegate_;
   base::WeakPtrFactory<InvalidationServiceImpl> weak_factory_{this};
 };

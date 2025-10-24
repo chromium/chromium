@@ -58,7 +58,7 @@ class MockGCMDriver : public gcm::GCMDriver {
 class MockInstanceID : public instance_id::InstanceID {
  public:
   MockInstanceID()
-      : instance_id::InstanceID(InvalidationServiceImpl::kApplicationId,
+      : instance_id::InstanceID(/*app_id=*/"",
                                 /*gcm_driver=*/nullptr) {}
   ~MockInstanceID() override = default;
   MOCK_METHOD(void, GetID, (GetIDCallback callback), (override));
@@ -116,8 +116,7 @@ class InvalidationServiceImplTest : public testing::Test {
     const std::string kDefaultFcmToken = "default_token";
     mock_instance_id_driver_ =
         std::make_unique<NiceMock<MockInstanceIDDriver>>();
-    ON_CALL(*mock_instance_id_driver_,
-            GetInstanceID(InvalidationServiceImpl::kApplicationId))
+    ON_CALL(*mock_instance_id_driver_, GetInstanceID)
         .WillByDefault(Return(&mock_instance_id_));
 
     ON_CALL(mock_instance_id_, GetToken)
@@ -146,7 +145,8 @@ TEST_F(InvalidationServiceImplTest, HandleInvalidation) {
   gcm::IncomingMessage gcm_message;
   gcm_message.raw_data = kPayloadValue;
   invalidation_service_impl_->fcm_handler()->OnMessage(
-      InvalidationServiceImpl::kApplicationId, gcm_message);
+      invalidation_service_impl_->fcm_handler()->GetAppIdForTesting(),
+      gcm_message);
 }
 
 TEST_F(InvalidationServiceImplTest, HandleTokenUpload) {

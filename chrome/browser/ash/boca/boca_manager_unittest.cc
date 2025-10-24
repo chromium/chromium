@@ -104,8 +104,7 @@ class BocaManagerTest : public testing::Test {
 
   void SetUp() override {
     // This is called in the FCMHandler.
-    ON_CALL(mock_instance_id_driver_,
-            GetInstanceID(boca::InvalidationServiceImpl::kApplicationId))
+    ON_CALL(mock_instance_id_driver_, GetInstanceID)
         .WillByDefault(Return(&mock_instance_id_));
     session_client_impl_ =
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);

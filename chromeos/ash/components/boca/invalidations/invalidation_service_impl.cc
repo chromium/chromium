@@ -34,8 +34,8 @@ InvalidationServiceImpl::InvalidationServiceImpl(
     instance_id::InstanceIDDriver* instance_id_driver,
     InvalidationServiceDelegate* delegate)
     : upload_retry_backoff_{&kBackoffPolicy}, delegate_(delegate) {
-  fcm_handler_ = std::make_unique<FCMHandler>(gcm_driver, instance_id_driver,
-                                              kSenderId, kApplicationId);
+  fcm_handler_ =
+      std::make_unique<FCMHandlerImpl>(gcm_driver, instance_id_driver);
   // Add token refresh observer.
   fcm_handler_->AddTokenObserver(this);
   // Add invalidation message observer.

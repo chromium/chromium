@@ -30,9 +30,6 @@ using testing::WithArg;
 namespace ash::boca {
 namespace {
 
-const char kDefaultSenderId[] = "fake_sender_id";
-const char kInvalidationsAppId[] = "com.google.chrome.boca.invalidations";
-
 const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
 class MockInstanceID : public InstanceID {
@@ -101,12 +98,10 @@ class MockTokenObserver : public FCMRegistrationTokenObserver {
 class FCMHandlerTest : public testing::Test {
  public:
   FCMHandlerTest()
-      : fcm_handler_(&fake_gcm_driver_,
-                     &mock_instance_id_driver_,
-                     kDefaultSenderId,
-                     kInvalidationsAppId) {
+      : fcm_handler_(&fake_gcm_driver_, &mock_instance_id_driver_) {
     // This is called in the FCMHandler.
-    ON_CALL(mock_instance_id_driver_, GetInstanceID(kInvalidationsAppId))
+    ON_CALL(mock_instance_id_driver_,
+            GetInstanceID(fcm_handler_.GetAppIdForTesting()))
         .WillByDefault(Return(&mock_instance_id_));
   }
 
@@ -118,7 +113,7 @@ class FCMHandlerTest : public testing::Test {
   NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
   NiceMock<MockInstanceID> mock_instance_id_;
 
-  FCMHandler fcm_handler_;
+  FCMHandlerImpl fcm_handler_;
 };
 
 TEST_F(FCMHandlerTest, ShouldReturnValidToken) {
@@ -146,7 +141,7 @@ TEST_F(FCMHandlerTest, ShouldPropagatePayloadToListener) {
   gcm_message.raw_data = kPayloadValue;
 
   EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue));
-  fcm_handler_.OnMessage(kInvalidationsAppId, gcm_message);
+  fcm_handler_.OnMessage(fcm_handler_.GetAppIdForTesting(), gcm_message);
   fcm_handler_.RemoveListener(&mock_listener);
   histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 0);
 }
@@ -241,7 +236,8 @@ TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   NiceMock<MockTokenObserver> mock_token_observer;
   fcm_handler_.AddTokenObserver(&mock_token_observer);
 
-  EXPECT_CALL(mock_instance_id_driver_, ExistsInstanceID(kInvalidationsAppId))
+  EXPECT_CALL(mock_instance_id_driver_,
+              ExistsInstanceID(fcm_handler_.GetAppIdForTesting()))
       .WillOnce(Return(true));
   // Token should be cleared when StopListeningPermanently() is called.
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged)
@@ -255,6 +251,26 @@ TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 1);
   histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
                                      false, 1);
+}
+
+TEST_F(FCMHandlerTest, ShutdownHandler) {
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  fcm_handler_.StartListening();
+  fcm_handler_.ShutdownHandler();
+
+  EXPECT_CALL(mock_instance_id_driver_, GetInstanceID(_)).Times(0);
+  EXPECT_CALL(mock_instance_id_, GetToken).Times(0);
+  EXPECT_CALL(mock_instance_id_driver_, ExistsInstanceID(_)).Times(0);
+
+  fcm_handler_.StartListening();
+
+  EXPECT_FALSE(fcm_handler_.IsListening());
+  EXPECT_FALSE(fcm_handler_.GetFCMRegistrationToken().has_value());
+
+  // Calling these after `ShutdownHandler` is a no-op.
+  fcm_handler_.StopListening();
+  fcm_handler_.StopListeningPermanently();
 }
 
 }  // namespace
