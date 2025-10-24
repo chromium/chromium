@@ -26,6 +26,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     super([
       'deleteAutocompleteMatch',
       'activateKeyword',
+      'showContextMenu',
       'executeAction',
       'onNavigationLikely',
       'onThumbnailRemoved',
@@ -72,6 +73,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       matchSelectionTimestamp,
       isMouseEvent,
     });
+  }
+
+  showContextMenu(point: {x: number, y: number}) {
+    this.methodCalled('showContextMenu', {point});
   }
 
   executeAction(
