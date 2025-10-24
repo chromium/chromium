@@ -154,11 +154,9 @@ public class TipsPromoCoordinator {
                                     R.layout.tips_promo_step_item,
                                     stepsContainer,
                                     /* attachToRoot= */ false);
+            // TODO(crbug.com/454724965): Translate the step number set for all languages.
             TextView stepNumber = (TextView) stepView.findViewById(R.id.step_number);
-            stepNumber.setText(
-                    mContext.getResources()
-                            .getQuantityString(
-                                    R.plurals.tips_promo_bottom_sheet_steps_number, i + 1, i + 1));
+            stepNumber.setText(String.valueOf(i + 1));
             TextView stepContent = (TextView) stepView.findViewById(R.id.step_content);
             stepContent.setText(steps.get(i));
             stepsContainer.addView(stepView);
