@@ -5,12 +5,15 @@
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 
 #include "chrome/browser/actor/tools/fake_tool.h"
+#include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
-FakeToolRequest::FakeToolRequest(base::OnceClosure on_invoke,
-                                 base::OnceClosure on_destroy)
+FakeToolRequest::FakeToolRequest(
+    base::OnceCallback<void(Tool::InvokeCallback)> on_invoke,
+    base::OnceClosure on_destroy)
     : on_invoke_(std::move(on_invoke)), on_destroy_(std::move(on_destroy)) {}
 
 FakeToolRequest::~FakeToolRequest() = default;
@@ -29,5 +32,4 @@ void FakeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {}
 std::string FakeToolRequest::Name() const {
   return "FakeTool";
 }
-
 }  // namespace actor

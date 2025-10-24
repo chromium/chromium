@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/ui/tool_request_variant.h"
+#include "chrome/browser/actor/tool_request_variant.h"
 
-namespace actor::ui {
+namespace actor {
 
 ConvertToVariantFn::ConvertToVariantFn() = default;
 ConvertToVariantFn::~ConvertToVariantFn() = default;
@@ -66,4 +66,5 @@ void ConvertToVariantFn::Apply(const TypeToolRequest& tr) {
 void ConvertToVariantFn::Apply(const WaitToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
-}  // namespace actor::ui
+
+}  // namespace actor

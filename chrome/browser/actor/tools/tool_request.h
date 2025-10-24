@@ -61,6 +61,9 @@ class ToolRequest {
   virtual std::string JournalEvent() const;
 
   // Returns the name of the ToolRequest.
+  // NOTE: This value is persisted to UMA logs so do not change after a
+  // ToolRequest is added.
+  // TODO(crbug.com/454919535): Add a test to verify that names do not change.
   virtual std::string Name() const = 0;
 
   // Used by ConvertToVariantFn to convert a polymorphic ToolRequest object into

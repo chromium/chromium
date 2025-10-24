@@ -15,7 +15,7 @@ class FakeTool : public Tool {
  public:
   FakeTool(TaskId task_id,
            ToolDelegate& tool_delegate,
-           base::OnceClosure on_invoke,
+           base::OnceCallback<void(Tool::InvokeCallback)> on_invoke,
            base::OnceClosure on_destroy);
 
   ~FakeTool() override;
@@ -33,9 +33,8 @@ class FakeTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
-  base::OnceClosure on_invoke_;
+  base::OnceCallback<void(Tool::InvokeCallback)> on_invoke_;
   base::OnceClosure on_destroy_;
-  InvokeCallback invoke_callback_;
 };
 
 }  // namespace actor

@@ -37,6 +37,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
 
+<!-- LINT.IfChange(ToolRequest) -->
+
 <variants name="ToolRequest">
   <variant name="AttemptLogin" summary="Attempt Login"/>
   <variant name="Click" summary="Click"/>
@@ -45,7 +47,6 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateTab" summary="Create Tab"/>
   <variant name="CreateWindow" summary="Create Window"/>
   <variant name="DragAndRelease" summary="Drag And Release"/>
-  <variant name="FakeTool" summary="Fake Tool"/>
   <variant name="History" summary="History"/>
   <variant name="MediaControl" summary="Media Control"/>
   <variant name="MoveMouse" summary="MoveMouse"/>
@@ -57,6 +58,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Type" summary="Type"/>
   <variant name="Wait" summary="Wait"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tool_request_variant.h:ToolRequestVariant) -->
 
 <!-- LINT.IfChange(UiEvent) -->
 

@@ -46,6 +46,7 @@ source_set("actor") {
     "tools/tool_controller.h",
     "tools/tool_delegate.h",
     "tools/tool_request.h",
+    "tools/tool_request_visitor_functor.h",
     "tools/type_tool_request.h",
     "tools/wait_tool_request.h",
     "tools/window_management_tool_request.h",
@@ -124,7 +125,6 @@ source_set("impl") {
     "tools/tool_callbacks.h",
     "tools/tool_controller.cc",
     "tools/tool_request.cc",
-    "tools/tool_request_visitor_functor.h",
     "tools/type_tool_request.cc",
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
@@ -138,10 +138,10 @@ source_set("impl") {
 
   deps = [
     ":actor",
+    ":variants",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
-    "//chrome/browser/actor/ui:tool_request_variant",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
@@ -170,15 +170,20 @@ source_set("impl") {
     "//url",
   ]
 
-  allow_circular_includes_from = [
-    # TODO(crbug.com/427726384): See if we can factor ToolRequest objects out of
-    # actor:impl, which could clean up this circular dependency.
-    "//chrome/browser/actor/ui:tool_request_variant",
-  ]
-
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
+}
+
+source_set("variants") {
+  sources = [
+    "tool_request_variant.cc",
+    "tool_request_variant.h",
+  ]
+  deps = [
+    ":actor",
+    "//base",
+  ]
 }
 
 # This target contains only type definitions that may be depended on by other
@@ -255,7 +260,10 @@ source_set("unit_tests") {
   ]
   if (enable_glic) {
     sources += [ "execution_engine_unittest.cc" ]
-    deps += [ ":impl_test_support" ]
+    deps += [
+      ":impl_test_support",
+      ":variants",
+    ]
   }
 }
 

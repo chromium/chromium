@@ -105,10 +105,10 @@ source_set("event_dispatcher") {
   ]
   deps = [
     ":dom_node_geometry",
-    ":tool_request_variant",
     ":ui_event_types",
     ":ui_event_utils",
     "//chrome/browser/actor",
+    "//chrome/browser/actor:variants",
     "//chrome/browser/actor/ui",
     "//third_party/abseil-cpp:absl",
   ]
@@ -155,17 +155,6 @@ source_set("test_support") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-source_set("tool_request_variant") {
-  sources = [
-    "tool_request_variant.cc",
-    "tool_request_variant.h",
-  ]
-  deps = [
-    "//base",
-    "//chrome/browser/actor",
-  ]
 }
 
 source_set("ui_event_types") {
