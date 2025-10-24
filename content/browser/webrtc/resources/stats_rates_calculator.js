@@ -222,8 +222,8 @@ class DifferenceCalculator {
 
   calculate(id, previousReport, currentReport) {
     const currentStats = currentReport.get(id);
-    return parseInt(currentStats[this.metricA], 10)
-        - this.otherMetrics.map(metric => parseInt(currentStats[metric], 10))
+    return currentStats[this.metricA]
+        - this.otherMetrics.map(metric => currentStats[metric])
             .reduce((a, b) => a + b, 0);
   }
 }

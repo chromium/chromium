@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -450,16 +451,38 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     if (attribute.holds_alternative<bool>()) {
       return base::Value(attribute.get<bool>());
     }
+    if (attribute.holds_alternative<int>()) {
+      return base::Value(attribute.get<int>());
+    }
     if (attribute.holds_alternative<int32_t>()) {
       return base::Value(attribute.get<int32_t>());
     }
-    if (attribute.holds_alternative<std::string>()) {
-      return base::Value(attribute.get<std::string>());
+    if (attribute.holds_alternative<uint32_t>()) {
+      uint32_t value = attribute.get<uint32_t>();
+      return base::Value(static_cast<double>(value));
+    }
+    if (attribute.holds_alternative<int64_t>()) {
+      int64_t value = attribute.get<int64_t>();
+      return base::Value(static_cast<double>(value));
+    }
+    if (attribute.holds_alternative<uint64_t>()) {
+      uint64_t value = attribute.get<uint64_t>();
+      return base::Value(static_cast<double>(value));
     }
     if (attribute.holds_alternative<double>()) {
       return base::Value(attribute.get<double>());
     }
-    // Types not supported by `base::Value` are converted to string.
+    if (attribute.holds_alternative<std::string>()) {
+      return base::Value(attribute.get<std::string>());
+    }
+    if (attribute.holds_alternative<std::map<std::string, double>>()) {
+      base::Value::Dict dict;
+      for (auto& value : attribute.get<std::map<std::string, double>>()) {
+        dict.Set(value.first, value.second);
+      }
+      return base::Value(std::move(dict));
+    }
+    DCHECK(false) << "Unimplemented native stats type.";
     return base::Value(attribute.ToString());
   }
 
