@@ -50,7 +50,7 @@ _RES_TABLE_OVERLAYABLE_TYPE = 0x0204
 _RES_TABLE_OVERLAYABLE_POLICY_TYPE = 0x0205
 _RES_TABLE_STAGED_ALIAS_TYPE = 0x0206
 
-_StringInfo = collections.namedtuple('StringInfo', 'str_size,enc_size,data')
+_StringInfo = collections.namedtuple('StringInfo', 'enc_size,data')
 
 
 class _ArscStreamReader(stream_reader.StreamReader):
@@ -430,7 +430,10 @@ class ArscStringPool(ArscChunk):
     self.reader = reader.Clone()
 
   def __str__(self):
-    return self.StrHelper('STRING_POOL', {'string_count': self.string_count})
+    return self.StrHelper('STRING_POOL', {
+        'string_count': self.string_count,
+        'style_count': self.style_count
+    })
 
   def symbol_name(self):
     return f'STRING_POOL: {self.role}' if self.role else 'STRING_POOL'
@@ -442,17 +445,19 @@ class ArscStringPool(ArscChunk):
     if self.is_utf8:
       for offset in self.string_addrs:
         self.reader.Seek(offset)
-        str_size = self.reader.NextArscEncodedLengthUtf8()
+        self.reader.NextArscEncodedLengthUtf8()  # Decoded length.
         enc_size = self.reader.NextArscEncodedLengthUtf8()
         data = self.reader.NextBytes(enc_size)
-        ret.append(_StringInfo(str_size, enc_size, data))
+        enc_size = self.reader.Tell() - offset + 1  # For trailing \0.
+        ret.append(_StringInfo(enc_size, data))
     else:
       for offset in self.string_addrs:
         self.reader.Seek(offset)
         str_size = self.reader.NextArscEncodedLengthWide()
         enc_size = str_size * 2
         data = self.reader.NextBytes(enc_size)
-        ret.append(_StringInfo(str_size, enc_size, data))
+        enc_size = self.reader.Tell() - offset + 2  # For trailing \0\0.
+        ret.append(_StringInfo(enc_size, data))
     return ret
 
   @property
@@ -468,6 +473,9 @@ class ArscStringPool(ArscChunk):
 
   def GetString(self, idx):
     return self.string_items[idx]
+
+  def GetEncodedSize(self, idx):
+    return self.string_infos[idx].enc_size
 
 
 class ArscResTable(ArscChunk):
@@ -740,7 +748,7 @@ def ParseRtxt(path):
   return {int(m.group(2), 16): m.group(1) for m in pattern.finditer(data)}
 
 
-def _DumpArscChunks(arsc_data, names_by_id):
+def _DumpArscChunks(arsc_data, names_by_id, dump_strings):
   arsc_file = ArscFile(arsc_data)
   package_id = None
   for _, chunk in arsc_file.VisitPreOrder():
@@ -751,11 +759,18 @@ def _DumpArscChunks(arsc_data, names_by_id):
       for i in range(chunk.entry_count):
         res_id = package_id << 24 | chunk.id << 16 | i
         print(f'- {chunk.type_str}:', names_by_id.get(res_id, '<unnamed>'))
+    elif isinstance(chunk, ArscStringPool) and dump_strings:
+      for i in range(chunk.string_count):
+        value = chunk.GetString(i)
+        if len(value) > 63:
+          value = value[:60] + '...'
+        print(f'- "{value}" size={chunk.GetEncodedSize(i) + 4}')
 
 
 def main():
   parser = argparse.ArgumentParser(description='Dump ARSC contents to stdout.')
   parser.add_argument('--rtxt-path', help='R.txt that maps IDs -> names')
+  parser.add_argument('--strings', action='store_true')
   parser.add_argument('input',
                       help='Input (.arsc, .apk, .jar, .zip) file path.')
   args = parser.parse_args()
@@ -769,7 +784,6 @@ def main():
   if args.rtxt_path:
     names_by_id = ParseRtxt(args.rtxt_path)
 
-
   if os.path.splitext(args.input)[1] in ('.apk', '.jar', '.zip'):
     with zipfile.ZipFile(args.input) as z:
       arsc_file_paths = [
@@ -779,11 +793,11 @@ def main():
         print('Error: {} does not contain .arsc files.'.format(args.input))
         sys.exit(1)
       for path in arsc_file_paths:
-        _DumpArscChunks(z.read(path), names_by_id)
+        _DumpArscChunks(z.read(path), names_by_id, args.strings)
 
   else:
     with open(args.input, 'rb') as fh:
-      _DumpArscChunks(fh.read(), names_by_id)
+      _DumpArscChunks(fh.read(), names_by_id, args.strings)
 
 
 if __name__ == '__main__':

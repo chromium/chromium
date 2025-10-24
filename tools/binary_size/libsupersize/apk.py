@@ -17,6 +17,7 @@ import zip_util
 
 
 _RESOURCES_ARSC_FILE = 'resources.arsc'
+_MAX_STRING_LEN = 30
 
 
 class _ResourcePathDeobfuscator:
@@ -138,6 +139,32 @@ def _CreateTypeSpecSymbols(chunk, package_id, sym_source_path, names_by_id,
   return chunk.entry_count * PER_ENTRY_SIZE
 
 
+def _CreateStringSymbols(chunk, sym_source_path, raw_symbols):
+  total_size = 0
+  for i in range(chunk.string_count):
+    # Do an extra initial truncation to make the ascii checks faster.
+    value = chunk.GetString(i)[:_MAX_STRING_LEN + 1]
+    if not value.isascii():
+      # file_format.py currently requires ascii (maybe unnecessarily...)
+      name = '<non-ascii>'
+    else:
+      value = value.replace('\r', '').replace('\n', '').replace('\t', '')
+      if not value.isprintable():
+        name = '<non-printable>'
+      elif len(value) > _MAX_STRING_LEN:
+        name = f'"{value[:_MAX_STRING_LEN - 3]}"...'
+      else:
+        name = f'"{value}"'
+    size = 4 + chunk.GetEncodedSize(i)  # Include the offset uint32
+    sym = models.Symbol(models.SECTION_ARSC,
+                        size,
+                        source_path=sym_source_path,
+                        full_name=name)
+    raw_symbols.append(sym)
+    total_size += size
+  return total_size
+
+
 def CreateArscSymbols(apk_spec):
   """Creates symbols for resources"""
   names_by_id = None
@@ -159,16 +186,28 @@ def CreateArscSymbols(apk_spec):
       source_path = posixpath.join(models.APK_PREFIX_PATH, filename)
       overhead = len(arsc_data)
       package_id = None
+      seen_string_pool = False
       for inner_path, chunk in arsc_file.VisitPreOrder():
         sym_source_path = (f'{source_path}/{inner_path}'
                            if inner_path else source_path)
         if isinstance(chunk, arsc_parser.ArscResTablePackage):
           package_id = chunk.id
+        elif isinstance(chunk,
+                        arsc_parser.ArscStringPool) and not seen_string_pool:
+          # Dump only the main string pool. The other ones contain type names
+          # and entry names, which are not useful as individual strings.
+          seen_string_pool = True
+          prev_count = len(raw_symbols)
+          overhead -= _CreateStringSymbols(chunk, f'{sym_source_path}/strings',
+                                           raw_symbols)
+          logging.info('Created %d ARSC string pool symbols', len(raw_symbols) - prev_count)
         elif isinstance(chunk, arsc_parser.ArscResTableTypeSpec):
           metrics[f'{models.METRICS_COUNT}/{chunk.type_str}'] = (
               chunk.entry_count)
+          prev_count = len(raw_symbols)
           overhead -= _CreateTypeSpecSymbols(chunk, package_id, sym_source_path,
                                              names_by_id, raw_symbols)
+          logging.info('Created %d ARSC type spec symbols', len(raw_symbols) - prev_count)
         elif not chunk.children:  # Leaf chunk.
           name = chunk.symbol_name()
           overhead -= chunk.size
