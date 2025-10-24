@@ -107,6 +107,9 @@ DialogText GetPromptDialogTextFromStatus(
         break;
       case collaboration::SigninStatus::kSignedInPaused:
         body_id = IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_SYNC_HISTORY_BODY;
+        if (status.sync_status == collaboration::SyncStatus::kSyncEnabled) {
+          ok_button_text_id = IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON;
+        }
         break;
       case collaboration::SigninStatus::kSignedIn:
         body = l10n_util::GetStringFUTF16(
@@ -563,8 +566,10 @@ void CollaborationControllerDelegateDesktop::
         break;
       case collaboration::SigninStatus::kSignedInPaused:
       case collaboration::SigninStatus::kSignedIn:
-        signin_metrics::LogHistorySyncOptInOffered(
-            signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+        if (status.sync_status != collaboration::SyncStatus::kSyncEnabled) {
+          signin_metrics::LogHistorySyncOptInOffered(
+              signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+        }
         break;
     }
   }

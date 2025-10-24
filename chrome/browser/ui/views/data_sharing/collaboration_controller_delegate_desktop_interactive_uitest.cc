@@ -499,7 +499,9 @@ class
         syncer::UserSelectableType::kSavedTabGroups, enabled);
   }
 
-  void ShowAndAcceptDialog(collaboration::SigninStatus signin_status) {
+  void ShowAndAcceptDialog(collaboration::SigninStatus signin_status,
+                           collaboration::SyncStatus sync_status =
+                               collaboration::SyncStatus::kNotSyncing) {
     // Set up an account picture in case it is shown in the dialog.
     signin::SimulateAccountImageFetch(
         identity_manager(),
@@ -511,8 +513,8 @@ class
     TestCollaborationControllerDelegateDesktop delegate(browser());
     EXPECT_CALL(delegate, GetServiceStatus())
         .Times(2)
-        .WillRepeatedly(testing::Return(
-            collaboration::ServiceStatus{.signin_status = signin_status}));
+        .WillRepeatedly(testing::Return(collaboration::ServiceStatus{
+            .signin_status = signin_status, .sync_status = sync_status}));
     EXPECT_EQ(nullptr, delegate.prompt_dialog_widget_for_testing());
     base::MockCallback<
         collaboration::CollaborationControllerDelegate::ResultCallback>
@@ -695,6 +697,25 @@ IN_PROC_BROWSER_TEST_F(
       "Signin.HistorySyncOptIn.Offered",
       signin_metrics::AccessPoint::kCollaborationShareTabGroup,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_SignInPendingWithHistorySyncAlreadyEnabled) {
+  signin::MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
+                                      signin::ConsentLevel::kSignin);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
+
+  // Show and accept the dialog.
+  ShowAndAcceptDialog(collaboration::SigninStatus::kSignedInPaused,
+                      collaboration::SyncStatus::kSyncEnabled);
+
+  // Since the type did not need to be enabled, we don't record that history
+  // sync opt in was offered.
+  histogram_tester.ExpectTotalCount("Signin.HistorySyncOptIn.Offered", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
