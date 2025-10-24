@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
 
 namespace glic::test {
@@ -354,6 +359,191 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, CreateTaskNoTitle) {
                         return task->title();
                       },
                       "", "Task has no title"));
+}
+
+class GlicActorTaskManagementDownloadUiTest
+    : public GlicActorTaskManagementUiTest {
+ public:
+  GlicActorTaskManagementDownloadUiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        actor::kGlicDeferDownloadFilePickerToUserTakeover);
+  }
+  void SetUpOnMainThread() override {
+    GlicActorTaskManagementUiTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(::prefs::kPromptForDownload,
+                                                 true);
+
+    file_activity_observer_ =
+        std::make_unique<DownloadTestFileActivityObserver>(
+            browser()->profile());
+
+    file_activity_observer_->EnableFileChooser(true);
+  }
+
+  void TearDownOnMainThread() override {
+    GlicActorTaskManagementUiTest::TearDownOnMainThread();
+    // Needs to be torn down on the main thread. file_activity_observer_ holds a
+    // reference to the ChromeDownloadManagerDelegate which should be destroyed
+    // on the UI thread.
+    file_activity_observer_.reset();
+  }
+
+  std::unique_ptr<DownloadTestFileActivityObserver> file_activity_observer_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
+                       FilePickerDeferredUntilPause) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kDownloadLabel = "download";
+
+  const GURL task_url = embedded_test_server()->GetURL("/actor/download.html");
+
+  content::DownloadManager* download_manager =
+      browser()->profile()->GetDownloadManager();
+  std::unique_ptr<content::DownloadTestObserverTerminal> download_observer;
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+
+      GetPageContextFromFocusedTab(),
+      ClickAction(kDownloadLabel, ClickAction::LEFT, ClickAction::SINGLE,
+                  actor::mojom::ActionResultCode::kFilePickerTriggered),
+      WaitForJsResult(kNewActorTabId, "() => download_clicked"),
+      CheckResult([&]() { return download_manager->InProgressCount(); }, 1,
+                  "A single download should now be in progress"),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          false, "File chooser was not yet shown"),
+      Do([&]() {
+        download_observer =
+            std::make_unique<content::DownloadTestObserverTerminal>(
+                download_manager, 1,
+                content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+      }),
+      PauseActorTask(), Do([&]() { download_observer->WaitForFinished(); }),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          true, "File chooser was shown"),
+      CheckResult([&]() { return download_manager->InProgressCount(); }, 0,
+                  "The download should have completed"),
+      ResumeActorTask(UpdatedContextOptions(),
+                      actor::mojom::ActionResultCode::kFilePickerConfirmed),
+      CheckIsActingOnTab(kNewActorTabId, true));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
+                       DownloadCancelledWhenTaskStopped) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kDownloadLabel = "download";
+
+  const GURL task_url = embedded_test_server()->GetURL("/actor/download.html");
+
+  content::DownloadManager* download_manager =
+      browser()->profile()->GetDownloadManager();
+  std::unique_ptr<content::DownloadTestObserverTerminal> download_observer;
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+
+      GetPageContextFromFocusedTab(),
+      ClickAction(kDownloadLabel, ClickAction::LEFT, ClickAction::SINGLE,
+                  actor::mojom::ActionResultCode::kFilePickerTriggered),
+      WaitForJsResult(kNewActorTabId, "() => download_clicked"),
+      CheckResult([&]() { return download_manager->InProgressCount(); }, 1,
+                  "A single download should now be in progress"),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          false, "File picker should be deferred"),
+      Do([&]() {
+        download_observer =
+            std::make_unique<content::DownloadTestObserverTerminal>(
+                download_manager, 1,
+                content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+      }),
+      StopActorTask(), Do([&]() { download_observer->WaitForFinished(); }),
+      CheckResult(
+          [&]() { return download_manager->InProgressCount(); }, 0,
+          "The download should have been cancelled and thus no longer in "
+          "progress"),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          false, "The file picker shuold not have shown"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
+                       AnotherDownloadStartedWhileActorDefersOne) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
+
+  constexpr std::string_view kDownloadLabel = "download";
+
+  const GURL task_url = embedded_test_server()->GetURL("/actor/download.html");
+  const GURL other_url =
+      embedded_test_server()->GetURL("example.com", "/actor/download.html");
+
+  content::DownloadManager* download_manager =
+      browser()->profile()->GetDownloadManager();
+  std::unique_ptr<content::DownloadTestObserverTerminal> download_observer;
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+
+      GetPageContextFromFocusedTab(),
+      ClickAction(kDownloadLabel, ClickAction::LEFT, ClickAction::SINGLE,
+                  actor::mojom::ActionResultCode::kFilePickerTriggered),
+      WaitForJsResult(kNewActorTabId, "() => download_clicked"),
+      CheckResult([&]() { return download_manager->InProgressCount(); }, 1,
+                  "A single download should now be in progress"),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          false, "File picker should be deferred"),
+
+      AddInstrumentedTab(kOtherTabId, other_url), Do([&]() {
+        download_observer =
+            std::make_unique<content::DownloadTestObserverTerminal>(
+                download_manager, 1,
+                content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+      }),
+      WaitForJsResult(kOtherTabId,
+                      "() => { document.getElementById('download').click(); "
+                      "return true; }"),
+      Do([&]() { download_observer->WaitForFinished(); }),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          true, "A file picker should have been shown"),
+      CheckResult([&]() { return download_manager->InProgressCount(); }, 1,
+                  "Still, only a single download should be in progress"),
+
+      Do([&]() {
+        download_observer =
+            std::make_unique<content::DownloadTestObserverTerminal>(
+                download_manager, 1,
+                content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+      }),
+      PauseActorTask(), Do([&]() { download_observer->WaitForFinished(); }),
+      CheckResult(
+          [&]() {
+            return file_activity_observer_->TestAndResetDidShowFileChooser();
+          },
+          true, "File chooser was shown"),
+      ResumeActorTask(UpdatedContextOptions(),
+                      actor::mojom::ActionResultCode::kFilePickerConfirmed),
+      CheckIsActingOnTab(kNewActorTabId, true));
 }
 
 }  //  namespace

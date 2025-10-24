@@ -25,6 +25,8 @@ BASE_DECLARE_FEATURE(kGlicBlockNavigationToDangerousContentTypes);
 
 BASE_DECLARE_FEATURE(kGlicBlockFileSystemAccessApiFilePicker);
 
+BASE_DECLARE_FEATURE(kGlicDeferDownloadFilePickerToUserTakeover);
+
 BASE_DECLARE_FEATURE(kGlicCrossOriginNavigationGating);
 
 // When enabled, the actor will send a dialog request to the web client to

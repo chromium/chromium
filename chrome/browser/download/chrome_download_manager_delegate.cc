@@ -31,6 +31,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -122,10 +123,14 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/android/window_android.h"
 #else
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/actor.mojom-data-view.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -538,6 +543,54 @@ void OnCheckDownloadAllowedFailed(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(check_download_allowed_cb), false));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+actor::ExecutionEngine* GetExecutionEngineForDownloadItem(
+    DownloadItem* download) {
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(download);
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  if (!actor_service) {
+    return nullptr;
+  }
+
+  if (const actor::ActorTask* actor_task =
+          actor_service->GetActingActorTaskForWebContents(web_contents)) {
+    return actor_task->GetExecutionEngine();
+  }
+
+  return nullptr;
+}
+
+void ProcessFilePickerWithExecutionEngine(
+    actor::ExecutionEngine* execution_engine,
+    DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
+    DownloadConfirmationResult result,
+    const ui::SelectedFileInfo& file_info) {
+  actor::mojom::ActionResultCode glic_result;
+  switch (result) {
+    case DownloadConfirmationResult::CONFIRMED:
+    case DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION:
+      glic_result = actor::mojom::ActionResultCode::kFilePickerConfirmed;
+      break;
+    case DownloadConfirmationResult::FAILED:
+    case DownloadConfirmationResult::CANCELED:
+      glic_result = actor::mojom::ActionResultCode::kFilePickerCancelled;
+      break;
+  }
+
+  if (execution_engine) {
+    execution_engine->set_user_take_over_result(glic_result);
+  }
+
+  std::move(callback).Run(result, file_info);
+}
+#endif
 
 }  // namespace
 
@@ -1458,17 +1511,51 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     return;
 
 #else   // BUILDFLAG(IS_ANDROID)
-  // Desktop Chrome displays a file picker for all confirmation needs. We can do
-  // better.
-  if (is_file_picker_showing_) {
-    file_picker_callbacks_.emplace_back(
-        base::BindOnce(&ChromeDownloadManagerDelegate::ShowFilePicker,
-                       weak_ptr_factory_.GetWeakPtr(), download->GetGuid(),
-                       suggested_path, std::move(callback)));
-  } else {
-    is_file_picker_showing_ = true;
-    ShowFilePicker(download->GetGuid(), suggested_path, std::move(callback));
+  auto trigger_user_takeover = base::BindOnce(
+      [](base::WeakPtr<ChromeDownloadManagerDelegate> download_manager_delegate,
+         const std::string& guid, const base::FilePath& suggested_path,
+         DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
+         bool should_cancel) {
+        if (should_cancel) {
+          download_manager_delegate->OnConfirmationCallbackComplete(
+              std::move(callback), DownloadConfirmationResult::CANCELED,
+              ui::SelectedFileInfo());
+          return;
+        }
+
+        // Desktop Chrome displays a file picker for all confirmation needs. We
+        // can do better.
+        if (download_manager_delegate->is_file_picker_showing_) {
+          download_manager_delegate->file_picker_callbacks_.emplace_back(
+              base::BindOnce(&ChromeDownloadManagerDelegate::ShowFilePicker,
+                             download_manager_delegate, guid, suggested_path,
+                             std::move(callback)));
+        } else {
+          download_manager_delegate->is_file_picker_showing_ = true;
+          download_manager_delegate->ShowFilePicker(guid, suggested_path,
+                                                    std::move(callback));
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), download->GetGuid(), suggested_path);
+
+  if (base::FeatureList::IsEnabled(
+          actor::kGlicDeferDownloadFilePickerToUserTakeover)) {
+    if (actor::ExecutionEngine* execution_engine =
+            GetExecutionEngineForDownloadItem(download)) {
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback_wrapper =
+          base::BindOnce(&ProcessFilePickerWithExecutionEngine,
+                         execution_engine, std::move(callback));
+
+      execution_engine->UserTakeover(
+          actor::mojom::ActionResultCode::kFilePickerTriggered,
+          base::BindOnce(std::move(trigger_user_takeover),
+                         std::move(callback_wrapper)));
+      return;
+    }
   }
+
+  std::move(trigger_user_takeover)
+      .Run(std::move(callback), /*should_cancel=*/false);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

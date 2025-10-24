@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/browser_action_util.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -224,6 +225,15 @@ void GlicActorTaskManager::ResumeActorTask(
 
   task->Resume();
 
+  actor::mojom::ActionResultCode resume_response_code =
+      actor::mojom::ActionResultCode::kOk;
+  if (actor::ExecutionEngine* execution_engine = task->GetExecutionEngine()) {
+    resume_response_code = execution_engine->user_take_over_result().value_or(
+        actor::mojom::ActionResultCode::kOk);
+    // Reset the takeover result
+    execution_engine->set_user_take_over_result(std::nullopt);
+  }
+
   // TODO(crbug.com/420669167): GetLastActedTabs should only ever have 1 tab in
   // it for now but once we support multi-tab we'll need to grab observations
   // for all relevant tabs.
@@ -252,6 +262,7 @@ void GlicActorTaskManager::ResumeActorTask(
   auto observation_callback = base::BindOnce(
       [](glic::mojom::WebClientHandler::ResumeActorTaskCallback reply_callback,
          glic::mojom::TabDataPtr tab_data,
+         actor::mojom::ActionResultCode resume_response_code,
          actor::ActorKeyedService::TabObservationResult result) {
         if (!result.has_value()) {
           std::move(reply_callback)
@@ -294,9 +305,11 @@ void GlicActorTaskManager::ResumeActorTask(
 
         std::move(reply_callback)
             .Run(mojom::GetContextResultWithActionResultCode::New(
-                std::move(tab_context_ptr), 0));
+                std::move(tab_context_ptr),
+                static_cast<int32_t>(resume_response_code)));
       },
-      std::move(callback), CreateTabData(tab_of_resumed_task->GetContents()));
+      std::move(callback), CreateTabData(tab_of_resumed_task->GetContents()),
+      resume_response_code);
 
   actor_keyed_service_->RequestTabObservation(*tab_of_resumed_task, task_id,
                                               std::move(observation_callback));

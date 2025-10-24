@@ -154,6 +154,20 @@ class ExecutionEngine : public ToolDelegate {
 
   static std::string StateToString(State state);
 
+  void UserTakeover(mojom::ActionResultCode takeover_response_code,
+                    base::OnceCallback<void(bool)> callback);
+
+  void RunUserTakeoverCallbackIfExists(bool should_cancel);
+
+  void set_user_take_over_result(
+      std::optional<mojom::ActionResultCode> user_takeover_result) {
+    user_takeover_result_ = user_takeover_result;
+  }
+
+  std::optional<mojom::ActionResultCode> user_take_over_result() const {
+    return user_takeover_result_;
+  }
+
   void AddObserver(StateObserver* observer);
 
   void RemoveObserver(StateObserver* observer);
@@ -286,6 +300,9 @@ class ExecutionEngine : public ToolDelegate {
   // `Credential::request_origin`.
   base::flat_map<url::Origin, CredentialWithPermission>
       user_selected_credentials_;
+
+  base::OnceCallback<void(bool /*should_cancel*/)> user_takeover_callback_;
+  std::optional<mojom::ActionResultCode> user_takeover_result_;
 
   base::ObserverList<StateObserver> observers_;
 

@@ -132,6 +132,8 @@ ExecutionEngine::~ExecutionEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UMA_HISTOGRAM_COUNTS_1000("Actor.NavigationGating.AllowListSize",
                             allowed_navigation_origins_.size());
+
+  RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
 }
 
 void ExecutionEngine::SetOwner(ActorTask* task) {
@@ -370,6 +372,25 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
   // TODO(crbug.com/450302860): Add UMA metrics for logging frequency of
   // different failure modes.
   std::move(callback).Run(/*may_continue=*/false);
+}
+
+void ExecutionEngine::UserTakeover(
+    mojom::ActionResultCode takeover_response_code,
+    base::OnceCallback<void(bool)> callback) {
+  CancelOngoingActions(takeover_response_code);
+
+  // Cancel any existing user takeover callback
+  RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
+
+  user_takeover_callback_ = std::move(callback);
+}
+
+void ExecutionEngine::RunUserTakeoverCallbackIfExists(bool should_cancel) {
+  if (user_takeover_callback_.is_null()) {
+    return;
+  }
+
+  std::move(user_takeover_callback_).Run(should_cancel);
 }
 
 void ExecutionEngine::AddObserver(StateObserver* observer) {

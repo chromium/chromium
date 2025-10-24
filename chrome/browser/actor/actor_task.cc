@@ -219,6 +219,7 @@ void ActorTask::Stop(bool success) {
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskWentAway);
+    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
   }
   end_time_ = base::Time::Now();
   // Remove all the tabs from the task.
@@ -239,6 +240,7 @@ void ActorTask::Pause(bool from_actor) {
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskPaused);
+    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/false);
   }
   if (from_actor) {
     SetState(State::kPausedByActor);
