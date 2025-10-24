@@ -1142,6 +1142,7 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1186,6 +1187,7 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1237,6 +1239,7 @@
           "--remote-ssh-port=9222",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
