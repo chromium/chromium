@@ -153,7 +153,8 @@ class PaintArtifactCompositorTest : public testing::Test,
     paint_artifact_compositor_->SetNeedsUpdate();
     paint_artifact_compositor_->Update(artifact, viewport_properties,
                                        scroll_translation_nodes, {});
-    layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
+    layer_tree_->layer_tree_host()->RequestMainFrameUpdate(false);
+    layer_tree_->layer_tree_host()->UpdateLayers();
   }
 
   void WillBeRemovedFromFrame() {

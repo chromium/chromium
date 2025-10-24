@@ -869,14 +869,6 @@ bool LayerTreeHost::ShouldWarmUp() const {
   return should_warm_up_;
 }
 
-void LayerTreeHost::LayoutAndUpdateLayers() {
-  DCHECK(IsSingleThreaded());
-  // This function is only valid when not using the scheduler.
-  DCHECK(!settings_.single_thread_proxy_scheduler);
-  RequestMainFrameUpdate(false);
-  UpdateLayers();
-}
-
 void LayerTreeHost::CompositeForTest(base::TimeTicks frame_begin_time,
                                      bool raster,
                                      base::OnceClosure callback) {

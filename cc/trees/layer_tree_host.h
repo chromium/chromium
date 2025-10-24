@@ -379,10 +379,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return defer_main_frame_update_count_;
   }
 
-  // Synchronously performs a main frame update and layer updates. Used only in
-  // single threaded mode when the compositor's internal scheduling is disabled.
-  void LayoutAndUpdateLayers();
-
   // Synchronously performs a complete main frame update, commit and compositor
   // frame. Used only in single threaded mode when the compositor's internal
   // scheduling is disabled.
