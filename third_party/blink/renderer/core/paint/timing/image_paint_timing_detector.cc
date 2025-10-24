@@ -63,6 +63,27 @@ uint64_t DownScaleIfIntrinsicSizeIsSmaller(
   return visual_size;
 }
 
+// Returns whether or not the `media_timing` should be ignored when computing
+// minimum required entropy. See crbug.com/434659232.
+bool ShouldIgnoreMediaEntropy(const MediaTiming& media_timing,
+                              bool is_recording_lcp) {
+  // Always check entropy for images.
+  if (media_timing.GetFirstVideoFrameTime().is_null()) {
+    return false;
+  }
+  // Ignore the entropy check for soft navs. Since hard LCP stops on the first
+  // interaction and soft navs requires an interaction, we use
+  // `is_recording_lcp` as a signal for whether this is for a soft nav. This
+  // isn't quite perfect since pressing browser navigation buttons (back,
+  // forward) aren't considered navigations, but it should be good enough for
+  // soft navs, with the goal of eventually aligning hard and soft LCP.
+  if (!is_recording_lcp) {
+    return true;
+  }
+  // Otherwise, use the flag for hard LCP.
+  return RuntimeEnabledFeatures::EntropyIgnoredForFirstVideoFrameLCPEnabled();
+}
+
 }  // namespace
 
 ImagePaintTimingDetector::ImagePaintTimingDetector(LocalFrameView* frame_view)
@@ -263,9 +284,13 @@ bool ImagePaintTimingDetector::RecordImage(
 
   // Check the entropy before creating an `ImageRecord`, to ensure the invariant
   // that all `ImageRecord`s have sufficient entropy.
+  // TODO(crbug.com/434659232): Consider moving the `kMinimumEntropyForLCP`
+  // check and `ShouldIgnoreMediaEntropy()` into a single helper. See
+  // comments in crrev.com/c/6981829 for context and discussion.
   double entropy_for_lcp =
       media_timing.ContentSizeForEntropy() * 8.0 / visual_size;
-  if (entropy_for_lcp < kMinimumEntropyForLCP) {
+  if (entropy_for_lcp < kMinimumEntropyForLCP &&
+      !ShouldIgnoreMediaEntropy(media_timing, IsRecordingLargestImagePaint())) {
     records_manager_.RecordImage(record_id_hash);
     return false;
   }

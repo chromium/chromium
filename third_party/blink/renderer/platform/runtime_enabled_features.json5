@@ -2119,6 +2119,12 @@
       name: "EnterInOpenShadowRoots",
       status: "stable",
     },
+    // When enabled, the LCP algorithm ignores image entropy for the first
+    // video frame. See crbug.com/434659232.
+    {
+      name: "EntropyIgnoredForFirstVideoFrameLCP",
+      status: "experimental",
+    },
     {
       // `event.pseudoTarget` property to represent pseudo-elements in events. Returns `CSSPseudoElement` or null.
       name: "EventPseudoTargetProperty",
