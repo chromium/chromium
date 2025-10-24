@@ -152,7 +152,6 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            @Nullable View.OnClickListener clickListener,
             @Nullable Intent intent,
             int order) {
         return BasicListMenu.buildListMenuItem(
@@ -164,7 +163,6 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
                 isIconTintable,
                 groupContainsIcon,
                 enabled,
-                clickListener,
                 intent,
                 order);
     }

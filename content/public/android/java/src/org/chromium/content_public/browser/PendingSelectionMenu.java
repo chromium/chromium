@@ -7,7 +7,6 @@ package org.chromium.content_public.browser;
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -24,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents a selection menu while it is being created. This class holds the menu items which will
@@ -132,9 +130,8 @@ public final class PendingSelectionMenu {
      *
      * @param menu the menu to populate with the contents of mItems.
      */
-    public void getMenuAsActionMode(Menu menu, Map<MenuItem, View.OnClickListener> clickListeners) {
+    public void getMenuAsActionMode(Menu menu) {
         SelectActionMenuHelper.removeAllAddedGroupsFromMenu(menu);
-        clickListeners.clear();
         // Stable sort the items based on order.
         mItems.sort(Comparator.comparingInt(menuItem -> menuItem.order));
 
@@ -150,9 +147,6 @@ public final class PendingSelectionMenu {
             @Nullable Character alphabeticShortcut = item.alphabeticShortcut;
             if (alphabeticShortcut != null) {
                 menuItem.setAlphabeticShortcut(alphabeticShortcut);
-            }
-            if (item.clickListener != null) {
-                clickListeners.put(menuItem, item.clickListener);
             }
         }
     }
@@ -202,7 +196,6 @@ public final class PendingSelectionMenu {
                             item.isIconTintable,
                             mGroupsWithIcon[group],
                             true,
-                            item.clickListener,
                             item.intent,
                             item.order));
         }

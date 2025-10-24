@@ -61,7 +61,6 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            @Nullable View.OnClickListener clickListener,
             @Nullable Intent intent,
             int order) {
         return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, new PropertyModel());

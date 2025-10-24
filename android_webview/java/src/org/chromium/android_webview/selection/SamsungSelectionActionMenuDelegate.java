@@ -18,7 +18,6 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IdRes;
@@ -332,18 +331,18 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
 
     @Override
     public boolean handleMenuItemClick(
-            MenuItem item, WebContents webContents, ViewGroup containerView) {
-        if ((item.getItemId() == R.id.select_action_menu_translate
-                        || item.getItemId() == R.id.select_action_menu_manage_apps)
-                && item.getIntent() != null) {
-            startActivity(item.getIntent());
+            SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
+        if ((item.id == R.id.select_action_menu_translate
+                        || item.id == R.id.select_action_menu_manage_apps)
+                && item.intent != null) {
+            startActivity(item.intent);
             return true;
         }
         if (isWritingToolKitMenuItem(item)) {
             SelectionPopupController selectionPopupController =
                     SelectionPopupController.fromWebContents(webContents);
             selectionPopupController.setPreserveSelectionOnNextLossOfFocus(true);
-            Intent intent = item.getIntent();
+            Intent intent = item.intent;
             launchWritingToolkit(containerView, intent, selectionPopupController);
             return true;
         }
@@ -352,12 +351,12 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         return super.handleMenuItemClick(item, webContents, containerView);
     }
 
-    private static boolean isWritingToolKitMenuItem(MenuItem item) {
-        return SCAN_TEXT_ID != 0 && item.getItemId() == SCAN_TEXT_ID;
+    private static boolean isWritingToolKitMenuItem(SelectionMenuItem item) {
+        return SCAN_TEXT_ID != 0 && item.id == SCAN_TEXT_ID;
     }
 
     private static void launchWritingToolkit(
-            View containerView,
+            @Nullable View containerView,
             @Nullable Intent intent,
             SelectionPopupController selectionPopupController) {
         Context context = ContextUtils.getApplicationContext();

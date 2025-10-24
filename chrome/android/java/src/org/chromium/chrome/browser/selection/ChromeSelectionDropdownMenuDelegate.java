@@ -107,7 +107,6 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            View.@Nullable OnClickListener clickListener,
             @Nullable Intent intent,
             int order) {
         PropertyModel.Builder modelBuilder =
@@ -118,7 +117,6 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                         .with(ListMenuItemProperties.MENU_ITEM_ID, id)
                         .with(ListMenuItemProperties.START_ICON_DRAWABLE, startIcon)
                         .with(ListMenuItemProperties.ENABLED, enabled)
-                        .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)
                         .with(ListMenuItemProperties.INTENT, intent)
                         .with(
                                 ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN,

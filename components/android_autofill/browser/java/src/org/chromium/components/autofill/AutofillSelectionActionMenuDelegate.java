@@ -5,8 +5,7 @@
 package org.chromium.components.autofill;
 
 import android.content.pm.ResolveInfo;
-import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -65,7 +64,7 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
 
     @Override
     public boolean handleMenuItemClick(
-            MenuItem item, WebContents webContents, ViewGroup containerView) {
+            SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
         return mAutofillSelectionMenuItemHelper != null
                 && mAutofillSelectionMenuItemHelper.handleMenuItemClick(item);
     }

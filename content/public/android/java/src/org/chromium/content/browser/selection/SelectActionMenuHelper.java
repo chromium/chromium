@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import android.app.ActivityOptions;
-import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.textclassifier.TextClassification;
 
 import androidx.annotation.IdRes;
@@ -23,7 +20,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -141,7 +137,7 @@ public class SelectActionMenuHelper {
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
-            @Nullable TextProcessingIntentHandler textProcessingIntentHandler,
+            boolean isTextProcessingAllowed,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
 
         // Add the groups in order. We sort the items on order when we create the menu and the sort
@@ -173,7 +169,7 @@ public class SelectActionMenuHelper {
                         isSelectionPassword,
                         isSelectionReadOnly,
                         selectedText,
-                        textProcessingIntentHandler,
+                        isTextProcessingAllowed,
                         selectionActionMenuDelegate);
         if (textProcessingAssistItems != null) {
             menu.addAll(textProcessingAssistItems);
@@ -199,7 +195,6 @@ public class SelectActionMenuHelper {
                 .setOrderAndCategory(0, ItemGroupOffset.ASSIST_ITEMS)
                 .setIcon(getPrimaryActionIconForClassificationResult(classificationResult, context))
                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                .setClickListener(getActionClickListener(primaryAction))
                 .build();
     }
 
@@ -265,8 +260,10 @@ public class SelectActionMenuHelper {
         final int startIndex = 1;
         for (int i = startIndex; i < count; i++) {
             RemoteAction action = actions.get(i);
-            final View.OnClickListener listener = getActionClickListener(action);
-            if (listener == null) continue;
+            if (TextUtils.isEmpty(action.getTitle())) {
+                Log.w(TAG, "Dropping selection menu item due to empty title.");
+                continue;
+            }
 
             SelectionMenuItem item =
                     new SelectionMenuItem.Builder(action.getTitle())
@@ -277,7 +274,6 @@ public class SelectActionMenuHelper {
                                     i - startIndex, ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
                             .setContentDescription(action.getContentDescription())
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                            .setClickListener(listener)
                             .build();
             secondaryAssistItems.add(item);
         }
@@ -290,11 +286,11 @@ public class SelectActionMenuHelper {
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
-            @Nullable TextProcessingIntentHandler intentHandler,
+            boolean isTextProcessingAllowed,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (selectedText.isEmpty()) return null;
         List<SelectionMenuItem> textProcessingItems = new ArrayList<>();
-        if (isSelectionPassword || intentHandler == null) {
+        if (isSelectionPassword || !isTextProcessingAllowed) {
             addAdditionalTextProcessingItems(textProcessingItems, selectionActionMenuDelegate);
             return textProcessingItems;
         }
@@ -319,7 +315,6 @@ public class SelectActionMenuHelper {
                 icon = resolveInfo.loadIcon(packageManager);
             }
             Intent intent = createProcessTextIntentForResolveInfo(resolveInfo, isSelectionReadOnly);
-            View.OnClickListener listener = v -> intentHandler.handleIntent(intent);
             textProcessingItems.add(
                     new SelectionMenuItem.Builder(title)
                             .setId(Menu.NONE)
@@ -327,7 +322,6 @@ public class SelectActionMenuHelper {
                             .setIcon(icon)
                             .setOrderAndCategory(i, ItemGroupOffset.TEXT_PROCESSING_ITEMS)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                            .setClickListener(listener)
                             .setIntent(intent)
                             .build());
         }
@@ -373,29 +367,6 @@ public class SelectActionMenuHelper {
                             .loadDrawable(context);
         }
         return icon;
-    }
-
-    private static View.@Nullable OnClickListener getActionClickListener(RemoteAction action) {
-        if (TextUtils.isEmpty(action.getTitle())) {
-            return null;
-        }
-        return v -> {
-            try {
-                ActivityOptions options = ActivityOptions.makeBasic();
-                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
-                action.getActionIntent()
-                        .send(
-                                ContextUtils.getApplicationContext(),
-                                0,
-                                null,
-                                null,
-                                null,
-                                null,
-                                options.toBundle());
-            } catch (PendingIntent.CanceledException e) {
-                Log.e(TAG, "Error creating OnClickListener from PendingIntent", e);
-            }
-        };
     }
 
     private static SelectionMenuItem.Builder cut() {

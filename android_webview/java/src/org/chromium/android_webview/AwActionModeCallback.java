@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -27,7 +26,6 @@ import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** A class that handles selection action mode for Android WebView. */
@@ -36,19 +34,13 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
     private final Context mContext;
     private final AwContents mAwContents;
     private final SelectionPopupController mSelectionPopupController;
-    private final SelectionActionMenuDelegate mDelegate;
     private final ActionModeCallbackHelper mHelper;
     private int mAllowedMenuItems;
 
-    public AwActionModeCallback(
-            Context context,
-            AwContents awContents,
-            WebContents webContents,
-            SelectionActionMenuDelegate delegate) {
+    public AwActionModeCallback(Context context, AwContents awContents, WebContents webContents) {
         mContext = context;
         mAwContents = awContents;
         mSelectionPopupController = SelectionPopupController.fromWebContents(webContents);
-        mDelegate = delegate;
         mHelper = mSelectionPopupController.getActionModeCallbackHelper();
         mHelper.setAllowedMenuItems(0); // No item is allowed by default for WebView.
     }
@@ -98,11 +90,6 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
             return true;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                && mDelegate.handleMenuItemClick(
-                        item, mAwContents.getWebContents(), mAwContents.getContainerView())) {
-            return true;
-        }
         return mHelper.onActionItemClicked(mode, item);
     }
 

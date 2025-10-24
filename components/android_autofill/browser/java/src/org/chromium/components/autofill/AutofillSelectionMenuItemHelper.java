@@ -61,11 +61,11 @@ public class AutofillSelectionMenuItemHelper {
         return autofillItems;
     }
 
-    public boolean handleMenuItemClick(MenuItem item) {
-        if (item.getItemId() == R.id.select_action_menu_passkey_entry) {
+    public boolean handleMenuItemClick(SelectionMenuItem item) {
+        if (item.id == R.id.select_action_menu_passkey_entry) {
             mAutofillProvider.triggerPasskeyRequest();
             return true;
-        } else if (item.getItemId() == android.R.id.autofill) {
+        } else if (item.id == android.R.id.autofill) {
             mAutofillProvider.queryAutofillSuggestion();
             return true;
         }

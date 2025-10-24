@@ -76,9 +76,6 @@ public interface SelectionDropdownMenuDelegate {
                 .setIntent(
                         PropertyModel.getFromModelOrDefault(
                                 itemModel, ListMenuItemProperties.INTENT, null))
-                .setClickListener(
-                        PropertyModel.getFromModelOrDefault(
-                                itemModel, ListMenuItemProperties.CLICK_LISTENER, null))
                 .build();
     }
 
@@ -97,7 +94,6 @@ public interface SelectionDropdownMenuDelegate {
      * @param isIconTintable True if the icon can be tinted.
      * @param groupContainsIcon True if this or any other item in group has an icon.
      * @param enabled Whether or not this menu item should be enabled.
-     * @param clickListener Optional click listener for the menu item.
      * @param intent Optional intent for the menu item.
      * @return ListItem with text and optionally an icon.
      */
@@ -110,7 +106,6 @@ public interface SelectionDropdownMenuDelegate {
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            View.@Nullable OnClickListener clickListener,
             @Nullable Intent intent,
             int order);
 

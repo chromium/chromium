@@ -11,7 +11,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.IdRes;
@@ -59,7 +58,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public final int order;
     public final int showAsActionFlags;
     public final @Nullable CharSequence contentDescription;
-    public final View.@Nullable OnClickListener clickListener;
     public final @Nullable Intent intent;
     public final boolean isEnabled;
     public final boolean isIconTintable;
@@ -75,7 +73,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             int order,
             int showAsActionFlags,
             @Nullable CharSequence contentDescription,
-            View.@Nullable OnClickListener clickListener,
             @Nullable Intent intent,
             boolean isEnabled,
             boolean isIconTintable) {
@@ -89,7 +86,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         this.order = order;
         this.showAsActionFlags = showAsActionFlags;
         this.contentDescription = contentDescription;
-        this.clickListener = clickListener;
         this.intent = intent;
         this.isEnabled = isEnabled;
         this.isIconTintable = isIconTintable;
@@ -138,7 +134,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         private int mOrder;
         private int mShowAsActionFlags;
         private @Nullable CharSequence mContentDescription;
-        private View.@Nullable OnClickListener mClickListener;
         private @Nullable Intent mIntent;
         private boolean mIsEnabled;
         private boolean mIsIconTintable;
@@ -169,7 +164,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             mOrder = Menu.NONE;
             mShowAsActionFlags = Menu.NONE;
             mContentDescription = null;
-            mClickListener = null;
             mIntent = null;
             mIsEnabled = true;
             mIsIconTintable = false;
@@ -262,12 +256,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             return this;
         }
 
-        /** Click listener for when the menu item is clicked. */
-        public Builder setClickListener(View.@Nullable OnClickListener clickListener) {
-            mClickListener = clickListener;
-            return this;
-        }
-
         /** The {@link Intent} for the menu item. */
         public Builder setIntent(@Nullable Intent intent) {
             mIntent = intent;
@@ -299,7 +287,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
                     mOrder,
                     mShowAsActionFlags,
                     mContentDescription,
-                    mClickListener,
                     mIntent,
                     mIsEnabled,
                     mIsIconTintable);

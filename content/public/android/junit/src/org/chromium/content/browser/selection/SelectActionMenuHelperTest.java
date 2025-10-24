@@ -188,22 +188,17 @@ public class SelectActionMenuHelperTest {
         PackageManager pm = mock(PackageManager.class);
         doReturn(pm).when(mContext).getPackageManager();
         when(pm.queryIntentActivities(any(Intent.class), anyInt())).thenReturn(list2);
-        SelectActionMenuHelper.TextProcessingIntentHandler intentHandler =
-                new SelectActionMenuHelper.TextProcessingIntentHandler() {
-                    @Override
-                    public void handleIntent(Intent textProcessingIntent) {}
-                };
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
         List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, "test", intentHandler, null);
+                        mContext, false, true, "test", true, null);
         assertNotNull(textProcessingItems);
         assertEquals(1, textProcessingItems.size());
 
         textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, "test", intentHandler, selectionActionMenuDelegate);
+                        mContext, false, true, "test", true, selectionActionMenuDelegate);
         assertNotNull(textProcessingItems);
         assertTrue(textProcessingItems.isEmpty());
     }
@@ -211,11 +206,9 @@ public class SelectActionMenuHelperTest {
     @Test
     @Feature({"TextInput"})
     public void testGetTextProcessingItems_emptySelection() {
-        SelectActionMenuHelper.TextProcessingIntentHandler intentHandler =
-                textProcessingIntent -> {};
         List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, "", intentHandler, null);
+                        mContext, false, true, "", true, null);
         assertNull(textProcessingItems);
     }
 
