@@ -1541,14 +1541,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // On the source Raster context, do the YUV->RGB conversion.
   // Pass the rgb sync token here to be waited upon before performing raster
   // tasks.
-  internals::ConvertYuvVideoFrameToRgbSharedImage(
-      video_frame.get(), raster_context_provider, rgb_shared_image,
-      rgb_sync_token, /*use_visible_rect=*/false,
-      yuv_shared_image_cache_.get());
-
-  gpu::SyncToken post_conversion_sync_token;
-  raster_context_provider->RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(
-      post_conversion_sync_token.GetData());
+  gpu::SyncToken post_conversion_sync_token =
+      internals::ConvertYuvVideoFrameToRgbSharedImage(
+          video_frame.get(), raster_context_provider, rgb_shared_image,
+          rgb_sync_token, /*use_visible_rect=*/false,
+          yuv_shared_image_cache_.get());
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
