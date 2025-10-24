@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "services/viz/public/mojom/compositing/local_surface_id.mojom-forward.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
 namespace content {
 class RenderFrameHost;
@@ -19,7 +21,8 @@ class RenderFrameHost;
 namespace secure_embed {
 
 class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
-    : public mojom::SecureEmbedHost {
+    : public mojom::SecureEmbedHost,
+      public content::GuestFrame::Delegate {
  public:
   ~SecureEmbedHost() override;
 
@@ -36,19 +39,20 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   void SetSecureEmbed(
       mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override;
   void Attach(int64_t content_id) override;
-  void SetLocalSurfaceId(
-      const ::viz::LocalSurfaceId& local_surface_id) override;
+  void SynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties) override;
+
+  // content::GuestFrame::Delegate implementation:
+  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
 
  private:
-  explicit SecureEmbedHost(content::RenderFrameHost* render_frame_host);
+  explicit SecureEmbedHost(content::RenderFrameHost*);
 
   void OnSecureEmbedDisconnected();
 
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
 
-  //   raw_ptr<content::WebContents> attached_web_contents_ = nullptr;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
   std::unique_ptr<content::GuestFrame> guest_frame_;
 
   mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;

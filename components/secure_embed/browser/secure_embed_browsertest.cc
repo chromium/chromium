@@ -71,7 +71,11 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, EmbedTagCreatesPlugin) {
   EXPECT_EQ(1u, SecureEmbedHost::GetInstanceCountForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, PluginRendersRedSquare) {
+// TODO(secure-embed): As there's no placeholder rendering anymore, this test
+// fails. It should be reworked to embed a guest WebContents and verify the
+// guest is rendered correctly.
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+                       DISABLED_PluginRendersRedSquare) {
   // TODO(secure-embed): This test currently just verifies that the plugin
   // renders something red in the expected location. As the SecureEmbedWebPlugin
   // is developed further, this test should be updated to verify that the

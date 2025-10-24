@@ -59,7 +59,6 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   void DidFailLoading(const blink::WebURLError& error) override;
 
   // mojom::SecureEmbed:
-  void OnAttached() override;
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
 
  private:
@@ -69,15 +68,24 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
 
   void OnSecureEmbedHostDisconnected();
 
+  void SendVisualProperties();
+
   // The guest contents ID parsed from the `data-content-id` attribute.
   int contents_id_ = -1;
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
   scoped_refptr<cc::SurfaceLayer> layer_;
 
+  gfx::Rect last_window_rect_;
+  gfx::Rect last_clip_rect_;
+  gfx::Rect last_unobscured_rect_;
+  bool last_is_visible_ = false;
+
+  viz::FrameSinkId frame_sink_id_;
+  bool frame_sink_id_changed_ = false;
+
   mojo::AssociatedRemote<mojom::SecureEmbedHost> host_;
   mojo::AssociatedReceiver<mojom::SecureEmbed> receiver_{this};
-  viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
       parent_local_surface_id_allocator_;
 };

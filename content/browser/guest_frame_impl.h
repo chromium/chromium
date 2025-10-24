@@ -5,19 +5,39 @@
 #ifndef CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
 #define CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
+#include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/cross_process_frame_connector_base.h"
 #include "content/public/browser/guest_frame.h"
+#include "content/public/browser/visibility.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
+#include "ui/display/screen_infos.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content {
+
+class RenderFrameHostImpl;
 
 class GuestFrameImpl : public GuestFrame,
                        public CrossProcessFrameConnectorBase {
  public:
-  GuestFrameImpl(WebContents* guest_web_contents);
+  GuestFrameImpl(WebContents* guest_web_contents,
+                 GuestFrame::Delegate* delegate);
   ~GuestFrameImpl() override;
 
   // GuestFrame:
-  void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id) override;
+  // TODO(secure-embed): Some of the methods that we override here don't need to
+  // be on CrossProcessFrameConnectorBase class at all. Go through them and
+  // remove anything that isn't directly used by the view from the base class.
+  void OnSynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties) override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
 
   // CrossProcessFrameConnectorBase:
@@ -31,7 +51,7 @@ class GuestFrameImpl : public GuestFrame,
       blink::mojom::IntrinsicSizingInfoPtr) override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
-      bool propagate) override;
+      bool propagate = true) override;
   void UpdateCursor(const ui::Cursor& cursor) override;
   RootViewFocusState HasFocus() override;
   void FocusRootView() override;
@@ -76,20 +96,87 @@ class GuestFrameImpl : public GuestFrame,
       override;
   bool IsVisible() override;
   void DelegateWasShown() override;
-  void OnSynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties) override;
   content::Visibility EmbedderVisibility() override;
 
   // input::ChildFrameInputHelper::Delegate:
   input::RenderWidgetHostViewInput* GetParentViewInput() override;
   input::RenderWidgetHostViewInput* GetRootViewInput() override;
 
+  void OnRenderViewReady();
+  void OnRenderFrameHostChanged(RenderFrameHost* old_host,
+                                RenderFrameHost* new_host);
+
  private:
-  viz::FrameSinkId frame_sink_id_;
-  viz::LocalSurfaceId local_surface_id_;
-  mutable display::ScreenInfos screen_infos_;
+  // Forward decl for internal observer that tracks WebContents events and
+  // forwards them to this class.
+  class Observer;
+
+  // Resets the rect and the viz::LocalSurfaceId of the connector to ensure the
+  // unguessable surface ID is not reused after a cross-process navigation.
+  void ResetRectInParentView();
+
+  void UpdateViewportIntersectionInternal(
+      const blink::mojom::ViewportIntersectionState& intersection_state,
+      bool include_visual_properties);
+
+  // Updates the view_ member to track the current RenderWidgetHostView
+  // associated with the guest WebContents.
+  void UpdateViewForCurrentRenderFrameHost();
+
+  // Get the RenderFrameHost for the embedded WebContents. This is similar to
+  // the CrossProcessFrameConnectorBase::current_child_frame_host(), but adapted
+  // for GuestFrameImpl to get the RenderFrameHost from the guest WebContents.
+  RenderFrameHostImpl* current_child_frame_host() const;
+
+  std::unique_ptr<Observer> observer_;
+  raw_ptr<GuestFrame::Delegate> delegate_ = nullptr;
+
   raw_ptr<WebContents> guest_web_contents_ = nullptr;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
+
+  // This is here rather than in the implementation class so that
+  // `GetIntersectionState()` can return a reference.
+  blink::mojom::ViewportIntersectionState intersection_state_;
+
+  display::ScreenInfos screen_infos_;
+
+  bool has_size_ = false;
+  gfx::Size local_frame_size_in_dip_;
+  gfx::Size local_frame_size_in_pixels_;
+  gfx::Rect rect_in_parent_view_in_dip_;
+
+  // The last pre-transform frame size received from the parent renderer.
+  // |last_received_local_frame_size_| may be in DIP if use zoom for DSF is
+  // off.
+  gfx::Size last_received_local_frame_size_;
+
+  // The last zoom level received from parent renderer, which is used to check
+  // if a new surface is created in case of zoom level change.
+  double last_received_zoom_level_ = 0.0;
+
+  // Represents CSS zoom applied to the embedding element in the parent.
+  double last_received_css_zoom_factor_ = 1.0;
+
+  // Visibility state of the corresponding secureembed element in parent process
+  // which is set through CSS or scrolling.
+  blink::mojom::FrameVisibility visibility_ =
+      blink::mojom::FrameVisibility::kRenderedInViewport;
+
+  // The last received FrameSinkId from the guest WebContents's view.
+  viz::FrameSinkId frame_sink_id_;
+
+  // The last received LocalSurfaceId from the SecureEmbed.
+  viz::LocalSurfaceId local_surface_id_;
+
+  // TODO(secure-embed): Not implemented fully yet.
+  uint32_t capture_sequence_number_ = 0u;
+
+  cc::TouchAction inherited_effective_touch_action_ = cc::TouchAction::kAuto;
+
+  bool is_inert_ = false;
+  bool is_throttled_ = false;
+  bool subtree_throttled_ = false;
+  bool display_locked_ = false;
 };
 
 }  // namespace content

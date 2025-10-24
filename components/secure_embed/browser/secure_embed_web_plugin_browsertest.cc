@@ -99,10 +99,6 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
   }
 
   // mojom::SecureEmbedHost implementation
-  MOCK_METHOD(void,
-              SetLocalSurfaceId,
-              (const ::viz::LocalSurfaceId& local_surface_id),
-              (override));
   void SetSecureEmbed(
       mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override {
     secure_embed_.Bind(std::move(secure_embed));
@@ -120,6 +116,9 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
       std::move(attach_callback_).Run(content_id);
     }
   }
+
+  void SynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties) override {}
 
   void OnSecureEmbedDisconnected() { secure_embed_.reset(); }
 

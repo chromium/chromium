@@ -21,8 +21,7 @@ namespace secure_embed {
 // static
 size_t SecureEmbedHost::instance_count_for_testing_ = 0;
 
-SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host), secure_embed_() {
+SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost*) : secure_embed_() {
   ++instance_count_for_testing_;
 }
 
@@ -55,11 +54,6 @@ void SecureEmbedHost::Attach(int64_t content_id) {
   guest_contents::GuestContentsHandle* guest_handle =
       guest_contents::GuestContentsHandle::FromID(guest_id);
 
-  // TODO(secure-embed): Temporary - remove when there's a real SecureEmbed
-  // method to call. This is here to verify that the mojo connection is set up
-  // correctly and that the browser can call back into the renderer.
-  secure_embed_->OnAttached();
-
   // TODO(secure-embed): These LOG's should probably be ReportBadMessage.
   if (!guest_handle) {
     LOG(ERROR) << "GuestContentsHandle not found for content_id: "
@@ -82,15 +76,14 @@ void SecureEmbedHost::Attach(int64_t content_id) {
   LOG(INFO) << "Successfully retrieved WebContents for content_id: "
             << content_id;
 
-  guest_frame_ =
-      content::GuestFrame::Create(web_contents_to_attach);
+  guest_frame_ = content::GuestFrame::Create(web_contents_to_attach, this);
   secure_embed_->SetFrameSinkId(guest_frame_->GetFrameSinkId());
 }
 
-void SecureEmbedHost::SetLocalSurfaceId(
-    const ::viz::LocalSurfaceId& local_surface_id) {
+void SecureEmbedHost::SynchronizeVisualProperties(
+    const blink::FrameVisualProperties& visual_properties) {
   if (guest_frame_) {
-    guest_frame_->SetLocalSurfaceId(local_surface_id);
+    guest_frame_->OnSynchronizeVisualProperties(visual_properties);
   }
 }
 
@@ -104,6 +97,12 @@ void SecureEmbedHost::OnSecureEmbedDisconnected() {
   // that scenario, `this` will get destroyed next as its lifetime is managed by
   // a SelfOwnedAssociatedReceiver.
   secure_embed_.reset();
+}
+
+void SecureEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
+  if (secure_embed_) {
+    secure_embed_->SetFrameSinkId(frame_sink_id);
+  }
 }
 
 }  // namespace secure_embed

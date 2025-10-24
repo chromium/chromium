@@ -16,5 +16,14 @@ mojom("mojom") {
 
   sources = [ "secure_embed.mojom" ]
 
-  deps = [ "//services/viz/public/mojom" ]
+  deps = [
+    "//services/viz/public/mojom",
+    "//third_party/blink/public/mojom:mojom_core",
+    "//ui/display/mojom",
+  ]
+
+  if (is_component_build) {
+    overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
+    component_deps = [ "//third_party/blink/public/common" ]
+  }
 }

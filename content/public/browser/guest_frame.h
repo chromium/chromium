@@ -10,6 +10,10 @@
 #include "content/common/content_export.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace blink {
+struct FrameVisualProperties;
+}  // namespace blink
+
 namespace content {
 
 class RenderFrameHost;
@@ -22,15 +26,21 @@ class WebContents;
 // to align with SecureEmbedDelegate's naming pattern.
 class CONTENT_EXPORT GuestFrame {
  public:
+  class Delegate {
+   public:
+    virtual void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) = 0;
+  };
+
   // Creates a GuestFrame for the given guest WebContents.
   // This will attach the guest to the embedder's frame.
-  static std::unique_ptr<GuestFrame> Create(WebContents* guest_web_contents);
+  static std::unique_ptr<GuestFrame> Create(WebContents* guest_web_contents,
+                                            GuestFrame::Delegate* delegate);
 
   virtual ~GuestFrame() = default;
 
-  // Called by the embedder to provide the surface ID for the guest content.
-  virtual void SetLocalSurfaceId(
-      const viz::LocalSurfaceId& local_surface_id) = 0;
+  // Called by the embedder to synchronize visual properties with the guest.
+  virtual void OnSynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties) = 0;
 
   // Gets the FrameSinkId of the guest's view.
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;

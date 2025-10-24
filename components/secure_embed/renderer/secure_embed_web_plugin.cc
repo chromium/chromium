@@ -13,9 +13,12 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
@@ -130,8 +133,91 @@ void SecureEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   // Note: Layer bounds are set by WebPluginContainerImpl::Paint()
   // so we don't need to set them here for the time being.
 
-  // TODO(secure-embed): This will need updated to propagate the geometry to the
-  // embedded content.
+  if (last_window_rect_ == window_rect && last_clip_rect_ == clip_rect &&
+      last_unobscured_rect_ == unobscured_rect &&
+      last_is_visible_ == is_visible && !frame_sink_id_changed_) {
+    return;
+  }
+
+  last_window_rect_ = window_rect;
+  last_clip_rect_ = clip_rect;
+  last_unobscured_rect_ = unobscured_rect;
+  last_is_visible_ = is_visible;
+  frame_sink_id_changed_ = false;
+
+  if (frame_sink_id_.is_valid()) {
+    SendVisualProperties();
+  }
+}
+
+void SecureEmbedWebPlugin::SendVisualProperties() {
+  // TODO(secure-embed): This is largely based on RemoteFrame's
+  // SynchronizeVisualProperties(). It's likely that we should cache the last
+  // visual properties and only send an update if something has changed. It's
+  // also possible that some of the updates that RemoteFrame is notified of may
+  // not get here as WebPlugin::UpdateGeometry() calls. Needs further testing.
+
+  // TODO(secure-embed): DSF is still not working correctly.
+
+  blink::FrameVisualProperties visual_properties;
+
+  // From PdfViewWebPluginClient:
+  // Do not rely on `blink::WebPluginContainer::DeviceScaleFactor()`, since it
+  // doesn't always reflect the real screen's device scale. Instead, get the
+  // device scale from the top-level frame's `display::ScreenInfo`.
+  blink::WebFrameWidget* ancestor_widget =
+      container_->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
+  DCHECK(ancestor_widget);
+  double device_scale_factor =
+      ancestor_widget->GetOriginalScreenInfo().device_scale_factor;
+
+  // zoom_factor includes device scale factor, browser zoom, and css zoom.
+  double zoom_level = container_->LayoutZoomFactor();
+  // TODO(secure-embed): Several places doing this conversion mention that it's
+  // lossy and do rounding. Do we need to?
+  double browser_zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
+  double css_zoom_factor =
+      zoom_level / (device_scale_factor * browser_zoom_factor);
+
+  visual_properties.zoom_level = zoom_level;
+  visual_properties.css_zoom_factor = css_zoom_factor;
+  visual_properties.page_scale_factor = container_->PageScaleFactor();
+  visual_properties.is_pinch_gesture_active =
+      ancestor_widget->PinchGestureActiveInMainFrame();
+  visual_properties.screen_infos = ancestor_widget->GetScreenInfos();
+
+  // For separate WebContents acting like an iframe, the "visible viewport" is
+  // the portion of the plugin that is visible within the plugin bounds.
+  visual_properties.visible_viewport_size =
+      gfx::Size(last_clip_rect_.width(), last_clip_rect_.height());
+
+  // TODO(secure-embed): Do these need any adjustment for plugin location/size?
+  const std::vector<gfx::Rect>& viewport_segments =
+      ancestor_widget->ViewportSegments();
+  visual_properties.root_widget_viewport_segments.assign(
+      viewport_segments.begin(), viewport_segments.end());
+
+  visual_properties.rect_in_local_root = last_window_rect_;
+  visual_properties.local_frame_size =
+      gfx::Size(last_window_rect_.width(), last_window_rect_.height());
+
+  // TODO(secure-embed): Start with what is actually visible for the plugin. We
+  // can use a more accurate calculation for the compositor viewport, similar to
+  // what RemoteFrame does if needed.
+  visual_properties.compositor_viewport = last_clip_rect_;
+  // TODO(secure-embed): This is probably not correct.
+  visual_properties.compositing_scale_factor = 1.0f;
+
+  parent_local_surface_id_allocator_->GenerateId();
+  auto local_surface_id =
+      parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
+  visual_properties.local_surface_id = local_surface_id;
+
+  viz::SurfaceId surface_id(frame_sink_id_, local_surface_id);
+  DCHECK(surface_id.is_valid());
+  layer_->SetSurfaceId(surface_id, cc::DeadlinePolicy::UseDefaultDeadline());
+  host_->SynchronizeVisualProperties(visual_properties);
+  container_->ScheduleAnimation();
 }
 
 void SecureEmbedWebPlugin::UpdateFocus(bool focused,
@@ -162,22 +248,18 @@ void SecureEmbedWebPlugin::DidFailLoading(const blink::WebURLError& error) {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedWebPlugin::OnAttached() {
-  // TODO(secure-embed): Here for testing only. Remove when there's a real
-  // SecureEmbed method to implement.
-  LOG(INFO) << "SecureEmbedWebPlugin::OnAttached() called";
-}
-
 void SecureEmbedWebPlugin::SetFrameSinkId(
     const ::viz::FrameSinkId& frame_sink_id) {
+  // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
+  // two different frame sinks, so recreate it here.
+  if (frame_sink_id_ != frame_sink_id) {
+    parent_local_surface_id_allocator_ =
+        std::make_unique<viz::ParentLocalSurfaceIdAllocator>();
+  }
   frame_sink_id_ = frame_sink_id;
-  parent_local_surface_id_allocator_->GenerateId();
+  frame_sink_id_changed_ = true;
 
-  auto local_surface_id =
-      parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
-  layer_->SetSurfaceId(viz::SurfaceId(frame_sink_id_, local_surface_id),
-                       cc::DeadlinePolicy::UseDefaultDeadline());
-  host_->SetLocalSurfaceId(local_surface_id);
+  SendVisualProperties();
 }
 
 }  // namespace secure_embed
