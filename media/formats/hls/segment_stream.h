@@ -13,9 +13,10 @@
 
 namespace media::hls {
 
-// Represents a segment, its start time, and its end time.
-using SegmentInfo =
-    std::tuple<scoped_refptr<MediaSegment>, base::TimeDelta, base::TimeDelta>;
+// Represents a segment, its start time, end time, and whether the init segment
+// should be included.
+using SegmentInfo = std::
+    tuple<scoped_refptr<MediaSegment>, base::TimeDelta, base::TimeDelta, bool>;
 
 // A segment stream represents the queue of segments which should be downloaded
 // in order. It supports configurable seeking as well as checks for size and
@@ -92,6 +93,7 @@ class MEDIA_EXPORT SegmentStream {
   scoped_refptr<MediaPlaylist> active_playlist_;
 
   SegmentIndex highest_segment_index_ = {0, 0};
+  std::optional<GURL> previous_segment_init_segment_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

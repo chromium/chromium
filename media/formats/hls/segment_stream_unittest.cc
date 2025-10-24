@@ -47,7 +47,8 @@ TEST(SegmentStreamUnittest, BasicQueueUsage) {
   scoped_refptr<hls::MediaSegment> segment;
   base::TimeDelta start;
   base::TimeDelta end;
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  bool need_init;
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
 
   ASSERT_TRUE(segment_stream->PlaylistHasSegments());
   ASSERT_EQ(segment_stream->GetMaxDuration(), base::Seconds(10));
@@ -141,7 +142,8 @@ TEST(SegmentStreamUnittest, SeekablePlaylistAdapt) {
   scoped_refptr<hls::MediaSegment> segment;
   base::TimeDelta start;
   base::TimeDelta end;
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  bool need_init;
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
 
   // Check the segment is low quality.
   ASSERT_EQ(segment_stream->NextSegmentStartTime(), base::Seconds(9.2));
@@ -157,7 +159,7 @@ TEST(SegmentStreamUnittest, SeekablePlaylistAdapt) {
 
   // The next segment should now be the video2_high file.
   ASSERT_EQ(segment_stream->NextSegmentStartTime(), base::Seconds(9.2));
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment_stream->NextSegmentStartTime(), base::Seconds(18.4));
   ASSERT_EQ(segment->GetUri().GetPath(), "/video2_high.ts");
 
@@ -166,7 +168,7 @@ TEST(SegmentStreamUnittest, SeekablePlaylistAdapt) {
   ASSERT_EQ(segment_stream->NextSegmentStartTime(), base::Seconds(36.8));
 
   // pop it.
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video5_high.ts");
   ASSERT_TRUE(segment_stream->Exhausted());
 
@@ -183,11 +185,11 @@ TEST(SegmentStreamUnittest, SeekablePlaylistAdapt) {
 
   // Seek backwards and read from the stream, should be low video.
   ASSERT_TRUE(segment_stream->Seek(base::Seconds(20)));
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video3_low.ts");
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video4_low.ts");
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video5_low.ts");
 }
 
@@ -215,12 +217,13 @@ TEST(SegmentStreamUnittest, RealWorldExample) {
   scoped_refptr<hls::MediaSegment> segment;
   base::TimeDelta start;
   base::TimeDelta end;
+  bool need_init;
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_800Kb_20909320.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 20909320lu);
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_800Kb_20909321.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 20909321lu);
 
@@ -238,11 +241,11 @@ TEST(SegmentStreamUnittest, RealWorldExample) {
                           "playlist_2500Kb_20909329.ts", "#EXTINF:2.00000,",
                           "playlist_2500Kb_20909330.ts"));
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_2500Kb_20909322.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 20909322lu);
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_2500Kb_20909323.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 20909323lu);
 }
@@ -265,17 +268,18 @@ TEST(SegmentStreamUnittest, UnseekablePlaylistAdapt) {
   scoped_refptr<hls::MediaSegment> segment;
   base::TimeDelta start;
   base::TimeDelta end;
+  bool need_init;
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video10_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 10lu);
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video11_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 11lu);
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video12_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 12lu);
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video13_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 13lu);
   ASSERT_FALSE(segment_stream->Exhausted());
@@ -293,7 +297,7 @@ TEST(SegmentStreamUnittest, UnseekablePlaylistAdapt) {
       "#EXTINF:9.2,", "video14_low.ts", "#EXTINF:9.2,", "video15_low.ts",
       "#EXTINF:9.2,", "video16_low.ts", "#EXT-X-ENDLIST"));
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video14_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 14lu);
 
@@ -302,10 +306,10 @@ TEST(SegmentStreamUnittest, UnseekablePlaylistAdapt) {
   ASSERT_FALSE(segment_stream->Exhausted());
 
   // Read the rest out
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video15_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 15lu);
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video16_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 16lu);
 
@@ -321,7 +325,7 @@ TEST(SegmentStreamUnittest, UnseekablePlaylistAdapt) {
       "#EXTINF:9.2,", "video19_low.ts", "#EXT-X-ENDLIST"));
   ASSERT_FALSE(segment_stream->Exhausted());
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/video17_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 17lu);
   ASSERT_FALSE(segment_stream->Exhausted());
@@ -349,8 +353,9 @@ TEST(SegmentStreamUnittest, SeekableEncryptedPlaylistAdapt) {
   scoped_refptr<hls::MediaSegment> segment;
   base::TimeDelta start;
   base::TimeDelta end;
+  bool need_init;
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_100000Kb_0.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 0lu);
 
@@ -370,7 +375,7 @@ TEST(SegmentStreamUnittest, SeekableEncryptedPlaylistAdapt) {
       "playlist_200000Kb_6.ts", "#EXTINF:12.0000000,", "playlist_200000Kb_7.ts",
       "#EXTINF:12.0000000,", "playlist_200000Kb_8.ts"));
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_200000Kb_1.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 1lu);
 
@@ -390,13 +395,67 @@ TEST(SegmentStreamUnittest, SeekableEncryptedPlaylistAdapt) {
       "playlist_300000Kb_6.ts", "#EXTINF:12.0000000,", "playlist_300000Kb_7.ts",
       "#EXTINF:12.0000000,", "playlist_300000Kb_8.ts"));
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_200000Kb_2.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 2lu);
 
-  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/playlist_300000Kb_3.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 3lu);
+}
+
+TEST(SegmentStreamUnittest, InitSegmentGetsReloadedAfterRenditionAdaptation) {
+  auto segment_stream = std::make_unique<SegmentStream>(
+      CreateMediaPlaylist(
+          "#EXT-X-TARGETDURATION:12", "#EXT-X-VERSION:1",
+          "#EXT-X-MEDIA-SEQUENCE:0", "#EXT-X-MAP:URI=\"init_a.mp4\"",
+          "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD", "#EXTINF:1,", "a0.mp4",
+          "#EXTINF:1,", "a1.mp4", "#EXTINF:1,", "a2.mp4", "#EXTINF:1,",
+          "a3.mp4", "#EXTINF:1,", "a4.mp4", "#EXTINF:1,", "a5.mp4",
+          "#EXTINF:1,", "a6.mp4", "#EXTINF:1,", "a7.mp4", "#EXT-X-ENDLIST"),
+      true);
+
+  scoped_refptr<hls::MediaSegment> segment;
+  base::TimeDelta start;
+  base::TimeDelta end;
+  bool need_init;
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a0.mp4");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 0lu);
+  ASSERT_TRUE(need_init);
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a1.mp4");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 1lu);
+  ASSERT_FALSE(need_init);
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a2.mp4");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 2lu);
+  ASSERT_FALSE(need_init);
+  segment_stream->SetNewPlaylist(CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:12", "#EXT-X-VERSION:1", "#EXT-X-MEDIA-SEQUENCE:0",
+      "#EXT-X-MAP:URI=\"init_b.mp4\"", "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXTINF:1,", "b0.mp4", "#EXTINF:1,", "b1.mp4", "#EXTINF:1,", "b2.mp4",
+      "#EXTINF:1,", "b3.mp4", "#EXTINF:1,", "b4.mp4",
+      "#EXT-X-MAP:URI=\"init_b2.mp4\"", "#EXTINF:1,", "b5.mp4", "#EXTINF:1,",
+      "b6.mp4", "#EXTINF:1,", "b7.mp4", "#EXT-X-ENDLIST"));
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/b3.mp4");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 3lu);
+  ASSERT_TRUE(need_init);
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/b4.mp4");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 4lu);
+  ASSERT_FALSE(need_init);
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/b5.mp4");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 5lu);
+  ASSERT_TRUE(need_init);
 }
 
 }  // namespace media::hls
