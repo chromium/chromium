@@ -29,7 +29,7 @@ std::optional<std::string> GetHttpsHost(const std::string& url) {
   url::StdStringCanonOutput output(&canonical);
   url::Parsed canonical_parsed;
   bool is_valid =
-      url::CanonicalizeStandardURL(url.data(), url::ParseStandardURL(url),
+      url::CanonicalizeStandardUrl(url, url::ParseStandardURL(url),
                                    url::SchemeType::SCHEME_WITH_HOST_AND_PORT,
                                    nullptr, &output, &canonical_parsed);
   if (!is_valid)

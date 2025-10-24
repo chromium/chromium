@@ -530,8 +530,8 @@ bool DoResolveRelativeHost(std::string_view base_url,
                                 query_converter, *output, *out_parsed);
   }
 
-  return ReplaceStandardURL(base_url.data(), base_parsed, replacements,
-                            scheme_type, query_converter, output, out_parsed);
+  return ReplaceStandardUrl(base_url, base_parsed, replacements, scheme_type,
+                            query_converter, output, out_parsed);
 }
 
 // Resolves a relative URL that happens to be an absolute file path. Examples

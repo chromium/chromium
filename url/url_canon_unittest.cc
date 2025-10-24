@@ -1780,7 +1780,7 @@ TEST_F(URLCanonTest, CanonicalizeStandardURL) {
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeStandardURL(
+    bool success = CanonicalizeStandardUrl(
         i.input, parsed, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
         &output, &out_parsed);
     output.Complete();
@@ -1963,7 +1963,7 @@ TEST_F(URLCanonTest, ReplaceStandardURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceStandardURL(replace_case.base, parsed, r,
+    ReplaceStandardUrl(replace_case.base, parsed, r,
                        SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
                        &output, &out_parsed);
     output.Complete();
@@ -1983,7 +1983,7 @@ TEST_F(URLCanonTest, ReplaceStandardURL) {
     std::string out_str1;
     StdStringCanonOutput output1(&out_str1);
     Parsed new_parsed;
-    ReplaceStandardURL(src, parsed, r,
+    ReplaceStandardUrl(src, parsed, r,
                        SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
                        &output1, &new_parsed);
     output1.Complete();
@@ -1993,7 +1993,7 @@ TEST_F(URLCanonTest, ReplaceStandardURL) {
     r.SetPath(reinterpret_cast<char*>(0x00000001), Component());
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
-    ReplaceStandardURL(src, parsed, r,
+    ReplaceStandardUrl(src, parsed, r,
                        SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
                        &output2, &new_parsed);
     output2.Complete();

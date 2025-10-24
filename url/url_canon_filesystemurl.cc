@@ -61,7 +61,7 @@ bool DoCanonicalizeFileSystemUrl(std::basic_string_view<CHAR> spec,
       inner_scheme_type = SCHEME_WITH_HOST_AND_PORT;
     }
     success =
-        CanonicalizeStandardURL(spec.data(), *inner_parsed, inner_scheme_type,
+        CanonicalizeStandardUrl(spec, *inner_parsed, inner_scheme_type,
                                 charset_converter, output, &new_inner_parsed);
   } else {
     // TODO(ericu): The URL is wrong, but should we try to output more of what

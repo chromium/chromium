@@ -306,9 +306,8 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec.data())),
                           &scheme_type)) {
     // All "normal" URLs.
-    success = CanonicalizeStandardURL(spec.data(), ParseStandardURL(spec),
-                                      scheme_type, charset_converter, output,
-                                      output_parsed);
+    success = CanonicalizeStandardUrl(spec, ParseStandardURL(spec), scheme_type,
+                                      charset_converter, output, output_parsed);
 
   } else {
     // Non-special scheme URLs like data:, mailto: and javascript:.
@@ -491,7 +490,7 @@ bool DoReplaceComponents(std::string_view spec,
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec_ptr),
                    &scheme_type)) {
-    return ReplaceStandardURL(spec_ptr, parsed, replacements, scheme_type,
+    return ReplaceStandardUrl(spec, parsed, replacements, scheme_type,
                               charset_converter, output, out_parsed);
   }
 

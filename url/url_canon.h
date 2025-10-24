@@ -739,14 +739,14 @@ void CanonicalizeRef(std::optional<std::u16string_view> spec,
 
 // Use for standard URLs with authorities and paths.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeStandardURL(const char* spec,
+bool CanonicalizeStandardUrl(std::string_view spec,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeStandardURL(const char16_t* spec,
+bool CanonicalizeStandardUrl(std::u16string_view spec,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
@@ -1027,7 +1027,7 @@ class Replacements {
 
 // The base must be an 8-bit canonical URL.
 COMPONENT_EXPORT(URL)
-bool ReplaceStandardURL(const char* base,
+bool ReplaceStandardUrl(std::string_view base,
                         const Parsed& base_parsed,
                         const Replacements<char>& replacements,
                         SchemeType scheme_type,
@@ -1035,7 +1035,7 @@ bool ReplaceStandardURL(const char* base,
                         CanonOutput* output,
                         Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceStandardURL(const char* base,
+bool ReplaceStandardUrl(std::string_view base,
                         const Parsed& base_parsed,
                         const Replacements<char16_t>& replacements,
                         SchemeType scheme_type,

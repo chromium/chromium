@@ -15,7 +15,7 @@ namespace url {
 namespace {
 
 template <typename CHAR>
-bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
+bool DoCanonicalizeStandardUrl(const URLComponentSource<CHAR>& source,
                                const Parsed& parsed,
                                SchemeType scheme_type,
                                CharsetConverter* query_converter,
@@ -155,24 +155,24 @@ int DefaultPortForScheme(std::string_view scheme) {
   return PORT_UNSPECIFIED;
 }
 
-bool CanonicalizeStandardURL(const char* spec,
+bool CanonicalizeStandardUrl(std::string_view spec,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed) {
-  return DoCanonicalizeStandardURL(URLComponentSource(spec), parsed,
+  return DoCanonicalizeStandardUrl(URLComponentSource(spec.data()), parsed,
                                    scheme_type, query_converter, output,
                                    new_parsed);
 }
 
-bool CanonicalizeStandardURL(const char16_t* spec,
+bool CanonicalizeStandardUrl(std::u16string_view spec,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed) {
-  return DoCanonicalizeStandardURL(URLComponentSource(spec), parsed,
+  return DoCanonicalizeStandardUrl(URLComponentSource(spec.data()), parsed,
                                    scheme_type, query_converter, output,
                                    new_parsed);
 }
@@ -186,23 +186,23 @@ bool CanonicalizeStandardURL(const char16_t* spec,
 //
 // You would also need to update DoReplaceComponents in url_util.cc which
 // relies on this re-checking everything (see the comment there for why).
-bool ReplaceStandardURL(const char* base,
+bool ReplaceStandardUrl(std::string_view base,
                         const Parsed& base_parsed,
                         const Replacements<char>& replacements,
                         SchemeType scheme_type,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* new_parsed) {
-  URLComponentSource<char> source(base);
+  URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupOverrideComponents(base, replacements, &source, &parsed);
-  return DoCanonicalizeStandardURL(source, parsed, scheme_type, query_converter,
+  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
+  return DoCanonicalizeStandardUrl(source, parsed, scheme_type, query_converter,
                                    output, new_parsed);
 }
 
 // For 16-bit replacements, we turn all the replacements into UTF-8 so the
 // regular code path can be used.
-bool ReplaceStandardURL(const char* base,
+bool ReplaceStandardUrl(std::string_view base,
                         const Parsed& base_parsed,
                         const Replacements<char16_t>& replacements,
                         SchemeType scheme_type,
@@ -210,10 +210,11 @@ bool ReplaceStandardURL(const char* base,
                         CanonOutput* output,
                         Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base);
+  URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base, replacements, &utf8, &source, &parsed);
-  return DoCanonicalizeStandardURL(source, parsed, scheme_type, query_converter,
+  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
+                               &parsed);
+  return DoCanonicalizeStandardUrl(source, parsed, scheme_type, query_converter,
                                    output, new_parsed);
 }
 
