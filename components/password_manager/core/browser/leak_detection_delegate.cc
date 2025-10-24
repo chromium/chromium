@@ -81,15 +81,12 @@ void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
   helper_.reset();
   if (leak_check_) {
     is_leaked_timer_ = std::make_unique<base::ElapsedTimer>();
-    leak_check_->Start(initiator, credentials.url, credentials.username_value,
-                       credentials.password_value);
+    leak_check_->Start(initiator, credentials);
   }
 }
 
 void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
-                                                GURL url,
-                                                std::u16string username,
-                                                std::u16string password) {
+                                                PasswordForm credentials) {
   leak_check_.reset();
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
@@ -115,7 +112,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
       base::FeatureList::IsEnabled(
           features::kFetchChangePasswordUrlForPasswordChange)) {
     affiliation_service->PrefetchChangePasswordURL(
-        url, base::BindOnce(barrier_callback, std::nullopt));
+        credentials.url, base::BindOnce(barrier_callback, std::nullopt));
   } else {
     barrier_callback.Run(std::nullopt);
   }
@@ -123,8 +120,9 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
   if (base::FeatureList::IsEnabled(features::kMarkAllCredentialsAsLeaked)) {
     auto leak_details = PrepareLeakDetails(
         PasswordForm::Store::kNotSet, IsReused(false), IsSavedAsBackup(false),
-        url, std::move(username), std::move(password),
-        /*all_urls_with_leaked_credentials=*/{url});
+        credentials.url, std::move(credentials.username_value),
+        std::move(credentials.password_value),
+        /*all_urls_with_leaked_credentials=*/{credentials.url});
     barrier_callback.Run(std::move(leak_details));
   } else {
     // Query the helper to asynchronously determine the `CredentialLeakType`.
@@ -133,8 +131,9 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
         base::BindOnce(&LeakDetectionDelegate::PrepareLeakDetails,
                        base::Unretained(this))
             .Then(barrier_callback));
-    helper_->ProcessLeakedPassword(std::move(url), std::move(username),
-                                   std::move(password));
+    helper_->ProcessLeakedPassword(std::move(credentials.url),
+                                   std::move(credentials.username_value),
+                                   std::move(credentials.password_value));
   }
 }
 

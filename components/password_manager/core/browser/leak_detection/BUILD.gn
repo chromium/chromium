@@ -102,6 +102,7 @@ source_set("test_support") {
     ":leak_detection",
     "//base/test:test_support",
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser:password_form",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -128,6 +129,7 @@ source_set("unit_tests") {
     ":proto",
     ":test_support",
     "//base/test:test_support",
+    "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",

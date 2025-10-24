@@ -111,6 +111,7 @@ using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
@@ -166,11 +167,10 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
-  MOCK_METHOD(
-      void,
-      Start,
-      (LeakDetectionInitiator, const GURL&, std::u16string, std::u16string),
-      (override));
+  MOCK_METHOD(void,
+              Start,
+              (LeakDetectionInitiator, const PasswordForm&),
+              (override));
 };
 
 class MockStoreResultFilter : public StubCredentialsFilter {
@@ -4610,10 +4610,13 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
       .WillOnce(MoveArgAndReturn<0>(&form_manager_to_save, true));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
-  EXPECT_CALL(
-      *check_instance,
-      Start(LeakDetectionInitiator::kSignInCheck, form_data.url(),
-            form_data.fields()[0].value(), form_data.fields()[1].value()));
+  EXPECT_CALL(*check_instance,
+              Start(Eq(LeakDetectionInitiator::kSignInCheck),
+                    AllOf(Field(&PasswordForm::url, Eq(form_data.url())),
+                          Field(&PasswordForm::username_value,
+                                Eq(form_data.fields()[0].value())),
+                          Field(&PasswordForm::password_value,
+                                Eq(form_data.fields()[1].value())))));
   EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
       .WillOnce(Return(ByMove(std::move(check_instance))));
 

@@ -48,7 +48,10 @@
 #include "url/url_constants.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -65,11 +68,10 @@ const char kTestAndroidRealm2[] = "android://hash@com.example.two.android/";
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
-  MOCK_METHOD(
-      void,
-      Start,
-      (LeakDetectionInitiator, const GURL&, std::u16string, std::u16string),
-      (override));
+  MOCK_METHOD(void,
+              Start,
+              (LeakDetectionInitiator, const PasswordForm&),
+              (override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -1848,9 +1850,14 @@ TEST_P(CredentialManagerImplTest, StorePasswordCredentialStartsLeakDetection) {
   cm_service_impl()->set_leak_factory(std::move(mock_factory));
 
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
-  EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form_.url,
-                    form_.username_value, form_.password_value));
+  EXPECT_CALL(
+      *check_instance,
+      Start(
+          Eq(LeakDetectionInitiator::kSignInCheck),
+          AllOf(
+              Field(&PasswordForm::url, Eq(form_.url)),
+              Field(&PasswordForm::username_value, Eq(form_.username_value)),
+              Field(&PasswordForm::password_value, Eq(form_.password_value)))));
   EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
       .WillOnce(Return(testing::ByMove(std::move(check_instance))));
   CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());

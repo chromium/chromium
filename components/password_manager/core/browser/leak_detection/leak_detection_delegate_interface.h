@@ -15,6 +15,8 @@ namespace password_manager {
 class LeakCheckCredential;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+struct PasswordForm;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Needs to stay in sync with PasswordLeakDetectionError in enums.xml.
@@ -57,9 +59,7 @@ class LeakDetectionDelegateInterface {
   // |url| and |username| are taken from Start() for presentation in the UI.
   // Pass parameters by value because the caller can be destroyed here.
   virtual void OnLeakDetectionDone(bool is_leaked,
-                                   GURL url,
-                                   std::u16string username,
-                                   std::u16string password) = 0;
+                                   PasswordForm credentials) = 0;
 
   virtual void OnError(LeakDetectionError error) = 0;
 };

@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_factory.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
 
 class GoogleServiceAuthError;
@@ -52,9 +53,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
 
   // LeakDetectionCheck:
   void Start(LeakDetectionInitiator initiator,
-             const GURL& url,
-             std::u16string username,
-             std::u16string password) override;
+             const PasswordForm& credentials) override;
 
 #if defined(UNIT_TEST)
   void set_network_factory(
@@ -101,12 +100,8 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   std::unique_ptr<LeakDetectionRequestInterface> request_;
   // A factory for creating a |request_|.
   std::unique_ptr<LeakDetectionRequestFactory> network_request_factory_;
-  // |url| passed to Start().
-  GURL url_;
-  // |username| passed to Start().
-  std::u16string username_;
-  // |password| passed to Start().
-  std::u16string password_;
+  // The form where leak detection was triggered.
+  PasswordForm credentials_;
   // Encryption key used during the request.
   std::string encryption_key_;
   // Weak pointers for different callbacks.

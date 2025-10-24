@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -22,9 +23,8 @@ class MockLeakDetectionDelegateInterface
   ~MockLeakDetectionDelegateInterface() override;
 
   // LeakDetectionDelegateInterface:
-  MOCK_METHOD4(OnLeakDetectionDone,
-               void(bool, GURL, std::u16string, std::u16string));
-  MOCK_METHOD1(OnError, void(LeakDetectionError));
+  MOCK_METHOD(void, OnLeakDetectionDone, (bool, PasswordForm), (override));
+  MOCK_METHOD(void, OnError, (LeakDetectionError), (override));
 };
 
 #if !BUILDFLAG(IS_ANDROID)

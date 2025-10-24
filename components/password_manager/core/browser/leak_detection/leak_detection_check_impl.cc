@@ -200,15 +200,13 @@ bool LeakDetectionCheckImpl::HasAccountForRequest(
 }
 
 void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
-                                   const GURL& url,
-                                   std::u16string username,
-                                   std::u16string password) {
+                                   const PasswordForm& credentials) {
   DCHECK(payload_helper_);
   DCHECK(!request_);
 
-  url_ = url;
-  username_ = std::move(username);
-  password_ = std::move(password);
+  // The copy is necessary here as we need to pass the credentials to the
+  // delegate when the leak check is done.
+  credentials_ = credentials;
   if (HasAccountForRequest(payload_helper_->GetIdentityManager())) {
     payload_helper_->RequestAccessToken(TimeCallback(
         base::BindOnce(&LeakDetectionCheckImpl::OnAccessTokenRequestCompleted,
@@ -218,7 +216,8 @@ void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
     payload_helper_->OnGotAccessToken(/*access_token=*/std::nullopt);
   }
   payload_helper_->PreparePayload(
-      initiator, base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
+      initiator, base::UTF16ToUTF8(credentials_.username_value),
+      base::UTF16ToUTF8(credentials_.password_value),
       base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -306,8 +305,7 @@ void LeakDetectionCheckImpl::OnAnalyzeSingleLeakResponse(
       "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseResult", result);
   const bool is_leaked = result == AnalyzeResponseResult::kLeaked;
   DVLOG(0) << "Leak check result=" << is_leaked;
-  delegate_->OnLeakDetectionDone(is_leaked, std::move(url_),
-                                 std::move(username_), std::move(password_));
+  delegate_->OnLeakDetectionDone(is_leaked, std::move(credentials_));
 }
 
 bool LeakDetectionCheck::IsURLBlockedByPolicy(
