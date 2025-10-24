@@ -33,6 +33,18 @@ class WebStateID;
                                       (const std::set<web::WebStateID>&)
                                           identifiers NS_DESIGNATED_INITIALIZER;
 
+// Initializer that inserts a new tab into the group if `createNewTabForGroup`
+// is YES.
+- (instancetype)
+    initTabGroupCreationWithBaseViewController:(UIViewController*)viewController
+                                       browser:(Browser*)browser
+                                  selectedTabs:
+                                      (const std::set<web::WebStateID>&)
+                                          identifiers
+                          createNewTabForGroup:(BOOL)createNewTabForGroup
+    NS_DESIGNATED_INITIALIZER;
+;
+
 // Initializer when you edit an existing `tabGroup` passed in parameters.
 // `tabGroup` should not be nil.
 - (instancetype)

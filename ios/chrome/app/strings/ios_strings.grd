@@ -7167,6 +7167,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_TAB_GRID_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to Incognito tabs). [iOS only]">
         Create new tab
       </message>
+      <message name="IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP" desc="The accessibility label for the button on the Tab Group Recall surface that creates new tab groups. [iOS only]">
+        Create new tab group
+      </message>
       <message name="IDS_IOS_TAB_GRID_DESELECT_ALL_BUTTON" desc="Title of the button in the tab grid UI selection mode, when tapped it will mark all tabs deselected.">
         Deselect all
       </message>

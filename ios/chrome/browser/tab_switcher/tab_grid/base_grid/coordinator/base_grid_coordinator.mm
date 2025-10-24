@@ -262,13 +262,28 @@ using collaboration::CollaborationControllerDelegate;
 
 - (void)showTabGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
-  CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
-                              "creation process is still running.";
+  CHECK(!_tabGroupCreator)
+      << "There is an attempt to create a tab group when a "
+         "creation process is still running.";
 
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initTabGroupCreationWithBaseViewController:self.baseViewController
                                          browser:self.browser
                                     selectedTabs:identifiers];
+  _tabGroupCreator.delegate = self;
+  [_tabGroupCreator start];
+}
+
+- (void)showTabGroupCreationWithoutTabs {
+  CHECK(!_tabGroupCreator)
+      << "There is an attempt to create a tab group when a "
+         "creation process is still running.";
+
+  _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
+      initTabGroupCreationWithBaseViewController:self.baseViewController
+                                         browser:self.browser
+                                    selectedTabs:{}
+                            createNewTabForGroup:YES];
   _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }
