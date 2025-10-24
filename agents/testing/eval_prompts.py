@@ -10,7 +10,6 @@ import os
 import pathlib
 import subprocess
 import sys
-import tempfile
 
 import checkout_helpers
 import constants
@@ -279,16 +278,12 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     if args.promptfoo_bin:
         promptfoo = promptfoo_installation.PreinstalledPromptfooInstallation(
             args.promptfoo_bin)
-    elif args.promptfoo_revision or args.promptfoo_version:
-        promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
-        promptfoo = promptfoo_installation.setup_promptfoo(
-            promptfoo_dir, args.promptfoo_revision, args.promptfoo_version)
     else:
         # This should be the default case. Specifying the bin or installing
         # from npm/src should only be done for testing purposes. The cipd
         # version is pinned which allows us to validate it before changing it.
-        promptfoo = promptfoo_installation.FromCipdPromptfooInstallation()
-        promptfoo.setup(args.verbose)
+        promptfoo = promptfoo_installation.FromCipdPromptfooInstallation(
+            args.verbose)
 
     if args.sandbox and not _fetch_sandbox_image():
         return 1
@@ -437,22 +432,6 @@ def _parse_args() -> argparse.Namespace:
         '--promptfoo-bin',
         type=pathlib.Path,
         help='Path to a custom promptfoo binary to use.')
-    promptfoo_install_group.add_argument(
-        '--install-promptfoo-from-npm',
-        metavar='VERSION',
-        nargs='?',
-        dest='promptfoo_version',
-        const='latest',
-        help=('Install promptfoo through npm. If no release version is given, '
-              'latest will be used.'))
-    promptfoo_install_group.add_argument(
-        '--install-promptfoo-from-src',
-        metavar='REVISION',
-        nargs='?',
-        dest='promptfoo_revision',
-        const='main',
-        help=('Build promptfoo from the given source revision. If no revision '
-              'is specified, ToT will be used.'))
 
     group = parser.add_argument_group('gemini-cli Arguments')
     group.add_argument(

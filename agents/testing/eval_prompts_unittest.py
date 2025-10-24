@@ -521,8 +521,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.filter = None
         self.args.force = False
         self.args.no_build = False
-        self.args.promptfoo_revision = None
-        self.args.promptfoo_version = None
         self.args.no_clean = False
         self.args.verbose = False
         self.args.sandbox = False
@@ -544,11 +542,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         worker_pool_patcher = mock.patch('eval_prompts.workers.WorkerPool')
         self.mock_worker_pool = worker_pool_patcher.start()
         self.addCleanup(worker_pool_patcher.stop)
-
-        setup_promptfoo_patcher = mock.patch(
-            'promptfoo_installation.setup_promptfoo')
-        self.mock_setup_promptfoo = setup_promptfoo_patcher.start()
-        self.addCleanup(setup_promptfoo_patcher.stop)
 
         from_cipd_patcher = mock.patch(
             'promptfoo_installation.FromCipdPromptfooInstallation')
@@ -593,7 +586,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
 
         self.mock_perform_chromium_setup.assert_called_once_with(force=False,
                                                                  build=True)
-        self.mock_setup_promptfoo.assert_not_called()
         self.mock_worker_pool.assert_called_once()
         (num_workers, promptfoo, worker_opts,
          result_opts) = self.mock_worker_pool.call_args[0]
@@ -800,7 +792,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             mock_preinstalled.assert_called_once_with(
                 pathlib.Path('/custom/promptfoo'))
 
-        self.mock_setup_promptfoo.assert_not_called()
         self.mock_worker_pool.assert_called_once()
         self.assertEqual(self.mock_worker_pool.call_args[0][2].gemini_cli_bin,
                          pathlib.Path('/custom/gemini'))
@@ -884,8 +875,6 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertIsNone(args.shard_index)
         self.assertIsNone(args.total_shards)
         self.assertIsNone(args.promptfoo_bin)
-        self.assertIsNone(args.promptfoo_version)
-        self.assertIsNone(args.promptfoo_revision)
         self.assertFalse(args.sandbox)
         self.assertIsNone(args.gemini_cli_bin)
         self.assertEqual(args.parallel_workers, 1)
@@ -1007,22 +996,6 @@ class ParseArgsUnittest(unittest.TestCase):
         args = eval_prompts._parse_args()
         self.assertEqual(args.promptfoo_bin,
                          pathlib.Path('/path/to/promptfoo'))
-
-    def test_parse_args_promptfoo_version(self):
-        """Tests --install-promptfoo-from-npm with a version."""
-        self.mock_argv[:] = [
-            'eval_prompts.py', '--install-promptfoo-from-npm', '0.40.0'
-        ]
-        args = eval_prompts._parse_args()
-        self.assertEqual(args.promptfoo_version, '0.40.0')
-
-    def test_parse_args_promptfoo_revision(self):
-        """Tests --install-promptfoo-from-src with a revision."""
-        self.mock_argv[:] = [
-            'eval_prompts.py', '--install-promptfoo-from-src', 'my-rev'
-        ]
-        args = eval_prompts._parse_args()
-        self.assertEqual(args.promptfoo_revision, 'my-rev')
 
     def test_parse_args_promptfoo_exclusive_group(self):
         """Tests that mutually exclusive promptfoo arguments raise an error."""
