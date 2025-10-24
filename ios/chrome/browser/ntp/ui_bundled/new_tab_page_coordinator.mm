@@ -131,6 +131,8 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_observing.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -166,6 +168,7 @@
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
+                                     TabGridObserving,
                                      FamilyLinkUserCapabilitiesObserving,
                                      NewTabPageShortcutsHandler> {
   // Observes changes in the IdentityManager.
@@ -328,6 +331,8 @@
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState addObserver:self];
 
+  [[TabGridSceneAgent agentFromScene:sceneState] addObserver:self];
+
   // Configures incognito NTP if user is in incognito mode.
   if (self.isOffTheRecord) {
     DCHECK(!self.incognitoViewController);
@@ -390,6 +395,8 @@
 
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
+
+  [[TabGridSceneAgent agentFromScene:sceneState] removeObserver:self];
 
   if (self.isOffTheRecord) {
     self.incognitoViewController = nil;
@@ -1843,6 +1850,16 @@
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler openURLInNewTab:command];
+}
+
+#pragma mark - TabGridObserving
+
+- (void)willEnterTabGrid {
+  [self clearPresentedState];
+}
+
+- (void)willExitTabGrid {
+  // Do nothing.
 }
 
 @end
