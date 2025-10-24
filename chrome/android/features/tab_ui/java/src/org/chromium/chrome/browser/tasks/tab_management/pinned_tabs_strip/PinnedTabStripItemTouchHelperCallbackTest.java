@@ -122,17 +122,16 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     }
 
     @Test
-    public void testLongPress_NullViewHolder() {
-        mCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_DRAG);
+    public void testLongPress_NoOpWithNoAction() {
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_IDLE);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mOnLongPressListener, never()).onLongPressEvent(anyInt(), any());
     }
 
     @Test
-    public void testLongPress_NoOpWithNoAction() {
-        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_IDLE);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mOnLongPressListener, never()).onLongPressEvent(anyInt(), any());
+    public void testOnSelectedChanged_ActionStateDrag() {
+        mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
+        verify(mTabListModel).updateSelectedCardForSelection(POSITION1, true);
     }
 
     @Test
@@ -141,6 +140,13 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         mCallback.clearView(mRecyclerView, mViewHolder);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mOnLongPressListener, never()).onLongPressEvent(anyInt(), any());
+    }
+
+    @Test
+    public void testOnSelectedChanged_ActionStateIdle() {
+        mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+        verify(mTabListModel).updateSelectedCardForSelection(POSITION1, false);
     }
 
     @Test

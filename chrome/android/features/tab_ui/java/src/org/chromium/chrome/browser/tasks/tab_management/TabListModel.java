@@ -412,7 +412,7 @@ public class TabListModel extends ModelList {
      * @param isSelected Whether the tab is selected or not. If selected, update the corresponding
      *     item in {@link TabListModel} to the selected state. If not, restore it to original state.
      */
-    void updateSelectedCardForSelection(int index, boolean isSelected) {
+    public void updateSelectedCardForSelection(int index, boolean isSelected) {
         @Nullable PropertyModel propertyModel = getModelSupportingAnimations(index);
         if (propertyModel == null) return;
 

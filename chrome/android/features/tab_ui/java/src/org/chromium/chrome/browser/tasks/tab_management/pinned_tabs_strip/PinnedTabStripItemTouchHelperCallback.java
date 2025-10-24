@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -40,6 +41,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     private final TabListModel mModel;
     private final ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
+    private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
 
     /**
      * @param model The model representing the data in the RecyclerView.
@@ -79,6 +81,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
             RecyclerView recyclerView,
             RecyclerView.ViewHolder fromViewHolder,
             RecyclerView.ViewHolder toViewHolder) {
+        mSelectedTabIndex = toViewHolder.getBindingAdapterPosition();
         @TabId
         int currentTabId =
                 assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder).model)
@@ -99,9 +102,20 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     @Override
     public void onSelectedChanged(RecyclerView.@Nullable ViewHolder viewHolder, int actionState) {
         super.onSelectedChanged(viewHolder, actionState);
-        if (viewHolder == null) return;
-        mTabGridItemLongPressOrchestrator.onSelectedChanged(
-                viewHolder.getBindingAdapterPosition(), actionState);
+
+        if (viewHolder != null) {
+            mTabGridItemLongPressOrchestrator.onSelectedChanged(
+                    viewHolder.getBindingAdapterPosition(), actionState);
+        }
+
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            assumeNonNull(viewHolder);
+            mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
+            mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
+        } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
+            mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+            mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+        }
     }
 
     @Override

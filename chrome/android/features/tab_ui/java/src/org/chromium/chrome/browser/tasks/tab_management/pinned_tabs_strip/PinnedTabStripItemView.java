@@ -28,21 +28,27 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.ui.animation.AnimationHandler;
 
 /** View for a pinned tab strip item. */
 @NullMarked
 public class PinnedTabStripItemView extends FrameLayout {
     private static final int WIDTH_ANIMATION_DURATION_MS = 400;
+    private static final int ZOOM_ANIMATION_DURATION_MS = 200;
+    private static final float SELECTED_SCALE = 0.8f;
+    private static final float UNSELECTED_SCALE = 1.0f;
 
     private @Nullable ImageView mFavicon;
     private @Nullable TextView mTitle;
     private @Nullable ImageView mTrailingIcon;
     private final AnimationHandler mWidthAnimationHandler;
+    private final AnimationHandler mZoomAnimationHandler;
 
     public PinnedTabStripItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mWidthAnimationHandler = new AnimationHandler();
+        mZoomAnimationHandler = new AnimationHandler();
     }
 
     @Override
@@ -194,5 +200,33 @@ public class PinnedTabStripItemView extends FrameLayout {
                     TabCardThemeUtil.getActionButtonTintList(
                             context, isIncognito, isSelected, /* colorId= */ null));
         }
+    }
+
+    void setCardAnimationStatus(int status) {
+        if (status == AnimationStatus.CARD_RESTORE) {
+            animateZoom(UNSELECTED_SCALE);
+        } else if (status == AnimationStatus.SELECTED_CARD_ZOOM_IN) {
+            animateZoom(SELECTED_SCALE);
+        } else if (status == AnimationStatus.SELECTED_CARD_ZOOM_OUT) {
+            animateZoom(UNSELECTED_SCALE);
+        }
+    }
+
+    private void animateZoom(float targetScale) {
+        clearZoomAnimation();
+        ValueAnimator animator = ValueAnimator.ofFloat(getScaleX(), targetScale);
+        animator.setDuration(ZOOM_ANIMATION_DURATION_MS);
+        animator.setInterpolator(STANDARD_INTERPOLATOR);
+        animator.addUpdateListener(
+                animation -> {
+                    float scale = (float) animation.getAnimatedValue();
+                    setScaleX(scale);
+                    setScaleY(scale);
+                });
+        mZoomAnimationHandler.startAnimation(animator);
+    }
+
+    private void clearZoomAnimation() {
+        mZoomAnimationHandler.forceFinishAnimation();
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
+
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -41,6 +43,8 @@ public class PinnedTabStripItemViewBinder {
                         listener.run(
                                 v, model.get(TabProperties.TAB_ID), /* triggeringMotion= */ null);
                     });
+        } else if (CARD_ANIMATION_STATUS.equals(propertyKey)) {
+            itemView.setCardAnimationStatus(model.get(CARD_ANIMATION_STATUS));
         }
     }
 }
