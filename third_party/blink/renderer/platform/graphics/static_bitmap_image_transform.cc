@@ -252,9 +252,13 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
 
   // Compute the parameters for the blit.
   const SkColorType dest_color_type = GetDestColorType(source_info.colorType());
-  const SkAlphaType dest_alpha_type =
-      source_info.alphaType() == kOpaque_SkAlphaType ? kOpaque_SkAlphaType
-                                                     : kPremul_SkAlphaType;
+
+  // The spec requires that any pixels not copied from the source be transparent
+  // black in the destination image. Thus, it is necessary that the destination
+  // here be premul (i.e., preserve the initial transparency of the destination
+  // image before the copy from the source), regardless of whether the source is
+  // premul or opaque.
+  const SkAlphaType dest_alpha_type = kPremul_SkAlphaType;
   const auto dest_color_space = options.dest_color_space
                                     ? options.dest_color_space
                                     : source_info.refColorSpace();
@@ -285,16 +289,11 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     }
   }
 
-  // If unable to create an accelerated snapshot, fall back to software. NOTE:
-  // The spec requires that any pixels not copied from the source be transparent
-  // black in the destination image. Thus, it is necessary that the destination
-  // here be premul (i.e., preserve the initial transparency of the destination
-  // image before the copy from the source), regardless of whether the source is
-  // premul or opaque.
+  // If unable to create an accelerated snapshot, fall back to software.
   SkSurfaceProps surface_props;
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
       SkImageInfo::Make(dest_size.width(), dest_size.height(), dest_color_type,
-                        kPremul_SkAlphaType, std::move(dest_color_space)),
+                        dest_alpha_type, std::move(dest_color_space)),
       &surface_props);
   if (!surface) {
     return nullptr;
