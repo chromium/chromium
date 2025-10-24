@@ -97,7 +97,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void OnMojoDisconnect();
 
-  void StartRequest(const network::ResourceRequest& resource_request);
+  void StartRequest();
   void DispatchFetchEvent();
   void DispatchFetchEventForSubresource();
   void OnFetchEventFinished(blink::mojom::ServiceWorkerEventStatus status);

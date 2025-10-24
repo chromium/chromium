@@ -326,7 +326,7 @@ ServiceWorkerSubresourceLoader::ServiceWorkerSubresourceLoader(
   url_loader_receiver_.set_disconnect_handler(
       base::BindOnce(&ServiceWorkerSubresourceLoader::OnMojoDisconnect,
                      base::Unretained(this)));
-  StartRequest(resource_request);
+  StartRequest();
 }
 
 ServiceWorkerSubresourceLoader::~ServiceWorkerSubresourceLoader() = default;
@@ -349,13 +349,12 @@ void ServiceWorkerSubresourceLoader::MaybeDeleteThis() {
   delete this;
 }
 
-void ServiceWorkerSubresourceLoader::StartRequest(
-    const network::ResourceRequest& resource_request) {
+void ServiceWorkerSubresourceLoader::StartRequest() {
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::StartRequest",
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
                           TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_OUT, "url", resource_request.url.spec());
+      TRACE_EVENT_FLAG_FLOW_OUT, "url", resource_request_.url.spec());
   TransitionToStatus(Status::kStarted);
   CHECK(commit_responsibility() == FetchResponseFrom::kNoResponseYet ||
         commit_responsibility() ==
@@ -1277,7 +1276,7 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
       FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
   race_network_request_loader_client_.reset();
   race_network_request_url_loader_factory_.reset();
-  StartRequest(resource_request_);
+  StartRequest();
 }
 
 void ServiceWorkerSubresourceLoader::SetPriority(net::RequestPriority priority,
