@@ -611,12 +611,8 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
       content::Visibility::VISIBLE);
   host_.NotifyWindowIntentToShow();
 
-  // TODO: NotifyPanelStateChanged() here
   // TODO: pass in the correct invocation source
-  Host::PanelWillOpenOptions options;
-  options.conversation_id = conversation_id();
-  host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
-                      std::move(options));
+  NotifyPanelWillOpen(mojom::InvocationSource::kTopChromeButton);
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
@@ -823,7 +819,15 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
   }
 }
 
+void GlicInstanceImpl::NotifyPanelWillOpen(
+    mojom::InvocationSource invocation_source) {
+  Host::PanelWillOpenOptions options;
+  options.conversation_id = conversation_id();
+  host_.PanelWillOpen(invocation_source, std::move(options));
+}
+
 void GlicInstanceImpl::OnWebClientCleared() {
   actor_task_manager_->CancelTask();
+  NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue);
 }
 }  // namespace glic

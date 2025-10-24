@@ -249,6 +249,7 @@ class GlicInstanceImpl : public GlicInstance,
   EmbedderEntry& BindTab(tabs::TabInterface* tab);
   // For any pinned tab not already bound to a conversation bind it to this one.
   void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool pinned);
+  void NotifyPanelWillOpen(mojom::InvocationSource invocation_source);
 
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;

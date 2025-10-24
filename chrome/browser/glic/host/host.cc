@@ -292,13 +292,12 @@ void Host::UnsetWebClient(GlicWebClientAccess* web_client) {
     return;
   }
 
-
   // Revert any observed state from the web client.
   if (handler_info_->context_access_indicator_enabled) {
     observers_.Notify(&Observer::ContextAccessIndicatorChanged, false);
   }
   handler_info_->web_client = nullptr;
-  instance_delegate_->OnWebClientCleared();
+  instance_delegate().OnWebClientCleared();
 }
 
 void Host::SetWebClient(GlicWebClientAccess* web_client) {
