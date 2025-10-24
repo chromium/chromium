@@ -15,7 +15,7 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-if (is_ios) {
+if (is_apple) {
   import("//build/config/apple/mobile_config.gni")  # For `target_platform`
 }
 
@@ -179,7 +179,7 @@ test("midi_unittests") {
     deps += [ ":midi_java" ]
   }
 
-  if (is_apple) {
+  if (is_apple && target_platform != "tvos") {
     sources += [ "midi_manager_mac_unittest.cc" ]
     frameworks = [ "CoreMIDI.framework" ]
   }
