@@ -61,7 +61,9 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.only_for_new_users = only_for_new_users;
-  options.expected_app_id = ash::kGoogleChatAppId;
+  options.expected_app_id = use_dedicated_origin_chat
+                                ? ash::kGoogleChatAppId
+                                : ash::kOldGoogleChatAppId;
   options.app_info_factory = base::BindRepeating(
       [](bool is_standalone, webapps::ManifestId manifest_id, GURL start_url,
          GURL scope) {

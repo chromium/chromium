@@ -198,6 +198,7 @@ bool IsAppAllowed(std::string_view app_id) {
           extension_misc::kGoogleSlidesDemoAppId,
           ash::kGmailAppId,
           ash::kGoogleChatAppId,
+          ash::kOldGoogleChatAppId,
           ash::kGoogleMeetAppId,
           ash::kGoogleDocsAppId,
           ash::kGoogleSlidesAppId,

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 
+#include <array>
+
 #include "ash/constants/web_app_id_constants.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
@@ -81,11 +83,12 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
 
   auto& provider = *WebAppProvider::GetForTest(browser()->profile());
   struct OfflineOnlyExpectation {
-    const char* app_id;
-    const char* install_url;
-    const char* launch_url;
-  } kOfflineOnlyExpectations[] = {
+    webapps::AppId app_id;
+    std::string_view install_url;
+    std::string_view launch_url;
+  };
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto kOfflineOnlyExpectations = std::to_array<OfflineOnlyExpectation>({
 #if BUILDFLAG(IS_CHROMEOS)
       {
           ash::kGoogleCalendarAppId,
@@ -127,20 +130,28 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
           "https://www.youtube.com/?feature=ytca",
       },
       {
-          ash::kGoogleChatAppId,
+          ash::kOldGoogleChatAppId,
           "https://mail.google.com/chat/download?usp=chrome_default",
           "https://mail.google.com/chat/",
       },
+  });
+  if (base::FeatureList::IsEnabled(features::kWebAppMigratePreinstalledChat)) {
+    auto& chat_expectation = kOfflineOnlyExpectations.back();
+    CHECK_EQ(chat_expectation.app_id, ash::kOldGoogleChatAppId);
+    chat_expectation.app_id = ash::kGoogleChatAppId;
+    chat_expectation.install_url =
+        "https://chat.google.com/download?usp=chrome_default";
+    chat_expectation.launch_url = "https://chat.google.com/";
+  }
+#else
+  std::array<OfflineOnlyExpectation, 0> kOfflineOnlyExpectations;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  };
-  size_t kOfflineOnlyExpectedCount =
-      sizeof(kOfflineOnlyExpectations) / sizeof(kOfflineOnlyExpectations[0]);
 
   struct OnlineOnlyExpectation {
-    const char* install_url;
-  } kOnlineOnlyExpectations[] = {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if BUILDFLAG(IS_CHROMEOS)
+    std::string_view install_url;
+  };
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  auto kOnlineOnlyExpectations = std::to_array<OnlineOnlyExpectation>({
       {
           "https://meet.google.com/download/webapp?usp=chrome_default",
       },
@@ -150,40 +161,74 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
       {
           "https://discover.apps.chrome/install/",
       },
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  };
-  size_t kOnlineOnlyExpectedCount =
-      sizeof(kOnlineOnlyExpectations) / sizeof(kOnlineOnlyExpectations[0]);
+  });
+#else
+  std::array<OnlineOnlyExpectation, 0> kOnlineOnlyExpectations;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::map<GURL, ExternallyManagedAppManager::InstallResult>,
+      std::map<GURL, webapps::UninstallResultCode>>
+      sync_result;
   provider.preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
-      base::BindLambdaForTesting(
-          [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
-                  install_results,
-              std::map<GURL, webapps::UninstallResultCode> uninstall_results) {
-            EXPECT_EQ(install_results.size(),
-                      kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
+      sync_result.GetCallback());
+  ASSERT_TRUE(sync_result.Wait());
+  auto uninstall_results =
+      sync_result.Get<std::map<GURL, webapps::UninstallResultCode>>();
+  EXPECT_EQ(uninstall_results.size(), 0u);
 
-            for (const auto& expectation : kOfflineOnlyExpectations) {
-              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                        webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
-            }
+  auto install_results =
+      sync_result
+          .Get<std::map<GURL, ExternallyManagedAppManager::InstallResult>>();
+  EXPECT_EQ(install_results.size(),
+            kOfflineOnlyExpectations.size() + kOnlineOnlyExpectations.size());
 
-            for (const auto& expectation : kOnlineOnlyExpectations) {
-              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                        webapps::InstallResultCode::kInstallURLLoadFailed);
-            }
+  for (const auto& expectation : kOfflineOnlyExpectations) {
+    auto install_result_it =
+        install_results.find(GURL(expectation.install_url));
+    EXPECT_NE(install_result_it, install_results.end())
+        << "Missing install result for " << expectation.install_url;
+    if (install_result_it == install_results.end()) {
+      continue;
+    }
+    EXPECT_EQ(install_result_it->second.code,
+              webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
+  }
 
-            EXPECT_EQ(uninstall_results.size(), 0u);
-
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  for (const auto& expectation : kOnlineOnlyExpectations) {
+    auto install_result_it =
+        install_results.find(GURL(expectation.install_url));
+    EXPECT_NE(install_result_it, install_results.end())
+        << "Missing install result for " << expectation.install_url;
+    if (install_result_it == install_results.end()) {
+      continue;
+    }
+    EXPECT_EQ(install_result_it->second.code,
+              webapps::InstallResultCode::kInstallURLLoadFailed);
+  }
 
   for (const auto& expectation : kOfflineOnlyExpectations) {
     EXPECT_EQ(provider.registrar_unsafe().GetAppLaunchUrl(expectation.app_id),
               GURL(expectation.launch_url));
+  }
+
+  // Also verify that the expected_app_id of the preinstalled app configuration
+  // matches the app id of the app that got installed.
+  base::test::TestFuture<std::vector<ExternalInstallOptions>> install_options;
+  provider.preinstalled_web_app_manager().LoadForTesting(
+      install_options.GetCallback());
+  ASSERT_TRUE(install_options.Wait());
+  for (const auto& expectation : kOfflineOnlyExpectations) {
+    bool found_match = false;
+    for (const auto& install_option : install_options.Get()) {
+      if (install_option.install_url == GURL(expectation.install_url)) {
+        EXPECT_EQ(install_option.expected_app_id, expectation.app_id);
+        found_match = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(found_match)
+        << "No configuration found for " << expectation.launch_url;
   }
 }
 
