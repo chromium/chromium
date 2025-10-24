@@ -1057,8 +1057,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             mRootUiCoordinator.getDataSharingTabManager(),
                             mRootUiCoordinator.getBottomSheetController(),
                             mRootUiCoordinator.getShareDelegateSupplier(),
-                            mXrSceneCoreSessionManagerSupplier.get(),
-                            mRootUiCoordinator.getTopControlsStacker());
+                            mXrSceneCoreSessionManagerSupplier.get());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

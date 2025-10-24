@@ -300,6 +300,7 @@ public class TopControlsStackerUnitTest {
                 false);
 
         mTopControlsStacker.setScrollingDisabled(true);
+        mTopControlsStacker.requestLayerUpdate(false);
 
         assertControlsHeight(100, 100);
     }
@@ -332,6 +333,7 @@ public class TopControlsStackerUnitTest {
         TestLayer toolbar = TestLayer.toolbarLayer();
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.setScrollingDisabled(true);
+        mTopControlsStacker.requestLayerUpdate(false);
         assertControlsHeight(100, 100);
         reset(mBrowserControlsSizer);
 

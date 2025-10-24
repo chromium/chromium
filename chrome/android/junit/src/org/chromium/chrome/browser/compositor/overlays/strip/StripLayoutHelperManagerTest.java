@@ -61,7 +61,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -157,7 +156,6 @@ public class StripLayoutHelperManagerTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private Tracker mTracker;
-    @Mock private TopControlsStacker mTopControlsStacker;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
@@ -243,8 +241,7 @@ public class StripLayoutHelperManagerTest {
                         mDataSharingTabManager,
                         mBottomSheetController,
                         () -> mShareDelegate,
-                        /* xrSpaceModeObservableSupplier= */ null,
-                        mTopControlsStacker);
+                        /* xrSpaceModeObservableSupplier= */ null);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
     }

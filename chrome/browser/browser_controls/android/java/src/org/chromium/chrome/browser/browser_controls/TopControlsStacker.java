@@ -173,18 +173,16 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     }
 
     /**
-     * Sets whether scrolling is disabled for the top controls.
+     * Sets whether scrolling is disabled for the top controls. This call can potentially still
+     * change the browser control's shown ratio when minHeight is updated when the controls is
+     * scrolled off, or when BrowserControlsState.HIDDEN. Note that the control's height will not be
+     * recalculated until {@link #requestLayerUpdate(boolean)} is called.
      *
      * @param disabled Whether scrolling is disabled.
      */
     public void setScrollingDisabled(boolean disabled) {
         if (mScrollingDisabled == disabled) return;
         mScrollingDisabled = disabled;
-
-        // This call can potentially still change the browser control's shown ration when minHeight
-        // is updated when the controls is scrolled off, or when BrowserControlsState.HIDDEN.
-        // We intentionally disabling animation updates for those.
-        requestLayerUpdate(false);
     }
 
     /**

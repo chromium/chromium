@@ -40,10 +40,6 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.TopControlLayer;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -130,8 +126,7 @@ public class StripLayoutHelperManager
                 PauseResumeWithNativeObserver,
                 TabStripTransitionDelegate,
                 TopResumedActivityChangedObserver,
-                AppHeaderObserver,
-                TopControlLayer {
+                AppHeaderObserver {
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
      * fix experiment where we create a placeholder tab strip on startup to mitigate jank as tabs
@@ -269,7 +264,6 @@ public class StripLayoutHelperManager
     private final ObservableSupplierImpl<@StripVisibilityState Integer>
             mStripVisibilityStateSupplier;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
-    private final TopControlsStacker mTopControlsStacker;
 
     // Drag-Drop
     private @Nullable TabStripDragHandler mTabStripDragHandler;
@@ -451,7 +445,6 @@ public class StripLayoutHelperManager
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
-     * @param topControlsStacker The {@link TopControlsStacker} to add |this| as a control to.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -476,8 +469,7 @@ public class StripLayoutHelperManager
             DataSharingTabManager dataSharingTabManager,
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
-            TopControlsStacker topControlsStacker) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mContext = context;
         Resources res = context.getResources();
         mManagerHost = managerHost;
@@ -634,9 +626,6 @@ public class StripLayoutHelperManager
         }
 
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
-
-        mTopControlsStacker = topControlsStacker;
-        mTopControlsStacker.addControl(this);
     }
 
     @EnsuresNonNullIf("mDesktopWindowStateManager")
@@ -772,7 +761,6 @@ public class StripLayoutHelperManager
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
-        mTopControlsStacker.removeControl(this);
     }
 
     /** Mark whether tab strip is hidden by a height transition. */
@@ -1779,34 +1767,5 @@ public class StripLayoutHelperManager
 
     private boolean isActivityInXrFullSpaceModeNow() {
         return mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
-    }
-
-    // TopControlLayer implementation:
-
-    @Override
-    public @TopControlType int getTopControlType() {
-        return TopControlType.TABSTRIP;
-    }
-
-    @Override
-    public int getTopControlHeight() {
-        return mToolbarManager.getTabStripHeightSupplier().get();
-    }
-
-    @Override
-    public int getTopControlVisibility() {
-        // The tab strip adds to the total height of the top controls regardless of whether or not
-        // it is "visible" to the user, i.e. we take its inherent height into account even when
-        // scrolled offscreen or obscured, except when hidden by height transition.
-        //
-        // ToolbarManager#getTabStripHeightSupplier can have different state than the current height
-        // store in the instance v.s. the target height it is going for. In order for the
-        // TopControlsStacker to react the the layer height change,  we cannot depend on
-        // getStripVisibilityStateSupplier here.
-        // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-        boolean isTabStripVisibleAsLayer = mToolbarManager.getTabStripHeightSupplier().get() > 0;
-        return isTabStripVisibleAsLayer
-                ? TopControlVisibility.VISIBLE
-                : TopControlVisibility.HIDDEN;
     }
 }

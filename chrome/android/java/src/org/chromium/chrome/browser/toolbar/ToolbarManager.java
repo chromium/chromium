@@ -67,8 +67,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -361,7 +363,7 @@ public class ToolbarManager
     private final OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
+    private TabStripHeightSupplier mTabStripHeightSupplier;
     private @Nullable TabStripHeightObserver mTabStripHeightObserver;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
@@ -1158,7 +1160,10 @@ public class ToolbarManager
                         progressBar,
                         historyDelegate,
                         topControlsStacker);
-        mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
+        mTabStripHeightSupplier = new TabStripHeightSupplier(mToolbar.getTabStripHeight());
+        if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
+            mTopControlsStacker.addControl(mTabStripHeightSupplier);
+        }
         mActionModeController =
                 new ActionModeController(
                         mActivity,
@@ -2610,6 +2615,7 @@ public class ToolbarManager
             mToolbar.removeTabStripHeightObserver(mTabStripHeightObserver);
             mTabStripHeightObserver = null;
         }
+        mTopControlsStacker.removeControl(mTabStripHeightSupplier);
         mTabStripHeightSupplier = null;
         mToolbar.destroy();
         mToolbarLongPressMenuHandler.destroy();
@@ -3464,5 +3470,39 @@ public class ToolbarManager
      */
     public @Nullable ExtensionToolbarCoordinator getExtensionToolbarCoordinator() {
         return mExtensionToolbarCoordinator;
+    }
+
+    // Top control layer representing tab strip. It can have different state than the current
+    // height store in the StripLayoutHelperManager, as this represents the target height it is
+    // going for during tab strip height transition.
+    private static class TabStripHeightSupplier extends ObservableSupplierImpl<Integer>
+            implements TopControlLayer {
+
+        public TabStripHeightSupplier(int tabStripHeight) {
+            super(tabStripHeight);
+        }
+
+        @Override
+        public @TopControlType int getTopControlType() {
+            return TopControlType.TABSTRIP;
+        }
+
+        @Override
+        public int getTopControlHeight() {
+            return get();
+        }
+
+        @Override
+        public int getTopControlVisibility() {
+            // The tab strip adds to the total height of the top controls regardless of whether or
+            // not it is "visible" to the user, i.e. we take its inherent height into account even
+            // when scrolled offscreen or obscured, except when hidden by height transition.
+            //
+            // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
+            boolean isTabStripVisibleAsLayer = get() > 0;
+            return isTabStripVisibleAsLayer
+                    ? TopControlVisibility.VISIBLE
+                    : TopControlVisibility.HIDDEN;
+        }
     }
 }
