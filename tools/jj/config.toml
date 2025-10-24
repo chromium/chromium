@@ -1,17 +1,27 @@
 # See https://jj-vcs.github.io/jj/latest/config/ for the schema.
 
 [aliases]
+# This allows the script to be run from directories other than the workspace
+# root.
+"relative-script" = [
+  "util",
+  "exec",
+  "python3",
+  "--",
+  "-c",
+  "import os; import sys; script = os.path.join(os.environ['JJ_WORKSPACE_ROOT'], sys.argv[1]); os.execv(script, [script, *sys.argv[2:]])"
+]
 # cr-* aliases are the equivalent of "porcelain" commands and should not
 # be overridden.
 # All cr-foo commands will have a corresponding foo command that you can
 # override with your preference (eg. sync -> ["cr-sync", "-a"])
-"cr-sync" = ["util", "exec", "tools/jj/sync.py", "--"]
+"cr-sync" = ["relative-script", "tools/jj/sync.py"]
 "sync" = ["cr-sync"]
 
-"cr-upload" = ["util", "exec", "tools/jj/upload.py", "--"]
+"cr-upload" = ["relative-script", "tools/jj/upload.py"]
 "upload" = ["cr-upload"]
 
-"cr-bug" = ["util", "exec", "tools/jj/bug.py", "--"]
+"cr-bug" = ["relative-script", "tools/jj/bug.py"]
 "bug" = ["cr-bug"]
 
 [revset-aliases]
