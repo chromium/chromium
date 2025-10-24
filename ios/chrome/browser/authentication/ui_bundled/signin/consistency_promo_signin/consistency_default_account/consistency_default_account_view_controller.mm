@@ -32,8 +32,8 @@ namespace {
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `self.contentView`.
 constexpr CGFloat kContentSpacing = 16.;
-// Vertical insets of primary button.
-constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+// Corner radius for the identity button.
+constexpr CGFloat kIdentityButtonControlCornerRadius = 24.;
 
 // Returns font to use for the navigation bar title.
 UIFont* GetNavigationBarTitleFont() {
@@ -232,10 +232,6 @@ UIFont* GetNavigationBarTitleFont() {
   ]];
   // Add the primary button (the "Continue as"/"Sign in" button).
   self.primaryButton = PrimaryActionButton();
-  UIButtonConfiguration* buttonConfiguration = self.primaryButton.configuration;
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
-  self.primaryButton.configuration = buttonConfiguration;
 
   self.primaryButton.accessibilityIdentifier =
       kConsistencySigninPrimaryButtonAccessibilityIdentifier;
@@ -250,10 +246,16 @@ UIFont* GetNavigationBarTitleFont() {
     [self.primaryButton.widthAnchor
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
+
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.
-  self.identityButtonControl.layer.cornerRadius =
-      self.primaryButton.configuration.background.cornerRadius;
+  if (@available(iOS 26, *)) {
+    self.identityButtonControl.layer.cornerRadius =
+        kIdentityButtonControlCornerRadius;
+  } else {
+    self.identityButtonControl.layer.cornerRadius =
+        self.primaryButton.configuration.background.cornerRadius;
+  }
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();
