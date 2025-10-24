@@ -25,6 +25,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -33,10 +34,14 @@
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
@@ -238,6 +243,48 @@ bool VerboseLogEnabled() {
 const char* ClientNameForVerboseLog() {
   const char* client_name = GetClientNameForMetrics();
   return client_name ? client_name : "<unknown client>";
+}
+
+bool ShouldDumpCompositorFrame(uint32_t& begin, uint32_t& end) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch(switches::kDumpCompositorFrame)) {
+    begin = 0;
+    end = 0;
+    return false;
+  }
+  begin = 1;
+  end = 10;
+  std::string param =
+      cmd_line->GetSwitchValueASCII(switches::kDumpCompositorFrame);
+  if (!param.empty()) {
+    std::vector<std::string> tokens = base::SplitString(
+        param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    unsigned num0, num1;
+    if (tokens.size() == 2 && base::StringToUint(tokens[0], &num0) &&
+        base::StringToUint(tokens[1], &num1) && num0 < num1) {
+      begin = num0;
+      end = num1;
+    }
+  }
+  return true;
+}
+
+void DoDumpCompositorFrame(const std::string& data,
+                           bool client,
+                           bool viz,
+                           uint32_t frame_token) {
+  base::FilePath path = base::PathService::CheckedGet(base::DIR_CURRENT);
+  std::string filename;
+  if (client) {
+    filename = "compositor_frame_client_";
+  } else if (viz) {
+    filename = "compositor_frame_viz_";
+  } else {
+    return;
+  }
+  filename += base::NumberToString(frame_token) + ".txt";
+  bool rt = base::WriteFile(path.AppendASCII(filename), data);
+  CHECK(rt);
 }
 
 #define VERBOSE_LOG() \
@@ -505,6 +552,12 @@ LayerTreeHostImpl::LayerTreeHostImpl(
             /*should_report_ukm=*/!settings.single_thread_proxy_scheduler, id,
             /*is_trees_in_viz_client=*/
             settings_.TreesInVizInClientProcess());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTreesInViz) ||
+      base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    dump_compositor_frame_ = ShouldDumpCompositorFrame(
+        dump_compositor_frame_begin_, dump_compositor_frame_end_);
   }
 
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>(
@@ -1487,7 +1540,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   // In TreesInViz mode, FrameData built in the renderer side is abandoned
   // and later rebuilt in viz side. Therefore, certain steps can be skipped.
-  bool output_frame_data = !settings_.TreesInVizInClientProcess();
+  bool output_frame_data =
+      !settings_.TreesInVizInClientProcess() || dump_compositor_frame_;
 
   for (EffectTreeLayerListIterator it(active_tree());
        it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
@@ -2897,6 +2951,18 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   auto compositor_frame = GenerateCompositorFrame(frame);
   const auto frame_token = compositor_frame.metadata.frame_token;
   frame->frame_token = frame_token;
+  if (dump_compositor_frame_ && frame_token >= dump_compositor_frame_begin_ &&
+      frame_token <= dump_compositor_frame_end_) {
+    // This is purely for debugging TreesInViz and TreeAnimationInViz purposes.
+    std::string data = viz::TransitionUtils::RenderPassListToString(
+        compositor_frame.render_pass_list, /*full_data=*/true);
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&DoDumpCompositorFrame, data,
+                       settings_.TreesInVizInClientProcess(),
+                       settings_.trees_in_viz_in_viz_process, frame_token));
+  }
+
   bool top_controls_moved = false;
   float current_top_controls =
       compositor_frame.metadata.top_controls_visible_height.value_or(0.f);
@@ -2933,7 +2999,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "Submitting a frame:\n"
                 << viz::TransitionUtils::RenderPassListToString(
-                       compositor_frame.render_pass_list);
+                       compositor_frame.render_pass_list,
+                       /*full_data=*/false);
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
   base::TimeTicks trees_in_viz_submit_time;

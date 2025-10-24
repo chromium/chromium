@@ -3769,6 +3769,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kEnableGpuBenchmarking,
       switches::kEnableClippedImageScaling,
       switches::kHighlightNonLCDTextLayers,
+      switches::kDumpCompositorFrame,
       switches::kShowCompositedLayerBorders,
       switches::kShowFPSCounter,
       switches::kShowLayerAnimationBounds,

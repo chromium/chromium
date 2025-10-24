@@ -87,19 +87,7 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("layer_content_rect", quad_layer_rect, value);
   cc::MathUtil::AddToTracedValue("layer_visible_content_rect",
                                  visible_quad_layer_rect, value);
-  cc::MathUtil::AddToTracedValue("mask_filter_bounds",
-                                 mask_filter_info.bounds(), value);
-  if (mask_filter_info.HasRoundedCorners()) {
-    cc::MathUtil::AddCornerRadiiToTracedValue(
-        "mask_filter_rounded_corners_radii",
-        mask_filter_info.rounded_corner_bounds(), value);
-  }
-  if (mask_filter_info.HasGradientMask()) {
-    cc::MathUtil::AddToTracedValue("mask_filter_gradient_mask",
-                                   mask_filter_info.gradient_mask().value(),
-                                   value);
-  }
-
+  value->SetString("mask_filter_info", mask_filter_info.ToString());
   if (clip_rect) {
     cc::MathUtil::AddToTracedValue("clip_rect", *clip_rect, value);
   }

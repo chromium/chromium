@@ -32,8 +32,10 @@ class VIZ_COMMON_EXPORT TransitionUtils {
     return CompositorRenderPassId(id.GetUnsafeValue() + 1);
   }
 
+  // If |full_data| is false, only essential information are included.
   static std::string RenderPassListToString(
-      const CompositorRenderPassList& render_passes);
+      const CompositorRenderPassList& render_passes,
+      bool full_data);
 };
 
 }  // namespace viz

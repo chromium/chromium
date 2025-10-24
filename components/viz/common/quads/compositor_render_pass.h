@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -83,6 +84,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               bool per_quad_damage);
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
+  std::string ToString() const;
 
   template <typename DrawQuadType>
   DrawQuadType* CreateAndAppendDrawQuad() {

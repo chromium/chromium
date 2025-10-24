@@ -54,6 +54,9 @@ CC_BASE_EXPORT extern const char kHighlightNonLCDTextLayers[];
 CC_BASE_EXPORT extern const char kLogOnUIDoubleBackgroundBlur[];
 #endif
 
+// Debug data dump.
+CC_BASE_EXPORT extern const char kDumpCompositorFrame[];
+
 // Parameters for kUIShowCompositedLayerBorders.
 CC_BASE_EXPORT extern const char kCompositedRenderPassBorders[];
 CC_BASE_EXPORT extern const char kCompositedSurfaceBorders[];

@@ -121,6 +121,8 @@ void RenderPassInternal::AsValueInto(
                                    *backdrop_filter_bounds, value);
   }
 
+  value->SetInteger("number_of_shared_quad_states",
+                    shared_quad_state_list.size());
   value->BeginArray("shared_quad_state_list");
   for (auto* shared_quad_state : shared_quad_state_list) {
     value->BeginDictionary();
@@ -129,6 +131,7 @@ void RenderPassInternal::AsValueInto(
   }
   value->EndArray();
 
+  value->SetInteger("number_of_quads", quad_list.size());
   value->BeginArray("quad_list");
   for (auto* quad : quad_list) {
     value->BeginDictionary();
