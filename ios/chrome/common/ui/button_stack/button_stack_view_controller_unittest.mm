@@ -9,6 +9,7 @@
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -134,41 +135,14 @@ TEST_F(ButtonStackViewControllerTest, TestLoadingWhenConfirmed) {
 // Tests that setting confirmed to YES when loading is YES sets loading to NO.
 TEST_F(ButtonStackViewControllerTest, TestConfirmedWhenLoading) {
   [view_controller_ setLoading:YES];
-  EXPECT_TRUE(view_controller_.primaryActionButton.configuration
-                  .showsActivityIndicator);
+  EXPECT_EQ(
+      PrimaryButtonImageSpinner,
+      ((ChromeButton*)view_controller_.primaryActionButton).primaryButtonImage);
 
   [view_controller_ setConfirmed:YES];
-  EXPECT_FALSE(view_controller_.primaryActionButton.configuration
-                   .showsActivityIndicator);
-  EXPECT_NE(nil, view_controller_.primaryActionButton.configuration.image);
-}
-
-// Tests that images are correctly set on the buttons.
-TEST_F(ButtonStackViewControllerTest, TestButtonImages) {
-  const CGFloat kTestSymbolPointSize = 15.0;
-  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
-      configurationWithPointSize:kTestSymbolPointSize];
-  UIImage* primaryImage = [UIImage systemImageNamed:@"pencil"
-                                  withConfiguration:config];
-  UIImage* secondaryImage = [UIImage systemImageNamed:@"trash"
-                                    withConfiguration:config];
-  UIImage* tertiaryImage = [UIImage systemImageNamed:@"folder"
-                                   withConfiguration:config];
-
-  configuration_.primaryActionImage = primaryImage;
-  configuration_.secondaryActionImage = secondaryImage;
-  configuration_.tertiaryActionImage = tertiaryImage;
-
-  view_controller_ =
-      [[ButtonStackViewController alloc] initWithConfiguration:configuration_];
-  [view_controller_ view];
-
-  EXPECT_EQ(primaryImage,
-            view_controller_.primaryActionButton.configuration.image);
-  EXPECT_EQ(secondaryImage,
-            view_controller_.secondaryActionButton.configuration.image);
-  EXPECT_EQ(tertiaryImage,
-            view_controller_.tertiaryActionButton.configuration.image);
+  EXPECT_EQ(
+      PrimaryButtonImageCheckmark,
+      ((ChromeButton*)view_controller_.primaryActionButton).primaryButtonImage);
 }
 
 // Tests that buttons are only created if they have a title.

@@ -28,6 +28,7 @@ source_set("unit_tests") {
     ":button_stack",
     "//base/test:test_support",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

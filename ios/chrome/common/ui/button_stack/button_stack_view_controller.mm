@@ -20,24 +20,12 @@ const CGFloat kButtonSpacing = 8.0;
 const CGFloat kButtonStackBottomMargin = 20.0;
 const CGFloat kButtonStackHorizontalMargin = 16.0;
 
-// The size of the checkmark symbol in the confirmation state on the primary
-// button.
-const CGFloat kSymbolConfirmationCheckmarkPointSize = 17;
-
 // The position of a button in the stack.
 typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   ButtonStackButtonPositionPrimary,
   ButtonStackButtonPositionSecondary,
   ButtonStackButtonPositionTertiary,
 };
-
-// Sets the activity indicator of the button in the button configuration.
-void SetConfigurationActivityIndicator(ChromeButton* button,
-                                       BOOL shows_activity_indicator) {
-  UIButtonConfiguration* button_configuration = button.configuration;
-  button_configuration.showsActivityIndicator = shows_activity_indicator;
-  button.configuration = button_configuration;
-}
 
 }  // namespace
 
@@ -308,22 +296,18 @@ void SetConfigurationActivityIndicator(ChromeButton* button,
 - (void)reconfigureButtons {
   [self configureButtonForPosition:ButtonStackButtonPositionPrimary
                         withString:_configuration.primaryActionString
-                             image:_configuration.primaryActionImage
                              style:_configuration.primaryButtonStyle];
   [self configureButtonForPosition:ButtonStackButtonPositionSecondary
                         withString:_configuration.secondaryActionString
-                             image:_configuration.secondaryActionImage
                              style:_configuration.secondaryButtonStyle];
   [self configureButtonForPosition:ButtonStackButtonPositionTertiary
                         withString:_configuration.tertiaryActionString
-                             image:_configuration.tertiaryActionImage
                              style:_configuration.tertiaryButtonStyle];
 }
 
 // Configures a button with the given properties.
 - (void)configureButtonForPosition:(ButtonStackButtonPosition)position
                         withString:(NSString*)string
-                             image:(UIImage*)image
                              style:(ButtonStackButtonStyle)style {
   ChromeButton* button;
   // Use a pointer to the cached style ivar to avoid repeating the update logic
@@ -367,7 +351,6 @@ void SetConfigurationActivityIndicator(ChromeButton* button,
       }
     }
     SetConfigurationTitle(button, string);
-    SetConfigurationImage(button, image);
   }
 }
 
@@ -440,22 +423,15 @@ void SetConfigurationActivityIndicator(ChromeButton* button,
   _secondaryActionButton.enabled = !showingProgressState;
   _tertiaryActionButton.enabled = !showingProgressState;
 
-  if (_isConfirmed) {
+  if (_isLoading) {
+    _primaryActionButton.primaryButtonImage = PrimaryButtonImageSpinner;
+  } else if (_isConfirmed) {
     _primaryActionButton.tunedDownStyle = YES;
-    // Use the system symbol name directly to avoid a dependency on the browser
-    // layer's symbol helpers.
-    UIImageSymbolConfiguration* symbol_configuration =
-        [UIImageSymbolConfiguration
-            configurationWithPointSize:kSymbolConfirmationCheckmarkPointSize];
-    SetConfigurationImage(_primaryActionButton,
-                          [UIImage systemImageNamed:@"checkmark.circle.fill"
-                                  withConfiguration:symbol_configuration]);
+    _primaryActionButton.primaryButtonImage = PrimaryButtonImageCheckmark;
   } else {
     _primaryActionButton.tunedDownStyle = NO;
-    SetConfigurationImage(_primaryActionButton,
-                          _configuration.primaryActionImage);
+    _primaryActionButton.primaryButtonImage = PrimaryButtonImageNone;
   }
-  SetConfigurationActivityIndicator(_primaryActionButton, _isLoading);
 
   SetConfigurationTitle(
       _primaryActionButton,
