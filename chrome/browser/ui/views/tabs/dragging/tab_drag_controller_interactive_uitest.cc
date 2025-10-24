@@ -4476,7 +4476,7 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
                   second_move.y() -
                       attached->GetWidget()->GetWindowBoundsInScreen().y());
               EXPECT_EQ(press_offset, drag_offset);
-              ASSERT_TRUE(test->ReleaseInput());
+              ASSERT_TRUE(test->ReleaseInput(0, /*async=*/true));
             }),
             window_hint));
       }),
@@ -4486,8 +4486,8 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-// TODO(mukai): enable this test on Windows and Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(mukai): enable this test on Linux.
 // TODO(crbug.com/41468034): flaky on Mac
 #define MAYBE_OffsetForDraggingTab DISABLED_OffsetForDraggingTab
 #else
