@@ -470,7 +470,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CheckResult
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
-        boolean isSmallestScreenWidthDpOverridden = false;
+        boolean result = false;
         if (UiAndroidFeatureList.sRefactorMinWidthContextOverride.isEnabled()) {
             // We override the smallestScreenWidthDp here for two reasons:
             // 1. To prevent multi-window from hiding the tabstrip when on a tablet.
@@ -479,17 +479,18 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             // See crbug.com/588838, crbug.com/662338, crbug.com/780593.
             overrideConfig.smallestScreenWidthDp =
                     DisplayUtil.getCurrentSmallestScreenWidth(baseContext);
-            isSmallestScreenWidthDpOverridden = true;
+            result |= true;
         }
-        applyOverridesForAutomotive(baseContext, overrideConfig);
-        applyOverridesForXr(baseContext, overrideConfig);
-        return isSmallestScreenWidthDpOverridden
-                || NightModeUtils.applyOverridesForNightMode(
+        result |= applyOverridesForAutomotive(baseContext, overrideConfig);
+        result |= applyOverridesForXr(baseContext, overrideConfig);
+        result |=
+                NightModeUtils.applyOverridesForNightMode(
                         getNightModeStateProvider(), overrideConfig);
+        return result;
     }
 
     @VisibleForTesting
-    static void applyOverridesForAutomotive(Context baseContext, Configuration overrideConfig) {
+    static boolean applyOverridesForAutomotive(Context baseContext, Configuration overrideConfig) {
         if (DeviceInfo.isAutomotive()) {
             // Potentially clamp scaling for automotive devices.
             if (ChromeFeatureList.sClampAutomotiveScaling.isEnabled()) {
@@ -509,17 +510,21 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             // Enable web ui scaling for automotive devices.
             CommandLine.getInstance()
                     .appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
+            return true;
         }
+        return false;
     }
 
     @VisibleForTesting
-    static void applyOverridesForXr(Context baseContext, Configuration overrideConfig) {
+    static boolean applyOverridesForXr(Context baseContext, Configuration overrideConfig) {
         if (DeviceInfo.isXr()) {
             DisplayUtil.scaleUpConfigurationForXr(baseContext, overrideConfig);
 
             // Enable web ui scaling for immersive devices.
             CommandLine.getInstance().appendSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
+            return true;
         }
+        return false;
     }
 
     /**

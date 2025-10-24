@@ -149,19 +149,17 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     @Override
-    @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         boolean result = super.applyOverrides(baseContext, overrideConfig);
         if (!UiAndroidFeatureList.sRefactorMinWidthContextOverride.isEnabled()) {
-
-        // We override the smallestScreenWidthDp here for two reasons:
-        // 1. To prevent multi-window from hiding the tabstrip when on a tablet.
-        // 2. To ensure mIsTablet only needs to be set once. Since the override lasts for the life
-        //    of the activity, it will never change via onConfigurationUpdated().
-        // See crbug.com/588838, crbug.com/662338, crbug.com/780593.
-        overrideConfig.smallestScreenWidthDp =
-                DisplayUtil.getCurrentSmallestScreenWidth(baseContext);
-        return true;
+            // We override the smallestScreenWidthDp here for two reasons:
+            // 1. To prevent multi-window from hiding the tabstrip when on a tablet.
+            // 2. To ensure mIsTablet only needs to be set once. Since the override lasts for the
+            //    life of the activity, it will never change via onConfigurationUpdated().
+            // See crbug.com/588838, crbug.com/662338, crbug.com/780593.
+            overrideConfig.smallestScreenWidthDp =
+                    DisplayUtil.getCurrentSmallestScreenWidth(baseContext);
+            return true;
         }
         return result;
     }
