@@ -179,7 +179,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "dom_storage/dom_storage_database_unittest.cc",
+    "dom_storage/dom_storage_database_leveldb_unittest.cc",
     "dom_storage/local_storage_impl_unittest.cc",
     "dom_storage/session_storage_area_impl_unittest.cc",
     "dom_storage/session_storage_data_map_unittest.cc",

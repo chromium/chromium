@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
 
 #include <algorithm>
 #include <functional>
@@ -58,27 +58,28 @@ std::string MakePrefixedKey(std::string_view prefix, std::string_view key) {
   return base::StrCat({prefix, key});
 }
 
-class StorageServiceDomStorageDatabaseTest : public testing::Test {
+}  // namespace
+
+class DomStorageDatabaseLevelDBTest : public testing::Test {
  public:
-  StorageServiceDomStorageDatabaseTest()
+  DomStorageDatabaseLevelDBTest()
       : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
-  StorageServiceDomStorageDatabaseTest(
-      const StorageServiceDomStorageDatabaseTest&) = delete;
-  StorageServiceDomStorageDatabaseTest& operator=(
-      const StorageServiceDomStorageDatabaseTest&) = delete;
+  DomStorageDatabaseLevelDBTest(const DomStorageDatabaseLevelDBTest&) = delete;
+  DomStorageDatabaseLevelDBTest& operator=(
+      const DomStorageDatabaseLevelDBTest&) = delete;
 
  protected:
   // Helper for tests to block on the result of an OpenInMemory call.
-  base::SequenceBound<DomStorageDatabase> OpenInMemorySync(
+  base::SequenceBound<DomStorageDatabaseLevelDB> OpenInMemorySync(
       const std::string& db_name) {
-    base::SequenceBound<DomStorageDatabase> result;
+    base::SequenceBound<DomStorageDatabaseLevelDB> result;
     base::RunLoop loop;
-    DomStorageDatabaseFactory::OpenInMemory(
+    DomStorageDatabaseLevelDB::OpenInMemory(
         db_name, /*memory_dump_id=*/std::nullopt, blocking_task_runner_,
         base::BindLambdaForTesting(
-            [&](base::SequenceBound<DomStorageDatabase> database,
+            [&](base::SequenceBound<DomStorageDatabaseLevelDB> database,
                 DbStatus status) {
               result = std::move(database);
               loop.Quit();
@@ -88,16 +89,16 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
   }
 
   // Helper for tests to block on the result of an OpenDirectory call.
-  base::SequenceBound<DomStorageDatabase> OpenDirectorySync(
+  base::SequenceBound<DomStorageDatabaseLevelDB> OpenDirectorySync(
       const base::FilePath& directory,
       const std::string& db_name) {
-    base::SequenceBound<DomStorageDatabase> result;
+    base::SequenceBound<DomStorageDatabaseLevelDB> result;
     base::RunLoop loop;
-    DomStorageDatabaseFactory::OpenDirectory(
+    DomStorageDatabaseLevelDB::OpenDirectory(
         directory, db_name, /*memory_dump_id=*/std::nullopt,
         blocking_task_runner_,
         base::BindLambdaForTesting(
-            [&](base::SequenceBound<DomStorageDatabase> database,
+            [&](base::SequenceBound<DomStorageDatabaseLevelDB> database,
                 DbStatus status) {
               result = std::move(database);
               loop.Quit();
@@ -111,7 +112,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
                        const std::string& db_name) {
     DbStatus result;
     base::RunLoop loop;
-    DomStorageDatabaseFactory::Destroy(
+    DomStorageDatabaseLevelDB::Destroy(
         directory, db_name, blocking_task_runner_,
         base::BindLambdaForTesting([&](DbStatus status) {
           result = status;
@@ -121,14 +122,14 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
     return result;
   }
 
-  // Helper to run an async operation on a DomStorageDatabase and wait for it to
-  // finish.
+  // Helper to run an async operation on a `DomStorageDatabaseLevelDB` and wait
+  // for it to finish.
   template <typename Func>
-  static void DoSync(base::SequenceBound<DomStorageDatabase>& database,
+  static void DoSync(base::SequenceBound<DomStorageDatabaseLevelDB>& database,
                      Func operation) {
     base::RunLoop loop;
     database.PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](DomStorageDatabase* database) {
+        base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* database) {
           operation(database);
           loop.Quit();
         }));
@@ -140,27 +141,25 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 };
 
-}  // namespace
-
-TEST_F(StorageServiceDomStorageDatabaseTest, BasicOpenInMemory) {
+TEST_F(DomStorageDatabaseLevelDBTest, BasicOpenInMemory) {
   // Basic smoke test to verify that we can successfully create and destroy an
   // in-memory database with no problems.
-  base::SequenceBound<DomStorageDatabase> database =
+  base::SequenceBound<DomStorageDatabaseLevelDB> database =
       OpenInMemorySync("test_db");
   EXPECT_TRUE(database);
 }
 
-TEST_F(StorageServiceDomStorageDatabaseTest, BasicOperations) {
+TEST_F(DomStorageDatabaseLevelDBTest, BasicOperations) {
   // Exercises basic Put, Get, Delete.
 
-  base::SequenceBound<DomStorageDatabase> database =
+  base::SequenceBound<DomStorageDatabaseLevelDB> database =
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
   // Write a key and read it back.
   const char kTestKey[] = "test_key";
   const char kTestValue[] = "test_value";
-  DoSync(database, [&](DomStorageDatabase* db) {
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
     EXPECT_STATUS_OK(db->Put(base::byte_span_from_cstring(kTestKey),
                              base::byte_span_from_cstring(kTestValue)));
 
@@ -170,7 +169,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, BasicOperations) {
   });
 }
 
-TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
+TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
   // Verifies that if we Put() something into a persistent database, we can
   // Get() it back out when we re-open the same database later. Also verifies
   // that this is not possible if the database is deleted.
@@ -181,10 +180,10 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   const char kTestKey[] = "test_key";
   const char kTestValue[] = "test_value";
 
-  base::SequenceBound<DomStorageDatabase> database =
+  base::SequenceBound<DomStorageDatabaseLevelDB> database =
       OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
   ASSERT_TRUE(database);
-  DoSync(database, [&](DomStorageDatabase* db) {
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
     EXPECT_STATUS_OK(db->Put(base::byte_span_from_cstring(kTestKey),
                              base::byte_span_from_cstring(kTestValue)));
   });
@@ -193,8 +192,8 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   // Re-open and verify that we can read what was written above.
   database = OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
   ASSERT_TRUE(database);
-  DoSync(database, [&](DomStorageDatabase* db) {
-    DomStorageDatabase::Value value;
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
+    DomStorageDatabaseLevelDB::Value value;
     EXPECT_STATUS_OK(db->Get(base::byte_span_from_cstring(kTestKey), &value));
     EXPECT_VALUE_EQ(kTestValue, value);
   });
@@ -205,30 +204,30 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   // the database.
   //
   // Because the database owns filesystem artifacts in the temp directory, we
-  // will wait for the DomStorageDatabase instance to actually be destroyed
-  // before completing the test.
+  // will wait for the `DomStorageDatabaseLevelDB` instance to actually be
+  // destroyed before completing the test.
   EXPECT_STATUS_OK(DestroySync(temp_dir.GetPath(), kTestDbName));
 
   // Verify that the database was destroyed (open again and verify it's a blank
   // slate).
   database = OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
   ASSERT_TRUE(database);
-  DoSync(database, [&](DomStorageDatabase* db) {
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
     DomStorageDatabase::Value value;
     EXPECT_TRUE(
         db->Get(base::byte_span_from_cstring(kTestKey), &value).IsNotFound());
   });
 
   // Because the database owns filesystem artifacts in the temp directory, block
-  // scope teardown until the DomStorageDatabase instance is actually destroyed
-  // on its background sequence.
+  // scope teardown until the `DomStorageDatabaseLevelDB` instance is actually
+  // destroyed on its background sequence.
   database.SynchronouslyResetForTest();
 }
 
-TEST_F(StorageServiceDomStorageDatabaseTest, GetPrefixed) {
+TEST_F(DomStorageDatabaseLevelDBTest, GetPrefixed) {
   // Verifies basic prefixed reading behavior.
 
-  base::SequenceBound<DomStorageDatabase> database =
+  base::SequenceBound<DomStorageDatabaseLevelDB> database =
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
@@ -241,7 +240,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, GetPrefixed) {
   std::string kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
   std::string kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
   std::string kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
-  DoSync(database, [&](DomStorageDatabase* db) {
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
 
     // No keys, so GetPrefixed should return nothing.
@@ -309,10 +308,10 @@ TEST_F(StorageServiceDomStorageDatabaseTest, GetPrefixed) {
   });
 }
 
-TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
+TEST_F(DomStorageDatabaseLevelDBTest, DeletePrefixed) {
   // Verifies basic prefixed deletion behavior.
 
-  base::SequenceBound<DomStorageDatabase> database =
+  base::SequenceBound<DomStorageDatabaseLevelDB> database =
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
@@ -325,7 +324,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
   std::string kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
   std::string kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
   std::string kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
-  DoSync(database, [&](DomStorageDatabase* db) {
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
     // Insert a bunch of entries. One unprefixed, two with one prefix, and two
     // with another prefix.
     static constexpr char kTestValue1[] = "meh";
@@ -375,10 +374,10 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
   });
 }
 
-TEST_F(StorageServiceDomStorageDatabaseTest, CopyPrefixed) {
+TEST_F(DomStorageDatabaseLevelDBTest, CopyPrefixed) {
   // Verifies basic prefixed copying behavior.
 
-  base::SequenceBound<DomStorageDatabase> database =
+  base::SequenceBound<DomStorageDatabaseLevelDB> database =
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
@@ -395,7 +394,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, CopyPrefixed) {
   static constexpr char kTestValue2[] = "another value";
   static constexpr char kTestValue3[] = "the only other value in the world";
 
-  DoSync(database, [&](DomStorageDatabase* db) {
+  DoSync(database, [&](DomStorageDatabaseLevelDB* db) {
     // Populate the database with one unprefixed entry, and two values with
     // a key prefix of |kTestPrefix1|.
     EXPECT_STATUS_OK(db->Put(base::byte_span_from_cstring(kTestUnprefixedKey),

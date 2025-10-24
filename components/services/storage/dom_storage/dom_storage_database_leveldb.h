@@ -90,6 +90,8 @@ class DomStorageDatabaseLevelDB
 
  private:
   friend class DomStorageDatabaseFactory;
+  friend class DomStorageDatabaseLevelDBTest;
+
   // Initializes a new DomStorageDatabaseLevelDB, creating or opening persistent
   // on-filesystem database as specified. Asynchronously invokes `callback` when
   // done.
@@ -97,10 +99,14 @@ class DomStorageDatabaseLevelDB
   // This must be called on a sequence that allows blocking operations.
   void Init(StatusCallback callback);
 
+  using OpenCallback = base::OnceCallback<void(
+      base::SequenceBound<DomStorageDatabaseLevelDB> database,
+      DbStatus status)>;
+
   template <typename... Args>
   static void CreateSequenceBoundDomStorageDatabase(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      DomStorageDatabaseFactory::OpenCallback callback,
+      OpenCallback callback,
       Args&&... args);
 
   static void OpenDirectory(
@@ -109,14 +115,14 @@ class DomStorageDatabaseLevelDB
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      DomStorageDatabaseFactory::OpenCallback callback);
+      OpenCallback callback);
 
   static void OpenInMemory(
       const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      DomStorageDatabaseFactory::OpenCallback callback);
+      OpenCallback callback);
 
   static void Destroy(
       const base::FilePath& directory,

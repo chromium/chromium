@@ -7,6 +7,17 @@
 #include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
 
 namespace storage {
+namespace {
+
+// Runs `callback` after casting `leveldb` to its base `DomStorageDatabase`.
+void OnLevelDBOpened(DomStorageDatabaseFactory::OpenCallback callback,
+                     base::SequenceBound<DomStorageDatabaseLevelDB> leveldb,
+                     DbStatus status) {
+  base::SequenceBound<DomStorageDatabase> database = std::move(leveldb);
+  std::move(callback).Run(std::move(database), status);
+}
+
+}  // namespace
 
 DomStorageDatabase::KeyValuePair::KeyValuePair() = default;
 
@@ -38,9 +49,9 @@ void DomStorageDatabaseFactory::OpenDirectory(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
-  DomStorageDatabaseLevelDB::OpenDirectory(directory, name, memory_dump_id,
-                                           std::move(blocking_task_runner),
-                                           std::move(callback));
+  DomStorageDatabaseLevelDB::OpenDirectory(
+      directory, name, memory_dump_id, std::move(blocking_task_runner),
+      base::BindOnce(&OnLevelDBOpened, std::move(callback)));
 }
 
 // static
@@ -50,9 +61,9 @@ void DomStorageDatabaseFactory::OpenInMemory(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
-  DomStorageDatabaseLevelDB::OpenInMemory(name, memory_dump_id,
-                                          std::move(blocking_task_runner),
-                                          std::move(callback));
+  DomStorageDatabaseLevelDB::OpenInMemory(
+      name, memory_dump_id, std::move(blocking_task_runner),
+      base::BindOnce(&OnLevelDBOpened, std::move(callback)));
 }
 
 // static
