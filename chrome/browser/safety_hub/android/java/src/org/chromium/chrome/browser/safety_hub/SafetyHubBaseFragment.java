@@ -81,7 +81,12 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
     }
 
     protected void startSettings(Class<? extends Fragment> fragment) {
-        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        getContext(),
+                        fragment,
+                        /* fragmentArgs= */ null,
+                        /* addToBackStack= */ true);
     }
 
     protected void launchSiteSettingsActivity(@SiteSettingsCategory.Type int category) {

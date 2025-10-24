@@ -893,7 +893,8 @@ public class SiteSettingsTest {
                             .startSettings(
                                     eq(websitePreferences.getContext()),
                                     eq(RwsCookieSettings.class),
-                                    refEq(fragmentArgs));
+                                    refEq(fragmentArgs),
+                                    eq(true));
                 });
     }
 

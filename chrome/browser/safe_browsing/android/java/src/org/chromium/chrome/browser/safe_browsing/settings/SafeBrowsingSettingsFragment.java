@@ -101,10 +101,18 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         recordUserActionHistogramForStateDetailsClicked(safeBrowsingState);
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
             SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(getActivity(), EnhancedProtectionSettingsFragment.class);
+                    .startSettings(
+                            getActivity(),
+                            EnhancedProtectionSettingsFragment.class,
+                            /* fragmentArgs= */ null,
+                            /* addToBackStack= */ true);
         } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
             SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(getActivity(), StandardProtectionSettingsFragment.class);
+                    .startSettings(
+                            getActivity(),
+                            StandardProtectionSettingsFragment.class,
+                            /* fragmentArgs= */ null,
+                            /* addToBackStack= */ true);
         } else {
             assert false : "Should not be reached";
         }

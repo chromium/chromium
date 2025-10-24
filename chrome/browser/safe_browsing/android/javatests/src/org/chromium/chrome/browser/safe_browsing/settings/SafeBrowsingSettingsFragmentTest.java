@@ -314,7 +314,9 @@ public class SafeBrowsingSettingsFragmentTest {
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
                                     mSafeBrowsingSettingsFragment.getContext(),
-                                    EnhancedProtectionSettingsFragment.class);
+                                    EnhancedProtectionSettingsFragment.class,
+                                    null,
+                                    true);
                 });
     }
 
@@ -330,7 +332,9 @@ public class SafeBrowsingSettingsFragmentTest {
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
                                     mSafeBrowsingSettingsFragment.getContext(),
-                                    StandardProtectionSettingsFragment.class);
+                                    StandardProtectionSettingsFragment.class,
+                                    null,
+                                    true);
                 });
     }
 

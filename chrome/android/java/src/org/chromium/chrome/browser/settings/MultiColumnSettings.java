@@ -100,14 +100,19 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         // Update the detail pane, if the intent is specified.
         Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
         if (processed != null) {
-            // Opening a new page. If we already have back stack entries, clean it up for
+            var fragmentManager = getChildFragmentManager();
+
+            // Opening a new page. If we already have back stack entries,
+            // and the intent does NOT says the fragment transaction should be added
+            // to the back stack (checked by processed.second), clean it up for
             // - back button behavior
             // - detailed page title
-            var fragmentManager = getChildFragmentManager();
-            if (fragmentManager.getBackStackEntryCount() > 0) {
-                var entry = fragmentManager.getBackStackEntryAt(0);
-                fragmentManager.popBackStack(
-                        entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            if (!processed.second) {
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    var entry = fragmentManager.getBackStackEntryAt(0);
+                    fragmentManager.popBackStack(
+                            entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
             }
 
             // Then, open the fragment.
@@ -128,6 +133,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     /**
      * Processes the pending Intent if there is, and returns the Fragment to be used in the detailed
      * pane.
+     *
+     * @return a pair of processed fragment and whether or not to add the transaction to the back
+     *     stack on success. Otherwise, null.
      */
     private @Nullable Pair<Fragment, Boolean> processPendingFragmentIntent() {
         if (mPendingFragmentIntent == null) {

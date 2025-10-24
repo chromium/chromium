@@ -204,7 +204,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
 
-        mSettingsNavigation.startSettings(getActivity(), RwsCookieSettings.class, fragmentArgs);
+        mSettingsNavigation.startSettings(
+                getActivity(), RwsCookieSettings.class, fragmentArgs, /* addToBackStack= */ true);
     }
 
     @Override
@@ -216,7 +217,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 StorageAccessSubpageSettings.EXTRA_ALLOWED, !isOnBlockList(website));
 
         mSettingsNavigation.startSettings(
-                getActivity(), StorageAccessSubpageSettings.class, fragmentArgs);
+                getActivity(),
+                StorageAccessSubpageSettings.class,
+                fragmentArgs,
+                /* addToBackStack= */ true);
     }
 
     // Note: these values must match the SiteLayout enum in enums.xml.
