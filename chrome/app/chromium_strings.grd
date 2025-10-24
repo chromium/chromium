@@ -1170,6 +1170,14 @@ Chromium is unable to recover your settings.
         Make Chromium Yours
       </message>
 
+      <!-- Customize Chrome Auto Promo Strings -->
+      <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_BODY" desc="The description of the IPH to auto open Customize Chromium">
+        Customize Chromium to give it a new look
+      </message>
+      <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_SCREENREADER" desc="The screenreader of the IPH to auto open Customize Chromium" is_accessibility_with_no_ui="true">
+        Click the Customize Chromium button on the New Tab Page to give Chromium a new look
+      </message>
+
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not is_chromeos">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">

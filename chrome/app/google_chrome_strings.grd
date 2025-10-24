@@ -1141,6 +1141,14 @@ Google Chrome is unable to recover your settings.
         Make Chrome Yours
       </message>
 
+      <!-- Customize Chrome Auto Promo Strings -->
+      <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_BODY" desc="The description of the IPH to auto open Customize Chrome">
+        Customize Chrome to give it a new look
+      </message>
+      <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_SCREENREADER" desc="The screenreader of the IPH to auto open Customize Chrome" is_accessibility_with_no_ui="true">
+        Click the Customize Chrome button on the New Tab Page to give Chrome a new look
+      </message>
+
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not is_chromeos">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">
