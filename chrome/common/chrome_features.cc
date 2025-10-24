@@ -40,7 +40,7 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<base::TimeDelta>
     kActorPaintStabilitySubsequentPaintTimeout{
         &kGlicActor, "actor-paint-stability-subsequent-paint-timeout",
-        base::Milliseconds(500)};
+        base::Seconds(1)};
 
 #if BUILDFLAG(IS_WIN)
 // When enabled, notifications from PWA's will use the PWA icon and name,
@@ -370,7 +370,7 @@ const base::FeatureParam<base::TimeDelta>
 // The minimum amount of time to wait for page stability before invoking the
 // callback.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityMinWait{
-    &kGlicActor, "glic-actor-page-stability-min-wait", base::Milliseconds(500)};
+    &kGlicActor, "glic-actor-page-stability-min-wait", base::Seconds(1)};
 
 // The overall observation timeout when waiting for a tool to complete.
 // This timeout is long but based on the NavigationToLoadEventFired UMA. This
