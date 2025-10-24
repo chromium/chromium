@@ -395,7 +395,7 @@ Node::InsertionNotificationRequest SVGSMILElement::InsertedInto(
 void SVGSMILElement::RemovedFrom(ContainerNode& root_parent) {
   if (root_parent.isConnected()) {
     ClearResourceAndEventBaseReferences();
-    ClearConditions();
+    DisconnectConditions();
     SetTargetElement(nullptr);
     time_container_ = nullptr;
   }
