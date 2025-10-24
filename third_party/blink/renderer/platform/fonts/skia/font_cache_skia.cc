@@ -91,10 +91,10 @@ const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
   SkString skia_family_name;
   typeface->getFamilyName(&skia_family_name);
 
-  bool synthetic_bold = font_description.IsSyntheticBold() &&
+  bool synthetic_bold = font_description.Weight() >= kBoldThreshold &&
                         !typeface->isBold() &&
                         font_description.SyntheticBoldAllowed();
-  bool synthetic_italic = font_description.IsSyntheticItalic() &&
+  bool synthetic_italic = font_description.Style() > kNormalSlopeValue &&
                           !typeface->isItalic() &&
                           font_description.SyntheticItalicAllowed();
 
