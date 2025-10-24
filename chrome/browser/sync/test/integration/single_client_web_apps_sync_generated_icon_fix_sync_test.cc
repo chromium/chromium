@@ -161,7 +161,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 // failing flakily everywhere except on Linux bots, and there are a few areas of
 // slowness that needs to be investigated.
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
-                       GeneratedIconsSilentlyUpdate) {
+                       DISABLED_GeneratedIconsSilentlyUpdate) {
   // Listen for sync install in client.
   WebAppTestInstallObserver install_observer(GetProfile(0));
   install_observer.BeginListening();
