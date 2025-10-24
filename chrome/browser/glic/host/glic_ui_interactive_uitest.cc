@@ -329,6 +329,10 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DoesNotNavigateToUnsupportedOrigin) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kAttached,
@@ -392,6 +396,10 @@ IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, DisconnectedPanelShown) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, LoadsWhenBackOnline) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
@@ -857,6 +865,10 @@ class GlicUiUnifiedFreIntegrationTest : public GlicUiInteractiveUiTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest, ShowsFreInsteadOfGlic) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),

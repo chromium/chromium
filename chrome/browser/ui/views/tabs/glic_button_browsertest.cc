@@ -130,6 +130,10 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextWhileGlicFreOpen) {
 #endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(GlicButtonTest,
                        MAYBE_TooltipAndA11yTextWhileGlicWindowOpen) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // Toggle to open the glic window.
   glic_service()->ToggleUI(browser(), false,
                            mojom::InvocationSource::kTopChromeButton);

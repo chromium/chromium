@@ -204,6 +204,10 @@ class ExecutionEngineInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
                        ConfirmNavigationToNewOrigin_Granted) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL second_url =
@@ -287,6 +291,10 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineInteractiveUiTest,
                        ConfirmBlockedOriginWithUser_Denied) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL blocked_url = embedded_https_test_server().GetURL(

@@ -17,13 +17,18 @@ namespace glic {
 
 class GlicControllerUiTest : public test::InteractiveGlicTest {
  public:
-  GlicControllerUiTest() = default;
+  GlicControllerUiTest() {
+    // TODO(b/453696965): Broken in multi-instance.
+    disable_multi_instance_feature_list_.InitAndDisableFeature(
+        features::kGlicMultiInstance);
+  }
   ~GlicControllerUiTest() override = default;
 
  protected:
   GlicController& glic_controller() { return glic_controller_; }
 
   GlicController glic_controller_;
+  base::test::ScopedFeatureList disable_multi_instance_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {

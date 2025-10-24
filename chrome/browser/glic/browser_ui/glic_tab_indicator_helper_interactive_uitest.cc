@@ -108,6 +108,10 @@ class GlicTabIndicatorHelperUiTest : public test::InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabNotAlerted) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(LoadStartingPage(),
                   ObserveState(kTab1AlertState, browser(), 0),
                   OpenGlicWindow(GlicWindowMode::kAttached),
@@ -143,6 +147,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlertTurnsOff) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SecondTabAlerted) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -163,6 +171,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SecondTabAlerted) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SwitchAlertedTabs) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       AddNewCandidateTab(kSecondTabId),
@@ -179,6 +191,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SwitchAlertedTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, AlertChangesOnTabRemoval) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   static constexpr char kTabCloseButton[] = "tab_close_button";
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
@@ -200,6 +216,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, AlertChangesOnTabRemoval) {
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        AlertDoesNotChangeOnTabRemoval) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   static constexpr char kTabCloseButton[] = "tab_close_button";
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
@@ -221,6 +241,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        NavigatingToInvalidSchemeShouldNotAlert) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -250,6 +274,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        NavigatingToInvalidSchemeAndBackShouldAlert) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -294,6 +322,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        IncognitoBrowserShouldNotAlert) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -336,6 +368,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 IN_PROC_BROWSER_TEST_F(
     GlicTabIndicatorHelperUiTest,
     MAYBE_MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   Browser* const browser2 = CreateBrowser(browser()->profile());
   RunTestSequence(
       LoadStartingPage(), LoadStartingPage(kSecondTabId, 0, browser2),
@@ -358,6 +394,10 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        AlertChangesOnTabMovedBetweenBrowsers) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP()

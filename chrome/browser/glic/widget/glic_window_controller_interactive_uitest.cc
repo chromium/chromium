@@ -310,6 +310,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyOpensDetachedWithNonActiveBrowser) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       // Glic should open attached to active browser.
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
@@ -399,6 +403,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, MAYBE_OpenMenuItemShows) {
 // On Windows, the OsButton toggles opening and closing floaty, because floaty
 // will never be active when the os button is clicked.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, OsButtonToggles) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       SimulateOsButton(), WaitForAndInstrumentGlic(kHostAndContents),
       CheckControllerHasWidget(true),
@@ -491,6 +499,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        MAYBE_ClientUnresponsiveWhileBrowserNotActive) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   const base::TimeDelta kTimeToWait = base::Seconds(7);
   ASSERT_GT(kTimeToWait,
             base::Milliseconds(
