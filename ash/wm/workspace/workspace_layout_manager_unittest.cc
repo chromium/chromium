@@ -2376,15 +2376,14 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.
   aura::Window::Windows children = default_container()->children();
-  children.erase(std::remove_if(children.begin(), children.end(),
-                                [](aura::Window* window) {
-                                  return window == OverviewController::Get()
-                                                       ->overview_session()
-                                                       ->grid_list()[0]
-                                                       ->no_windows_widget()
-                                                       ->GetNativeWindow();
-                                }),
-                 children.end());
+  aura::Window* native_window = OverviewController::Get()
+                                    ->overview_session()
+                                    ->grid_list()[0]
+                                    ->no_windows_widget()
+                                    ->GetNativeWindow();
+  std::erase_if(children, [native_window](aura::Window* window) {
+    return window == native_window;
+  });
   EXPECT_EQ(3U, children.size());
 
   // Backdrop is hidden in overview mode. So test the window and backdrop
