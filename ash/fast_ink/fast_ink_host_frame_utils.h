@@ -77,7 +77,6 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    const gfx::Size& buffer_size,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);

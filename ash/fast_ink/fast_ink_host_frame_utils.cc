@@ -144,7 +144,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    const gfx::Size& buffer_size,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
@@ -161,6 +160,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   // NOTE: `shared_image` is guaranteed to be non-null by contract of this
   // method.
   CHECK(shared_image);
+
+  const gfx::Size buffer_size = shared_image->size();
 
   // In auto_update mode, we use hardware overlays to render the content.
   auto resource = AcquireUiResource(buffer_size, auto_update, resource_manager,
