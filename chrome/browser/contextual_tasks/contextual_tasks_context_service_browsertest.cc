@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
@@ -182,12 +183,21 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
+  base::HistogramTester histogram_tester;
+
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery("some text", future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
+  base::HistogramTester histogram_tester;
+
   NotifyEmbedderMetadata();
   UpdateEmbedderStatus(
       passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
@@ -195,18 +205,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery("some text", future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                        SuccessQueryNoPageEmbeddings) {
+  base::HistogramTester histogram_tester;
+
   NotifyEmbedderMetadata();
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery("some text", future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
+  base::HistogramTester histogram_tester;
+
   NotifyEmbedderMetadata();
 
   std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
@@ -222,6 +246,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery("some text", future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 1);
 }
 
 }  // namespace contextual_tasks

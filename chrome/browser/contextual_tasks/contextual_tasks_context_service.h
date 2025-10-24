@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
@@ -58,6 +59,7 @@ class ContextualTasksContextService
   // Callback invoked when the embedding for `query` is ready.
   void OnQueryEmbeddingReady(
       const std::string& query,
+      base::TimeTicks start_time,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,

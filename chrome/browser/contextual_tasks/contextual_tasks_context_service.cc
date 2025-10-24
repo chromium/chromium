@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -47,6 +48,8 @@ ContextualTasksContextService::~ContextualTasksContextService() = default;
 void ContextualTasksContextService::GetRelevantTabsForQuery(
     const std::string& query,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
+  base::TimeTicks now = base::TimeTicks::Now();
+
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s", query));
 
   if (!is_embedder_available_) {
@@ -64,7 +67,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kUrgent, {query},
       base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
-                     weak_ptr_factory_.GetWeakPtr(), query,
+                     weak_ptr_factory_.GetWeakPtr(), query, now,
                      std::move(callback)));
 }
 
@@ -75,6 +78,7 @@ void ContextualTasksContextService::EmbedderMetadataUpdated(
 
 void ContextualTasksContextService::OnQueryEmbeddingReady(
     const std::string& query,
+    base::TimeTicks start_time,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     std::vector<std::string> passages,
     std::vector<passage_embeddings::Embedding> embeddings,
@@ -143,11 +147,17 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
       }
     }
   }
+
   AUTO_CONTEXT_LOG(base::StringPrintf("Number of open tabs for query %s: %d",
                                         query, all_browsers_tab_count));
   AUTO_CONTEXT_LOG(
           base::StringPrintf("Number of relevant tabs for query %s: %d", query,
                              relevant_web_contents.size()));
+
+  base::UmaHistogramTimes("ContextualTasks.Context.ContextCalculationLatency",
+                          base::TimeTicks::Now() - start_time);
+  base::UmaHistogramCounts100("ContextualTasks.Context.RelevantTabsCount",
+                              relevant_web_contents.size());
   std::move(callback).Run(std::move(relevant_web_contents));
 }
 
