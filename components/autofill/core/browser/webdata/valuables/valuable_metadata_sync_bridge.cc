@@ -181,7 +181,7 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
             change->data().specifics.autofill_valuable_metadata();
         EntityInstance::EntityMetadata remote =
             CreateValuableMetadataFromSpecifics(specifics);
-        if (!table->AddOrUpdateValuableMetadata(remote)) {
+        if (!table->AddOrUpdateEntityMetadata(remote)) {
           return syncer::ModelError(
               FROM_HERE, syncer::ModelError::Type::
                              kAutofillValuableMetadataFailedToLoadDatabase);

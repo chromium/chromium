@@ -319,31 +319,31 @@ TEST_F(EntityTableTest, RemoveEntityInstanceRemovesMetadata) {
   EXPECT_EQ(s.ColumnInt(0), 0);
 }
 
-// Tests that AddOrUpdateValuableMetadata() correctly adds new metadata.
-TEST_F(EntityTableTest, AddOrUpdateValuableMetadata_Add) {
+// Tests that AddOrUpdateEntityMetadata() correctly adds new metadata.
+TEST_F(EntityTableTest, AddOrUpdateEntityMetadata_Add) {
   EntityInstance::EntityMetadata metadata{
       .guid = EntityInstance::EntityId("test-guid-1"),
       .date_modified = base::Time::FromTimeT(100),
       .use_count = 1,
       .use_date = base::Time::FromTimeT(50)};
 
-  ASSERT_TRUE(table().AddOrUpdateValuableMetadata(metadata));
+  ASSERT_TRUE(table().AddOrUpdateEntityMetadata(metadata));
   EXPECT_THAT(test_api(table()).GetMetadataEntries(), ElementsAre(metadata));
 }
 
-// Tests that AddOrUpdateValuableMetadata() correctly updates existing metadata.
-TEST_F(EntityTableTest, AddOrUpdateValuableMetadata_Update) {
+// Tests that AddOrUpdateEntityMetadata() correctly updates existing metadata.
+TEST_F(EntityTableTest, AddOrUpdateEntityMetadata_Update) {
   EntityInstance::EntityMetadata metadata{
       .guid = EntityInstance::EntityId("test-guid-2"),
       .date_modified = base::Time::FromTimeT(100),
       .use_count = 1,
       .use_date = base::Time::FromTimeT(50)};
-  ASSERT_TRUE(table().AddOrUpdateValuableMetadata(metadata));
+  ASSERT_TRUE(table().AddOrUpdateEntityMetadata(metadata));
 
   metadata.use_count = 2;
   metadata.date_modified = base::Time::FromTimeT(200);
   metadata.use_date = base::Time::FromTimeT(150);
-  ASSERT_TRUE(table().AddOrUpdateValuableMetadata(metadata));
+  ASSERT_TRUE(table().AddOrUpdateEntityMetadata(metadata));
   EXPECT_THAT(test_api(table()).GetMetadataEntries(), ElementsAre(metadata));
 }
 

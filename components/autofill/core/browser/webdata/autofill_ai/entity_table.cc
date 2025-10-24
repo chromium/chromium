@@ -374,7 +374,7 @@ bool EntityTable::RemoveEntityMetadata(const EntityInstance::EntityId& guid) {
                              entities_metadata::kEntityGuid, *guid);
 }
 
-bool EntityTable::AddOrUpdateValuableMetadata(
+bool EntityTable::AddOrUpdateEntityMetadata(
     const EntityInstance::EntityMetadata& metadata) {
   sql::Transaction transaction(db());
   return transaction.Begin() && RemoveEntityMetadata(metadata.guid) &&

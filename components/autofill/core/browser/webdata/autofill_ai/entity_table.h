@@ -112,7 +112,7 @@ class EntityTable : public WebDatabaseTable {
 
   // Adds or updates the entity `metadata` in the `entities_metadata` table.
   // Returns true on success.
-  bool AddOrUpdateValuableMetadata(
+  bool AddOrUpdateEntityMetadata(
       const EntityInstance::EntityMetadata& metadata);
 
   // Returns the valid entity instances; ignores invalid instances.
