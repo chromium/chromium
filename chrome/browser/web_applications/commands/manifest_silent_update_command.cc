@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -48,6 +49,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/image_visual_diff.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/page.h"
@@ -425,6 +427,7 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
     std::unique_ptr<WebAppInstallInfo> install_info) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kConstructingWebAppInfo);
   CHECK(!new_install_info_);
+  CHECK(app_lock_);
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
@@ -444,37 +447,72 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   // exit early.
   const WebApp* app = app_lock_->registrar().GetAppById(app_id_);
   CHECK(app);
-  is_trusted_install_ = app->IsPolicyInstalledApp() || app->IsPreinstalledApp();
+
   web_app_comparison_ =
       WebAppComparison::CompareWebApps(*app, *new_install_info_);
-  GetMutableDebugValue().Set("web_app_comparison",
-                             web_app_comparison_.ToDict());
+  GetMutableDebugValue().Set("web_app_diff", web_app_comparison_.ToDict());
 
-  // First, handle the case where the existing app (without the pending update)
-  // matches the new install, so we can clear the pending info (if there was
-  // any) and return early.
-  if (web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate()) {
-    WritePendingUpdateInfoThenComplete(
-        /*pending_update=*/std::nullopt,
-        ManifestSilentUpdateCheckResult::kAppUpToDate);
-    return;
+  // Store the conditions for which a silent update of the app is allowed. This
+  // is usually possible if:
+  // 1. The app is a trusted one, installed via policy or default installed.
+  // 2. The app has generated icons, but was sync installed and is within the
+  // time frame in which it can be fixed, and there are no other changes in the
+  // app.
+  bool is_trusted_install =
+      (base::FeatureList::IsEnabled(
+          features::kSilentPolicyAndDefaultAppUpdating)) &&
+      (app->IsPolicyInstalledApp() || app->IsPreinstalledApp());
+  bool can_fix_generated_icons =
+      app->is_generated_icon() &&
+      app->latest_install_source() == webapps::WebappInstallSource::SYNC &&
+      generated_icon_fix_util::IsWithinFixTimeWindow(*app) &&
+      web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate();
+  silently_update_app_identity_ =
+      (is_trusted_install || can_fix_generated_icons);
+
+  // Store the time window for generated icons being fixed in the web app.
+  if (can_fix_generated_icons) {
+    ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
+    generated_icon_fix_util::EnsureFixTimeWindowStarted(
+        *app_lock_, update, app_id_,
+        proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
   }
+  GetMutableDebugValue().Set("silently_update_identity",
+                             silently_update_app_identity_);
 
-  // Exit early if the existing pending update info matches the seen data.
-  // Instead of writing pending update info, we simply exit directly.
-  if (web_app_comparison_.ExistingAppWithPendingEqualsNewUpdate()) {
-    CompleteCommandAndSelfDestruct(
-        FROM_HERE, ManifestSilentUpdateCheckResult::kAppUpToDate);
-    return;
+  // Silent app updates based on the generated icon fix requires the updating
+  // algorithm to proceed, so perform all functions that exit early here in case
+  // that doesn't need to happen.
+  if (!can_fix_generated_icons) {
+    // First, handle the case where the existing app (without the pending
+    // update) matches the new install, so we can clear the pending info (if
+    // there was any) and return early. The only case where this doesn't happen
+    // is if the app needs to be updated silently (like for fixing generated
+    // icons), in which case, allow the update to proceed silently.
+    if (web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate()) {
+      WritePendingUpdateInfoThenComplete(
+          /*pending_update=*/std::nullopt,
+          ManifestSilentUpdateCheckResult::kAppUpToDate);
+      return;
+    }
+
+    // Exit early if the existing pending update info matches the seen data.
+    // Instead of writing pending update info, we simply exit directly.
+    if (web_app_comparison_.ExistingAppWithPendingEqualsNewUpdate()) {
+      CompleteCommandAndSelfDestruct(
+          FROM_HERE, ManifestSilentUpdateCheckResult::kAppUpToDate);
+      return;
+    }
   }
 
   // After this line, we know that something in the system needs to update.
 
   // If it's only a name change, simply skip to the end to write the pending
   // update info.
-  // Skip the case where the new name is empty - we will pretend it is the same
-  // and update the rest of the information.
-  if (web_app_comparison_.IsNameChangeOnly() && !is_trusted_install_) {
+  // Skip the case where the new name is empty - we will pretend it is the
+  // same and update the rest of the information.
+  if (web_app_comparison_.IsNameChangeOnly() &&
+      !silently_update_app_identity_) {
     proto::PendingUpdateInfo update;
     update.set_name(base::UTF16ToUTF8(new_install_info_->title));
     WritePendingUpdateInfoThenComplete(
@@ -502,8 +540,11 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   }
   // Meanwhile, skip downloading icons from the network that we know didn't
   // change, and thus we'll just use what we have on disk.
+  // If `silently_update_app_identity_` is true, we need all of the new product
+  // icons for the update, so fetch them.
   IconUrlExtractionOptions icon_fetch_options{
-      .product_icons = !web_app_comparison_.primary_icons_equality(),
+      .product_icons = !web_app_comparison_.primary_icons_equality() ||
+                       silently_update_app_identity_,
       .shortcut_menu_item_icons =
           !web_app_comparison_.shortcut_menu_item_infos_equality()};
   manifest_to_install_info_job_->FetchIcons(
@@ -512,28 +553,22 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
 
   std::move(barrier).Done(base::BindOnce(
       &ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist,
-      weak_factory_.GetWeakPtr()));
+      weak_factory_.GetWeakPtr(), is_trusted_install));
 
   SetStage(
       ManifestSilentUpdateCommandStage::kLoadingExistingAndNewManifestIcons);
 }
 
-void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
+void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist(
+    bool is_trusted_install) {
   CHECK_EQ(
       stage_,
       ManifestSilentUpdateCommandStage::kLoadingExistingAndNewManifestIcons);
   SetStage(ManifestSilentUpdateCommandStage::kComparingManifestData);
 
-  const WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
-
-  silent_update_required_ =
-      !web_app_comparison_.other_fields_equality() ||
-      !web_app_comparison_.shortcut_menu_item_infos_equality();
-  GetMutableDebugValue().Set("silent_update_required",
-                             base::ToString(silent_update_required_));
-
   // Copy over any icons that did not have manifest changes, and thus we loaded
   // from disk to avoid hitting the network
+  const WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
   CHECK(new_install_info_);
   if (web_app_comparison_.shortcut_menu_item_infos_equality()) {
     new_install_info_->shortcuts_menu_item_infos =
@@ -541,21 +576,13 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
     new_install_info_->shortcuts_menu_icon_bitmaps =
         existing_shortcuts_menu_icon_bitmaps_;
   }
-  if (web_app_comparison_.primary_icons_equality()) {
-    new_install_info_->manifest_icons = web_app->manifest_icons();
-    new_install_info_->trusted_icons = web_app->trusted_icons();
-    new_install_info_->icon_bitmaps = existing_manifest_icon_bitmaps_;
-    new_install_info_->trusted_icon_bitmaps = existing_trusted_icon_bitmaps_;
-  }
 
-  // Changes to preinstalled or admin installed web apps are always silently
-  // applied since they are installed by trusted sources. There should be no
-  // pending update info saved for these web apps.
-  if (base::FeatureList::IsEnabled(
-          features::kSilentPolicyAndDefaultAppUpdating) &&
-      is_trusted_install_) {
-    new_install_info_->trusted_icons = new_install_info_->manifest_icons;
-    new_install_info_->trusted_icon_bitmaps = new_install_info_->icon_bitmaps;
+  // Update the app's identity silently first and exit early if allowed.
+  if (silently_update_app_identity_) {
+    if (is_trusted_install) {
+      new_install_info_->trusted_icons = new_install_info_->manifest_icons;
+      new_install_info_->trusted_icon_bitmaps = new_install_info_->icon_bitmaps;
+    }
 
     app_lock_->install_finalizer().FinalizeUpdate(
         new_install_info_->Clone(),
@@ -575,6 +602,21 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
                 &ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct,
                 GetWeakPtr(), FROM_HERE)));
     return;
+  }
+
+  silent_update_required_ =
+      !web_app_comparison_.other_fields_equality() ||
+      !web_app_comparison_.shortcut_menu_item_infos_equality();
+  GetMutableDebugValue().Set("silent_update_required",
+                             base::ToString(silent_update_required_));
+
+  // If the app's icons can be silently updated, they should not be reverted.
+  if (web_app_comparison_.primary_icons_equality()) {
+    new_install_info_->manifest_icons = web_app->manifest_icons();
+    new_install_info_->trusted_icons = web_app->trusted_icons();
+    new_install_info_->icon_bitmaps = existing_manifest_icon_bitmaps_;
+    new_install_info_->trusted_icon_bitmaps = existing_trusted_icon_bitmaps_;
+    new_install_info_->is_generated_icon = web_app->is_generated_icon();
   }
 
   // Both of these cases should have already been handled & exited early.
@@ -693,6 +735,10 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
     new_install_info_->trusted_icons = web_app->trusted_icons();
     new_install_info_->icon_bitmaps = existing_manifest_icon_bitmaps_;
     new_install_info_->trusted_icon_bitmaps = existing_trusted_icon_bitmaps_;
+
+    // We can not update generated icons if we are outside of the time window to
+    // silently update them - so we must persist this state.
+    new_install_info_->is_generated_icon = web_app->is_generated_icon();
   } else {
     // Silent updates are allowed if the icons are less than 10% diff.
     silent_update_required_ = true;
@@ -930,6 +976,7 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
     app_lock_->sync_bridge().SetAppManifestUpdateTime(app_id_,
                                                       app_lock_->clock().Now());
   }
+
   completion_info_.result = check_result;
   GetMutableDebugValue().Set("completion_info",
                              completion_info_.ToDebugValue());
