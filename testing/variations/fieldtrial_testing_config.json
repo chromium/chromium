@@ -14226,12 +14226,18 @@
                     "name": "InhibitSQLPreload",
                     "enable_features": [
                         "InhibitSQLPreload"
+                    ],
+                    "disable_features": [
+                        "InhibitSQLPreloadOnFixedSSD"
                     ]
                 },
                 {
                     "name": "InhibitSQLPreloadOnFixedSSD",
                     "enable_features": [
                         "InhibitSQLPreloadOnFixedSSD"
+                    ],
+                    "disable_features": [
+                        "InhibitSQLPreload"
                     ]
                 }
             ]
