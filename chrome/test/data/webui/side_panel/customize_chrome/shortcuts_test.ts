@@ -10,7 +10,9 @@ import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} fro
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 import {TileType} from 'chrome://customize-chrome-side-panel.top-chrome/tile_type.mojom-webui.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -53,6 +55,16 @@ suite('ShortcutsTest', () => {
         '[name="enterpriseShortcutsOption"]')!;
   }
 
+  function getPersonalShortcutsToggle(): CrCheckboxElement {
+    return customizeShortcutsElement.shadowRoot.querySelector(
+        '#personalToggle')!;
+  }
+
+  function getEnterpriseShortcutsToggle(): CrCheckboxElement {
+    return customizeShortcutsElement.shadowRoot.querySelector(
+        '#enterpriseToggle')!;
+  }
+
   function getCustomLinksContainer(): HTMLElement {
     return customizeShortcutsElement.shadowRoot.querySelector(
         '#customLinksContainer')!;
@@ -69,20 +81,38 @@ suite('ShortcutsTest', () => {
   }
 
   async function setInitialSettings(
-      shortcutsType: number, shortcutsVisible: boolean,
+      shortcutsTypes: TileType[], shortcutsVisible: boolean,
+      shortcutsPersonalVisible: boolean,
       disabledShortcuts: TileType[]): Promise<void> {
     customizeShortcutsElement =
         document.createElement('customize-chrome-shortcuts');
     document.body.appendChild(customizeShortcutsElement);
     await handler.whenCalled('updateMostVisitedSettings');
     callbackRouterRemote.setMostVisitedSettings(
-        shortcutsType, shortcutsVisible, disabledShortcuts);
+        shortcutsTypes, shortcutsVisible, shortcutsPersonalVisible,
+        disabledShortcuts);
     await callbackRouterRemote.$.flushForTesting();
     assertTrue(getCustomLinksButton().hideLabelText);
     assertTrue(getTopSitesButton().hideLabelText);
     assertEquals(getCustomLinksButton().label, 'My shortcuts');
     assertEquals(getTopSitesButton().label, 'Most visited sites');
-    if (disabledShortcuts.includes(TileType.kEnterpriseShortcuts)) {
+    const enterpriseShortcutsMixedContainer =
+        customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
+            '#enterpriseShortcutsMixedContainer');
+    const personalShortcutsContainer =
+        customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
+            '#personalShortcutsContainer');
+    if (customizeShortcutsElement['showEnterprisePersonalMixedSidepanel_']()) {
+      assertTrue(!!enterpriseShortcutsMixedContainer);
+      assertTrue(!!personalShortcutsContainer);
+      const enterpriseButtonLabel =
+          enterpriseShortcutsMixedContainer.querySelector(
+              'customize-chrome-button-label')!;
+      assertEquals(enterpriseButtonLabel.label, 'My organization\'s shortcuts');
+      const personalButtonLabel = personalShortcutsContainer.querySelector(
+          'customize-chrome-button-label')!;
+      assertEquals(personalButtonLabel.label, 'My shortcuts and sites');
+    } else if (disabledShortcuts.includes(TileType.kEnterpriseShortcuts)) {
       assertEquals(
           customizeShortcutsElement.shadowRoot.querySelector(
               '#enterpriseShortcutsContainer'),
@@ -119,7 +149,8 @@ suite('ShortcutsTest', () => {
 
   test('selections are mutually exclusive', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 1, /* shortcutsVisible= */ false,
+        /* shortcutsTypes= */[TileType.kCustomLinks],
+        /* shortcutsVisible= */ false, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
     assertShown(false);
     customizeShortcutsElement.$.showToggle.click();
@@ -134,7 +165,8 @@ suite('ShortcutsTest', () => {
 
   test('turning toggle on updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 0, /* shortcutsVisible= */ false,
+        /* shortcutsTypes= */[TileType.kTopSites],
+        /* shortcutsVisible= */ false, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
 
     customizeShortcutsElement.$.showToggle.click();
@@ -145,15 +177,17 @@ suite('ShortcutsTest', () => {
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(0, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('turning toggle off hides settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 0, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kTopSites],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
 
     customizeShortcutsElement.$.showToggle.click();
@@ -164,15 +198,17 @@ suite('ShortcutsTest', () => {
     assertTrue(!!selector);
     assertEquals(false, selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(0, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
     assertFalse(shortcutsVisible);
   });
 
   test('clicking toggle title updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 0, /* shortcutsVisible= */ false,
+        /* shortcutsTypes= */[TileType.kTopSites],
+        /* shortcutsVisible= */ false, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
 
     customizeShortcutsElement.$.showToggleContainer.click();
@@ -183,15 +219,17 @@ suite('ShortcutsTest', () => {
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(0, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('clicking custom links label updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 0, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kTopSites],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
     assertUseMostVisited();
 
@@ -199,15 +237,18 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(1, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kCustomLinks]),
+        JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('clicking custom button label updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 0, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kTopSites],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
     assertUseMostVisited();
 
@@ -215,15 +256,18 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(1, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kCustomLinks]),
+        JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('clicking most visited label updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 1, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kCustomLinks],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
     assertCustomLinksEnabled();
 
@@ -231,30 +275,34 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(0, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('clicking most visited button updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 1, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kCustomLinks],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[TileType.kEnterpriseShortcuts]);
     assertCustomLinksEnabled();
 
     getTopSitesButton().click();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(0, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('clicking enterprise shortcuts label updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 1, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kCustomLinks],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[]);
     assertCustomLinksEnabled();
 
@@ -262,30 +310,36 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(2, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kEnterpriseShortcuts]),
+        JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('clicking enterprise shortcuts button updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 1, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kCustomLinks],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[]);
     assertCustomLinksEnabled();
 
     getEnterpriseShortcutsButton().click();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(2, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kEnterpriseShortcuts]),
+        JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
   });
 
   test('keydown on radio options updates MV settings', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 0, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[TileType.kTopSites],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[]);
     assertUseMostVisited();
 
@@ -293,42 +347,50 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType, shortcutsVisible] =
+    const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(1, shortcutsType);
+    assertEquals(
+        JSON.stringify([TileType.kCustomLinks]),
+        JSON.stringify(shortcutsTypes));
     assertTrue(shortcutsVisible);
 
     keyDownOn(getCustomLinksButton(), 0, [], 'ArrowUp');
     await microtasksFinished();
 
     assertEquals(2, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType2, shortcutsVisible2] =
+    const [shortcutsTypes2, shortcutsVisible2] =
         handler.getArgs('setMostVisitedSettings')[1];
-    assertEquals(2, shortcutsType2);
+    assertEquals(
+        JSON.stringify([TileType.kEnterpriseShortcuts]),
+        JSON.stringify(shortcutsTypes2));
     assertTrue(shortcutsVisible2);
 
     keyDownOn(getEnterpriseShortcutsButton(), 0, [], 'ArrowDown');
     await microtasksFinished();
 
     assertEquals(3, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType3, shortcutsVisible3] =
+    const [shortcutsTypes3, shortcutsVisible3] =
         handler.getArgs('setMostVisitedSettings')[2];
-    assertEquals(1, shortcutsType3);
+    assertEquals(
+        JSON.stringify([TileType.kCustomLinks]),
+        JSON.stringify(shortcutsTypes3));
     assertTrue(shortcutsVisible3);
 
     keyDownOn(getCustomLinksButton(), 0, [], 'ArrowDown');
     await microtasksFinished();
 
     assertEquals(4, handler.getCallCount('setMostVisitedSettings'));
-    const [shortcutsType4, shortcutsVisible4] =
+    const [shortcutsTypes4, shortcutsVisible4] =
         handler.getArgs('setMostVisitedSettings')[3];
-    assertEquals(0, shortcutsType4);
+    assertEquals(
+        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes4));
     assertTrue(shortcutsVisible4);
   });
 
   test('no radio option selected if shortcuts type is invalid', async () => {
     await setInitialSettings(
-        /* shortcutsType= */ 100, /* shortcutsVisible= */ true,
+        /* shortcutsTypes= */[100 as TileType],
+        /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
         /* disabledShortcuts= */[]);
     assertNothingSelected();
   });
@@ -345,7 +407,8 @@ suite('ShortcutsTest', () => {
 
     // Initialize.
     callbackRouterRemote.setMostVisitedSettings(
-        /*shortcutsType=*/ 1, /*shortcutsVisible=*/ true,
+        /*shortcutsTypes=*/[TileType.kCustomLinks],
+        /*shortcutsVisible=*/ true, /*shortcutsPersonalVisible=*/ true,
         /*disabledShortcuts=*/[]);
     await callbackRouterRemote.$.flushForTesting();
 
@@ -354,13 +417,146 @@ suite('ShortcutsTest', () => {
 
     // Update.
     callbackRouterRemote.setMostVisitedSettings(
-        /*shortcutsType=*/ 0, /*shortcutsVisible=*/ true,
+        /*shortcutsTypes=*/[TileType.kTopSites],
+        /*shortcutsVisible=*/ true, /*shortcutsPersonalVisible=*/ true,
         /*disabledShortcuts=*/[]);
     await callbackRouterRemote.$.flushForTesting();
 
     // Still animation after update.
     assertFalse(crCollapse.noAnimation);
   });
+
+  test(
+      'toggling enterprise shortcuts updates MV settings when mixing enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          ntpEnterpriseShortcutsMixingAllowed: true,
+        });
+        await setInitialSettings(
+            /* shortcutsTypes= */
+            [TileType.kCustomLinks, TileType.kEnterpriseShortcuts],
+            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
+            /* disabledShortcuts= */[]);
+        assertCustomLinksEnabled();
+
+        getEnterpriseShortcutsToggle().click();
+        await microtasksFinished();
+
+        assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+        const [shortcutsTypes, shortcutsVisible, shortcutsPersonalVisible] =
+            handler.getArgs('setMostVisitedSettings')[0];
+        assertEquals(
+            JSON.stringify([TileType.kCustomLinks]),
+            JSON.stringify(shortcutsTypes));
+        assertTrue(shortcutsVisible);
+        assertTrue(shortcutsPersonalVisible);
+      });
+
+  test(
+      'toggling personal shortcuts updates MV settings when mixing enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          ntpEnterpriseShortcutsMixingAllowed: true,
+        });
+        await setInitialSettings(
+            /* shortcutsTypes= */
+            [TileType.kCustomLinks, TileType.kEnterpriseShortcuts],
+            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
+            /* disabledShortcuts= */[]);
+        assertCustomLinksEnabled();
+
+        getPersonalShortcutsToggle().click();
+        await microtasksFinished();
+
+        assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+        const [shortcutsTypes, shortcutsVisible, shortcutsPersonalVisible] =
+            handler.getArgs('setMostVisitedSettings')[0];
+        assertEquals(
+            JSON.stringify(
+                [TileType.kEnterpriseShortcuts, TileType.kCustomLinks]),
+            JSON.stringify(shortcutsTypes));
+        assertTrue(shortcutsVisible);
+        assertFalse(shortcutsPersonalVisible);
+      });
+
+  test(
+      'radio options enabled when personal shortcuts on and mixing enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          ntpEnterpriseShortcutsMixingAllowed: true,
+        });
+        await setInitialSettings(
+            /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
+            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
+            /* disabledShortcuts= */[]);
+
+        assertFalse(getCustomLinksButton().disabled);
+        assertFalse(getTopSitesButton().disabled);
+      });
+
+  test(
+      'radio options disabled when personal shortcuts off and mixing enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          ntpEnterpriseShortcutsMixingAllowed: true,
+        });
+        await setInitialSettings(
+            /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
+            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ false,
+            /* disabledShortcuts= */[]);
+        await microtasksFinished();
+
+        assertTrue(customizeShortcutsElement.$.radioSelection.disabled);
+      });
+
+  test(
+      'enterprise and personal shortcut containers visible when mixing enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          ntpEnterpriseShortcutsMixingAllowed: true,
+        });
+        await setInitialSettings(
+            /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
+            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
+            /* disabledShortcuts= */[]);
+
+        const enterpriseShortcutsMixedContainer =
+            customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
+                '#enterpriseShortcutsMixedContainer');
+        assertTrue(!!enterpriseShortcutsMixedContainer);
+        assertFalse(enterpriseShortcutsMixedContainer.hidden);
+
+        const personalShortcutsContainer =
+            customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
+
+                '#personalShortcutsContainer');
+        assertTrue(!!personalShortcutsContainer);
+        assertFalse(personalShortcutsContainer.hidden);
+      });
+
+  test(
+      'enterprise and personal shortcut containers not visible when mixing disabled',
+      async () => {
+        loadTimeData.overrideValues({
+          ntpEnterpriseShortcutsMixingAllowed: false,
+        });
+        await setInitialSettings(
+            /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
+            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
+            /* disabledShortcuts= */[]);
+
+        const enterpriseShortcutsMixedContainer =
+            customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
+                '#enterpriseShortcutsMixedContainer');
+        assertTrue(!!enterpriseShortcutsMixedContainer);
+        assertTrue(enterpriseShortcutsMixedContainer.hidden);
+
+        const personalShortcutsContainer =
+            customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
+                '#personalShortcutsContainer');
+        assertTrue(!!personalShortcutsContainer);
+        assertTrue(personalShortcutsContainer.hidden);
+      });
 
   suite('Metrics', () => {
     test('Clicking show shortcuts toggle sets metric', async () => {

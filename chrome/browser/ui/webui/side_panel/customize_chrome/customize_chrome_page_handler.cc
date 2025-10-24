@@ -150,6 +150,11 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
   pref_change_registrar_.Add(
+      ntp_prefs::kNtpPersonalShortcutsVisible,
+      base::BindRepeating(
+          &CustomizeChromePageHandler::UpdateMostVisitedSettings,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       ntp_prefs::kNtpShortcutsVisible,
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
@@ -467,14 +472,17 @@ void CustomizeChromePageHandler::OpenNtpManagedByPage() {
 }
 
 void CustomizeChromePageHandler::SetMostVisitedSettings(
-    ntp_tiles::TileType type,
-    bool visible) {
-  if (GetTileType() != type) {
-    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible,
-                                     type == ntp_tiles::TileType::kCustomLinks);
+    const std::vector<ntp_tiles::TileType>& types,
+    bool visible,
+    bool personal_shortcuts_visible) {
+  std::set<ntp_tiles::TileType> types_set(types.begin(), types.end());
+  if (GetTileTypes() != types_set) {
+    profile_->GetPrefs()->SetBoolean(
+        ntp_prefs::kNtpCustomLinksVisible,
+        base::Contains(types_set, ntp_tiles::TileType::kCustomLinks));
     profile_->GetPrefs()->SetBoolean(
         ntp_prefs::kNtpEnterpriseShortcutsVisible,
-        type == ntp_tiles::TileType::kEnterpriseShortcuts);
+        base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts));
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
@@ -482,28 +490,29 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
     profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, visible);
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY);
   }
+
+  if (IsPersonalShortcutsVisible() != personal_shortcuts_visible) {
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                     personal_shortcuts_visible);
+    // TODO(crbug.com/438304285): Add logging event here for toggle.
+  }
 }
 
 // TODO(crbug.com/441766227): Update so that when the user has not selected a
 // tile type to view, admin-set shortcuts should be shown by default.
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   std::vector<ntp_tiles::TileType> disabled_shortcuts;
-  // If feature is not enabled, hide the enterprise shortcuts option, but leave
+  // If feature is not enabled or no enterprise shortcuts are set by policy,
+  // hide the enterprise shortcuts option, but leave
   // the preference as is.
-  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts)) {
-    disabled_shortcuts.push_back(ntp_tiles::TileType::kEnterpriseShortcuts);
-  } else if (!IsEnterpriseShortcutsVisible()) {
-    // If enterprise shortcuts is no longer visible (due to policy being unset),
-    // fallback shortcuts type to custom links.
-    if (GetTileType() == ntp_tiles::TileType::kEnterpriseShortcuts) {
-      profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
-      profile_->GetPrefs()->SetBoolean(
-          ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
-    }
+  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
+      IsEnterpriseShortcutsEmpty()) {
     disabled_shortcuts.push_back(ntp_tiles::TileType::kEnterpriseShortcuts);
   }
-  page_->SetMostVisitedSettings(GetTileType(), IsShortcutsVisible(),
-                                std::move(disabled_shortcuts));
+  auto tile_types = GetTileTypes();
+  page_->SetMostVisitedSettings(
+      {tile_types.begin(), tile_types.end()}, IsShortcutsVisible(),
+      IsPersonalShortcutsVisible(), std::move(disabled_shortcuts));
 }
 
 void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
@@ -679,24 +688,51 @@ void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   }
 }
 
-ntp_tiles::TileType CustomizeChromePageHandler::GetTileType() const {
-  if (profile_->GetPrefs()->GetBoolean(
-          ntp_prefs::kNtpEnterpriseShortcutsVisible)) {
-    return ntp_tiles::TileType::kEnterpriseShortcuts;
+std::set<ntp_tiles::TileType> CustomizeChromePageHandler::GetTileTypes() const {
+  std::set<ntp_tiles::TileType> tile_types;
+  if (IsEnterpriseShortcutsVisible()) {
+    tile_types.insert(ntp_tiles::TileType::kEnterpriseShortcuts);
+    // Skip adding personal shortcuts if enterprise shortcuts mixing is not
+    // allowed.
+    if (!ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
+      return tile_types;
+    }
   }
-  return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible)
-             ? ntp_tiles::TileType::kCustomLinks
-             : ntp_tiles::TileType::kTopSites;
+  if (IsPersonalShortcutsVisible()) {
+    tile_types.insert(
+        profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible)
+            ? ntp_tiles::TileType::kCustomLinks
+            : ntp_tiles::TileType::kTopSites);
+  }
+  return tile_types;
 }
 
 bool CustomizeChromePageHandler::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
 }
 
+bool CustomizeChromePageHandler::IsPersonalShortcutsVisible() const {
+  // Always return true if enterprise shortcuts feature is disabled,
+  // enterprise shortcuts mixing is disabled, or no enterprise shortcuts are set
+  // by policy.
+  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
+      !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get() ||
+      IsEnterpriseShortcutsEmpty()) {
+    return true;
+  }
+  return profile_->GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpPersonalShortcutsVisible);
+}
+
 bool CustomizeChromePageHandler::IsEnterpriseShortcutsVisible() const {
-  return !profile_->GetPrefs()
-              ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
-              .empty();
+  return profile_->GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpEnterpriseShortcutsVisible);
+}
+
+bool CustomizeChromePageHandler::IsEnterpriseShortcutsEmpty() const {
+  return profile_->GetPrefs()
+      ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
+      .empty();
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(

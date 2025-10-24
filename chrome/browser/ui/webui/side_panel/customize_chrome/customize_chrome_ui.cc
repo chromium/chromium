@@ -35,6 +35,7 @@
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/ntp_tiles/features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
@@ -147,6 +148,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"enterpriseShortcutsCurated",
        IDS_NTP_CUSTOMIZE_ENTERPRISE_SHORTCUTS_DESC},
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
+      {"showPersonalShortcutsToggle",
+       IDS_NTP_CUSTOMIZE_SHOW_PERSONAL_SHORTCUTS_LABEL},
+      {"showPersonalShortcutsToggleDescription",
+       IDS_NTP_CUSTOMIZE_SHOW_PERSONAL_SHORTCUTS_DESC},
       // Card strings.
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
       // Footer strings.
@@ -296,6 +301,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
+  source->AddBoolean(
+      "ntpEnterpriseShortcutsMixingAllowed",
+      base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+          ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get());
 
   webui::SetupWebUIDataSource(
       source, kSidePanelCustomizeChromeResources,

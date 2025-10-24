@@ -18,11 +18,42 @@ export function getHtml(this: ShortcutsElement) {
 <div id="options">
   <cr-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
-    <cr-radio-group id="radioSelection" ?disabled="${!this.show_}"
+    <div id="enterpriseShortcutsMixedContainer" class="option" @click="${
+      this.onShowEnterpriseShortcutsClick_}" ?hidden="${
+  !this.showEnterprisePersonalMixedSidepanel_()}">
+      ${
+      this.getEnterpriseShortcutConfigs_()
+          .map(item => html`
+          <customize-chrome-button-label label="${item.title}"
+              label-description="${item.description}">
+          </customize-chrome-button-label>
+          <cr-checkbox id="enterpriseToggle" class="label-first"
+              ?checked="${this.showEnterpriseShortcuts_}"
+              @change="${this.onShowEnterpriseShortcutsChange_}">
+          </cr-checkbox>
+      `)}
+    </div>
+    <div id="personalShortcutsContainer" class="option" @click="${
+      this.onShowPersonalShortcutsClick_}" ?hidden="${
+  !this.showEnterprisePersonalMixedSidepanel_()}">
+      <customize-chrome-button-label label="$i18n{showPersonalShortcutsToggle}"
+          label-description="$i18n{showPersonalShortcutsToggleDescription}">
+      </customize-chrome-button-label>
+      <cr-checkbox id="personalToggle" class="label-first"
+          ?checked="${this.showPersonalShortcuts_}"
+          @change="${this.onShowPersonalShortcutsChange_}">
+      </cr-checkbox>
+    </div>
+    <cr-radio-group id="radioSelection"
+        class="${
+      this.showEnterprisePersonalMixedSidepanel_() ?
+      'sub-options' :
+      ''}"
+        ?disabled="${this.getRadioSelectionDisabled_()}"
         .selected="${this.radioSelection_}"
          @selected-changed="${this.onRadioSelectionChanged_}" nested-selectable>
       ${
-      this.shortcutConfigs_.filter(item => !item.disabled)
+      this.getRadioSelectionShortcutConfigs_()
           .map(
               item => html`
         <div class="option" id="${item.containerName}" @click="${
