@@ -326,8 +326,8 @@ if (enable_vr) {
     sources = [ "test/test_hook.h" ]
 
     deps = [
-      "//device/vr/public/mojom:test_mojom",
       "//device/vr/public/mojom:vr_service",
+      "//device/vr/public/mojom/test:test_mojom",
       "//ui/gfx",
       "//ui/gfx/mojom",
     ]
@@ -441,8 +441,8 @@ if (enable_openxr) {
         "//base",
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",
-        "//device/vr/public/mojom:test_mojom",
         "//device/vr/public/mojom:vr_service",
+        "//device/vr/public/mojom/test:test_mojom",
         "//third_party/openxr:openxr_headers",
       ]
 

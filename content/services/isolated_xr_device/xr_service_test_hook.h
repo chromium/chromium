@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace webxr {

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_PUBLIC_MOJOM_TEST_HOOK_TYPES_H_
-#define DEVICE_VR_PUBLIC_MOJOM_TEST_HOOK_TYPES_H_
+#ifndef DEVICE_VR_PUBLIC_MOJOM_TEST_CONTROLLER_FRAME_DATA_H_
+#define DEVICE_VR_PUBLIC_MOJOM_TEST_CONTROLLER_FRAME_DATA_H_
 
 #include <array>
-#include <cstdint>
 #include <optional>
 
 #include "base/component_export.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom-shared.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom-shared.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
@@ -21,32 +18,6 @@ inline constexpr uint32_t kMaxControllers = 5;
 inline constexpr unsigned int kMaxNumAxes = 5;
 inline constexpr unsigned int kNumJointsForTest =
     static_cast<unsigned int>(device::mojom::XRHandJoint::kMaxValue) + 1;
-inline constexpr unsigned int kNumVisibilityMaskVerticesForTest = 6;
-inline constexpr unsigned int kNumVisibilityMaskIndicesForTest = 3;
-
-struct Color {
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-  unsigned char a;
-};
-
-enum class XrEye {
-  kLeft = 0,
-  kRight = 1,
-  kNone = 2,
-};
-
-struct ViewData {
-  Color color;
-  XrEye eye;
-  gfx::Rect viewport;
-  char raw_buffer[256];  // Can encode raw data here.
-};
-
-struct DeviceConfig {
-  float interpupillary_distance;
-};
 
 // These are largely the same as the OpenVR button/axis constants, but kept
 // separate so they're more runtime-agnostic.
@@ -136,11 +107,6 @@ struct COMPONENT_EXPORT(VR_PUBLIC_TEST_TYPEMAPS) ControllerFrameData {
   ControllerFrameData& operator=(ControllerFrameData&& other);
 };
 
-struct COMPONENT_EXPORT(VR_PUBLIC_TEST_TYPEMAPS) VisibilityMaskData {
-  std::array<float, kNumVisibilityMaskVerticesForTest> vertices;
-  std::array<uint32_t, kNumVisibilityMaskIndicesForTest> indices;
-};
-
 }  // namespace device
 
-#endif  // DEVICE_VR_PUBLIC_MOJOM_TEST_HOOK_TYPES_H_
+#endif  // DEVICE_VR_PUBLIC_MOJOM_TEST_CONTROLLER_FRAME_DATA_H_

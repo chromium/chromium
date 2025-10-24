@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/public/mojom/test_hook_types.h"
+#include "device/vr/public/mojom/test/controller_frame_data.h"
 
 namespace device {
 

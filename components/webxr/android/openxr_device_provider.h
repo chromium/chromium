@@ -11,7 +11,7 @@
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_device.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom-forward.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {

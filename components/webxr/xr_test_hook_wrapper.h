@@ -6,7 +6,7 @@
 #define COMPONENTS_WEBXR_XR_TEST_HOOK_WRAPPER_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "device/vr/test/test_hook.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

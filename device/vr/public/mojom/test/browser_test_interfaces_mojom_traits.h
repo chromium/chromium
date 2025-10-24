@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_PUBLIC_MOJOM_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
-#define DEVICE_VR_PUBLIC_MOJOM_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
+#ifndef DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
+#define DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
 
-#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
-#include "device/vr/public/mojom/test_hook_types.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test/color.h"
+#include "device/vr/public/mojom/test/controller_frame_data.h"
+#include "device/vr/public/mojom/test/device_config.h"
+#include "device/vr/public/mojom/test/view_data.h"
+#include "device/vr/public/mojom/test/visibility_mask.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -303,4 +307,4 @@ struct StructTraits<device_test::mojom::XRVisibilityMaskDataView,
 
 }  // namespace mojo
 
-#endif  // DEVICE_VR_PUBLIC_MOJOM_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
+#endif  // DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
