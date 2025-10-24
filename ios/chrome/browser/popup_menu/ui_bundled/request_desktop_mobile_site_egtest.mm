@@ -14,8 +14,8 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
@@ -134,14 +134,14 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 - (void)selectDefaultMode:(NSString*)defaultMode {
   [ChromeEarlGreyUI openSettingsMenu];
   {
-    // Disable the timer in this scope to avoid infinite spinner loop. EarlGrey
+    // Disable syncronization to avoid infinite spinner loop. EarlGrey
     // tests wait for scroll bars to disappear after a scroll operation.
-    ScopedDisableTimerTracking disabler;
+    ScopedSynchronizationDisabler disabler;
     [[[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                                 kSettingsContentSettingsCellId),
                                             grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 300)
         onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
         performAction:grey_tap()];
   }
