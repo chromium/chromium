@@ -272,6 +272,24 @@ component("integrity_policy") {
   defines = [ "IS_NETWORK_CPP_INTEGRITY_POLICY_IMPL" ]
 }
 
+component("connection_allowlist") {
+  sources = [
+    "connection_allowlist.cc",
+    "connection_allowlist.h",
+    "connection_allowlist_mojom_traits.cc",
+    "connection_allowlist_mojom_traits.h",
+    "connection_allowlist_parser.cc",
+    "connection_allowlist_parser.h",
+  ]
+  deps = [
+    ":flags_and_switches",
+    "//net",
+    "//services/network/public/mojom:mojom_connection_allowlist_shared",
+  ]
+  public_deps = [ "//base" ]
+  defines = [ "IS_NETWORK_CPP_CONNECTION_ALLOWLIST_IMPL" ]
+}
+
 component("fetch_retry_options") {
   sources = [
     "fetch_retry_options.cc",
@@ -652,6 +670,7 @@ component("cpp_base") {
 
   public_deps = [
     ":ad_auction_support",
+    ":connection_allowlist",
     ":cookies_mojom_support",
     ":crash_keys",
     ":cross_origin_embedder_policy",
@@ -749,6 +768,7 @@ source_set("tests") {
     "avail_language_header_parser_unittest.cc",
     "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
+    "connection_allowlist_unittest.cc",
     "content_decoding_interceptor_unittest.cc",
     "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",

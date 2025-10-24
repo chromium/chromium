@@ -504,6 +504,38 @@ mojom("mojom_attribution") {
   sources = [ "attribution.mojom" ]
 }
 
+mojom("mojom_connection_allowlist") {
+  generate_java = true
+  sources = [ "connection_allowlist.mojom" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.ConnectionAllowlist"
+          cpp = "::network::ConnectionAllowlist"
+        },
+        {
+          mojom = "network.mojom.ConnectionAllowlists"
+          cpp = "::network::ConnectionAllowlists"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/connection_allowlist_mojom_traits.h",
+      ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:connection_allowlist" ]
+    },
+  ]
+  cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
+}
+
 mojom("mojom_cors_origin_pattern") {
   generate_java = true
   sources = [ "cors_origin_pattern.mojom" ]
@@ -1728,6 +1760,7 @@ mojom("mojom") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_connection_allowlist",
     ":mojom_cors_origin_pattern",
     ":mojom_first_party_sets",
     ":mojom_host_resolver",
