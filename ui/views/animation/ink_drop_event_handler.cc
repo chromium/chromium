@@ -28,7 +28,10 @@ InkDropEventHandler::InkDropEventHandler(View* host_view, Delegate* delegate)
           std::make_unique<ui::ScopedTargetHandler>(host_view, this)),
       host_view_(host_view),
       delegate_(delegate) {
-  observation_.Observe(host_view_.get());
+  view_observation_.Observe(host_view_.get());
+  if (Widget* widget = host_view_->GetWidget()) {
+    widget_observation_.Observe(widget);
+  }
 }
 
 InkDropEventHandler::~InkDropEventHandler() = default;
@@ -187,6 +190,39 @@ void InkDropEventHandler::OnViewThemeChanged(View* observed_view) {
   // not want to create the ink drop when view theme changed.
   if (delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->HostViewThemeChanged();
+  }
+}
+
+void InkDropEventHandler::OnViewAddedToWidget(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
+  if (!widget_observation_.IsObserving()) {
+    widget_observation_.Observe(host_view_->GetWidget());
+  }
+}
+
+void InkDropEventHandler::OnViewRemovedFromWidget(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
+  // Only clean up ink drop and widget observation. Keep observing the view
+  // since it may be added to another widget later.
+  CleanupInkDrop();
+  widget_observation_.Reset();
+}
+
+void InkDropEventHandler::OnWidgetDestroying(Widget* widget) {
+  // Clean up everything including both observations since the widget is being
+  // destroyed.
+  CleanupInkDrop();
+  widget_observation_.Reset();
+  view_observation_.Reset();
+}
+
+void InkDropEventHandler::CleanupInkDrop() {
+  // Clean up ink drop state before the widget completes destruction. This
+  // prevents crashes when observer callbacks try to access widget components
+  // (like frame views) that have already been destroyed.
+  if (delegate_->HasInkDrop()) {
+    delegate_->GetInkDrop()->SnapToHidden();
+    delegate_->GetInkDrop()->SetHovered(false);
   }
 }
 
