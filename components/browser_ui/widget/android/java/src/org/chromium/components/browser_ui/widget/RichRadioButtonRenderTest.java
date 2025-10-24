@@ -30,6 +30,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -151,6 +152,7 @@ public class RichRadioButtonRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "RichRadioButton"})
+    @DisabledTest(message = "https://crbug.com/454385607")
     public void testRichRbHorizontalTitleChecked() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -177,6 +179,7 @@ public class RichRadioButtonRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "RichRadioButton"})
+    @DisabledTest(message = "https://crbug.com/454443245")
     public void testRichRbHorizontalFullChecked() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
