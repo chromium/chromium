@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -77,6 +78,7 @@ void BwgBrowserAgent::PresentBwgOverlay(
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
 
   BWGConfiguration* config = [[BWGConfiguration alloc] init];
+  config.pageContext = [[GeminiPageContext alloc] init];
   config.baseViewController = base_view_controller;
   config.authService =
       AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
@@ -107,22 +109,22 @@ void BwgBrowserAgent::PresentBwgOverlay(
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
   if (expected_page_context.has_value()) {
     pageContext = std::move(expected_page_context.value());
-    config.BWGPageContextComputationState =
+    config.pageContext.BWGPageContextComputationState =
         ios::provider::BWGPageContextComputationState::kSuccess;
   } else {
-    config.BWGPageContextComputationState =
+    config.pageContext.BWGPageContextComputationState =
         BWGPageContextComputationStateFromPageContextWrapperError(
             expected_page_context.error());
   }
-  config.uniquePageContext = std::move(pageContext);
+  config.pageContext.uniquePageContext = std::move(pageContext);
 
   // Set the page context attachment state.
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
   if (!pref_service->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
-    config.BWGPageContextAttachmentState =
+    config.pageContext.BWGPageContextAttachmentState =
         ios::provider::BWGPageContextAttachmentState::kUserDisabled;
   } else {
-    config.BWGPageContextAttachmentState =
+    config.pageContext.BWGPageContextAttachmentState =
         ios::provider::BWGPageContextAttachmentState::kAttached;
   }
 
@@ -141,7 +143,7 @@ void BwgBrowserAgent::PresentBwgOverlay(
     page_favicon =
         DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
   }
-  config.favicon = page_favicon;
+  config.pageContext.favicon = page_favicon;
 
   // Start the overlay and update the tab helper to reflect this.
   ios::provider::StartBwgOverlay(config);
