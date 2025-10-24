@@ -811,6 +811,66 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                                           HasLabel(u"Flight · Jan 2")));
 }
 
+// Tests that passenger name is used as a disambiguating label in flight
+// reservation suggestions.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       LabelGeneration_FlightReservation_PassengerNameDisambiguation) {
+  base::Time departure_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-02-16T15:30:15", &departure_time));
+  SetEntities(
+      {test::GetFlightReservationEntityInstanceWithRandomGuid({
+           .confirmation_code = u"ABC",
+           .name = u"John Doe",
+           // The departure time is set to 1 hour before the other
+           // entity's departure time to ensure deterministic sorting,
+           // as flight reservations suggestions are sorted by departure time.
+           .departure_time = departure_time - base::Hours(1),
+       }),
+       test::GetFlightReservationEntityInstanceWithRandomGuid({
+           .confirmation_code = u"DEF",
+           .name = u"Bob Doe",
+           .departure_time = departure_time,
+       })});
+  SetForm({NAME_FULL, FLIGHT_RESERVATION_TICKET_NUMBER});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(1));
+
+  EXPECT_THAT(suggestions, SuggestionsAre(HasLabel(u"Flight · John Doe"),
+                                          HasLabel(u"Flight · Bob Doe")));
+}
+
+// Tests that flight number is used as a disambiguating label in flight
+// reservation suggestions.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       LabelGeneration_FlightReservation_FlightNumberDisambiguation) {
+  base::Time departure_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-02-16T15:30:15", &departure_time));
+  SetEntities(
+      {test::GetFlightReservationEntityInstanceWithRandomGuid({
+           .flight_number = u"123",
+           .ticket_number = u"ABC",
+           // The departure time is set to 1 hour before the other
+           // entity's departure time to ensure deterministic sorting,
+           // as flight reservations suggestions are sorted by departure time.
+           .departure_time = departure_time - base::Hours(1),
+       }),
+       test::GetFlightReservationEntityInstanceWithRandomGuid({
+           .flight_number = u"234",
+           .ticket_number = u"DEF",
+           .departure_time = departure_time,
+       })});
+  SetForm({NAME_FULL, FLIGHT_RESERVATION_TICKET_NUMBER});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+
+  EXPECT_THAT(suggestions, SuggestionsAre(HasLabel(u"Flight · 123"),
+                                          HasLabel(u"Flight · 234")));
+}
+
 // Tests that the Wallet suggestions show the IPH.
 TEST_F(AutofillAiSuggestionGeneratorTest, WalletSuggestionsShowIPH) {
   SetEntities({test::GetVehicleEntityInstanceWithRandomGuid(
