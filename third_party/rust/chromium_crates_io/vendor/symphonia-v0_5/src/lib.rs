@@ -35,7 +35,7 @@
 //!
 //! \* Gapless playback requires support from both the demuxer and decoder.
 //!
-//! **Tip:** All formats can be enabled with the `all-codecs` feature flag.
+//! **Tip:** All formats can be enabled with the `all-formats` feature flag.
 //!
 //! ## Codecs
 //!
@@ -98,7 +98,7 @@
 //! 4.  Instantiate a [`MediaSourceStream`][core::io::MediaSourceStream] with the `MediaSource`
 //!     above.
 //! 5.  Using the `Probe`, call [`format`][core::probe::Probe::format] and pass it the
-//!    `MediaSourceStream`.
+//!     `MediaSourceStream`.
 //! 6.  If the probe successfully detects a compatible format, a `FormatReader` will be returned.
 //!     This is an instance of a demuxer that can read and demux the provided source into
 //!     [`Packet`][core::formats::Packet]s.
