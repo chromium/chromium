@@ -906,8 +906,9 @@ def make_check_constructor_call(cg_context):
     if not cg_context.is_legacy_factory_function:
         node.append(
             CxxLikelyIfNode(
-                cond=("ConstructorMode::Current(${isolate}) == "
-                      "ConstructorMode::Mode::kWrapExistingObject"),
+                cond=(
+                    "V8PerIsolateData::From(${isolate})->InWrapperConstructor()"
+                ),
                 attribute=None,
                 body=T("bindings::V8SetReturnValue(${info}, ${v8_receiver});\n"
                        "return;")))

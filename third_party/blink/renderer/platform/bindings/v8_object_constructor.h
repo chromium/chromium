@@ -38,28 +38,6 @@
 
 namespace blink {
 
-class ConstructorMode {
-  STACK_ALLOCATED();
- public:
-  using Mode = V8PerIsolateData::ConstructorCallbackMode;
-
-  explicit ConstructorMode(v8::Isolate* isolate)
-      : per_isolate_data_(V8PerIsolateData::From(isolate)),
-        previous_(per_isolate_data_->constructor_mode_) {
-    per_isolate_data_->constructor_mode_ = Mode::kWrapExistingObject;
-  }
-
-  ~ConstructorMode() { per_isolate_data_->constructor_mode_ = previous_; }
-
-  static Mode Current(v8::Isolate* isolate) {
-    return V8PerIsolateData::From(isolate)->constructor_mode_;
-  }
-
- private:
-  V8PerIsolateData* const per_isolate_data_;
-  const Mode previous_;
-};
-
 class PLATFORM_EXPORT V8ObjectConstructor {
   STATIC_ONLY(V8ObjectConstructor);
 

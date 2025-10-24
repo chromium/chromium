@@ -77,11 +77,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     kUseSnapshot,
   };
 
-  enum class ConstructorCallbackMode {
-    kWrapExistingObject,
-    kCreateNewObject,
-  };
-
   // Disables the UseCounter.
   // UseCounter depends on the current context, but it's not available during
   // the initialization of v8::Context and the global object.  So we need to
@@ -253,6 +248,18 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     return omit_exception_context_information_;
   }
 
+  void EnterWrapperConstructor() {
+    DCHECK(!is_in_wrapper_constructor_);
+    is_in_wrapper_constructor_ = true;
+  }
+
+  void LeaveWrapperConstructor() {
+    DCHECK(is_in_wrapper_constructor_);
+    is_in_wrapper_constructor_ = false;
+  }
+
+  bool InWrapperConstructor() const { return is_in_wrapper_constructor_; }
+
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
@@ -315,9 +322,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   std::unique_ptr<V8PrivateProperty> private_property_;
   Persistent<ScriptState> script_regexp_script_state_;
 
-  ConstructorCallbackMode constructor_mode_ =
-      ConstructorCallbackMode::kCreateNewObject;
-  friend class ConstructorMode;
+  bool is_in_wrapper_constructor_ = false;
 
   bool use_counter_disabled_ = false;
   friend class UseCounterDisabledScope;
