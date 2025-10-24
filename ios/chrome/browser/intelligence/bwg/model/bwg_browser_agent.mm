@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -63,6 +65,9 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
     bwg_session_handler_ = [[BWGSessionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.sessionHandler = bwg_session_handler_;
+
+    gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc] init];
+    bwg_gateway_.suggestionHandler = gemini_suggestion_handler_;
   }
 }
 
