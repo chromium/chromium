@@ -5829,20 +5829,28 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
     return nullptr;
   }
 
-  if (!image->IsOpaque()) {
-    resource_provider->Canvas().clear(SkColors::kTransparent);
-  }
+  CHECK_EQ(resource_provider->GetType(),
+           CanvasResourceProvider::ResourceProviderType::kBitmap);
+  CanvasResourceProviderBitmap* resource_provider_bitmap =
+      static_cast<CanvasResourceProviderBitmap*>(resource_provider);
 
-  gfx::Rect src_rect(image->Size());
-  gfx::Rect dest_rect(0, 0, width, height);
-  cc::PaintFlags flags;
-  // TODO(ccameron): WebGL should produce sRGB images.
-  // https://crbug.com/672299
-  ImageDrawOptions draw_options;
-  draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(&resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
-              gfx::RectF(src_rect), draw_options);
-  return resource_provider->Snapshot(FlushReason::kWebGLTexImage);
+  resource_provider_bitmap->ExternalCanvasDrawHelper(
+      [&](MemoryManagedPaintCanvas& canvas) {
+        if (!image->IsOpaque()) {
+          canvas.clear(SkColors::kTransparent);
+        }
+        gfx::Rect src_rect(image->Size());
+        gfx::Rect dest_rect(0, 0, width, height);
+        cc::PaintFlags flags;
+        // TODO(ccameron): WebGL should produce sRGB images.
+        // https://crbug.com/672299
+        ImageDrawOptions draw_options;
+        draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
+        image->Draw(&canvas, flags, gfx::RectF(dest_rect), gfx::RectF(src_rect),
+                    draw_options);
+      });
+
+  return resource_provider_bitmap->Snapshot(FlushReason::kWebGLTexImage);
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
