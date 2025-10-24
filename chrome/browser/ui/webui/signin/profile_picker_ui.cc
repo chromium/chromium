@@ -101,9 +101,64 @@ int GetMainViewTitleId(bool is_glic_version) {
     return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC;
   }
 #endif
-
   return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
                                 : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
+}
+
+int GetMainViewSingleProfileTitleId(bool is_glic_version) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (is_glic_version) {
+    return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC;
+  }
+#endif
+  if (base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations)) {
+    switch (switches::kProfilePickerTextVariation.Get()) {
+      case switches::ProfilePickerVariation::kKeepWorkAndLifeSeparate:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_WORK_AND_LIFE_SEPARATE;
+      case switches::ProfilePickerVariation::kGotAnotherGoogleAccount:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GOT_ANOTHER_GOOGLE_ACCOUNT;
+      case switches::ProfilePickerVariation::kKeepTasksSeparate:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_TASKS_SEPARATE;
+      case switches::ProfilePickerVariation::kSharingAComputer:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_SHARING_A_COMPUTER;
+      case switches::ProfilePickerVariation::kKeepEverythingInChrome:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_EVERYTHING_IN_CHROME;
+    }
+  }
+  return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
+                                : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
+}
+
+int GetMainViewSubtitleId(bool is_glic_version) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (is_glic_version) {
+    return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC;
+  }
+#endif
+  return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE;
+}
+
+int GetMainViewSingleProfileSubtitleId(bool is_glic_version) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (is_glic_version) {
+    return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC;
+  }
+#endif
+  if (base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations)) {
+    switch (switches::kProfilePickerTextVariation.Get()) {
+      case switches::ProfilePickerVariation::kKeepWorkAndLifeSeparate:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_WORK_AND_LIFE_SEPARATE;
+      case switches::ProfilePickerVariation::kGotAnotherGoogleAccount:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GOT_ANOTHER_GOOGLE_ACCOUNT;
+      case switches::ProfilePickerVariation::kKeepTasksSeparate:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_TASKS_SEPARATE;
+      case switches::ProfilePickerVariation::kSharingAComputer:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_SHARING_A_COMPUTER;
+      case switches::ProfilePickerVariation::kKeepEverythingInChrome:
+        return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_EVERYTHING_IN_CHROME;
+    }
+  }
+  return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE;
 }
 
 void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
@@ -165,15 +220,14 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
            : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL);
   html_source->AddLocalizedString("mainViewTitle",
                                   GetMainViewTitleId(is_glic_version));
-#if BUILDFLAG(ENABLE_GLIC)
   html_source->AddLocalizedString(
-      "mainViewSubtitle", is_glic_version
-                              ? IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC
-                              : IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE);
-#else
+      "mainViewSingleProfileTitle",
+      GetMainViewSingleProfileTitleId(is_glic_version));
   html_source->AddLocalizedString("mainViewSubtitle",
-                                  IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE);
-#endif  // BUILDFLAG(ENABLE_GLIC)
+                                  GetMainViewSubtitleId(is_glic_version));
+  html_source->AddLocalizedString(
+      "mainViewSingleProfileSubtitle",
+      GetMainViewSingleProfileSubtitleId(is_glic_version));
 
   html_source->AddLocalizedString(
       "profileTypeChoiceSubtitle",
@@ -208,6 +262,7 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
     html_source->AddBoolean("isGuestModeEnabled", false);
     html_source->AddBoolean("isProfileCreationAllowed", false);
     html_source->AddBoolean("showProfilePickerToAllUsersExperiment", false);
+    html_source->AddBoolean("isProfilePickerTextVariationsEnabled", false);
     return;
   }
 
@@ -237,6 +292,9 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
       "showProfilePickerToAllUsersExperiment",
       base::FeatureList::IsEnabled(
           switches::kShowProfilePickerToAllUsersExperiment));
+  html_source->AddBoolean(
+      "isProfilePickerTextVariationsEnabled",
+      base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations));
 }
 
 void AddResourcePaths(content::WebUIDataSource* html_source,

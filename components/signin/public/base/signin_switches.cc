@@ -342,7 +342,6 @@ BASE_FEATURE(kProfileCreationDeclineSigninCTAExperiment,
 BASE_FEATURE(kProfilePickerTextVariations, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<ProfilePickerVariation>::Option
     kProfilePickerVariations[] = {
-        {ProfilePickerVariation::kDefault, "default"},
         {ProfilePickerVariation::kKeepWorkAndLifeSeparate,
          "keep-work-and-life-separate"},
         {ProfilePickerVariation::kGotAnotherGoogleAccount,
@@ -355,7 +354,8 @@ constexpr base::FeatureParam<ProfilePickerVariation>::Option
 constexpr base::FeatureParam<ProfilePickerVariation>
     kProfilePickerTextVariation{
         &kProfilePickerTextVariations, "profile-picker-variation",
-        ProfilePickerVariation::kDefault, &kProfilePickerVariations};
+        ProfilePickerVariation::kKeepWorkAndLifeSeparate,
+        &kProfilePickerVariations};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 BASE_FEATURE(kProfilesReordering, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -114,6 +114,8 @@ export class ProfilePickerMainViewElement extends
 
   private showProfilePickerToAllUsersExperiment_: boolean =
       loadTimeData.getBoolean('showProfilePickerToAllUsersExperiment');
+  private isProfilePickerTextVariationsEnabled_: boolean =
+      loadTimeData.getBoolean('isProfilePickerTextVariationsEnabled');
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -339,24 +341,32 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getTitle_(): TrustedHTML {
-    const titleStringResouce =
-        // <if expr="enable_glic">
-        this.isProfileListLoadedAndEmptyAndGlic_() ? 'glicTitleNoProfile' :
-        // </if>
-                                                     'mainViewTitle';
-    // Special styling through 'class' attribute in some version of the title.
+    // <if expr="enable_glic">
+    if (this.isProfileListLoadedAndEmptyAndGlic_()) {
+      // Special styling through 'class' attribute in some version of the title.
+      return this.i18nAdvanced('glicTitleNoProfile', {attrs: ['class']});
+    }
+    // </if>
+    const titleStringResouce = this.isProfilePickerTextVariationsEnabled_ &&
+            this.profilesList_.length === 1 ?
+        'mainViewSingleProfileTitle' :
+        'mainViewTitle';
     return this.i18nAdvanced(titleStringResouce, {attrs: ['class']});
   }
 
   protected getSubtitle_(): TrustedHTML {
-    const subtitleStringResource =
-        // <if expr="enable_glic">
-        this.isProfileListLoadedAndEmptyAndGlic_() ?
-        'mainViewSubtitleGlicNoProfile' :
-        // </if>
+    // <if expr="enable_glic">
+    if (this.isProfileListLoadedAndEmptyAndGlic_()) {
+      // Special tagging through 'class' attribute in some version of the
+      // subtitle.
+      return this.i18nAdvanced(
+          'mainViewSubtitleGlicNoProfile', {attrs: ['class']});
+    }
+    // </if>
+    const subtitleStringResource = this.isProfilePickerTextVariationsEnabled_ &&
+            this.profilesList_.length === 1 ?
+        'mainViewSingleProfileSubtitle' :
         'mainViewSubtitle';
-    // Special tagging through 'class' attribute in some version of the
-    // subtitle.
     return this.i18nAdvanced(subtitleStringResource, {attrs: ['class']});
   }
 

@@ -291,12 +291,11 @@ BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilePickerTextVariations);
 enum class ProfilePickerVariation {
-  kDefault = 0,
-  kKeepWorkAndLifeSeparate = 1,
-  kGotAnotherGoogleAccount = 2,
-  kKeepTasksSeparate = 3,
-  kSharingAComputer = 4,
-  kKeepEverythingInChrome = 5,
+  kKeepWorkAndLifeSeparate = 0,
+  kGotAnotherGoogleAccount = 1,
+  kKeepTasksSeparate = 2,
+  kSharingAComputer = 3,
+  kKeepEverythingInChrome = 4,
 };
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<ProfilePickerVariation>
