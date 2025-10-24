@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/notreached.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "printing/buildflags/buildflags.h"
@@ -55,9 +54,9 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
                                               bool is_scripted,
                                               PrintSettingsCallback callback) {
   if (!print_dialog_) {
-    // Can only get here if the renderer is sending bad messages.
-    // http://crbug.com/341777
-    NOTREACHED();
+    // Can only get here if the renderer is sending bad messages. Ignore.
+    // https://crbug.com/41088489
+    return;
   }
 
   print_dialog_->ShowDialog(delegate_->GetParentView(), has_selection,
