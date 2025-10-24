@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -116,11 +115,6 @@ void BrowserViewLayoutImplOld::Layout(views::View* browser_view) {
 
   if (delegate().ShouldLayoutTabStrip()) {
     LayoutTabStripRegion(main_container_bounds);
-    if (delegate().ShouldDrawTabStrip()) {
-      views().tab_strip->SetBackgroundOffset(
-          views().tab_strip_region_view->GetMirroredX() +
-          views().browser_view->GetMirroredX());
-    }
     LayoutWebUITabStrip(main_container_bounds);
   }
   LayoutToolbar(main_container_bounds);

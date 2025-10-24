@@ -5102,7 +5102,6 @@ void BrowserView::AddedToWidget() {
   layout_views.web_app_frame_toolbar = web_app_frame_toolbar_;
   layout_views.web_app_window_title = web_app_window_title_;
   layout_views.tab_strip_region_view = tab_strip_region_view_;
-  layout_views.tab_strip = tab_strip_region_view_->tab_strip();
   layout_views.vertical_tab_strip_container = vertical_tab_strip_container_;
   layout_views.toolbar = toolbar_;
   layout_views.infobar_container = infobar_container_;

@@ -73,10 +73,6 @@ bool FakeTabSlotController::HoverCardIsShowingForTab(Tab* tab) {
   return false;
 }
 
-int FakeTabSlotController::GetBackgroundOffset() const {
-  return 0;
-}
-
 int FakeTabSlotController::GetStrokeThickness() const {
   return 0;
 }

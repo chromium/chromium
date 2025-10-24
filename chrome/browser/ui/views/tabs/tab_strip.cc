@@ -1126,14 +1126,6 @@ void TabStrip::SetTabStripObserver(TabStripObserver* observer) {
   observer_ = observer;
 }
 
-void TabStrip::SetBackgroundOffset(int background_offset) {
-  if (background_offset == background_offset_) {
-    return;
-  }
-  background_offset_ = background_offset;
-  OnPropertyChanged(&background_offset_, views::kPropertyEffectsPaint);
-}
-
 bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
   // `rect` is in the window caption if it doesn't hit any content area.
   return !tab_container_->IsRectInContentArea(rect);
@@ -2029,10 +2021,6 @@ void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
   }
 }
 
-int TabStrip::GetBackgroundOffset() const {
-  return background_offset_;
-}
-
 int TabStrip::GetStrokeThickness() const {
   return ShouldDrawStrokes() ? 1 : 0;
 }
@@ -2589,7 +2577,6 @@ void TabStrip::AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id) {
 }
 
 BEGIN_METADATA(TabStrip)
-ADD_PROPERTY_METADATA(int, BackgroundOffset)
 ADD_READONLY_PROPERTY_METADATA(int, TabCount)
 ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
 ADD_READONLY_PROPERTY_METADATA(int, ModelPinnedTabCount)

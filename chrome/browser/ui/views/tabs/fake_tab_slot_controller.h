@@ -74,7 +74,6 @@ class FakeTabSlotController : public TabSlotController {
   bool HoverCardIsShowingForTab(Tab* tab) override;
   void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override {}
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}
-  int GetBackgroundOffset() const override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
   bool HasVisibleBackgroundTabShapes() const override;
