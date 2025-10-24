@@ -13,20 +13,30 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "ui/actions/actions.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace content {
 class WebContents;
 }
 
-namespace {}  // namespace
+namespace {
+actions::ActionItem* GetActionItem(actions::ActionItem* root_action_item) {
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionShowCookieControls, root_action_item);
+  CHECK(action_item);
+  return action_item;
+}
+}  // namespace
 
 DEFINE_USER_DATA(CookieControlsBubbleCoordinator);
 
 CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator(
-    BrowserWindowInterface* browser_window)
+    BrowserWindowInterface* browser_window,
+    actions::ActionItem* root_action_item)
     : scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
-                                *this) {}
+                                *this),
+      action_item_(GetActionItem(root_action_item)) {}
 
 CookieControlsBubbleCoordinator::~CookieControlsBubbleCoordinator() = default;
 
@@ -67,6 +77,8 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   view_controller_->SetIsReloadingState(false);
   controller->Update(web_contents);
   widget->Show();
+
+  action_item_->SetIsShowingBubble(true);
 }
 
 bool CookieControlsBubbleCoordinator::IsReloadingState() const {
@@ -106,6 +118,8 @@ void CookieControlsBubbleCoordinator::OnViewIsDeleting(
   bubble_view_ = nullptr;
   view_controller_ = nullptr;
   bubble_closing_callbacks_.Notify();
+
+  action_item_->SetIsShowingBubble(false);
 }
 
 // static

@@ -11,6 +11,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/test/widget_test.h"
@@ -141,6 +143,27 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleCoordinatorBrowserTest,
   coordinator()->GetBubble()->GetWidget()->Close();
   waiter.Wait();
   EXPECT_EQ(coordinator()->GetBubble(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleCoordinatorBrowserTest,
+                       ActionItemUpdatedWithBubbleVisibility) {
+  actions::ActionItem* action =
+      actions::ActionManager::Get().FindAction(kActionShowCookieControls);
+  ASSERT_NE(action, nullptr);
+
+  EXPECT_EQ(coordinator()->GetBubble(), nullptr);
+  coordinator()->ShowBubble(BrowserView::GetBrowserViewForBrowser(browser())
+                                ->toolbar_button_provider(),
+                            web_contents(), controller());
+  EXPECT_NE(coordinator()->GetBubble(), nullptr);
+  EXPECT_TRUE(action->GetIsShowingBubble());
+
+  views::test::WidgetDestroyedWaiter waiter(
+      coordinator()->GetBubble()->GetWidget());
+  coordinator()->GetBubble()->GetWidget()->Close();
+  waiter.Wait();
+  EXPECT_EQ(coordinator()->GetBubble(), nullptr);
+  EXPECT_FALSE(action->GetIsShowingBubble());
 }
 
 class CookieControlsBubbleViewControllerBrowserTest
