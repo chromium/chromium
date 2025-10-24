@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] @layer (block) is invalid in @mixin
+  assert_equals: child count expected 0 but got 1
+[FAIL] @layer (anonymous) is invalid in @mixin
+  assert_equals: child count expected 0 but got 1
+Harness: the test ran to completion.
+
