@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("switches") {
+  sources = [
+    "os_crypt_switches.h",
+  ]
+}
+
+if (is_apple) {
+  source_set("keychain_password_mac") {
+    sources = [
+      "keychain_password_mac.h",
+      "keychain_password_mac.mm",
+    ]
+    deps = [
+      "//base",
+      "//build:branding_buildflags",
+      "//crypto",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  if (is_apple) {
+    sources = [ "keychain_password_mac_unittest.mm" ]
+    deps = [
+      ":keychain_password_mac",
+      "//base",
+      "//crypto:mock_apple_keychain",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

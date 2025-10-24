@@ -10,7 +10,7 @@ specific_include_rules = {
     "+components/os_crypt/sync",
   ],
   "keychain_key_provider.mm": [
-    "+components/os_crypt/sync/keychain_password_mac.h",
-    "+components/os_crypt/sync/os_crypt_switches.h",
+    "+components/os_crypt/common/keychain_password_mac.h",
+    "+components/os_crypt/common/os_crypt_switches.h",
   ],
 }

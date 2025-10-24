@@ -1,20 +1,19 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OS_CRYPT_SYNC_KEYCHAIN_PASSWORD_MAC_H_
-#define COMPONENTS_OS_CRYPT_SYNC_KEYCHAIN_PASSWORD_MAC_H_
+#ifndef COMPONENTS_OS_CRYPT_COMMON_KEYCHAIN_PASSWORD_MAC_H_
+#define COMPONENTS_OS_CRYPT_COMMON_KEYCHAIN_PASSWORD_MAC_H_
 
 #include <string>
 
-#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 
 namespace crypto::apple {
 class Keychain;
 }
 
-class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
+class KeychainPassword {
  public:
 #if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)
   using KeychainNameType = std::string;
@@ -22,7 +21,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   using KeychainNameType = const std::string;
 #endif
 
-  KeychainPassword(const crypto::apple::Keychain& keychain);
+  explicit KeychainPassword(const crypto::apple::Keychain& keychain);
 
   KeychainPassword(const KeychainPassword&) = delete;
   KeychainPassword& operator=(const KeychainPassword&) = delete;
@@ -38,11 +37,11 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   std::string GetPassword() const;
 
   // The service and account names used in Chrome's Safe Storage keychain item.
-  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetServiceName();
-  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetAccountName();
+  static KeychainNameType& GetServiceName();
+  static KeychainNameType& GetAccountName();
 
  private:
   const raw_ref<const crypto::apple::Keychain> keychain_;
 };
 
-#endif  // COMPONENTS_OS_CRYPT_SYNC_KEYCHAIN_PASSWORD_MAC_H_
+#endif  // COMPONENTS_OS_CRYPT_COMMON_KEYCHAIN_PASSWORD_MAC_H_

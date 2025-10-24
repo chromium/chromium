@@ -808,6 +808,7 @@ if (is_win) {
       "//components/crash/core/app:run_as_crashpad_handler",
       "//components/devtools/simple_devtools_protocol_client",
       "//components/embedder_support",
+      "//components/os_crypt/common:switches",
       "//content:sandbox_helper_win",
       "//content/public/app",
       "//content/public/browser",
@@ -857,6 +858,7 @@ static_library("headless_shell_lib") {
     "//build:branding_buildflags",
     "//components/devtools/simple_devtools_protocol_client",
     "//components/embedder_support",
+    "//components/os_crypt/common:switches",
     "//components/policy/content",
     "//components/security_state/content",
     "//content",
@@ -911,10 +913,6 @@ static_library("headless_shell_lib") {
       "//content:sandbox_helper_win",
       "//sandbox",
     ]
-  }
-
-  if (is_mac) {
-    deps += [ "//components/os_crypt/sync" ]
   }
 
   if (is_win || (is_posix && !is_mac)) {

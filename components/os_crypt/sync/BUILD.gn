@@ -38,14 +38,13 @@ component("sync") {
     "os_crypt.h",
     "os_crypt_metrics.cc",
     "os_crypt_metrics.h",
-    "os_crypt_switches.cc",
-    "os_crypt_switches.h",
   ]
 
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
+    "//components/os_crypt/common:switches",
     "//components/prefs",
     "//crypto",
   ]
@@ -58,12 +57,11 @@ component("sync") {
   }
 
   if (is_apple) {
-    sources += [
-      "keychain_password_mac.h",
-      "keychain_password_mac.mm",
-      "os_crypt_mac.mm",
+    sources += [ "os_crypt_mac.mm" ]
+    deps += [
+      "//components/os_crypt/common:keychain_password_mac",
+      "//crypto:mock_apple_keychain",
     ]
-    deps += [ "//crypto:mock_apple_keychain" ]
   } else if (is_win) {
     sources += [ "os_crypt_win.cc" ]
     deps += [ "//components/version_info" ]
@@ -148,10 +146,7 @@ source_set("unit_tests") {
   ]
 
   if (is_apple) {
-    sources += [
-      "keychain_password_mac_unittest.mm",
-      "os_crypt_mac_unittest.cc",
-    ]
+    sources += [ "os_crypt_mac_unittest.cc" ]
     deps += [ "//crypto:mock_apple_keychain" ]
   } else if (is_linux && !is_castos) {
     sources += [

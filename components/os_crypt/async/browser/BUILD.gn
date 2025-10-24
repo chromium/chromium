@@ -52,7 +52,8 @@ if (is_apple) {
       ":key_provider_interface",
       "//base",
       "//components/os_crypt/async/common",
-      "//components/os_crypt/sync",
+      "//components/os_crypt/common:keychain_password_mac",
+      "//components/os_crypt/common:switches",
       "//crypto",
       "//crypto:mock_apple_keychain",
     ]

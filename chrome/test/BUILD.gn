@@ -547,6 +547,7 @@ static_library("test_support") {
     "//components/infobars/content",
     "//components/input",
     "//components/network_session_configurator/common",
+    "//components/os_crypt/common:switches",
     "//components/performance_manager",
     "//components/performance_manager/test_support:test_support_common",
     "//components/privacy_sandbox:features",

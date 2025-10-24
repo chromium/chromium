@@ -1,8 +1,8 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/os_crypt/sync/keychain_password_mac.h"
+#include "components/os_crypt/common/keychain_password_mac.h"
 
 #import <Security/Security.h>
 
