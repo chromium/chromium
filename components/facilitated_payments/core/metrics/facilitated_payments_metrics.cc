@@ -79,6 +79,19 @@ std::string PaymentLinkFopSelectorTypesToString(
   }
 }
 
+std::string PixCodeValidationResultToString(PixCodeValidationResult result) {
+  switch (result) {
+    case PixCodeValidationResult::kDynamic:
+      return "DynamicCode";
+    case PixCodeValidationResult::kStatic:
+      return "StaticCode";
+    case PixCodeValidationResult::kInvalid:
+      return "InvalidCode";
+    case PixCodeValidationResult::kValidatorFailed:
+      return "ValidatorFailed";
+  }
+}
+
 }  // namespace
 
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
@@ -167,20 +180,13 @@ void LogEwalletFopSelected(AvailableEwalletsConfiguration type) {
       FopSelectorAction::kFopSelected);
 }
 
-void LogPaymentCodeValidationResultAndLatency(
-    base::expected<mojom::PixQrCodeType, std::string> result,
-    base::TimeDelta duration) {
-  std::string payment_code_validation_result_type;
-  if (!result.has_value()) {
-    payment_code_validation_result_type = "ValidatorFailed";
-  } else if (result.value() == mojom::PixQrCodeType::kInvalid) {
-    payment_code_validation_result_type = "InvalidCode";
-  } else {
-    payment_code_validation_result_type = "DynamicCode";
-  }
+void LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult result,
+                                              base::TimeDelta duration) {
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.Result", result);
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.PaymentCodeValidation.",
-                    payment_code_validation_result_type, ".Latency"}),
+                    PixCodeValidationResultToString(result), ".Latency"}),
       duration);
 }
 

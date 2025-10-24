@@ -124,6 +124,17 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixAccountLinkingFlowExitedReason) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.PixCodeValidationResult) -->
+
+<enum name="FacilitatedPayments.PixCodeValidationResult">
+  <int value="0" label="Dynamic"/>
+  <int value="1" label="Static"/>
+  <int value="2" label="Invalid"/>
+  <int value="3" label="Validator failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixCodeValidationResult) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.PixFlowExitedReason) -->
 
 <enum name="FacilitatedPayments.PixFlowExitedReason">
@@ -152,6 +163,7 @@ reviewer.
   <int value="17" label="Pix code was copied in an inactive frame"/>
   <int value="18"
       label="Pix code was copied in CCT with Gboard as the default IME"/>
+  <int value="19" label="Static code was copied and is not supported"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->

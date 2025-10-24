@@ -23,12 +23,9 @@ TEST(PixCodeValidatorTest, ValidDynamicCodeWithSomeUpperCaseLetters) {
 }
 
 TEST(PixCodeValidatorTest, StaticCode) {
-  // Code is invalid because merchant account identifier section
-  // 26270014br.gov.bcb.pix0105ABCDE does not contain a section for dynamic url
-  // with id 25.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
                 "00020126270014br.gov.bcb.pix0105ABCDE63041D3D"),
-            mojom::PixQrCodeType::kInvalid);
+            mojom::PixQrCodeType::kStatic);
 }
 
 TEST(PixCodeValidatorTest, EmptyStringNotValid) {

@@ -596,6 +596,61 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
       /*expected_bucket_count=*/1);
 }
 
+// If the user doesn't have any linked Pix account, the PayflowExitedReason
+// histogram should be logged.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_NoLinkedAccount) {
+  base::HistogramTester histogram_tester;
+
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kNoLinkedAccount,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_StaticCode_FeatureDisabled_PixFlowsAbandoned) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  feature_list.InitAndDisableFeature(kEnableStaticQrCodeForPix);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kStatic);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kStaticCode,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_StaticCode_ApiClientAvailabilityChecked) {
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableStaticQrCodeForPix);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(1);
+
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*pix_qr_code_type=*/mojom::PixQrCodeType::kStatic);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
+      /*sample=*/PixCodeValidationResult::kStatic,
+      /*expected_bucket_count=*/1);
+}
+
 // If payments data manager is unavailable, neither the payflow nor the account
 // linking flow is initiated.
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
@@ -697,22 +752,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   pix_manager_->OnPixCodeValidated(
       /*pix_code=*/std::string(), base::TimeTicks::Now(),
       /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
-}
-
-// If the user doesn't have any linked Pix account, the PayflowExitedReason
-// histogram should be logged.
-TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       PayflowExitedReason_NoLinkedAccount) {
-  base::HistogramTester histogram_tester;
-
-  pix_manager_->OnPixCodeValidated(
-      /*pix_code=*/std::string(), base::TimeTicks::Now(),
-      /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PixFlowExitedReason::kNoLinkedAccount,
-      /*expected_bucket_count=*/1);
 }
 
 // If the account linking flag is disabled, the account linking flow shouldn't

@@ -7,6 +7,7 @@ module payments.facilitated.mojom;
 enum PixQrCodeType {
   kInvalid,
   kDynamic,
+  kStatic,
 };
 
 // Interface to validate the format of Pix codes. Called by a browser process

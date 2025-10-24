@@ -154,6 +154,12 @@ class PixManager {
                            PayflowExitedReason_NoLinkedAccount);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTestWithAccountLinkingEnabled,
+      PayflowExitedReason_StaticCode_FeatureDisabled_PixFlowsAbandoned);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
+      PayflowExitedReason_StaticCode_ApiClientAvailabilityChecked);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
       NoLinkedAccount_AccountLinkingFlagDisabled_AccountLinkingFlowNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            NoLinkedAccount_AccountLinkingFlowTriggered);

@@ -16,6 +16,7 @@ constexpr char kSectionIdAndSizePattern[] = "(\\d{2})(\\d{2})";
 constexpr char kPayloadFormatIndicatorFirstSectionId[] = "00";
 constexpr char kMerchantAccountInformationSectionId[] = "26";
 constexpr char kMerchantAccountInformationDynamicUrlSectionId[] = "25";
+constexpr char kMerchantAccountInformationStaticKeySectionId[] = "01";
 constexpr char kAdditionalDataFieldTemplateSectionId[] = "62";
 constexpr char kCrc16LastSectionId[] = "63";
 constexpr char kPixCodeIndicatorLowercase[] = "0014br.gov.bcb.pix";
@@ -76,8 +77,6 @@ mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
   }
 
   SectionInfo section_info;
-  mojom::PixQrCodeType contains_pix_code_indicator =
-      mojom::PixQrCodeType::kInvalid;
 
   if (!ParseNextSection(&code, &section_info) ||
       section_info.section_id != kPayloadFormatIndicatorFirstSectionId) {
@@ -101,18 +100,22 @@ mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
       // merchant account information are already valid. Only checking for the
       // presence of the dynamic url section id is sufficient to determine
       // whether the Pix code is a static vs dynamic code.
-      SectionInfo dynamic_url_section_info;
+      SectionInfo pix_qr_code_type_section_info;
       // We expect the dynamic url id to start right after the Pix code
       // indicator.
-      std::string_view dynamic_url_section_string =
+      std::string_view pix_qr_code_type_section_string =
           section_info.section_value.substr(strlen(kPixCodeIndicatorLowercase));
-      ParseNextSection(&dynamic_url_section_string, &dynamic_url_section_info);
-      if (dynamic_url_section_info.section_id !=
+      ParseNextSection(&pix_qr_code_type_section_string,
+                       &pix_qr_code_type_section_info);
+      if (pix_qr_code_type_section_info.section_id ==
           kMerchantAccountInformationDynamicUrlSectionId) {
+        return mojom::PixQrCodeType::kDynamic;
+      } else if (pix_qr_code_type_section_info.section_id ==
+                 kMerchantAccountInformationStaticKeySectionId) {
+        return mojom::PixQrCodeType::kStatic;
+      } else {
         return mojom::PixQrCodeType::kInvalid;
       }
-
-      contains_pix_code_indicator = mojom::PixQrCodeType::kDynamic;
     }
 
     if (section_info.section_id == kAdditionalDataFieldTemplateSectionId) {
@@ -126,7 +129,7 @@ mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
     }
   }
 
-  return contains_pix_code_indicator;
+  return mojom::PixQrCodeType::kInvalid;
 }
 
 // static

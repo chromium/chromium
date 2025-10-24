@@ -166,7 +166,9 @@ enum class PixFlowExitedReason {
   kFrameNotActive = 17,
   // Pix code was copied in CCT with Gboard as the default IME provider.
   kCctWithGboardAsDefaultIme = 18,
-  kMaxValue = kCctWithGboardAsDefaultIme
+  // Pix code was static and not supported.
+  kStaticCode = 19,
+  kMaxValue = kStaticCode
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 
@@ -186,6 +188,20 @@ enum class PixAccountLinkingFlowExitedReason {
   kMaxValue = kUserSwitchedWebsite
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.AccountLinking.FlowExitedReason)
+
+// LINT.IfChange(PixCodeValidationResult)
+enum class PixCodeValidationResult {
+  // The code is dynamic.
+  kDynamic = 0,
+  // The code is static.
+  kStatic = 1,
+  // The code is invalid.
+  kInvalid = 2,
+  // The validator failed to validate the code.
+  kValidatorFailed = 3,
+  kMaxValue = kValidatorFailed
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixCodeValidationResult)
 
 // Converts `PaymentLinkValidator::Scheme` to a string for logging.
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
@@ -232,9 +248,8 @@ void LogNonCardPaymentMethodsFopSelected(
 
 // Log the result and latency for validating a payment code using
 // `data_decoder::DataDecoder`.
-void LogPaymentCodeValidationResultAndLatency(
-    base::expected<mojom::PixQrCodeType, std::string> result,
-    base::TimeDelta duration);
+void LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult result,
+                                              base::TimeDelta duration);
 
 // Log the result of whether the facilitated payments is available or not and
 // the check's latency.

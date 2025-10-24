@@ -123,9 +123,12 @@ TEST(FacilitatedPaymentsMetricsTest,
   base::HistogramTester histogram_tester;
 
   LogPaymentCodeValidationResultAndLatency(
-      /*result=*/base::unexpected("Data Decoder terminated unexpectedly"),
-      base::Milliseconds(10));
+      PixCodeValidationResult::kValidatorFailed, base::Milliseconds(10));
 
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
+      /*sample=*/PixCodeValidationResult::kValidatorFailed,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PaymentCodeValidation.ValidatorFailed.Latency",
       /*sample=*/10,
@@ -136,9 +139,13 @@ TEST(FacilitatedPaymentsMetricsTest,
      LogPaymentCodeValidationResultAndLatency_InvalidCode) {
   base::HistogramTester histogram_tester;
 
-  LogPaymentCodeValidationResultAndLatency(
-      /*result=*/mojom::PixQrCodeType::kInvalid, base::Milliseconds(10));
+  LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult::kInvalid,
+                                           base::Milliseconds(10));
 
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
+      /*sample=*/PixCodeValidationResult::kInvalid,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PaymentCodeValidation.InvalidCode.Latency",
       /*sample=*/10,
@@ -146,17 +153,38 @@ TEST(FacilitatedPaymentsMetricsTest,
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
-     LogPaymentCodeValidationResultAndLatency_ValidCode) {
+     LogPaymentCodeValidationResultAndLatency_DynamicCode) {
   base::HistogramTester histogram_tester;
 
-  LogPaymentCodeValidationResultAndLatency(
-      /*result=*/mojom::PixQrCodeType::kDynamic, base::Milliseconds(10));
+  LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult::kDynamic,
+                                           base::Milliseconds(10));
 
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
+      /*sample=*/PixCodeValidationResult::kDynamic,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PaymentCodeValidation.DynamicCode.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogPaymentCodeValidationResultAndLatency_StaticCode) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult::kStatic,
+                                           base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
+      /*sample=*/PixCodeValidationResult::kStatic,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.StaticCode.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+  }
 
 TEST(FacilitatedPaymentsMetricsTest,
      LogPixInitiatePurchaseActionResultAndLatency) {
