@@ -30,6 +30,7 @@ class NavigationAttachmentsPopup {
     /* package */ Button mFileButton;
     /* package */ Button mClipboardButton;
     /* package */ Button mAiModeButton;
+    /* package */ View mAutocompleteRequestTypeGroup;
     /* package */ TabAttachmentPopupChoicesRecyclerViewAdapter mTabAttachmentsAdapter;
     /* package */ View mRecentTabsHeader;
 
@@ -61,6 +62,8 @@ class NavigationAttachmentsPopup {
         mClipboardButton =
                 mContentView.findViewById(R.id.navigation_attachments_paste_from_clipboard_button);
         mAiModeButton = mContentView.findViewById(R.id.navigation_attachments_ai_mode_button);
+        mAutocompleteRequestTypeGroup =
+                mContentView.findViewById(R.id.autocomplete_request_type_group);
         mRecentTabsHeader =
                 mContentView.findViewById(R.id.navigation_attachments_recent_tabs_header);
 

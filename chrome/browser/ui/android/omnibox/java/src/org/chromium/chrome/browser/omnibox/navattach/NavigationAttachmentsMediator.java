@@ -156,13 +156,14 @@ class NavigationAttachmentsMediator {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
     }
 
-    public void setNavigationTypeVisible(boolean showNavigationType) {
+    public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {
         // Don't take an action if the state isn't really changing.
-        if (mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE)
-                == showNavigationType) return;
+        if (mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE)
+                == isChangeable) return;
 
-        mModel.set(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE, showNavigationType);
-        if (!showNavigationType) {
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, isChangeable);
+        if (!isChangeable) {
             activateSearchMode();
         }
     }

@@ -85,7 +85,10 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                 new PropertyModel.Builder(NavigationAttachmentsProperties.ALL_KEYS)
                         .with(NavigationAttachmentsProperties.ADAPTER, adapter)
                         .with(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false)
-                        .with(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE, false)
+                        .with(
+                                NavigationAttachmentsProperties
+                                        .AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
+                                false)
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
@@ -138,9 +141,9 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                     default -> false;
                 };
 
-        boolean showNavigationType = hasFocus && isSupportedPageClass;
-        mMediator.setNavigationTypeVisible(showNavigationType);
-        boolean shouldShowToolbar = showNavigationType && !mAimToggleOnly;
+        boolean isChangeable = hasFocus && isSupportedPageClass;
+        mMediator.setAutocompleteRequestTypeChangeable(isChangeable);
+        boolean shouldShowToolbar = isChangeable && !mAimToggleOnly;
         mMediator.setToolbarVisible(shouldShowToolbar);
     }
 

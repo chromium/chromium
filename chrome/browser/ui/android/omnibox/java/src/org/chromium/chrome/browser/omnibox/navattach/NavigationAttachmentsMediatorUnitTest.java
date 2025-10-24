@@ -131,15 +131,17 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void onUrlFocusChange_viewsHiddenWhenNotFocused() {
         // Show it first
         mMediator.setToolbarVisible(true);
-        mMediator.setNavigationTypeVisible(true);
+        mMediator.setAutocompleteRequestTypeChangeable(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertTrue(mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE));
+        assertTrue(
+                mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
 
         // Then hide it
         mMediator.setToolbarVisible(false);
-        mMediator.setNavigationTypeVisible(false);
+        mMediator.setAutocompleteRequestTypeChangeable(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertFalse(mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE));
+        assertFalse(
+                mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
     }
 
     @Test
@@ -354,7 +356,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
         // Transition to true. Should NOT start a session.
-        mMediator.setNavigationTypeVisible(true);
+        mMediator.setAutocompleteRequestTypeChangeable(true);
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
@@ -364,18 +366,18 @@ public class NavigationAttachmentsMediatorUnitTest {
         Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
 
         // Calling with true again. Should do nothing.
-        mMediator.setNavigationTypeVisible(true);
+        mMediator.setAutocompleteRequestTypeChangeable(true);
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
 
         // Transition to false. Should abandon the session.
-        mMediator.setNavigationTypeVisible(false);
+        mMediator.setAutocompleteRequestTypeChangeable(false);
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
 
         // Calling with false again. Should do nothing.
-        mMediator.setNavigationTypeVisible(false);
+        mMediator.setAutocompleteRequestTypeChangeable(false);
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
     }
