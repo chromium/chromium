@@ -17081,6 +17081,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ComposeboxUsesChromeComposeClient",
+                        "OmniboxMultilineEditField",
                         "OmniboxMultimodalInput"
                     ]
                 }

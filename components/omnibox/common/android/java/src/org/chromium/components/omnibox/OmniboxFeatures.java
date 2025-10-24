@@ -138,7 +138,7 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "aim_toggle_only", false);
 
     public static final CachedFlag sMultilineEditField =
-            newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sAndroidHubSearchTabGroups =
             newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.ENABLED_IN_TEST);

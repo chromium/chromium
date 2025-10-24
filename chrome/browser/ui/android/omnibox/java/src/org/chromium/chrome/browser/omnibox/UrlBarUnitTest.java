@@ -1000,4 +1000,19 @@ public class UrlBarUnitTest {
         mUrlBar.setModelForTesting(model);
         assertEquals("model non-autocomplete text", mUrlBar.getTextWithoutAutocomplete());
     }
+
+    @Test
+    public void multiline() {
+        mUrlBar.requestFocus();
+        mUrlBar.setText(" ");
+        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
+        assertFalse(mUrlBar.isSingleLine());
+
+        mUrlBar.setText("");
+        assertEquals(1, mUrlBar.getMaxLines());
+        assertTrue(mUrlBar.isSingleLine());
+
+        mUrlBar.setText(" ");
+        mUrlBar.clearFocus();
+    }
 }

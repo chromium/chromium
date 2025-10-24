@@ -91,7 +91,7 @@ public class UrlBar extends AutocompleteEditText {
     // check for text equality, instead of worrying about partial equality with truncated text.
     static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
-    private static final int MULTILINE_EDIT_MAX_LINES = 5;
+    static final int MULTILINE_EDIT_MAX_LINES = 5;
 
     /**
      * The text direction of the URL or query: LAYOUT_DIRECTION_LOCALE, LAYOUT_DIRECTION_LTR, or

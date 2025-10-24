@@ -254,6 +254,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
+    // @DisableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
         // Verify that setting a selection before the autocomplete clears it.
         verifySelectionState(
@@ -267,79 +268,79 @@ public class UrlBarTest {
         // and autocomplete text does not delete the autocomplete text.
         verifySelectionState(
                 "test",
-                "ing is fun",
+                "ing_is_fun",
                 "foo.com",
                 2,
                 5,
                 false,
-                "testing is fun",
-                "testing is fun",
+                "testing_is_fun",
+                "testing_is_fun",
                 true,
-                "testing is fun");
+                "testing_is_fun");
 
         // Verify that setting a selection range that over the entire string does not delete
         // the autocomplete text.
         verifySelectionState(
                 "test",
-                "ing is fun",
+                "ing_is_fun",
                 "foo.com",
                 0,
                 14,
                 false,
-                "testing is fun",
-                "testing is fun",
+                "testing_is_fun",
+                "testing_is_fun",
                 true,
-                "testing is fun");
+                "testing_is_fun");
 
         // Note: with new model touching the beginning of the autocomplete text is a no-op.
         // Verify that setting a selection at the end of the text does not delete the
         // autocomplete text.
         verifySelectionState(
                 "test",
-                "ing is fun",
+                "ing_is_fun",
                 "foo.com",
                 14,
                 14,
                 false,
-                "testing is fun",
-                "testing is fun",
+                "testing_is_fun",
+                "testing_is_fun",
                 true,
-                "testing is fun");
+                "testing_is_fun");
 
         // Verify that setting a selection in the middle of the autocomplete text does not delete
         // the autocomplete text.
         verifySelectionState(
                 "test",
-                "ing is fun",
+                "ing_is_fun",
                 "foo.com",
                 9,
                 9,
                 false,
-                "testing is fun",
-                "testing is fun",
+                "testing_is_fun",
+                "testing_is_fun",
                 true,
-                "testing is fun");
+                "testing_is_fun");
 
         // Verify that setting a selection range in the middle of the autocomplete text does not
         // delete the autocomplete text.
         verifySelectionState(
                 "test",
-                "ing is fun",
+                "ing_is_fun",
                 "foo.com",
                 8,
                 11,
                 false,
-                "testing is fun",
-                "testing is fun",
+                "testing_is_fun",
+                "testing_is_fun",
                 true,
-                "testing is fun");
+                "testing_is_fun");
 
         // Select autocomplete text. As we do not expect the suggestions to be refreshed, we test
         // this slightly differently than the other cases.
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is fun", "www.bar.com");
+        mOmnibox.setAutocompleteText("ing_is_fun", "www.bar.com");
         ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(4, 14));
-        mOmnibox.checkText(equalTo("testing is fun"), null, equalTo("www.bar.com"));
+        mOmnibox.checkText(equalTo("testing_is_fun"), null, equalTo("www.bar.com"));
     }
 
     /**
@@ -888,7 +889,8 @@ public class UrlBarTest {
         clearInvocations(model);
 
         // Set text and wait for listeners to be called.
-        mUrlBar.onTextChanged(EXAMPLE_STRING, 0, 0, EXAMPLE_STRING.length());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mUrlBar.onTextChanged(EXAMPLE_STRING, 0, 0, EXAMPLE_STRING.length()));
 
         // Verify that the typing started listener is called before model.onTextChanged is called.
         inOrder.verify(mListener).run();
