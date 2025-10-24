@@ -317,8 +317,14 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
             webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed);
 }
 
+// Flaky on Linux, see https://crbug.com/454830629.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_IconDownloading DISABLED_IconDownloading
+#else
+#define MAYBE_IconDownloading IconDownloading
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
-                       IconDownloading) {
+                       MAYBE_IconDownloading) {
   WebAppIconDownloader icon_downloader;
 
   std::unique_ptr<content::WebContents> deleting_web_contents =
