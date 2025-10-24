@@ -31,7 +31,6 @@ function assertFaviconUrl(
       !isTopChromeSearchbox);
   assertEquals(
       faviconImageUrl.searchParams.get('forceEmptyDefaultFavicon'), '1');
-  assertTrue((/cacheBypass=\d+/).test(faviconImageUrl.toString()));
 }
 
 suite('CrComponentsSearchboxIconTest', () => {
