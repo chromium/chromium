@@ -401,6 +401,10 @@ void GlicInstanceImpl::PrepareForOpen() {
   }
 }
 
+void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
+  interaction_mode_ = new_mode;
+}
+
 void GlicInstanceImpl::AddStateObserver(PanelStateObserver* observer) {
   state_observers_.AddObserver(observer);
 }

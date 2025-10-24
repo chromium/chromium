@@ -909,6 +909,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnModeChange(glic::mojom::WebClientMode new_mode) override {
     glic_service_->metrics()->SetWebClientMode(new_mode);
+    host().OnInteractionModeChange(page_handler_, new_mode);
   }
 
   void ResizeWidget(const gfx::Size& size,

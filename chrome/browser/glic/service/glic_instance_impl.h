@@ -173,6 +173,7 @@ class GlicInstanceImpl : public GlicInstance,
           callback) override;
   void OnWebClientCleared() override;
   void PrepareForOpen() override;
+  void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
 
   // GlicUiEmbedder::Delegate:
   void OnEmbedderWindowActivationChanged(bool has_focus) override;
@@ -280,6 +281,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.
   mojom::PanelStateKind last_non_hidden_panel_state_kind_;
+  mojom::WebClientMode interaction_mode_;
 
   base::ObserverList<PanelStateObserver> state_observers_;
 

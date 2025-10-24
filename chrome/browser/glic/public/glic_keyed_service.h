@@ -221,6 +221,7 @@ class GlicKeyedService : public KeyedService,
       mojom::WebClientHandler::RegisterConversationCallback callback) override;
   void OnWebClientCleared() override;
   void PrepareForOpen() override;
+  void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 

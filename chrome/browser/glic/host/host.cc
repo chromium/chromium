@@ -452,6 +452,11 @@ void Host::OnViewChanged(GlicWebClientAccess* client,
   }
 }
 
+void Host::OnInteractionModeChange(GlicPageHandler* page_handler,
+                                   mojom::WebClientMode new_mode) {
+  instance_delegate_->OnInteractionModeChange(new_mode);
+}
+
 mojom::CurrentView Host::GetPrimaryCurrentView() {
   return primary_current_view_;
 }

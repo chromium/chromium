@@ -707,4 +707,8 @@ void GlicKeyedService::OnWebClientCleared() {
   actor_task_manager_->CancelTask();
 }
 
+void GlicKeyedService::OnInteractionModeChange(mojom::WebClientMode new_mode) {
+  // Unused in single instance mode.
+}
+
 }  // namespace glic

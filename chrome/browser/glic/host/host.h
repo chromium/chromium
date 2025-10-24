@@ -125,6 +125,8 @@ class Host : public GlicSharingManagerProvider {
 
     virtual void OnWebClientCleared() = 0;
     virtual void PrepareForOpen() = 0;
+
+    virtual void OnInteractionModeChange(mojom::WebClientMode new_mode) = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -284,6 +286,10 @@ class Host : public GlicSharingManagerProvider {
 
   // Called when the current view changes in the glic webUI to update the state.
   void OnViewChanged(GlicWebClientAccess* client, mojom::CurrentView new_view);
+
+  // Called when the web client changes its mode.
+  void OnInteractionModeChange(GlicPageHandler* page_handler,
+                               mojom::WebClientMode new_mode);
 
   // Sets the size of the glic window to the specified dimensions. Callback
   // runs when the animation finishes or is destroyed, or soon if the window
