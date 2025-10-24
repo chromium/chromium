@@ -18,6 +18,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -160,16 +162,20 @@ RevokedPermissionsService::RevokedPermissionsService(
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  abusive_notification_manager_ =
-      std::make_unique<AbusiveNotificationPermissionsManager>(
+    RevokedPermissionsOSNotificationDisplayManager*
+        notification_display_manager =
+            RevokedPermissionsOSNotificationDisplayManagerFactory::
+                GetForProfile(Profile::FromBrowserContext(browser_context_));
+    abusive_notification_manager_ =
+        std::make_unique<AbusiveNotificationPermissionsManager>(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-          g_browser_process->safe_browsing_service()
-              ? g_browser_process->safe_browsing_service()->database_manager()
-              : nullptr,
+            g_browser_process->safe_browsing_service()
+                ? g_browser_process->safe_browsing_service()->database_manager()
+                : nullptr,
 #else
           nullptr,
 #endif
-          hcsm(), pref_change_registrar_->prefs());
+            hcsm(), pref_change_registrar_->prefs());
 
   pref_change_registrar_->Add(
       prefs::kSafeBrowsingEnabled,
@@ -183,7 +189,8 @@ RevokedPermissionsService::RevokedPermissionsService(
         std::make_unique<DisruptiveNotificationPermissionsManager>(
             hcsm(),
             site_engagement::SiteEngagementServiceFactory::GetForProfile(
-                browser_context_));
+                browser_context_),
+            notification_display_manager);
   }
 
   unused_site_permissions_manager_ =
@@ -258,6 +265,20 @@ void RevokedPermissionsService::OnContentSettingChanged(
     if (disruptive_notification_manager_) {
       disruptive_notification_manager_->OnPermissionChanged(primary_pattern,
                                                             secondary_pattern);
+    }
+  }
+
+  // Update OS notification to reflect changes in abusive or disruptive
+  // revocations.
+  if (content_type_set.Contains(
+          ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS) ||
+      content_type_set.Contains(
+          ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS)) {
+    RevokedPermissionsOSNotificationDisplayManager* manager =
+        RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(browser_context_));
+    if (manager) {
+      manager->UpdateNotification();
     }
   }
 }
@@ -481,7 +502,7 @@ RevokedPermissionsService::GetRevokedPermissions() {
 
   if (disruptive_notification_manager_) {
     ContentSettingsForOneType revoked_disruptive_notifications =
-        disruptive_notification_manager_->GetRevokedNotifications();
+        disruptive_notification_manager_->GetRevokedNotifications(hcsm());
     for (const auto& permission : revoked_disruptive_notifications) {
       // Skip origins with revoked unused site permissions, since these were
       // handled above.

@@ -230,6 +230,7 @@
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
@@ -1261,6 +1262,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   reporting::ManualTestHeartbeatEventFactory::GetInstance();
 #endif
+  RevokedPermissionsOSNotificationDisplayManagerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   ResetReportUploaderFactory::GetInstance();
 #endif

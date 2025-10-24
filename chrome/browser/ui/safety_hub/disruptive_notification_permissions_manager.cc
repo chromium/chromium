@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -281,22 +282,16 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
-DisruptiveNotificationPermissionsManager::SafetyHubNotificationWrapper::
-    ~SafetyHubNotificationWrapper() = default;
-
 DisruptiveNotificationPermissionsManager::
     DisruptiveNotificationPermissionsManager(
         scoped_refptr<HostContentSettingsMap> hcsm,
-        site_engagement::SiteEngagementService* site_engagement_service)
+        site_engagement::SiteEngagementService* site_engagement_service,
+        RevokedPermissionsOSNotificationDisplayManager*
+            revoked_permissions_notification_display_manager)
     : hcsm_(std::move(hcsm)),
-      site_engagement_service_(site_engagement_service)
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      notification_wrapper_(std::make_unique<NotificationWrapperAndroid>())
-#endif
-{
-  content_settings_observation_.Observe(hcsm_.get());
-
+      site_engagement_service_(site_engagement_service),
+      revoked_permissions_notification_display_manager_(
+          revoked_permissions_notification_display_manager) {
   // TODO(crbug.com/435407894): Remove the migration logic after most of the
   // exceptions were migrated.
   for (auto& [url, revocation_entry] :
@@ -490,8 +485,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       "RevokedWebsitesCount",
       proposed_revoked_sites_count);
 
-  if (revoked_anything) {
-    DisplayNotification();
+  if (revoked_anything && revoked_permissions_notification_display_manager_) {
+    revoked_permissions_notification_display_manager_->DisplayNotification();
   }
 
   ReportDailyRunMetrics();
@@ -588,24 +583,6 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
               kDisruptiveAutoRevocation);
 }
 
-void DisruptiveNotificationPermissionsManager::DisplayNotification() {
-  if (notification_wrapper_) {
-    notification_wrapper_->DisplayNotification(
-        GetRevokedNotifications().size());
-  }
-}
-
-void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsTypeSet content_type_set) {
-  if (!content_type_set.ContainsAllTypes() &&
-      content_type_set.GetType() ==
-          ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS) {
-    UpdateNotificationCount();
-  }
-}
-
 void DisruptiveNotificationPermissionsManager::OnPermissionChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
@@ -633,34 +610,6 @@ void DisruptiveNotificationPermissionsManager::OnPermissionChanged(
   hcsm_->SetWebsiteSettingCustomScope(
       primary_pattern, secondary_pattern,
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
-}
-
-void DisruptiveNotificationPermissionsManager::UpdateNotificationCount() {
-  // If revocation is currently running there is no point in updating, since
-  // the notification will be re-displayed when the revocation completes.
-  if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get() &&
-      notification_wrapper_ && !is_revocation_running_) {
-    notification_wrapper_->UpdateNotification(GetRevokedNotifications().size());
-  }
-}
-
-ContentSettingsForOneType
-DisruptiveNotificationPermissionsManager::GetRevokedNotifications() {
-  ContentSettingsForOneType result;
-  ContentSettingsForOneType revoked_permissions = hcsm_->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  // Filter only revoked values, skipping proposed, ignore or false positive
-  // values.
-  for (const auto& revoked_permission : revoked_permissions) {
-    const GURL& url = revoked_permission.primary_pattern.ToRepresentativeUrl();
-    std::optional<RevocationEntry> revocation_entry =
-        ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
-    if (revocation_entry &&
-        revocation_entry->revocation_state == RevocationState::kRevoked) {
-      result.emplace_back(revoked_permission);
-    }
-  }
-  return result;
 }
 
 bool DisruptiveNotificationPermissionsManager::IsChangingContentSettings() {
@@ -932,6 +881,27 @@ void DisruptiveNotificationPermissionsManager::LogMetrics(
   ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
 }
 
+// Static
+ContentSettingsForOneType
+DisruptiveNotificationPermissionsManager::GetRevokedNotifications(
+    HostContentSettingsMap* hcsm) {
+  ContentSettingsForOneType result;
+  ContentSettingsForOneType revoked_permissions = hcsm->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+  // Filter only revoked values, skipping proposed, ignore or false positive
+  // values.
+  for (const auto& revoked_permission : revoked_permissions) {
+    const GURL& url = revoked_permission.primary_pattern.ToRepresentativeUrl();
+    std::optional<RevocationEntry> revocation_entry =
+        ContentSettingHelper(*hcsm).GetRevocationEntry(url);
+    if (revocation_entry &&
+        revocation_entry->revocation_state == RevocationState::kRevoked) {
+      result.emplace_back(revoked_permission);
+    }
+  }
+  return result;
+}
+
 // static
 bool DisruptiveNotificationPermissionsManager::
     IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
@@ -975,7 +945,3 @@ void DisruptiveNotificationPermissionsManager::SetClockForTesting(
   clock_ = clock;
 }
 
-void DisruptiveNotificationPermissionsManager::SetNotificationWrapperForTesting(
-    std::unique_ptr<SafetyHubNotificationWrapper> wrapper) {
-  notification_wrapper_ = std::move(wrapper);
-}

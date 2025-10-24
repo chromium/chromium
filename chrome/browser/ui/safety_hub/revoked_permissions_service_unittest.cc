@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
@@ -111,6 +113,25 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
   return service;
 }
 
+class TestRevokedPermissionsOSNotificationDisplayManager
+    : public RevokedPermissionsOSNotificationDisplayManager {
+ public:
+  explicit TestRevokedPermissionsOSNotificationDisplayManager(
+      HostContentSettingsMap* hcsm)
+      : RevokedPermissionsOSNotificationDisplayManager(hcsm, nullptr) {}
+  MOCK_METHOD(void, DisplayNotification, (), (override));
+  MOCK_METHOD(void, UpdateNotification, (), (override));
+};
+
+std::unique_ptr<KeyedService>
+BuildTestRevokedPermissionsOSNotificationDisplayManager(
+    content::BrowserContext* context) {
+  auto notification_manager =
+      std::make_unique<TestRevokedPermissionsOSNotificationDisplayManager>(
+          HostContentSettingsMapFactory::GetForProfile(context));
+  return notification_manager;
+}
+
 }  // namespace
 
 class RevokedPermissionsServiceTest
@@ -174,7 +195,13 @@ class RevokedPermissionsServiceTest
             // Needed for background UKM reporting.
             TestingProfile::TestingFactory{
                 HistoryServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestHistoryService)}};
+                base::BindRepeating(&BuildTestHistoryService)},
+            // For testing OnContentSettingChanged.
+            TestingProfile::TestingFactory{
+                RevokedPermissionsOSNotificationDisplayManagerFactory::
+                    GetInstance(),
+                base::BindRepeating(
+                    &BuildTestRevokedPermissionsOSNotificationDisplayManager)}};
   }
 
   // There are two variations of the test: where safe browsing is enabled and
@@ -208,6 +235,13 @@ class RevokedPermissionsServiceTest
 
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
+  }
+
+  TestRevokedPermissionsOSNotificationDisplayManager*
+  test_revoked_notification_manager() {
+    return static_cast<TestRevokedPermissionsOSNotificationDisplayManager*>(
+        RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
+            profile()));
   }
 
   uint8_t callback_count() { return callback_count_; }
@@ -1798,6 +1832,20 @@ TEST_P(RevokedPermissionsServiceTest, OnContentSettingsChanged_WebsiteSetting) {
   if (ShouldSetupDisruptiveSites()) {
     EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
   }
+}
+
+TEST_P(RevokedPermissionsServiceTest,
+       OnContentSettingsChanged_RevokedAbusiveNotificationChanged) {
+  EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+  SetupRevokedAbusiveNotificationSite(url2);
+}
+
+TEST_P(RevokedPermissionsServiceTest,
+       OnContentSettingsChanged_RevokedDisruptiveNotificationChanged) {
+  EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+  SetupRevokedDisruptiveNotificationSite(url3);
+  ExpectRevokedDisruptiveNotificationSettingValues(url3);
+  EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

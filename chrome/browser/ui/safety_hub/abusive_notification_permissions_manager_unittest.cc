@@ -15,6 +15,8 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -36,6 +38,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 namespace {
 
@@ -55,18 +58,39 @@ const ContentSettingsType revoked_notifications_type =
 std::set<ContentSettingsType> abusive_permission_types(
     {ContentSettingsType::NOTIFICATIONS});
 
+class MockRevokedPermissionsOSNotificationDisplayManager
+    : public RevokedPermissionsOSNotificationDisplayManager {
+ public:
+  explicit MockRevokedPermissionsOSNotificationDisplayManager(
+      HostContentSettingsMap* hcsm)
+      : RevokedPermissionsOSNotificationDisplayManager(hcsm, nullptr) {}
+  MOCK_METHOD(void, DisplayNotification, (), (override));
+  MOCK_METHOD(void, UpdateNotification, (), (override));
+};
+
 }  // namespace
 
 class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
  public:
   void SetUp() override {
     mock_database_manager_ = new MockSafeBrowsingDatabaseManager();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        RevokedPermissionsOSNotificationDisplayManagerFactory::GetInstance(),
+        base::BindRepeating(
+            &AbusiveNotificationPermissionsManagerTest::
+                BuildRevokedPermissionsOSNotificationDisplayManager,
+            base::Unretained(this)));
+    profile_ = builder.Build();
   }
 
-  void TearDown() override { mock_database_manager_.reset(); }
+  void TearDown() override {
+    profile_.reset();
+    mock_database_manager_.reset();
+  }
 
   HostContentSettingsMap* hcsm() {
-    return HostContentSettingsMapFactory::GetForProfile(&profile_);
+    return HostContentSettingsMapFactory::GetForProfile(profile());
   }
 
   MockSafeBrowsingDatabaseManager* mock_database_manager() {
@@ -158,17 +182,32 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
     EXPECT_FALSE(mock_database_manager_->HasCalledCancelCheck());
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   void SetNotificationPermission(const GURL& url, ContentSetting cs) {
     hcsm()->SetContentSettingDefaultScope(url, GURL(), notifications_type, cs);
   }
 
+  MockRevokedPermissionsOSNotificationDisplayManager*
+  mock_notification_manager() {
+    return static_cast<MockRevokedPermissionsOSNotificationDisplayManager*>(
+        RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
+            profile()));
+  }
+
  private:
+  std::unique_ptr<KeyedService>
+  BuildRevokedPermissionsOSNotificationDisplayManager(
+      content::BrowserContext* context) {
+    auto notification_manager =
+        std::make_unique<MockRevokedPermissionsOSNotificationDisplayManager>(
+            HostContentSettingsMapFactory::GetForProfile(context));
+    return std::move(notification_manager);
+  }
   scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -1417,4 +1456,31 @@ TEST_F(SuspiciousNotificationRevocationTest,
   ASSERT_FALSE(
       AbusiveNotificationPermissionsManager::IsUrlRevokedDueToSuspiciousContent(
           hcsm(), GURL(url4)));
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermissionShowsNotification) {
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  EXPECT_CALL(*mock_notification_manager(), DisplayNotification());
+  // All criteria met; `MaybeRevokeSuspiciousNotificationPermission` returns
+  // true.
+  ASSERT_TRUE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermissionDoesNotShowNotification) {
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  // High site engagement score prevents revocation.
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff + 10.0);
+
+  EXPECT_CALL(*mock_notification_manager(), DisplayNotification()).Times(0);
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
 }

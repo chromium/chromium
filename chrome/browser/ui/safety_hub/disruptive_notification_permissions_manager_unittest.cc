@@ -7,15 +7,19 @@
 #include <memory>
 
 #include "base/json/values_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
@@ -57,7 +61,7 @@ constexpr char kSafeBrowsingNotificationRevocationSourceHistogram[] =
     "SafeBrowsing.NotificationRevocationSource";
 
 class SafetyHubNotificationWrapperForTesting
-    : public DisruptiveNotificationPermissionsManager::
+    : public RevokedPermissionsOSNotificationDisplayManager::
           SafetyHubNotificationWrapper {
  public:
   SafetyHubNotificationWrapperForTesting(std::vector<int>& display_called_with,
@@ -77,6 +81,15 @@ class SafetyHubNotificationWrapperForTesting
   base::raw_ref<std::vector<int>> update_called_with_;
 };
 
+class MockRevokedPermissionsOSNotificationDisplayManager
+    : public RevokedPermissionsOSNotificationDisplayManager {
+ public:
+  explicit MockRevokedPermissionsOSNotificationDisplayManager(
+      HostContentSettingsMap* hcsm)
+      : RevokedPermissionsOSNotificationDisplayManager(hcsm, nullptr) {}
+  MOCK_METHOD(void, DisplayNotification, (), (override));
+  MOCK_METHOD(void, UpdateNotification, (), (override));
+};
 }  // namespace
 
 class DisruptiveNotificationPermissionsMigrationTest : public ::testing::Test {
@@ -90,6 +103,11 @@ class DisruptiveNotificationPermissionsMigrationTest : public ::testing::Test {
 
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(&profile_);
+  }
+
+  RevokedPermissionsOSNotificationDisplayManager* notification_manager() {
+    return RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
+        profile());
   }
 
   site_engagement::SiteEngagementService* site_engagement_service() {
@@ -136,7 +154,7 @@ TEST_F(DisruptiveNotificationPermissionsMigrationTest,
   SetupIgnoreContentSettingEntry(correct_url, base::Days(30));
 
   auto manager = std::make_unique<DisruptiveNotificationPermissionsManager>(
-      hcsm(), site_engagement_service());
+      hcsm(), site_engagement_service(), notification_manager());
   CHECK(manager);
 
   // The content setting expiration was migrated on start up.
@@ -160,27 +178,30 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
       DisruptiveNotificationPermissionsManager::RevocationState;
 
   void SetUp() override {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        RevokedPermissionsOSNotificationDisplayManagerFactory::GetInstance(),
+        base::BindRepeating(
+            &DisruptiveNotificationPermissionsManagerTest::
+                BuildRevokedPermissionsOSNotificationDisplayManager,
+            base::Unretained(this)));
+    profile_ = builder.Build();
     manager_ = std::make_unique<DisruptiveNotificationPermissionsManager>(
-        hcsm(), site_engagement_service());
-    manager_->SetNotificationWrapperForTesting(
-        std::make_unique<SafetyHubNotificationWrapperForTesting>(
-            display_notification_function_called_with_,
-            update_notification_function_called_with_));
+        hcsm(), site_engagement_service(), mock_notification_manager());
     manager_->SetClockForTesting(clock());
     clock()->SetNow(base::Time::Now());
   }
-
   void TearDown() override {
     manager_->SetClockForTesting(base::DefaultClock::GetInstance());
   }
 
   HostContentSettingsMap* hcsm() {
-    return HostContentSettingsMapFactory::GetForProfile(&profile_);
+    return HostContentSettingsMapFactory::GetForProfile(profile());
   }
 
   site_engagement::SiteEngagementService* site_engagement_service() {
     return site_engagement::SiteEngagementServiceFactory::GetForProfile(
-        &profile_);
+        profile());
   }
 
   void SetNotificationPermission(GURL url, ContentSetting setting) {
@@ -190,7 +211,7 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
 
   void SetDailyAverageNotificationCount(GURL url, int daily_average_count) {
     auto* notifications_engagement_service =
-        NotificationsEngagementServiceFactory::GetForProfile(&profile_);
+        NotificationsEngagementServiceFactory::GetForProfile(profile());
     notifications_engagement_service->RecordNotificationDisplayed(
         url, daily_average_count * 7);
   }
@@ -200,14 +221,6 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
         ->GetSettingsForOneType(
             ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS)
         .size();
-  }
-
-  const std::vector<int>& GetDisplayNotificationFunctionCalledWith() {
-    return display_notification_function_called_with_;
-  }
-
-  const std::vector<int>& GetUpdateNotificationFunctionCalledWith() {
-    return update_notification_function_called_with_;
   }
 
   void SetupRevocationEntry(const GURL& url,
@@ -225,9 +238,25 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
 
   DisruptiveNotificationPermissionsManager* manager() { return manager_.get(); }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   base::SimpleTestClock* clock() { return &clock_; }
+
+  std::unique_ptr<KeyedService>
+  BuildRevokedPermissionsOSNotificationDisplayManager(
+      content::BrowserContext* context) {
+    auto notification_manager =
+        std::make_unique<MockRevokedPermissionsOSNotificationDisplayManager>(
+            HostContentSettingsMapFactory::GetForProfile(context));
+    return notification_manager;
+  }
+
+  MockRevokedPermissionsOSNotificationDisplayManager*
+  mock_notification_manager() {
+    return static_cast<MockRevokedPermissionsOSNotificationDisplayManager*>(
+        RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
+            profile()));
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -235,10 +264,7 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile profile_;
-
-  std::vector<int> display_notification_function_called_with_;
-  std::vector<int> update_notification_function_called_with_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<DisruptiveNotificationPermissionsManager> manager_;
   base::SimpleTestClock clock_;
 };
@@ -581,6 +607,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   clock()->Advance(base::Days(10));
 
+  EXPECT_CALL(*mock_notification_manager(), DisplayNotification);
   // On the next run, site goes from proposed to actual revocation even without
   // metrics being reported because the waiting for metrics has expired.
   manager()->RevokeDisruptiveNotifications();
@@ -591,7 +618,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
-  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), ElementsAre(1));
   t.ExpectBucketCount(
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "Revoke.DaysSinceProposedRevocation",
@@ -610,6 +636,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   SetDailyAverageNotificationCount(url, 4);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
+  EXPECT_CALL(*mock_notification_manager(), DisplayNotification).Times(0);
   manager()->RevokeDisruptiveNotifications();
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -623,7 +650,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
   t.ExpectBucketCount(kNotificationCountHistogram, 4, 1);
-  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 
   site_engagement_service()->ResetBaseScoreForURL(url, 10);
 
@@ -897,11 +923,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 
-  // The notification count has been updated.
-  EXPECT_THAT(GetUpdateNotificationFunctionCalledWith(), ElementsAre(1, 0));
-
-  // The content setting was updated to "ignore" to prevent autorevoking in the
-  // future.
+  // The content setting was updated to "ignore" to prevent auto-revoking in
+  // the future.
   EXPECT_EQ(GetRevokedPermissionsCount(), 1);
   std::optional<RevocationEntry> revocation_entry =
       ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
@@ -1124,19 +1147,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
-       UpdateNotificationContentSettingsChanged) {
-  GURL url("https://chrome.test/");
-  RevocationEntry entry(
-      /*revocation_state=*/RevocationState::kRevoked,
-      /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4,
-      /*timestamp=*/base::Time::Now() - base::Days(3));
-
-  ContentSettingHelper(*hcsm()).PersistRevocationEntry(url, entry);
-  EXPECT_THAT(GetUpdateNotificationFunctionCalledWith(), ElementsAre(1));
-}
-
-TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        SetIgnoreOnContentSettingsChanged) {
   for (auto [initial_state, new_content_setting, expected_state] :
        std::initializer_list<std::tuple<RevocationState, ContentSetting,
@@ -1237,6 +1247,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   SetDailyAverageNotificationCount(url, 4);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
+  // The shadow run should never display notifications.
+  EXPECT_CALL(*mock_notification_manager(), DisplayNotification).Times(0);
   manager()->RevokeDisruptiveNotifications();
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -1267,9 +1279,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kAlreadyInProposedRevokeList, 1);
-
-  // The shadow run should never display notifications.
-  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,

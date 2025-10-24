@@ -75,6 +75,10 @@ public class UnsubscribedNotificationsNotificationManager {
                         false);
     }
 
+    private static boolean isAutoRevokeSuspiciousNotificationEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION);
+    }
+
     private static long getNotificationTimeout() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION,
@@ -101,18 +105,21 @@ public class UnsubscribedNotificationsNotificationManager {
     }
 
     private static void displayOrUpdateNotification(int numRevokedPermissions, long when) {
-        if (!isDisruptiveNotificationRevocationEnabled()) {
+        if (!isDisruptiveNotificationRevocationEnabled()
+                && !isAutoRevokeSuspiciousNotificationEnabled()) {
             dismissNotification();
             return;
         }
 
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
-        String title =
-                res.getQuantityString(
-                        R.plurals.safety_hub_unsubscribed_notifications_notification_title,
-                        numRevokedPermissions,
-                        numRevokedPermissions);
+        int titleId =
+                isAutoRevokeSuspiciousNotificationEnabled()
+                        ? R.plurals
+                                .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title
+                        : R.plurals.safety_hub_unsubscribed_notifications_notification_title;
+        String title = res.getQuantityString(titleId, numRevokedPermissions, numRevokedPermissions);
+
         String contents =
                 res.getQuantityString(
                         R.plurals.safety_hub_unsubscribed_notifications_notification_message,

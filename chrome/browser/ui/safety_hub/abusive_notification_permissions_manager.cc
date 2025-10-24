@@ -15,6 +15,8 @@
 #include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -298,6 +300,11 @@ bool AbusiveNotificationPermissionsManager::
   base::UmaHistogramEnumeration("SafeBrowsing.NotificationRevocationSource",
                                 safe_browsing::NotificationRevocationSource::
                                     kSuspiciousContentAutoRevocation);
+  if (auto* notification_manager =
+          RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
+              profile)) {
+    notification_manager->DisplayNotification();
+  }
   return true;
 }
 
