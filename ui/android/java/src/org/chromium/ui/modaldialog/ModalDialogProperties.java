@@ -338,6 +338,12 @@ public class ModalDialogProperties {
     /** The minimum vertical margin used by the dialog relative to the window. */
     public static final WritableIntPropertyKey VERTICAL_MARGIN = new WritableIntPropertyKey();
 
+    /**
+     * The maximum height for the dialog. Only specify it if you want to override the standard
+     * maximum height.
+     */
+    public static final WritableIntPropertyKey MAX_HEIGHT = new WritableIntPropertyKey();
+
     /** The padding used by the dialog content view. */
     public static final WritableObjectPropertyKey<Rect> PADDING = new WritableObjectPropertyKey();
 
@@ -389,6 +395,7 @@ public class ModalDialogProperties {
                 VERTICAL_MARGIN,
                 PADDING,
                 BLOCK_INPUTS,
-                DISABLE_SCRIM
+                DISABLE_SCRIM,
+                MAX_HEIGHT
             };
 }

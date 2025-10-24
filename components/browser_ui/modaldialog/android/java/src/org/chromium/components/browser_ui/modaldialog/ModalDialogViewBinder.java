@@ -166,6 +166,8 @@ public class ModalDialogViewBinder
             // default buttons, or switching custom view.
         } else if (ModalDialogProperties.DISABLE_SCRIM == propertyKey) {
             // Intentionally left empty since this is a property used for the dialog container.
+        } else if (ModalDialogProperties.MAX_HEIGHT == propertyKey) {
+            view.setMaxHeight(model.get(ModalDialogProperties.MAX_HEIGHT));
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }

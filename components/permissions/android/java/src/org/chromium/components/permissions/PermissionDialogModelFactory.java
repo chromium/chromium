@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -55,6 +56,15 @@ class PermissionDialogModelFactory {
                     .with(
                             ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                             delegate.getNegativeButtonText());
+        }
+        if (delegate.getContentSettingsTypes()[0] == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+            // The geolocation prompt with the precise and approximate location options is big, so
+            // let's allow additional height for it.
+            builder.with(
+                    ModalDialogProperties.MAX_HEIGHT,
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.geolocation_with_options_prompt_max_height));
         }
         if (delegate.isEmbeddedPromptVariant()) {
             // We always begin with BUTTON_STYLES. This means we have @style/TextButton and
