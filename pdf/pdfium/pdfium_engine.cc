@@ -967,9 +967,6 @@ void PDFiumEngine::OnDocumentCanceled() {
 void PDFiumEngine::ClearTextSelection() {
   SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();
-  if (caret_) {
-    caret_->SetVisible(true);
-  }
 }
 
 void PDFiumEngine::ExtendAndInvalidateSelectionByChar(

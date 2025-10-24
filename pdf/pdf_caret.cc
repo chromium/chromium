@@ -314,6 +314,7 @@ void PdfCaret::MoveToChar(const PageCharacterIndex& new_index,
                           bool should_select) {
   if (!should_select) {
     client_->ClearTextSelection();
+    SetVisible(true);
   }
 
   if (index_ == new_index) {

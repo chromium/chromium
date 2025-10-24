@@ -131,7 +131,7 @@ class PdfCaret {
   // Moves the caret to `new_index`. If `should_select` is true, then the text
   // selection will be extended to `new_index`, starting from the original caret
   // position if not yet text selecting. If `should_select` is false, text
-  // selection will be cleared.
+  // selection will be cleared, and the caret will be set visible.
   void MoveToChar(const PageCharacterIndex& new_index, bool should_select);
 
   // Determines the next valid char, handling moving horizontally to a char on a
