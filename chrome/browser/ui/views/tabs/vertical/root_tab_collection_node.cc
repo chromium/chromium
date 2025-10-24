@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 
 RootTabCollectionNode::RootTabCollectionNode(
@@ -31,6 +32,7 @@ void RootTabCollectionNode::OnTabsCreated(
     TabCollectionNode* parent =
         GetNodeForId(tab_created->position.parent_id().value());
     parent->AddNewChild(
+        GetPassKey(),
         tabs_api::mojom::Data::NewTab(std::move(tab_created->tab)),
         tab_created->position.index());
   }
@@ -43,7 +45,13 @@ void RootTabCollectionNode::OnNodeMoved(
     const tabs_api::mojom::OnNodeMovedEventPtr& node_moved_event) {}
 
 void RootTabCollectionNode::OnDataChanged(
-    const tabs_api::mojom::OnDataChangedEventPtr& data_changed_event) {}
+    const tabs_api::mojom::OnDataChangedEventPtr& data_changed_event) {
+  TabCollectionNode* node =
+      GetNodeForId(tabs_api::utils::GetNodeId(*data_changed_event->data));
+  if (node) {
+    node->SetData(GetPassKey(), std::move(data_changed_event->data));
+  }
+}
 
 void RootTabCollectionNode::OnCollectionCreated(
     const tabs_api::mojom::OnCollectionCreatedEventPtr&

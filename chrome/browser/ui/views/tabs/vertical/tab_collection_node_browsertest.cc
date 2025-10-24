@@ -730,3 +730,38 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
             TabCollectionNode::Type::kTab);
   EXPECT_EQ(unpinned_node->children()[2].get(), appended_unpinned_tab_node);
 }
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DataChangedEvent) {
+  auto parent_view = std::make_unique<views::View>();
+
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // The root node should contain two nodes: one for pinned, one for unpinned.
+  ASSERT_EQ(root_node.children().size(), 2u);
+  const auto& unpinned_node = root_node.children()[1];
+  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+
+  // The unpinned Node should have one tab (the initial one).
+  ASSERT_EQ(unpinned_node->children().size(), 1u);
+  const auto& tab = unpinned_node->children()[0];
+  ASSERT_EQ(tab->GetType(), TabCollectionNode::Type::kTab);
+
+  // Send out an update to change the title of the tab.
+  const std::string new_title = "New Title";
+  ASSERT_NE(new_title, tab->data()->get_tab()->title);
+
+  auto event = tabs_api::mojom::OnDataChangedEvent::New();
+  auto tab_data = tab->data()->get_tab()->Clone();
+  tab_data->title = new_title;
+  event->data = tabs_api::mojom::Data::NewTab(std::move(tab_data));
+  root_node.OnDataChanged(event);
+
+  // Title should be changed.
+  EXPECT_EQ(new_title, tab->data()->get_tab()->title);
+}

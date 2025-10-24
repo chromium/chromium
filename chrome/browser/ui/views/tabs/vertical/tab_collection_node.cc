@@ -96,6 +96,12 @@ std::unique_ptr<views::View> TabCollectionNode::Initialize(
   return node_view;
 }
 
+void TabCollectionNode::SetData(base::PassKey<TabCollectionNode> pass_key,
+                                tabs_api::mojom::DataPtr data) {
+  data_ = std::move(data);
+  // TODO(crbug.com/439960283): Pipe data to node_view_.
+}
+
 // TODO(crbug.com/450976282): Consider having a map at the root level, or using
 // path in the API, in order to not have to iterate through the whole collection
 // node structure.
@@ -114,7 +120,8 @@ TabCollectionNode* TabCollectionNode::GetNodeForId(
   return nullptr;
 }
 
-void TabCollectionNode::AddNewChild(tabs_api::mojom::DataPtr data,
+void TabCollectionNode::AddNewChild(base::PassKey<TabCollectionNode> pass_key,
+                                    tabs_api::mojom::DataPtr data,
                                     size_t model_index) {
   auto child_node = std::make_unique<TabCollectionNode>(std::move(data));
   auto child_node_view = child_node->CreateAndSetView();

@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_types.mojom.h"
@@ -43,12 +44,17 @@ class TabCollectionNode {
   std::unique_ptr<views::View> Initialize(
       std::vector<tabs_api::mojom::ContainerPtr> child_containers);
 
+  void SetData(base::PassKey<TabCollectionNode> pass_key,
+               tabs_api::mojom::DataPtr data);
+
   // Gets the collection under this subtree that has the associated node_id.
   // Returns nullptr if no such node exists.
   TabCollectionNode* GetNodeForId(const tabs_api::NodeId& node_id);
 
   // Creates a new child with data and adds it at model_index.
-  void AddNewChild(tabs_api::mojom::DataPtr data, size_t model_index);
+  void AddNewChild(base::PassKey<TabCollectionNode> pass_key,
+                   tabs_api::mojom::DataPtr data,
+                   size_t model_index);
 
   const tabs_api::mojom::DataPtr& data() const { return data_; }
   const Children& children() const { return children_; }
@@ -67,6 +73,12 @@ class TabCollectionNode {
   views::View* get_view_for_testing() { return node_view_; }
 
  protected:
+  // Returns the pass key to be used by derived classes so that methods such as
+  // SetData may only be performed by a `TabCollectionNode`.
+  base::PassKey<TabCollectionNode> GetPassKey() const {
+    return base::PassKey<TabCollectionNode>();
+  }
+
   static std::unique_ptr<views::View> CreateViewForNode(
       TabCollectionNode* node_for_view);
 
