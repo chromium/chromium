@@ -414,12 +414,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
     return false;
   }
   // Add the entity's metadata.
-  const EntityInstance::EntityMetadata metadata =
-      EntityInstance::EntityMetadata{.guid = entity.guid(),
-                                     .date_modified = entity.date_modified(),
-                                     .use_count = entity.use_count(),
-                                     .use_date = entity.use_date()};
-  if (!AddEntityMetadata(metadata)) {
+  if (!AddEntityMetadata(entity.get_metadata())) {
     return false;
   }
   return transaction.Commit();

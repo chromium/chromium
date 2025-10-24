@@ -300,17 +300,20 @@ class EntityInstance final {
   const std::string& nickname() const LIFETIME_BOUND { return nickname_; }
 
   // The latest time the instance, including any of its attributes, was edited.
-  base::Time date_modified() const { return date_modified_; }
+  base::Time date_modified() const { return entity_metadata_.date_modified; }
 
   // Updates the last time an entity was used to fill a form and
   // increases the entity use count.
   void RecordEntityUsed(base::Time date);
 
   // Returns the last time an entity was used to fill a form.
-  base::Time use_date() const { return use_date_; }
+  base::Time use_date() const { return entity_metadata_.use_date; }
 
   // Returns how many times an entity was used to fill a form.
-  size_t use_count() const { return use_count_; }
+  size_t use_count() const { return entity_metadata_.use_count; }
+
+  // Returns the metadata for this instance.
+  const EntityMetadata& get_metadata() const { return entity_metadata_; }
 
   // Returns true if the attributes of this entity instance cannot be edited by
   // the user.
@@ -376,10 +379,7 @@ class EntityInstance final {
       attributes_;
   EntityId guid_;
   std::string nickname_;
-  // TODO(crbug.com/436551488): Use `EntityMetadata`.
-  base::Time date_modified_;
-  size_t use_count_;
-  base::Time use_date_;
+  EntityMetadata entity_metadata_;
   RecordType record_type_;
   AreAttributesReadOnly are_attributes_read_only_;
   std::string frecency_override_;
