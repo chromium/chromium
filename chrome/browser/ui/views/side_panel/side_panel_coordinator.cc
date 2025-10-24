@@ -152,7 +152,7 @@ void SidePanelCoordinator::Show(
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
 
   // If the side panel is already showing, cancel all loads and do nothing.
-  if (current_key() && *current_key() == input) {
+  if (current_key(entry->type()) && *current_key(entry->type()) == input) {
     waiter(entry->type())->ResetLoadingEntryIfNecessary();
 
     SidePanel* side_panel = entry->type() == SidePanelEntry::PanelType::kContent
@@ -204,12 +204,13 @@ void SidePanelCoordinator::Close(bool suppress_animations) {
     return;
   }
 
-  if (current_key()) {
+  if (current_key(SidePanelEntry::PanelType::kContent)) {
     if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
       side_panel_toolbar_pinning_controller_->UpdateActiveState(
-          current_key()->key, false);
+          current_key(SidePanelEntry::PanelType::kContent)->key, false);
     }
-    SidePanelEntry* entry = GetEntryForUniqueKey(*current_key());
+    SidePanelEntry* entry =
+        GetEntryForUniqueKey(*current_key(SidePanelEntry::PanelType::kContent));
     if (entry) {
       entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
     }
@@ -258,7 +259,9 @@ void SidePanelCoordinator::PopulateSidePanel(
   side_panel->Open(/*animated=*/!suppress_animations);
 
   SidePanelEntry* previous_entry =
-      current_key() ? GetEntryForUniqueKey(*current_key()) : nullptr;
+      current_key(entry->type())
+          ? GetEntryForUniqueKey(*current_key(entry->type()))
+          : nullptr;
 
   if (content_wrapper->children().size()) {
     if (previous_entry) {
@@ -337,9 +340,11 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
                                   ? old_contextual_registry->GetActiveEntryFor(
                                         SidePanelEntry::PanelType::kContent)
                                   : std::nullopt;
-          active_entry.has_value() && current_key() &&
-          current_key()->tab_handle &&
-          (*active_entry)->key() == current_key()->key) {
+          active_entry.has_value() &&
+          current_key(SidePanelEntry::PanelType::kContent) &&
+          current_key(SidePanelEntry::PanelType::kContent)->tab_handle &&
+          (*active_entry)->key() ==
+              current_key(SidePanelEntry::PanelType::kContent)->key) {
         auto* content_wrapper =
             browser_view_->contents_height_side_panel()->GetContentParentView();
         DCHECK(content_wrapper->children().size() == 1);
@@ -388,7 +393,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   //   becomes visible).
   //   We currently only take action on (2). We use `current_key()` to
   //   distinguish (3) from (2). We use visibility to distinguish (1) from (2).
-  if (observed_view->GetVisible() || !current_key()) {
+  if (observed_view->GetVisible() || !current_key(type)) {
     return;
   }
 
@@ -396,7 +401,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // from calling multiple times. This could happen in the edge cases when
   // callback inside current_entry->OnEntryHidden() is calling Close() to
   // trigger race condition.
-  SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
+  SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key(type));
   SetCurrentKey(type, std::nullopt);
   if (previous_entry) {
     previous_entry->OnEntryHidden();

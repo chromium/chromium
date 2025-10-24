@@ -67,30 +67,36 @@ void SidePanelUIBase::Show(
 }
 
 std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId() const {
-  if (!current_key().has_value()) {
+  if (!current_key(SidePanelEntry::PanelType::kContent).has_value()) {
     return std::nullopt;
   }
-  return current_key()->key.id();
+  return current_key(SidePanelEntry::PanelType::kContent)->key.id();
 }
 
 int SidePanelUIBase::GetCurrentEntryDefaultContentWidth() const {
-  if (!current_key().has_value()) {
+  if (!current_key(SidePanelEntry::PanelType::kContent).has_value()) {
     return SidePanelEntry::kSidePanelDefaultContentWidth;
   }
 
-  const SidePanelEntry* const entry = GetEntryForUniqueKey(*current_key());
+  const SidePanelEntry* const entry =
+      GetEntryForUniqueKey(*current_key(SidePanelEntry::PanelType::kContent));
   CHECK(entry);
 
   return entry->GetDefaultContentWidth();
 }
 
 bool SidePanelUIBase::IsSidePanelShowing(SidePanelEntry::PanelType type) const {
-  return current_key().has_value();
+  return current_key(type).has_value();
 }
 
 bool SidePanelUIBase::IsSidePanelEntryShowing(
     const SidePanelEntry::Key& entry_key) const {
-  return current_key().has_value() && current_key()->key == entry_key;
+  for (const auto& [_, panel_data] : panel_data_) {
+    if (panel_data->current_key && panel_data->current_key->key == entry_key) {
+      return true;
+    }
+  }
+  return false;
 }
 
 base::CallbackListSubscription SidePanelUIBase::RegisterSidePanelShown(
@@ -102,8 +108,13 @@ base::CallbackListSubscription SidePanelUIBase::RegisterSidePanelShown(
 bool SidePanelUIBase::IsSidePanelEntryShowing(
     const SidePanelEntry::Key& entry_key,
     bool for_tab) const {
-  return current_key().has_value() && current_key()->key == entry_key &&
-         current_key()->tab_handle.has_value() == for_tab;
+  for (const auto& [_, panel_data] : panel_data_) {
+    if (panel_data->current_key && panel_data->current_key->key == entry_key &&
+        panel_data->current_key->tab_handle.has_value() == for_tab) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void SidePanelUIBase::SetOpenedTimestamp(base::TimeTicks timestamp) {
@@ -199,8 +210,11 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
                          ->key()};
   }
 
-  if (current_key() && window_registry_->GetEntryForKey(current_key()->key)) {
-    return GetUniqueKeyForKey(current_key()->key);
+  if (current_key(SidePanelEntry::PanelType::kContent) &&
+      window_registry_->GetEntryForKey(
+          current_key(SidePanelEntry::PanelType::kContent)->key)) {
+    return GetUniqueKeyForKey(
+        current_key(SidePanelEntry::PanelType::kContent)->key);
   }
 
   if (auto entry = window_registry_->GetActiveEntryFor(

@@ -138,8 +138,8 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
 
   void NotifyShownCallbacksFor(SidePanelEntry::PanelType type);
 
-  std::optional<UniqueKey> current_key() const {
-    return panel_data_.at(SidePanelEntry::PanelType::kContent)->current_key;
+  std::optional<UniqueKey> current_key(SidePanelEntry::PanelType type) const {
+    return panel_data_.at(type)->current_key;
   }
   void SetCurrentKey(SidePanelEntry::PanelType type,
                      std::optional<UniqueKey> new_key);
