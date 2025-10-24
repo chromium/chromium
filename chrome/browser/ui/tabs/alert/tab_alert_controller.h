@@ -104,6 +104,9 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // currently active. Otherwise, removes `alert` from the set and is considered
   // inactive.
   void UpdateAlertState(TabAlert alert, bool is_active);
+  // Updates the set of active alerts with the currently active media alerts for
+  // this tab.
+  void UpdateMediaAlert();
 
   using AlertToShowChangedCallbackList =
       base::RepeatingCallbackList<void(std::optional<TabAlert>)>;
