@@ -519,6 +519,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         return true;
                     });
         }
+        notifyPreferencesUpdated();
     }
 
     private void createReauthenticatorBridge() {
