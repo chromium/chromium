@@ -37,6 +37,9 @@ struct BLINK_COMMON_EXPORT
   static bool was_cold_open(const blink::IndexedDBDatabaseMetadata& metadata) {
     return metadata.was_cold_open;
   }
+  static bool is_sqlite(const blink::IndexedDBDatabaseMetadata& metadata) {
+    return metadata.is_sqlite;
+  }
   static bool Read(blink::mojom::IDBDatabaseMetadataDataView data,
                    blink::IndexedDBDatabaseMetadata* out);
 };

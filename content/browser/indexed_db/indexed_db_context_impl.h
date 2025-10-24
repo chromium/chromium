@@ -114,6 +114,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void GetBaseDataPathForTesting(
       GetBaseDataPathForTestingCallback callback) override;
   void GetFilePathForTesting(const storage::BucketLocator& bucket_locator,
+                             bool for_sqlite,
                              GetFilePathForTestingCallback callback) override;
   void ResetCachesForTesting(base::OnceClosure callback) override;
   void GetPathForBlobForTesting(

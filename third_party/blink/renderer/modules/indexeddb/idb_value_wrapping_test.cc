@@ -457,10 +457,10 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   v8::Local<v8::Value> v8_true = v8::True(scope.GetIsolate());
   IDBValueWrapper wrapper(scope.GetIsolate(), v8_true,
                           SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+                          non_throwable_exception_state,
+                          /*backend_uses_sqlite=*/false);
   wrapper.set_wrapping_threshold_for_test(0);
   wrapper.DoneCloning();
-  IDBKeyPath key_path(String("primaryKey"));
 
   std::unique_ptr<IDBValue> wrapped_value = std::move(wrapper).Build();
 
@@ -495,6 +495,39 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
       mutant_value.SetIsolate(scope.GetIsolate());
       EXPECT_FALSE(IDBValueUnwrapper::IsWrapped(&mutant_value));
     }
+  }
+}
+
+TEST(IDBValueUnwrapperTest, SqliteDoesntWrapOrCompress) {
+  for (const bool use_sqlite : {true, false}) {
+    test::TaskEnvironment task_environment;
+    V8TestingScope scope;
+    NonThrowableExceptionState non_throwable_exception_state;
+    v8::Local<v8::Value> v8_value =
+        v8::String::NewFromUtf8(
+            scope.GetIsolate(),
+            base::StrCat(std::vector<std::string>(500, "abcd")).c_str(),
+            v8::NewStringType::kNormal)
+            .ToLocalChecked();
+    IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
+                            SerializedScriptValue::SerializeOptions::kSerialize,
+                            non_throwable_exception_state, use_sqlite);
+    wrapper.set_wrapping_threshold_for_test(0);
+    wrapper.set_compression_threshold_for_test(0);
+    wrapper.DoneCloning();
+
+    std::unique_ptr<IDBValue> wrapped_value = std::move(wrapper).Build();
+
+    wrapped_value->SetIsolate(scope.GetIsolate());
+    EXPECT_NE(use_sqlite, IDBValueUnwrapper::IsWrapped(wrapped_value.get()));
+
+    auto is_compressed = [](base::span<const uint8_t> data) {
+      return data.size() >= 3 && data[0] == kVersionTag && data[1] == 0x11 &&
+             data[2] == 2;
+    };
+    // Even with compression enabled, the data won't look compressed if it's
+    // wrapped.
+    EXPECT_FALSE(is_compressed(wrapped_value->Data()));
   }
 }
 
@@ -539,7 +572,8 @@ TEST(IDBValueUnwrapperTest, Compression) {
             .ToLocalChecked();
     IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
                             SerializedScriptValue::SerializeOptions::kSerialize,
-                            non_throwable_exception_state);
+                            non_throwable_exception_state,
+                            /*backend_uses_sqlite=*/false);
     wrapper.set_wrapping_threshold_for_test(test_case.wrapping_threshold);
     wrapper.set_compression_threshold_for_test(test_case.compression_threshold);
     wrapper.DoneCloning();
@@ -614,7 +648,8 @@ TEST(IDBValueUnwrapperTest, Decompression) {
                    .ToLocalChecked();
     IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
                             SerializedScriptValue::SerializeOptions::kSerialize,
-                            non_throwable_exception_state);
+                            non_throwable_exception_state,
+                            /*backend_uses_sqlite=*/false);
     wrapper.DoneCloning();
     value = std::move(wrapper).Build();
   }

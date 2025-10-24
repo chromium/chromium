@@ -5692,18 +5692,22 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   idb_control.BindTestInterfaceForTesting(
       idb_control_test.BindNewPipeAndPassReceiver());
 
-  base::FilePath idb_path;
-  {
+  std::pair<base::FilePath, base::FilePath> idb_paths;
+  for (bool use_sqlite : {true, false}) {
     ASSERT_OK_AND_ASSIGN(auto bucket_locator,
                          GetStorageBucket(blink::StorageKey::CreateFirstParty(
                              url::Origin::Create(ext_url))));
     base::RunLoop run_loop;
     idb_control_test->GetFilePathForTesting(
-        bucket_locator,
+        bucket_locator, use_sqlite,
         base::BindLambdaForTesting([&](const base::FilePath& path) {
-          idb_path = path;
-          EXPECT_TRUE(base::CreateDirectory(idb_path));
-          EXPECT_TRUE(base::DirectoryExists(idb_path));
+          if (use_sqlite) {
+            idb_paths.first = path;
+          } else {
+            idb_paths.second = path;
+          }
+          EXPECT_TRUE(base::CreateDirectory(path));
+          EXPECT_TRUE(base::DirectoryExists(path));
           idb_control_test->ResetCachesForTesting(run_loop.QuitClosure());
         }));
     run_loop.Run();
@@ -5736,7 +5740,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   }
 
   // Check if the indexed db has disappeared too.
-  EXPECT_FALSE(base::DirectoryExists(idb_path));
+  EXPECT_FALSE(base::DirectoryExists(idb_paths.first));
+  EXPECT_FALSE(base::DirectoryExists(idb_paths.second));
 }
 
 std::vector<net::CanonicalCookie> IncludedCookies(
@@ -5834,18 +5839,22 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   idb_control.BindTestInterfaceForTesting(
       idb_control_test.BindNewPipeAndPassReceiver());
 
-  base::FilePath idb_path;
-  {
+  std::pair<base::FilePath, base::FilePath> idb_paths;
+  for (bool use_sqlite : {true, false}) {
     ASSERT_OK_AND_ASSIGN(auto bucket_locator,
                          GetStorageBucket(blink::StorageKey::CreateFirstParty(
                              url::Origin::Create(origin1))));
     base::RunLoop run_loop;
     idb_control_test->GetFilePathForTesting(
-        bucket_locator,
+        bucket_locator, use_sqlite,
         base::BindLambdaForTesting([&](const base::FilePath& path) {
-          idb_path = path;
-          EXPECT_TRUE(base::CreateDirectory(idb_path));
-          EXPECT_TRUE(base::DirectoryExists(idb_path));
+          if (use_sqlite) {
+            idb_paths.first = path;
+          } else {
+            idb_paths.second = path;
+          }
+          EXPECT_TRUE(base::CreateDirectory(path));
+          EXPECT_TRUE(base::DirectoryExists(path));
           idb_control_test->ResetCachesForTesting(run_loop.QuitClosure());
         }));
     run_loop.Run();
@@ -5894,7 +5903,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   }
 
   // Check if the indexed db has disappeared too.
-  EXPECT_FALSE(base::DirectoryExists(idb_path));
+  EXPECT_FALSE(base::DirectoryExists(idb_paths.first));
+  EXPECT_FALSE(base::DirectoryExists(idb_paths.second));
 }
 
 // Tests loading single extensions (like --load-extension)

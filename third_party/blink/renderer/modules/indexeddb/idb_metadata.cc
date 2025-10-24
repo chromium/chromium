@@ -61,20 +61,12 @@ scoped_refptr<IDBObjectStoreMetadata> IDBObjectStoreMetadata::CreateCopy()
 IDBDatabaseMetadata::IDBDatabaseMetadata()
     : version(IDBDatabaseMetadata::kNoVersion) {}
 
-IDBDatabaseMetadata::IDBDatabaseMetadata(const String& name,
-                                         int64_t version,
-                                         int64_t max_object_store_id,
-                                         bool was_cold_open)
-    : name(name),
-      version(version),
-      max_object_store_id(max_object_store_id),
-      was_cold_open(was_cold_open) {}
-
 void IDBDatabaseMetadata::CopyFrom(const IDBDatabaseMetadata& metadata) {
   name = metadata.name;
   version = metadata.version;
   max_object_store_id = metadata.max_object_store_id;
   was_cold_open = metadata.was_cold_open;
+  is_sqlite = metadata.is_sqlite;
 }
 
 }  // namespace blink

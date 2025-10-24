@@ -163,7 +163,8 @@ class ConnectionCoordinator::OpenRequest
               ConnectionCoordinator* connection_coordinator)
       : ConnectionRequest(bucket_context, db, connection_coordinator),
         pending_(std::move(pending_connection)),
-        was_cold_open_(pending_->was_cold_open) {
+        was_cold_open_(pending_->was_cold_open),
+        uses_sqlite_(bucket_context.ShouldUseSqlite()) {
     // Note that the `scheduling_priority` on this lock receiver isn't very
     // important because locks are only acquired when upgrading the version, and
     // that requires that all other connections be closed. So there shouldn't be
@@ -434,11 +435,13 @@ class ConnectionCoordinator::OpenRequest
   blink::IndexedDBDatabaseMetadata GenerateDbMetadata() {
     blink::IndexedDBDatabaseMetadata metadata = db_->metadata();
     metadata.was_cold_open = was_cold_open_;
+    metadata.is_sqlite = uses_sqlite_;
     return metadata;
   }
 
   std::unique_ptr<PendingConnection> pending_;
   bool was_cold_open_;
+  bool uses_sqlite_;
 
   // If an upgrade is needed, holds the pending connection until ownership is
   // transferred to the IndexedDBDispatcherHost via OnUpgradeNeeded.

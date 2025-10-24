@@ -86,6 +86,7 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   std::map<int64_t, IndexedDBObjectStoreMetadata> object_stores;
 
   bool was_cold_open = true;
+  bool is_sqlite = false;
 };
 
 }  // namespace blink

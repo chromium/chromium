@@ -428,7 +428,7 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
           ? SerializedScriptValue::SerializeOptions::kSerialize
           : SerializedScriptValue::SerializeOptions::kBlockedInNonSecureContext;
   IDBValueWrapper value_wrapper(isolate, value.V8Value(), wasm_policy,
-                                exception_state);
+                                exception_state, db().Metadata().is_sqlite);
   transaction_->SetActiveDuringSerialization(true);
   if (exception_state.HadException())
     return nullptr;

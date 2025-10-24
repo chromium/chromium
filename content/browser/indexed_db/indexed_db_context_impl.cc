@@ -569,9 +569,10 @@ void IndexedDBContextImpl::GetBaseDataPathForTesting(
 
 void IndexedDBContextImpl::GetFilePathForTesting(
     const BucketLocator& bucket_locator,
+    bool for_sqlite,
     GetFilePathForTestingCallback callback) {
   std::move(callback).Run(
-      GetFilePathForTesting(bucket_locator, /*sqlite=*/false));  // IN-TEST
+      GetFilePathForTesting(bucket_locator, for_sqlite));  // IN-TEST
 }
 
 base::FilePath IndexedDBContextImpl::GetFilePathForTesting(

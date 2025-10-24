@@ -97,7 +97,8 @@ class MODULES_EXPORT IDBValueWrapper {
       v8::Isolate*,
       v8::Local<v8::Value>,
       SerializedScriptValue::SerializeOptions::WasmSerializationPolicy,
-      ExceptionState&);
+      ExceptionState&,
+      bool backend_uses_sqlite);
   ~IDBValueWrapper();
 
   // Creates a clone of the serialized value.
@@ -153,6 +154,8 @@ class MODULES_EXPORT IDBValueWrapper {
 
   // Stores `wire_bytes_` in a Blob if it is over the size threshold.
   void MaybeStoreInBlob();
+
+  bool backend_uses_sqlite_;
 
   // V8 value serialization state.
   scoped_refptr<SerializedScriptValue> serialized_value_;
@@ -243,7 +246,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   base::span<const uint8_t> parse_span_;
 
   // The size of the Blob holding the data for the last unwrapped IDBValue.
-  unsigned blob_size_;
+  unsigned blob_size_ = 0;
 
   // Handle to the Blob holding the data for the last unwrapped IDBValue.
   scoped_refptr<BlobDataHandle> blob_handle_;

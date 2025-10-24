@@ -193,6 +193,8 @@ struct IDBDatabaseMetadata {
   int64 max_object_store_id;
   map<int64, IDBObjectStoreMetadata> object_stores;
   bool was_cold_open;
+  // True if the backing store uses SQLite. If false, it uses LevelDB.
+  bool is_sqlite;
 };
 
 struct IDBNameAndVersion {

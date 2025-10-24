@@ -97,9 +97,9 @@ mojom::blink::IDBReturnValuePtr CreateIDBReturnValuePtrWithBlob(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_value) {
   NonThrowableExceptionState non_throwable_exception_state;
-  IDBValueWrapper wrapper(isolate, v8_value,
-                          SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+  IDBValueWrapper wrapper(
+      isolate, v8_value, SerializedScriptValue::SerializeOptions::kSerialize,
+      non_throwable_exception_state, /*backend_uses_sqlite=*/false);
   wrapper.set_wrapping_threshold_for_test(0);
   wrapper.DoneCloning();
 
@@ -116,9 +116,9 @@ std::unique_ptr<IDBValue> CreateIDBValueWithV8Value(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_value) {
   NonThrowableExceptionState non_throwable_exception_state;
-  IDBValueWrapper wrapper(isolate, v8_value,
-                          SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+  IDBValueWrapper wrapper(
+      isolate, v8_value, SerializedScriptValue::SerializeOptions::kSerialize,
+      non_throwable_exception_state, /*backend_uses_sqlite=*/false);
   wrapper.DoneCloning();
   return std::move(wrapper).Build();
 }

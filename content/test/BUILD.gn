@@ -2028,6 +2028,7 @@ test("content_browsertests") {
     "//services/video_capture/public/mojom:constants",
     "//services/viz/privileged/mojom",
     "//services/viz/public/cpp/gpu",
+    "//sql:test_support",
     "//storage/browser",
     "//storage/browser:test_support",
     "//testing/gmock",

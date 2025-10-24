@@ -43,6 +43,9 @@ struct MODULES_EXPORT StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
   static bool was_cold_open(const blink::IDBDatabaseMetadata& metadata) {
     return metadata.was_cold_open;
   }
+  static bool is_sqlite(const blink::IDBDatabaseMetadata& metadata) {
+    return metadata.is_sqlite;
+  }
   static bool Read(blink::mojom::IDBDatabaseMetadataDataView data,
                    blink::IDBDatabaseMetadata* out);
 };

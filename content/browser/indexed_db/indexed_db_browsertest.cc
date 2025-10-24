@@ -68,6 +68,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "sql/database.h"
+#include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -1075,6 +1078,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
         bucket_locator, base::BindLambdaForTesting([&]() {
           control_test->GetFilePathForTesting(
               bucket_locator,
+              /*for_sqlite=*/false,
               base::BindLambdaForTesting([&](const base::FilePath& path) {
                 CorruptDatabase(path);
                 loop.Quit();
@@ -1430,6 +1434,61 @@ IN_PROC_BROWSER_TEST_F(IndexedDBLevelDBOnlyTest, LargeValueReadBlobMissing) {
           base::Bucket(kFileErrorOK, kExpectedBucketCount),
           base::Bucket(kFileErrorCodeNotFoundErr, kExpectedBucketCount));
   histogram_tester.ExpectTotalCount("IndexedDB.WrappedBlobLoadTime", 1);
+}
+
+// Large values are NOT wrapped when using SQLite, but are wrapped when using
+// LevelDB.
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
+  const GURL kTestUrl =
+      GetTestUrl("indexeddb", "write_and_read_large_value.html");
+  SimpleTest(kTestUrl);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_OK_AND_ASSIGN(
+      const storage::BucketInfo bucket_info,
+      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl)))));
+
+  if (using_sqlite_) {
+    base::test::TestFuture<base::FilePath> future;
+    auto control_test = GetControlTest();
+    control_test->GetFilePathForTesting(
+        bucket_info.ToBucketLocator(), /*for_sqlite=*/true,
+        future.GetCallback<const base::FilePath&>());
+    base::FilePath db_dir = future.Take();
+    base::FilePath db_file;
+
+    base::FileEnumerator enumerator(db_dir, /*recursive=*/false,
+                                    base::FileEnumerator::FILES);
+    for (base::FilePath file = enumerator.Next(); !file.empty();
+         file = enumerator.Next()) {
+      if (file.MaybeAsASCII().find("-wal") != std::string::npos) {
+        continue;
+      }
+      db_file = file;
+    }
+    ASSERT_FALSE(db_file.empty());
+
+    shell()->Close();
+
+    // We have to try to open the database multiple times because the files
+    // (both main DB file and -wal journal) may still be held open by the
+    // backing store.
+    std::unique_ptr<sql::Database> db;
+    ASSERT_TRUE(base::test::RunUntil([&db, &db_file]() {
+      db = std::make_unique<sql::Database>(sql::test::kTestTag);
+      return db->Open(db_file);
+    }));
+
+    sql::Statement s(db->GetUniqueStatement("SELECT COUNT(*) FROM blobs"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(0, s.ColumnInt(0));
+  } else {
+    base::FilePath blob_path =
+        PathForBlob(bucket_info.ToBucketLocator(), /*database_id=*/1,
+                    DatabaseMetaDataKey::kBlobNumberGeneratorInitialNumber);
+    EXPECT_TRUE(base::PathExists(blob_path));
+  }
 }
 
 // The blob key corruption test runs in a separate class to avoid corrupting

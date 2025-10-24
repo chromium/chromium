@@ -41,7 +41,8 @@ interface IndexedDBControlTest {
   GetBaseDataPathForTesting() => (mojo_base.mojom.FilePath path);
 
   // Gets the name of the local storage file for the given `bucket_locator`.
-  GetFilePathForTesting(storage.mojom.BucketLocator bucket_locator)
+  GetFilePathForTesting(storage.mojom.BucketLocator bucket_locator,
+                        bool for_sqlite)
       => (mojo_base.mojom.FilePath path);
 
   // Forgets the storage keys and sizes read from disk.
