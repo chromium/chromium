@@ -22,7 +22,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -55,7 +54,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
@@ -329,7 +327,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void startPartnerCustomizationDuringFre() {
         launchFirstRunActivity();
         CriteriaHelper.pollInstrumentationThread(
@@ -360,7 +358,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testAbortFirstRun() throws Exception {
         launchViewIntent(TEST_URL);
         Activity chromeLauncherActivity = waitForActivity(ChromeLauncherActivity.class);
@@ -398,7 +396,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "crbug.com/430594808")
     public void testFirstRunPages_NoCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo());
     }
@@ -407,7 +405,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_SearchPromo_HistorySyncPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo().withHistorySyncPromo());
     }
@@ -416,7 +414,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_HistorySyncPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withHistorySyncPromo());
     }
@@ -425,7 +423,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
 
@@ -453,7 +451,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos().withCctTosDisabled());
 
@@ -479,14 +477,14 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
     }
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
     }
@@ -495,7 +493,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SearchPromo_HistorySyncPromo()
             throws Exception {
         runFirstRunPagesTest(
@@ -509,7 +507,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(
                 new FirstRunPagesTestCase().withCctTosDisabled().withHistorySyncPromo());
@@ -583,7 +581,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
         HistogramWatcher.Builder histogramBuilder =
                 HistogramWatcher.newBuilder()
@@ -638,7 +636,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "issuetracker.google.com/360931705")
     public void testFirstRunSkippedSharedPreferenceRefresh() throws Exception {
         // Set that the first run was previous skipped by policy in shared preference, then
         // refreshing shared preference should cause its value to become false, since there's no
@@ -884,7 +882,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/431982831")
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testSigninFirstRunLoadPointHistograms() throws Exception {
         var histograms =
                 HistogramWatcher.newBuilder()
