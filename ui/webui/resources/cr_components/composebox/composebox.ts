@@ -52,7 +52,7 @@ export interface ComposeboxElement {
 export class ComposeboxElement extends I18nMixinLit
 (CrLitElement) {
   static get is() {
-    return 'ntp-composebox';
+    return 'cr-composebox';
   }
 
   static override get styles() {
@@ -81,7 +81,7 @@ export class ComposeboxElement extends I18nMixinLit
       },
       /**
        * Index of the currently selected match, if any.
-       * Do not modify this. Use <composebox-dropdown> API to change
+       * Do not modify this. Use <cr-composebox-dropdown> API to change
        * selection.
        */
       selectedMatchIndex_: {type: Number},
@@ -915,7 +915,7 @@ export class ComposeboxElement extends I18nMixinLit
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-composebox': ComposeboxElement;
+    'cr-composebox': ComposeboxElement;
   }
 }
 

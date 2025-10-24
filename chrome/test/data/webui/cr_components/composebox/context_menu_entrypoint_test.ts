@@ -53,7 +53,7 @@ suite('ContextMenuEntrypoint', () => {
         new SearchboxPageCallbackRouter());
     ComposeboxProxyImpl.setInstance(proxy);
 
-    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    entrypoint = document.createElement('cr-composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
     await microtasksFinished();
   });
@@ -257,7 +257,7 @@ suite('ContextMenuEntrypoint', () => {
     // The element reads the loadTimeData in its constructor, so we need to
     // recreate it.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    entrypoint = document.createElement('cr-composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
     await microtasksFinished();
 
@@ -283,7 +283,7 @@ suite('ContextMenuEntrypoint', () => {
     });
 
     entrypoint.remove();
-    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    entrypoint = document.createElement('cr-composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
     await microtasksFinished();
 
@@ -326,7 +326,7 @@ suite('ContextMenuEntrypoint', () => {
       composeboxShowDeepSearchButton: true,
     });
     entrypoint.remove();
-    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    entrypoint = document.createElement('cr-composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
     // Simulate parent component behavior of listening for event and changing
     // property.
@@ -419,7 +419,7 @@ suite('ContextMenuEntrypoint', () => {
       composeboxShowDeepSearchButton: true,
     });
     entrypoint.remove();
-    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    entrypoint = document.createElement('cr-composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
     await microtasksFinished();
 
@@ -457,7 +457,7 @@ suite('ContextMenuEntrypoint', () => {
       composeboxShowCreateImageButton: true,
     });
     entrypoint.remove();
-    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    entrypoint = document.createElement('cr-composebox-context-menu-entrypoint');
     document.body.appendChild(entrypoint);
     await microtasksFinished();
 

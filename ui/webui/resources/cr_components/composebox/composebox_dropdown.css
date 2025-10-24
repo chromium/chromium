@@ -19,6 +19,6 @@
   display: none;
 }
 
-ntp-composebox-match[hidden] {
+cr-composebox-match[hidden] {
   display: none;
 }

@@ -98,7 +98,7 @@
   box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-composebox-font-size, 18px);
   transition: var(--border-radius-transition);
-  width: var(--ntp-composebox-width, 337px);
+  width: var(--cr-composebox-width, 337px);
 }
 
 :host(:not([ntp-realbox-next-enabled])) {
@@ -308,7 +308,7 @@
   display: none;
 }
 
-:host([expanded_][show-dropdown_]) ntp-composebox-dropdown {
+:host([expanded_][show-dropdown_]) cr-composebox-dropdown {
   padding-bottom: 8px;
 }
 

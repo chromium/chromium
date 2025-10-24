@@ -9,7 +9,7 @@ import type {OmniboxAimAppElement} from './aim_app.js';
 export function getHtml(this: OmniboxAimAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<ntp-composebox></ntp-composebox>
+<cr-composebox></cr-composebox>
 <!--_html_template_end_-->`;
   // clang-format on
 }

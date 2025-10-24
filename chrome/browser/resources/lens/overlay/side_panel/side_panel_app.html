@@ -315,7 +315,7 @@
   }
 
   :host([enable-lens-aim-suggestions])
-    #composeboxContainer:has(ntp-composebox[show-dropdown_][expanded_]) {
+    #composeboxContainer:has(cr-composebox[show-dropdown_][expanded_]) {
     background-color: var(--search-background-color);
     pointer-events: auto;
     inset-block-start: var(--aim-header-height);
@@ -533,12 +533,12 @@
 </cr-toast>
 
 <div id="composeboxContainer">
-  <ntp-composebox
+  <cr-composebox
     id="composebox"
     is-collapsible
     hide-file-inputs_
     style$="--composebox-height: [[composeboxHeight_]]px;"
     lens-button-disabled_$="[[isOverlayShowing]]"
   >
-  </ntp-composebox>
+  </cr-composebox>
 </div>

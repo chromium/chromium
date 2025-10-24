@@ -12,7 +12,7 @@ import {getHtml} from './file_carousel.html.js';
 
 export class ComposeboxFileCarouselElement extends CrLitElement {
   static get is() {
-    return 'ntp-composebox-file-carousel';
+    return 'cr-composebox-file-carousel';
   }
 
   static override get styles() {
@@ -34,7 +34,7 @@ export class ComposeboxFileCarouselElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-composebox-file-carousel': ComposeboxFileCarouselElement;
+    'cr-composebox-file-carousel': ComposeboxFileCarouselElement;
   }
 }
 

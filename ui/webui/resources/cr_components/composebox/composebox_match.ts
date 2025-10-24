@@ -21,7 +21,7 @@ export interface ComposeboxMatchElement {
 // Displays an autocomplete match
 export class ComposeboxMatchElement extends CrLitElement {
   static get is() {
-    return 'ntp-composebox-match';
+    return 'cr-composebox-match';
   }
 
   static override get styles() {
@@ -122,7 +122,7 @@ export class ComposeboxMatchElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-composebox-match': ComposeboxMatchElement;
+    'cr-composebox-match': ComposeboxMatchElement;
   }
 }
 

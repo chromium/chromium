@@ -134,7 +134,7 @@ suite('Composebox', () => {
 
     await waitAfterNextRender(lensSidePanelElement);
     const composebox =
-        lensSidePanelElement.shadowRoot!.querySelector('ntp-composebox');
+        lensSidePanelElement.shadowRoot!.querySelector('cr-composebox');
     assertTrue(!!composebox);
 
     testBrowserProxy.page.setIsOverlayShowing(false);

@@ -21,7 +21,7 @@ function remainder(lhs: number, rhs: number) {
 // A dropdown element that contains autocomplete matches.
 export class ComposeboxDropdownElement extends CrLitElement {
   static get is() {
-    return 'ntp-composebox-dropdown';
+    return 'cr-composebox-dropdown';
   }
 
   static override get styles() {
@@ -68,7 +68,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
   /** Focuses the selected match, if any. */
   focusSelected() {
     const selectableMatchElements =
-        this.shadowRoot.querySelectorAll('ntp-composebox-match');
+        this.shadowRoot.querySelectorAll('cr-composebox-match');
     selectableMatchElements[this.selectedMatchIndex]?.focus();
   }
 
@@ -181,7 +181,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-composebox-dropdown': ComposeboxDropdownElement;
+    'cr-composebox-dropdown': ComposeboxDropdownElement;
   }
 }
 

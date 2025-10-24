@@ -17,8 +17,8 @@ export function getHtml(this: ContextualTasksAppElement) {
   <!-- TODO(452978117): Switch back to webview tag once it is supported. -->
   <iframe id="threadFrame" src="${this.threadUrl_}"></iframe>
   <div id="composeboxContainer">
-    <ntp-composebox id="composebox">
-    </ntp-composebox>
+    <cr-composebox id="composebox">
+    </cr-composebox>
   </div>
   <!--_html_template_end_-->`;
 }

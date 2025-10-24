@@ -1225,7 +1225,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      const composebox = app.shadowRoot.querySelector('ntp-composebox');
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
       assertTrue(!!composebox);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
@@ -1249,7 +1249,7 @@ suite('NewTabPageAppTest', () => {
           await microtasksFinished();
 
           // Assert.
-          const composebox = app.shadowRoot.querySelector('ntp-composebox');
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
           assertTrue(!!composebox);
           assertEquals(
               searchboxHandler.getCallCount('notifySessionStarted'), 1);
@@ -1270,7 +1270,7 @@ suite('NewTabPageAppTest', () => {
           await microtasksFinished();
 
           // Assert.
-          const composebox = app.shadowRoot.querySelector('ntp-composebox');
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
           assertTrue(!!composebox);
           assertEquals(
               searchboxHandler.getCallCount('notifySessionStarted'), 1);
@@ -1311,13 +1311,13 @@ suite('NewTabPageAppTest', () => {
               detail: {searchboxText: '', contextFiles: []},
             }));
             await microtasksFinished();
-            const ntpComposebox =
-                app.shadowRoot.querySelector('ntp-composebox');
-            ntpComposebox!.setText('hello');
+            const composebox =
+                app.shadowRoot.querySelector('cr-composebox');
+            composebox!.setText('hello');
             const composeboxScrim =
                 app.shadowRoot.querySelector<HTMLElement>('#scrim');
             assertTrue(!!composeboxScrim);
-            assertEquals(ntpComposebox!.getText(), 'hello');
+            assertEquals(composebox!.getText(), 'hello');
             composeboxScrim.click();
             await microtasksFinished();
 
@@ -1352,7 +1352,7 @@ suite('NewTabPageAppTest', () => {
           bubbles: true,
           cancelable: true,
         });
-        const composebox = app.shadowRoot.querySelector('ntp-composebox');
+        const composebox = app.shadowRoot.querySelector('cr-composebox');
         assertTrue(!!composebox);
         composebox.dispatchEvent(escapeKeyEvent);
         await microtasksFinished();
@@ -1890,21 +1890,21 @@ suite('NewTabPageAppTest', () => {
             detail: {searchboxText: '', contextFiles: []},
           }));
           await microtasksFinished();
-          const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
-          assertTrue(!!ntpComposebox);
-          ntpComposebox.$.input.dispatchEvent(new FocusEvent('focus'));
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
+          assertTrue(!!composebox);
+          composebox.$.input.dispatchEvent(new FocusEvent('focus'));
           await microtasksFinished();
 
           assertFalse(scrim.hidden);
 
-          ntpComposebox.$.input.dispatchEvent(
+          composebox.$.input.dispatchEvent(
               new FocusEvent('focusout', {relatedTarget: scrim}));
           await microtasksFinished();
           scrim.click();
           await microtasksFinished();
           assertTrue(scrim?.hidden);
           // Composebox should have been closed.
-          assertFalse(!!app.shadowRoot.querySelector('ntp-composebox'));
+          assertFalse(!!app.shadowRoot.querySelector('cr-composebox'));
         });
     test('searchbox text carries over to composebox', async () => {
         // Arrange.
@@ -1919,7 +1919,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      const composebox = app.shadowRoot.querySelector('ntp-composebox');
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
       assertTrue(!!composebox);
       assertEquals(
         'text',

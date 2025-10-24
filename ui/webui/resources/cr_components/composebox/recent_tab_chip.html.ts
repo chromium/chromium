@@ -16,10 +16,10 @@ export function getHtml(this: RecentTabChipElement) {
       aria-label="${this.i18n('askAboutThisTabAriaLabel',
           this.recentTab.title)}">
     <div class="button-content">
-      <composebox-tab-favicon
+      <cr-composebox-tab-favicon
           class="favicon"
           .url="${this.recentTab.url?.url}">
-      </composebox-tab-favicon>
+      </cr-composebox-tab-favicon>
       <span class="recent-tab-button-text">
         ${this.i18n('askAboutThisTab')}
       </span>

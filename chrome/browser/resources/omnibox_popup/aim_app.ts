@@ -48,7 +48,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       return;
     }
 
-    const composebox = this.shadowRoot.querySelector('ntp-composebox');
+    const composebox = this.shadowRoot.querySelector('cr-composebox');
     assert(composebox);
     composebox.focus();
   }

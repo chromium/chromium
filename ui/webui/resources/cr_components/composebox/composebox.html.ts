@@ -64,7 +64,7 @@ export function getHtml(this: ComposeboxElement) {
           ?show-dropdown="${this.showDropdown_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}"
           realbox-layout-mode="${this.realboxLayoutMode}">
-        <ntp-composebox-dropdown
+        <cr-composebox-dropdown
             id="matches"
             part="dropdown"
             role="listbox"
@@ -75,7 +75,7 @@ export function getHtml(this: ComposeboxElement) {
             @match-click="${this.onMatchClick_}"
             ?hidden="${!this.showDropdown_}"
             .lastQueriedInput=${this.lastQueriedInput_}>
-        </ntp-composebox-dropdown>
+        </cr-composebox-dropdown>
       </contextual-entrypoint-and-carousel>
     </div>
     <!-- A seperate container is needed for the submit button so the

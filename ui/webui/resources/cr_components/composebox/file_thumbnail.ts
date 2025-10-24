@@ -21,7 +21,7 @@ export interface ComposeboxFileThumbnailElement {
 
 export class ComposeboxFileThumbnailElement extends CrLitElement {
   static get is() {
-    return 'ntp-composebox-file-thumbnail';
+    return 'cr-composebox-file-thumbnail';
   }
 
   static override get styles() {
@@ -62,7 +62,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-composebox-file-thumbnail': ComposeboxFileThumbnailElement;
+    'cr-composebox-file-thumbnail': ComposeboxFileThumbnailElement;
   }
 }
 

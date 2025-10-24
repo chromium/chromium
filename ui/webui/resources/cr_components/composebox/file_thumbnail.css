@@ -167,7 +167,7 @@
   opacity: 1;
 }
 
-#tabThumbnail composebox-tab-favicon {
+#tabThumbnail cr-composebox-tab-favicon {
   border-radius: 50%;
   height: 16px;
   width: 16px;

@@ -24,22 +24,22 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         </composebox-recent-tab-chip>
         ` :
                                       ''}
-        <composebox-tool-chip
+        <cr-composebox-tool-chip
             icon="composebox:deepSearch"
             label="${this.i18n('deepSearch')}"
             ?visible="${this.inDeepSearchMode_}"
             @click="${this.onDeepSearchClick_}">
-        </composebox-tool-chip>
-        <composebox-tool-chip
+        </cr-composebox-tool-chip>
+        <cr-composebox-tool-chip
             icon="composebox:nanoBanana"
             label="${this.i18n('createImages')}"
             ?visible="${this.inCreateImageMode_}"
             @click="${this.onCreateImageClick_}">
-        </composebox-tool-chip>
+        </cr-composebox-tool-chip>
   `;
   const contextMenu = html`
       <div class="context-menu-container" part="context-menu-and-tools">
-        <composebox-context-menu-entrypoint id="contextEntrypoint"
+        <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             exportparts="context-menu-entrypoint-icon"
             class="upload-icon no-overlap"
@@ -56,7 +56,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             .fileNum="${this.files_.size}"
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}">
-        </composebox-context-menu-entrypoint>
+        </cr-composebox-context-menu-entrypoint>
         ${this.realboxLayoutMode !== 'Compact' ? toolChips : ''}
       </div>
   `;
@@ -65,12 +65,12 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   return html`<!--_html_template_start_-->
   ${this.realboxLayoutMode === 'Compact' ? contextMenu : ''}
   ${this.showFileCarousel_ ? html`
-    <ntp-composebox-file-carousel
-      part="composebox-file-carousel"
+    <cr-composebox-file-carousel
+      part="cr-composebox-file-carousel"
       id="carousel"
       .files=${Array.from(this.files_.values())}
       @delete-file=${this.onDeleteFile_}>
-    </ntp-composebox-file-carousel> ` : ''}
+    </cr-composebox-file-carousel> ` : ''}
   ${this.realboxLayoutMode === 'TallTopContext' ? contextMenu : ''}
   ${this.showDropdown && (this.showFileCarousel_ || this.realboxLayoutMode === 'TallTopContext') ? html`
   <div class="carousel-divider" part="carousel-divider"></div>` : ''}

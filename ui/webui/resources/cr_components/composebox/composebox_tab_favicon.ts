@@ -16,13 +16,13 @@ import {getCss} from './composebox_tab_favicon.css.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'composebox-tab-favicon': TabFaviconElement;
+    'cr-composebox-tab-favicon': TabFaviconElement;
   }
 }
 
 export class TabFaviconElement extends CrLitElement {
   static get is() {
-    return 'composebox-tab-favicon';
+    return 'cr-composebox-tab-favicon';
   }
 
   static override get styles() {

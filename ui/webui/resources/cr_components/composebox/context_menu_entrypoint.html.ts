@@ -38,8 +38,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
               @click="${this.addTabContext_}">
-            <composebox-tab-favicon .url="${tab.url.url}">
-            </composebox-tab-favicon>
+            <cr-composebox-tab-favicon .url="${tab.url.url}">
+            </cr-composebox-tab-favicon>
             <span class="tab-title">${tab.title}</span>
           </button>
           ${this.shouldShowTabPreview_() ? html`

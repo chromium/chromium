@@ -35,7 +35,7 @@ const ContextMenuEntrypointElementBase = I18nMixinLit(CrLitElement);
 export class ContextMenuEntrypointElement extends
     ContextMenuEntrypointElementBase {
   static get is() {
-    return 'composebox-context-menu-entrypoint';
+    return 'cr-composebox-context-menu-entrypoint';
   }
 
   static override get styles() {
@@ -210,7 +210,7 @@ export class ContextMenuEntrypointElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'composebox-context-menu-entrypoint': ContextMenuEntrypointElement;
+    'cr-composebox-context-menu-entrypoint': ContextMenuEntrypointElement;
   }
 }
 

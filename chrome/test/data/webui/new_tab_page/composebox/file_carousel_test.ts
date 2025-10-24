@@ -21,7 +21,7 @@ suite('NewTabPageComposeboxFileCarouselTest', () => {
     // Assert no files.
     assertEquals(
         fileCarouselElement.shadowRoot
-            .querySelectorAll('ntp-composebox-file-thumbnail')
+            .querySelectorAll('cr-composebox-file-thumbnail')
             .length,
         0);
 
@@ -34,7 +34,7 @@ suite('NewTabPageComposeboxFileCarouselTest', () => {
 
     // Assert.
     const files = fileCarouselElement.shadowRoot.querySelectorAll(
-        'ntp-composebox-file-thumbnail');
+        'cr-composebox-file-thumbnail');
     assertEquals(files.length, 2);
   });
 });

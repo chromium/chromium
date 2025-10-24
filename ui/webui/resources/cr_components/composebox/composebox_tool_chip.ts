@@ -9,13 +9,13 @@ import {getHtml} from './composebox_tool_chip.html.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'composebox-tool-chip': ComposeboxToolChipElement;
+    'cr-composebox-tool-chip': ComposeboxToolChipElement;
   }
 }
 
 export class ComposeboxToolChipElement extends CrLitElement {
   static get is() {
-    return 'composebox-tool-chip';
+    return 'cr-composebox-tool-chip';
   }
 
   static override get styles() {

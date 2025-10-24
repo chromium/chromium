@@ -762,7 +762,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
     const matchEls =
         composeboxElement.$.matches.shadowRoot.querySelectorAll(
-            'ntp-composebox-match');
+            'cr-composebox-match');
 
     // Case 1: composeboxCloseByEscape_ = false. Escape should select the
     // first suggestion.
@@ -1061,7 +1061,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertFalse(composeboxDropdown.hidden);
 
     const matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(4, matchEls.length);
     const matchEl = matchEls[0];
     assertTrue(!!matchEl);
@@ -1247,7 +1247,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     const matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(2, matchEls.length);
 
     const arrowDownEvent = new KeyboardEvent('keydown', {
@@ -1324,7 +1324,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     let matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(1, matchEls.length);
     // First match is not selected.
     assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -1352,7 +1352,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(2, matchEls.length);
 
     // First match is not selected.
@@ -1571,7 +1571,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     let matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(2, matchEls.length);
     let matchEl = matchEls[0];
     assertTrue(!!matchEl);
@@ -1589,7 +1589,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(2, matchEls.length);
     matchEl = matchEls[0];
     assertTrue(!!matchEl);
@@ -1616,7 +1616,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     const matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
-        'ntp-composebox-match');
+        'cr-composebox-match');
     assertEquals(2, matchEls.length);
     const matchEl = matchEls[0];
     assertTrue(!!matchEl);
