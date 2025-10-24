@@ -125,7 +125,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
-                Features.ADD_QUIC_HINTS_V1 + Features.DEV_SUFFIX,
+                Features.ADD_QUIC_HINTS_V1,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
