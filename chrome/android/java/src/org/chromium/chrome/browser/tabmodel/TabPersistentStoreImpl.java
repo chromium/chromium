@@ -91,6 +91,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private static final String TAG_MIGRATION = "fb_migration";
     private static final long INVALID_TIME = -1;
 
+    /**
+     * Determined experimentally to balance load speed and UI thread congestion. The optimal value
+     * of those tested was 5. The exact optimal value is likely in the range [2, 9].
+     */
+    private static final int BATCH_RESTORE_SIZE = 5;
+
     @VisibleForTesting /* package */ static final int MAX_MIGRATIONS_PER_SAVE = 5;
 
     private static boolean sDeferredStartupComplete;
@@ -1495,12 +1501,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             }
         } else {
             ArrayList<TabRestoreDetails> details = new ArrayList<>();
-            if (ChromeFeatureList.sBatchTabRestore.isEnabled()) {
-                int batchSize = ChromeFeatureList.sBatchTabRestoreBatchSize.getValue();
-                for (int i = 0; i < batchSize && !mTabsToRestore.isEmpty(); i++) {
-                    details.add(mTabsToRestore.removeFirst());
-                }
-            } else {
+            for (int i = 0; i < BATCH_RESTORE_SIZE && !mTabsToRestore.isEmpty(); i++) {
                 details.add(mTabsToRestore.removeFirst());
             }
             mTabBatchLoader = new TabBatchLoader(details);

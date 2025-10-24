@@ -5186,10 +5186,6 @@ inline constexpr char kBackgroundNotPerceptibleBindingDescription[] =
     "If enabled, not perceptible binding put processes to the background cpu "
     "cgroup";
 
-inline constexpr char kBatchTabRestoreName[] = "Batch tab restore";
-inline constexpr char kBatchTabRestoreDescription[] =
-    "Batch tab restore to improve startup performance.";
-
 inline constexpr char kBiometricAuthIdentityCheckName[] =
     "Enables android identity check for eligible features";
 inline constexpr char kBiometricAuthIdentityCheckDescription[] =

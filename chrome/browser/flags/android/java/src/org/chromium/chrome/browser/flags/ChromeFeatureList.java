@@ -293,7 +293,6 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL_FIELD_TRIAL =
             "BackgroundThreadPoolFieldTrial";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
-    public static final String BATCH_TAB_RESTORE = "BatchTabRestore";
     public static final String BCIV_BOTTOM_CONTROLS = "AndroidBcivBottomControls";
     public static final String BIOMETRIC_AUTH_IDENTITY_CHECK = "BiometricAuthIdentityCheck";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
@@ -804,7 +803,6 @@ public abstract class ChromeFeatureList {
                     BACKGROUND_THREAD_POOL_FIELD_TRIAL,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sBatchTabRestore = newCachedFlag(BATCH_TAB_RESTORE, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
@@ -1142,7 +1140,6 @@ public abstract class ChromeFeatureList {
                     sAsyncNotificationManager,
                     sAutomotiveBackButtonBarStreamline,
                     sBackgroundThreadPoolFieldTrial,
-                    sBatchTabRestore,
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
                     sBrowserControlsDebugging,
@@ -1450,9 +1447,6 @@ public abstract class ChromeFeatureList {
 
     public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
             newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 4);
-
-    public static final IntCachedFeatureParam sBatchTabRestoreBatchSize =
-            newIntCachedFeatureParam(BATCH_TAB_RESTORE, "batch_tab_restore_batch_size", 5);
 
     public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
             newIntCachedFeatureParam(
@@ -1770,7 +1764,6 @@ public abstract class ChromeFeatureList {
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sBackgroundThreadPoolFieldTrialConfig,
-                    sBatchTabRestoreBatchSize,
                     sCctAdaptiveButtonContextualOnly,
                     sCctAdaptiveButtonDefaultVariant,
                     sCctAdaptiveButtonEnableVoice,
