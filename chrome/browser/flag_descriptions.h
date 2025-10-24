@@ -342,6 +342,11 @@ inline constexpr char kClipboardMaximumAgeName[] = "Clipboard maximum age";
 inline constexpr char kClipboardMaximumAgeDescription[] =
     "Limit the maximum age for recent clipboard content";
 
+inline constexpr char kConnectionAllowlistsName[] = "Connection Allowlists";
+inline constexpr char kConnectionAllowlistsDescription[] =
+    "Enables a prototype implementation of `Connection-Allowlist` header "
+    "parsing and enforcement. See https://github.com/mikewest/anti-exfil/";
+
 inline constexpr char kContainerTypeNoLayoutContainmentName[] =
     "Enables the container-type property to have no layout containment";
 inline constexpr char kContainerTypeNoLayoutContainmentDescription[] =

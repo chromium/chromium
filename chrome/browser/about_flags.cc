@@ -13437,6 +13437,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWebAppMigratePreinstalledChat)},
 #endif
 
+    {"connection-allowlists", flag_descriptions::kConnectionAllowlistsName,
+     flag_descriptions::kConnectionAllowlistsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kConnectionAllowlists)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

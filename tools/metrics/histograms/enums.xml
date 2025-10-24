@@ -9010,6 +9010,7 @@ from previous Chrome versions.
   <int value="-1875836063" label="UserNotes:disabled"/>
   <int value="-1875383510" label="UseGoogleLocalNtp:disabled"/>
   <int value="-1875168316" label="UseMonitorColorSpace:disabled"/>
+  <int value="-1875003635" label="ConnectionAllowlists:enabled"/>
   <int value="-1874937563" label="cast-streaming-force-disable-hardware-vp9"/>
   <int value="-1874908826" label="enable-instant-search-clicks"/>
   <int value="-1874883469" label="AudioDucking:enabled"/>
@@ -9460,6 +9461,7 @@ from previous Chrome versions.
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1710314754"
       label="MessagesForAndroidStackingAnimation:disabled"/>
+  <int value="-1710182840" label="ConnectionAllowlists:disabled"/>
   <int value="-1709603348" label="ReaderModeImprovements:enabled"/>
   <int value="-1709271317" label="AutofillEnableBuyNowPayLaterSyncing:enabled"/>
   <int value="-1707707919"
