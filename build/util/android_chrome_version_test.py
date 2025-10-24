@@ -157,6 +157,8 @@ class _VersionTest(unittest.TestCase):
         'TRICHROME_AUTO_64_32_VERSION_CODE']
     arch_trichrome_desktop_64_version_code = output[
         'TRICHROME_DESKTOP_64_VERSION_CODE']
+    arch_chrome_desktop_version_code = output[
+        'CHROME_DESKTOP_VERSION_CODE']
 
     self.assertEqual(arch_monochrome_32_version_code, '484400020')
     self.assertEqual(arch_monochrome_32_64_version_code, '484400023')
@@ -175,6 +177,7 @@ class _VersionTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_auto_64_version_code, '484400055')
     self.assertEqual(arch_trichrome_auto_64_32_version_code, '484400054')
     self.assertEqual(arch_trichrome_desktop_64_version_code, '484400065')
+    self.assertEqual(arch_chrome_desktop_version_code, '484400075')
 
   def testGenerateVersionCodesAndroidArchX64(self):
     """Assert it handles different architectures correctly.
@@ -217,6 +220,8 @@ class _VersionTest(unittest.TestCase):
         'TRICHROME_AUTO_64_32_VERSION_CODE']
     arch_trichrome_desktop_64_version_code = output[
         'TRICHROME_DESKTOP_64_VERSION_CODE']
+    arch_chrome_desktop_version_code = output[
+        'CHROME_DESKTOP_VERSION_CODE']
 
     self.assertEqual(arch_monochrome_32_version_code, '484400021')
     self.assertEqual(arch_monochrome_32_64_version_code, '484400026')
@@ -234,6 +239,7 @@ class _VersionTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_auto_64_version_code, '484400058')
     self.assertEqual(arch_trichrome_auto_64_32_version_code, '484400057')
     self.assertEqual(arch_trichrome_desktop_64_version_code, '484400068')
+    self.assertEqual(arch_chrome_desktop_version_code, '484400078')
 
   def testGenerateVersionCodesAndroidArchOrderArm(self):
     """Assert it handles different architectures correctly.
