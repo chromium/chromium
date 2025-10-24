@@ -24,7 +24,7 @@ class UninstallViewBrowserTest : public DialogBrowserTest {
     // which requires IO. Since this is a test, we'll just allow that.
     base::ScopedAllowBlockingForTesting allow_blocking;
 
-    chrome::ShowUninstallBrowserPrompt();
+    ShowUninstallBrowserPrompt();
 
     // The uninstall dialog is intentionally leaked because it assumes Chrome is
     // about to close anyway, so we have to explicitly exit for the test to end.

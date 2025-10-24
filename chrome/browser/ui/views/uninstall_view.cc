@@ -156,8 +156,6 @@ std::u16string UninstallView::GetItemAt(size_t index) const {
 BEGIN_METADATA(UninstallView)
 END_METADATA
 
-namespace chrome {
-
 int ShowUninstallBrowserPrompt() {
   DCHECK(base::CurrentUIThread::IsSet());
   int result = content::RESULT_CODE_NORMAL_EXIT;
@@ -168,5 +166,3 @@ int ShowUninstallBrowserPrompt() {
   run_loop.Run();
   return result;
 }
-
-}  // namespace chrome
