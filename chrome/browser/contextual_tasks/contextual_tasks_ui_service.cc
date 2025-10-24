@@ -15,11 +15,15 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+
+using sessions::SessionTabHelper;
 
 namespace contextual_tasks {
 
@@ -32,7 +36,6 @@ bool IsContextualTasksHost(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == kContextualTasksUiHost;
 }
-
 }  // namespace
 
 ContextualTasksUiService::ContextualTasksUiService(
@@ -69,9 +72,11 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   ui_url = net::AppendQueryParameter(ui_url, "task",
                                      task.GetTaskId().AsLowercaseString());
 
+  content::WebContents* contextual_task_web_contents = nullptr;
   if (!is_to_new_tab) {
     source_contents->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(ui_url));
+    contextual_task_web_contents = source_contents;
   } else {
     auto* profile =
         Profile::FromBrowserContext(source_contents->GetBrowserContext());
@@ -79,6 +84,15 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
     Navigate(&params);
+    contextual_task_web_contents = params.navigated_or_inserted_contents;
+  }
+  // Attach the session Id of the ai page to the task.
+  if (contextual_task_web_contents) {
+    SessionID session_id =
+        SessionTabHelper::IdForTab(contextual_task_web_contents);
+    if (session_id.is_valid()) {
+      context_controller_->AssociateTabWithTask(task.GetTaskId(), session_id);
+    }
   }
 }
 
