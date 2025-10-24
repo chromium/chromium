@@ -125,7 +125,7 @@ crbug.com/895777 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063
 crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip Timeout ]
 
 # Temporarily disabled for a devtools change
-crbug.com/444376779 http/tests/devtools/network/network-serviceworker-timing-view.js [ Pass Failure ]
+crbug.com/444376779 http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass ]
 
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
@@ -3019,11 +3019,11 @@ crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browser/set_down
 crbug.com/453673799 external/wpt/html/semantics/forms/the-textarea-element/selection-after-whitespace-change.html [ Failure ]
 
 # Unstable context IDs dumped in output
-external/wpt/webdriver/tests/classic/execute_async_script/node.py [ Failure ]
-external/wpt/webdriver/tests/classic/execute_script/node.py [ Failure ]
+crbug.com/454945074 external/wpt/webdriver/tests/classic/execute_async_script/node.py [ Failure ]
+crbug.com/454945074 external/wpt/webdriver/tests/classic/execute_script/node.py [ Failure ]
 
 # Unstable duration in assertion ouptput
-external/wpt/html/webappapis/timers/timer-nesting-not-inherited-in-microtask.html [ Failure ]
+crbug.com/454945814 external/wpt/html/webappapis/timers/timer-nesting-not-inherited-in-microtask.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/453781784 external/wpt/css/css-text/text-transform/text-transform-fullwidth-001.xht [ Failure ]
@@ -9870,4 +9870,4 @@ crbug.com/453886244 [ Linux ] external/wpt/uievents/mouse/mouse_boundary_events_
 crbug.com/453916409 [ Mac12 ] wpt_internal/shared-worker/back-forward-cache/shared-worker-mixed-clients-eviction.tentative.window.html [ Crash Failure Pass Timeout ]
 
 # Gardener 2025-10-24
-crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification.html [ Timeout Pass ]
+crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification.html [ Pass Timeout ]
