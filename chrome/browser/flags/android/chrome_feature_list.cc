@@ -169,7 +169,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kHttpsFirstBalancedMode,
     &features::kLoadingPredictorLimitPreconnectSocketCount,
     &features::kNetworkServiceInProcess,
-    &features::kNotificationOneTapUnsubscribe,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,
     &features::kQuietNotificationPrompts,

@@ -5581,12 +5581,6 @@ inline constexpr char kNavigationCaptureRefactorAndroidDescription[] =
     "Prevents UI jank when a navigation is 'captured', causing a new "
     "app to be opened.";
 
-inline constexpr char kNotificationOneTapUnsubscribeName[] =
-    "Notification one-tap unsubscribe";
-inline constexpr char kNotificationOneTapUnsubscribeDescription[] =
-    "Enables an experimental UX that replaces the [Site settings] button on "
-    "web push notifications with an [Unsubscribe] button.";
-
 inline constexpr char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
 inline constexpr char kNotificationPermissionRationaleDescription[] =

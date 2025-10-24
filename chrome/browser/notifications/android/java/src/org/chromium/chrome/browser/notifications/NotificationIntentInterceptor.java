@@ -220,9 +220,6 @@ public class NotificationIntentInterceptor {
         }
         // The delete intent needs to be handled by broadcast receiver from Q due to background
         // activity start restriction.
-        boolean shouldUseService =
-                actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE
-                        && shouldUseServiceIntentForPreUnsubscribeAction();
         boolean shouldUseBroadcast =
                 intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT
                         || actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE
@@ -244,9 +241,7 @@ public class NotificationIntentInterceptor {
 
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent intent = null;
-        if (shouldUseService) {
-            intent = new Intent(applicationContext, NotificationIntentInterceptorService.class);
-        } else if (shouldUseBroadcast) {
+        if (shouldUseBroadcast) {
             intent = new Intent(applicationContext, Receiver.class);
         } else {
             intent = new Intent(applicationContext, TrampolineActivity.class);
@@ -276,10 +271,6 @@ public class NotificationIntentInterceptor {
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
         int requestCode = computeHashCode(metadata, intentType, actionType, originalRequestCode);
 
-        if (shouldUseService) {
-            return PendingIntent.getService(applicationContext, requestCode, intent, flags);
-        }
-
         return shouldUseBroadcast
                 ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)
                 : PendingIntent.getActivity(applicationContext, requestCode, intent, flags);
@@ -297,15 +288,6 @@ public class NotificationIntentInterceptor {
                 /* actionType= */ NotificationUmaTracker.ActionType.UNKNOWN,
                 metadata,
                 /* pendingIntentProvider= */ null);
-    }
-
-    /** Whether to use a service-type intent for handling PRE_UNSUBSCRIBE actions. */
-    public static boolean shouldUseServiceIntentForPreUnsubscribeAction() {
-        final String useServiceIntentParam = "use_service_intent";
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
-                useServiceIntentParam,
-                false);
     }
 
     /**

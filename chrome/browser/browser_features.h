@@ -73,11 +73,7 @@ const base::FeatureParam<int>
         &features::kNewTabPageTriggerForPrefetch,
         "prefetch_start_delay_on_mouse_hover_ms", 300};
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
-extern base::FeatureParam<bool>
-    kNotificationOneTapUnsubscribeUseServiceIntentParam;
-#else
+#if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop);
 #endif
 
