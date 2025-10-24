@@ -12,6 +12,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace net {

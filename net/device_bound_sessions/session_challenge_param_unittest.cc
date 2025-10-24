@@ -11,6 +11,7 @@
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 

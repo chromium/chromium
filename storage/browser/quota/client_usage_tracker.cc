@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace storage {
 

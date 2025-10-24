@@ -15,6 +15,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/libfuzzer/proto/url_proto_converter.h"
+#include "url/gurl.h"
 
 namespace canonical_cookie_proto {
 

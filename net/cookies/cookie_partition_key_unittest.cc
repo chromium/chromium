@@ -14,6 +14,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 

@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/ref_unique_cookie_key.h"
 #include "net/cookies/unique_cookie_key.h"
+#include "url/gurl.h"
 
 namespace net {
 

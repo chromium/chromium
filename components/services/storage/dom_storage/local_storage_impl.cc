@@ -46,6 +46,7 @@
 #include "storage/common/database/db_status.h"
 #include "storage/common/database/leveldb_status_helper.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace storage {
 

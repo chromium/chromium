@@ -27,6 +27,7 @@
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
+#include "url/gurl.h"
 
 namespace net {
 

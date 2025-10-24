@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "net/cookies/canonical_cookie.h"
+#include "url/gurl.h"
 
 namespace network::mojom {
 class CookieManager;

@@ -19,6 +19,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
 #include "mojo/public/cpp/bindings/default_construct_tag.h"

@@ -16,6 +16,7 @@
 #include "net/base/network_isolation_partition.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace net {
 

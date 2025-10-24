@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 

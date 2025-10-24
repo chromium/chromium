@@ -6,6 +6,7 @@
 
 #include "base/hash/hash.h"
 #include "net/cookies/canonical_cookie.h"
+#include "url/gurl.h"
 
 namespace canonical_cookie {
 

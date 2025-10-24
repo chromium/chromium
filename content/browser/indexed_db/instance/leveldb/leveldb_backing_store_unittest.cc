@@ -44,6 +44,7 @@
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "url/gurl.h"
 
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;

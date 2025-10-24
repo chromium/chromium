@@ -22,6 +22,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "url/gurl.h"
 
 namespace net {
 

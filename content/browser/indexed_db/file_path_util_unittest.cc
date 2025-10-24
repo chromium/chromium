@@ -12,6 +12,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content::indexed_db {

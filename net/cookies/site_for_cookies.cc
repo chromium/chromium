@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
+#include "url/gurl.h"
 
 namespace net {
 

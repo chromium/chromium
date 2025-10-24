@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace net {
