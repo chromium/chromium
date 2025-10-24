@@ -94,6 +94,10 @@ namespace shell_util {
 std::string Md5AsBase32ForUserSpecificRegistrySuffix(std::string_view str);
 }
 
+namespace spellcheck {
+std::string Md5AsHexForDictionaryChecksum(std::string_view data);
+}
+
 namespace trusted_vault {
 std::string MD5StringForTrustedVault(const std::string& local_trusted_value);
 }
@@ -140,20 +144,22 @@ class CRYPTO_EXPORT Md5 {
   // The friends listed here are the areas required to continue using MD5 for
   // compatibility with existing specs, on-disk data, or similar.
   friend Md5 android_tools::MakeMd5HasherForMd5sumTool();
-  friend Md5 policy::MakeMd5HasherForPolicyEventId();
-  friend Md5 drive::MakeMd5HasherForDriveFsAccount();
-  friend Md5 drive::util::MakeMd5HasherForDriveApi();
-  friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+  friend uint32_t blink::MD5Hash32ForBackgroundTracingHelper(
+      std::string_view str);
   friend Md5 cachetool::MakeMd5HasherForCachetools();
   friend std::string content::Md5OfPixelsAsHexForWebTests(
       base::span<const uint8_t> pixels);
+  friend Md5 drive::MakeMd5HasherForDriveFsAccount();
+  friend Md5 drive::util::MakeMd5HasherForDriveApi();
+  friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+  friend Md5 policy::MakeMd5HasherForPolicyEventId();
   friend std::string remoting::GetHostHash();
   friend std::string safe_browsing::Md5AsHexForBodyDigest(
       std::string_view data);
-  friend uint32_t blink::MD5Hash32ForBackgroundTracingHelper(
-      std::string_view str);
   friend std::string shell_util::Md5AsBase32ForUserSpecificRegistrySuffix(
       std::string_view str);
+  friend std::string spellcheck::Md5AsHexForDictionaryChecksum(
+      std::string_view data);
 
   // TODO(b/298652869): get rid of these.
   friend Md5 ash::printing::MakeMd5HasherForPrinterConfigurer();
@@ -165,12 +171,12 @@ class CRYPTO_EXPORT Md5 {
   // TODO(https://crbug.com/433545115): get rid of this.
   friend Md5 autofill::MakeMd5HasherForPasswordRequirementsSpec();
 
-  // TODO(https://crbug.com/426243026): get rid of this.
-  friend class bookmarks::BookmarkCodec;
-
   // TODO(https://crbug.com/450285252): get rid of this.
   friend std::array<uint8_t, Md5::kSize> base::Md5ForWinInspectionResultsCache(
       base::span<const uint8_t> payload);
+
+  // TODO(https://crbug.com/426243026): get rid of this.
+  friend class bookmarks::BookmarkCodec;
 
   // TODO(crbug.com/454363517): get rid of this.
   friend std::string devtools::Md5OfUrlAsHexForDevTools(std::string_view url);

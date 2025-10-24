@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -34,8 +33,15 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 
 using content::BrowserThread;
+
+namespace spellcheck {
+std::string Md5AsHexForDictionaryChecksum(std::string_view data) {
+  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(data)));
+}
+}  // namespace spellcheck
 
 namespace {
 
@@ -83,8 +89,9 @@ ChecksumStatus LoadFile(const base::FilePath& file_path,
   if (pos != std::string::npos) {
     std::string checksum = contents.substr(pos + strlen(CHECKSUM_PREFIX));
     contents = contents.substr(0, pos);
-    if (checksum != base::MD5String(contents))
+    if (checksum != spellcheck::Md5AsHexForDictionaryChecksum(contents)) {
       return INVALID_CHECKSUM;
+    }
   }
 
   std::vector<std::string> word_list = base::SplitString(
@@ -158,7 +165,8 @@ void SaveDictionaryFileReliably(const base::FilePath& path,
   for (const std::string& word : custom_words)
     content << word << '\n';
 
-  std::string checksum = base::MD5String(content.str());
+  std::string checksum =
+      spellcheck::Md5AsHexForDictionaryChecksum(content.str());
   content << CHECKSUM_PREFIX << checksum;
   {
     base::ScopedBlockingCall scoped_blocking_call(
