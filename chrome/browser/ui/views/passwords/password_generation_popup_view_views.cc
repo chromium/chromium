@@ -77,7 +77,10 @@ std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
                     /*resize=*/false, view.get());
 
   auto* label = view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_GENERATION_NUDGE_TITLE,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT)),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
