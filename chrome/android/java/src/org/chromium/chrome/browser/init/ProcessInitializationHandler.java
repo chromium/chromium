@@ -746,11 +746,6 @@ public class ProcessInitializationHandler {
         tasks.add(TabPersistentStoreImpl::onDeferredStartup);
     }
 
-    // TODO(crbug.com/454104029): This should be removed.
-    @CallSuper
-    @Deprecated
-    protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks) {}
-
     /**
      * Adds all the deferred startup tasks that should be called exactly once for the lifetime of a
      * profile.
